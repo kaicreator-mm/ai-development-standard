@@ -12,19 +12,76 @@
 
 不要使用“应该没问题”“基本通过”等不可审计描述，也不要把不同层级的状态压成一个值。
 
-状态必须绑定到明确层级。例如：
+mandatory downstream gate 仍是 `NOT_RUN` 时，该 gate 保持 `NOT_RUN`；依赖它的 Release Qualification 通常为 `BLOCKED`，而不是把未执行 gate 改写成 `FAIL`。
 
-- project verifier command 已执行并返回 exit 1 → **verifier gate = `FAIL`**；
-- 若 verifier 的失败根因是 Standard Defect，导致符合标准 contract 的 Adoption 无法被标准 verifier 接受 → **overall Adoption acceptance 可以是 `BLOCKED`**；这不会把已经执行失败的 verifier gate 改写为 `BLOCKED`。
-- mandatory downstream gate 仍是 `NOT_RUN` → 对应 gate 保持 `NOT_RUN`；依赖这些 mandatory gates 的 Release Qualification 通常为 `BLOCKED`，而不是自动把未执行 gate 写成 `FAIL`。
+## 2. Validation 与执行器分离
 
-## 2. Gate 分层
+Validation 是工程要求；执行器只是实现方式。
+
+允许的执行器包括但不限于：
+
+- ChatGPT 可执行环境；
+- Codex / coding agent；
+- Ubuntu Build Host；
+- Windows workstation；
+- macOS host；
+- self-hosted runner；
+- GitHub Actions；
+- 其它可信 clean execution environment。
+
+是否使用 CI 不改变 required gate 的 acceptance criteria。
+
+任何 PASS 都必须来自真实执行证据，不能来自执行器名称、workflow 存在、cross-build 或 Agent 推测。
+
+## 3. Required Gate Authority
+
+Mandatory Gate 必须有可追溯来源。优先级：
+
+```text
+1. Frozen PRD / Product Contract
+2. Frozen Architecture / Technical Contract
+3. .dev-standard/PROJECT_OVERRIDES.md
+4. Task-specific acceptance
+5. Standard defaults
+```
+
+历史 workflow、旧脚本、旧 artifact、旧 CI matrix 或 Agent 建议不能自动创建 mandatory release gate。
+
+如果需要新增 mandatory gate，应修改其上游冻结权威并留下审计记录。
+
+## 4. Validation Tuple
+
+矩阵验证的最小证据单元是 Validation Tuple：
+
+```text
+<exact SHA>
+× <real platform/environment>
+× <runtime/toolchain>
+× <validation profile>
+```
+
+示例：
+
+```text
+abc123... × Ubuntu 24.04 × Go 1.26 × visible-release
+abc123... × Ubuntu 24.04 × Go 1.27 × visible-release
+```
+
+规则：
+
+1. 一个 tuple 的 PASS 只证明该 tuple。
+2. 一个 toolchain PASS 不得推导另一 toolchain PASS。
+3. cross-build 不等价于真实 platform execution。
+4. platform/matrix 聚合 PASS 必须由其 required tuples 全部 PASS 得出。
+5. 如果 candidate SHA 变化，旧 SHA 的 tuple evidence 不能自动迁移成新 candidate PASS。
+
+## 5. Gate 分层
 
 ### A. Fast Gate
 
 通常包括：format、lint、typecheck、unit、contract smoke、basic build。
 
-目标：快速发现局部回归，适合每个 Task/commit。
+目标：快速发现局部回归，适合每个 Task/Concern。
 
 ### B. Integration Gate
 
@@ -36,45 +93,143 @@
 
 ### D. Hidden Validation
 
-使用实现 Agent 在开发阶段不依赖其具体答案的独立数据/场景验证正常路径、边界、错误处理和关键不变量。Hidden Validation 失败视项目策略决定是否为 release blocker；默认 P0/P1 关键场景失败为 blocker。
+使用实现 Agent 在开发阶段不依赖其具体答案的独立数据/场景，验证正常路径、边界、错误处理、failure injection、rollback 和关键不变量。
+
+Hidden Validation 默认在 Candidate Freeze 后执行。Pack/design 可以提前准备，但 `Hidden Validation Execution` 不得在未冻结 candidate 上伪造 PASS。
 
 ### E. Platform / Production Build
 
-按项目需要验证 Android、Flutter、iOS、Windows、Linux、Docker image、browser bundle、Rust release build 等真实产物。
+按项目需要验证真实 OS、SDK、device、container、browser bundle、release build 或其它生产环境。
 
-### F. Clean CI Gate
+### F. Minimal CI Gate
 
-在 GitHub runner 或可信 self-hosted runner 上从 clean checkout 安装依赖并重复 required gates。
+CI 是低成本、clean-checkout 的独立复核层，不是完整 Validation 的替代品。
 
-## 3. Required Gate 的确定
+默认 Minimal CI SHOULD 包含：
 
-Task DAG 或 PRD 应明确 required gates。如果没有显式声明，至少要求：Fast Gate + 与修改范围相关的 Integration/Build Gate。
+- standard/project verifier；
+- format/lint/typecheck 的必要确定性子集；
+- 快速 unit/contract smoke；
+- basic build smoke。
 
-版本 Closeout 默认还要求：Critical Journey、Hidden Validation（如果项目已定义）、Production Build 与 GitHub CI。
+默认 Minimal CI SHOULD NOT 承载：
 
-Required gate 对项目适用但 runner/command 尚未建立时，不得伪造命令或标成 `NOT_APPLICABLE`。应按真实原因使用 `NOT_RUN — <reason>` 或 `BLOCKED — <reason>`，并在项目 override / validation evidence 中记录。
+- 完整多平台矩阵；
+- 真实设备/SDK；
+- Critical Journeys；
+- Hidden Validation；
+- 高成本 E2E；
+- release packaging。
 
-## 4. 失败与阻塞证据
+项目在 `.dev-standard/PROJECT_OVERRIDES.md` 声明 CI profile：
+
+```text
+minimal
+custom
+disabled
+```
+
+- `minimal`：采用默认低成本 profile；
+- `custom`：明确列出项目需要的最小独立 checks；
+- `disabled`：明确不使用 CI，并记录原因；必须保留 exact-SHA clean validation + review。
+
+CI profile 的选择不能降低 frozen product/release validation。
+
+## 6. Required Gate 的确定
+
+Task DAG、PRD 或项目 override 应明确 required gates。
+
+如果没有显式声明，至少要求：
+
+- Fast Gate；
+- 与修改范围相关的 Integration/Build Gate；
+- 项目配置的 Minimal CI（若 CI profile 不是 disabled）。
+
+版本 Closure 根据 frozen authority 还可能要求：
+
+- Critical Journey；
+- Hidden Validation；
+- Platform / Production Build；
+- external boundary；
+- project-specific release gates。
+
+CI 不自动成为 Release Qualification blocker；只有 frozen/project policy 明确把某个 CI gate 列为 release-required 时，它才是版本级 mandatory gate。
+
+## 7. Exact-SHA Evidence
+
+Validation Report 应尽量记录：
+
+```text
+repository
+tested SHA
+branch/ref（辅助信息）
+execution host role
+OS/platform
+architecture
+runtime/toolchain
+validation profile
+exact command
+start/end timestamp
+exit code
+key logs
+state
+```
+
+如果 report commit 晚于被测试 commit，必须区分：
+
+```text
+tested checkpoint = <sha>
+evidence-only head = <sha>
+```
+
+不得把 working-tree PASS 宣称为未实际执行的 commit SHA PASS。
+
+## 8. Blocker Propagation
+
+`BLOCKED` 只沿依赖边传播。
+
+一个 gate BLOCKED 时：
+
+1. 标记该 gate 与直接依赖的 downstream state；
+2. 记录原因和 release impact；
+3. 继续执行所有不依赖该 gate 的工作；
+4. 不重复无意义 retry；
+5. 最后统一统计。
+
+示例：
+
+```text
+macOS tuple BLOCKED
+→ Candidate Freeze BLOCKED
+→ Hidden Validation Execution NOT_RUN
+→ Release Qualification BLOCKED
+```
+
+但 Candidate Preparation、Hidden Pack Preparation、其它平台 validation、release notes 等仍应继续。
+
+## 9. 失败与阻塞证据
 
 FAIL/BLOCKED 应尽量记录：
 
-- failing / blocked command or job
-- exit code（若 command 实际启动）
-- 关键日志
-- reproduction
-- expected vs actual
-- root cause（若已知）
-- affected Task/version
-- release blocking level
+- failing / blocked command or job；
+- exit code（若 command 实际启动）；
+- 关键日志；
+- reproduction；
+- expected vs actual；
+- root cause（若已知）；
+- affected Task/version；
+- downstream blocking level。
 
-对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact；不得通过把它改写成 `FAIL` 或 `NOT_APPLICABLE` 来简化 Release Qualification。
+对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact。
 
-## 5. 禁止事项
+## 10. 禁止事项
 
 - 删除有效测试以消除失败。
 - 将 required gate 改为可选以消除失败。
 - 无依据增大 timeout/retry 掩盖确定性 bug。
 - 在未执行时写 PASS。
-- 把环境不可用写成 PASS；应写 BLOCKED 或 NOT_RUN。
-- 把已执行并失败的具体 gate 因 root cause classification 改写成 BLOCKED。
-- 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL；应在依赖它的上层 qualification 上表达 BLOCKED。
+- 把环境不可用写成 PASS。
+- 把已执行失败的具体 gate 因 root cause classification 改写成 BLOCKED。
+- 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL。
+- 把 CI PASS 当成未执行的 Platform/CJ/Hidden/Packaging PASS。
+- 把 cross-build 当成真实 platform PASS。
