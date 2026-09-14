@@ -2,26 +2,44 @@
 
 - Issue: #
 - Baseline Commit:
-- Development Standard: `kaicreator-mm/ai-development-standard@v1.0.0`
+- Development Standard: `kaicreator-mm/ai-development-standard@v2.0.0` + immutable revision
 
 ## Why
 
+
+## Scope
+
+- In:
+- Out:
 
 ## Changes
 
 
 ## Validation
 
-- [ ] Format
-- [ ] Lint
-- [ ] Typecheck
-- [ ] Unit
-- [ ] Integration
-- [ ] Critical Journeys (if required)
-- [ ] Hidden Validation (if required)
-- [ ] Platform/Production Build (if required)
-- [ ] GitHub CI
+- Tested SHA:
+- Execution environment:
+- CI profile: `minimal / custom / disabled`
+
+| Gate / Tuple | State | Evidence |
+|---|---|---|
+| Fast Gate | | |
+| Integration | | |
+| Critical Journeys | | |
+| Hidden Validation | | |
+| Platform / Production Build | | |
+| Minimal CI | | |
+
+Use only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
+
+## Remaining Gates / Blockers
+
+- gate → state → reason → downstream impact
 
 ## Remaining Issues / Limitations
 
 None / describe explicitly.
+
+## Release Impact
+
+PR PASS / Minimal CI PASS does not imply Release PASS.

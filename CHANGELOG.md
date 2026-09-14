@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.0.0 — 2026-09-15
+
+基于 FastDev 真实 Pilot 重构执行模型：保留 CI，但默认最小化；将 Validation Evidence 提升为版本判断主链，并形式化 Gate Authority、Validation Tuple 与 blocker propagation。
+
+Breaking changes:
+
+- Validation 与 CI 解耦：Validation 是 mandatory；CI 是 execution mechanism，不再自动等同于完整验证或 Release Authority。
+- CI profile 改为项目显式声明：`minimal / custom / disabled`；默认推荐 `minimal`，只运行低成本、确定性、clean-checkout 的独立 checks。
+- Minimal CI 默认不承载完整多平台矩阵、Critical Journeys、Hidden Validation、高成本 E2E 或 packaging。
+- 新增 Validation Tuple：`exact SHA × real platform × runtime/toolchain × validation profile`；一个 tuple PASS 不能推导另一 tuple PASS。
+- 新增 Required Gate Authority 顺序：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults；历史 workflow、旧脚本和 Agent 推测不能自动创建 mandatory release gate。
+- 新增 DAG blocker propagation：BLOCKED 只阻塞依赖节点；其它独立工作继续执行，最终统一统计。
+- 开发生命周期从机械 14 Phase 收敛为更少的 Stage：Baseline → Product/Scope → Architecture/Task → Implementation → Validation/PR/Minimal CI → Candidate → Hidden/Closure → Release。
+- Candidate Prepared 与 Candidate Freeze 明确分离；Hidden Validation pack 可提前准备，但 execution 默认只针对 frozen candidate。
+- Release Qualification 改为 exact-SHA required evidence 驱动；CI 只有在 frozen/project policy 明确要求时才成为 release-level gate。
+- GitHub/PR/Validation 模板同步移除旧的 checkbox-only / CI-first 语义。
+
+FastDev Pilot 直接验证了：Critical Journey 能发现真实产品缺陷、五状态 Gate 语义可审计、exact-SHA evidence 可替代 CI-first 执行模型，同时必须避免单 blocker 停止所有独立工作。
+
 ## v1.2.1 — 2026-09-15
 
 修复 v1.2.0 已声明的 immutable project adoption contract 与 project verifier 不兼容问题，并增加最小 self-bootstrap regression。
