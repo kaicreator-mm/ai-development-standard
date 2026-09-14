@@ -34,18 +34,25 @@
 
 - Unit/component tests MAY co-locate 在模块源码旁或模块自己的 `tests/`。
 - 跨模块 integration/e2e/critical-journey tests SHOULD 放根 `tests/` 的明确目录。
-- fixture/testdata 必须有用途和所有权，不得把生产 dump 直接复制进仓库。
+- fixture/testdata 必须有用途和所有权，不得把 production dump 直接复制进仓库。
 - 大型二进制 fixture SHOULD 使用生成器、外部 artifact 或最小化样本，避免仓库无界增长。
 
-## 4. 测试数据
+## 4. 测试数据与 Scenario
 
-测试数据 MUST：
+测试数据、模拟数据、Golden Case、Scenario Matrix、generator、provenance、Hidden Validation Data 的完整规则由 `TEST_DATA_AND_SCENARIO_STANDARD.md` 定义。
+
+测试数据至少 MUST：
 
 - 不包含真实 secret/token/password；
-- 避免真实个人敏感数据；
-- 在需要随机性时使用可重现 seed 或记录 seed；
+- 不使用未经批准的真实个人敏感/客户数据；
+- 从 contract/rule/evidence 派生，而不是仅由 LLM 想象；
+- 在需要随机性时记录 seed + generator identity；
 - 对时间、时区、locale、排序等不稳定因素显式控制；
-- 清楚区分 fixture、golden/snapshot 和 expected result。
+- 区分 curated Golden/Regression 与 generated bulk data；
+- 区分 schema-invalid、domain-invalid 与 runtime failure；
+- 对正式 Test Data Pack 执行对应 validation gate。
+
+测试数据的“数量”不能替代 scenario/risk/domain-rule coverage。
 
 ## 5. 测试独立性
 
@@ -69,9 +76,10 @@ Coverage 是发现盲区的信号，不是质量目标本身。
 
 - 为提高行覆盖率写没有断言价值的测试；
 - 为达阈值测试第三方库内部行为；
-- 用覆盖率替代关键业务、failure path、contract 和 integration 验证。
+- 用覆盖率替代关键业务、failure path、contract 和 integration 验证；
+- 用大量重复 synthetic records 伪造“数据覆盖”。
 
-项目可以定义 coverage threshold，但必须与风险和历史基线合理对应。
+项目可以定义 code coverage threshold，但必须与风险和历史基线合理对应。测试数据 coverage 还应按 `TEST_DATA_AND_SCENARIO_STANDARD.md` 审查 Scenario / Rule / Boundary / Failure / Regression Coverage。
 
 ## 8. Flaky Test
 
@@ -90,6 +98,8 @@ Snapshot/golden test 适合复杂结构化输出，但必须可审查。大面�
 
 对 AI/LLM 输出，优先验证结构、约束、不变量、评分规则和关键语义，不对自然语言全文做无意义精确字符串匹配。
 
+Golden expected behavior 必须具有独立 authority；LLM 自己生成 expected answer 不能仅凭自评成为 approved Golden。
+
 ## 10. External Boundary
 
 外部 API、云服务、LLM provider、支付、邮件等边界建议分层：
@@ -103,6 +113,8 @@ Snapshot/golden test 适合复杂结构化输出，但必须可审查。大面�
 ## 11. 性能、安全与可靠性
 
 当 PRD/Architecture 声明性能、容量、安全或可靠性目标时，必须有相应可执行验证或清晰的人工 gate。不要在没有目标值和基线时把“性能测试”变成无结论 benchmark。
+
+性能/容量数据如果声称代表真实分布，必须记录数据来源或分布假设；不得让 LLM 无 evidence 猜测真实频率。
 
 ## 12. CI 分层
 
@@ -121,3 +133,4 @@ PR PASS 不等于 Release PASS。
 - 测试实现细节到使正常重构无法进行，而没有 contract 价值。
 - 依赖共享开发环境中的残留数据。
 - 把没有执行的测试写成 PASS。
+- 删除 Golden/Regression Case 仅因为当前实现无法通过。

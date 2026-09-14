@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "case_count": 27,
+  "curated_case_count": 16,
+  "generated_case_count": 8,
+  "valid_case_count": 24,
+  "schema_invalid_case_count": 3,
+  "classes": {
+    "adversarial": 2,
+    "boundary": 4,
+    "domain_invalid": 2,
+    "golden": 4,
+    "incomplete": 3,
+    "normal": 8,
+    "regression": 1,
+    "schema_invalid": 3
+  },
+  "not_applicable": {
+    "failure_injection": "No runtime dependency boundary in this pure decision reference pack."
+  },
+  "dimension_coverage": {
+    "completeness": ["complete", "invalid", "partial"],
+    "evidence_state": ["conflicting", "consistent", "insufficient"],
+    "quantity_band": ["huge", "large", "negative", "normal", "one", "zero"],
+    "supplier_status": ["blocked", "unknown", "verified"],
+    "text_risk": ["none", "prompt_injection"]
+  },
+  "risk_matrix_count": 10,
+  "golden_count": 4,
+  "regression_count": 1,
+  "adversarial_count": 2,
+  "reproducibility": {
+    "seed": 20260914,
+    "generator_version": "2.0.0",
+    "curated_cases_sha256": "3ba19b4141e65e1f0ee302e803fbe6b9b350136ad37b543a3c9cf8b525442194",
+    "generated_cases_sha256": "9495174dda12aaa413a583bc59ee7ce9af6205373633cdd3dae37fa414a70df0",
+    "schema_invalid_sha256": "fc1e648b13d95a8fa64ed668969936d8ccd9e787c6b21caa41237a750667cd74"
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QuoteAssessmentInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "product", "quantity", "currency", "supplier_status", "lead_time_days", "evidence", "free_text"],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1},
+    "product": {"type": "string"},
+    "quantity": {"type": "integer"},
+    "currency": {"type": "string"},
+    "supplier_status": {"enum": ["verified", "unknown", "blocked"]},
+    "lead_time_days": {"type": ["integer", "null"]},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "notes"],
+      "properties": {
+        "state": {"enum": ["consistent", "conflicting", "insufficient"]},
+        "notes": {"type": "string"}
+      }
+    },
+    "free_text": {"type": "string"}
+  }
+}

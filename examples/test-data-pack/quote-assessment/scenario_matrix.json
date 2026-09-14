@@ -1,0 +1,27 @@
+{
+  "strategy": "risk-based targeted combinations; not full Cartesian product",
+  "required_scenarios": [
+    {"risk": "happy_path", "covered_by": ["GOLD-001"]},
+    {"risk": "missing_business_fact", "covered_by": ["GOLD-002", "INC-MISSING-LEAD"]},
+    {"risk": "numeric_lower_boundary", "covered_by": ["BOUND-NEG-QTY", "BOUND-ZERO-QTY", "BOUND-ONE-QTY"]},
+    {"risk": "large_input", "covered_by": ["BOUND-HUGE-QTY"]},
+    {"risk": "unsupported_business_value", "covered_by": ["DIN-UNSUPPORTED-CURRENCY"]},
+    {"risk": "supplier_risk", "covered_by": ["GOLD-003", "INC-UNKNOWN-SUPPLIER"]},
+    {"risk": "evidence_conflict_or_insufficiency", "covered_by": ["GOLD-004", "INC-INSUFFICIENT-EVIDENCE"]},
+    {"risk": "prompt_injection", "covered_by": ["ADV-001", "ADV-002"]},
+    {"risk": "schema_contract_violation", "covered_by": ["SCHEMA-001", "SCHEMA-002", "SCHEMA-003"]},
+    {"risk": "regression", "covered_by": ["REG-001"]}
+  ],
+  "not_applicable": [
+    {
+      "risk": "runtime_failure_injection",
+      "reason": "This pack has no runtime dependency boundary; integration packs should cover timeout/unavailable/I-O/DB failures."
+    }
+  ],
+  "excluded_combinations": [
+    {
+      "combination": "full Cartesian product of all dimensions",
+      "reason": "would inflate case count without proportional risk coverage; use pairwise/property-based generation when needed"
+    }
+  ]
+}

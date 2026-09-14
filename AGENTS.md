@@ -14,9 +14,10 @@
    - `standards/PROJECT_STRUCTURE.md`
    - `standards/DOCUMENTATION_STANDARD.md`
    - `standards/TESTING_STANDARD.md`
-5. 涉及 ChatGPT → Codex 交接时读取 `standards/CODEX_HANDOFF_PROTOCOL.md`。
-6. 涉及测试、构建、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-7. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+5. 涉及模拟数据、fixture、scenario、Golden Case、Regression、Hidden Validation Data 或数据生成器时，必须读取 `standards/TEST_DATA_AND_SCENARIO_STANDARD.md`；让 LLM 设计/生成测试数据时同时读取 `prompts/TEST_DATA_GENERATION.md`。
+6. 涉及 ChatGPT → Codex 交接时读取 `standards/CODEX_HANDOFF_PROTOCOL.md`。
+7. 涉及测试、构建、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
+8. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -24,7 +25,10 @@
 
 - GitHub repository state、commit、Issue、PR、CI 是执行事实；聊天记录不是事实源。
 - 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
-- 不得为了让测试或 CI 通过而降低测试强度、删除有效断言、跳过 required gate 或改变冻结需求。
+- 不得为了让测试或 CI 通过而降低测试强度、删除有效断言、Golden/Regression Case、跳过 required gate 或改变冻结需求。
+- 测试/模拟数据不得仅凭 LLM 想象成为 Golden truth；正式 Test Data Pack 必须能回溯到 contract/rule/evidence，并通过自身 validation gate。
+- LLM 不得同时作为测试输入生成者、expected-answer 唯一来源和唯一审批者。
+- Hidden Validation expected answer 不得暴露给实现 Agent。
 - Codex 不得在 Handoff 阶段自行重新定义产品需求、领域语义、公共 API、数据语义、安全模型或架构边界。
 - ChatGPT Web 在交接 Codex 前必须明确 baseline commit、已完成内容、剩余工作、required gates 和禁止修改项。
 - 项目结构必须表达真实职责；不得为了匹配模板创建无职责模块，也不得把多个无关职责长期堆入 catch-all `common/utils/shared`。
@@ -35,4 +39,4 @@
 
 ## 输出风格
 
-执行报告优先使用可审计状态：`PASS / FAIL / NOT_RUN / NOT_APPLICABLE / BLOCKED`。每个 FAIL/BLOCKED 应尽可能提供 failing command、复现方式、根因或当前证据。
+执行报告优先使用可审计状态：`PASS / FAIL / NOT_RUN / NOT_APPLICABLE / BLOCKED`。每个 FAIL/BLOCKED 应尽可能提供 failing command、复现方式、case id/seed（相关时）、根因或当前证据。
