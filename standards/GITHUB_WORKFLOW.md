@@ -9,13 +9,14 @@
 - **Push**：把稳定 checkpoint 发布到远端，使其可恢复、可交接、可审计。
 - **Pull Request**：准备评审/合并的一组真实变化。
 - **Actions / CI**：独立验证。
-- **Tag / Release**：已完成版本身份。
+- **Tag / Release**：可选的人类友好发布别名/分发对象；immutable commit SHA 始终是 canonical identity。
 
 ## 2. 分支建议
 
 - `feat/<version-or-task>`
 - `fix/<issue-or-task>`
 - `chore/<scope>`
+- `docs/<scope>`
 
 不强制复杂 GitFlow。小团队优先短分支 + PR + main。
 
@@ -41,16 +42,41 @@ Implementation 阶段以 `Task / Concern` 为主要远端同步单位。允许�
 
 Codex Handoff 使用 `templates/codex-handoff-issue.md`。普通 Task 可使用项目自己的 Task template。
 
+重复出现的 bug/feature/support 类型 SHOULD 使用 Issue Form/Template 标准化必要输入，避免依赖评论来补充最基本复现信息。
+
 ## 6. PR
 
-PR 使用 `templates/implementation-pr.md`。必须说明变更原因、范围、验证和关联 Issue。大版本可先建 Draft PR，让 Codex在其上完成真实环境修复。
+PR 使用 `templates/implementation-pr.md` 或项目等价模板。必须说明变更原因、范围、验证和关联 Issue。大版本可先建 Draft PR，让 Codex 在其上完成真实环境修复。
 
 原则上遵循 `One concern, one PR`。每个独立 concern 在局部 Validation / Review / CI 通过后即可按项目策略合并 main，不要求等待同版本其它 concern 一起合并。
 
-## 7. CI
+PR template 应短而聚焦必要事实；不要通过几十项无差别勾选制造形式负担。详细 review 可引用 `checklists/pr-review.md`。
+
+## 7. Ownership
+
+多人协作、共享 package、部署/安全/基础设施等高风险目录 SHOULD 使用 CODEOWNERS 或等价 ownership 规则，让 GitHub 自动路由具有上下文的 review。
+
+单人私有项目不要求为了形式创建 CODEOWNERS。
+
+## 8. CI
 
 Required checks 应尽可能在 PR merge 前强制。Self-hosted runner 负责特殊 SDK/设备/高成本环境时，应与 cloud runner 的 clean verification 做合理分工。
 
-## 8. Merge
+CI 必须基于可识别 commit；“我本地刚跑过”不能替代 required status check。
+
+## 9. Stable Branch Protection
+
+`main` 或等价稳定分支 SHOULD 根据项目风险启用 repository ruleset/branch protection，例如：
+
+- required status checks；
+- required review（多人项目）；
+- 禁止 force push；
+- 必要时禁止 branch deletion。
+
+单人项目可以简化 review，但不应取消 required CI/validation 的真实性要求。
+
+## 10. Merge
 
 优先 squash 或项目既定策略。Merge 前需满足 required review/CI。Merge 后 Handoff Issue 应自动或手动关闭。
+
+每次 merge 后，main 上的 merge/squash commit SHA 成为新的远端事实。Version Closure 必须明确最终 baseline SHA，而不是只引用 PR number 或 tag。
