@@ -2,103 +2,268 @@
 
 ## 1. 目标
 
-该流程用于让 ChatGPT Web 与 Codex 在不同执行环境中协作，同时保证任务范围、代码状态、验证结果和发布结论可追踪、可复现、可审计。
+该流程用于让 ChatGPT Web、Codex / 其它 Execution Agent、Build Host 与 GitHub 在不同执行环境中协作，同时保证范围、代码状态、验证结果和发布结论可追踪、可复现、可审计。
+
+v2.0 的关键变化：
+
+- Validation 是 mandatory；CI 不再等同于完整 Validation。
+- CI 默认最小化，仅作为 clean-checkout 独立复核层。
+- Blocker 按依赖传播，不再因为单个 gate 被阻塞而停止所有独立工作。
+- 阶段减少，状态和依赖更细。
 
 ## 2. 生命周期
 
-### Phase 0 — Intake / Baseline
+### Stage 0 — Intake / Baseline
 
-确认：目标、repository、目标版本或 Task、当前默认分支、当前 HEAD、已有 PRD/Architecture/Task/CI 状态。
+确认：目标、repository、目标版本或 Task、当前默认分支、当前 HEAD、已有 PRD/Architecture/Task/Validation/CI 状态。
 
-输出至少包括：`scope`、`baseline ref`、`acceptance criteria`。如果任务已经明确且影响小，可以直接进入实现。
+输出至少包括：
 
-### Phase 1 — L1 Product Evidence（按需）
+```text
+scope
+baseline ref
+acceptance criteria
+known blockers
+required evidence
+```
 
-适用于新产品、新重大能力、产品形态不明确或需要验证用户问题时。目标不是堆竞品，而是确认真实问题、用户 workflow、替代方案、反证和产品边界。
+如果任务已经明确且影响小，可以直接进入实现。
 
-输出：产品证据、反证、关键假设、继续/收缩/停止建议。
+### Stage 1 — Product / Scope
 
-### Phase 2 — PRD / Scope Freeze
+按需执行 L1 Product Evidence，并冻结 PRD / Scope。
 
-冻结本版本要解决的问题、用户行为、业务规则、功能范围、明确不做事项、验收条件与 release blocker。
+适用于：新产品、新重大能力、产品边界不清、需要反证或用户 workflow 验证的情况。
 
-PRD 冻结后，执行 Agent 不得自行改变产品语义。
+PRD / Scope Freeze 应明确：
 
-### Phase 3 — L2 Architecture Evidence（按需）
+- 本版本解决的问题；
+- 用户行为 / 业务规则；
+- 功能范围与明确不做；
+- release blockers；
+- required gates；
+- acceptance criteria。
 
-对关键架构模式、技术边界、依赖、数据流、失败模型和可维护性进行证据验证。输出应能支撑架构决策，而不是技术清单。
+冻结后 Execution Agent 不得自行改变产品语义。
 
-### Phase 4 — Task DAG
+### Stage 2 — Architecture / Task Definition
 
-把冻结范围拆成可执行任务，并明确：依赖、输入、输出、验收标准、适合模型强度、可并行性、风险与 required validation。
+按需执行 L2 Architecture Evidence；随后形成 Task DAG。
 
-### Phase 5 — L3 Implementation Evidence（按需）
+Task DAG 至少明确：
 
-为高风险或低成本模型执行的 Task 提供最小 Reference Pack。证据优先级：
+- dependency；
+- input/output；
+- acceptance；
+- required validation；
+- parallelism；
+- risk；
+- model/executor suitability。
 
-`Tests → Contract/Interface → Core Implementation → Failure Handling → Examples/Docs`
+高风险或低成本模型执行的 Task 可按需增加 L3 Implementation Evidence。证据优先级：
 
-### Phase 6 — ChatGPT Web Implementation
+```text
+Tests → Contract/Interface → Core Implementation → Failure Handling → Examples/Docs
+```
 
-ChatGPT Web 尽可能完成：代码、测试、迁移、文档、CI 配置和能在当前环境执行的验证。不能运行的内容必须明确列为 `NOT VERIFIED`，不能默认通过。
+### Stage 3 — Implementation Concerns
 
-### Phase 7 — Web Validation
+以 Task / Concern 为主要实现单位。
 
-执行当前环境可运行的 `format / lint / typecheck / unit / integration / build smoke`。记录 PASS/FAIL/NOT_RUN。
+原则：
 
-交接条件：主体实现达到可交接状态，已知失败已修复或被明确标为 Codex 剩余工作。
+- One concern, one PR；
+- 大功能优先拆成 Contract → Core → Integration → UI → Validation；
+- 当前环境能完成的代码、测试、fixture、migration、文档与局部验证应尽可能完成；
+- 不能执行的内容如实进入 gate 状态，不得默认通过；
+- 正式 Concern 达到可审查状态后形成远端 checkpoint。
 
-### Phase 8 — GitHub Baseline
+### Stage 4 — Validation / PR / Minimal CI
 
-将 Web Implementation + Validation 成果形成 GitHub branch/commit baseline。前序正式阶段产物应已按“Stage Checkpoint Push”规则形成远端 checkpoint。Codex Handoff 必须引用不可歧义的 baseline commit SHA；仅写“最新代码”不合格。
+先执行当前环境或 Build Host 可运行的 Validation，再形成或更新 PR。
 
-### Phase 9 — Codex Handoff
+#### 4.1 Local / Build Host Validation
 
-创建 `codex-handoff` Issue，使用 `templates/codex-handoff-issue.md`。Issue 是本次剩余工作的 Work Item；长期规则不重复粘贴，引用本标准固定 revision。
+根据项目需要执行：
 
-### Phase 10 — Codex + Build Host Validation
+```text
+format
+lint
+typecheck
+unit
+contract
+integration
+build smoke
+platform validation
+Critical Journey
+```
 
-Codex 在完整环境中 checkout baseline，执行 Handoff 指定 gates。发现工程问题时做最小必要修复，并在每次修复后重跑受影响 gate。
+Validation 必须绑定明确 commit SHA。真实平台/运行时矩阵使用 Validation Tuple：
 
-当问题要求改变冻结需求/架构时，不得擅自修改，应标为 BLOCKED 并返回 Web 决策。
+```text
+<exact SHA> × <real platform> × <runtime/toolchain> × <validation profile>
+```
 
-### Phase 11 — Pull Request
+#### 4.2 PR
 
-真实代码变化通过 PR 表达。PR 关联 Handoff Issue，说明 baseline、发现的问题、根因、修改与验证结果。
+PR 说明：
 
-### Phase 12 — GitHub CI
+```text
+baseline
+concern scope
+changes
+validation evidence
+known blockers
+required downstream gates
+```
 
-在干净 runner 或受控 self-hosted runner 上运行 required gates。CI 是独立裁判，不接受“Codex 本地通过”替代。
+#### 4.3 Minimal CI
 
-独立 Concern/Task 的 PR 在局部 CI / Review 通过后即可按项目策略合并 `main`；不要求等待同版本其它 PR 统一合并。
+CI 默认只做低成本、确定性、clean-checkout 独立复核。
 
-### Phase 13 — Version Closure / Final Closeout
+默认 Minimal CI SHOULD 只包含：
 
-在 integrated `main` / release baseline 上，根据 Task DAG、实现 diff、Validation Report、CI、文档同步状态执行版本级判断。版本 Closure 默认检查 Full Regression、Critical Journeys、Hidden Validation、真实 packaging/platform 和 required external boundary。
+- standard/project verifier；
+- format/lint/typecheck 的必要子集；
+- 快速 unit/contract smoke；
+- basic build smoke。
 
-- `READY`：所有 release blocker 与 required gate 通过。
-- `CONDITIONAL`：允许发布但存在明确、非阻塞、已记录限制。
-- `BLOCKED`：存在 release blocker、required gate FAIL/NOT_RUN/BLOCKED 或范围未完成。
+默认不把以下内容放入 CI：
+
+- 完整多平台矩阵；
+- 真实设备/SDK；
+- Critical Journeys；
+- Hidden Validation；
+- 高成本 Docker/E2E；
+- packaging。
+
+项目通过 `.dev-standard/PROJECT_OVERRIDES.md` 声明 CI profile：
+
+```text
+minimal
+custom
+disabled
+```
+
+`disabled` 必须记录理由，并保留 exact-SHA clean validation + review；没有 CI 不等于没有 Validation。
+
+PR 在 concern scope、required local/build-host validation、Review 与配置的 Minimal CI 满足项目 merge policy 后即可合并 main，不要求等待同版本其它 concern。
+
+### Stage 5 — Integrated Baseline / Candidate Preparation
+
+在 integrated `main` 或 release branch 上形成候选准备状态。
+
+允许在全部 release gate 完成前先准备：
+
+- candidate identity；
+- platform matrix；
+- Critical Journey matrix；
+- Hidden Validation pack；
+- closeout checklist；
+- release notes draft；
+- tag/baseline plan。
+
+正确区分：
+
+```text
+Candidate Prepared = preparation complete
+Candidate Freeze = required visible gates pass on one exact SHA
+```
+
+Candidate Prepared PASS 不代表 Candidate Freeze PASS。
+
+### Stage 6 — Candidate Freeze / Hidden Validation / Closure
+
+只有 required visible gates 在同一个 exact candidate SHA 上满足冻结条件后，才能记录 `CANDIDATE_FROZEN_SHA`。
+
+Candidate Freeze 后执行 Hidden Validation。
+
+版本级 Closure 检查：
+
+- required visible Validation；
+- Critical Journeys；
+- Hidden Validation；
+- 真实 platform / production build；
+- external boundaries；
+- docs / known limitations；
+- project-required Minimal CI（若配置为 required）。
+
+Release Qualification 使用：
+
+- `PASS`：所有 frozen mandatory gates PASS；
+- `FAIL`：mandatory gate 已执行并 FAIL；
+- `BLOCKED`：mandatory gate 为 BLOCKED/NOT_RUN 或存在 release blocker。
 
 PR PASS 不等于 Release PASS。
 
-### Phase 14 — Release Baseline / Optional Tag / Release
+### Stage 7 — Release Baseline / Optional Tag / Release
 
-只有达到项目 release policy 后才能宣布版本 READY/发布。必须记录 immutable final baseline commit SHA。Tag / GitHub Release / release candidate 是可选的人类友好别名与分发对象，不是 release identity 的必要条件。
+只有达到项目 release policy 后才能宣布版本 READY/发布。
 
-发布后关闭对应 Handoff/Version Issues，并保留 Validation/CI 审计链。
+必须记录：
 
-## 3. Stage Checkpoint Push
+```text
+immutable final baseline commit SHA
+standard version + revision
+release gate summary
+known limitations
+```
 
-开发流程不要求“每个操作都 push”，而要求在形成可审计、可恢复、可交接的正式阶段结果后建立远端 checkpoint。
+Tag / GitHub Release 是可选的人类友好别名和分发对象，不是 canonical identity。
 
-### 3.1 必须形成 checkpoint 的情况
+## 3. Gate Authority
 
-当某一阶段产物会成为后续阶段的正式输入、约束或发布依据时，阶段完成后必须：
+Mandatory Gate 必须能追溯到明确权威来源。优先级：
 
-1. 形成任务相关的 Git commit；
-2. push 到远端 branch；
-3. 保留可解析的 commit SHA 作为阶段身份。
+```text
+1. Frozen PRD / Contract
+2. Frozen Architecture
+3. .dev-standard/PROJECT_OVERRIDES.md
+4. Task-specific acceptance
+5. Standard defaults
+```
+
+以下内容不能自动创建 mandatory release gate：
+
+- 历史 workflow；
+- 已弃用脚本；
+- 旧版本 artifact；
+- Agent 推测；
+- “以前项目都这么做”。
+
+若要新增 mandatory release gate，必须通过相应冻结权威的显式变更。
+
+## 4. Blocker Propagation
+
+Blocker 只沿依赖边传播。
+
+示例：
+
+```text
+macOS validation BLOCKED
+        ↓
+Candidate Freeze BLOCKED
+        ↓
+Hidden Validation Execution NOT_RUN
+        ↓
+Release Qualification BLOCKED
+```
+
+但与 macOS gate 无直接依赖的工作仍继续，例如：
+
+- release notes draft；
+- Hidden Validation pack preparation；
+- docs synchronization；
+-其它平台 validation；
+- candidate preparation。
+
+执行 Agent 不应因为单个 blocker 停止整个版本，只在所有可独立工作耗尽或继续会破坏事实/数据时停止。
+
+## 5. Stage Checkpoint Push
+
+开发流程不要求“每个操作都 push”，而要求正式、稳定、可恢复、可交接的结果形成远端 checkpoint。
+
+### 5.1 必须 checkpoint 的情况
 
 至少包括：
 
@@ -106,24 +271,32 @@ PR PASS 不等于 Release PASS。
 - L2 Architecture Evidence；
 - Task DAG；
 - L3 Implementation Evidence；
-- Implementation 中达到可审查状态的 Task / Concern；
-- Validation / Final Closeout；
-- Release baseline 与其它正式 release artifact。
+- 可审查 Task / Concern；
+- Validation / Candidate / Closeout；
+- Release baseline 与正式 release artifact。
 
-L1 Product Evidence 只有在被正式采用为产品决策依据时才要求 checkpoint；探索性草稿不要求机械 push。
+每个 checkpoint 应有 Git commit、remote push 与可解析 commit SHA。
 
-### 3.2 不要求逐步 push
+### 5.2 不要求逐步 push
 
-阶段内部的草稿、临时修复、单次测试运行、局部编辑不要求每一步 push。允许在本地形成多个逻辑 commit，再在阶段或 Task 达到稳定检查点时统一 push。
+草稿、临时修复、单次测试运行、局部编辑不要求每一步 push。
 
-### 3.3 Implementation 的同步单位
+Implementation 以 Task / Concern 为远端同步单位，不以单文件或每次编辑为单位。
 
-Implementation 以 `Task / Concern` 为主要远端同步单位，而不是以单个文件或单次编辑为单位。一个 Task 可以包含多个本地 commit；达到可评审状态后 push，创建或更新 PR，经局部 Validation / CI / Review 通过后按项目策略合并 main。
+### 5.3 长任务恢复
 
-### 3.4 长任务与 Agent 恢复
+长任务、多 Agent、跨会话任务应在正式 Stage/Concern checkpoint push，使后续可以仅依赖 GitHub commit 恢复，而不是依赖聊天记录。
 
-长任务、多 Agent 或可能跨会话执行的工作，应优先在每个正式 Stage 或 Task checkpoint push，以便中断后可以从 GitHub 的明确 commit 恢复，而不是依赖聊天记录或本地未发布状态。
+## 6. 快速路径
 
-## 4. 快速路径
+Bug、小修复、文档修正、已冻结范围内明确 Task 可跳过 L1/L2/L3，但不能跳过：
 
-Bug、小修复、文档修正、已冻结范围内的明确 Task 可跳过 L1/L2/L3，但不能跳过：Baseline → Implementation → Validation → GitHub 事实链 → Release 判断。快速路径同样遵守 Stage Checkpoint Push：只对实际经过并形成正式结果的阶段建立 checkpoint，不为被跳过的阶段制造空提交。
+```text
+Baseline
+→ Implementation
+→ Validation
+→ GitHub fact chain
+→ Release impact decision
+```
+
+快速路径不为被跳过阶段制造空提交。
