@@ -1,0 +1,62 @@
+name: Codex Handoff
+description: Hand off remaining environment validation/fixes from ChatGPT Web to Codex.
+title: "[Handoff] "
+labels:
+  - codex-handoff
+  - validation
+body:
+  - type: input
+    id: standard
+    attributes:
+      label: Development Standard
+      value: kaicreator-mm/ai-development-standard@v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: baseline
+    attributes:
+      label: Repository / branch / baseline commit
+      placeholder: owner/repo | branch | full SHA
+    validations:
+      required: true
+  - type: textarea
+    id: completed
+    attributes:
+      label: Web Completed
+    validations:
+      required: true
+  - type: textarea
+    id: web_validation
+    attributes:
+      label: Web Validation
+      description: PASS/FAIL/NOT_RUN/NOT_APPLICABLE/BLOCKED with evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: remaining
+    attributes:
+      label: Remaining Work
+    validations:
+      required: true
+  - type: textarea
+    id: gates
+    attributes:
+      label: Required Gates
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Allowed / Forbidden Changes
+      value: |
+        Allowed: implementation/build/platform/CI fixes within frozen scope.
+        Forbidden: PRD, product/domain semantics, public contract, security model, architecture boundary, weakening tests.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Expected Output
+      value: Final commit/PR, standard Validation Report, GitHub CI status, or explicit BLOCKED evidence.
+    validations:
+      required: true
