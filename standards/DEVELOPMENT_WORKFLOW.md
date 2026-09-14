@@ -50,7 +50,7 @@ ChatGPT Web 尽可能完成：代码、测试、迁移、文档、CI 配置和�
 
 ### Phase 8 — GitHub Baseline
 
-将 Web 阶段成果落到 GitHub branch/commit。Codex Handoff 必须引用不可歧义的 baseline commit SHA；仅写“最新代码”不合格。
+将 Web Implementation + Validation 成果形成 GitHub branch/commit baseline。前序正式阶段产物应已按“Stage Checkpoint Push”规则形成远端 checkpoint。Codex Handoff 必须引用不可歧义的 baseline commit SHA；仅写“最新代码”不合格。
 
 ### Phase 9 — Codex Handoff
 
@@ -82,6 +82,42 @@ ChatGPT Web 根据 Task DAG、实现 diff、Validation Report、CI、文档同�
 
 只有达到项目 release policy 后才能 merge/tag/release。发布后关闭对应 Handoff Issue，并保留 Validation/CI 审计链。
 
-## 3. 快速路径
+## 3. Stage Checkpoint Push
 
-Bug、小修复、文档修正、已冻结范围内的明确 Task 可跳过 L1/L2/L3，但不能跳过：Baseline → Implementation → Validation → GitHub事实链 → Release判断。
+开发流程不要求“每个操作都 push”，而要求在形成可审计、可恢复、可交接的正式阶段结果后建立远端 checkpoint。
+
+### 3.1 必须形成 checkpoint 的情况
+
+当某一阶段产物会成为后续阶段的正式输入、约束或发布依据时，阶段完成后必须：
+
+1. 形成任务相关的 Git commit；
+2. push 到远端 branch；
+3. 保留可解析的 commit SHA 作为阶段身份。
+
+至少包括：
+
+- PRD / Scope Freeze；
+- L2 Architecture Evidence；
+- Task DAG；
+- L3 Implementation Evidence；
+- Implementation 中达到可审查状态的 Task / Concern；
+- Validation / Final Closeout；
+- Release baseline 与其它正式 release artifact。
+
+L1 Product Evidence 只有在被正式采用为产品决策依据时才要求 checkpoint；探索性草稿不要求机械 push。
+
+### 3.2 不要求逐步 push
+
+阶段内部的草稿、临时修复、单次测试运行、局部编辑不要求每一步 push。允许在本地形成多个逻辑 commit，再在阶段或 Task 达到稳定检查点时统一 push。
+
+### 3.3 Implementation 的同步单位
+
+Implementation 以 `Task / Concern` 为主要远端同步单位，而不是以单个文件或单次编辑为单位。一个 Task 可以包含多个本地 commit；达到可评审状态后 push，创建或更新 PR，经局部 Validation / CI / Review 通过后按项目策略合并 main。
+
+### 3.4 长任务与 Agent 恢复
+
+长任务、多 Agent 或可能跨会话执行的工作，应优先在每个正式 Stage 或 Task checkpoint push，以便中断后可以从 GitHub 的明确 commit 恢复，而不是依赖聊天记录或本地未发布状态。
+
+## 4. 快速路径
+
+Bug、小修复、文档修正、已冻结范围内的明确 Task 可跳过 L1/L2/L3，但不能跳过：Baseline → Implementation → Validation → GitHub事实链 → Release判断。快速路径同样遵守 Stage Checkpoint Push：只对实际经过并形成正式结果的阶段建立 checkpoint，不为被跳过的阶段制造空提交。
