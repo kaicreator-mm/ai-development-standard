@@ -3,11 +3,12 @@ from __future__ import annotations
 import copy
 import json
 import random
+import sys
 from pathlib import Path
 
 SEED = 20260914
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT / "cases" / "generated.jsonl"
+DEFAULT_OUT = ROOT / "cases" / "generated.jsonl"
 
 BASE = {
     "request_id": "BASE",
@@ -81,14 +82,15 @@ def build_case(index: int, rng: random.Random) -> dict:
 
 
 def main() -> None:
+    output = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
     rng = random.Random(SEED)
     rows = [build_case(i, rng) for i in range(1, 9)]
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
         "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
         encoding="utf-8",
     )
-    print(OUT)
+    print(output)
 
 
 if __name__ == "__main__":

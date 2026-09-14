@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.3.0 — 2026-09-14
+
+新增 Test Data & Scenario 工程标准，并用仓库自身 reference pack 完成“标准 → 模拟数据 → 验证 → 反馈优化标准”的闭环。
+
+- 新增 `standards/TEST_DATA_AND_SCENARIO_STANDARD.md`：定义数据来源优先级、provenance、Scenario Matrix、Golden/Regression、Boundary、Schema-invalid、Domain-invalid、Failure Injection、Adversarial、Hidden Validation Data、生成器与 coverage 规则。
+- 明确 LLM 在测试数据中的职责：适合场景设计、语义边界、自然语言输入与 property/invariant 建议，但默认不是 Golden Oracle；不得由同一个 LLM 同时生成输入、expected answer 并独立批准自身 PASS。
+- 新增 `prompts/TEST_DATA_GENERATION.md` 与 `checklists/test-data-review.md`，将测试数据设计和审核流程标准化。
+- 新增 `references/TEST_DATA_ENGINEERING_REFERENCES.md`，记录 Hypothesis、Faker、Schemathesis 的 property-based、seed/version reproducibility、schema-driven generation/replay 等采纳依据。
+- 新增 `examples/test-data-pack/quote-assessment/` reference pack：27 个案例，包含 curated/generated/schema-invalid 分离、4 Golden、Boundary、Domain-invalid、Failure Injection、Adversarial、Regression、risk matrix、provenance 与冻结 hash。
+- 新增 `scripts/verify_test_data_pack.py`，把 pack integrity、dimension rationale/coverage、provenance、Golden/Regression review、risk mapping 与 artifact hash 变成可执行验证。
+- 实际生成/验证反馈反向强化标准：required dimension 必须有行为/风险意义；schema-invalid/domain-invalid/runtime failure 必须分离；Golden 选择按风险而非固定数量；seed 必须配合 generator/dependency identity；禁止用重复 synthetic records 刷 coverage。
+- `TESTING_STANDARD.md` 与 `VALIDATION_STANDARD.md` 接入 Test Data / Scenario Gate；正式 pack 自身未通过时，下游 Hidden/Critical Journey 结果不得宣称 PASS。
+- 标准仓库自验证新增 reference test-data pack 检查与 deterministic generator replay。
+
 ## v1.2.0 — 2026-09-14
 
 将 AI Development Standard 从流程规范扩展为跨项目工程基线，并参考成熟 GitHub 项目/模板制定可复用标准。

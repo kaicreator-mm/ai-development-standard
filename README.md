@@ -1,8 +1,8 @@
 # AI Development Standard
 
-跨项目 AI 软件工程执行规范与工程基线。该仓库定义 ChatGPT Web、Codex、GitHub、Build Host 与 CI 在软件开发生命周期中的统一职责，也定义项目结构、文档、测试、repository hygiene、模板和 release closure 规则。
+跨项目 AI 软件工程执行规范与工程基线。该仓库定义 ChatGPT Web、Codex、GitHub、Build Host 与 CI 在软件开发生命周期中的统一职责，也定义项目结构、文档、测试、测试数据/Scenario、repository hygiene、模板和 release closure 规则。
 
-当前版本：`v1.2.0`
+当前版本：`v1.3.0`
 
 ## 核心原则
 
@@ -16,6 +16,7 @@
 8. **正式阶段必须留下远端 checkpoint**。PRD、Architecture、Task DAG、L3、可审查 Task、Validation/Closeout 等形成后续依赖时，应 commit + push；阶段内部临时编辑不要求逐步 push。
 9. **结构服务于职责，不服务于形式**。复杂多模块产品优先考虑 monorepo，但不创建无职责的空层级。
 10. **PR PASS ≠ Release PASS**。版本 Closure 在 integrated baseline 上执行完整 required regression、Critical Journeys、Hidden Validation、真实 packaging/platform 和 Release Qualification。
+11. **测试数据也是工程资产**。模拟数据、Golden、Scenario、Regression 与 Hidden Validation Data 必须有来源、规则、覆盖与可重复性证据；LLM 不能凭自评把自己生成的答案提升为 Golden truth。
 
 ## 标准流程
 
@@ -68,6 +69,7 @@ Immutable baseline SHA + optional Tag / Release
 - 项目/Monorepo 结构：[`standards/PROJECT_STRUCTURE.md`](standards/PROJECT_STRUCTURE.md)
 - 文档规范：[`standards/DOCUMENTATION_STANDARD.md`](standards/DOCUMENTATION_STANDARD.md)
 - 测试规范：[`standards/TESTING_STANDARD.md`](standards/TESTING_STANDARD.md)
+- 测试数据 / Scenario：[`standards/TEST_DATA_AND_SCENARIO_STANDARD.md`](standards/TEST_DATA_AND_SCENARIO_STANDARD.md)
 
 ### Agent Roles
 
@@ -76,18 +78,19 @@ Immutable baseline SHA + optional Tag / Release
 - Web → Codex：[`standards/CODEX_HANDOFF_PROTOCOL.md`](standards/CODEX_HANDOFF_PROTOCOL.md)
 - 模型策略：[`standards/MODEL_USAGE_POLICY.md`](standards/MODEL_USAGE_POLICY.md)
 
-## Templates / References / Checklists
+## Templates / References / Checklists / Examples
 
 - `templates/`：Task DAG、PR、Validation、Closeout 和可复制的 `templates/project/` 项目接入基线。
 - `reference-architectures/`：非强制的实现/结构参考，例如 monorepo。
-- `checklists/`：Project Init、PR Review、Version Closure 等机械执行清单。
+- `checklists/`：Project Init、PR Review、Version Closure、Test Data Review 等机械执行清单。
 - `references/`：制定标准时采用的公开工程 evidence/provenance。
-- `prompts/`：L1/L2/L3 与 Agent 执行基线。
-- `scripts/`：标准仓库自身或项目接入自动化。
+- `prompts/`：L1/L2/L3、Agent 执行以及 Test Data Generation 基线。
+- `scripts/`：标准仓库自身或项目接入自动化，包括 Test Data Pack verifier。
+- `examples/`：标准自身的 executable/reference examples；`examples/test-data-pack/quote-assessment/` 展示从规则→Scenario→模拟数据→验证→反馈标准的闭环。
 
 ## 外部工程参考
 
-本标准参考优秀公开项目/模板的稳定工程实践，但不绑定其技术栈。当前证据包括 Vercel Turborepo、GitHub Spec Kit、FastAPI Full Stack Template、Cookiecutter Django、Astral uv、VS Code 及 GitHub repository/community guidance。详见 [`references/GITHUB_ENGINEERING_REFERENCES.md`](references/GITHUB_ENGINEERING_REFERENCES.md)。
+本标准参考优秀公开项目/模板的稳定工程实践，但不绑定其技术栈。工程基线证据见 [`references/GITHUB_ENGINEERING_REFERENCES.md`](references/GITHUB_ENGINEERING_REFERENCES.md)。测试数据标准额外参考 Hypothesis、Faker 与 Schemathesis 的 property-based、reproducible generation、schema-driven generation/replay 思路，详见 [`references/TEST_DATA_ENGINEERING_REFERENCES.md`](references/TEST_DATA_ENGINEERING_REFERENCES.md)。
 
 ## 版本策略
 
