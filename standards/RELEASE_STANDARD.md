@@ -4,7 +4,7 @@
 
 - 冻结的 PRD / scope
 - Task DAG 最终状态
-- 最终 commit/PR
+- 最终 immutable baseline commit SHA
 - Validation Report
 - GitHub CI required checks
 - 文档同步状态
@@ -30,8 +30,32 @@ Deferred 必须是显式产品/版本决策，不得把失败测试简单改名�
 
 ## 4. Release 动作
 
-建议顺序：Final Closeout → merge → final main CI → tag → release candidate/release → close milestone/issues。
+建议顺序：
+
+```text
+Final Closeout
+→ merge required PRs
+→ final main/release-baseline CI
+→ record immutable commit SHA
+→ optional tag / release candidate / release
+→ close milestone/issues
+```
+
+Tag 不是 release identity 的必要条件。commit SHA 是 canonical immutable identity；tag/release name 是便于人类识别和分发的可选别名。
 
 ## 5. Release 记录
 
-至少记录：版本、tag、commit、采用的 Development Standard 版本、CI 结果、重要已知限制。
+至少记录：
+
+- 产品版本；
+- immutable baseline commit SHA；
+- 采用的 Development Standard version + revision；
+- required CI / Validation 结果；
+- artifact/package identity（适用时）；
+- 重要已知限制。
+
+若创建 tag/release，还应记录其名称，但不得只写 tag 而省略 commit SHA。
+
+## 6. Version Closure
+
+版本级收尾使用 `checklists/version-closure.md`。PR 的局部 CI PASS 不能替代集成后的 Full Regression、Critical Journeys、Hidden Validation、真实 packaging/platform 和 Release Qualification。
