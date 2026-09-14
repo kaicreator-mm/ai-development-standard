@@ -2,7 +2,7 @@
 
 跨项目 AI 软件工程执行规范与工程基线。该仓库定义 ChatGPT Web、Codex、GitHub、Build Host 与 CI 在软件开发生命周期中的统一职责，也定义项目结构、文档、测试、repository hygiene、模板和 release closure 规则。
 
-当前版本：`v1.2.0`
+当前版本：`v1.2.1`
 
 ## 核心原则
 

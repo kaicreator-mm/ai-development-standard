@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.2.1 — 2026-09-15
+
+修复 v1.2.0 已声明的 immutable project adoption contract 与 project verifier 不兼容问题，并增加最小 self-bootstrap regression。
+
+- `scripts/verify_project_standard.py` 现在只接受 canonical `repository/version/revision` 三字段 identity，并验证 repository、SemVer、40-char hexadecimal revision、duplicate/missing/unknown keys 与未替换 placeholders。
+- Legacy `ai-development-standard@vX.Y.Z` 单行 identity 不再作为 canonical PASS。
+- 新增 `scripts/test_verify_project_standard.py`，用临时真实 project fixtures 通过 subprocess 覆盖 canonical PASS、legacy FAIL、missing/invalid identity、required-file 缺失等 regression cases。
+- `standards/PROJECT_ADOPTION.md` 明确 immutable resolution procedure：exact revision、commit identity、root VERSION consistency、禁止 fallback 到 `main/latest`，并定义 resolution 的 FAIL/BLOCKED/NOT_RUN 语义。
+- `standards/VALIDATION_STANDARD.md` 明确 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE` 的层级语义，包括 verifier FAIL 与 overall Adoption BLOCKED 可以同时成立，以及 mandatory downstream NOT_RUN 通常使 Release Qualification BLOCKED。
+- `PROJECT_OVERRIDES` 模板明确 required-but-unestablished runner 应使用 `NOT_RUN — reason` 或 `BLOCKED — reason`，禁止伪造命令或用 `NOT_APPLICABLE` 隐藏 required gate。
+- `verify-standard` CI 现在同时运行 repository verification 与 project-verifier regression suite；`verify_standard.py` 的 REQUIRED 增加与 self-bootstrap concern 直接相关的 executable/template assets。
+
 ## v1.2.0 — 2026-09-14
 
 将 AI Development Standard 从流程规范扩展为跨项目工程基线，并参考成熟 GitHub 项目/模板制定可复用标准。

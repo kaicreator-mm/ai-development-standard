@@ -1,16 +1,22 @@
 # Validation Standard
 
-## 1. 状态枚举
+## 1. 状态枚举与语义
 
 每个 Gate 只能使用：
 
-- `PASS`
-- `FAIL`
-- `NOT_RUN`
-- `NOT_APPLICABLE`
-- `BLOCKED`
+- `PASS` = gate 已实际执行，且满足该 gate 的 acceptance criteria。
+- `FAIL` = gate 已实际执行，但结果不满足 acceptance criteria。
+- `BLOCKED` = gate 因前置条件、权限、工具、环境或标准缺陷无法完成。
+- `NOT_RUN` = gate 尚未执行。
+- `NOT_APPLICABLE` = gate 对当前 project/change 确实不适用。
 
-不要使用“应该没问题”“基本通过”等不可审计描述。
+不要使用“应该没问题”“基本通过”等不可审计描述，也不要把不同层级的状态压成一个值。
+
+状态必须绑定到明确层级。例如：
+
+- project verifier command 已执行并返回 exit 1 → **verifier gate = `FAIL`**；
+- 若 verifier 的失败根因是 Standard Defect，导致符合标准 contract 的 Adoption 无法被标准 verifier 接受 → **overall Adoption acceptance 可以是 `BLOCKED`**；这不会把已经执行失败的 verifier gate 改写为 `BLOCKED`。
+- mandatory downstream gate 仍是 `NOT_RUN` → 对应 gate 保持 `NOT_RUN`；依赖这些 mandatory gates 的 Release Qualification 通常为 `BLOCKED`，而不是自动把未执行 gate 写成 `FAIL`。
 
 ## 2. Gate 分层
 
@@ -46,18 +52,22 @@ Task DAG 或 PRD 应明确 required gates。如果没有显式声明，至少要
 
 版本 Closeout 默认还要求：Critical Journey、Hidden Validation（如果项目已定义）、Production Build 与 GitHub CI。
 
-## 4. 失败证据
+Required gate 对项目适用但 runner/command 尚未建立时，不得伪造命令或标成 `NOT_APPLICABLE`。应按真实原因使用 `NOT_RUN — <reason>` 或 `BLOCKED — <reason>`，并在项目 override / validation evidence 中记录。
+
+## 4. 失败与阻塞证据
 
 FAIL/BLOCKED 应尽量记录：
 
-- failing command / job
-- exit code
+- failing / blocked command or job
+- exit code（若 command 实际启动）
 - 关键日志
 - reproduction
 - expected vs actual
 - root cause（若已知）
 - affected Task/version
 - release blocking level
+
+对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact；不得通过把它改写成 `FAIL` 或 `NOT_APPLICABLE` 来简化 Release Qualification。
 
 ## 5. 禁止事项
 
@@ -66,3 +76,5 @@ FAIL/BLOCKED 应尽量记录：
 - 无依据增大 timeout/retry 掩盖确定性 bug。
 - 在未执行时写 PASS。
 - 把环境不可用写成 PASS；应写 BLOCKED 或 NOT_RUN。
+- 把已执行并失败的具体 gate 因 root cause classification 改写成 BLOCKED。
+- 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL；应在依赖它的上层 qualification 上表达 BLOCKED。
