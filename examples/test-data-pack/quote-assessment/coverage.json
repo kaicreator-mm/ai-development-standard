@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "case_count": 27,
+  "curated_case_count": 16,
+  "generated_case_count": 8,
+  "valid_case_count": 24,
+  "schema_invalid_case_count": 3,
+  "classes": {
+    "adversarial": 2,
+    "boundary": 4,
+    "domain_invalid": 2,
+    "failure_injection": 3,
+    "golden": 4,
+    "normal": 8,
+    "regression": 1,
+    "schema_invalid": 3
+  },
+  "dimension_coverage": {
+    "completeness": ["complete", "invalid", "partial"],
+    "evidence_state": ["conflicting", "consistent", "insufficient"],
+    "quantity_band": ["huge", "large", "negative", "normal", "one", "zero"],
+    "supplier_status": ["blocked", "unknown", "verified"],
+    "text_risk": ["none", "prompt_injection"]
+  },
+  "risk_matrix_count": 10,
+  "golden_count": 4,
+  "regression_count": 1,
+  "adversarial_count": 2,
+  "reproducibility": {
+    "seed": 20260914,
+    "generator_version": "2.0.0",
+    "curated_cases_sha256": "720336cac205f027629e3c3b8fd65cfb2f33f13dc05a2aa661d6f203286f3ebd",
+    "generated_cases_sha256": "9495174dda12aaa413a583bc59ee7ce9af6205373633cdd3dae37fa414a70df0",
+    "schema_invalid_sha256": "fc1e648b13d95a8fa64ed668969936d8ccd9e787c6b21caa41237a750667cd74"
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,35 @@
+{
+  "pack_id": "reference-quote-assessment-v2",
+  "format_version": "1.0",
+  "purpose": "Reference pack demonstrating the normative test-data lifecycle.",
+  "domain": "generic quote assessment",
+  "privacy_classification": "synthetic-no-real-pii",
+  "schema": "schema.json",
+  "rules": "RULES.md",
+  "generator": {
+    "name": "reference_quote_generator",
+    "version": "2.0.0",
+    "seed": 20260914,
+    "deterministic": true,
+    "runtime": "python-stdlib"
+  },
+  "provenance": [
+    {"id": "P-CONTRACT", "source_type": "contract", "source": "schema.json", "license": "repository-internal", "retrieved_or_frozen": "2026-09-14", "use": "input structure and structural constraints"},
+    {"id": "P-RULES", "source_type": "domain_rule", "source": "RULES.md", "license": "repository-internal", "retrieved_or_frozen": "2026-09-14", "use": "decision behavior and invariants"}
+  ],
+  "scenario_taxonomy": ["normal", "boundary", "domain_invalid", "schema_invalid", "failure_injection", "adversarial", "golden", "regression"],
+  "dimensions": {
+    "completeness": {"values": ["complete", "partial", "invalid"], "rationale": "drives missing-information and invalid-input behavior", "required": true},
+    "quantity_band": {"values": ["negative", "zero", "one", "normal", "large", "huge"], "rationale": "quantity has a positive-domain boundary", "required": true},
+    "supplier_status": {"values": ["verified", "unknown", "blocked"], "rationale": "status changes decision behavior", "required": true},
+    "evidence_state": {"values": ["consistent", "conflicting", "insufficient"], "rationale": "evidence state changes decision behavior", "required": true},
+    "text_risk": {"values": ["none", "prompt_injection"], "rationale": "AI/LLM systems must not let untrusted text override structured rules", "required": true}
+  },
+  "files": {
+    "curated_cases": "cases/curated.jsonl",
+    "generated_cases": "cases/generated.jsonl",
+    "schema_invalid_cases": "cases/schema_invalid.jsonl",
+    "scenario_matrix": "scenario_matrix.json",
+    "coverage": "coverage.json"
+  }
+}
