@@ -26,7 +26,13 @@
 - Hidden Validation: `<command>`
 - Production Build / Package: `<command>`
 
-Use `NOT_APPLICABLE` for a category that genuinely does not apply. Do not invent placeholder commands in an adopted project.
+For an adopted project, replace placeholders with truthful executable commands or explicit states:
+
+- `NOT_RUN — <reason>` when the gate applies but has not been executed / its runner is not yet established;
+- `BLOCKED — <reason>` when prerequisites, permission, tooling, environment or a standard defect prevents completion;
+- `NOT_APPLICABLE — <reason>` only when the category genuinely does not apply.
+
+Do not invent placeholder commands, and do not use `NOT_APPLICABLE` to hide a required-but-unestablished gate.
 
 ## Runtime / Platform Requirements
 
