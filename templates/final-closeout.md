@@ -1,9 +1,10 @@
 # Final Closeout — <version>
 
 - Repository: `<owner/repo>`
-- Final HEAD: `<sha>`
-- PR: `#<id>`
-- Development Standard: `ai-development-standard@v1.0.0`
+- Final baseline commit: `<40-char-sha>`
+- Relevant PRs: `<ids>`
+- Development Standard version: `<semantic-version>`
+- Development Standard revision: `<40-char-sha>`
 
 ## Scope Completion
 
@@ -13,14 +14,15 @@
 
 ## Validation Summary
 
-| Gate | Status |
-|---|---|
-| Fast Gate | |
-| Integration | |
-| Critical Journeys | |
-| Hidden Validation | |
-| Production Build | |
-| GitHub CI | |
+| Gate | Status | Evidence |
+|---|---|---|
+| Fast / Full Regression | | |
+| Integration | | |
+| Critical Journeys | | |
+| Hidden Validation | | |
+| Required External Boundary | | |
+| Production Build / Packaging | | |
+| GitHub CI | | |
 
 ## Deferred Items
 
@@ -38,5 +40,7 @@ Reason: <concise evidence-based decision>
 
 ## Release Identity
 
-- Tag: `<tag or pending>`
-- Release/RC: `<id or pending>`
+- Immutable commit SHA: `<sha>`
+- Tag: `<optional tag or NOT_APPLICABLE>`
+- Release/RC: `<optional id or NOT_APPLICABLE>`
+- Artifact/package identity/checksum: `<if applicable>`
