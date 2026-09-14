@@ -13,6 +13,40 @@
 - Intentional deviations from `PROJECT_STRUCTURE.md`:
   - `<deviation + reason>`
 
+## Validation Execution Profile
+
+Declare the real environments that execute validation:
+
+- Linux validation: `<Ubuntu Build Host | other | NOT_RUN/BLOCKED>`
+- Windows validation: `<Windows workstation/build host | NOT_RUN/BLOCKED>`
+- macOS validation: `<real macOS host | NOT_RUN/BLOCKED>`
+- Other real environment/device: `<...>`
+
+Required validation tuples, when applicable:
+
+```text
+<platform> × <runtime/toolchain> × <validation profile>
+```
+
+One tuple PASS never implies another tuple PASS. Cross-build is not real platform execution unless the frozen project contract explicitly says otherwise.
+
+## CI Profile
+
+Choose exactly one:
+
+```text
+minimal
+custom
+disabled
+```
+
+- CI profile: `<minimal | custom | disabled>`
+- CI checks (for `custom`): `<checks>`
+- Disabled reason (for `disabled`): `<reason>`
+- Exact-SHA clean-validation fallback/review policy: `<policy>`
+
+Default `minimal` CI should remain low-cost and deterministic: project/standard verifier, format/lint/typecheck subset, fast unit/contract smoke, basic build smoke. Do not default full platform matrices, Critical Journeys, Hidden Validation, expensive E2E or packaging into CI.
+
 ## Required Commands
 
 - Bootstrap: `<command>`
@@ -22,9 +56,9 @@
 - Unit: `<command>`
 - Contract: `<command>`
 - Integration: `<command>`
-- E2E / Critical Journey: `<command>`
+- Critical Journey: `<command>`
 - Hidden Validation: `<command>`
-- Production Build / Package: `<command>`
+- Production Build / Package: `<command or NOT_APPLICABLE/NOT_RUN/BLOCKED>`
 
 For an adopted project, replace placeholders with truthful executable commands or explicit states:
 
@@ -37,8 +71,9 @@ Do not invent placeholder commands, and do not use `NOT_APPLICABLE` to hide a re
 ## Runtime / Platform Requirements
 
 - Supported OS/platform: `<...>`
+- Required runtime/toolchain versions: `<...>`
 - Required services: `<db / queue / object storage / external sandbox / ...>`
-- Required SDK/toolchain: `<...>`
+- Required SDK/device: `<...>`
 
 ## Project-specific Hard Boundaries
 
@@ -46,10 +81,16 @@ Do not invent placeholder commands, and do not use `NOT_APPLICABLE` to hide a re
 
 ## Required Release Gates
 
-- `<gate>`
+List only gates with a real authority source. Recommended format:
+
+```text
+- <gate> — authority: <Frozen PRD / Architecture / Project Override / Task / Standard default>
+```
+
+Historical workflows, old scripts or obsolete artifacts do not automatically create mandatory release gates.
 
 ## Ownership / Sensitive Areas
 
 - `<path or concern → owner/review rule>`
 
-Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, validation evidence, frozen product semantics or release claims.
+Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, exact-SHA validation evidence, frozen product semantics or release claims.
