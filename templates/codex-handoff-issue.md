@@ -2,7 +2,10 @@
 
 ## Standard
 
-`kaicreator-mm/ai-development-standard@v1.0.0`
+Read the business project's `.dev-standard/VERSION` and use exactly that immutable `ai-development-standard` revision.
+
+- Standard version: `<semantic-version>`
+- Standard revision: `<40-char-sha>`
 
 ## Baseline
 
@@ -10,6 +13,12 @@
 - Branch: `<branch>`
 - Commit: `<sha>`
 - Scope / Task IDs: `<ids>`
+
+## Frozen Inputs
+
+- PRD / Scope: `<path/ref>`
+- Architecture / Contracts: `<path/ref>`
+- Task DAG: `<path/ref>`
 
 ## Web Completed
 
@@ -19,10 +28,11 @@
 
 | Gate | Status | Evidence |
 |---|---|---|
-| Format | PASS/FAIL/NOT_RUN/N/A/BLOCKED | |
+| Format | PASS/FAIL/NOT_RUN/NOT_APPLICABLE/BLOCKED | |
 | Lint | | |
 | Typecheck | | |
 | Unit | | |
+| Contract | | |
 | Integration | | |
 | Build Smoke | | |
 
@@ -39,6 +49,7 @@
 - implementation bug fixes
 - dependency/build/platform fixes required by the frozen scope
 - tests that preserve or strengthen the frozen behavior
+- documentation synchronization required by the actual change
 
 ## Forbidden Changes
 
@@ -51,6 +62,6 @@
 ## Expected Output
 
 1. Final commit / PR.
-2. Validation Report using the standard template.
-3. CI status.
+2. Validation Report using the pinned standard template.
+3. CI status bound to the actual commit.
 4. If blocked: failing command, reproduction, root cause/evidence, affected scope and release impact.
