@@ -54,7 +54,7 @@ ChatGPT Web 尽可能完成：代码、测试、迁移、文档、CI 配置和�
 
 ### Phase 9 — Codex Handoff
 
-创建 `codex-handoff` Issue，使用 `templates/codex-handoff-issue.md`。Issue 是本次剩余工作的 Work Item；长期规则不重复粘贴，引用本标准固定版本。
+创建 `codex-handoff` Issue，使用 `templates/codex-handoff-issue.md`。Issue 是本次剩余工作的 Work Item；长期规则不重复粘贴，引用本标准固定 revision。
 
 ### Phase 10 — Codex + Build Host Validation
 
@@ -70,17 +70,23 @@ Codex 在完整环境中 checkout baseline，执行 Handoff 指定 gates。发�
 
 在干净 runner 或受控 self-hosted runner 上运行 required gates。CI 是独立裁判，不接受“Codex 本地通过”替代。
 
-### Phase 13 — Final Closeout
+独立 Concern/Task 的 PR 在局部 CI / Review 通过后即可按项目策略合并 `main`；不要求等待同版本其它 PR 统一合并。
 
-ChatGPT Web 根据 Task DAG、实现 diff、Validation Report、CI、文档同步状态做最终判断：
+### Phase 13 — Version Closure / Final Closeout
+
+在 integrated `main` / release baseline 上，根据 Task DAG、实现 diff、Validation Report、CI、文档同步状态执行版本级判断。版本 Closure 默认检查 Full Regression、Critical Journeys、Hidden Validation、真实 packaging/platform 和 required external boundary。
 
 - `READY`：所有 release blocker 与 required gate 通过。
 - `CONDITIONAL`：允许发布但存在明确、非阻塞、已记录限制。
-- `BLOCKED`：存在 release blocker、required gate FAIL/NOT_RUN 或范围未完成。
+- `BLOCKED`：存在 release blocker、required gate FAIL/NOT_RUN/BLOCKED 或范围未完成。
 
-### Phase 14 — Merge / Tag / Release
+PR PASS 不等于 Release PASS。
 
-只有达到项目 release policy 后才能 merge/tag/release。发布后关闭对应 Handoff Issue，并保留 Validation/CI 审计链。
+### Phase 14 — Release Baseline / Optional Tag / Release
+
+只有达到项目 release policy 后才能宣布版本 READY/发布。必须记录 immutable final baseline commit SHA。Tag / GitHub Release / release candidate 是可选的人类友好别名与分发对象，不是 release identity 的必要条件。
+
+发布后关闭对应 Handoff/Version Issues，并保留 Validation/CI 审计链。
 
 ## 3. Stage Checkpoint Push
 
@@ -120,4 +126,4 @@ Implementation 以 `Task / Concern` 为主要远端同步单位，而不是以�
 
 ## 4. 快速路径
 
-Bug、小修复、文档修正、已冻结范围内的明确 Task 可跳过 L1/L2/L3，但不能跳过：Baseline → Implementation → Validation → GitHub事实链 → Release判断。快速路径同样遵守 Stage Checkpoint Push：只对实际经过并形成正式结果的阶段建立 checkpoint，不为被跳过的阶段制造空提交。
+Bug、小修复、文档修正、已冻结范围内的明确 Task 可跳过 L1/L2/L3，但不能跳过：Baseline → Implementation → Validation → GitHub 事实链 → Release 判断。快速路径同样遵守 Stage Checkpoint Push：只对实际经过并形成正式结果的阶段建立 checkpoint，不为被跳过的阶段制造空提交。
