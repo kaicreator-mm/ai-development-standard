@@ -1,182 +1,65 @@
 # Test Data Generation Prompt Baseline
 
-Use this prompt when an LLM is asked to design or generate simulation/test data for a project.
+Use this prompt when an LLM designs or generates simulation/test data. You are designing **test evidence**, not decorative fake data.
 
-## Role
+## Inputs
 
-You are designing **test evidence**, not decorative fake data. Your output must be derived from the project's frozen contracts, rules, risks and evidence.
+Read when available: frozen PRD/scope, schema/contracts, domain rules/invariants, existing tests, real bugs/incidents, Critical Journeys, approved public/real datasets, privacy/security constraints, Hidden Validation policy.
 
-## Required Inputs
-
-Read, when available:
-
-1. PRD / frozen scope;
-2. API/schema/file/data contracts;
-3. domain rules / Decision Models / invariants;
-4. existing tests and fixtures;
-5. real bug / incident / support examples;
-6. Critical Journeys;
-7. external standards or public datasets approved for the project;
-8. privacy/security constraints;
-9. Hidden Validation policy.
-
-If a necessary fact is missing, mark it `UNKNOWN` rather than inventing a business rule.
+Missing material facts must be `UNKNOWN`; do not invent business rules.
 
 ## Workflow
 
-### Step 1 — Build Source Catalog
+1. **Source Catalog** — record source identity/type, trust/authority, version/frozen date, license/usage restriction, privacy class and what it supports. Mark LLM content synthetic.
+2. **Rules / Contracts** — extract required fields/types/enums, domain constraints, state transitions, permissions, failure behavior, invariants and critical decisions.
+3. **Scenario Dimensions** — for each dimension provide values/range, why it matters, linked rule/risk and whether coverage is required. Do not count inert dimensions.
+4. **Scenario Matrix** — design only applicable classes: normal, boundary, schema-invalid, domain-invalid, incomplete/uncertain, runtime failure injection, adversarial, regression, Critical Journey, load/scale. If a class is irrelevant, mark `NOT_APPLICABLE + rationale`; do not fabricate it.
+5. **Golden Cases** — choose risk-driving semantic anchors, not a fixed count. Define input, expected decision, invariants, forbidden behavior, allowed variation, rationale, provenance and review authority.
+6. **Generators** — use LLM for semantic design/natural-language content; use deterministic/property/fuzz code for bulk generation where practical. Record generator revision, seed and relevant runtime/dependencies.
+7. **Generate** — curated high-value cases first; supplemental generated cases second. Keep schema-invalid separate from intended-valid data.
+8. **Validate** — check integrity, intended-valid schema compliance, intended-invalid violations, rule/oracle consistency, provenance, Golden/Regression authority, risk/dimension coverage, dedup, reproducibility/hash, privacy/secrets and Hidden-data separation.
+9. **Feedback** — identify inert dimensions, taxonomy mistakes, missing risks, weak Goldens, ambiguous rules, non-reproducibility, coverage gaming and project/standard gaps.
 
-For every source record:
+## Taxonomy Guardrails
 
-- identity/path/URL;
-- source type;
-- authority/trust level;
-- version or frozen date;
-- license/usage restriction if external;
-- privacy classification;
-- what fields/rules/distributions it supports.
+- `schema_invalid`: contract structure/type/required/enum violation.
+- `domain_invalid`: structurally valid but business-invalid.
+- `incomplete/uncertain`: valid but missing/unknown/insufficient facts; expected behavior is often request/defer/low-confidence.
+- `failure_injection`: actual runtime/dependency/I-O/DB failure, not missing business information.
 
-Do not present LLM-created content as a real-world source.
+## Golden Authority
 
-### Step 2 — Extract Contracts and Rules
+An LLM may propose expected behavior but may not mark an LLM-only expectation `approved`. Approval requires deterministic contract/rule, approved real case, independent reviewer/domain expert, or accepted evaluator/rubric.
 
-Produce a compact list of:
+For LLM output, prefer schema/decision/facts/forbidden claims/invariants/evidence correctness over exact natural-language matching.
 
-- required fields/types/enums;
-- business/domain constraints;
-- state transitions;
-- permissions;
-- failure behavior;
-- invariants;
-- critical decisions;
-- AI-specific evidence/trust rules.
+## Reproducibility
 
-Each expected result later generated must map back to one or more of these rules or an approved Golden source.
-
-### Step 3 — Design Scenario Dimensions
-
-Create only dimensions that matter to behavior or risk. For each dimension include:
-
-- name;
-- candidate values/ranges;
-- why the dimension matters;
-- rule/risk it exercises;
-- whether every value must be covered.
-
-Typical dimensions include completeness, numeric boundary, role/permission, lifecycle state, dependency state, evidence quality, locale/timezone, concurrency, AI ambiguity and adversarial text.
-
-Do not create dimensions merely to inflate coverage counts.
-
-### Step 4 — Create Scenario Matrix Before Records
-
-Design a risk-based matrix containing at least the applicable classes:
-
-- normal;
-- boundary;
-- schema-invalid;
-- domain-invalid;
-- failure injection;
-- adversarial;
-- regression;
-- Critical Journey;
-- scale/load.
-
-Do not blindly generate the full Cartesian product. Prefer high-risk combinations, pairwise combinations, historical failures, contract boundaries and property-based generation.
-
-### Step 5 — Select Golden Cases
-
-For each Golden Case define:
-
-- id;
-- intent/scenario;
-- input;
-- expected decision/structured result;
-- required invariants;
-- forbidden behavior;
-- allowed output variation;
-- rationale;
-- provenance;
-- review state.
-
-For natural-language/LLM outputs, avoid exact-string goldens unless exact text is itself the contract.
-
-You may propose a Golden Case, but you may not mark an LLM-only expectation as approved without independent rule/evidence/reviewer support.
-
-### Step 6 — Build Generators
-
-Use the LLM primarily for semantic scenario design and natural-language content. Use deterministic code for bulk generation when practical.
-
-A generator must record:
-
-- name/version;
-- seed;
-- runtime/dependency versions that affect output;
-- locale/timezone/clock assumptions;
-- generated file hashes when the pack is frozen.
-
-### Step 7 — Generate Data
-
-Generate small curated high-value examples first, then supplemental deterministic/property-based data.
-
-Keep schema-invalid fixtures separate from schema-valid/domain-invalid fixtures so validators can distinguish an intentionally invalid case from a broken pack.
-
-### Step 8 — Validate
-
-Validate at least:
-
-- file/pack integrity;
-- intended-valid schema compliance;
-- intended-invalid constraint violation;
-- rule/oracle consistency;
-- invariants;
-- provenance references;
-- Golden/Regression review state;
-- dimension/risk coverage;
-- duplicate/near-duplicate inflation;
-- deterministic reproducibility/hash;
-- privacy/secret scanning policy;
-- Hidden Validation separation.
-
-### Step 9 — Produce Feedback
-
-Do not stop at PASS. Review whether the generation exercise exposed weaknesses in the standard, source material or test model.
-
-Report:
-
-- inert dimensions that do not affect behavior;
-- missing risk classes;
-- rules that are ambiguous or untestable;
-- Golden Cases with weak evidence;
-- invalid/failure categories that were conflated;
-- non-reproducible generation;
-- coverage metrics that can be gamed;
-- missing privacy/provenance metadata.
-
-Propose concrete changes to the standard or project rules.
+Seed alone is insufficient. Record generator name/revision and any dependency/runtime/locale/timezone/clock that changes bytes; for frozen packs record hashes.
 
 ## Required Output
 
-Prefer a version-controlled pack containing:
+Prefer a version-controlled pack:
 
 ```text
 manifest.json|yaml
-schema / contract refs
+schema / contract / rule refs
 scenario_matrix.*
 cases/
-golden/
-regression/
+  curated.*
+  generated.*
+  schema_invalid.*
 generators/
 coverage.*
-validation-report.md
+VALIDATION_REPORT.md
 ```
-
-Use the repository's own format conventions when they already exist.
 
 ## Hard Rules
 
-- Never invent a real-world distribution and label it realistic without evidence.
-- Never use record count as the main coverage claim.
-- Never let one LLM be the sole source of input, expected answer and approval.
-- Never expose Hidden Validation expected answers to implementation agents.
-- Never include real credentials or unapproved personal/customer data.
-- Never convert an unexecuted check to PASS.
+- Never label an invented distribution “realistic” without evidence.
+- Never use record count as the primary coverage claim.
+- Never let one LLM be generator + oracle + sole approver.
+- Never expose Hidden expected mapping to implementation agents.
+- Never include real credentials or unapproved PII/customer data.
+- Never turn an unexecuted check into PASS.
+- Never invent an irrelevant scenario to satisfy a checklist; use `NOT_APPLICABLE + rationale`.

@@ -1,62 +1,63 @@
 # Test Data Review Checklist
 
-Use this checklist before a simulation/test-data pack becomes required validation evidence.
+Use before a simulation/test-data pack becomes required validation evidence.
 
 ## Scope / Sources
 
 - [ ] Pack purpose and target tests are explicit.
 - [ ] Contract/schema/domain-rule references are identified.
-- [ ] Real/public/external sources have provenance and usage restrictions recorded.
-- [ ] LLM-derived/synthetic content is labeled as such.
+- [ ] External/real sources have provenance, version/frozen date and usage restrictions.
+- [ ] LLM-derived/synthetic content is labeled.
 - [ ] No real secret/token/private key is present.
-- [ ] PII/customer/production-derived data has an explicit approved handling basis or is absent.
+- [ ] PII/customer/production-derived data is absent or explicitly approved.
 
 ## Scenario Model
 
-- [ ] Scenario dimensions map to behavior, contract or risk.
-- [ ] Normal path is covered.
-- [ ] Relevant numeric/string/collection/time/state boundaries are covered.
-- [ ] Schema-invalid cases are represented separately when relevant.
-- [ ] Domain-invalid cases are represented separately when relevant.
-- [ ] Failure injection covers important dependency/runtime failures.
-- [ ] AI/LLM systems include ambiguity, insufficient/conflicting evidence and adversarial cases where relevant.
-- [ ] Critical Journeys are represented where the pack is used for release validation.
-- [ ] Historical P0/P1 regressions are represented or explicitly not applicable.
-- [ ] Excluded combinations have a reason; full Cartesian explosion is not used without need.
+- [ ] Every required dimension maps to behavior, contract or risk.
+- [ ] Normal path is covered where applicable.
+- [ ] Relevant boundaries are covered.
+- [ ] Schema-invalid and domain-invalid are distinguished.
+- [ ] Missing/unknown/insufficient facts are modeled as incomplete/uncertain rather than runtime failure.
+- [ ] Runtime failure injection covers actual dependency/I-O/DB failures where applicable.
+- [ ] AI systems cover ambiguity/conflicting evidence/adversarial input where applicable.
+- [ ] Critical Journeys and historical regressions are covered where required.
+- [ ] Non-applicable categories are explicitly `NOT_APPLICABLE + rationale`, not fabricated.
+- [ ] Full Cartesian explosion is avoided unless justified.
 
 ## Golden / Regression
 
-- [ ] Golden expected behavior is tied to rules/evidence.
+- [ ] Golden expected behavior is tied to independent rule/evidence/reviewer authority.
 - [ ] Required invariants and forbidden behavior are explicit.
 - [ ] Allowed variation is documented.
-- [ ] Natural-language output is not exact-string matched unless contractually required.
-- [ ] Golden cases are independently approved; LLM-only self-approval is not used.
-- [ ] Regression cases have a bug/incident/reproduction source where available.
+- [ ] Natural-language output is not exact-match unless contractually required.
+- [ ] LLM-only self-approval is not used.
+- [ ] Regression cases have bug/incident/reproduction provenance when available.
 
 ## Generator / Reproducibility
 
-- [ ] Generator name/version is recorded.
+- [ ] Generator name/revision is recorded.
 - [ ] Seed is recorded when randomness is used.
 - [ ] Dependency/runtime/locale/timezone/clock influences are controlled or recorded.
-- [ ] Frozen pack hash is recorded when useful.
-- [ ] A failure can be replayed from case id, seed or minimal reproduction.
+- [ ] Frozen pack hashes are recorded where useful.
+- [ ] Failures can be replayed from case id, seed or minimal reproduction.
 
 ## Validation
 
 - [ ] Pack files parse successfully.
-- [ ] Intended-valid inputs pass schema/type validation.
-- [ ] Intended-invalid inputs actually violate the targeted constraint.
-- [ ] Expected behavior matches rules/contract/oracle.
+- [ ] Intended-valid inputs pass target schema/type validation.
+- [ ] Intended-invalid inputs violate the intended constraint.
+- [ ] Expected behavior matches rule/contract/oracle.
 - [ ] Provenance references resolve.
-- [ ] Required scenario/risk coverage has no unexplained gap.
-- [ ] Duplicate/near-duplicate records do not inflate coverage claims.
+- [ ] Required risk/dimension coverage has no unexplained gap.
+- [ ] Duplicate/near-duplicate records do not inflate coverage.
 - [ ] Privacy/secret policy has been checked.
-- [ ] Hidden expected answers are separated from implementation-side assets.
-- [ ] Validation status uses PASS / FAIL / NOT_RUN / NOT_APPLICABLE / BLOCKED.
+- [ ] Hidden expected mapping is separated from implementation assets.
+- [ ] Status uses PASS / FAIL / NOT_RUN / NOT_APPLICABLE / BLOCKED.
 
 ## Feedback Loop
 
-- [ ] The pack-generation exercise recorded weaknesses discovered in rules or standards.
-- [ ] Inert dimensions were removed or justified.
+- [ ] Inert dimensions were removed or labeled exploratory.
+- [ ] Taxonomy mistakes were corrected (schema/domain/incomplete/runtime/adversarial).
 - [ ] Ambiguous expected behavior was escalated instead of guessed.
-- [ ] New reusable rules were fed back to the project or global standard.
+- [ ] Weak Golden authority was identified.
+- [ ] New reusable findings were fed back to project rules or the global standard.

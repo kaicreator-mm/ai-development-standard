@@ -1,22 +1,19 @@
 # Reference Test Data Pack — Quote Assessment
 
-This is a deliberately small, framework-neutral example used to exercise `standards/TEST_DATA_AND_SCENARIO_STANDARD.md` end to end.
+This small, framework-neutral pack exercises `standards/TEST_DATA_AND_SCENARIO_STANDARD.md` end to end. It is **not** a business-domain standard and contains no real customer/production data.
 
-It is **not** a business-domain standard and does not contain real customer or production data.
+## Demonstrates
 
-## What it demonstrates
-
-- contract/schema-derived structure;
-- explicit domain rules;
+- schema/contract-derived structure and explicit domain rules;
 - provenance catalog;
 - scenario dimensions with behavioral/risk rationale;
-- risk-based Scenario Matrix rather than a full Cartesian product;
-- curated Golden Cases;
-- separate schema-invalid and domain-invalid data;
-- boundary, failure-injection, adversarial and regression cases;
-- deterministic generated supplements with a fixed seed;
-- coverage and reproducibility hashes;
-- validation feedback used to improve the standard itself.
+- risk-based Scenario Matrix rather than a Cartesian product;
+- curated Golden/Boundary/Domain-invalid/Incomplete/Adversarial/Regression cases;
+- intentionally schema-invalid data stored separately;
+- deterministic generated supplements with fixed seed + generator version;
+- coverage and frozen hashes;
+- `NOT_APPLICABLE + rationale` for runtime failure injection because this pack has no runtime dependency boundary;
+- validation feedback that changed the standard itself.
 
 ## Files
 
@@ -26,14 +23,16 @@ schema.json
 RULES.md
 scenario_matrix.json
 cases/
-  cases.jsonl
+  curated.jsonl
+  generated.jsonl
   schema_invalid.jsonl
+generate_supplement.py
 coverage.json
 VALIDATION_REPORT.md
 ```
 
 ## Validation
 
-Repository CI validates pack structure through `scripts/verify_test_data_pack.py` and checks this reference domain's expected decisions/invariants through the standard repository verification flow.
+`python scripts/verify_test_data_pack.py examples/test-data-pack/quote-assessment`
 
-The frozen reference result is recorded in `coverage.json` and `VALIDATION_REPORT.md`.
+Repository `verify-standard` also validates this pack and replays the deterministic generator in a temporary directory, comparing the generated SHA-256 with `coverage.json`.

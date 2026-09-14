@@ -1,7 +1,7 @@
 {
   "pack_id": "reference-quote-assessment-v2",
   "format_version": "1.0",
-  "purpose": "Reference pack demonstrating the normative test-data lifecycle.",
+  "purpose": "Reference pack demonstrating the normative test-data lifecycle for deterministic quote assessment logic.",
   "domain": "generic quote assessment",
   "privacy_classification": "synthetic-no-real-pii",
   "schema": "schema.json",
@@ -17,7 +17,10 @@
     {"id": "P-CONTRACT", "source_type": "contract", "source": "schema.json", "license": "repository-internal", "retrieved_or_frozen": "2026-09-14", "use": "input structure and structural constraints"},
     {"id": "P-RULES", "source_type": "domain_rule", "source": "RULES.md", "license": "repository-internal", "retrieved_or_frozen": "2026-09-14", "use": "decision behavior and invariants"}
   ],
-  "scenario_taxonomy": ["normal", "boundary", "domain_invalid", "schema_invalid", "failure_injection", "adversarial", "golden", "regression"],
+  "scenario_taxonomy": ["normal", "boundary", "incomplete", "domain_invalid", "schema_invalid", "adversarial", "golden", "regression"],
+  "not_applicable": {
+    "failure_injection": "This reference pack validates pure decision/input semantics and has no runtime dependency boundary. Runtime failure injection belongs in integration packs."
+  },
   "dimensions": {
     "completeness": {"values": ["complete", "partial", "invalid"], "rationale": "drives missing-information and invalid-input behavior", "required": true},
     "quantity_band": {"values": ["negative", "zero", "one", "normal", "large", "huge"], "rationale": "quantity has a positive-domain boundary", "required": true},
