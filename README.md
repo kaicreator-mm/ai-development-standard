@@ -2,7 +2,7 @@
 
 跨项目 AI 软件工程执行规范。该仓库定义 ChatGPT Web、Codex、GitHub、Build Host 与 CI 在软件开发生命周期中的统一职责、交接协议、验证门槛和发布规则。
 
-当前版本：`v1.0.0`
+当前版本：`v1.1.0`
 
 ## 核心原则
 
@@ -13,6 +13,7 @@
 5. **不为 CI 变绿而改变需求**。禁止删除断言、降低测试标准、跳过 required test 或擅自改变冻结的产品/架构语义。
 6. **规范版本必须固定**。业务项目必须记录采用的本规范版本，升级规范应显式进行，而不是隐式跟随 `main`。
 7. **过程对象分工明确**：长期规则放仓库文件；单次工作交接放 Issue；真实变更集放 PR；最终事实由 commit + CI + Validation Report 证明。
+8. **正式阶段必须留下远端 checkpoint**。PRD、Architecture、Task DAG、L3、可审查 Task、Validation/Closeout 等形成后续依赖时，应 commit + push；阶段内部临时编辑不要求逐步 push。
 
 ## 标准流程
 
@@ -50,6 +51,8 @@ GitHub CI
  CI again  Merge / Tag / Release
 ```
 
+正式阶段产物在进入下一阶段前按 `Stage Checkpoint Push` 规则形成远端 checkpoint；流程图中的 `GitHub Commit / Branch` 表示 Implementation → Codex Handoff 所需的最终实现 baseline，而不是第一次接触 GitHub。
+
 不是所有任务都必须机械执行 L1/L2/L3。Bug、小修复、已冻结范围内的实现可以从最接近的阶段开始，但验证和 GitHub 事实链不能省略。
 
 ## 入口文档
@@ -81,4 +84,4 @@ GitHub CI
 - MINOR：新增兼容的流程、Gate、模板或自动化能力。
 - MAJOR：角色职责、Source of Truth、交接模型、必选 Gate 等发生不兼容变化。
 
-业务项目应固定到 tag，例如 `ai-development-standard@v1.0.0`，不要直接声明“遵循最新 main”。
+业务项目应固定到 tag，例如 `ai-development-standard@v1.1.0`，不要直接声明“遵循最新 main”。

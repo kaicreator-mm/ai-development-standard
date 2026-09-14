@@ -16,6 +16,7 @@
 ## 硬约束
 
 - GitHub repository state、commit、Issue、PR、CI 是执行事实；聊天记录不是事实源。
+- 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
 - 不得为了让测试或 CI 通过而降低测试强度、删除有效断言、跳过 required gate 或改变冻结需求。
 - Codex 不得在 Handoff 阶段自行重新定义产品需求、领域语义、公共 API、数据语义、安全模型或架构边界。
 - ChatGPT Web 在交接 Codex 前必须明确 baseline commit、已完成内容、剩余工作、required gates 和禁止修改项。
