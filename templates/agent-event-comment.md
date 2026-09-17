@@ -8,7 +8,7 @@ Use this format for machine-readable Builder / Reviewer / Validator / merge-cont
 
 ```yaml
 schema: ai-dev/event-v1
-event: <TASK_CLAIMED | IMPLEMENTATION_READY | REVIEW_POLICY_DECISION | REVIEW_RESULT | FIX_APPLIED | VALIDATION_REQUEST | VALIDATION_RESULT | BLOCKER_REPORTED | DEPENDENCY_CHANGED | MERGE_RESULT>
+event: <TASK_CLAIMED | IMPLEMENTATION_READY | REVIEW_DECISION | REVIEW_RESULT | FIX_APPLIED | VALIDATION_REQUEST | VALIDATION_RESULT | BLOCKER_REPORTED | DEPENDENCY_CHANGED | MERGE_RESULT>
 actor_role: <builder | reviewer | validator | merge-controller>
 task: "#<issue>"
 pr: "#<pr>" # omit when not applicable
@@ -41,13 +41,13 @@ next_state: review-ready
 
 For `review:not-required`, or `review:recommended` when the optional review is explicitly skipped, the Task may route directly toward merge readiness once all other required prerequisites are satisfied. Record the policy/decision rather than fabricating a Review PASS.
 
-## REVIEW_POLICY_DECISION examples
+## REVIEW_DECISION examples
 
 Recommended review explicitly skipped:
 
 ```yaml
 schema: ai-dev/event-v1
-event: REVIEW_POLICY_DECISION
+event: REVIEW_DECISION
 actor_role: merge-controller
 task: "#31"
 pr: "#42"
@@ -63,7 +63,7 @@ Review not required by declared policy:
 
 ```yaml
 schema: ai-dev/event-v1
-event: REVIEW_POLICY_DECISION
+event: REVIEW_DECISION
 actor_role: merge-controller
 task: "#31"
 pr: "#42"
