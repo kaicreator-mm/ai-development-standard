@@ -14,7 +14,7 @@ Breaking changes:
 - 高风险/关键变更 SHOULD 选择 `required`，包括 security/auth/permission、public API/external contract、schema/migration、shared infrastructure、high-risk concurrency/state、release-critical integration 等；普通实现可 `recommended`；机械性低风险变更可 `not-required`。
 - Task DAG、Task Issue、Implementation PR、PROJECT_OVERRIDES、PR Review Checklist 与 GitHub metadata 增加 Review Policy；portable labels 使用 `review:required / review:recommended / review:not-required`。
 - Builder 仅在 `required` 或本轮选择执行 `recommended` Review 时将 Task 路由到 `state:review-ready`；`not-required` 或明确跳过的 `recommended` Review 不应制造 Reviewer Queue 工作。
-- 新增 `REVIEW_POLICY_DECISION` 结构化 Agent event，用于记录 recommended Review 的 `skipped` 或 not-required 的 `not-applicable` 决策；Review 被执行时仍使用 exact-SHA `REVIEW_RESULT`。
+- 新增 `REVIEW_DECISION` 结构化 Agent event，用于记录 recommended Review 的 `skipped` 或 not-required 的 `not-applicable` 决策；Review 被执行时仍使用 exact-SHA `REVIEW_RESULT`。
 - `prompts/independent-review-bootstrap.md` 改为 policy-aware：只用于 `required` 或明确调用的 `recommended` Review；遇到 `not-required` 时默认停止而不是制造形式化 Review Gate。
 - 一旦 optional Review 实际执行，发现的有效 release-significant finding 仍是工程事实，必须修复、明确接受风险或按 authority 处置，不能因为 Review 原本不是 mandatory 就忽略。
 - CI 与 Review 完全解耦：`CI profile=disabled` 仍要求真实 required Validation，但不自动要求 Independent Review；CI enabled 也不能替代 required Review 或 required Validation。
