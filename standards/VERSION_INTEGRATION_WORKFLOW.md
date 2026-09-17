@@ -119,17 +119,17 @@ handoff:local-agent
 executor:codex
 executor:claude-code
 
- gate:fast
- gate:integration
- gate:critical-journey
- gate:hidden
- gate:platform
- gate:packaging
+gate:fast
+gate:integration
+gate:critical-journey
+gate:hidden
+gate:platform
+gate:packaging
 
- env:ubuntu-build-host
- env:windows
- env:macos
- env:gpu
+env:ubuntu-build-host
+env:windows
+env:macos
+env:gpu
 
 release-blocker
 blocked:environment
