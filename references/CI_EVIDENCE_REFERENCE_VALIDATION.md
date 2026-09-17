@@ -136,15 +136,17 @@ status: ERROR / superseded intermediate checkpoint
 
 This commit introduced the first monotonic-pointer helper before the full test/workflow integration commit was formed. It is not a validation candidate and is retained only as branch history. No standard conclusion is derived from it.
 
-### Pipeline 9 — monotonic latest-pointer regression
+### Pipeline 9 — monotonic latest-pointer regression and final reference candidate
 
 ```text
 pipeline: 9
+rerun: 0
 exact SHA: 73c5014c2db9a832d8d0c5be335240334f9bae24
-status: PENDING at initial report checkpoint
+run key: 9-0-73c5014c2db9
+Woodpecker result: SUCCESS
 ```
 
-This candidate adds deterministic regression cases for:
+This candidate executes deterministic regression cases for:
 
 - newer pipeline → UPDATE;
 - older pipeline → STALE;
@@ -154,7 +156,18 @@ This candidate adds deterministic regression cases for:
 - same pipeline/rerun with conflicting identity → hard failure;
 - invalid negative ordering metadata → hard failure.
 
-The final v2.2.0 closeout must update this section with the actual exact-SHA execution result before release.
+The regression command is part of the Evidence packaging step, so pipeline success proves the executable cases completed successfully on this exact SHA before publication proceeded.
+
+Consumer-side Google Drive verification additionally confirmed:
+
+- immutable run `9-0-73c5014c2db9` exists;
+- `completion.json` exists;
+- manifest / validation-summary / environment / SHA256SUMS and artifact directories exist;
+- workflow-level `latest.json` was modified after completion;
+- `latest.json` points to pipeline 9, rerun 0, exact SHA `73c5014c2db9a832d8d0c5be335240334f9bae24`;
+- `profile_state` is PASS and `failed_checks` is empty.
+
+This is the final Formula reference SHA for the v2.2.0 contract validation.
 
 ## 4. Problems found and repaired
 
@@ -176,7 +189,8 @@ Repair/validation:
 
 - update only after completed immutable publication;
 - include exact SHA, provider run/rerun, profile state and immutable run pointer;
-- protect against stale overwrite.
+- protect against stale overwrite;
+- execute deterministic newer/older/rerun/idempotent/conflict regression cases.
 
 A broad Drive filename search initially returned a false negative for `latest.json`; direct traversal of the known workflow root showed the file existed. Consumer implementations should resolve known project/workflow roots or exact evidence identity rather than treating global filename search as an authoritative existence check.
 
@@ -190,6 +204,7 @@ Validated states include:
 Pipeline 5: validation FAIL, publication COMPLETE
 Pipeline 6: validation PASS, publication INCOMPLETE
 Pipeline 7: validation PASS, publication COMPLETE
+Pipeline 9: validation PASS, publication COMPLETE
 ```
 
 This distinction prevents partial remote directories from being mistaken for complete evidence.
@@ -198,7 +213,7 @@ This distinction prevents partial remote directories from being mistaken for com
 
 `validation-summary.json` preserves exact SHA, Validation Tuple, profile scope, per-check commands/status/exit code/timing/log path, and aggregate state counts.
 
-The Pipeline 6 profile produced 9/9 PASS while still explicitly excluding release Critical Journey, Hidden Validation, Windows packaged runtime, release packaging, and out-of-tuple visual/golden baselines. This demonstrates why profile PASS must not be named or interpreted as Release PASS.
+The refined profile produced 9/9 PASS while still explicitly excluding release Critical Journey, Hidden Validation, Windows packaged runtime, release packaging, and out-of-tuple visual/golden baselines. This demonstrates why profile PASS must not be named or interpreted as Release PASS.
 
 ### P0-5 — consumer-relative paths
 
@@ -208,6 +223,12 @@ The pilot found two opposite path hazards:
 - a simplistic validator can accidentally reject the legitimate published `artifacts/...` namespace.
 
 The final rule validates path safety according to metadata type and published namespace rather than string prefix alone.
+
+### P0-6 — provider status snapshot is not publication authority
+
+Pipeline 6 also exposed a timing nuance: the manifest can capture a provider status snapshot while Evidence finalization is running, before a later publication step fails. Therefore provider status metadata inside a manifest is execution metadata only; consumers still require `completion.json` and the validation summary before treating a run as usable evidence.
+
+No release or validation conclusion is derived from the provider status snapshot alone.
 
 ## 5. Performance observations
 
@@ -239,7 +260,7 @@ Keeping these optional avoids standardizing unvalidated provider-specific behavi
 
 ## 7. Acceptance for the standard
 
-The CI Evidence Contract is acceptable for v2.2.0 only when all of the following are true:
+The CI Evidence Contract v2.2.0 reference acceptance is:
 
 ```text
 Formula refined Validation Profile PASS
@@ -249,8 +270,16 @@ remote immutable publication PASS
 completion publication PASS
 latest pointer update PASS
 monotonic/stale pointer regression PASS
-ai-development-standard verify-standard PASS
-standard diff review recorded
 ```
 
-The exact final reference SHA and standard baseline SHA must be recorded at closeout.
+Final reference implementation:
+
+```text
+repository: kaicreator-mm/formula
+exact SHA: 73c5014c2db9a832d8d0c5be335240334f9bae24
+pipeline: 9
+run key: 9-0-73c5014c2db9
+result: PASS
+```
+
+The development-standard repository still requires its own exact-head `verify-standard` PASS and recorded diff review before the v2.2.0 version branch is merged to `main`. The final immutable standard baseline SHA is recorded in the version closeout/merge record because it cannot be embedded self-referentially inside the commit it identifies.
