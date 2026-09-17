@@ -2,9 +2,9 @@
 
 跨项目 AI 软件工程执行规范与工程基线。
 
-当前版本：`v2.1.0`
+当前版本：`v2.2.0`
 
-v2.1 在 v2.0 的 Validation-first / Minimal-CI 模型上增加 **Version Branch Mode** 与 **Generic Local Agent Handoff**：大版本可以通过 Task/Fix 短分支先集成到版本分支，再统一进入 `main`；本地 Agent 交接改为 GitHub Issue contract + reusable bootstrap prompt，不依赖聊天上下文。
+v2.2 在 v2.1 的 Version Branch / Local Agent Handoff 基础上增加 **Provider-neutral CI Evidence Contract**：当 CI 或自动化验证把证据发布到 Google Drive、S3、MinIO 或其它外部 backend 时，统一使用 exact-SHA、Validation Tuple、immutable run、artifact provenance、`completion.json` 与 workflow-level `latest.json` 形成可审计且高效读取的 Evidence 链；CI Evidence 仍不等于 Release Authority。
 
 ## 核心原则
 
@@ -21,6 +21,7 @@ v2.1 在 v2.0 的 Validation-first / Minimal-CI 模型上增加 **Version Branch
 11. **Substantial version 优先 Version Branch Mode**：`task/fix → version/vX.Y.Z → main`；小型、低风险、范围明确的维护可以走 trunk/fast path。
 12. **Local Agent Handoff 以 Issue 为合同**：任务特定事实放 Issue，通用执行纪律放 pinned standard / bootstrap prompt；本地 Agent 应能仅凭 repository + issue 恢复执行。
 13. **Release Qualification 由完整 required evidence 决定**：Critical Journeys、Hidden Validation、真实 platform/build 与其它 frozen required gates 必须在 candidate identity 上形成真实证据。
+14. **外部 CI Evidence 必须事务化发布**：immutable evidence 与 mutable discovery pointer 分离；只有完整发布并形成 `completion.json` 的 run 才能更新 `latest.json`，且旧 run 不得覆盖新 pointer。
 
 ## 标准生命周期
 
@@ -139,6 +140,35 @@ Bootstrap Prompt：[`prompts/local-agent-bootstrap.md`](prompts/local-agent-boot
 
 项目可通过 `.dev-standard/PROJECT_OVERRIDES.md` 声明 `minimal / custom / disabled` CI profile。若 CI 被显式禁用或不可用，项目必须保留 exact-SHA clean validation、Independent Review 与真实 Release Gate。
 
+## CI Evidence Contract
+
+当自动化 Evidence 发布到外部 backend 时，推荐布局：
+
+```text
+<project>/<workflow>/
+├── latest.json
+└── runs/<run-key>/
+    ├── manifest.json
+    ├── validation-summary.json
+    ├── environment.json
+    ├── diagnostic.json        # FAIL 时推荐
+    ├── SHA256SUMS
+    ├── completion.json
+    ├── logs/
+    ├── reports/
+    └── artifacts/
+```
+
+职责分离：
+
+- `manifest.json`：immutable Evidence Identity Root；
+- `validation-summary.json`：一个 Validation Tuple/profile 的机器可读结果；
+- `completion.json`：Evidence publication commit marker，不代表 Validation PASS；
+- `latest.json`：workflow-level mutable discovery/cache pointer，不代表 Release readiness；
+- artifact 必须记录 producer check/state/provenance，失败或未执行 producer 不能产生有效 artifact。
+
+正常读取先看 `latest.json`/summary，小日志与大型 artifact 只按需读取。完整规则见 [`standards/CI_EVIDENCE_STANDARD.md`](standards/CI_EVIDENCE_STANDARD.md)。真实 Formula Woodpecker → Google Drive pilot 的问题发现与修复记录见 [`references/CI_EVIDENCE_REFERENCE_VALIDATION.md`](references/CI_EVIDENCE_REFERENCE_VALIDATION.md)。
+
 ## Validation Tuple
 
 ```text
@@ -171,6 +201,7 @@ NOT_APPLICABLE
 - 版本集成：[`standards/VERSION_INTEGRATION_WORKFLOW.md`](standards/VERSION_INTEGRATION_WORKFLOW.md)
 - GitHub 工作流：[`standards/GITHUB_WORKFLOW.md`](standards/GITHUB_WORKFLOW.md)
 - Validation：[`standards/VALIDATION_STANDARD.md`](standards/VALIDATION_STANDARD.md)
+- CI Evidence：[`standards/CI_EVIDENCE_STANDARD.md`](standards/CI_EVIDENCE_STANDARD.md)
 - Release：[`standards/RELEASE_STANDARD.md`](standards/RELEASE_STANDARD.md)
 - 项目接入：[`standards/PROJECT_ADOPTION.md`](standards/PROJECT_ADOPTION.md)
 
@@ -194,7 +225,7 @@ NOT_APPLICABLE
 - `templates/`：Task DAG、PR、Validation、Closeout、Local Agent Handoff 和项目接入模板。
 - `reference-architectures/`：非强制结构参考。
 - `checklists/`：Project Init、PR Review、Version Closure 等机械检查项。
-- `references/`：公开工程 evidence/provenance。
+- `references/`：公开工程 evidence/provenance 与真实 reference validation 记录。
 - `prompts/`：L1/L2/L3 与 Agent 执行基线。
 - `scripts/`：标准仓库自身或项目接入自动化。
 
