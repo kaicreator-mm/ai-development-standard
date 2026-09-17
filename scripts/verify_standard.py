@@ -11,8 +11,10 @@ REQUIRED = [
     "CHANGELOG.md",
     ".github/workflows/verify-standard.yml",
     "standards/DEVELOPMENT_WORKFLOW.md",
+    "standards/VERSION_INTEGRATION_WORKFLOW.md",
     "standards/CHATGPT_WEB_ROLE.md",
     "standards/CODEX_ROLE.md",
+    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
     "standards/CODEX_HANDOFF_PROTOCOL.md",
     "standards/VALIDATION_STANDARD.md",
     "standards/GITHUB_WORKFLOW.md",
@@ -23,6 +25,7 @@ REQUIRED = [
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
     "scripts/verify_project_standard.py",
     "scripts/test_verify_project_standard.py",
+    "templates/local-agent-handoff-issue.md",
     "templates/codex-handoff-issue.md",
     "templates/implementation-pr.md",
     "templates/validation-report.md",
@@ -31,6 +34,7 @@ REQUIRED = [
     "prompts/L1_PRODUCT_EVIDENCE.md",
     "prompts/L2_ARCHITECTURE_EVIDENCE.md",
     "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
+    "prompts/local-agent-bootstrap.md",
     "prompts/CODEX_EXECUTION.md",
 ]
 
