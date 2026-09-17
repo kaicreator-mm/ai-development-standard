@@ -15,6 +15,18 @@ Pull Request:
 
 不要修改代码，除非当前 Handoff/项目规则明确把 Reviewer 同时指定为修复执行者；默认只做独立审查并把结果写回 GitHub。
 
+在第一次写 GitHub 事件之前，先建立本会话的逻辑 Operator Identity：
+
+actor_role: reviewer
+operator_kind: chatgpt-web | codex | claude-code | human | other
+operator_id: <例如 chatgpt-web:web-b>
+session_ref: <本具体页面/会话的非敏感别名>
+transport_actor: <例如 github:kaicreator-mm>
+
+如果与 Builder 使用同一个 GitHub 账号，transport_actor 可以相同；required Independent Review 的 operator_id/session_ref 必须能证明这是与 Builder 不同的实现上下文。
+
+不要把 access token、cookie、签名 URL 或其它凭据写入这些字段。
+
 初始化顺序：
 
 1. 阅读仓库根目录 AGENTS.md。
@@ -23,17 +35,20 @@ Pull Request:
 4. 阅读 PROJECT_OVERRIDES（若存在）。
 5. 读取 PR 关联的 Task Issue。
 6. 读取 Task Issue 的 Milestone、labels/state、Review Policy、Issue Dependencies、相关 sub-issues。
-7. 读取 Frozen PRD / Architecture / Task DAG / L3 references。
-8. 读取 PR baseline、target branch、diff、当前 HEAD SHA、已有 Validation Evidence 与 review threads。
-9. 如果 PR 是 stacked PR，确认其 base branch/parent PR 与 Task Issue dependency 语义是否一致；不要把 stack 本身当成 canonical Task DAG。
+7. 读取已有 ROLE_CLAIMED / Agent events，确认 Builder/其它 Reviewer 的 operator attribution，避免误把同一 GitHub author 当成同一逻辑 Agent。
+8. 读取 Frozen PRD / Architecture / Task DAG / L3 references。
+9. 读取 PR baseline、target branch、diff、当前 HEAD SHA、已有 Validation Evidence 与 review threads。
+10. 如果 PR 是 stacked PR，确认其 base branch/parent PR 与 Task Issue dependency 语义是否一致；不要把 stack 本身当成 canonical Task DAG。
 
 先确认 Review Policy：
 
 - `required`：本次 Review 是 merge gate，必须输出 exact-SHA Review Result；
-- `recommended`：本次 Review 只有在已被显式调用/领取时执行；Review 本身不是默认 merge gate，但一旦发现有效的 release-significant finding，不能因为 policy= recommended 就忽略，必须修复、接受风险或按项目 authority 明确处置；
+- `recommended`：本次 Review 只有在已被显式调用/领取时执行；Review 本身不是默认 merge gate，但一旦发现有效的 release-significant finding，不能因为 policy=recommended 就忽略，必须修复、接受风险或按项目 authority 明确处置；
 - `not-required`：默认停止审查并记录 policy mismatch，不要为了形式制造 Review Gate；除非 Task/项目 authority 已把 policy 改为 required/recommended。
 
 如果 Task 没有 Review Policy，按 PROJECT_OVERRIDES / Task DAG / Task risk 解析；无法解析时不要把 Review 自动升级为 mandatory，应记录 policy unresolved 并请求上游澄清。
+
+开始 substantial Review 时 SHOULD 先发布 ROLE_CLAIMED，并使用 templates/agent-event-comment.md 的 ai-dev:event:v2 格式记录本 Reviewer 的 operator identity。
 
 Review 必须独立于实现会话：不要依赖 Builder 的聊天推理或未写入 GitHub 的结论。
 
@@ -79,8 +94,10 @@ Required Change
 - 对窄小修复可以做 old-reviewed-sha..new-head-sha delta review；
 - 对跨模块/架构/测试语义变化做完整 re-review。
 
-最终把 REVIEW_RESULT 写回 GitHub，使用 templates/agent-event-comment.md 的 ai-dev:event:v1 格式，并给出：
+最终把 REVIEW_RESULT 写回 GitHub，使用 templates/agent-event-comment.md 的 ai-dev:event:v2 格式，并给出：
 
+Actor Role
+Operator Kind / Operator ID / Session Ref
 Review Policy
 Reviewed SHA
 Review Gate Result
