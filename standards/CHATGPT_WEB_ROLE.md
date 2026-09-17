@@ -4,7 +4,36 @@
 
 ChatGPT Web 是主要的分析、设计、实现与审查工作台，优先承担需要跨文件理解、产品/架构推理、任务拆解、代码生成和按需 Independent Review 的工作。
 
-GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务、多 Agent、跨会话任务必须通过 GitHub checkpoint、Issue、Issue Dependencies、metadata/events、PR 与 exact SHA 可恢复。
+GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务、多 Agent、跨会话任务必须通过 GitHub checkpoint、Issue、Issue Dependencies、metadata/events、PR、operator attribution 与 exact SHA 可恢复。
+
+## Web Session Operator Identity
+
+多个 ChatGPT Web 页面可能通过同一个 GitHub 账号写 Issue/PR，因此 GitHub author 不能作为 Web Agent identity。
+
+每个参与 GitHub 执行流的 Web 页面/会话 SHOULD 在第一次结构化事件前建立：
+
+```text
+operator_kind=chatgpt-web
+operator_id=chatgpt-web:<human-friendly logical id>
+session_ref=<this concrete page/conversation alias>
+transport_actor=github:<account>
+```
+
+例如：
+
+```text
+Builder 页面：
+operator_id=chatgpt-web:web-a
+session_ref=domainharness-builder-a
+
+Reviewer 页面：
+operator_id=chatgpt-web:web-b
+session_ref=domainharness-reviewer-b
+```
+
+同一个 GitHub `transport_actor` 可以对应多个不同 logical operators。
+
+`operator_id/session_ref` 不得包含 token、cookie、签名 URL、凭据或其它秘密。Web session 没有可安全暴露的内部 ID 时，使用项目内稳定的非敏感别名即可。
 
 ## 两种主要工作模式
 
@@ -14,7 +43,9 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 
 主要职责：
 
+- 使用 `actor_role=builder` + 当前 Web Operator Identity；
 - 消费 `state:ready` / `state:changes-requested` Task；
+- substantial/concurrent work 开始时 SHOULD 发布 `ROLE_CLAIMED`；
 - 实现、测试、push、PR；
 - 解析/记录 Task Review Policy：`required / recommended / not-required`；
 - 发布 `IMPLEMENTATION_READY` / `FIX_APPLIED` / `REVIEW_DECISION` event；
@@ -28,7 +59,9 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 
 主要职责：
 
+- 使用 `actor_role=reviewer` 和独立 Reviewer Operator Identity；
 - 消费 `state:review-ready` Task/PR；
+- substantial Review 开始时 SHOULD 发布 `ROLE_CLAIMED`；
 - 从 GitHub + pinned standard 独立重建上下文；
 - 审查 Frozen PRD/Architecture/Task acceptance、diff、tests、Validation Evidence、Issue Dependencies、stack topology；
 - 将 `REVIEW_RESULT` 绑定 exact PR HEAD SHA；
@@ -36,6 +69,8 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 - 当 Review 仍是 merge-required evidence 且 HEAD 变化时执行 delta/full re-review，而不是复用旧 SHA 的 PASS。
 
 同模型 fresh session 可以作为独立 Reviewer；关键是上下文独立和从 GitHub 重新建事实，不要求一定更换模型或机器。
+
+当 Review Policy=`required` 时，Reviewer 的 `operator_id/session_ref` 必须可审计地区别于实现该变更的 Builder context；GitHub `transport_actor` 可以相同。
 
 推荐 Review bootstrap：`prompts/independent-review-bootstrap.md`。
 
@@ -52,6 +87,7 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 - 当前执行环境可运行的静态/动态 Validation；
 - Review Policy 解析与记录；
 - Independent Review（仅当处于 Reviewer context 且 Review 被选择/要求）；
+- 所有新 structured Agent events 使用 v2 operator attribution；
 - Local Agent Handoff Issue / Prompt；
 - Execution Agent / Build Host 返回后的按需 Review Closure 与 Final Closeout。
 
@@ -125,13 +161,14 @@ Frozen PRD / Contract
 
 当 Review 被执行时，Reviewer 必须：
 
-1. 确认当前 PR HEAD SHA；
-2. 读取 Task Issue / Issue Dependencies / Frozen inputs；
-3. 检查 branch target / stack parent；
-4. 检查实现、测试、failure handling、scope、compatibility、validation credibility；
-5. 对 exact HEAD 输出 Gate Result；
-6. 需要真实环境事实时发 `VALIDATION_REQUEST`，不得猜测；
-7. 记录 `REVIEW_RESULT` event。
+1. 确认自身 `operator_id/session_ref` 与 Builder context 的关系；required Review 必须是独立 context；
+2. 确认当前 PR HEAD SHA；
+3. 读取 Task Issue / Issue Dependencies / Frozen inputs；
+4. 检查 branch target / stack parent；
+5. 检查实现、测试、failure handling、scope、compatibility、validation credibility；
+6. 对 exact HEAD 输出 Gate Result；
+7. 需要真实环境事实时发 `VALIDATION_REQUEST`，不得猜测；
+8. 记录带 operator attribution 的 `REVIEW_RESULT` event。
 
 Review Gate 只使用：
 
@@ -145,9 +182,26 @@ PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 
 ## Agent Event 职责
 
-跨 Session/Agent 的重要状态迁移 SHOULD 使用 `templates/agent-event-comment.md` 的 `ai-dev:event:v1` 格式，例如：
+跨 Session/Agent 的重要状态迁移 SHOULD 使用 `templates/agent-event-comment.md` 的当前格式：
+
+```html
+<!-- ai-dev:event:v2 -->
+```
+
+新事件必须区分：
 
 ```text
+actor_role      = workflow responsibility
+operator_id     = logical Web/Local/automation executor
+session_ref     = concrete page/conversation/run correlation
+transport_actor = GitHub account/API transport identity
+```
+
+常用事件：
+
+```text
+ROLE_CLAIMED
+ROLE_RELEASED
 TASK_CLAIMED
 IMPLEMENTATION_READY
 REVIEW_DECISION
@@ -159,7 +213,9 @@ DEPENDENCY_CHANGED
 MERGE_RESULT
 ```
 
-Issue body 保持稳定 contract；metadata 表示当前状态；comments 记录事件历史。
+Issue body 保持稳定 contract；metadata 表示当前状态；comments 记录事件历史与 logical operator attribution。
+
+历史 `ai-dev:event:v1` 继续有效，不要为了增加 operator fields 重写历史评论。
 
 ## CI 职责
 
@@ -187,14 +243,17 @@ Branch 数量本身不是 CI 成本指标；CI 成本应通过 workflow triggers
 
 一个旧 reviewed SHA 的 Review PASS 也不能推导新的 PR HEAD PASS。
 
+同一个 GitHub author 也不能证明两个事件来自同一个逻辑 Agent；反过来，相同 GitHub author 也不能否定两个独立 Web contexts 的 Review 独立性。
+
 ## Blocker 行为
 
 遇到 blocker 时：
 
 1. 标记对应 gate/state；
 2. 识别 GitHub Issue dependency downstream；
-3. 继续所有不依赖该 blocker 的 implementation/review/validation；
-4. 最终统一统计。
+3. 发布带 logical operator attribution 的 BLOCKER_REPORTED（若使用 structured events）；
+4. 继续所有不依赖该 blocker 的 implementation/review/validation；
+5. 最终统一统计。
 
 不要因为单一环境缺失、一个 PR FAIL 或等待 optional Review 而停止整个版本剩余独立工作。
 
@@ -234,6 +293,7 @@ Handoff Issue: #<number>
 13. Completion Rule。
 14. Failure / Blocker Reporting Rule。
 15. Expected Evidence / Output。
+16. Source Web operator / role attribution（若交接来自具体会话）。
 
 Issue SHOULD 使用 version Milestone 和 type/state/review/executor/gate/env/release-impact metadata，使本地 Agent 与后续 Web session 可机械发现和分类。
 

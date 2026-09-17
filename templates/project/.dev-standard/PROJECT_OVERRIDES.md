@@ -28,6 +28,39 @@ When Issue-based execution is enabled:
 - Sub-issues express hierarchy, not implicit blocking.
 - Stacked PR MUST NOT replace Issue Dependency.
 
+## Agent / Operator Attribution Profile
+
+GitHub account identity is transport provenance only. When multiple Web sessions, Local Agents, CI runners or humans may write through the same GitHub account, use `ai-dev:event:v2` logical operator attribution.
+
+Canonical fields:
+
+```text
+actor_role
+operator_kind
+operator_id
+session_ref
+transport_actor
+```
+
+Project conventions:
+
+- Event schema for new events: `<ai-dev:event:v2 | stricter project rule>`
+- Operator ID convention: `<kind>:<project-local-id>`
+- ChatGPT Web operator examples: `<chatgpt-web:web-a | chatgpt-web:web-b | project-specific>`
+- Local Agent operator examples: `<codex:ubuntu-build-01 | claude-code:windows-01 | project-specific>`
+- Session reference convention: `<non-secret alias / run id>`
+- Transport actor convention: `<github:<account> | project-specific>`
+- Role claim policy: `<ROLE_CLAIMED for substantial/concurrent work | custom>`
+
+Rules:
+
+- Role and operator are separate dimensions. The same operator may perform different roles over time.
+- `operator_id/session_ref` SHOULD distinguish concurrent ChatGPT Web pages or Local Agent runs even when `transport_actor` is identical.
+- Dynamic operator/session IDs SHOULD NOT be encoded as GitHub labels.
+- `executor:*` labels are routing hints and do not prove which concrete operator performed an event.
+- Required Independent Review must be attributable to a context independent from the Builder context; the same GitHub transport account is allowed.
+- Identity fields MUST NOT contain tokens, cookies, signed URLs, credentials or secrets.
+
 ## Independent Review Profile
 
 Independent Review is risk-based by default; it is not universally mandatory for every Task/Fix PR.

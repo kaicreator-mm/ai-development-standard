@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.1.0 — 2026-09-18
+
+为 GitHub-native Agent Interaction 增加 **Actor Role / Logical Operator Attribution**，解决 ChatGPT Web、Local Agent、CI、人工都通过同一个 GitHub 账号写 Issue/PR 时无法区分真实执行主体的问题。v3.0 的 Review Policy、Validation、Task DAG、Stacked PR 与 Release semantics 保持不变，因此是兼容 MINOR。
+
+- 新 structured Agent events 升级为 `ai-dev:event:v2`；历史 `ai-dev:event:v1` 保持有效，不重写历史。
+- Event v2 新增 `actor_role / operator_kind / operator_id / session_ref / transport_actor`，明确区分 workflow responsibility、logical executor、具体页面/进程/run 与 GitHub transport identity。
+- `actor_role` 标准角色扩展为 `planner / builder / reviewer / validator / merge-controller / release-controller`。
+- `operator_kind` 支持 `chatgpt-web / codex / claude-code / human / github-actions / woodpecker / other`；推荐 `operator_id` 例如 `chatgpt-web:web-a`、`chatgpt-web:web-b`、`codex:ubuntu-build-01`。
+- 新增 `ROLE_CLAIMED / ROLE_RELEASED` 事件，用于记录哪个 logical operator 当前承担某个角色；role claim 只是 attribution/routing fact，不是 Gate PASS 或 distributed lock。
+- 多个 ChatGPT Web 页面使用相同 GitHub 账号时，使用不同 `operator_id/session_ref`；动态 session/operator identity 不进入 GitHub labels，避免 label churn。
+- required Independent Review 现在可以通过 operator attribution 审计 context independence：Builder 与 Reviewer 可共用同一个 GitHub transport account，但必须是可区分的逻辑 context。
+- `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`、`templates/agent-event-comment.md`、`standards/CHATGPT_WEB_ROLE.md`、Web/Local bootstrap prompts、项目 `PROJECT_OVERRIDES` 与 `AGENTS` 模板同步 Operator Attribution 语义。
+- Local Agent / Validation event 必须能区分真正执行命令的本地 operator/run 与发起请求的 Web session，避免共享 GitHub author 造成错误归属。
+- `verify_standard.py` 新增 v3.1 semantic guards：检查 Event v2、operator attribution 五字段、`ROLE_CLAIMED/ROLE_RELEASED` 与 v1 backward compatibility。
+
 ## v3.0.0 — 2026-09-18
 
 将 v2.3.0 的 universal mandatory Independent Review 改为 **risk-based / on-demand Review Policy**。这是 mandatory Gate semantics 的不兼容变化，因此升级 MAJOR；Validation mandatory、Issue Dependency canonical Task DAG、Stacked PR code-baseline dependency、GitHub-native Agent Interaction 与 Release Authority 保持不变。
@@ -76,7 +91,7 @@ Breaking changes:
 - Validation 与 CI 解耦：Validation 是 mandatory；CI 是 execution mechanism，不再自动等同于完整验证或 Release Authority。
 - CI profile 改为项目显式声明：`minimal / custom / disabled`；默认推荐 `minimal`，只运行低成本、确定性、clean-checkout 的独立 checks。
 - Minimal CI 默认不承载完整多平台矩阵、Critical Journeys、Hidden Validation、高成本 E2E 或 packaging。
-- 新增 Validation Tuple：`exact SHA × real platform × runtime/toolchain × validation profile`；一个 tuple PASS 不能推导另一 tuple PASS。
+- 新增 Validation Tuple：`exact SHA × real platform> × <runtime/toolchain> × <validation profile>`；一个 tuple PASS 不能推导另一 tuple PASS。
 - 新增 Required Gate Authority 顺序：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults；历史 workflow、旧脚本和 Agent 推测不能自动创建 mandatory release gate。
 - 新增 DAG blocker propagation：BLOCKED 只阻塞依赖节点；其它独立工作继续执行，最终统一统计。
 - 开发生命周期从机械 14 Phase 收敛为更少的 Stage：Baseline → Product/Scope → Architecture/Task → Implementation → Validation/PR/Minimal CI → Candidate → Hidden/Closure → Release。

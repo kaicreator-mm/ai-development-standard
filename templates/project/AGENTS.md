@@ -8,18 +8,22 @@ This project follows the immutable `kaicreator-mm/ai-development-standard` revis
 2. Read `.dev-standard/PROJECT_OVERRIDES.md`.
 3. Read the pinned standard's `AGENTS.md`.
 4. For lifecycle work, read `standards/DEVELOPMENT_WORKFLOW.md`.
-5. For Issue-based Task DAG, Builder/Reviewer/Validator queues, structured events, or stacked PR rules, read `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` and `standards/GITHUB_WORKFLOW.md`.
+5. For Issue-based Task DAG, Builder/Reviewer/Validator queues, structured events, Actor/Operator Attribution, or stacked PR rules, read `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` and `standards/GITHUB_WORKFLOW.md`.
 6. For repository structure/docs/tests, read `standards/PROJECT_STRUCTURE.md`, `DOCUMENTATION_STANDARD.md`, `TESTING_STANDARD.md`, and `REPOSITORY_STANDARD.md` as relevant.
 7. For validation/release work, read `VALIDATION_STANDARD.md` and `RELEASE_STANDARD.md`.
 
 ## Project rules
 
 - GitHub repository state, commit, Issue, Issue Dependency, PR, Review and Validation Evidence are execution facts; chat history is not.
+- GitHub username/API account is transport identity only. New v3.1+ structured events SHOULD distinguish `actor_role`, `operator_kind`, `operator_id`, `session_ref`, and `transport_actor`.
+- Multiple ChatGPT Web pages or Local Agent runs using one GitHub account must remain distinguishable by logical operator/session attribution. Do not create dynamic GitHub labels for per-session IDs.
+- `ROLE_CLAIMED/ROLE_RELEASED` may record who is currently acting in a workflow role; these are attribution/routing events, not Gate PASS or distributed locking.
 - Frozen Task DAG is the planning checkpoint; GitHub Issue Dependencies are the canonical live execution DAG when Issue-based execution is enabled.
 - Sub-issues express hierarchy, not implicit blocking.
 - Stacked PR is only for a real unmerged code-baseline dependency and does not replace Issue Dependency.
 - Independent Review is risk-based. Each Task/PR follows its declared `required / recommended / not-required` Review Policy from PROJECT_OVERRIDES / Task DAG / Task Issue.
 - `review:required` must be satisfied on the current exact PR HEAD SHA before merge; `review:recommended` may be explicitly performed or skipped; `review:not-required` must not be turned into a mandatory Review Gate merely because Version Branch Mode is used.
+- Required Independent Review must be attributable to a context independent from the Builder context. The same GitHub transport account may be used if logical operator/session identity proves the separation.
 - If PR HEAD changes after a Review PASS, re-review is required only when the Review Policy is `required` or the optional Review is intentionally being continued for the new SHA.
 - Do not change frozen product/architecture semantics to make implementation, review or CI easier.
 - Use the commands and project-specific boundaries in `.dev-standard/PROJECT_OVERRIDES.md`.
