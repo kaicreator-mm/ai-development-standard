@@ -1,8 +1,18 @@
 ## Related Work
 
-- Issue: #
+- Task / Issue: #
+- Milestone / Version:
 - Baseline Commit:
-- Development Standard: `kaicreator-mm/ai-development-standard@v2.0.0` + immutable revision
+- Integration target:
+- Development Standard: `kaicreator-mm/ai-development-standard@v2.3.0` + immutable revision
+
+## Dependency / Branch Topology
+
+- Execution dependencies: Issue Dependencies / none
+- Branch strategy: `independent / stacked`
+- Stack parent PR / branch: `NOT_APPLICABLE / ...`
+
+Issue Dependency is the canonical Task DAG. Stacked PR is only for real unmerged code-baseline dependency.
 
 ## Why
 
@@ -32,9 +42,28 @@
 
 Use only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
 
+## Independent Review
+
+- Required: `YES / NO`
+- Reviewed SHA:
+- Review status:
+- Reviewer context:
+- Review evidence/event:
+
+Review PASS applies only to the exact reviewed SHA. A later HEAD requires delta/full re-review.
+
 ## Remaining Gates / Blockers
 
 - gate → state → reason → downstream impact
+
+## Merge Readiness
+
+- [ ] Required task/local Validation satisfied.
+- [ ] Independent Review satisfied on current HEAD when required.
+- [ ] Configured required CI satisfied when applicable.
+- [ ] Required Issue Dependencies satisfied for merge.
+- [ ] Correct integration target / stack parent.
+- [ ] No unresolved release-significant blocker.
 
 ## Remaining Issues / Limitations
 
@@ -42,4 +71,4 @@ None / describe explicitly.
 
 ## Release Impact
 
-PR PASS / Minimal CI PASS does not imply Release PASS.
+PR PASS / Review PASS / Minimal CI PASS does not imply Release PASS.

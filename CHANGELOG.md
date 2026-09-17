@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.3.0 — 2026-09-18
+
+新增 GitHub-native Agent Interaction Protocol，将 Task DAG、Issue Dependency、Stacked PR、Independent Review 与 Builder/Reviewer/Validator 多会话协作统一进 v2.x 开发执行模型。
+
+- 新增 `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`：定义 Issue body = stable contract、metadata = routing/current state、comments = append-oriented Agent event log、PR = code change、SHA = exact identity。
+- Frozen Task DAG 继续作为 planning/history checkpoint；执行阶段 materialize 为 GitHub Task Issues + native Issue Dependencies，并把 Issue Dependency 定义为 canonical live execution DAG。
+- 明确 Milestone / Sub-issue / Issue Dependency 的语义分层：Milestone 聚合版本，Sub-issue 表达 belongs-to hierarchy，Issue Dependency 表达 blocked-by / blocking；不得互相替代。
+- 明确 Stacked PR 不是 Task DAG，只在下游 Task 必须建立在尚未合并的上游代码分支上时使用，表达 temporary code-baseline dependency；不得为了镜像 DAG 人工堆叠所有 PR。
+- Stacked PR upstream merge 后，下游 PR 需要 rebase/retarget 到正确 parent/integration branch；SHA 改变后，受影响的 Review/Validation 必须重新建立。
+- Version Branch Mode 的 Task/Fix PR merge 到 `version/vX.Y.Z` 前默认新增 mandatory Independent Review Gate；Review PASS 绑定 exact PR HEAD SHA，后续 commit 使旧 PASS 只保留历史意义，并要求 delta/full re-review。
+- Independent Reviewer 的 final authority 默认与实现 context 分离；允许另一 ChatGPT session、另一 Agent、人类 reviewer，或同模型 fresh context 从 GitHub 独立重建事实。
+- 新增 Builder / Reviewer / Validator queue model：Builder 主要消费 `state:ready` / `state:changes-requested`，Reviewer 消费 `state:review-ready`，Validator 消费 `state:validation-needed`；单一 blocker 不停止其它独立 implementation/review/validation。
+- 新增 portable workflow metadata：`state:planned / ready / implementing / review-ready / reviewing / changes-requested / validation-needed / merge-ready / blocked / done`，并明确 workflow state 与 Gate status (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`) 不得混淆。
+- 新增 `templates/task-issue.md`，把 Task Issue 固化为 stable work contract；新增 `templates/agent-event-comment.md` 与 `ai-dev:event:v1`，标准化 `IMPLEMENTATION_READY / REVIEW_RESULT / FIX_APPLIED / VALIDATION_REQUEST / VALIDATION_RESULT / DEPENDENCY_CHANGED / MERGE_RESULT` 等跨 Agent 事件。
+- 新增 `prompts/independent-review-bootstrap.md`，让 Reviewer 仅凭 repository + PR/Issue + pinned standard 独立完成 exact-SHA Review。
+- `templates/task-dag.md`、`templates/implementation-pr.md`、`checklists/pr-review.md`、`PROJECT_OVERRIDES`、项目 `AGENTS.md` 同步加入 execution DAG、stack topology、review evidence 与 merge-readiness 规则。
+- Local Agent Handoff 与 Review workflow 打通：Reviewer 请求真实环境验证时 route 到 validation-needed；Local Agent PASS 后返回 review-ready；若本地修复改变源码/HEAD，则必须重新 Validation + Review。
+- GitHub / Version Integration / Development Workflow / ChatGPT Web Role / Root AGENTS / README 同步接入新协议，确保多会话之间通过 GitHub facts 协作而非复制聊天记录。
+
 ## v2.2.0 — 2026-09-17
 
 新增 provider-neutral CI Evidence Contract，将 CI/自动化验证发布到 Google Drive、S3、MinIO 或其它外部 backend 时的 identity、publication、integrity、discovery 与性能读取路径标准化，同时保持“Validation mandatory、CI 不是 Release Authority”的 v2.x 基线。

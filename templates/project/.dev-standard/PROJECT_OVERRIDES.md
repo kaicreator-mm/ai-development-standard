@@ -13,6 +13,32 @@
 - Intentional deviations from `PROJECT_STRUCTURE.md`:
   - `<deviation + reason>`
 
+## Integration / GitHub Execution Profile
+
+- Integration mode: `<version-branch | trunk-fast-path>`
+- Version integration branch pattern: `<version/vX.Y.Z | NOT_APPLICABLE>`
+- Issue-based execution DAG: `<enabled | disabled + reason>`
+- Task Issue template/profile: `<canonical | project-specific path>`
+- Stacked PR policy: `<allowed only for real code-baseline dependency | disabled | stricter project rule>`
+
+When Issue-based execution is enabled:
+
+- Frozen Task DAG remains the planning checkpoint.
+- GitHub Issue Dependencies are the canonical live execution DAG.
+- Sub-issues express hierarchy, not implicit blocking.
+- Stacked PR MUST NOT replace Issue Dependency.
+
+## Independent Review Profile
+
+Version Branch Mode default is Independent Review required for every Task/Fix PR before merge to the version branch.
+
+- Independent Review required: `<YES | project-authorized narrower exception>`
+- Allowed reviewer sources: `<fresh ChatGPT session | human | Codex/Claude reviewer | other>`
+- Exact-SHA re-review policy: `<standard default | stricter rule>`
+- Review queue metadata override: `<state:review-ready etc. | canonical>`
+
+A project MAY strengthen review rules. A narrower exception must identify its authority and scope; lack of CI, lack of a second human, or convenience alone is not an exception.
+
 ## Validation Execution Profile
 
 Declare the real environments that execute validation:
@@ -93,4 +119,4 @@ Historical workflows, old scripts or obsolete artifacts do not automatically cre
 
 - `<path or concern → owner/review rule>`
 
-Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, exact-SHA validation evidence, frozen product semantics or release claims.
+Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, exact-SHA validation/review evidence, frozen product semantics or release claims.

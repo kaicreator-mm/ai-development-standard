@@ -4,15 +4,19 @@
 
 该流程用于让 ChatGPT Web、Codex / Claude Code / 其它 Execution Agent、Build Host 与 GitHub 在不同执行环境中协作，同时保证范围、代码状态、验证结果和发布结论可追踪、可复现、可审计。
 
-v2.1 在 v2.0 的 Validation-first 模型上增加：
+v2.3 在 v2.2 基线上增加 GitHub-native Agent Interaction：
 
-- substantial version 的 Version Branch Mode；
-- Stage Artifact checkpoint 与 Implementation Task branch 的明确分离；
-- Generic Local Agent Handoff；
-- Validation Issue / Milestone / Label 标准；
-- `repository + issue` 驱动的本地 Agent 恢复执行。
+- Frozen Task DAG → Task Issues + Issue Dependencies 的 execution DAG materialization；
+- Issue Dependency 作为 canonical live Task DAG；
+- Stacked PR 仅用于真实的未合并 code-baseline dependency；
+- Builder / Independent Reviewer / Validator queue；
+- Version Branch Task/Fix PR merge 前 mandatory Independent Review Gate；
+- exact-SHA Review 与 re-review 规则；
+- `ai-dev:event:v1` 结构化 Agent 事件。
 
 Validation 仍然 mandatory；CI 仍然只是 execution mechanism，不是完整 Validation 或 Release Authority。
+
+完整 GitHub 协作协议见 `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`。
 
 ## 2. Intake 时先选择 Integration Mode
 
@@ -124,6 +128,31 @@ L2、Task DAG、L3 在成为 implementation dependency 时 MUST 形成 remote ch
 
 这些属于 stage artifact，默认 checkpoint，不等于一个独立 branch。
 
+#### Stage 2.5 — Execution DAG Materialization
+
+Task DAG Freeze 后，若项目采用 Issue-based execution，应把规划 DAG materialize 到 GitHub：
+
+```text
+Frozen Task DAG checkpoint
+        ↓
+Task Issues
+        ↓
+Milestone / type / initial state metadata
+        ↓
+GitHub Issue Dependencies
+        ↓
+Builder / Reviewer / Validator queues
+```
+
+规则：
+
+- Planning DAG document = 规划/历史快照；
+- GitHub Issue Dependencies = canonical live execution DAG；
+- Sub-issue = belongs-to hierarchy，不自动表达 blocked-by；
+- 不为 Task DAG 本身创建 branch；
+- dependency 发生实质变化时 SHOULD 记录 rationale / `DEPENDENCY_CHANGED` event；
+- `templates/task-issue.md` SHOULD 作为 Task Issue contract 基线。
+
 ### Stage 3 — Implementation Concerns
 
 以 Task / Concern 为主要实现与 branch 单位。
@@ -135,7 +164,8 @@ L2、Task DAG、L3 在成为 implementation dependency 时 MUST 形成 remote ch
 - 当前环境能完成的代码、测试、fixture、migration、文档与局部验证应尽可能完成；
 - 不能执行的内容如实进入 gate 状态，不得默认通过；
 - 正式 Concern 达到可审查状态后形成远端 checkpoint；
-- Task DAG 允许时多个 Task branch MAY 并行。
+- Task DAG 允许时多个 Task branch MAY 并行；
+- Builder MAY 在上一个 PR 等待 review 时继续其它独立 Task。
 
 Version Branch Mode 推荐：
 
@@ -145,15 +175,32 @@ task/vX.Y.Z-t02-<scope>
 fix/vX.Y.Z-<issue>-<scope>
 ```
 
-Task/Fix PR target `version/vX.Y.Z`。
-
-Trunk/Fast Path 使用项目约定短分支并 target `main` 或 declared stable branch。
+Task/Fix PR 默认 target `version/vX.Y.Z`。
 
 Task branch 应从明确 integration baseline 开始；不得不记录 baseline 就随意从最新 HEAD 开工。
 
-### Stage 4 — Validation / PR / Minimal CI
+#### 3.1 Optional Stacked PR
 
-先执行当前环境或 Build Host 可运行的 Validation，再形成或更新 PR。
+只有当 Task 的代码必须直接建立在另一个尚未合并的 Task branch 上时，才使用 stacked PR：
+
+```text
+version/vX.Y.Z
+  ↑
+task/T01-contract
+  ↑
+task/T02-core
+```
+
+Stacked PR 只表达 code-baseline dependency：
+
+- Issue Dependency 仍是 canonical Task DAG；
+- 不得为了镜像 Task DAG 而人工 stack 所有 PR；
+- upstream merge 后，下游 PR 应 rebase/retarget 到正确 parent/integration branch；
+- SHA 改变后，受影响 Review/Validation 必须重新执行。
+
+### Stage 4 — Task Validation / PR / Independent Review / Minimal CI
+
+先执行当前环境或 Build Host 可运行的 Validation，再形成或更新 PR，然后进入 Independent Review。
 
 #### 4.1 Local / Build Host Validation
 
@@ -177,13 +224,16 @@ Validation 必须绑定明确 commit SHA。真实平台/运行时矩阵使用 Va
 <exact SHA> × <real platform> × <runtime/toolchain> × <validation profile>
 ```
 
-#### 4.2 PR
+#### 4.2 PR / Review Queue
 
 PR 说明：
 
 ```text
+Task/Issue
 baseline
-integration target
+Issue Dependencies
+branch strategy independent/stacked
+integration target / stack parent
 concern scope
 changes
 validation evidence
@@ -191,9 +241,43 @@ known blockers
 required downstream gates
 ```
 
-在 Version Branch Mode，一个 Task/Concern 的 required task-level Validation / Review / configured Minimal CI 满足项目 merge policy 后即可合并 version branch；不等待同版本其它独立 Task。
+Builder 完成可审查实现后发布 `IMPLEMENTATION_READY` event，并把 Task route 到：
 
-#### 4.3 Minimal CI
+```text
+state:review-ready
+```
+
+Reviewer 从 Review Queue 读取当前 GitHub facts。
+
+#### 4.3 Independent Review Gate
+
+Version Branch Mode 中，每个 Task/Fix PR merge 到 version branch 前 MUST 完成 Independent Review，除非更高权威项目规则明确批准例外。
+
+Review 要求：
+
+- final review context 与实现 context 独立；
+- 可由另一 ChatGPT session、另一 agent、人类 reviewer，或同模型 fresh context 承担；
+- Reviewer 重新读取 pinned standard、Task Issue、Issue Dependencies、Frozen inputs、PR diff、Validation Evidence；
+- Review Result 绑定 exact PR HEAD SHA；
+- HEAD 变化后旧 PASS 不迁移，执行 delta/full re-review；
+- runtime/platform 事实无法静态确认时发 `VALIDATION_REQUEST`，不得猜测。
+
+Reviewer route：
+
+```text
+FAIL → state:changes-requested
+needs real execution → state:validation-needed
+PASS + merge prerequisites satisfied → state:merge-ready
+blocked → state:blocked
+```
+
+推荐使用：
+
+- `prompts/independent-review-bootstrap.md`
+- `checklists/pr-review.md`
+- `templates/agent-event-comment.md`
+
+#### 4.4 Minimal CI
 
 CI 默认只做低成本、确定性、clean-checkout 独立复核。
 
@@ -221,13 +305,29 @@ custom
 disabled
 ```
 
-`disabled` 必须记录理由，并保留 exact-SHA clean validation + review；没有 CI 不等于没有 Validation。
+`disabled` 必须记录理由，并保留 exact-SHA clean validation + Independent Review；没有 CI 不等于没有 Validation/Review。
 
 Branch 数量本身不是 CI 成本控制手段。CI 成本 SHOULD 通过 trigger strategy、minimal/custom profile 和 local/self-hosted execution 控制。
 
-### Stage 4.5 — Local Agent Handoff（按需）
+#### 4.5 Task Merge Readiness
 
-当当前环境无法完成真实 build/platform/integration/CJ/Hidden/packaging 或其它 execution 时，使用 GitHub Issue 交给 Local Agent / Build Host。
+Version Branch Task/Fix PR 默认只有满足以下条件才能进入 `state:merge-ready`：
+
+```text
+current PR HEAD SHA
++ required task/local Validation PASS
++ Independent Review PASS on current SHA
++ configured required Minimal CI PASS when enabled
++ required Issue Dependencies satisfied for merge
++ correct integration target / stack parent
++ no unresolved release-significant finding/blocker
+```
+
+PR merge 后记录 integration SHA / `MERGE_RESULT`，Task completion rule 满足后进入 `state:done`。
+
+### Stage 4.6 — Local Agent Handoff（按需）
+
+当当前环境无法完成真实 build/platform/integration/CJ/Hidden/packaging 或 Reviewer 明确要求真实 execution 时，使用 GitHub Issue 交给 Local Agent / Build Host。
 
 新交接 SHOULD 使用：
 
@@ -235,7 +335,7 @@ Branch 数量本身不是 CI 成本控制手段。CI 成本 SHOULD 通过 trigge
 - `templates/local-agent-handoff-issue.md`
 - `prompts/local-agent-bootstrap.md`
 
-Issue 应通过 Milestone + labels 表达 version、type、executor、gate、environment 和 release impact。
+Issue 应通过 Milestone + metadata 表达 version、type、state、executor、gate、environment 和 release impact。
 
 推荐：
 
@@ -243,12 +343,15 @@ Issue 应通过 Milestone + labels 表达 version、type、executor、gate、env
 Milestone: vX.Y.Z
 Labels:
   type:validation
+  state:validation-needed
   handoff:local-agent
   executor:codex | executor:claude-code
   gate:<profile>
   env:<host/platform>
   release-blocker (when applicable)
 ```
+
+Validation Issue MAY 作为 Task 的 sub-issue 表达层级；如果它真正 blocking 另一个 work item/candidate，应使用 Issue Dependency 表达 blocking 关系。
 
 任务特定事实放 Issue；通用执行纪律放 pinned standard。目标是 Local Agent 只需 `repository + issue` 即可初始化。
 
@@ -267,6 +370,7 @@ Validation Issue
 → PR to declared integration branch
 → new exact SHA
 → rerun affected required gates
+→ re-review affected PR HEAD
 ```
 
 旧 SHA 的 PASS 不自动成为新 SHA 的 PASS。
@@ -318,7 +422,7 @@ Release Qualification 使用：
 - `FAIL`：mandatory gate 已执行并 FAIL；
 - `BLOCKED`：mandatory gate 为 BLOCKED/NOT_RUN 或存在 release blocker。
 
-PR PASS 不等于 Release PASS。
+Task Review PASS / PR PASS 不等于 Release PASS。
 
 ### Stage 7 — Version PR / Release Baseline / Optional Tag / Release
 
@@ -372,6 +476,8 @@ Mandatory Gate 必须能追溯到明确权威来源。优先级：
 
 若要新增 mandatory release gate，必须通过相应冻结权威的显式变更。
 
+Independent Review Gate 是 Version Branch Task/Fix merge 的 standard default；项目可通过更高 authority 明确强化或定义窄例外，但不得把“没有 CI/没有第二个人”自动解释为不需要 review。
+
 ## 5. Blocker Propagation
 
 Blocker 只沿依赖边传播。
@@ -393,10 +499,13 @@ Release Qualification BLOCKED
 - release notes draft；
 - Hidden Validation pack preparation；
 - docs synchronization；
--其它平台 validation；
-- candidate preparation。
+- 其它平台 validation；
+- candidate preparation；
+- 其它独立 Task implementation/review。
 
 执行 Agent 不应因为单个 blocker 停止整个版本，只在所有可独立工作耗尽或继续会破坏事实/数据时停止。
+
+Execution DAG 的 blocker propagation 以 GitHub Issue Dependencies 为 live relation；Planning DAG 仍保留设计依据。
 
 ## 6. Stage Checkpoint Push
 
@@ -426,9 +535,11 @@ Implementation 以 Task / Concern 为远端同步单位，不以单文件或每�
 
 Stage Artifact 以 checkpoint 为单位，不以“每个阶段一个 branch”为单位。
 
+Task DAG dependency 以 Issue Dependency 为执行表示，不以 branch topology 表示。
+
 ### 6.3 长任务恢复
 
-长任务、多 Agent、跨会话任务应在正式 Stage/Concern checkpoint push，使后续可以仅依赖 GitHub commit、Issue、PR 和 pinned standard 恢复，而不是依赖聊天记录。
+长任务、多 Agent、跨会话任务应在正式 Stage/Concern checkpoint push，使后续可以仅依赖 GitHub commit、Issue、Issue Dependencies、metadata/events、PR 和 pinned standard 恢复，而不是依赖聊天记录。
 
 ## 7. 快速路径
 
@@ -438,6 +549,7 @@ Bug、小修复、文档修正、已冻结范围内明确 Task 可跳过 L1/L2/L
 Baseline
 → Implementation
 → Validation
+→ applicable Review
 → GitHub fact chain
 → Release impact decision
 ```

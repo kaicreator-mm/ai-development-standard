@@ -15,16 +15,17 @@ Do not modify code before initialization is complete.
 2. Read `.dev-standard/VERSION`.
 3. Read `.dev-standard/PROJECT_OVERRIDES.md`.
 4. Resolve and read the exact pinned `ai-development-standard` revision.
-5. Read the complete Handoff Issue, including labels, milestone, comments and linked PRs/evidence when relevant.
-6. Checkout the Issue's exact Baseline Commit.
-7. Run:
+5. Read the complete Handoff Issue, including labels/state, milestone, comments, parent Task, Issue Dependencies, linked PRs and evidence when relevant.
+6. If the handoff came from Independent Review, read the Review event/findings and exact target SHA.
+7. Checkout the Issue's exact Baseline Commit.
+8. Run:
 
 ```text
 git status
 git log -1 --oneline
 ```
 
-8. Confirm actual HEAD against the Issue baseline. If it differs, record the drift before proceeding; do not silently substitute a newer branch HEAD.
+9. Confirm actual HEAD against the Issue baseline. If it differs, record the drift before proceeding; do not silently substitute a newer branch HEAD.
 
 ## Execution
 
@@ -61,15 +62,19 @@ Validation-only execution does not require a branch.
 
 If a source change is required:
 
-1. create the Issue/task-specific fix or task branch from the declared integration baseline;
+1. create the Issue/task-specific fix or task branch from the declared integration baseline or justified stack parent;
 2. make the minimum correct change;
 3. run affected tests first;
 4. run all required gates again against the resulting exact SHA;
 5. commit and push the change;
-6. create/update a PR targeting the Handoff Issue's declared integration branch;
-7. reference the Issue from the PR.
+6. create/update a PR targeting the Handoff Issue's declared integration branch or justified stack parent;
+7. reference the Issue and parent Task from the PR;
+8. publish `FIX_APPLIED` and/or `VALIDATION_RESULT` using the project's `ai-dev:event:v1` format when enabled;
+9. if the PR HEAD changed, route the parent Task back to `state:review-ready` for required delta/full Independent Review.
 
 Do not target `main` when the active project uses Version Branch Mode and the Issue declares a `version/vX.Y.Z` integration branch.
+
+Do not invent a stacked PR. Use one only when the code really depends on an unmerged upstream Task branch; Issue Dependency remains the canonical Task DAG.
 
 ## Failure / blocker behavior
 
@@ -83,12 +88,15 @@ reproduction
 expected vs actual
 root cause/evidence if known
 affected scope
-downstream impact
+downstream Issue dependency impact
+candidate/release impact
 ```
 
 A blocker only blocks dependent work. Continue all independent work until exhausted, unless continuing would violate frozen facts or risk data/safety.
 
-## Final report
+Publish `BLOCKER_REPORTED` for material blockers when the project uses structured Agent events.
+
+## Final report / routing
 
 Before finishing, produce/update the standard Validation Report with:
 
@@ -117,5 +125,11 @@ BLOCKED
 NOT_RUN
 NOT_APPLICABLE
 ```
+
+If the handoff was requested by Reviewer and required validation PASS:
+
+- publish `VALIDATION_RESULT`;
+- route the parent Task back to `state:review-ready` rather than directly to merge-ready;
+- Reviewer closes the Review Gate on the correct exact SHA.
 
 Only close the Handoff Issue when its explicit completion rule is satisfied. If required work remains FAIL/BLOCKED/NOT_RUN, keep the issue open unless the Issue contract explicitly defines a different terminal state.

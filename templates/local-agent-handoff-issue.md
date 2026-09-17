@@ -11,9 +11,12 @@ Read the business project's `.dev-standard/VERSION` and use exactly that immutab
 
 - Repository: `<owner/repo>`
 - Version milestone: `<vX.Y.Z or NOT_APPLICABLE>`
+- Parent Task Issue: `<#issue or NOT_APPLICABLE>`
+- Source Review / PR: `<#pr / review event / NOT_APPLICABLE>`
 - Integration mode: `<version-branch | trunk-fast-path>`
-- Integration / target branch: `<version/vX.Y.Z | main | other>`
-- Handoff labels: `<type:validation, handoff:local-agent, ...>`
+- Integration / target branch: `<version/vX.Y.Z | main | stack parent | other>`
+- Handoff labels/state: `<type:validation, state:validation-needed, handoff:local-agent, ...>`
+- Relevant Issue Dependencies: `<#issues / none>`
 
 ## Baseline
 
@@ -25,18 +28,21 @@ Read the business project's `.dev-standard/VERSION` and use exactly that immutab
 
 - PRD / Scope: `<path/ref>`
 - Architecture / Contracts: `<path/ref>`
-- Task DAG: `<path/ref>`
+- Planning Task DAG: `<path/ref>`
 - L3 / Implementation Evidence: `<path/ref or NOT_APPLICABLE>`
 
-## Web Completed
+GitHub Issue Dependencies are the canonical live execution DAG. A stacked PR, if present, only expresses code-baseline dependency.
+
+## Web / Reviewer Completed
 
 - <completed item>
 
-## Existing Validation Evidence
+## Existing Validation / Review Evidence
 
-| Gate / Tuple | Status | Tested SHA | Evidence |
+| Gate / Tuple | Status | SHA | Evidence |
 |---|---|---|---|
-| Format | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | | |
+| Independent Review | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | | |
+| Format | | | |
 | Lint | | | |
 | Typecheck | | | |
 | Unit / Contract | | | |
@@ -98,9 +104,12 @@ Validation-only execution does not require a branch.
 If a source change is required:
 
 - create a dedicated `task/...` or `fix/<version>-<issue>-<scope>` branch;
-- target `<integration / target branch>`;
-- reference this Issue from the PR;
-- rerun affected required gates against the resulting exact SHA.
+- target `<integration / target branch>` or the justified stack parent;
+- reference this Issue and parent Task from the PR;
+- rerun affected required gates against the resulting exact SHA;
+- if a previously reviewed PR HEAD changes, route the parent Task back to `state:review-ready` for delta/full re-review.
+
+Do not create a stacked PR unless the source change truly needs an unmerged upstream code baseline.
 
 ## Expected Output / Artifacts
 
@@ -110,17 +119,25 @@ If a source change is required:
 4. Exact commands + exit codes.
 5. Gate matrix and Validation Tuple results.
 6. Changed files and fixed failures.
-7. Remaining blockers and downstream release impact.
-8. `<project-specific artifact>`.
+7. Remaining blockers and downstream Issue dependency/release impact.
+8. `VALIDATION_RESULT` / `BLOCKER_REPORTED` event when `ai-dev:event:v1` is enabled.
+9. `<project-specific artifact>`.
 
-## Completion Rule
+## Completion / Routing Rule
 
-This Issue is complete only when:
+This Handoff Issue is complete only when:
 
 - all explicitly required gates are PASS and evidence/PR is linked; **or**
 - the remaining path is explicitly FAIL/BLOCKED with reproduction, evidence, impact and any upstream decision required.
 
 Do not close the Issue merely because execution stopped.
+
+If this handoff was requested by Independent Review and validation PASS:
+
+- publish `VALIDATION_RESULT`;
+- route the parent Task back to `state:review-ready`;
+- Reviewer closes the Review Gate on the correct exact SHA;
+- do not route directly to `state:merge-ready` solely because local validation passed.
 
 ## Failure / Blocker Reporting Rule
 
@@ -134,7 +151,8 @@ reproduction
 expected vs actual
 root cause/evidence
 affected scope
-downstream impact
+downstream Issue dependency impact
+release impact
 ```
 
 Continue independent work when a blocker affects only part of the DAG.
