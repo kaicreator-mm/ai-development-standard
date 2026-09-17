@@ -78,16 +78,24 @@ review_policy_files = [
 ]
 
 if version and int(version.split(".", 1)[0]) >= 3:
-    required_policy_tokens = (
-        "review:required",
-        "review:recommended",
-        "review:not-required",
-    )
+    # Every active policy surface must expose all three semantics, but not every
+    # document needs to use the portable `review:*` label representation.
     for rel in review_policy_files:
         text = (ROOT / rel).read_text(encoding="utf-8")
-        for token in required_policy_tokens:
+        if "Review Policy" not in text:
+            errors.append(f"{rel} missing Review Policy semantics")
+        if "recommended" not in text or "not-required" not in text:
+            errors.append(f"{rel} missing risk-based Review Policy choices")
+
+    for rel in (
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "standards/GITHUB_WORKFLOW.md",
+        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+    ):
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        for token in ("review:required", "review:recommended", "review:not-required"):
             if token not in text:
-                errors.append(f"{rel} missing risk-based Review Policy token: {token}")
+                errors.append(f"{rel} missing portable Review Policy label: {token}")
 
     event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(
         encoding="utf-8"
@@ -122,7 +130,6 @@ if version and int(version.split(".", 1)[0]) >= 3:
         "Independent Review default is mandatory",
         "Version Branch Mode default is Independent Review required",
         "Version Branch Task/Fix PRs require Independent Review",
-        "Independent Review 默认 mandatory",
         "Independent Review 默认 mandatory",
     )
     for rel in operational_review_files:
