@@ -17,6 +17,7 @@ REQUIRED = [
     "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
     "standards/CODEX_HANDOFF_PROTOCOL.md",
     "standards/VALIDATION_STANDARD.md",
+    "standards/CI_EVIDENCE_STANDARD.md",
     "standards/GITHUB_WORKFLOW.md",
     "standards/RELEASE_STANDARD.md",
     "standards/MODEL_USAGE_POLICY.md",
