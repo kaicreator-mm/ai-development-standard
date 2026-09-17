@@ -24,6 +24,7 @@
       "standards/RELEASE_STANDARD.md",
       "standards/REPOSITORY_STANDARD.md",
       "standards/TESTING_STANDARD.md",
+      "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
       "standards/VALIDATION_STANDARD.md",
       "standards/VERSION_INTEGRATION_WORKFLOW.md"
     ],
@@ -39,11 +40,13 @@
       "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
       "templates/task-dag.md",
       "templates/task-issue.md",
+      "templates/test-data-pack.md",
       "templates/validation-report.md"
     ],
     "checklists": [
       "checklists/pr-review.md",
       "checklists/project-init.md",
+      "checklists/test-data-review.md",
       "checklists/version-closure.md"
     ],
     "prompts": [
@@ -51,6 +54,7 @@
       "prompts/L1_PRODUCT_EVIDENCE.md",
       "prompts/L2_ARCHITECTURE_EVIDENCE.md",
       "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
+      "prompts/TEST_DATA_GENERATION.md",
       "prompts/independent-review-bootstrap.md",
       "prompts/local-agent-bootstrap.md"
     ],
@@ -59,7 +63,8 @@
     ],
     "references": [
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
-      "references/GITHUB_ENGINEERING_REFERENCES.md"
+      "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/TEST_DATA_ENGINEERING_REFERENCES.md"
     ],
     "machine_contracts": [
       "schemas/agent-event-v2.schema.json",
