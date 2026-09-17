@@ -52,11 +52,14 @@ for rel in REQUIRED:
         errors.append(f"missing required file: {rel}")
 
 version = None
+version_tuple = None
 version_path = ROOT / "VERSION"
 if version_path.exists():
     version = version_path.read_text(encoding="utf-8").strip()
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         errors.append(f"VERSION is not SemVer: {version!r}")
+    else:
+        version_tuple = tuple(int(part) for part in version.split("."))
 
 if version:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -77,9 +80,7 @@ review_policy_files = [
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
 ]
 
-if version and int(version.split(".", 1)[0]) >= 3:
-    # Every active policy surface must expose all three semantics, but not every
-    # document needs to use the portable `review:*` label representation.
+if version_tuple and version_tuple[0] >= 3:
     for rel in review_policy_files:
         text = (ROOT / rel).read_text(encoding="utf-8")
         if "Review Policy" not in text:
@@ -139,6 +140,52 @@ if version and int(version.split(".", 1)[0]) >= 3:
         for phrase in stale_mandatory_phrases:
             if phrase in text:
                 errors.append(f"{rel} contains stale universal Review requirement: {phrase}")
+
+# v3.1+ logical operator attribution contract.
+if version_tuple and version_tuple >= (3, 1, 0):
+    operator_surfaces = [
+        "README.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "standards/CHATGPT_WEB_ROLE.md",
+        "templates/agent-event-comment.md",
+        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+        "prompts/independent-review-bootstrap.md",
+        "prompts/local-agent-bootstrap.md",
+    ]
+    required_tokens = (
+        "actor_role",
+        "operator_kind",
+        "operator_id",
+        "session_ref",
+        "transport_actor",
+    )
+    for rel in operator_surfaces:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        for token in required_tokens:
+            if token not in text:
+                errors.append(f"{rel} missing operator attribution token: {token}")
+
+    event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(
+        encoding="utf-8"
+    )
+    event_template = (ROOT / "templates/agent-event-comment.md").read_text(
+        encoding="utf-8"
+    )
+    for rel, text in (
+        ("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md", event_protocol),
+        ("templates/agent-event-comment.md", event_template),
+    ):
+        if "ai-dev:event:v2" not in text or "ai-dev/event-v2" not in text:
+            errors.append(f"{rel} missing event v2 schema/marker")
+        for event in ("ROLE_CLAIMED", "ROLE_RELEASED"):
+            if event not in text:
+                errors.append(f"{rel} missing operator lifecycle event: {event}")
+
+    if "transport identity" not in event_protocol and "transport_actor" not in event_protocol:
+        errors.append("GitHub Agent Interaction Protocol does not distinguish transport identity")
+
+    if "ai-dev:event:v1" not in event_protocol or "ai-dev:event:v1" not in event_template:
+        errors.append("event v1 backward-compatibility is not documented")
 
 for md in ROOT.rglob("*.md"):
     text = md.read_text(encoding="utf-8")
