@@ -15,7 +15,7 @@ Do not modify code before initialization is complete.
 2. Read `.dev-standard/VERSION`.
 3. Read `.dev-standard/PROJECT_OVERRIDES.md`.
 4. Resolve and read the exact pinned `ai-development-standard` revision.
-5. Read the complete Handoff Issue, including labels/state, milestone, comments, parent Task, Issue Dependencies, linked PRs and evidence when relevant.
+5. Read the complete Handoff Issue, including labels/state, milestone, comments, parent Task, Review Policy, Issue Dependencies, linked PRs and evidence when relevant.
 6. If the handoff came from Independent Review, read the Review event/findings and exact target SHA.
 7. Checkout the Issue's exact Baseline Commit.
 8. Run:
@@ -70,7 +70,10 @@ If a source change is required:
 6. create/update a PR targeting the Handoff Issue's declared integration branch or justified stack parent;
 7. reference the Issue and parent Task from the PR;
 8. publish `FIX_APPLIED` and/or `VALIDATION_RESULT` using the project's `ai-dev:event:v1` format when enabled;
-9. if the PR HEAD changed, route the parent Task back to `state:review-ready` for required delta/full Independent Review.
+9. if the PR HEAD changed, route according to the parent Task's Review Policy:
+   - `required` → `state:review-ready` for delta/full re-review;
+   - `recommended` → `state:review-ready` only when optional review is being continued, otherwise record `REVIEW_POLICY_DECISION` and follow remaining merge prerequisites;
+   - `not-required` → do not create a Review Gate solely because HEAD changed.
 
 Do not target `main` when the active project uses Version Branch Mode and the Issue declares a `version/vX.Y.Z` integration branch.
 
@@ -129,7 +132,7 @@ NOT_APPLICABLE
 If the handoff was requested by Reviewer and required validation PASS:
 
 - publish `VALIDATION_RESULT`;
-- route the parent Task back to `state:review-ready` rather than directly to merge-ready;
-- Reviewer closes the Review Gate on the correct exact SHA.
+- if Review Policy is `required`, or a `recommended` Review is actively in progress, route the parent Task back to `state:review-ready` so Reviewer can close Review on the correct SHA;
+- otherwise route according to remaining required merge prerequisites instead of forcing review-ready.
 
 Only close the Handoff Issue when its explicit completion rule is satisfied. If required work remains FAIL/BLOCKED/NOT_RUN, keep the issue open unless the Issue contract explicitly defines a different terminal state.
