@@ -200,7 +200,7 @@ start/end timestamp or duration
 Evidence-relative log/report path
 ```
 
-Paths in published metadata MUST be relative to the immutable evidence directory. Local workspace prefixes such as `artifacts/`, `/tmp/...`, `C:\...`, or runner-specific absolute paths MUST NOT leak into consumer-facing paths.
+Paths in published metadata MUST be relative to the immutable evidence directory and MUST NOT contain host-absolute paths, `..` traversal, or runner-specific temporary roots. Published top-level namespaces such as `logs/...`, `reports/...`, and `artifacts/...` are valid evidence-relative paths; implementations must distinguish those namespaces from any coincidentally named local staging directory. A leaked local staging prefix must be detected by type/path validation and existence checks rather than by globally banning the legitimate `artifacts/...` namespace.
 
 ### 6.1 Aggregate profile state
 
