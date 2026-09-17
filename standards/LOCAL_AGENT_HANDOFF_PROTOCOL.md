@@ -8,7 +8,9 @@ Supported executors include Codex, Claude Code, other coding agents, a Build Hos
 
 The GitHub Issue is the handoff contract. Chat history is not required for execution.
 
-## 2. Issue naming
+When the handoff belongs to a Task workflow, the Local Agent MUST preserve the GitHub Agent Interaction semantics in `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
+
+## 2. Issue naming / metadata
 
 Recommended title:
 
@@ -20,6 +22,7 @@ For validation-focused work, recommended labels include:
 
 ```text
 type:validation
+state:validation-needed
 handoff:local-agent
 ```
 
@@ -46,6 +49,8 @@ blocked:environment
 
 Use a version Milestone such as `vX.Y.Z` when the repository uses milestones. Do not create a unique version label merely to encode the version.
 
+A Validation Issue MAY be a sub-issue of its parent Task to express hierarchy. If its completion actually blocks another Task/Candidate, use Issue Dependency for the blocking relationship; sub-issue hierarchy alone is not blocking semantics.
+
 ## 3. Required issue contract
 
 Every handoff issue MUST identify:
@@ -54,10 +59,11 @@ Every handoff issue MUST identify:
 - Repository
 - Integration Branch / Target Branch
 - Baseline Commit
+- Parent Task Issue when applicable
 - Scope / Task IDs
 - Frozen Inputs: PRD / Architecture / Contract / Task DAG as applicable
-- Web Completed
-- Existing Validation Evidence
+- Web/Reviewer Completed
+- Existing Validation / Review Evidence
 - Remaining Work
 - Required Gates / Validation Tuples
 - Execution Environment
@@ -81,10 +87,11 @@ The execution agent MUST:
 1. read repository `AGENTS.md`;
 2. read `.dev-standard/VERSION` and `.dev-standard/PROJECT_OVERRIDES.md`;
 3. resolve the exact pinned standard revision;
-4. read the complete handoff Issue;
-5. checkout the specified baseline commit;
-6. run `git status` and `git log -1 --oneline` or equivalent checks;
-7. record any baseline drift before changing code.
+4. read the complete handoff Issue and parent Task/PR when applicable;
+5. read relevant Issue Dependencies / workflow state;
+6. checkout the specified baseline commit;
+7. run `git status` and `git log -1 --oneline` or equivalent checks;
+8. record any baseline drift before changing code.
 
 The agent MUST NOT silently replace the pinned baseline with a later branch HEAD.
 
@@ -99,6 +106,8 @@ For every required gate:
 - do not infer PASS from another platform, toolchain, CI job, or previous SHA.
 
 If an exact command is not predeclared, the agent MAY resolve it from project-owned entrypoints such as `AGENTS.md`, `PROJECT_OVERRIDES`, package scripts, Make/Task files, or documented build tooling. The resolved command MUST be recorded in the report.
+
+After execution, the agent SHOULD publish a `VALIDATION_RESULT` event using `templates/agent-event-comment.md` when the project follows the GitHub Agent Interaction Protocol.
 
 ## 6. Allowed fixes
 
@@ -131,7 +140,7 @@ Validation alone does not require a branch.
 If no source change is needed:
 
 ```text
-Issue → execute against exact SHA → Validation Report → close/leave open by result
+Issue → execute against exact SHA → Validation Report → VALIDATION_RESULT → route parent Task/review
 ```
 
 If a source change is needed, create an isolated task/fix branch, preferably:
@@ -142,9 +151,13 @@ fix/<version>-<issue>-<scope>
 
 or the repository's equivalent naming convention.
 
-The resulting PR MUST target the correct integration branch (`version/vX.Y.Z` in Version Branch Mode, otherwise the declared stable branch) and reference the handoff Issue.
+The resulting PR MUST target the correct integration branch (`version/vX.Y.Z` in Version Branch Mode, otherwise the declared stable branch) or a justified stack parent, and reference the handoff Issue / parent Task.
 
-After any code-changing fix, affected required gates MUST be re-executed against the resulting exact SHA.
+After any code-changing fix:
+
+- affected required gates MUST be re-executed against the resulting exact SHA;
+- any prior Independent Review PASS on an older PR HEAD is historical only;
+- the changed PR MUST return to `state:review-ready` for delta/full re-review before merge.
 
 ## 8. Blocker behavior
 
@@ -159,11 +172,13 @@ For FAIL/BLOCKED record, where available:
 - expected vs actual;
 - root cause/evidence;
 - affected task/version;
-- downstream release impact.
+- downstream dependency/release impact.
+
+If the project follows structured Agent events, publish `BLOCKER_REPORTED` for material blockers.
 
 Continue all independent work until it is exhausted or continuing would violate frozen facts or safety.
 
-## 9. Completion rule
+## 9. Completion / routing rule
 
 A handoff is complete when one of the following is true:
 
@@ -171,6 +186,12 @@ A handoff is complete when one of the following is true:
 2. the remaining path is explicitly FAIL/BLOCKED with reproduction, evidence, impact, and any upstream decision required.
 
 An Issue MUST NOT be closed merely because an agent finished running commands.
+
+When the handoff was requested by Independent Review:
+
+- validation PASS does not itself make the parent Task merge-ready;
+- route the parent Task back to `state:review-ready` so Reviewer can close the Review Gate on the correct SHA;
+- if source code changed, Reviewer must re-review the new PR HEAD.
 
 ## 10. Expected final output
 
@@ -195,6 +216,8 @@ Gate states are limited to:
 ```text
 PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 ```
+
+Workflow routing state is separate and follows `state:*` metadata from `GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
 
 ## 11. Bootstrap prompt
 
