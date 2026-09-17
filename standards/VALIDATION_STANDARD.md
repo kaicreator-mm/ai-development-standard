@@ -184,6 +184,8 @@ evidence-only head = <sha>
 
 不得把 working-tree PASS 宣称为未实际执行的 commit SHA PASS。
 
+当 CI/自动化 Validation Evidence 发布到外部 artifact store 时，SHOULD 遵循 `CI_EVIDENCE_STANDARD.md`：immutable run 必须绑定 exact SHA，`validation-summary.json` 必须保留 Validation Tuple 和五状态 Gate 语义；`latest.json` 只能作为 discovery pointer，不能替代 exact-SHA evidence lookup。
+
 ## 8. Blocker Propagation
 
 `BLOCKED` 只沿依赖边传播。
@@ -222,7 +224,36 @@ FAIL/BLOCKED 应尽量记录：
 
 对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact。
 
-## 10. 禁止事项
+外部 Evidence Contract 中的 `completion.json` 只表示 publication COMPLETE。即使 Validation 为 `FAIL/BLOCKED/NOT_RUN`，只要 evidence truthfully 完整发布，仍可以存在 `completion.json`；不得把 publication complete 误写为 Validation PASS。
+
+## 10. CI Evidence Contract
+
+当项目需要让 CI Evidence 可被 ChatGPT、Agent、Release tooling 或其它消费者稳定读取时，使用 [`CI_EVIDENCE_STANDARD.md`](CI_EVIDENCE_STANDARD.md)。
+
+最小职责分离：
+
+```text
+latest.json             = mutable discovery pointer
+manifest.json           = immutable evidence identity root
+validation-summary.json = immutable machine-readable Validation Report
+SHA256SUMS              = immutable integrity inventory
+completion.json         = immutable evidence publication commit marker
+```
+
+推荐 consumer 顺序：
+
+```text
+resolve requested exact SHA
+→ locate matching immutable run
+→ verify completion / identity
+→ read validation-summary
+→ on failure read diagnostic + specific logs
+→ download large artifacts only when required
+```
+
+CI provider UI/status 可以帮助发现 execution run，但不能替代上述 exact-SHA Evidence Contract。
+
+## 11. 禁止事项
 
 - 删除有效测试以消除失败。
 - 将 required gate 改为可选以消除失败。
@@ -233,3 +264,6 @@ FAIL/BLOCKED 应尽量记录：
 - 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL。
 - 把 CI PASS 当成未执行的 Platform/CJ/Hidden/Packaging PASS。
 - 把 cross-build 当成真实 platform PASS。
+- 把 `latest.json` 当成请求 SHA 的权威 Validation Evidence。
+- 把 `completion.json` 当成 Validation PASS。
+- 发布 producer 未 PASS 的 stale build/package artifact 并把它标记为有效。

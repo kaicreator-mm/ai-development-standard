@@ -16,6 +16,8 @@
 
 CI 不再自动作为 Release Qualification 的必要输入。是否为 release-required 由 frozen/project policy 决定。
 
+当 CI evidence 发布到外部 artifact store 时，Release Closeout 可以引用 `CI_EVIDENCE_STANDARD.md` 定义的 immutable run，但仍必须用 candidate exact SHA 交叉检查，而不能只读取 `latest.json`。
+
 ## 2. Candidate
 
 区分：
@@ -111,9 +113,47 @@ Tag 不是 release identity 的必要条件。commit SHA 是 canonical immutable
 - artifact/package identity（只有 frozen authority 要求或项目确实发布 artifact 时）；
 - 重要已知限制。
 
+若引用外部 CI Evidence，SHOULD 记录或可解析到：
+
+```text
+evidence_id
+workflow/profile
+exact tested SHA
+immutable run location
+validation-summary
+completion state
+artifact identity（若 relevant）
+```
+
 若创建 tag/release，还应记录其名称，但不得只写 tag 而省略 commit SHA。
 
-## 8. Version Closure
+## 8. External CI Evidence 与 Release Authority
+
+`CI_EVIDENCE_STANDARD.md` 定义的是 evidence transport / publication contract，不改变 Release Authority。
+
+因此：
+
+- `latest.json` 只是 workflow discovery cache；
+- `completion.json = COMPLETE` 只证明 evidence publication 完成；
+- `validation-summary.profile_state = PASS` 只证明对应 Validation Tuple/profile；
+- artifact 存在不等于 artifact producer gate PASS；
+- CI provider 的 success 状态不能自动替代 Critical Journey、Hidden、real platform/build 或 packaging gate。
+
+Release Qualification 如果消费外部 CI Evidence，至少应：
+
+```text
+resolve candidate exact SHA
+→ locate immutable matching run
+→ require completion COMPLETE
+→ verify evidence_id / tested SHA / tuple
+→ read validation-summary
+→ verify required producer/artifact identity when applicable
+→ aggregate only gates authorized for this release
+```
+
+任何 identity mismatch、incomplete publication 或 stale pointer 都不能被当作 candidate PASS。
+
+## 9. Version Closure
 
 版本级收尾使用 `checklists/version-closure.md`。
 
