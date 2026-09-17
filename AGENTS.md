@@ -17,7 +17,8 @@
    - `standards/TESTING_STANDARD.md`
 6. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
 7. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-8. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+8. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
+9. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -26,6 +27,7 @@
 - GitHub repository state、commit、Issue、PR、Review、Validation Evidence 与 Release identity 是执行事实；聊天记录不是事实源。
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
 - CI 默认最小化：只做低成本、确定性、clean-checkout 的独立复核；不要默认把多平台矩阵、昂贵 E2E、Critical Journey、Hidden Validation 或 packaging 放入 CI。
+- 启用外部 CI Evidence 发布时，immutable run、exact SHA、Validation Tuple、artifact producer/provenance、`completion.json` publication marker 与 concurrency-safe `latest.json` pointer 必须遵守 `CI_EVIDENCE_STANDARD.md`；`latest.json` 只能做 discovery/cache，不能成为 Release Authority。
 - 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
 - PRD Freeze、L1/L2、Task DAG、L3、Candidate、Validation、Closeout 默认是 checkpoint 边界，不要求为每个阶段产物机械创建独立分支。
 - Substantial version SHOULD 使用 Version Branch Mode：Task/Fix 短分支合并到 `version/vX.Y.Z`，最终再由版本分支合并 `main`；小型低风险维护 MAY 使用 trunk/fast path。
