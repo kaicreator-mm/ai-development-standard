@@ -56,6 +56,14 @@ recommended
 not-required
 ```
 
+Portable label mapping when labels are used:
+
+```text
+review:required
+review:recommended
+review:not-required
+```
+
 Rules:
 
 - `required` is a real merge gate and requires PASS on the current merge-candidate SHA.
