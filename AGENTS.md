@@ -9,7 +9,7 @@
    - ChatGPT Web / Builder / Reviewer → `standards/CHATGPT_WEB_ROLE.md`
    - Codex / Build Host / Local Execution Agent → `standards/CODEX_ROLE.md`
 3. 涉及开发生命周期时读取 `standards/DEVELOPMENT_WORKFLOW.md`。
-4. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event、Review Policy 或 Stacked PR 时读取：
+4. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event、Review Policy、Operator Attribution 或 Stacked PR 时读取：
    - `standards/VERSION_INTEGRATION_WORKFLOW.md`
    - `standards/GITHUB_WORKFLOW.md`
    - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
@@ -28,6 +28,11 @@
 ## 硬约束
 
 - GitHub repository state、commit、Issue、Issue Dependency、PR、Review、Validation Evidence 与 Release identity 是执行事实；聊天记录不是事实源。
+- GitHub username/API account 只是 transport identity，不足以区分 ChatGPT Web、Local Agent、CI 或人工的逻辑执行主体。
+- v3.1+ 新 structured Agent events SHOULD 使用 `ai-dev:event:v2`，并记录 `actor_role / operator_kind / operator_id / session_ref / transport_actor`。历史 v1 events 保持有效，不重写历史。
+- `actor_role` 表示流程职责；`operator_id/session_ref` 表示具体 Web 页面、Local Agent 或 run；`transport_actor` 表示向 GitHub 写入的账号/API identity。三者不得混为一谈。
+- 多个 Web/Local contexts 使用同一个 GitHub 账号时，必须通过不同的 `operator_id/session_ref` 保持可审计区分；动态 operator/session identity 不应做成 GitHub label。
+- required Independent Review 可以与 Builder 共用同一个 GitHub transport account，但 Reviewer 的 operator/context 必须与 Builder context 可审计地区分。
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
 - Independent Review **不是所有 Task/Fix PR 的统一 mandatory gate**。每个 Task/PR 应根据权威来源与风险明确 `required / recommended / not-required` Review Policy。
 - `review:required` 时，当前 merge-candidate exact SHA 必须有 Independent Review PASS；`review:recommended` 可执行也可显式 SKIP；`review:not-required` 的 Review Gate 为 `NOT_APPLICABLE`。
@@ -41,13 +46,14 @@
 - Sub-issue 表达 belongs-to hierarchy，不自动等于 blocked-by；Stacked PR 只表达真实未合并 code-baseline dependency，不得替代 Issue Dependency 或被用来镜像整个 Task DAG。
 - Substantial version SHOULD 使用 Version Branch Mode：Task/Fix 短分支合并到 `version/vX.Y.Z`，最终再由版本分支合并 `main`；小型低风险维护 MAY 使用 trunk/fast path。
 - Implementation 默认以 Task / Concern 为短分支边界，并遵循 One concern, one PR。Validation-only Issue 不因为存在 Issue 而自动创建 branch；只有需要源码修改时才创建 task/fix branch。
-- Issue body 是相对稳定的 work contract；metadata 表示当前路由状态；comments SHOULD 作为 append-oriented event log。跨 Agent 关键事件优先使用 `templates/agent-event-comment.md` 的 `ai-dev:event:v1` 格式。
+- Issue body 是相对稳定的 work contract；metadata 表示当前路由状态；comments SHOULD 作为 append-oriented event log。跨 Agent 新关键事件优先使用 `templates/agent-event-comment.md` 的 `ai-dev:event:v2` 格式。
+- `ROLE_CLAIMED/ROLE_RELEASED` 用于记录哪个 logical operator 正在承担某个角色；它们是 attribution/routing facts，不是 Validation PASS，也不是 distributed lock。
 - Workflow `state:*`、Review Policy `review:*` 与 Gate status 不得混淆。Gate 只能使用 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`。
 - Required Gate 的来源必须可追溯。优先级：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults。历史 workflow、旧脚本或 Agent 建议不能自行创建 mandatory release gate。
 - Blocker 只阻塞依赖它的下游节点；其它独立可完成工作必须继续推进并最终统一统计。
 - 不得为了让测试、Validation、Review 或 CI 通过而降低测试强度、删除有效断言、跳过 required gate 或改变冻结需求。
 - Codex / Local Execution Agent 不得在 Handoff 阶段自行重新定义产品需求、领域语义、公共 API、数据语义、安全模型或架构边界。
-- ChatGPT Web 在交接执行 Agent 前必须明确 baseline commit、integration branch、已完成内容、剩余工作、required gates、execution environment、allowed/forbidden changes 与 completion rule。
+- ChatGPT Web 在交接执行 Agent 前必须明确 baseline commit、integration branch、已完成内容、剩余工作、required gates、execution environment、allowed/forbidden changes、source operator attribution 与 completion rule。
 - Local Agent Handoff Issue 必须可由 `repository + issue` 独立执行，不依赖隐藏聊天上下文；任务特定事实属于 Issue，通用执行纪律属于 pinned standard / bootstrap prompt。
 - 项目结构必须表达真实职责；不得为了匹配模板创建无职责模块，也不得把多个无关职责长期堆入 catch-all `common/utils/shared`。
 - README/AGENTS/CLAUDE/docs 不得维护互相冲突的平行事实源。
