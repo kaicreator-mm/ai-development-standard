@@ -30,14 +30,40 @@ When Issue-based execution is enabled:
 
 ## Independent Review Profile
 
-Version Branch Mode default is Independent Review required for every Task/Fix PR before merge to the version branch.
+Independent Review is risk-based by default; it is not universally mandatory for every Task/Fix PR.
 
-- Independent Review required: `<YES | project-authorized narrower exception>`
+Choose the project default profile:
+
+```text
+risk-based
+always
+custom
+```
+
+- Review profile: `<risk-based | always | custom>`
+- Default Task Review Policy under `risk-based`: `<recommended>`
+- `required` triggers: `<security/auth | public API/schema/migration | cross-service contract | concurrency/data integrity | high-risk/release-blocker | project-specific>`
+- `not-required` examples: `<docs-only | mechanical/generated | low-risk local change | project-specific>`
 - Allowed reviewer sources: `<fresh ChatGPT session | human | Codex/Claude reviewer | other>`
-- Exact-SHA re-review policy: `<standard default | stricter rule>`
+- Exact-SHA re-review policy when review is performed: `<standard default | stricter rule>`
 - Review queue metadata override: `<state:review-ready etc. | canonical>`
 
-A project MAY strengthen review rules. A narrower exception must identify its authority and scope; lack of CI, lack of a second human, or convenience alone is not an exception.
+Task/PR policy values are:
+
+```text
+required
+recommended
+not-required
+```
+
+Rules:
+
+- `required` is a real merge gate and requires PASS on the current merge-candidate SHA.
+- `recommended` is optional; if skipped, record the decision/rationale. Review Gate may remain `NOT_RUN` without blocking merge.
+- `not-required` means no Review Gate for that concern; use `NOT_APPLICABLE`.
+- A project MAY strengthen review rules globally or for sensitive paths/concerns.
+- A Task MUST NOT silently downgrade a higher-authority `required` review rule.
+- Review is not a substitute for required Validation.
 
 ## Validation Execution Profile
 
@@ -69,9 +95,11 @@ disabled
 - CI profile: `<minimal | custom | disabled>`
 - CI checks (for `custom`): `<checks>`
 - Disabled reason (for `disabled`): `<reason>`
-- Exact-SHA clean-validation fallback/review policy: `<policy>`
+- Exact-SHA clean-validation fallback: `<policy>`
 
 Default `minimal` CI should remain low-cost and deterministic: project/standard verifier, format/lint/typecheck subset, fast unit/contract smoke, basic build smoke. Do not default full platform matrices, Critical Journeys, Hidden Validation, expensive E2E or packaging into CI.
+
+CI being disabled does not automatically make Independent Review required; Review follows the Review Profile and Task Review Policy.
 
 ## Required Commands
 
@@ -119,4 +147,4 @@ Historical workflows, old scripts or obsolete artifacts do not automatically cre
 
 - `<path or concern → owner/review rule>`
 
-Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, exact-SHA validation/review evidence, frozen product semantics or release claims.
+Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims. When Review is required by project/task authority, its exact-SHA evidence is also mandatory.
