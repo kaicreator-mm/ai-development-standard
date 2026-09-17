@@ -110,7 +110,7 @@ If a source change is required:
 - rerun affected required Validation gates against the resulting exact SHA;
 - apply the parent Task Review Policy to the new PR HEAD:
   - `required` → route to `state:review-ready` for delta/full re-review;
-  - `recommended` → re-review only if the optional review is being continued; otherwise record `REVIEW_POLICY_DECISION` and follow remaining merge prerequisites;
+  - `recommended` → re-review only if the optional review is being continued; otherwise record `REVIEW_DECISION` and follow remaining merge prerequisites;
   - `not-required` → do not manufacture a Review Gate because SHA changed.
 
 Do not create a stacked PR unless the source change truly needs an unmerged upstream code baseline.
