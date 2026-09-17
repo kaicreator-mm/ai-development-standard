@@ -72,7 +72,7 @@ If a source change is required:
 8. publish `FIX_APPLIED` and/or `VALIDATION_RESULT` using the project's `ai-dev:event:v1` format when enabled;
 9. if the PR HEAD changed, route according to the parent Task's Review Policy:
    - `required` → `state:review-ready` for delta/full re-review;
-   - `recommended` → `state:review-ready` only when optional review is being continued, otherwise record `REVIEW_POLICY_DECISION` and follow remaining merge prerequisites;
+   - `recommended` → `state:review-ready` only when optional review is being continued, otherwise record `REVIEW_DECISION` and follow remaining merge prerequisites;
    - `not-required` → do not create a Review Gate solely because HEAD changed.
 
 Do not target `main` when the active project uses Version Branch Mode and the Issue declares a `version/vX.Y.Z` integration branch.
