@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.1.0 — 2026-09-17
+
+新增版本集成分支与通用 Local Agent Handoff，强化多 Task、多 Agent、跨环境验证时的 GitHub 事实链，同时保留小改动的 trunk 快速路径。
+
+- 新增 `standards/VERSION_INTEGRATION_WORKFLOW.md`：大版本默认可采用 `task/fix → version/vX.Y.Z → main`，小型维护继续允许 `task/fix → main`。
+- 明确 PRD Freeze、L1、L2、Task DAG、L3、Candidate、Validation、Closeout 是远端 checkpoint，不要求为了形式分别创建分支；Task/Concern 才是默认独立短分支边界。
+- 明确 Validation Issue 本身不自动创建 branch；只有验证发现需要修改源码时才创建 `task/fix` 分支并 PR 到正确 integration branch，随后针对新 exact SHA 重跑 required gates。
+- 推荐版本使用 GitHub Milestone，Label 表达稳定属性；新增 `type:*`、`handoff:local-agent`、`executor:*`、`gate:*`、`env:*`、`release-blocker`、`blocked:environment` 分类建议。
+- 新增 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`，将 Codex-specific handoff 泛化为 Codex、Claude Code、Build Host Agent 或其它可信 execution agent 共用的 Issue contract。
+- 新增 `templates/local-agent-handoff-issue.md`，补齐 Execution Environment、Validation Profile、Exact Commands、fixtures/services/credential assumptions、completion rule 与 blocker reporting。
+- 新增 `prompts/local-agent-bootstrap.md`，使本地 Agent 只需 `repository + handoff issue` 即可按 pinned standard、baseline SHA、allowed/forbidden changes 和 required gates 初始化并执行。
+- 分支数量本身不作为限制 Task isolation 的理由；成本敏感项目继续通过 Minimal CI 与本地/self-hosted validation 控制 GitHub-hosted CI 消耗，并遵守 repository large-file/artifact hygiene。
+
 ## v2.0.0 — 2026-09-15
 
 基于 FastDev 真实 Pilot 重构执行模型：保留 CI，但默认最小化；将 Validation Evidence 提升为版本判断主链，并形式化 Gate Authority、Validation Tuple 与 blocker propagation。
