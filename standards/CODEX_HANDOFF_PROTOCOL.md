@@ -1,43 +1,83 @@
 # Codex Handoff Protocol
 
-## 1. 为什么用 Issue
+## 1. Status
 
-Codex Handoff 是一次性的 Work Item，因此使用 GitHub Issue；长期执行规则留在标准仓库；代码变化使用 PR。不要为每次交接往业务项目 `docs/` 增加过程性 Markdown。
+This file is the Codex-specific compatibility entry for the generic Local Agent Handoff model introduced in v2.1.
 
-## 2. Issue 命名
+New handoffs SHOULD follow:
 
-推荐：
+- `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`
+- `templates/local-agent-handoff-issue.md`
+- `prompts/local-agent-bootstrap.md`
 
-`[<version-or-task>] Codex Handoff — <validation/fix scope>`
+Codex remains a supported executor, but the task contract MUST NOT depend on Codex-specific chat context.
 
-建议 label：`codex-handoff`、`validation`，需要完整 Build Host 时增加 `needs-build-host`，阻塞发布时增加 `release-blocker`。
+## 2. Codex-specific labels
 
-## 3. 必填字段
+For a Codex execution/validation issue, recommended labels include:
 
-- Standard Version
+```text
+type:validation
+handoff:local-agent
+executor:codex
+```
+
+Add gate/environment/release-impact labels as required, for example:
+
+```text
+gate:integration
+gate:platform
+gate:hidden
+env:ubuntu-build-host
+env:windows
+env:macos
+env:gpu
+release-blocker
+blocked:environment
+```
+
+Use a version Milestone such as `vX.Y.Z` when supported by the repository.
+
+## 3. Required contract
+
+A Codex handoff MUST satisfy every required field of `LOCAL_AGENT_HANDOFF_PROTOCOL.md`, including:
+
+- Standard Version + immutable revision
 - Repository
-- Branch
+- integration/target branch
 - Baseline Commit
 - Scope / Task IDs
-- Web Completed
-- Web Validation
+- Frozen Inputs
+- Web Completed / Existing Validation
 - Remaining Work
-- Required Gates
-- Allowed Changes
-- Forbidden Changes
+- Required Gates / Validation Tuples
+- Execution Environment
+- Validation Profile
+- Exact Commands / canonical project entrypoints
+- Allowed / Forbidden Changes
 - Expected Output
+- Completion Rule
+- Failure / Blocker Reporting Rule
 
-## 4. Baseline 规则
+## 4. Baseline rule
 
-必须使用完整或足够唯一的 commit SHA。Codex不得以未经确认的更晚 commit 替换 baseline。如果 branch 已前进，应先判断新 commit 是否属于同一任务，并记录实际执行基线。
+Codex MUST use the Issue's exact baseline commit and pinned standard revision. It MUST NOT silently replace the baseline with a newer branch HEAD.
 
-## 5. 完成条件
+If source changes are required, Codex creates or uses the declared task/fix branch and targets the correct integration branch. In Version Branch Mode this is normally `version/vX.Y.Z`, not `main`.
 
-Handoff 只有在以下之一发生时结束：
+## 5. Validation-only rule
 
-- 所有 required gates PASS，PR/commit 与 Validation Report 已关联。
-- 明确 BLOCKED，并提供复现、根因、影响范围和需要 Web 决策的问题。
+A validation-only Codex handoff does not require a branch.
 
-## 6. Issue 与 PR
+If validation passes without source changes, record exact-SHA evidence and update/close the Issue according to its completion rule.
 
-PR 应包含 `Closes #<handoff-issue>` 或明确关联。若 PR 尚不能关闭 Issue，可使用 `Refs #<issue>`，直到最终验证完成。
+If validation finds a defect requiring code changes, create a task/fix branch, produce the PR, and rerun affected required gates against the resulting exact SHA.
+
+## 6. Completion
+
+The handoff ends only when:
+
+- all required gates PASS and commit/PR + Validation Report are linked; or
+- the remaining path is explicitly FAIL/BLOCKED with reproduction, evidence, impact and any upstream decision required.
+
+A finished command run is not by itself a completed Handoff.

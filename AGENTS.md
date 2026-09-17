@@ -2,21 +2,22 @@
 
 本仓库是 `AI Development Standard` 的权威规范源。
 
-所有参与本仓库或引用本仓库的 AI Agent（包括 ChatGPT Web、Codex 及其它 coding/execution agent）必须遵守以下读取顺序：
+所有参与本仓库或引用本仓库的 AI Agent（包括 ChatGPT Web、Codex、Claude Code 及其它 coding/execution agent）必须遵守以下读取顺序：
 
 1. 先读取 `VERSION` 与本文件。
 2. 根据当前角色读取：
    - ChatGPT Web → `standards/CHATGPT_WEB_ROLE.md`
-   - Codex / Build Host Execution → `standards/CODEX_ROLE.md`
+   - Codex / Build Host / Local Execution Agent → `standards/CODEX_ROLE.md`
 3. 涉及开发生命周期时读取 `standards/DEVELOPMENT_WORKFLOW.md`。
-4. 涉及 repository/project 组织时按需读取：
+4. 涉及版本分支、Task 分支、集成方式时读取 `standards/VERSION_INTEGRATION_WORKFLOW.md` 与 `standards/GITHUB_WORKFLOW.md`。
+5. 涉及 repository/project 组织时按需读取：
    - `standards/REPOSITORY_STANDARD.md`
    - `standards/PROJECT_STRUCTURE.md`
    - `standards/DOCUMENTATION_STANDARD.md`
    - `standards/TESTING_STANDARD.md`
-5. 涉及 ChatGPT → Codex 交接时读取 `standards/CODEX_HANDOFF_PROTOCOL.md`。
-6. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-7. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+6. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
+7. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
+8. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -26,11 +27,15 @@
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
 - CI 默认最小化：只做低成本、确定性、clean-checkout 的独立复核；不要默认把多平台矩阵、昂贵 E2E、Critical Journey、Hidden Validation 或 packaging 放入 CI。
 - 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
+- PRD Freeze、L1/L2、Task DAG、L3、Candidate、Validation、Closeout 默认是 checkpoint 边界，不要求为每个阶段产物机械创建独立分支。
+- Substantial version SHOULD 使用 Version Branch Mode：Task/Fix 短分支合并到 `version/vX.Y.Z`，最终再由版本分支合并 `main`；小型低风险维护 MAY 使用 trunk/fast path。
+- Implementation 默认以 Task / Concern 为短分支边界，并遵循 One concern, one PR。Validation-only Issue 不因为存在 Issue 而自动创建 branch；只有需要源码修改时才创建 task/fix branch。
 - Required Gate 的来源必须可追溯。优先级：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults。历史 workflow、旧脚本或 Agent 建议不能自行创建 mandatory release gate。
 - Blocker 只阻塞依赖它的下游节点；其它独立可完成工作必须继续推进并最终统一统计。
 - 不得为了让测试、Validation 或 CI 通过而降低测试强度、删除有效断言、跳过 required gate 或改变冻结需求。
-- Codex / Execution Agent 不得在 Handoff 阶段自行重新定义产品需求、领域语义、公共 API、数据语义、安全模型或架构边界。
-- ChatGPT Web 在交接执行 Agent 前必须明确 baseline commit、已完成内容、剩余工作、required gates、allowed/forbidden changes。
+- Codex / Local Execution Agent 不得在 Handoff 阶段自行重新定义产品需求、领域语义、公共 API、数据语义、安全模型或架构边界。
+- ChatGPT Web 在交接执行 Agent 前必须明确 baseline commit、integration branch、已完成内容、剩余工作、required gates、execution environment、allowed/forbidden changes 与 completion rule。
+- Local Agent Handoff Issue 必须可由 `repository + issue` 独立执行，不依赖隐藏聊天上下文；任务特定事实属于 Issue，通用执行纪律属于 pinned standard / bootstrap prompt。
 - 项目结构必须表达真实职责；不得为了匹配模板创建无职责模块，也不得把多个无关职责长期堆入 catch-all `common/utils/shared`。
 - README/AGENTS/CLAUDE/docs 不得维护互相冲突的平行事实源。
 - PR 局部 PASS 不得被解释为版本 Release PASS；Version Closure 必须在 integrated candidate/baseline 上完成 required release gates。
