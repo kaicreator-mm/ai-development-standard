@@ -2,27 +2,32 @@
 
 ## 1. Purpose
 
-This protocol defines GitHub-native coordination between Builder, optional Independent Reviewer, Validator / Local Agent and merge/release control roles.
+This protocol defines GitHub-native coordination between Planner, Builder, optional Independent Reviewer, Validator / Local Agent, merge control and release control.
 
-The objective is that multiple sessions or agents can collaborate without exchanging hidden chat context. GitHub carries the durable contract, routing metadata, event history, code change and exact identities.
+The objective is that multiple sessions or agents can collaborate without exchanging hidden chat context. GitHub carries the durable contract, routing metadata, event history, code change, exact identities and logical operator attribution.
 
 Canonical responsibility model:
 
 ```text
-Issue body       = stable work contract
-Issue metadata   = routing and current workflow state
-Issue dependency = canonical execution dependency graph
-Comments         = append-oriented agent event log
-Branch           = isolated implementation concern
-PR               = reviewable/mergeable code change
-Stacked PR       = optional unmerged code-baseline dependency
-Commit SHA       = exact change / execution identity
-Milestone        = version/release aggregation
-Validation       = exact-SHA execution evidence
-Review           = optional or required exact-SHA independent analysis according to Review Policy
+Issue body        = stable work contract
+Issue metadata    = routing and current workflow state
+Issue dependency  = canonical execution dependency graph
+Comments          = append-oriented Agent event log
+Actor role        = responsibility performed by an event
+Logical operator  = concrete Web session / Local Agent / automation / human that performed it
+Transport actor   = GitHub account/API identity that wrote the event
+Branch            = isolated implementation concern
+PR                = reviewable/mergeable code change
+Stacked PR        = optional unmerged code-baseline dependency
+Commit SHA        = exact change / execution identity
+Milestone         = version/release aggregation
+Validation        = exact-SHA execution evidence
+Review            = optional or required exact-SHA independent analysis according to Review Policy
 ```
 
 Chat is a workspace. It is not the coordination source of truth.
+
+A GitHub username is **not** sufficient Agent identity when several Web sessions, local agents or automations use the same account.
 
 ## 2. Three dependency layers
 
@@ -119,7 +124,9 @@ Forbidden changes
 Expected outputs
 ```
 
-Do not use repeated body rewrites as an event log. State changes, review decisions/results, fixes and validation results belong in metadata/comments.
+Do not use repeated body rewrites as an event log. State changes, operator claims, review decisions/results, fixes and validation results belong in metadata/comments.
+
+Current logical ownership SHOULD be recovered from structured events such as `ROLE_CLAIMED`, not by rewriting the stable Issue body.
 
 ## 5. Metadata model
 
@@ -194,7 +201,7 @@ Semantics:
 - `recommended`: Review is useful but optional. It MAY be skipped with an explicit decision/rationale. Review Gate may remain `NOT_RUN` without blocking merge.
 - `not-required`: no Independent Review Gate exists for this concern; use `NOT_APPLICABLE`.
 
-Review policy and Review result are different dimensions. Do not encode `required/recommended/not-required` using Gate states.
+Review Policy and Review result are different dimensions. Do not encode `required/recommended/not-required` using Gate states.
 
 ### 5.5 Routing / execution dimensions
 
@@ -223,6 +230,79 @@ blocked:environment
 ```
 
 Projects MAY map stable dimensions to Organization custom Issue Fields where available. The protocol semantics MUST NOT depend on a specific GitHub UI feature; labels remain the portable baseline.
+
+`executor:*` is a routing/capability hint. It does not prove which concrete session or process actually performed an event.
+
+### 5.6 Actor role and logical operator identity
+
+Every new structured Agent event under standard v3.1+ SHOULD identify both the **role** and the **logical operator**.
+
+Role vocabulary:
+
+```text
+planner
+builder
+reviewer
+validator
+merge-controller
+release-controller
+```
+
+Operator vocabulary:
+
+```text
+operator_kind: chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other
+operator_id: <logical executor instance>
+session_ref: <opaque page/conversation/process/run alias>
+transport_actor: <GitHub/API identity that wrote the event>
+```
+
+Semantics:
+
+- `actor_role` says **what responsibility** was performed.
+- `operator_kind` says **which execution surface/system** performed it.
+- `operator_id` identifies the logical executor context and SHOULD remain stable for that Web session, local worker or automation identity.
+- `session_ref` identifies the concrete page/conversation/process/run when useful. It SHOULD be present when multiple concurrent sessions of the same kind exist.
+- `transport_actor` identifies the account/API identity that physically wrote to GitHub. It is transport metadata, not logical authorship.
+
+Recommended examples:
+
+```text
+chatgpt-web:web-a
+chatgpt-web:web-b
+codex:ubuntu-build-01
+claude-code:windows-01
+woodpecker:runner-01
+github-actions:verify-standard
+human:owner
+```
+
+For two ChatGPT Web pages sharing one GitHub account:
+
+```text
+Builder page:
+  actor_role=builder
+  operator_id=chatgpt-web:web-a
+  session_ref=domainharness-builder-a
+  transport_actor=github:kaicreator-mm
+
+Reviewer page:
+  actor_role=reviewer
+  operator_id=chatgpt-web:web-b
+  session_ref=domainharness-reviewer-b
+  transport_actor=github:kaicreator-mm
+```
+
+Identity rules:
+
+- `operator_id` need only be unique enough within the repository/version execution window; global identity infrastructure is not required.
+- A new ChatGPT page/session SHOULD receive a new `session_ref`; it MAY keep a stable human-friendly `operator_id` if the project intentionally treats it as the same long-lived logical worker.
+- Never store tokens, cookies, signed URLs, credentials or secrets in identity fields.
+- Dynamic `operator_id/session_ref` SHOULD NOT become GitHub labels; otherwise every session would create label churn. Use structured events instead.
+- The same operator MAY perform different roles on different work items.
+- The same role MAY be performed by different operators over time.
+
+For required Independent Review, the Reviewer MUST be attributable to a context independent from the Builder context. The same `transport_actor` is allowed, but `operator_id/session_ref` must make the separation auditable.
 
 ## 6. Review Policy selection
 
@@ -284,7 +364,11 @@ For `recommended` review that is skipped, record a concise decision/rationale us
 
 ## 7. Agent roles and queues
 
-### 7.1 Builder
+### 7.1 Planner
+
+Planner creates/finalizes planning facts, Task Issues, Issue Dependencies and initial Review Policy. Planning events SHOULD identify their logical operator when written through a shared GitHub account.
+
+### 7.2 Builder
 
 Builder consumes primarily:
 
@@ -304,7 +388,9 @@ Builder responsibilities:
 - when no review is required/performed and all other merge requirements are satisfied, transition directly to `state:merge-ready`;
 - continue other independent Tasks instead of waiting for Reviewer when the execution DAG allows it.
 
-### 7.2 Independent Reviewer
+For long-running or concurrent work, Builder SHOULD publish `ROLE_CLAIMED` with its operator attribution before substantial modification.
+
+### 7.3 Independent Reviewer
 
 Reviewer is invoked only for Tasks whose Review Policy/decision selects review.
 
@@ -316,6 +402,7 @@ state:review-ready
 
 Reviewer responsibilities:
 
+- publish its own independent operator attribution / role claim;
 - reconstruct context from GitHub and pinned standard, not Builder chat history;
 - review the PR against frozen scope, architecture, Task acceptance, tests and evidence;
 - bind the review result to exact PR HEAD SHA;
@@ -323,7 +410,7 @@ Reviewer responsibilities:
 
 A long-lived Reviewer session MAY process many PRs, but every review must re-read current GitHub facts and must not rely on trust accumulated from earlier tasks.
 
-### 7.3 Validator / Local Agent
+### 7.4 Validator / Local Agent
 
 Validator consumes primarily:
 
@@ -335,7 +422,9 @@ or dedicated validation sub-issues with appropriate `gate:*`, `env:*` and `hando
 
 Validator executes real environment gates and publishes exact-SHA Validation Evidence. Validation-only work does not require a branch. A source fix requires a separate task/fix branch and revalidation.
 
-### 7.4 Merge control
+Local validation events MUST distinguish the logical local operator from the GitHub account used to post evidence.
+
+### 7.5 Merge control
 
 A Task/Fix PR may become mergeable only after its declared merge policy is satisfied.
 
@@ -362,6 +451,8 @@ review:not-required → Review Gate NOT_APPLICABLE
 
 Merge then targets `version/vX.Y.Z`, `main`, or the correct temporary stack parent according to integration mode/topology.
 
+`MERGE_RESULT` SHOULD include the merge-controller's operator attribution.
+
 ## 8. Independent Review execution rules
 
 These rules apply whenever Independent Review is performed, and are mandatory when Review Policy is `required`.
@@ -378,6 +469,8 @@ Acceptable independent review sources include:
 - the same model in a fresh context that reconstructs facts from GitHub.
 
 Different model or machine is optional. Independent context and evidence reconstruction are the important properties.
+
+With v2 Agent events, independence SHOULD be auditable from `operator_id/session_ref`. A shared `transport_actor` does not invalidate independence.
 
 ### 8.2 Exact-SHA binding
 
@@ -418,28 +511,44 @@ When a conclusion requires real execution that the reviewer cannot perform, do n
 
 Agent-to-agent coordination comments SHOULD include a machine-readable marker and YAML payload, followed by optional human-readable Markdown.
 
-Marker:
+### 9.1 Event v2 — current schema
+
+New events under v3.1+ SHOULD use:
 
 ```html
-<!-- ai-dev:event:v1 -->
+<!-- ai-dev:event:v2 -->
 ```
 
 Base shape:
 
 ```yaml
-schema: ai-dev/event-v1
+schema: ai-dev/event-v2
 event: <EVENT_TYPE>
-actor_role: builder | reviewer | validator | merge-controller
-task: "#123"
-pr: "#456"        # when applicable
-sha: "<40-char-sha>"
+actor_role: planner | builder | reviewer | validator | merge-controller | release-controller
+operator_kind: chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other
+operator_id: "<logical operator id>"
+session_ref: "<opaque page/conversation/process/run alias>" # strongly recommended for concurrent sessions
+transport_actor: "github:<account>"                         # recommended for shared GitHub accounts
+task: "#123"                                                # when applicable
+pr: "#456"                                                  # when applicable
+sha: "<40-char-sha>"                                        # when applicable
 status: PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE
 next_state: <state label without state: prefix, when applicable>
 ```
 
-Recommended event types:
+Event-specific fields MAY be added, but existing field semantics MUST NOT be silently redefined.
+
+### 9.2 Event v1 compatibility
+
+Historical `<!-- ai-dev:event:v1 -->` / `schema: ai-dev/event-v1` events remain valid evidence. Do not rewrite history only to add attribution.
+
+When a v1 event lacks operator identity, its GitHub author MAY be used only as transport provenance; do not infer which ChatGPT/local context produced it.
+
+### 9.3 Recommended event types
 
 ```text
+ROLE_CLAIMED
+ROLE_RELEASED
 TASK_CLAIMED
 IMPLEMENTATION_READY
 REVIEW_DECISION
@@ -452,15 +561,21 @@ DEPENDENCY_CHANGED
 MERGE_RESULT
 ```
 
-`REVIEW_DECISION` MAY record `required/recommended/not-required`, or `recommended + SKIP/PERFORM`, without pretending that the policy/decision itself is a Gate PASS.
+`TASK_CLAIMED` remains a Builder-specific compatibility event. New cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
-Event-specific fields MAY be added, but existing field semantics MUST NOT be silently redefined.
+`ROLE_CLAIMED` means a logical operator has started acting in a workflow role. `ROLE_RELEASED` records intentional handoff/abandonment before the normal result event. Neither event is a Validation/Review PASS.
+
+A role claim is attribution/routing evidence, not a distributed lock. If the project needs exclusive ownership, it must define that separately.
+
+`REVIEW_DECISION` MAY record `required/recommended/not-required`, or `recommended + SKIP/PERFORM`, without pretending that the policy/decision itself is a Gate PASS.
 
 Comments are append-oriented history. If an event is materially wrong, publish a corrective event referencing the superseded comment/event rather than silently rewriting important history.
 
+The canonical concrete examples live in `templates/agent-event-comment.md`.
+
 ## 10. Canonical state flow
 
-Review is now an optional branch in the Task workflow:
+Review is an optional branch in the Task workflow:
 
 ```text
 planned
@@ -489,22 +604,27 @@ implementation ready
 
 An unresolved Issue dependency normally prevents `state:merge-ready`, but MAY NOT prevent implementation from beginning when the upstream branch exposes a stable code baseline and the frozen Task contract permits early/stacked work.
 
+`ROLE_CLAIMED/ROLE_RELEASED` annotate **who** is working; they do not create new workflow states.
+
 ## 11. Builder / Reviewer pipeline
 
 A and B may operate continuously when review work exists:
 
 ```text
-Builder A                         Reviewer B
+Builder A                               Reviewer B
+operator=chatgpt-web:web-a             operator=chatgpt-web:web-b
 T01 implementation
   ↓
-PR #101 + review-ready ─────────→ review #101
-T02 implementation                ↓
-  ↓                              PASS / findings
+PR #101 + review-ready ───────────────→ review #101
+T02 implementation                      ↓
+  ↓                                    PASS / findings
 PR #102 (review skipped) → merge-ready
 T03 implementation
   ↓
-PR #103 + review-ready ─────────→ review #103
+PR #103 + review-ready ───────────────→ review #103
 ```
+
+Both sessions may post through the same `transport_actor=github:<account>` while remaining distinguishable by `operator_id/session_ref`.
 
 Builder SHOULD NOT wait idle for Reviewer if independent executable work exists.
 
@@ -527,6 +647,8 @@ Use dependency when the validation result truly blocks another work item/candida
 
 The validation issue records exact target SHA, environment/profile, commands, expected result and completion rule according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and `VALIDATION_STANDARD.md`.
 
+Validation evidence SHOULD include v2 operator attribution so a fresh session can distinguish Web-requested validation from the concrete Local Agent/run that executed it.
+
 ## 13. Execution DAG materialization
 
 After Task DAG freeze:
@@ -543,6 +665,8 @@ materialize Issue Dependencies
 apply initial workflow states
         ↓
 Builder / optional Reviewer / Validator queues
+        ↓
+ROLE_CLAIMED + operator attribution when work begins
         ↓
 Task Branch / PR
 ```
@@ -565,6 +689,8 @@ Before merging a Task/Fix PR, verify:
 - configured required CI is PASS when applicable;
 - no unresolved release-significant blocker/finding/thread remains.
 
+Where v2 events are used, merge/release evidence SHOULD identify the logical operator responsible for the decision/result.
+
 If a stacked PR is retargeted/rebased after its parent merges, repeat affected **required** review/validation against the new exact SHA before merge.
 
 ## 15. Recovery rule
@@ -578,6 +704,16 @@ repository
 + Issue dependencies/metadata
 + linked PR
 + exact-SHA evidence/comments
++ actor role / logical operator attribution
+```
+
+It SHOULD be able to answer from GitHub facts:
+
+```text
+who planned/claimed/implemented/reviewed/validated/merged?
+which ChatGPT Web page/session or Local Agent/run did it?
+which GitHub account transported the event?
+which exact SHA did the result apply to?
 ```
 
 It SHOULD NOT require private reasoning or a previous chat transcript.
