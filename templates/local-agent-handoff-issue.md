@@ -12,6 +12,7 @@ Read the business project's `.dev-standard/VERSION` and use exactly that immutab
 - Repository: `<owner/repo>`
 - Version milestone: `<vX.Y.Z or NOT_APPLICABLE>`
 - Parent Task Issue: `<#issue or NOT_APPLICABLE>`
+- Parent Task Review Policy: `<required | recommended | not-required | NOT_APPLICABLE>`
 - Source Review / PR: `<#pr / review event / NOT_APPLICABLE>`
 - Integration mode: `<version-branch | trunk-fast-path>`
 - Integration / target branch: `<version/vX.Y.Z | main | stack parent | other>`
@@ -106,8 +107,11 @@ If a source change is required:
 - create a dedicated `task/...` or `fix/<version>-<issue>-<scope>` branch;
 - target `<integration / target branch>` or the justified stack parent;
 - reference this Issue and parent Task from the PR;
-- rerun affected required gates against the resulting exact SHA;
-- if a previously reviewed PR HEAD changes, route the parent Task back to `state:review-ready` for delta/full re-review.
+- rerun affected required Validation gates against the resulting exact SHA;
+- apply the parent Task Review Policy to the new PR HEAD:
+  - `required` → route to `state:review-ready` for delta/full re-review;
+  - `recommended` → re-review only if the optional review is being continued; otherwise record `REVIEW_POLICY_DECISION` and follow remaining merge prerequisites;
+  - `not-required` → do not manufacture a Review Gate because SHA changed.
 
 Do not create a stacked PR unless the source change truly needs an unmerged upstream code baseline.
 
@@ -135,9 +139,9 @@ Do not close the Issue merely because execution stopped.
 If this handoff was requested by Independent Review and validation PASS:
 
 - publish `VALIDATION_RESULT`;
-- route the parent Task back to `state:review-ready`;
-- Reviewer closes the Review Gate on the correct exact SHA;
-- do not route directly to `state:merge-ready` solely because local validation passed.
+- route the parent Task back to `state:review-ready` only when Review Policy is `required` or a `recommended` Review is actively being continued;
+- otherwise route according to remaining required gates and merge prerequisites;
+- do not route directly to `state:merge-ready` solely because local validation passed unless all other required merge conditions are also satisfied.
 
 ## Failure / Blocker Reporting Rule
 
