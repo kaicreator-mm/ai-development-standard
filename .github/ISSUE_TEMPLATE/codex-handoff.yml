@@ -1,35 +1,46 @@
-name: Codex Handoff
-description: Hand off remaining environment validation/fixes from ChatGPT Web to Codex.
+name: Codex Handoff (Legacy Compatibility)
+description: Hand off bounded validation/fix work to Codex. New projects should prefer the generic Local Agent Handoff contract.
 title: "[Handoff] "
 labels:
   - codex-handoff
   - validation
 body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a Codex-specific compatibility form. Follow the pinned standard's LOCAL_AGENT_HANDOFF_PROTOCOL and GITHUB_AGENT_INTERACTION_PROTOCOL. Task dependencies belong in GitHub Issue Dependencies; this Issue is not a Task-DAG substitute.
   - type: input
     id: standard
     attributes:
       label: Development Standard
-      value: kaicreator-mm/ai-development-standard@v1.0.0
+      value: kaicreator-mm/ai-development-standard@v2.3.0 + immutable revision
+    validations:
+      required: true
+  - type: input
+    id: parent_task
+    attributes:
+      label: Parent Task / Review Source
+      placeholder: "#31 / PR #42 / NOT_APPLICABLE"
     validations:
       required: true
   - type: input
     id: baseline
     attributes:
-      label: Repository / branch / baseline commit
-      placeholder: owner/repo | branch | full SHA
+      label: Repository / integration branch / baseline commit
+      placeholder: owner/repo | version/vX.Y.Z | full SHA
     validations:
       required: true
   - type: textarea
     id: completed
     attributes:
-      label: Web Completed
+      label: Web / Reviewer Completed
     validations:
       required: true
   - type: textarea
     id: web_validation
     attributes:
-      label: Web Validation
-      description: PASS/FAIL/NOT_RUN/NOT_APPLICABLE/BLOCKED with evidence.
+      label: Existing Validation / Review Evidence
+      description: PASS/FAIL/NOT_RUN/NOT_APPLICABLE/BLOCKED with exact SHA and evidence.
     validations:
       required: true
   - type: textarea
@@ -41,7 +52,14 @@ body:
   - type: textarea
     id: gates
     attributes:
-      label: Required Gates
+      label: Required Gates / Validation Tuples
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Execution Environment / Exact Commands
+      placeholder: platform, runtime/toolchain, validation profile, commands, fixtures/services
     validations:
       required: true
   - type: textarea
@@ -49,14 +67,14 @@ body:
     attributes:
       label: Allowed / Forbidden Changes
       value: |
-        Allowed: implementation/build/platform/CI fixes within frozen scope.
-        Forbidden: PRD, product/domain semantics, public contract, security model, architecture boundary, weakening tests.
+        Allowed: implementation/build/platform fixes within frozen scope as authorized by the Issue.
+        Forbidden: PRD, product/domain semantics, public contract, security model, architecture boundary, weakening tests/gates.
     validations:
       required: true
   - type: textarea
     id: output
     attributes:
-      label: Expected Output
-      value: Final commit/PR, standard Validation Report, GitHub CI status, or explicit BLOCKED evidence.
+      label: Expected Output / Completion Rule
+      value: Final commit/PR when changed, exact-SHA Validation Report, ai-dev:event:v1 result when enabled, or explicit FAIL/BLOCKED evidence. If source HEAD changes, route the parent Task back to review-ready.
     validations:
       required: true
