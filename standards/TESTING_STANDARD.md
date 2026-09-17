@@ -104,7 +104,7 @@ Snapshot/golden test 适合复杂结构化输出，但必须可审查。大面�
 
 当 PRD/Architecture 声明性能、容量、安全或可靠性目标时，必须有相应可执行验证或清晰的人工 gate。不要在没有目标值和基线时把“性能测试”变成无结论 benchmark。
 
-## 12. CI 分层
+## 12. CI 分层与 Validation Profile
 
 与 `VALIDATION_STANDARD.md` 对齐：
 
@@ -114,10 +114,45 @@ Snapshot/golden test 适合复杂结构化输出，但必须可审查。大面�
 
 PR PASS 不等于 Release PASS。
 
-## 13. 禁止事项
+CI profile SHOULD 选择与其真实 execution environment 相容的 tests。不要为了“一个命令覆盖全部”把不同 Validation Tuple 混成粗粒度 `npm test` / `pytest` / equivalent aggregate，然后把 Windows-only、GPU-only、visual/golden、packaged-runtime、real-device 等不兼容失败压成一个低信息 FAIL。
+
+推荐：
+
+```text
+CI profile
+→ deterministic / environment-compatible focused checks
+
+separate platform tuple
+→ platform-specific tests
+
+separate visual/golden tuple
+→ pinned rendering/runtime/font environment
+
+Version Closure
+→ Critical Journey / Hidden / Packaging / other release gates
+```
+
+如果 full repository suite 本身跨越多个 tuple，项目 SHOULD 将其拆成可审计 profiles，并明确每个 profile 的 scope/exclusions。拆分 profile 不得删除 required test；它只是把 test 放回正确的执行环境和 Gate。
+
+当 CI evidence 发布到外部 store 时，test/check result、log/report path 和 profile scope SHOULD 按 `CI_EVIDENCE_STANDARD.md` 结构化发布，以便消费者先读 summary/diagnostic，再按需读取完整日志或大 artifact。
+
+## 13. CI Evidence 性能原则
+
+自动化测试 Evidence SHOULD 优先减少远端读取和存储开销：
+
+- 失败摘要/diagnostic 与完整日志分离；
+- structured environment metadata 优于大量微小 text files；
+- PASS 可以保留 compact evidence，FAIL 可以保留更丰富诊断；
+- 大型 build/package artifact 只由实际 owning profile 发布；
+- 未 PASS 的 producer 不得把历史/stale workspace artifact 当成有效测试产物。
+
+这些性能优化不能降低 required test coverage 或 Gate authority。
+
+## 14. 禁止事项
 
 - 为让 CI 通过删除有效测试/断言。
 - 将 required test 标记 skip/xpass 而没有批准的原因。
 - 测试实现细节到使正常重构无法进行，而没有 contract 价值。
 - 依赖共享开发环境中的残留数据。
 - 把没有执行的测试写成 PASS。
+- 通过缩小 CI profile 来隐瞒本应属于该 profile 的 required test。
