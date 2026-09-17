@@ -6,6 +6,8 @@ This standard defines how substantial version work is integrated through GitHub 
 
 The goal is to keep GitHub as the recoverable execution memory without creating branches for every drafting step.
 
+For GitHub-native multi-agent routing, Issue state/events, canonical execution dependencies and independent review, also read `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
+
 ## 2. Two supported integration modes
 
 ### A. Version Branch Mode
@@ -34,7 +36,9 @@ main
              main
 ```
 
-Task/fix PRs target the version branch. The final version PR targets `main`.
+Task/fix PRs target the version branch by default. The final version PR targets `main`.
+
+A Task/Fix PR MUST pass its required task-level validation and Independent Review Gate before merge to the version branch, plus configured required CI when applicable.
 
 ### B. Trunk / Fast Path
 
@@ -48,6 +52,8 @@ main
 ```
 
 Bug fixes, small documentation changes, and narrow maintenance work MAY use this mode if frozen scope and release policy allow it.
+
+Independent Review SHOULD follow project risk/policy; disabling CI does not remove required review/validation paths.
 
 ## 3. Stage artifacts: checkpoint, not branch by default
 
@@ -70,7 +76,27 @@ version/vX.Y.Z
 
 A temporary evidence/docs branch MAY be used when the artifact is produced independently or in parallel and needs isolated review.
 
-## 4. Implementation task branches
+## 4. Planning DAG and execution DAG
+
+Task DAG has two related representations after freeze:
+
+```text
+Planning DAG checkpoint
+= decomposition rationale, inputs/outputs, acceptance, risk, parallelism
+
+Execution DAG
+= GitHub Task Issues + native Issue Dependencies
+```
+
+GitHub Issue Dependencies are the canonical live Task DAG during execution.
+
+Do not create a dedicated Task-DAG branch merely to represent dependencies.
+
+Sub-issues represent belongs-to hierarchy and MUST NOT be treated as implicit dependency edges.
+
+The planning checkpoint and execution DAG MUST remain traceable. Material dependency changes SHOULD record rationale/event history.
+
+## 5. Implementation task branches
 
 Implementation uses Task / Concern as the default branch boundary.
 
@@ -87,14 +113,68 @@ docs/vX.Y.Z-<scope>
 Rules:
 
 - One concern, one PR.
-- A task branch starts from the current intended integration baseline.
+- A task branch starts from the current intended integration baseline or a justified stack parent.
 - A task must state its upstream checkpoint / baseline SHA.
 - A task must complete its required task-level validation before merge unless explicitly blocked by a downstream-only environment gate.
-- In Version Branch Mode, task PRs merge to the version branch, not directly to `main`.
+- In Version Branch Mode, task PRs merge to the version branch unless they are temporarily based on a justified stack parent.
 - Independent task branches MAY run in parallel when the Task DAG permits it.
 - Finished short-lived branches SHOULD be deleted after merge unless retention has a documented purpose.
 
-## 5. Validation issues do not automatically create branches
+## 6. Stacked PR is optional code-baseline dependency
+
+Stacked PR does not replace Issue Dependency.
+
+Use it only when a Task must build on another unmerged Task branch:
+
+```text
+version/vX.Y.Z
+  ↑
+task/T01-contract
+  ↑
+task/T02-core
+```
+
+Corresponding PR topology:
+
+```text
+T01 → version/vX.Y.Z
+T02 → task/T01-contract
+```
+
+Rules:
+
+- Do not mirror the whole Task DAG as a stack when code can branch independently.
+- Issue Dependency remains the canonical execution relationship.
+- Stacked PR only captures the current unmerged Git/code baseline relationship.
+- When an upstream stack PR merges, downstream PRs SHOULD be rebased/retargeted to the correct remaining parent or version branch.
+- Rebase/retarget SHA changes invalidate SHA-bound review/validation evidence as applicable; re-run affected gates.
+- A branch has one direct base while a Task DAG can fork/join, so PR stack topology is not a general DAG representation.
+
+## 7. Independent Review before integration
+
+In Version Branch Mode, every Task/Fix PR MUST receive an Independent Review before merge to `version/vX.Y.Z`, unless an explicit higher-authority project rule defines a narrower exception.
+
+Review requirements:
+
+- reviewer reconstructs facts from GitHub + pinned standard;
+- final reviewer context is independent from the implementation context;
+- Review Result is bound to exact PR HEAD SHA;
+- if HEAD changes, old PASS remains historical only and delta/full re-review is required;
+- reviewer may request real Local Validation instead of guessing about runtime/platform behavior.
+
+Recommended continuous pipeline:
+
+```text
+Builder A                    Reviewer B
+Task T01 → PR review-ready → review
+Task T02 implementation      PASS/findings
+Task T02 → PR review-ready → review
+Task T03 implementation      ...
+```
+
+Builder need not wait idle for review when independent work exists. Reviewer should continue other independent review work when one PR fails.
+
+## 8. Validation issues do not automatically create branches
 
 A validation issue is an execution work item, not necessarily a code-change work item.
 
@@ -104,21 +184,36 @@ If validation finds a defect that requires a source change, create a separate ta
 
 Evidence from an older SHA MUST NOT be promoted to PASS for the new candidate without real re-execution where the gate requires it.
 
-## 6. Version milestone and issue labels
+Validation requested by Reviewer MAY be represented as a dedicated validation sub-issue, but actual blocking semantics use Issue Dependency when another work item/candidate is blocked by it.
+
+## 9. Version milestone and issue metadata
 
 For repositories that use GitHub Milestones, a release/version SHOULD use a milestone such as `vX.Y.Z` rather than creating one label per version.
 
-Labels express stable properties of a work item. Recommended label taxonomy:
+Recommended portable label taxonomy:
 
 ```text
 type:task
 type:bug
 type:validation
+type:blocker
+
+state:planned
+state:ready
+state:implementing
+state:review-ready
+state:reviewing
+state:changes-requested
+state:validation-needed
+state:merge-ready
+state:blocked
+state:done
 
 handoff:local-agent
 executor:codex
 executor:claude-code
 
+gate:review
 gate:fast
 gate:integration
 gate:critical-journey
@@ -135,9 +230,11 @@ release-blocker
 blocked:environment
 ```
 
-Repositories MAY use equivalent naming, but SHOULD keep the dimensions distinguishable: work type, executor, gate, environment, release impact.
+A Task SHOULD have at most one `state:*` label at a time. Workflow state labels are routing metadata and MUST NOT be confused with Gate states (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`).
 
-## 7. GitHub fact chain
+Repositories MAY map type/state/executor semantics to native Issue Types or custom fields when available, but the protocol meaning must remain portable.
+
+## 10. GitHub fact chain
 
 A substantial version SHOULD be recoverable from GitHub without relying on chat history.
 
@@ -146,9 +243,11 @@ The intended fact chain is:
 ```text
 PRD Freeze
 → L1/L2 evidence as required
-→ Task DAG
+→ frozen Task DAG checkpoint
+→ Task Issues + Issue Dependencies
 → L3 evidence as required
 → Task branches / PRs
+→ task validation + exact-SHA independent review
 → integrated version baseline
 → validation issues + exact-SHA evidence
 → candidate freeze
@@ -161,7 +260,43 @@ PRD Freeze
 
 Each formal checkpoint MUST have an unambiguous commit SHA or Issue/PR reference that resolves to one.
 
-## 8. Cost and repository hygiene
+## 11. Merge readiness
+
+For a Version Branch Task/Fix PR, default merge readiness requires:
+
+```text
+current PR HEAD SHA
++ required task/local Validation PASS
++ Independent Review PASS on current HEAD
++ configured required Minimal CI PASS (when enabled)
++ required Issue Dependencies satisfied for merge
++ correct target version branch / stack parent
++ no unresolved release-significant finding/blocker
+```
+
+Only then should the Task route to `state:merge-ready`.
+
+After merge, publish the resulting integration SHA and move the Task to `state:done` when its completion rule is satisfied.
+
+## 12. Agent interaction history
+
+Issue body is the stable work contract. Metadata is current routing state. Comments are append-oriented event history.
+
+Multi-agent work SHOULD use the `ai-dev:event:v1` format from `templates/agent-event-comment.md` for events such as:
+
+```text
+IMPLEMENTATION_READY
+REVIEW_RESULT
+FIX_APPLIED
+VALIDATION_REQUEST
+VALIDATION_RESULT
+DEPENDENCY_CHANGED
+MERGE_RESULT
+```
+
+This lets a new Builder/Reviewer/Validator session recover from GitHub without previous chat transcripts.
+
+## 13. Cost and repository hygiene
 
 Branch count itself is not a reason to avoid task isolation. Branches are references to Git objects and do not by themselves require GitHub Actions execution.
 
@@ -169,7 +304,7 @@ However, repositories MUST still follow repository hygiene rules: do not commit 
 
 Cost-sensitive projects SHOULD prefer local/self-hosted validation where appropriate and keep GitHub-hosted CI minimal according to the configured CI profile.
 
-## 9. Selection rule
+## 14. Selection rule
 
 Use Version Branch Mode when the engineering value of integration isolation, multi-agent handoff, candidate control, or exact-SHA closure is material.
 
