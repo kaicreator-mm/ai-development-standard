@@ -2,23 +2,24 @@
 
 ## 1. Purpose
 
-This protocol defines GitHub-native coordination between Builder, Reviewer, Validator / Local Agent and merge/release control roles.
+This protocol defines GitHub-native coordination between Builder, optional Independent Reviewer, Validator / Local Agent and merge/release control roles.
 
 The objective is that multiple sessions or agents can collaborate without exchanging hidden chat context. GitHub carries the durable contract, routing metadata, event history, code change and exact identities.
 
 Canonical responsibility model:
 
 ```text
-Issue body      = stable work contract
-Issue metadata  = routing and current workflow state
-Issue dependency= canonical execution dependency graph
-Comments        = append-oriented agent event log
-Branch          = isolated implementation concern
-PR              = reviewable code change
-Stacked PR      = optional unmerged code-baseline dependency
-Commit SHA      = exact change / execution identity
-Milestone       = version/release aggregation
-Validation      = exact-SHA execution evidence
+Issue body       = stable work contract
+Issue metadata   = routing and current workflow state
+Issue dependency = canonical execution dependency graph
+Comments         = append-oriented agent event log
+Branch           = isolated implementation concern
+PR               = reviewable/mergeable code change
+Stacked PR       = optional unmerged code-baseline dependency
+Commit SHA       = exact change / execution identity
+Milestone        = version/release aggregation
+Validation       = exact-SHA execution evidence
+Review           = optional or required exact-SHA independent analysis according to Review Policy
 ```
 
 Chat is a workspace. It is not the coordination source of truth.
@@ -29,7 +30,7 @@ Do not overload one Git/GitHub mechanism to represent every kind of dependency.
 
 ### 2.1 Planning DAG
 
-The frozen Task DAG document/checkpoint records why the work was decomposed, task inputs/outputs, acceptance, risks, parallelism and dependency rationale.
+The frozen Task DAG document/checkpoint records why the work was decomposed, task inputs/outputs, acceptance, risks, parallelism, Review Policy and dependency rationale.
 
 It is a planning/history artifact.
 
@@ -80,7 +81,7 @@ Rules:
 - A stack describes Git/code baseline dependency, not product/task planning semantics.
 - Because a Git branch has one direct base while a Task DAG may fork and join, stacked PRs cannot replace the execution DAG.
 - When an upstream stack PR merges, downstream PRs SHOULD be rebased/retargeted onto the correct remaining stack parent or integration branch.
-- Any resulting SHA change invalidates SHA-bound review/validation evidence according to their rules; affected review/validation MUST be re-executed.
+- Any resulting SHA change invalidates SHA-bound required review/validation evidence according to their rules; affected required evidence MUST be re-executed.
 - When a task's completion depends on another task, the corresponding Issue dependency SHOULD still be recorded even if implementation proceeds early on a stable stacked baseline.
 
 ## 3. Hierarchy is not dependency
@@ -91,7 +92,7 @@ Use different GitHub mechanisms for different semantics:
 Milestone     = version/release grouping
 Sub-issue     = belongs-to hierarchy (version/epic/task/validation)
 Dependency    = blocked-by / blocking execution relationship
-Branch/PR     = implementation and review boundary
+Branch/PR     = implementation and merge boundary
 Stacked PR    = code-baseline dependency
 ```
 
@@ -111,13 +112,14 @@ Planning Task DAG reference
 Baseline / integration target
 Acceptance criteria
 Required task-level gates
+Review Policy
 Known dependencies
 Allowed changes
 Forbidden changes
 Expected outputs
 ```
 
-Do not use repeated body rewrites as an event log. State changes, review results, fixes and validation results belong in metadata/comments.
+Do not use repeated body rewrites as an event log. State changes, review decisions/results, fixes and validation results belong in metadata/comments.
 
 ## 5. Metadata model
 
@@ -164,13 +166,37 @@ state:done
 
 A Task Issue SHOULD have at most one `state:*` label at a time.
 
-Workflow state is not a Validation Gate status. Gate results still use only:
+Workflow state is not a Validation/Review Gate status. Gate results still use only:
 
 ```text
 PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 ```
 
-### 5.4 Routing / execution dimensions
+### 5.4 Review Policy metadata
+
+Independent Review is risk-based; it is not globally mandatory for every Task/Fix PR.
+
+Every implementation Task/PR SHOULD resolve one policy:
+
+```text
+review:required
+review:recommended
+review:not-required
+```
+
+Repositories using custom Issue Fields MAY represent the same dimension as `Review Policy = required | recommended | not-required` instead of labels.
+
+At most one Review Policy value applies to a Task/PR.
+
+Semantics:
+
+- `required`: Independent Review is a merge gate. Current merge-candidate SHA requires Review `PASS`.
+- `recommended`: Review is useful but optional. It MAY be skipped with an explicit decision/rationale. Review Gate may remain `NOT_RUN` without blocking merge.
+- `not-required`: no Independent Review Gate exists for this concern; use `NOT_APPLICABLE`.
+
+Review policy and Review result are different dimensions. Do not encode `required/recommended/not-required` using Gate states.
+
+### 5.5 Routing / execution dimensions
 
 Recommended labels:
 
@@ -198,9 +224,67 @@ blocked:environment
 
 Projects MAY map stable dimensions to Organization custom Issue Fields where available. The protocol semantics MUST NOT depend on a specific GitHub UI feature; labels remain the portable baseline.
 
-## 6. Agent roles and queues
+## 6. Review Policy selection
 
-### 6.1 Builder
+### 6.1 Authority
+
+Review Policy must follow the normal authority order:
+
+```text
+Frozen PRD / Contract
+→ Frozen Architecture
+→ PROJECT_OVERRIDES
+→ Task acceptance / risk classification
+→ Standard defaults
+```
+
+A lower-authority Task or Agent MUST NOT silently downgrade a higher-authority `required` rule.
+
+### 6.2 Standard default
+
+When no higher authority defines a policy, use **risk-based** selection.
+
+The standard does not make Independent Review mandatory merely because Version Branch Mode is used.
+
+Typical guidance:
+
+#### `required` SHOULD be selected when the concern includes
+
+- security, authentication, authorization, permissions, secrets or trust boundaries;
+- public API / external contract semantics;
+- database schema or migration semantics;
+- cross-service / cross-package contracts with meaningful blast radius;
+- concurrency, transactions, locking or data-integrity logic;
+- destructive/irreversible behavior or failure-recovery logic;
+- release blockers or explicitly high-risk Task classification;
+- large/cross-cutting changes where tests/validation alone provide insufficient confidence;
+- sensitive areas required by CODEOWNERS/project policy.
+
+#### `recommended` is normally appropriate for
+
+- medium-risk behavior changes;
+- non-critical integration/refactor work;
+- new functionality with good automated validation but useful independent scrutiny;
+- changes where a fresh-context review is cheap relative to risk.
+
+#### `not-required` MAY be selected for
+
+- docs-only/comment-only work;
+- deterministic mechanical/generated updates with reliable verification;
+- narrowly scoped low-risk changes where independent analysis adds little value;
+- project-specific categories explicitly declared safe to merge without Independent Review.
+
+These examples guide classification. Project policy may be stricter.
+
+### 6.3 Decision record
+
+The selected policy SHOULD be visible in the Task Issue and PR.
+
+For `recommended` review that is skipped, record a concise decision/rationale using Issue/PR metadata or an Agent event. Skipping an optional review is not a Validation PASS and must not be represented as one.
+
+## 7. Agent roles and queues
+
+### 7.1 Builder
 
 Builder consumes primarily:
 
@@ -215,10 +299,14 @@ Builder responsibilities:
 - create/update the Task branch and PR;
 - run available task-level validation;
 - publish exact HEAD SHA and evidence;
-- transition to `state:review-ready` when reviewable;
+- resolve Review Policy;
+- when review is selected for execution, transition to `state:review-ready`;
+- when no review is required/performed and all other merge requirements are satisfied, transition directly to `state:merge-ready`;
 - continue other independent Tasks instead of waiting for Reviewer when the execution DAG allows it.
 
-### 6.2 Independent Reviewer
+### 7.2 Independent Reviewer
+
+Reviewer is invoked only for Tasks whose Review Policy/decision selects review.
 
 Reviewer consumes primarily:
 
@@ -231,11 +319,11 @@ Reviewer responsibilities:
 - reconstruct context from GitHub and pinned standard, not Builder chat history;
 - review the PR against frozen scope, architecture, Task acceptance, tests and evidence;
 - bind the review result to exact PR HEAD SHA;
-- publish findings and transition to `state:changes-requested`, `state:validation-needed`, or `state:merge-ready`.
+- publish findings and transition to `state:changes-requested`, `state:validation-needed`, `state:merge-ready`, or `state:blocked` as appropriate.
 
 A long-lived Reviewer session MAY process many PRs, but every review must re-read current GitHub facts and must not rely on trust accumulated from earlier tasks.
 
-### 6.3 Validator / Local Agent
+### 7.3 Validator / Local Agent
 
 Validator consumes primarily:
 
@@ -247,31 +335,38 @@ or dedicated validation sub-issues with appropriate `gate:*`, `env:*` and `hando
 
 Validator executes real environment gates and publishes exact-SHA Validation Evidence. Validation-only work does not require a branch. A source fix requires a separate task/fix branch and revalidation.
 
-### 6.4 Merge control
+### 7.4 Merge control
 
-A Task/Fix PR may become mergeable only after its declared merge policy is satisfied. In Version Branch Mode the standard default is:
+A Task/Fix PR may become mergeable only after its declared merge policy is satisfied.
+
+Canonical merge formula:
 
 ```text
 current PR HEAD SHA
-+ required task-level Validation PASS
-+ Independent Review Gate PASS on that SHA
++ required task/local Validation PASS
++ Review condition satisfied
 + configured required Minimal CI PASS (when enabled)
 + required upstream Issue dependencies satisfied for merge
-+ correct integration target
++ correct integration target / stack topology
++ no unresolved release-significant blocker/finding
 = state:merge-ready
 ```
 
-Merge then targets `version/vX.Y.Z`.
+Review condition means:
 
-## 7. Independent Task Review Gate
+```text
+review:required     → Independent Review PASS on current SHA
+review:recommended  → PASS on current SHA OR explicit SKIP decision/rationale
+review:not-required → Review Gate NOT_APPLICABLE
+```
 
-### 7.1 Default requirement
+Merge then targets `version/vX.Y.Z`, `main`, or the correct temporary stack parent according to integration mode/topology.
 
-In Version Branch Mode, every Task/Fix PR MUST receive an Independent Review before merge to the version branch unless an explicit higher-authority project rule defines a narrower exception.
+## 8. Independent Review execution rules
 
-Trunk/Fast Path SHOULD use Independent Review according to project risk/policy; disabling CI does not remove review/validation requirements.
+These rules apply whenever Independent Review is performed, and are mandatory when Review Policy is `required`.
 
-### 7.2 Independence
+### 8.1 Independence
 
 The final review authority SHOULD NOT be the same implementation context that just produced the change.
 
@@ -284,18 +379,20 @@ Acceptable independent review sources include:
 
 Different model or machine is optional. Independent context and evidence reconstruction are the important properties.
 
-### 7.3 Exact-SHA binding
+### 8.2 Exact-SHA binding
 
 Review PASS is bound to a specific PR HEAD SHA.
 
 If the PR HEAD changes after PASS:
 
 - previous PASS remains historical evidence for the old SHA;
-- current Review Gate becomes `NOT_RUN` until re-review;
+- if review remains required for merge, current Review Gate becomes `NOT_RUN` until re-review;
 - a narrow fix MAY receive delta review from `old-reviewed-sha..new-head-sha` when the reviewer confirms the change is sufficiently scoped;
 - large or cross-cutting changes require full re-review.
 
-### 7.4 Review result
+If Review Policy is only `recommended` and the project chooses not to retain review as merge evidence after a later HEAD change, record that decision rather than falsely carrying the old PASS forward.
+
+### 8.3 Review result
 
 Review Gate uses:
 
@@ -307,13 +404,17 @@ NOT_RUN
 NOT_APPLICABLE
 ```
 
-`NOT_APPLICABLE` for a Version Branch Task/Fix PR requires explicit authority; it is not a convenience shortcut.
+Rules:
+
+- `required`: merge requires `PASS` on current SHA.
+- `recommended`: `NOT_RUN` is allowed when review is explicitly skipped; if review is performed, its material findings must be resolved or dispositioned before merge.
+- `not-required`: use `NOT_APPLICABLE`.
 
 Reviewer findings SHOULD identify severity, location/evidence, expected behavior, actual behavior and required change.
 
 When a conclusion requires real execution that the reviewer cannot perform, do not guess. Publish `VALIDATION_REQUEST` and route to the appropriate validation environment.
 
-## 8. Standard event comment format
+## 9. Standard event comment format
 
 Agent-to-agent coordination comments SHOULD include a machine-readable marker and YAML payload, followed by optional human-readable Markdown.
 
@@ -341,6 +442,7 @@ Recommended event types:
 ```text
 TASK_CLAIMED
 IMPLEMENTATION_READY
+REVIEW_DECISION
 REVIEW_RESULT
 FIX_APPLIED
 VALIDATION_REQUEST
@@ -350,13 +452,15 @@ DEPENDENCY_CHANGED
 MERGE_RESULT
 ```
 
+`REVIEW_DECISION` MAY record `required/recommended/not-required`, or `recommended + SKIP/PERFORM`, without pretending that the policy/decision itself is a Gate PASS.
+
 Event-specific fields MAY be added, but existing field semantics MUST NOT be silently redefined.
 
 Comments are append-oriented history. If an event is materially wrong, publish a corrective event referencing the superseded comment/event rather than silently rewriting important history.
 
-## 9. Canonical state flow
+## 10. Canonical state flow
 
-Typical Task flow:
+Review is now an optional branch in the Task workflow:
 
 ```text
 planned
@@ -365,13 +469,16 @@ ready
   ↓
 implementing
   ↓
-review-ready
-  ↓
-reviewing
-  ├── changes-requested → implementing/review-ready
-  ├── validation-needed → validation → review-ready
-  ├── blocked
-  └── merge-ready
+implementation ready
+  ├── review required/selected → review-ready → reviewing
+  │      ├── changes-requested → implementing
+  │      ├── validation-needed → validation → review-ready
+  │      ├── blocked
+  │      └── PASS → merge-ready
+  │
+  └── review not required/skipped
+          ↓
+       merge-ready
           ↓
         merged
           ↓
@@ -382,9 +489,9 @@ reviewing
 
 An unresolved Issue dependency normally prevents `state:merge-ready`, but MAY NOT prevent implementation from beginning when the upstream branch exposes a stable code baseline and the frozen Task contract permits early/stacked work.
 
-## 10. Builder / Reviewer pipeline
+## 11. Builder / Reviewer pipeline
 
-A and B may operate continuously:
+A and B may operate continuously when review work exists:
 
 ```text
 Builder A                         Reviewer B
@@ -393,9 +500,10 @@ T01 implementation
 PR #101 + review-ready ─────────→ review #101
 T02 implementation                ↓
   ↓                              PASS / findings
-PR #102 + review-ready ─────────→ review #102
-T03 implementation                ↓
-...                              ...
+PR #102 (review skipped) → merge-ready
+T03 implementation
+  ↓
+PR #103 + review-ready ─────────→ review #103
 ```
 
 Builder SHOULD NOT wait idle for Reviewer if independent executable work exists.
@@ -404,9 +512,9 @@ Reviewer SHOULD continue reviewing independent PRs even if one PR fails, unless 
 
 Normal chat sessions are not background workers. Queue consumption occurs when an agent/session is invoked, scheduled by supported automation, or triggered by an external orchestrator.
 
-## 11. Validation sub-issues
+## 12. Validation sub-issues
 
-When review requires environment-specific execution, a dedicated Validation Issue MAY be created as a sub-issue of the Task Issue.
+When review or Task policy requires environment-specific execution, a dedicated Validation Issue MAY be created as a sub-issue of the Task Issue.
 
 Example:
 
@@ -419,7 +527,7 @@ Use dependency when the validation result truly blocks another work item/candida
 
 The validation issue records exact target SHA, environment/profile, commands, expected result and completion rule according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and `VALIDATION_STANDARD.md`.
 
-## 12. Execution DAG materialization
+## 13. Execution DAG materialization
 
 After Task DAG freeze:
 
@@ -428,13 +536,13 @@ Frozen Task DAG checkpoint
         ↓
 create/update Task Issues
         ↓
-apply Milestone / type metadata
+apply Milestone / type / Review Policy metadata
         ↓
 materialize Issue Dependencies
         ↓
 apply initial workflow states
         ↓
-execution queues
+Builder / optional Reviewer / Validator queues
         ↓
 Task Branch / PR
 ```
@@ -443,22 +551,23 @@ The Task DAG document remains the planning checkpoint. GitHub Issue Dependencies
 
 Do not create a Task-DAG branch merely to represent dependencies.
 
-## 13. Merge and dependency rules
+## 14. Merge and dependency rules
 
-Before merging a Task/Fix PR in Version Branch Mode, verify:
+Before merging a Task/Fix PR, verify:
 
 - Task Issue and PR are linked;
-- PR targets the correct version branch or correct stack parent;
+- PR targets the correct version branch/main branch or correct stack parent;
 - required upstream Issue dependencies for merge are resolved;
-- current HEAD matches the SHA reviewed/validated by required gates;
-- Independent Review Gate is PASS;
+- current HEAD matches the SHA validated by required gates;
+- Review Policy is explicit;
+- review condition is satisfied according to `required/recommended/not-required` semantics;
 - required task/local validation is PASS;
 - configured required CI is PASS when applicable;
-- no unresolved release-significant review thread/blocker remains.
+- no unresolved release-significant blocker/finding/thread remains.
 
-If a stacked PR is retargeted/rebased after its parent merges, repeat affected review/validation against the new exact SHA before merge.
+If a stacked PR is retargeted/rebased after its parent merges, repeat affected **required** review/validation against the new exact SHA before merge.
 
-## 14. Recovery rule
+## 15. Recovery rule
 
 A fresh agent/session SHOULD be able to recover work from:
 
