@@ -13,7 +13,7 @@
 - Validation profile 应保持 Validation Tuple 边界；不要用一个粗粒度命令混合 Windows packaged、Linux logic、visual/golden、Critical Journey、Hidden 或 release packaging 后再输出低信息量 blanket status。
 - 增加 hot/evidence/diagnostic/audit/artifact 分层读取模型：日常状态优先读小型 pointer/summary，大日志和大型 binary artifact 仅按需读取。
 - `VALIDATION_STANDARD.md`、`TESTING_STANDARD.md`、`RELEASE_STANDARD.md` 与 Agent/README 入口同步接入 CI Evidence Contract；标准仓库 verifier 要求核心合同文件存在。
-- 新增 `references/CI_EVIDENCE_REFERENCE_VALIDATION.md`，记录 Formula Woodpecker → Google Drive 真实 pilot：Pipeline 5 验证 `validation FAIL + publication COMPLETE`；Pipeline 6 验证 9/9 checks PASS 但因 Evidence self-verifier namespace 缺陷 publication incomplete 且 latest 不前移；Pipeline 7 修复后完整 PASS 并发布 completion/latest；后续 monotonic latest-pointer regression 作为 v2.2.0 closeout 的最后反例验证。
+- 新增 `references/CI_EVIDENCE_REFERENCE_VALIDATION.md`，记录 Formula Woodpecker → Google Drive 真实 pilot：Pipeline 5 验证 `validation FAIL + publication COMPLETE`；Pipeline 6 验证 9/9 checks PASS 但因 Evidence self-verifier namespace 缺陷 publication incomplete 且 latest 不前移；Pipeline 7 修复后完整 PASS 并发布 completion/latest；Pipeline 9 在 final reference SHA `73c5014c2db9a832d8d0c5be335240334f9bae24` 上执行 monotonic/stale/rerun/idempotent/conflict 反例回归并完整 PASS，Drive consumer-side 再确认 immutable run、completion 与 latest pointer。
 
 ## v2.1.0 — 2026-09-17
 
