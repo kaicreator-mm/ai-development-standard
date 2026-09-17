@@ -6,7 +6,7 @@ This standard defines how substantial version work is integrated through GitHub 
 
 The goal is to keep GitHub as the recoverable execution memory without creating branches for every drafting step.
 
-For GitHub-native multi-agent routing, Issue state/events, canonical execution dependencies and independent review, also read `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
+For GitHub-native multi-agent routing, Issue state/events, canonical execution dependencies and risk-based Independent Review, also read `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
 
 ## 2. Two supported integration modes
 
@@ -38,7 +38,9 @@ main
 
 Task/fix PRs target the version branch by default. The final version PR targets `main`.
 
-A Task/Fix PR MUST pass its required task-level validation and Independent Review Gate before merge to the version branch, plus configured required CI when applicable.
+A Task/Fix PR MUST pass its **required** task-level validation, configured required CI when applicable, required Issue Dependencies, and any Independent Review that its Review Policy marks `required`.
+
+Version Branch Mode by itself does **not** make Independent Review mandatory.
 
 ### B. Trunk / Fast Path
 
@@ -53,7 +55,7 @@ main
 
 Bug fixes, small documentation changes, and narrow maintenance work MAY use this mode if frozen scope and release policy allow it.
 
-Independent Review SHOULD follow project risk/policy; disabling CI does not remove required review/validation paths.
+Independent Review follows the same risk-based Review Policy; Integration Mode does not override a higher-authority project/task rule.
 
 ## 3. Stage artifacts: checkpoint, not branch by default
 
@@ -82,7 +84,7 @@ Task DAG has two related representations after freeze:
 
 ```text
 Planning DAG checkpoint
-= decomposition rationale, inputs/outputs, acceptance, risk, parallelism
+= decomposition rationale, inputs/outputs, acceptance, risk, parallelism, review policy
 
 Execution DAG
 = GitHub Task Issues + native Issue Dependencies
@@ -147,29 +149,57 @@ Rules:
 - Issue Dependency remains the canonical execution relationship.
 - Stacked PR only captures the current unmerged Git/code baseline relationship.
 - When an upstream stack PR merges, downstream PRs SHOULD be rebased/retargeted to the correct remaining parent or version branch.
-- Rebase/retarget SHA changes invalidate SHA-bound review/validation evidence as applicable; re-run affected gates.
+- Rebase/retarget SHA changes invalidate SHA-bound required review/validation evidence as applicable; re-run affected gates.
 - A branch has one direct base while a Task DAG can fork/join, so PR stack topology is not a general DAG representation.
 
-## 7. Independent Review before integration
+## 7. Risk-based Independent Review
 
-In Version Branch Mode, every Task/Fix PR MUST receive an Independent Review before merge to `version/vX.Y.Z`, unless an explicit higher-authority project rule defines a narrower exception.
+Independent Review is **on-demand**. Every Task/Fix PR SHOULD resolve one Review Policy:
 
-Review requirements:
+```text
+required
+recommended
+not-required
+```
+
+### 7.1 `required`
+
+Use when Review is mandated by Frozen PRD/Architecture, PROJECT_OVERRIDES, Task acceptance, or risk classification.
+
+Typical examples include security/auth/permission changes, public API/schema/migration semantics, cross-service contracts, concurrency/data-integrity logic, high-blast-radius integration and explicit release blockers.
+
+Merge requires Independent Review `PASS` on the current merge-candidate SHA.
+
+### 7.2 `recommended`
+
+Use when a fresh-context review materially improves confidence but should not be a merge gate.
+
+Review MAY be performed. It MAY also be skipped with an explicit decision/rationale. A skipped recommended Review may remain `NOT_RUN` and does not by itself block merge.
+
+If review is performed and produces material findings, those findings must be resolved/dispositioned before merge.
+
+### 7.3 `not-required`
+
+Use for genuinely low-risk/mechanical concerns when project policy permits it. Review Gate is `NOT_APPLICABLE`.
+
+### 7.4 Review execution semantics
+
+Whenever review is performed:
 
 - reviewer reconstructs facts from GitHub + pinned standard;
-- final reviewer context is independent from the implementation context;
-- Review Result is bound to exact PR HEAD SHA;
-- if HEAD changes, old PASS remains historical only and delta/full re-review is required;
+- final reviewer context SHOULD be independent from implementation context;
+- Review Result binds to exact PR HEAD SHA;
+- if required Review evidence remains part of merge policy and HEAD changes, old PASS remains historical only and delta/full re-review is required;
 - reviewer may request real Local Validation instead of guessing about runtime/platform behavior.
 
-Recommended continuous pipeline:
+Recommended pipeline when review is selected:
 
 ```text
 Builder A                    Reviewer B
 Task T01 → PR review-ready → review
 Task T02 implementation      PASS/findings
-Task T02 → PR review-ready → review
-Task T03 implementation      ...
+Task T02 → merge-ready       (review skipped/not-required)
+Task T03 → PR review-ready → review
 ```
 
 Builder need not wait idle for review when independent work exists. Reviewer should continue other independent review work when one PR fails.
@@ -209,6 +239,10 @@ state:merge-ready
 state:blocked
 state:done
 
+review:required
+review:recommended
+review:not-required
+
 handoff:local-agent
 executor:codex
 executor:claude-code
@@ -230,9 +264,9 @@ release-blocker
 blocked:environment
 ```
 
-A Task SHOULD have at most one `state:*` label at a time. Workflow state labels are routing metadata and MUST NOT be confused with Gate states (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`).
+A Task SHOULD have at most one `state:*` and one `review:*` value at a time. Workflow state and Review Policy metadata MUST NOT be confused with Gate states (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`).
 
-Repositories MAY map type/state/executor semantics to native Issue Types or custom fields when available, but the protocol meaning must remain portable.
+Repositories MAY map type/state/review/executor semantics to native Issue Types or custom fields when available, but the protocol meaning must remain portable.
 
 ## 10. GitHub fact chain
 
@@ -244,10 +278,11 @@ The intended fact chain is:
 PRD Freeze
 → L1/L2 evidence as required
 → frozen Task DAG checkpoint
-→ Task Issues + Issue Dependencies
+→ Task Issues + Issue Dependencies + Review Policy
 → L3 evidence as required
 → Task branches / PRs
-→ task validation + exact-SHA independent review
+→ required task validation
+→ Independent Review only when selected/required
 → integrated version baseline
 → validation issues + exact-SHA evidence
 → candidate freeze
@@ -262,16 +297,24 @@ Each formal checkpoint MUST have an unambiguous commit SHA or Issue/PR reference
 
 ## 11. Merge readiness
 
-For a Version Branch Task/Fix PR, default merge readiness requires:
+For a Task/Fix PR, merge readiness requires:
 
 ```text
 current PR HEAD SHA
 + required task/local Validation PASS
-+ Independent Review PASS on current HEAD
++ Review condition satisfied
 + configured required Minimal CI PASS (when enabled)
 + required Issue Dependencies satisfied for merge
-+ correct target version branch / stack parent
++ correct target version branch / main / stack parent
 + no unresolved release-significant finding/blocker
+```
+
+Review condition:
+
+```text
+required     → Review PASS on current HEAD
+recommended  → Review PASS on current HEAD OR explicit SKIP decision/rationale
+not-required → Review Gate NOT_APPLICABLE
 ```
 
 Only then should the Task route to `state:merge-ready`.
@@ -286,6 +329,7 @@ Multi-agent work SHOULD use the `ai-dev:event:v1` format from `templates/agent-e
 
 ```text
 IMPLEMENTATION_READY
+REVIEW_DECISION
 REVIEW_RESULT
 FIX_APPLIED
 VALIDATION_REQUEST
@@ -300,6 +344,8 @@ This lets a new Builder/Reviewer/Validator session recover from GitHub without p
 
 Branch count itself is not a reason to avoid task isolation. Branches are references to Git objects and do not by themselves require GitHub Actions execution.
 
+Independent Review should also be applied according to risk rather than as mechanical cost/latency overhead on every PR.
+
 However, repositories MUST still follow repository hygiene rules: do not commit build caches, dependency directories, large generated outputs, databases, model weights, installers, or repeated binary artifacts merely because they are produced by task branches.
 
 Cost-sensitive projects SHOULD prefer local/self-hosted validation where appropriate and keep GitHub-hosted CI minimal according to the configured CI profile.
@@ -309,3 +355,5 @@ Cost-sensitive projects SHOULD prefer local/self-hosted validation where appropr
 Use Version Branch Mode when the engineering value of integration isolation, multi-agent handoff, candidate control, or exact-SHA closure is material.
 
 Use Trunk / Fast Path when the change is narrow enough that a version branch would add ceremony without improving correctness, recoverability, or reviewability.
+
+Choose Independent Review separately from Integration Mode using the Review Policy and risk/authority model.

@@ -1,5 +1,25 @@
 # Changelog
 
+## v3.0.0 — 2026-09-18
+
+将 v2.3.0 的 universal mandatory Independent Review 改为 **risk-based / on-demand Review Policy**。这是 mandatory Gate semantics 的不兼容变化，因此升级 MAJOR；Validation mandatory、Issue Dependency canonical Task DAG、Stacked PR code-baseline dependency、GitHub-native Agent Interaction 与 Release Authority 保持不变。
+
+Breaking changes:
+
+- Version Branch Mode 不再自动要求每个 Task/Fix PR 都完成 Independent Review；每个 Task/PR 现在显式声明 `required / recommended / not-required` Review Policy。
+- `required`：Independent Review 是 merge gate，必须在当前 exact PR HEAD SHA 上满足；HEAD 变化后按影响执行 delta/full re-review。
+- `recommended`：Review 是建议性的风险控制，可被显式执行或跳过；跳过使用结构化 policy decision 记录，不伪造 Review PASS，也不阻塞 merge。
+- `not-required`：Review 不进入 Reviewer Queue，Review Gate 为 `NOT_APPLICABLE`；Task 满足其它 required merge prerequisites 后可直接进入 merge-ready。
+- Review Policy authority 按 `Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance/Task DAG → standard risk defaults` 解析，不得因 Version Branch、CI disabled、单人项目或流程习惯自动升级为 mandatory。
+- 高风险/关键变更 SHOULD 选择 `required`，包括 security/auth/permission、public API/external contract、schema/migration、shared infrastructure、high-risk concurrency/state、release-critical integration 等；普通实现可 `recommended`；机械性低风险变更可 `not-required`。
+- Task DAG、Task Issue、Implementation PR、PROJECT_OVERRIDES、PR Review Checklist 与 GitHub metadata 增加 Review Policy；portable labels 使用 `review:required / review:recommended / review:not-required`。
+- Builder 仅在 `required` 或本轮选择执行 `recommended` Review 时将 Task 路由到 `state:review-ready`；`not-required` 或明确跳过的 `recommended` Review 不应制造 Reviewer Queue 工作。
+- 新增 `REVIEW_DECISION` 结构化 Agent event，用于记录 recommended Review 的 `skipped` 或 not-required 的 `not-applicable` 决策；Review 被执行时仍使用 exact-SHA `REVIEW_RESULT`。
+- `prompts/independent-review-bootstrap.md` 改为 policy-aware：只用于 `required` 或明确调用的 `recommended` Review；遇到 `not-required` 时默认停止而不是制造形式化 Review Gate。
+- 一旦 optional Review 实际执行，发现的有效 release-significant finding 仍是工程事实，必须修复、明确接受风险或按 authority 处置，不能因为 Review 原本不是 mandatory 就忽略。
+- CI 与 Review 完全解耦：`CI profile=disabled` 仍要求真实 required Validation，但不自动要求 Independent Review；CI enabled 也不能替代 required Review 或 required Validation。
+- Root AGENTS、README、Development Workflow、GitHub Workflow、Version Integration Workflow 与 ChatGPT Web Role 全部同步 risk-based Review 语义，避免旧 mandatory 规则残留。
+
 ## v2.3.0 — 2026-09-18
 
 新增 GitHub-native Agent Interaction Protocol，将 Task DAG、Issue Dependency、Stacked PR、Independent Review 与 Builder/Reviewer/Validator 多会话协作统一进 v2.x 开发执行模型。

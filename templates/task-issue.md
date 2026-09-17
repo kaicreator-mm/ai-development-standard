@@ -53,12 +53,33 @@ Stacked PR is only for unmerged code-baseline dependency; it does not replace Is
 
 - [ ] <criterion>
 
+## Review Policy
+
+Choose exactly one:
+
+```text
+required
+recommended
+not-required
+```
+
+- Review policy: `<required | recommended | not-required>`
+- Authority / rationale: `<PRD | Architecture | PROJECT_OVERRIDES | Task risk assessment | other>`
+
+Standard default is risk-based, not always-review.
+
+`required` SHOULD be selected for changes such as security/auth/permissions, public API or schema/migration semantics, cross-service contracts, concurrency/data-integrity logic, high-blast-radius integration, release blockers, or other explicitly high-risk concerns.
+
+`recommended` is appropriate when independent review adds useful confidence but is not a merge requirement. If skipped, record the decision/rationale; Review Gate may remain `NOT_RUN` without blocking merge.
+
+`not-required` is appropriate for genuinely low-risk/mechanical concerns such as docs-only or equivalent changes when project policy allows it; Review Gate is `NOT_APPLICABLE`.
+
 ## Required Task Gates
 
 | Gate | Required | Notes |
 |---|---|---|
 | Task validation | YES/NO | |
-| Independent Review | YES/NO | Version Branch Mode default: YES |
+| Independent Review | YES/NO | derived from Review Policy; YES only when `required` |
 | Minimal CI | YES/NO | per project CI profile |
 | Local/platform validation | YES/NO | |
 
@@ -78,7 +99,7 @@ Gate results use only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
 
 - Task branch / PR when source changes are required.
 - Exact-SHA validation evidence.
-- Independent Review result on the merge candidate SHA.
+- Independent Review evidence only when review is performed or required.
 - Structured agent events in Issue/PR comments when state changes.
 
 ## Completion Rule
@@ -88,7 +109,8 @@ Task reaches `state:done` only when:
 - acceptance criteria are satisfied;
 - required dependencies for completion are resolved;
 - required task validation is PASS;
-- Independent Review is PASS when required;
+- Independent Review is PASS when Review Policy is `required`;
+- for `recommended`, any performed review findings are resolved or explicitly dispositioned; skipping review is recorded when material;
 - configured required CI is PASS when applicable;
 - the correct PR has merged to the intended integration target;
 - remaining blockers/limitations are explicitly recorded.

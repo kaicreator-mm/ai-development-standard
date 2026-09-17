@@ -9,9 +9,9 @@
 
 ## Planning DAG
 
-| Task | Issue | Depends On | Parallel | Risk | Input / Reference | Output | Acceptance | Model | Required Validation | Code Baseline | Status |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| T-001 | `#<id>` | — | YES/NO | L/M/H | | | | High/Low | | independent/stacked | TODO |
+| Task | Issue | Depends On | Parallel | Risk | Input / Reference | Output | Acceptance | Model | Required Validation | Review Policy | Code Baseline | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| T-001 | `#<id>` | — | YES/NO | L/M/H | | | | High/Low | | required/recommended/not-required | independent/stacked | TODO |
 
 Planning status values: `TODO / DOING / BLOCKED / DONE / DEFERRED / NOT_APPLICABLE`.
 
@@ -26,6 +26,26 @@ Rules:
 - High-risk or low-cost-model tasks SHOULD link an L3 Reference Pack using `Tests → Contract → Core Implementation → Failure Handling → Reference`.
 - Task boundaries SHOULD map to reviewable concerns and GitHub Issues/PRs when source changes are required.
 
+## Review Policy Planning
+
+Review is risk-based, not universally mandatory.
+
+Use one of:
+
+```text
+required
+recommended
+not-required
+```
+
+Guidance:
+
+- `required`: security/auth/permissions, public API/schema/migration semantics, cross-service contracts, concurrency/data-integrity, high-blast-radius integration, release-blocker/high-risk concerns, or project-specific sensitive areas.
+- `recommended`: medium-risk behavior/refactor/integration changes where an independent pass materially improves confidence but is not a merge gate.
+- `not-required`: genuinely low-risk/mechanical work when project policy allows it.
+
+The planning value is an initial policy. A higher-authority project/task rule may strengthen it later; it must not be silently weakened.
+
 ## Execution DAG Materialization
 
 After Task DAG freeze:
@@ -35,11 +55,11 @@ Frozen Task DAG checkpoint
         ↓
 Task Issues
         ↓
-Milestone / type / initial workflow state
+Milestone / type / initial workflow state / Review Policy
         ↓
 GitHub Issue Dependencies
         ↓
-Builder / Reviewer / Validator queues
+Builder / optional Reviewer / Validator queues
 ```
 
 Do not create a Task-DAG branch merely to encode dependencies.
@@ -50,7 +70,7 @@ Important semantics:
 Planning DAG document = why/how the work was decomposed
 Issue Dependency      = canonical execution dependency
 Sub-issue             = belongs-to hierarchy
-Task Branch / PR      = implementation/review boundary
+Task Branch / PR      = implementation boundary and optional review boundary
 Stacked PR            = optional unmerged code-baseline dependency
 ```
 
@@ -60,4 +80,4 @@ Set `Code Baseline = stacked` only when the task must build on another task bran
 
 A stacked PR does not replace the corresponding Task Issue or Issue Dependency. Do not turn the entire Task DAG into a PR stack merely to mirror task order.
 
-If the stack is rebased/retargeted after an upstream merge, review/validation evidence affected by the SHA change must be re-established.
+If the stack is rebased/retargeted after an upstream merge, required review/validation evidence affected by the SHA change must be re-established.

@@ -1,14 +1,24 @@
 # Pull Request Review Checklist
 
-Use with `templates/implementation-pr.md`. Not every item applies to every PR; mark release-significant non-applicable items explicitly.
+Use with `templates/implementation-pr.md`. This checklist is used when Independent Review is selected or required. Not every item applies to every PR; mark release-significant non-applicable items explicitly.
+
+## Review Applicability
+
+- [ ] Task/PR Review Policy is explicit: `required / recommended / not-required`.
+- [ ] Policy authority/rationale is traceable to Frozen PRD/Architecture, PROJECT_OVERRIDES, Task acceptance, or documented risk assessment.
+- [ ] `required` review is not silently downgraded for convenience, cost, lack of a second human, or CI availability.
+- [ ] For `recommended`, a SKIP decision is explicit when review is not performed.
+- [ ] `not-required` is used only when review genuinely adds insufficient value relative to the concern risk; Review Gate is `NOT_APPLICABLE`.
 
 ## Review Identity
+
+When review is performed:
 
 - [ ] Current PR HEAD SHA is recorded.
 - [ ] Review result is bound to that exact SHA.
 - [ ] Reviewer reconstructed context from GitHub + pinned standard rather than relying on Builder chat history.
 - [ ] Reviewer context is independent from the implementation context when Independent Review is required.
-- [ ] If HEAD changed after a prior PASS, delta/full re-review was performed and old PASS was not reused for the new SHA.
+- [ ] If HEAD changed after a prior PASS, delta/full re-review was performed when that review remains part of merge policy; old PASS was not reused for the new SHA.
 
 ## Scope
 
@@ -48,9 +58,10 @@ Use with `templates/implementation-pr.md`. Not every item applies to every PR; m
 - [ ] Mock/sandbox/cross-build evidence is not misreported as real platform/external validation.
 - [ ] When a reviewer cannot establish a runtime/platform fact statically, a VALIDATION_REQUEST is created rather than guessing.
 
-## Independent Review Gate
+## Independent Review Result
 
-- [ ] Version Branch Task/Fix PR has Independent Review unless an explicit higher-authority exception applies.
+When review is performed:
+
 - [ ] Review Gate uses only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
 - [ ] Findings identify severity, evidence/location, expected behavior, actual behavior and required change where practical.
 - [ ] Release-significant review threads/findings are resolved before merge-ready.
@@ -61,7 +72,7 @@ Use with `templates/implementation-pr.md`. Not every item applies to every PR; m
 - [ ] Project CI profile is `minimal / custom / disabled`.
 - [ ] Enabled CI checks are low-cost, deterministic and run from the actual PR head/clean checkout.
 - [ ] CI does not replace required Platform/CJ/Hidden/Packaging evidence.
-- [ ] If CI is disabled, the documented exact-SHA clean-validation + review path is followed.
+- [ ] If CI is disabled, the documented exact-SHA clean-validation path is followed; Review is required only when the active Review Policy says so.
 
 ## Documentation
 
@@ -80,7 +91,8 @@ Use with `templates/implementation-pr.md`. Not every item applies to every PR; m
 
 - [ ] Commit/branch/PR identity is traceable to Task/Issue when applicable.
 - [ ] Task workflow state is not confused with Gate status.
-- [ ] Current merge candidate SHA has required Validation + Independent Review + configured required CI.
+- [ ] Current merge candidate SHA has all **required** Validation, Review and configured CI evidence.
+- [ ] For `recommended` Review that was skipped, the skip decision/rationale is recorded.
 - [ ] The PR can merge independently under `One concern, one PR` unless an explicit dependency says otherwise.
-- [ ] If a stacked PR was rebased/retargeted, affected review/validation was re-established on the new SHA.
+- [ ] If a stacked PR was rebased/retargeted, affected required review/validation was re-established on the new SHA.
 - [ ] PR PASS is not presented as Release PASS.

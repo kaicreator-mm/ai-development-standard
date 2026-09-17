@@ -2,13 +2,13 @@
 
 ## 定位
 
-ChatGPT Web 是主要的分析、设计、实现与审查工作台，优先承担需要跨文件理解、产品/架构推理、任务拆解、代码生成和 Independent Review 的工作。
+ChatGPT Web 是主要的分析、设计、实现与审查工作台，优先承担需要跨文件理解、产品/架构推理、任务拆解、代码生成和按需 Independent Review 的工作。
 
 GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务、多 Agent、跨会话任务必须通过 GitHub checkpoint、Issue、Issue Dependencies、metadata/events、PR 与 exact SHA 可恢复。
 
 ## 两种主要工作模式
 
-同一个 ChatGPT 产品可以承担 Builder 或 Independent Reviewer，但同一个具体实现上下文不应同时成为自己刚完成变更的最终 Review Authority。
+同一个 ChatGPT 产品可以承担 Builder 或 Independent Reviewer。Reviewer 不是每个 Task 的固定必经角色；只有 Review Policy/decision 选择 Review 时才进入 Reviewer Queue。
 
 ### Builder Session
 
@@ -16,11 +16,15 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 
 - 消费 `state:ready` / `state:changes-requested` Task；
 - 实现、测试、push、PR；
-- 发布 `IMPLEMENTATION_READY` / `FIX_APPLIED` event；
-- 把 Task route 到 `state:review-ready`；
+- 解析/记录 Task Review Policy：`required / recommended / not-required`；
+- 发布 `IMPLEMENTATION_READY` / `FIX_APPLIED` / `REVIEW_DECISION` event；
+- `required` 或决定执行 `recommended` Review 时 route 到 `state:review-ready`；
+- `recommended + SKIP` 或 `not-required` 时，在其它 merge prerequisites 满足后直接 route 到 `state:merge-ready`；
 - 在 Task DAG 允许时继续其它独立 Task，不必等待 Reviewer。
 
 ### Independent Reviewer Session
+
+仅在实际需要 Review 时参与。
 
 主要职责：
 
@@ -29,7 +33,7 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 - 审查 Frozen PRD/Architecture/Task acceptance、diff、tests、Validation Evidence、Issue Dependencies、stack topology；
 - 将 `REVIEW_RESULT` 绑定 exact PR HEAD SHA；
 - route 到 `state:changes-requested` / `state:validation-needed` / `state:merge-ready` / `state:blocked`；
-- HEAD 变化后执行 delta/full re-review，而不是复用旧 SHA 的 PASS。
+- 当 Review 仍是 merge-required evidence 且 HEAD 变化时执行 delta/full re-review，而不是复用旧 SHA 的 PASS。
 
 同模型 fresh session 可以作为独立 Reviewer；关键是上下文独立和从 GitHub 重新建事实，不要求一定更换模型或机器。
 
@@ -46,9 +50,10 @@ GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务�
 - Task DAG freeze 后按项目策略 materialize Task Issues + Issue Dependencies；
 - 主体代码实现、refactor、测试、fixtures、migration、文档；
 - 当前执行环境可运行的静态/动态 Validation；
-- Independent Review（当处于 Reviewer context）；
+- Review Policy 解析与记录；
+- Independent Review（仅当处于 Reviewer context 且 Review 被选择/要求）；
 - Local Agent Handoff Issue / Prompt；
-- Execution Agent / Build Host 返回后的 Review Closure 与 Final Closeout。
+- Execution Agent / Build Host 返回后的按需 Review Closure 与 Final Closeout。
 
 ## GitHub / Branch / Dependency 职责
 
@@ -72,7 +77,8 @@ Task DAG Freeze 后：
 Planning DAG checkpoint
 → Task Issues
 → GitHub Issue Dependencies
-→ Builder / Reviewer / Validator queues
+→ Review Policy metadata
+→ Builder / optional Reviewer / Validator queues
 ```
 
 GitHub Issue Dependency 是 canonical live Task DAG。Sub-issue 只表示 belongs-to hierarchy。
@@ -83,11 +89,41 @@ Implementation Task/Concern 默认使用短分支 + PR；在 Version Branch Mode
 
 Validation-only Handoff Issue 不自动创建 branch。只有发现需要源码修改时才创建 task/fix branch。
 
-## Independent Review 职责
+## Review Policy 职责
 
-Version Branch Mode 的 Task/Fix PR merge 前，Independent Review 默认 mandatory。
+Independent Review 按风险和权威按需启用，不再由 Version Branch Mode 自动强制。
 
-Reviewer 必须：
+Task/PR SHOULD 明确：
+
+```text
+required
+recommended
+not-required
+```
+
+Builder/Planner 应使用：
+
+```text
+Frozen PRD / Contract
+→ Frozen Architecture
+→ PROJECT_OVERRIDES
+→ Task acceptance / risk classification
+→ Standard defaults
+```
+
+来决定 Review Policy。
+
+典型 `required`：security/auth/permissions、public API/schema/migration、cross-service contracts、concurrency/data-integrity、destructive/recovery、高风险/release-blocker、项目敏感 ownership 区域。
+
+`recommended` 可以执行，也可以显式 SKIP；SKIP 不等于 PASS，Review Gate 可保持 `NOT_RUN` 且不阻塞 merge。
+
+`not-required` 使用 `NOT_APPLICABLE`。
+
+低权威 Agent 不得静默把高权威 `required` 降级。
+
+## Independent Review 执行职责
+
+当 Review 被执行时，Reviewer 必须：
 
 1. 确认当前 PR HEAD SHA；
 2. 读取 Task Issue / Issue Dependencies / Frozen inputs；
@@ -103,7 +139,9 @@ Review Gate 只使用：
 PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 ```
 
-如果 HEAD 在 Review PASS 后改变，旧 PASS 仅对旧 SHA 有效；新 HEAD 必须重新 review。
+当 Review Policy 是 `required`，HEAD 在 Review PASS 后改变时旧 PASS 仅对旧 SHA 有效，新 HEAD 必须重新 review。
+
+对于 `recommended` Review，若执行后发现 material/release-significant finding，不得因为 Review 非 mandatory 而忽略该 finding。
 
 ## Agent Event 职责
 
@@ -112,6 +150,7 @@ PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 ```text
 TASK_CLAIMED
 IMPLEMENTATION_READY
+REVIEW_DECISION
 REVIEW_RESULT
 FIX_APPLIED
 VALIDATION_REQUEST
@@ -130,12 +169,13 @@ ChatGPT Web 不应把“增加 CI”当成默认完成度指标。
 
 - 只维护项目明确需要的最小 checks；
 - 避免重复平台矩阵、高成本 E2E、Critical Journey、Hidden Validation、packaging；
-- CI PASS 不能替代真实 required Validation 或 Independent Review。
+- CI PASS 不能替代真实 required Validation 或 required Review。
 
 如果项目 CI profile 为 `disabled`：
 
 - 不创建新的 workflow；
-- 使用项目声明的 exact-SHA clean validation + Independent Review 路径。
+- 使用项目声明的 exact-SHA clean validation 路径；
+- 不因为 CI disabled 就自动要求 Independent Review，Review 仍由 Review Policy 决定。
 
 Branch 数量本身不是 CI 成本指标；CI 成本应通过 workflow triggers、minimal/custom profile 和 local/self-hosted execution 控制。
 
@@ -156,7 +196,7 @@ Branch 数量本身不是 CI 成本指标；CI 成本应通过 workflow triggers
 3. 继续所有不依赖该 blocker 的 implementation/review/validation；
 4. 最终统一统计。
 
-不要因为单一环境缺失或一个 PR FAIL 而停止整个版本剩余独立工作。
+不要因为单一环境缺失、一个 PR FAIL 或等待 optional Review 而停止整个版本剩余独立工作。
 
 ## Local Agent Handoff
 
@@ -195,7 +235,7 @@ Handoff Issue: #<number>
 14. Failure / Blocker Reporting Rule。
 15. Expected Evidence / Output。
 
-Issue SHOULD 使用 version Milestone 和 type/state/executor/gate/env/release-impact metadata，使本地 Agent 与后续 Web session 可机械发现和分类。
+Issue SHOULD 使用 version Milestone 和 type/state/review/executor/gate/env/release-impact metadata，使本地 Agent 与后续 Web session 可机械发现和分类。
 
 ## 何时收回控制权
 
@@ -205,5 +245,5 @@ Execution Agent 返回以下任一情况时，ChatGPT Web重新成为决策主�
 - 公共 API 或数据契约必须改变；
 - Security model 必须改变；
 - 测试与冻结需求本身冲突；
-- Mandatory Gate authority 存在争议；
+- Mandatory Gate / Review Policy authority 存在争议；
 - Release decision 需要综合多个 Task/Gate/风险判断。

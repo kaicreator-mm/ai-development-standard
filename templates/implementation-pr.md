@@ -66,14 +66,18 @@ For matrix validation, identify exact tuples. A PASS for one SHA/platform/toolch
 
 ## Independent Review
 
-- Required: `YES / NO`
+- Review Policy: `required / recommended / not-required`
+- Policy authority / rationale: `<...>`
+- Review decision for `recommended`: `PERFORM / SKIP / NOT_APPLICABLE`
 - Review status: `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`
-- Reviewed SHA: `<sha>`
-- Reviewer context: `<human / independent session / agent>`
+- Reviewed SHA: `<sha or NOT_APPLICABLE>`
+- Reviewer context: `<human / independent session / agent / NOT_APPLICABLE>`
 - Review event / evidence: `<Issue/PR comment or review ref>`
-- Local validation requested by reviewer: `YES / NO`
+- Local validation requested by reviewer: `YES / NO / NOT_APPLICABLE`
 
-In Version Branch Mode, Task/Fix PR review is required by default. Review PASS is valid only for the exact reviewed HEAD SHA. A later commit requires delta or full re-review.
+Review is not universally mandatory. When policy is `required`, PASS on the current merge-candidate SHA is a merge prerequisite. When policy is `recommended`, the PR may merge without review only when the skip decision is explicit and no higher-authority rule requires it. When policy is `not-required`, Review Gate is `NOT_APPLICABLE`.
+
+Any review that is performed is exact-SHA evidence. A later commit requires delta/full re-review if that review remains part of the merge decision.
 
 ## Failures Found / Root Cause
 
@@ -91,19 +95,22 @@ Do not stop unrelated work solely because one gate is blocked.
 
 ## Merge Readiness
 
-The PR may enter `state:merge-ready` only when the current merge candidate SHA satisfies the applicable policy:
+The PR may enter `state:merge-ready` only when the current merge candidate satisfies the applicable policy:
 
-- required task Validation PASS;
-- Independent Review PASS;
+- required task/local Validation PASS;
+- review condition satisfied:
+  - `required` → Independent Review PASS on current SHA;
+  - `recommended` → PASS on current SHA **or** explicit SKIP decision/rationale;
+  - `not-required` → Review Gate `NOT_APPLICABLE`;
 - configured required Minimal CI PASS when enabled;
 - required upstream Issue dependencies satisfied for merge;
 - correct integration target / stack parent;
-- no unresolved release-significant blocker/thread.
+- no unresolved release-significant blocker/thread/finding.
 
-If a stacked PR is rebased/retargeted and HEAD changes, affected review/validation must be re-established.
+If a stacked PR is rebased/retargeted and HEAD changes, affected required review/validation must be re-established.
 
 ## Release Impact
 
 `NO_RELEASE_IMPACT / RELEASE_BLOCKED / RELEASE_READY_REQUIRES_CLOSEOUT`
 
-PR PASS or Minimal CI PASS is not Release PASS.
+PR PASS, Review PASS, or Minimal CI PASS is not Release PASS.

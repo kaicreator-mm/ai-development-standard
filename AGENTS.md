@@ -9,7 +9,7 @@
    - ChatGPT Web / Builder / Reviewer → `standards/CHATGPT_WEB_ROLE.md`
    - Codex / Build Host / Local Execution Agent → `standards/CODEX_ROLE.md`
 3. 涉及开发生命周期时读取 `standards/DEVELOPMENT_WORKFLOW.md`。
-4. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event 或 Stacked PR 时读取：
+4. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event、Review Policy 或 Stacked PR 时读取：
    - `standards/VERSION_INTEGRATION_WORKFLOW.md`
    - `standards/GITHUB_WORKFLOW.md`
    - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
@@ -29,6 +29,10 @@
 
 - GitHub repository state、commit、Issue、Issue Dependency、PR、Review、Validation Evidence 与 Release identity 是执行事实；聊天记录不是事实源。
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
+- Independent Review **不是所有 Task/Fix PR 的统一 mandatory gate**。每个 Task/PR 应根据权威来源与风险明确 `required / recommended / not-required` Review Policy。
+- `review:required` 时，当前 merge-candidate exact SHA 必须有 Independent Review PASS；`review:recommended` 可执行也可显式 SKIP；`review:not-required` 的 Review Gate 为 `NOT_APPLICABLE`。
+- Task/Agent 不得静默降低更高权威来源已经声明的 `required` Review Policy。
+- Review 被执行时，Review PASS 绑定 exact reviewed SHA；若 Review 仍是 merge 所需 evidence 且 PR HEAD 改变，旧 PASS 只保留历史意义，必须 delta/full re-review。
 - CI 默认最小化：只做低成本、确定性、clean-checkout 的独立复核；不要默认把多平台矩阵、昂贵 E2E、Critical Journey、Hidden Validation 或 packaging 放入 CI。
 - 启用外部 CI Evidence 发布时，immutable run、exact SHA、Validation Tuple、artifact producer/provenance、`completion.json` publication marker 与 concurrency-safe `latest.json` pointer 必须遵守 `CI_EVIDENCE_STANDARD.md`；`latest.json` 只能做 discovery/cache，不能成为 Release Authority。
 - 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
@@ -37,11 +41,8 @@
 - Sub-issue 表达 belongs-to hierarchy，不自动等于 blocked-by；Stacked PR 只表达真实未合并 code-baseline dependency，不得替代 Issue Dependency 或被用来镜像整个 Task DAG。
 - Substantial version SHOULD 使用 Version Branch Mode：Task/Fix 短分支合并到 `version/vX.Y.Z`，最终再由版本分支合并 `main`；小型低风险维护 MAY 使用 trunk/fast path。
 - Implementation 默认以 Task / Concern 为短分支边界，并遵循 One concern, one PR。Validation-only Issue 不因为存在 Issue 而自动创建 branch；只有需要源码修改时才创建 task/fix branch。
-- Version Branch Mode 的 Task/Fix PR merge 到 version branch 前，默认 MUST 完成当前 exact PR HEAD SHA 上的 required task Validation + Independent Review + configured required Minimal CI（若启用），并满足 merge 所需 Issue Dependencies。
-- Independent Review 的 final authority SHOULD 与刚完成实现的 context 独立；另一 Session/Agent/人类均可，同模型 fresh context 也可，只要从 GitHub 重新建立事实。
-- Review PASS 绑定 exact reviewed SHA；PR HEAD 改变后旧 PASS 只保留历史意义，当前 Review Gate 回到 `NOT_RUN`，必须执行 delta/full re-review。
 - Issue body 是相对稳定的 work contract；metadata 表示当前路由状态；comments SHOULD 作为 append-oriented event log。跨 Agent 关键事件优先使用 `templates/agent-event-comment.md` 的 `ai-dev:event:v1` 格式。
-- Workflow `state:*` 与 Gate status 不得混淆。Gate 只能使用 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`。
+- Workflow `state:*`、Review Policy `review:*` 与 Gate status 不得混淆。Gate 只能使用 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`。
 - Required Gate 的来源必须可追溯。优先级：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults。历史 workflow、旧脚本或 Agent 建议不能自行创建 mandatory release gate。
 - Blocker 只阻塞依赖它的下游节点；其它独立可完成工作必须继续推进并最终统一统计。
 - 不得为了让测试、Validation、Review 或 CI 通过而降低测试强度、删除有效断言、跳过 required gate 或改变冻结需求。

@@ -1,6 +1,8 @@
 # Independent Review Bootstrap Prompt
 
-Use this prompt to start a fresh independent review context for a Task/Fix PR.
+Use this prompt to start a fresh independent review context for a Task/Fix PR **when the Task Review Policy is `required` or when a `recommended` review is explicitly invoked**.
+
+Do not invoke this prompt for `review:not-required` work merely for process formality.
 
 ```text
 你是本项目的 Independent Review Agent。
@@ -20,10 +22,18 @@ Pull Request:
 3. 解析并读取该 immutable revision 对应的 ai-development-standard。
 4. 阅读 PROJECT_OVERRIDES（若存在）。
 5. 读取 PR 关联的 Task Issue。
-6. 读取 Task Issue 的 Milestone、labels/state、Issue Dependencies、相关 sub-issues。
+6. 读取 Task Issue 的 Milestone、labels/state、Review Policy、Issue Dependencies、相关 sub-issues。
 7. 读取 Frozen PRD / Architecture / Task DAG / L3 references。
 8. 读取 PR baseline、target branch、diff、当前 HEAD SHA、已有 Validation Evidence 与 review threads。
 9. 如果 PR 是 stacked PR，确认其 base branch/parent PR 与 Task Issue dependency 语义是否一致；不要把 stack 本身当成 canonical Task DAG。
+
+先确认 Review Policy：
+
+- `required`：本次 Review 是 merge gate，必须输出 exact-SHA Review Result；
+- `recommended`：本次 Review 只有在已被显式调用/领取时执行；Review 本身不是默认 merge gate，但一旦发现有效的 release-significant finding，不能因为 policy= recommended 就忽略，必须修复、接受风险或按项目 authority 明确处置；
+- `not-required`：默认停止审查并记录 policy mismatch，不要为了形式制造 Review Gate；除非 Task/项目 authority 已把 policy 改为 required/recommended。
+
+如果 Task 没有 Review Policy，按 PROJECT_OVERRIDES / Task DAG / Task risk 解析；无法解析时不要把 Review 自动升级为 mandatory，应记录 policy unresolved 并请求上游澄清。
 
 Review 必须独立于实现会话：不要依赖 Builder 的聊天推理或未写入 GitHub 的结论。
 
@@ -64,13 +74,14 @@ Required Change
 - 明确 target SHA、Gate、Environment、Exact Command/entrypoint、Expected observation；
 - 将 Task route 到 validation-needed 或创建/关联 Validation Issue。
 
-如果当前 HEAD 与上次 Reviewed SHA 不同：
+如果当前 HEAD 与上次 Reviewed SHA 不同，并且当前 Task 的 Review Policy 要求或本轮选择继续 Review：
 - 上次 PASS 只对旧 SHA 有效；
 - 对窄小修复可以做 old-reviewed-sha..new-head-sha delta review；
 - 对跨模块/架构/测试语义变化做完整 re-review。
 
 最终把 REVIEW_RESULT 写回 GitHub，使用 templates/agent-event-comment.md 的 ai-dev:event:v1 格式，并给出：
 
+Review Policy
 Reviewed SHA
 Review Gate Result
 Findings summary
@@ -78,5 +89,5 @@ Local validation required
 Remaining risk
 Recommended next workflow state
 
-只有当前 exact HEAD 的 required Validation + Independent Review + configured required CI + merge dependencies 都满足时，Task 才能进入 merge-ready。
+Merge readiness 只要求满足当前 Task 声明为 required 的 gates。Independent Review 仅在 Review Policy = required 时是 merge gate；recommended/not-required 不得被自动升级为 mandatory。
 ```

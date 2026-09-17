@@ -8,7 +8,7 @@ Supported executors include Codex, Claude Code, other coding agents, a Build Hos
 
 The GitHub Issue is the handoff contract. Chat history is not required for execution.
 
-When the handoff belongs to a Task workflow, the Local Agent MUST preserve the GitHub Agent Interaction semantics in `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
+When the handoff belongs to a Task workflow, the Local Agent MUST preserve the GitHub Agent Interaction semantics in `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`, including the Task's declared Review Policy.
 
 ## 2. Issue naming / metadata
 
@@ -60,6 +60,7 @@ Every handoff issue MUST identify:
 - Integration Branch / Target Branch
 - Baseline Commit
 - Parent Task Issue when applicable
+- Parent Task Review Policy when applicable
 - Scope / Task IDs
 - Frozen Inputs: PRD / Architecture / Contract / Task DAG as applicable
 - Web/Reviewer Completed
@@ -88,7 +89,7 @@ The execution agent MUST:
 2. read `.dev-standard/VERSION` and `.dev-standard/PROJECT_OVERRIDES.md`;
 3. resolve the exact pinned standard revision;
 4. read the complete handoff Issue and parent Task/PR when applicable;
-5. read relevant Issue Dependencies / workflow state;
+5. read relevant Issue Dependencies, workflow state and Review Policy;
 6. checkout the specified baseline commit;
 7. run `git status` and `git log -1 --oneline` or equivalent checks;
 8. record any baseline drift before changing code.
@@ -133,14 +134,14 @@ The agent MUST NOT independently change:
 
 If solving a failure requires such a change, report it as BLOCKED for that path and continue independent work.
 
-## 7. Branch creation rule
+## 7. Branch creation / review routing rule
 
 Validation alone does not require a branch.
 
 If no source change is needed:
 
 ```text
-Issue → execute against exact SHA → Validation Report → VALIDATION_RESULT → route parent Task/review
+Issue → execute against exact SHA → Validation Report → VALIDATION_RESULT → route parent Task according to remaining required gates / Review Policy
 ```
 
 If a source change is needed, create an isolated task/fix branch, preferably:
@@ -155,9 +156,11 @@ The resulting PR MUST target the correct integration branch (`version/vX.Y.Z` in
 
 After any code-changing fix:
 
-- affected required gates MUST be re-executed against the resulting exact SHA;
-- any prior Independent Review PASS on an older PR HEAD is historical only;
-- the changed PR MUST return to `state:review-ready` for delta/full re-review before merge.
+- affected required Validation gates MUST be re-executed against the resulting exact SHA;
+- any prior Review PASS on an older PR HEAD remains historical only for that old SHA;
+- if Review Policy is `required`, the changed PR MUST return to `state:review-ready` for delta/full re-review before merge;
+- if Review Policy is `recommended`, return to review-ready only when the optional Review is being continued; otherwise record the Review decision and follow remaining merge prerequisites;
+- if Review Policy is `not-required`, do not create a Review Gate merely because the SHA changed.
 
 ## 8. Blocker behavior
 
@@ -187,11 +190,11 @@ A handoff is complete when one of the following is true:
 
 An Issue MUST NOT be closed merely because an agent finished running commands.
 
-When the handoff was requested by Independent Review:
+When the handoff was requested by an Independent Reviewer:
 
-- validation PASS does not itself make the parent Task merge-ready;
-- route the parent Task back to `state:review-ready` so Reviewer can close the Review Gate on the correct SHA;
-- if source code changed, Reviewer must re-review the new PR HEAD.
+- validation PASS does not by itself decide the parent Task's Review result;
+- if the Review Policy is `required`, or a `recommended` Review is actively in progress, route the parent Task back to `state:review-ready` so the Reviewer can close the Review on the correct SHA;
+- if the Reviewer requested validation only as advisory evidence and the Task has no active Review requirement, route according to the actual remaining required gates instead of forcing review-ready.
 
 ## 10. Expected final output
 

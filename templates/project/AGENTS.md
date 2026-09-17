@@ -18,8 +18,9 @@ This project follows the immutable `kaicreator-mm/ai-development-standard` revis
 - Frozen Task DAG is the planning checkpoint; GitHub Issue Dependencies are the canonical live execution DAG when Issue-based execution is enabled.
 - Sub-issues express hierarchy, not implicit blocking.
 - Stacked PR is only for a real unmerged code-baseline dependency and does not replace Issue Dependency.
-- Version Branch Task/Fix PRs require Independent Review on the current exact HEAD SHA unless the pinned project override defines an authorized narrower exception.
-- If PR HEAD changes after review PASS, affected review must be re-run.
+- Independent Review is risk-based. Each Task/PR follows its declared `required / recommended / not-required` Review Policy from PROJECT_OVERRIDES / Task DAG / Task Issue.
+- `review:required` must be satisfied on the current exact PR HEAD SHA before merge; `review:recommended` may be explicitly performed or skipped; `review:not-required` must not be turned into a mandatory Review Gate merely because Version Branch Mode is used.
+- If PR HEAD changes after a Review PASS, re-review is required only when the Review Policy is `required` or the optional Review is intentionally being continued for the new SHA.
 - Do not change frozen product/architecture semantics to make implementation, review or CI easier.
 - Use the commands and project-specific boundaries in `.dev-standard/PROJECT_OVERRIDES.md`.
 - Formal Stage/Task outputs that become downstream dependencies require a remote checkpoint.
