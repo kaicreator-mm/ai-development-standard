@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/agent-event-v2.schema.json",
+  "title": "AI Development Agent Event v2",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "event", "actor_role", "operator_kind", "operator_id", "status"],
+  "properties": {
+    "schema": {"const": "ai-dev/event-v2"},
+    "event": {
+      "type": "string",
+      "enum": ["ROLE_CLAIMED", "ROLE_RELEASED", "TASK_CLAIMED", "IMPLEMENTATION_READY", "REVIEW_DECISION", "REVIEW_RESULT", "FIX_APPLIED", "VALIDATION_REQUEST", "VALIDATION_RESULT", "BLOCKER_REPORTED", "DEPENDENCY_CHANGED", "MERGE_RESULT"]
+    },
+    "actor_role": {
+      "type": "string",
+      "enum": ["planner", "builder", "reviewer", "validator", "merge-controller", "release-controller"]
+    },
+    "operator_kind": {
+      "type": "string",
+      "enum": ["chatgpt-web", "codex", "claude-code", "human", "github-actions", "woodpecker", "other"]
+    },
+    "operator_id": {"type": "string", "minLength": 1},
+    "session_ref": {"type": "string", "minLength": 1},
+    "transport_actor": {"type": "string", "minLength": 1},
+    "task": {"type": "string", "pattern": "^#[0-9]+$"},
+    "pr": {"type": "string", "pattern": "^#[0-9]+$"},
+    "sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "status": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"]},
+    "next_state": {"type": "string", "minLength": 1}
+  }
+}
