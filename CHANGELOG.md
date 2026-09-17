@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.2.0 — 2026-09-17
+
+新增 provider-neutral CI Evidence Contract，将 CI/自动化验证发布到 Google Drive、S3、MinIO 或其它外部 backend 时的 identity、publication、integrity、discovery 与性能读取路径标准化，同时保持“Validation mandatory、CI 不是 Release Authority”的 v2.x 基线。
+
+- 新增 `standards/CI_EVIDENCE_STANDARD.md`：定义 `manifest.json`、`validation-summary.json`、`environment.json`、`diagnostic.json`、`SHA256SUMS`、`completion.json` 与 workflow-level `latest.json` 的非重叠职责。
+- immutable run identity 绑定 provider run + rerun/attempt + exact SHA，避免同一 pipeline rerun 覆盖历史 Evidence。
+- `completion.json` 被定义为 Evidence publication commit marker；Validation FAIL 也可以 publication COMPLETE，反之 Validation PASS 也不能把 incomplete publication 视为完整证据。
+- `latest.json` 只作为 mutable discovery/cache pointer，必须在 completion 之后更新，并要求 serialization / monotonic compare / CAS 等等价 stale-write protection；它不能成为 Validation 或 Release Authority。
+- artifact 必须记录 producer check/state/provenance；producer 未 PASS 时不能把残留 workspace 文件包装成有效 build/package artifact。
+- consumer-facing metadata 必须使用 Evidence-relative path；合法的 `artifacts/...` published namespace 与本地 staging root 必须按类型/存在性区分，不能靠简单字符串禁用。
+- Validation profile 应保持 Validation Tuple 边界；不要用一个粗粒度命令混合 Windows packaged、Linux logic、visual/golden、Critical Journey、Hidden 或 release packaging 后再输出低信息量 blanket status。
+- 增加 hot/evidence/diagnostic/audit/artifact 分层读取模型：日常状态优先读小型 pointer/summary，大日志和大型 binary artifact 仅按需读取。
+- `VALIDATION_STANDARD.md`、`TESTING_STANDARD.md`、`RELEASE_STANDARD.md` 与 Agent/README 入口同步接入 CI Evidence Contract；标准仓库 verifier 要求核心合同文件存在。
+- 新增 `references/CI_EVIDENCE_REFERENCE_VALIDATION.md`，记录 Formula Woodpecker → Google Drive 真实 pilot：Pipeline 5 验证 `validation FAIL + publication COMPLETE`；Pipeline 6 验证 9/9 checks PASS 但因 Evidence self-verifier namespace 缺陷 publication incomplete 且 latest 不前移；Pipeline 7 修复后完整 PASS 并发布 completion/latest；后续 monotonic latest-pointer regression 作为 v2.2.0 closeout 的最后反例验证。
+
 ## v2.1.0 — 2026-09-17
 
 新增版本集成分支与通用 Local Agent Handoff，强化多 Task、多 Agent、跨环境验证时的 GitHub 事实链，同时保留小改动的 trunk 快速路径。
