@@ -66,7 +66,7 @@ For matrix validation, identify exact tuples. A PASS for one SHA/platform/toolch
 
 ## Independent Review
 
-- Review policy: `required / recommended / not-required`
+- Review Policy: `required / recommended / not-required`
 - Policy authority / rationale: `<...>`
 - Review decision for `recommended`: `PERFORM / SKIP / NOT_APPLICABLE`
 - Review status: `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`
