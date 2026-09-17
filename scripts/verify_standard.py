@@ -51,11 +51,87 @@ for rel in REQUIRED:
     if not path.is_file():
         errors.append(f"missing required file: {rel}")
 
+version = None
 version_path = ROOT / "VERSION"
 if version_path.exists():
     version = version_path.read_text(encoding="utf-8").strip()
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         errors.append(f"VERSION is not SemVer: {version!r}")
+
+if version:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    if f"当前版本：`v{version}`" not in readme:
+        errors.append("README current version does not match VERSION")
+
+# v3+ risk-based Independent Review contract.
+# Historical changelog entries intentionally preserve old v2.3 mandatory wording,
+# so semantic guards target only active operational documents/templates.
+review_policy_files = [
+    "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "standards/DEVELOPMENT_WORKFLOW.md",
+    "standards/GITHUB_WORKFLOW.md",
+    "standards/VERSION_INTEGRATION_WORKFLOW.md",
+    "templates/task-dag.md",
+    "templates/task-issue.md",
+    "templates/implementation-pr.md",
+    "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+]
+
+if version and int(version.split(".", 1)[0]) >= 3:
+    required_policy_tokens = (
+        "review:required",
+        "review:recommended",
+        "review:not-required",
+    )
+    for rel in review_policy_files:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        for token in required_policy_tokens:
+            if token not in text:
+                errors.append(f"{rel} missing risk-based Review Policy token: {token}")
+
+    event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(
+        encoding="utf-8"
+    )
+    event_template = (ROOT / "templates/agent-event-comment.md").read_text(
+        encoding="utf-8"
+    )
+    if "REVIEW_DECISION" not in event_protocol or "REVIEW_DECISION" not in event_template:
+        errors.append("REVIEW_DECISION event is not consistently defined")
+
+    operational_review_files = [
+        "AGENTS.md",
+        "README.md",
+        "standards/DEVELOPMENT_WORKFLOW.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "standards/GITHUB_WORKFLOW.md",
+        "standards/VERSION_INTEGRATION_WORKFLOW.md",
+        "standards/CHATGPT_WEB_ROLE.md",
+        "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+        "templates/project/AGENTS.md",
+        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+        "templates/task-dag.md",
+        "templates/task-issue.md",
+        "templates/implementation-pr.md",
+        "templates/local-agent-handoff-issue.md",
+        "checklists/pr-review.md",
+        "prompts/independent-review-bootstrap.md",
+        "prompts/local-agent-bootstrap.md",
+    ]
+    stale_mandatory_phrases = (
+        "every Task/Fix PR MUST receive an Independent Review",
+        "Independent Review default is mandatory",
+        "Version Branch Mode default is Independent Review required",
+        "Version Branch Task/Fix PRs require Independent Review",
+        "Independent Review 默认 mandatory",
+        "Independent Review 默认 mandatory",
+    )
+    for rel in operational_review_files:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        if "REVIEW_POLICY_DECISION" in text:
+            errors.append(f"{rel} uses deprecated REVIEW_POLICY_DECISION; use REVIEW_DECISION")
+        for phrase in stale_mandatory_phrases:
+            if phrase in text:
+                errors.append(f"{rel} contains stale universal Review requirement: {phrase}")
 
 for md in ROOT.rglob("*.md"):
     text = md.read_text(encoding="utf-8")
