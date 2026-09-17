@@ -18,3 +18,4 @@ jobs:
           python-version: '3.13'
       - run: python scripts/verify_standard.py
       - run: python scripts/test_verify_project_standard.py
+      - run: python scripts/test_protocol_schemas.py
