@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "description": "Canonical inventory of active AI Development Standard assets validated by scripts/verify_standard.py.",
+  "sections": {
+    "authority": [
+      "standard-manifest.json",
+      "VERSION",
+      "README.md",
+      "AGENTS.md",
+      "CHANGELOG.md"
+    ],
+    "normative_standards": [
+      "standards/CHATGPT_WEB_ROLE.md",
+      "standards/CI_EVIDENCE_STANDARD.md",
+      "standards/CODEX_HANDOFF_PROTOCOL.md",
+      "standards/CODEX_ROLE.md",
+      "standards/DEVELOPMENT_WORKFLOW.md",
+      "standards/DOCUMENTATION_STANDARD.md",
+      "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "standards/GITHUB_WORKFLOW.md",
+      "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "standards/MODEL_USAGE_POLICY.md",
+      "standards/PROJECT_ADOPTION.md",
+      "standards/PROJECT_STRUCTURE.md",
+      "standards/RELEASE_STANDARD.md",
+      "standards/REPOSITORY_STANDARD.md",
+      "standards/TESTING_STANDARD.md",
+      "standards/VALIDATION_STANDARD.md",
+      "standards/VERSION_INTEGRATION_WORKFLOW.md"
+    ],
+    "templates": [
+      "templates/agent-event-comment.md",
+      "templates/codex-handoff-issue.md",
+      "templates/final-closeout.md",
+      "templates/implementation-pr.md",
+      "templates/local-agent-handoff-issue.md",
+      "templates/project-overrides.md",
+      "templates/project/AGENTS.md",
+      "templates/project/.dev-standard/VERSION",
+      "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+      "templates/task-dag.md",
+      "templates/task-issue.md",
+      "templates/validation-report.md"
+    ],
+    "checklists": [
+      "checklists/pr-review.md",
+      "checklists/project-init.md",
+      "checklists/version-closure.md"
+    ],
+    "prompts": [
+      "prompts/CODEX_EXECUTION.md",
+      "prompts/L1_PRODUCT_EVIDENCE.md",
+      "prompts/L2_ARCHITECTURE_EVIDENCE.md",
+      "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
+      "prompts/independent-review-bootstrap.md",
+      "prompts/local-agent-bootstrap.md"
+    ],
+    "reference_architectures": [
+      "reference-architectures/MONOREPO.md"
+    ],
+    "references": [
+      "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
+      "references/GITHUB_ENGINEERING_REFERENCES.md"
+    ],
+    "machine_contracts": [
+      "schemas/agent-event-v2.schema.json",
+      "schemas/task-contract.schema.json",
+      "schemas/validation-report.schema.json"
+    ],
+    "verification": [
+      ".github/workflows/verify-standard.yml",
+      "scripts/verify_project_standard.py",
+      "scripts/test_verify_project_standard.py",
+      "scripts/test_protocol_schemas.py",
+      "scripts/test_verify_standard.py",
+      "scripts/verify_standard.py"
+    ]
+  }
+}
