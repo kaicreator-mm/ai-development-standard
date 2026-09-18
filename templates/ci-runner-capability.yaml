@@ -1,0 +1,76 @@
+schema: ai-development-standard/ci-runner-capability/v1
+
+runner:
+  id: <stable-logical-runner-id>
+  role: <ubuntu-build-host | windows-build-host | macos-build-host | hosted-runner | other>
+  provider: <woodpecker | github-actions | gitlab-ci | jenkins | other>
+  provider_version: <version | unknown>
+  backend: <local | container | hosted-vm | kubernetes | shell | other>
+  observed_at: <ISO-8601 UTC timestamp>
+  observation_method: <probe/manual/provider-metadata + version>
+
+platform:
+  os: <name>
+  release: <release>
+  architecture: <arch>
+  cpu_count: <integer | unknown>
+  memory_total: <value | unknown>
+  swap_total: <value | unknown>
+  workspace_available: <value | unknown>
+
+execution:
+  service_user: <user | provider-managed>
+  max_workflows: <integer | provider-managed | unknown>
+  workspace_root: <path | provider-managed>
+  shell_entrypoint: <path/model>
+  clone_checkout: <plugin/action/model>
+  workspace_write_delete: <observed-true | observed-false | not-checked>
+  child_process_spawn: <observed-true | observed-false | not-checked>
+
+runtimes:
+  node: <version/path | unavailable | not-checked>
+  npm: <version/path | unavailable | not-checked>
+  pnpm: <version/path | unavailable | not-checked>
+  python3: <version/path | unavailable | not-checked>
+  go: <version/path | unavailable | not-checked>
+  java: <version/path | unavailable | not-checked>
+  rust: <version/path | unavailable | not-checked>
+  dotnet: <version/path | unavailable | not-checked>
+
+build_toolchains:
+  gcc: <version/path | unavailable | not-checked>
+  gxx: <version/path | unavailable | not-checked>
+  clang: <version/path | unavailable | not-checked>
+  make: <version/path | unavailable | not-checked>
+  cmake: <version/path | unavailable | not-checked>
+  ninja: <version/path | unavailable | not-checked>
+  pkg_config: <version/path | unavailable | not-checked>
+
+container:
+  docker: <supported | unavailable | command-only | not-checked>
+  podman: <supported | unavailable | command-only | not-checked>
+  notes: <optional>
+
+data_clients:
+  sqlite3: <version/path | unavailable | not-checked>
+  psql: <version/path | unavailable | not-checked>
+  redis_cli: <version/path | unavailable | not-checked>
+
+network:
+  dns: <observed | failed | not-checked>
+  https_tls: <observed | failed | not-checked>
+  tested_endpoints:
+    - <non-secret endpoint/category>
+
+capabilities:
+  - <routing capability token>
+
+limitations:
+  - <known limitation>
+
+security:
+  secrets_redacted: true
+  contains_credentials: false
+
+notes:
+  - Capability inventory supports routing only; runtime preflight and exact-SHA Validation Evidence remain authoritative for each run.
