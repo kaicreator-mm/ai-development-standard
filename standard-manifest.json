@@ -3,6 +3,7 @@
   "description": "Canonical inventory of active AI Development Standard assets validated by scripts/verify_standard.py.",
   "sections": {
     "authority": [
+      "standard-manifest.json",
       "VERSION",
       "README.md",
       "AGENTS.md",
@@ -71,6 +72,7 @@
       "scripts/verify_project_standard.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_protocol_schemas.py",
+      "scripts/test_verify_standard.py",
       "scripts/verify_standard.py"
     ]
   }
