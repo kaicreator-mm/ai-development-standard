@@ -27,7 +27,7 @@
     "sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
     "previous_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
     "review_policy": {"type": "string", "enum": ["required", "recommended", "not-required"]},
-    "decision": {"type": "string", "enum": ["skipped", "not-applicable"]},
+    "decision": {"type": "string", "enum": ["perform", "skipped", "not-applicable"]},
     "status": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"]},
     "next_state": {
       "type": "string",
@@ -52,7 +52,48 @@
     },
     {
       "if": {"properties": {"event": {"const": "REVIEW_DECISION"}}, "required": ["event"]},
-      "then": {"required": ["sha", "review_policy", "decision", "reason", "next_state"], "properties": {"actor_role": {"const": "merge-controller"}}}
+      "then": {
+        "required": ["sha", "review_policy", "decision", "reason", "next_state"],
+        "properties": {"actor_role": {"const": "merge-controller"}},
+        "allOf": [
+          {
+            "if": {"properties": {"review_policy": {"const": "required"}}, "required": ["review_policy"]},
+            "then": {
+              "properties": {
+                "decision": {"const": "perform"},
+                "status": {"const": "NOT_RUN"},
+                "next_state": {"const": "review-ready"}
+              }
+            }
+          },
+          {
+            "if": {"properties": {"review_policy": {"const": "recommended"}}, "required": ["review_policy"]},
+            "then": {
+              "properties": {"decision": {"enum": ["perform", "skipped"]}, "status": {"const": "NOT_RUN"}},
+              "allOf": [
+                {
+                  "if": {"properties": {"decision": {"const": "perform"}}, "required": ["decision"]},
+                  "then": {"properties": {"next_state": {"const": "review-ready"}}}
+                },
+                {
+                  "if": {"properties": {"decision": {"const": "skipped"}}, "required": ["decision"]},
+                  "then": {"properties": {"next_state": {"const": "merge-ready"}}}
+                }
+              ]
+            }
+          },
+          {
+            "if": {"properties": {"review_policy": {"const": "not-required"}}, "required": ["review_policy"]},
+            "then": {
+              "properties": {
+                "decision": {"const": "not-applicable"},
+                "status": {"const": "NOT_APPLICABLE"},
+                "next_state": {"const": "merge-ready"}
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "if": {"properties": {"event": {"const": "REVIEW_RESULT"}}, "required": ["event"]},
