@@ -9,7 +9,7 @@ EXPECTED_REPOSITORY = "kaicreator-mm/ai-development-standard"
 REQUIRED_IDENTITY_KEYS = ("repository", "version", "revision")
 SEMVER_RE = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-    r"(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?)?"
+    r"(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?"
     r"(?:\+(?:[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$"
 )
 SHA40_RE = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -118,7 +118,7 @@ def is_placeholder(value: str) -> bool:
 
 def is_not_applicable(value: str) -> bool:
     normalized = value.strip().upper().replace("_", " ")
-    return normalized.startswith("NOT APPLICABLE") or normalized.startswith("NOT_APPLICABLE")
+    return normalized.startswith("NOT APPLICABLE")
 
 
 def require_field(text: str, label: str, errors: list[str]) -> str | None:
