@@ -39,6 +39,8 @@ The declaration describes semantics, not secrets. Tokens, credentials, private U
 
 Provider-specific absolute executable paths MAY be declared by a project when they are part of the real runner contract, but MUST NOT become global standard requirements.
 
+Shared/self-hosted runners SHOULD also have a Runner Capability Profile following `CI_RUNNER_CAPABILITY_STANDARD.md`. That profile supports routing and environment selection; it does not replace run-time preflight or Validation Evidence.
+
 ## 3. Backend Semantics Are Part of the Contract
 
 Pipeline DSL fields are interpreted by the selected provider and backend. Projects and Agents MUST NOT assume that syntax has container semantics unless the selected backend actually provides them.
@@ -233,4 +235,12 @@ A validated Woodpecker Local Backend case is documented in:
 
 - `references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md`
 
-The normative rule is the execution contract above, not any particular Woodpecker path or command.
+A capability snapshot for the same Ubuntu runner role is documented in:
+
+- `references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml`
+
+Runner capability semantics are defined in:
+
+- `standards/CI_RUNNER_CAPABILITY_STANDARD.md`
+
+The normative rule is the execution/capability contract above, not any particular Woodpecker path or command.
