@@ -165,6 +165,97 @@ class ProtocolSchemaTests(unittest.TestCase):
             assert_supported_schema({"type": "strnig"})
         self.assertTrue(validate_subset("x", {"type": "strnig"}))
 
+    def _review_decision(self, **overrides):
+        value = {
+            "schema": "ai-dev/event-v2",
+            "event": "REVIEW_DECISION",
+            "actor_role": "merge-controller",
+            "operator_kind": "chatgpt-web",
+            "operator_id": "chatgpt-web:web-a",
+            "session_ref": "merge-control-a",
+            "transport_actor": "github:kaicreator-mm",
+            "task": "#15",
+            "pr": "#19",
+            "sha": "f31c9dfb285cb96126ec1babb96d63c5fae6b0d2",
+            "review_policy": "recommended",
+            "decision": "skipped",
+            "status": "NOT_RUN",
+            "reason": "optional review explicitly skipped after risk decision",
+            "next_state": "merge-ready",
+        }
+        value.update(overrides)
+        return value
+
+    def test_review_decision_contract_valid_combinations(self) -> None:
+        schema = load_schema("agent-event-v2.schema.json")
+        valid_cases = [
+            self._review_decision(
+                review_policy="required",
+                decision="perform",
+                status="NOT_RUN",
+                next_state="review-ready",
+            ),
+            self._review_decision(
+                review_policy="recommended",
+                decision="perform",
+                status="NOT_RUN",
+                next_state="review-ready",
+            ),
+            self._review_decision(
+                review_policy="recommended",
+                decision="skipped",
+                status="NOT_RUN",
+                next_state="merge-ready",
+            ),
+            self._review_decision(
+                review_policy="not-required",
+                decision="not-applicable",
+                status="NOT_APPLICABLE",
+                next_state="merge-ready",
+            ),
+        ]
+        for value in valid_cases:
+            with self.subTest(policy=value["review_policy"], decision=value["decision"]):
+                self.assertEqual(validate_subset(value, schema), [])
+
+    def test_review_decision_contract_rejects_gate_bypass_combinations(self) -> None:
+        schema = load_schema("agent-event-v2.schema.json")
+        invalid_cases = [
+            self._review_decision(
+                review_policy="required",
+                decision="skipped",
+                status="NOT_RUN",
+                next_state="merge-ready",
+            ),
+            self._review_decision(
+                review_policy="required",
+                decision="perform",
+                status="NOT_RUN",
+                next_state="merge-ready",
+            ),
+            self._review_decision(
+                review_policy="recommended",
+                decision="not-applicable",
+                status="NOT_APPLICABLE",
+                next_state="merge-ready",
+            ),
+            self._review_decision(
+                review_policy="recommended",
+                decision="skipped",
+                status="PASS",
+                next_state="merge-ready",
+            ),
+            self._review_decision(
+                review_policy="not-required",
+                decision="perform",
+                status="NOT_RUN",
+                next_state="review-ready",
+            ),
+        ]
+        for value in invalid_cases:
+            with self.subTest(policy=value["review_policy"], decision=value["decision"], state=value["next_state"]):
+                self.assertTrue(validate_subset(value, schema), value)
+
     def test_review_result_contract(self) -> None:
         schema = load_schema("agent-event-v2.schema.json")
         valid = {
