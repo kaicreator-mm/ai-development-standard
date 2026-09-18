@@ -135,12 +135,38 @@ disabled
 
 - CI profile: `<minimal | custom | disabled>`
 - CI checks (for `custom`): `<checks>`
-- Disabled reason (for `disabled`): `<reason>`
+- Disabled reason (for `disabled`): `<reason | NOT_APPLICABLE when enabled>`
 - Exact-SHA clean-validation fallback: `<policy>`
 
 Default `minimal` CI should remain low-cost and deterministic: project/standard verifier, format/lint/typecheck subset, fast unit/contract smoke, basic build smoke. Do not default full platform matrices, Critical Journeys, Hidden Validation, expensive E2E or packaging into CI.
 
 CI being disabled does not automatically make Independent Review required; Review follows the Review Profile and Task Review Policy.
+
+## CI Execution Profile
+
+Interpret provider-specific workflow syntax only after declaring the real execution model. Follow `standards/CI_EXECUTION_STANDARD.md` from the pinned standard revision.
+
+- CI provider: `<woodpecker | github-actions | gitlab-ci | jenkins | other | NOT_APPLICABLE — reason>`
+- CI backend / execution model: `<local | container | hosted-vm | kubernetes | shell | other | NOT_APPLICABLE — reason>`
+- CI runner role: `<ubuntu-build-host | windows-build-host | hosted-runner | other | NOT_APPLICABLE — reason>`
+- Workflow config: `<repository path | provider-managed identity | NOT_APPLICABLE — reason>`
+- Workflow config source: `<pr-head | merge-ref | base-branch | provider-snapshot | other | NOT_APPLICABLE — reason>`
+- Execution shell / entrypoint model: `<host shell/path | container entrypoint | provider-managed | NOT_APPLICABLE — reason>`
+- Runtime source: `<host-managed | container-image | setup-action/toolcache | other | NOT_APPLICABLE — reason>`
+- Clone / checkout model: `<provider default | local plugin | explicit settings | other | NOT_APPLICABLE — reason>`
+- Partial clone policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
+- Submodule policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
+- Git LFS policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
+- Fresh-run / rerun policy: `<new exact SHA requires fresh run; rerun only proves its own run subject | stricter project rule | NOT_APPLICABLE — reason>`
+
+Rules:
+
+- Provider/backend semantics are part of the execution contract; do not assume `image`, plugin, service or volume semantics from another backend.
+- For host/local backends, verify the host runtime/toolchain before dependency install and tests.
+- For a new source SHA, evidence must come from a run whose tested subject resolves to that SHA; restarting an older pipeline does not validate the new HEAD.
+- Provider-specific executable paths may be declared here when they are real project/runner facts, but they are not portable global defaults.
+- Do not place CI secrets, registration tokens, credentials, cookies or signed URLs in this file.
+- If `CI profile: disabled`, CI execution fields may be `NOT_APPLICABLE — <reason>`; the exact-SHA clean-validation fallback still applies.
 
 ## Required Commands
 

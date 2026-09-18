@@ -33,6 +33,8 @@ Validation 是工程要求；执行器只是实现方式。
 
 任何 PASS 都必须来自真实执行证据，不能来自执行器名称、workflow 存在、cross-build 或 Agent 推测。
 
+当执行器是 CI / automated runner 时，provider/backend/runner/workflow/runtime 的执行语义 SHOULD 遵循 `CI_EXECUTION_STANDARD.md`。CI workflow 语法必须按真实 backend 解释，不能把另一个 backend 的 container/local/host 语义直接套用。
+
 ## 3. Required Gate Authority
 
 Mandatory Gate 必须有可追溯来源。优先级：
@@ -75,6 +77,8 @@ abc123... × Ubuntu 24.04 × Go 1.27 × visible-release
 4. platform/matrix 聚合 PASS 必须由其 required tuples 全部 PASS 得出。
 5. 如果 candidate SHA 变化，旧 SHA 的 tuple evidence 不能自动迁移成新 candidate PASS。
 
+CI 的 provider/backend/workflow identity 属于 execution provenance，不替代这个 tuple；但当这些执行配置会改变实际执行语义时，Evidence SHOULD 一并记录。
+
 ## 5. Gate 分层
 
 ### A. Fast Gate
@@ -107,6 +111,7 @@ CI 是低成本、clean-checkout 的独立复核层，不是完整 Validation �
 
 默认 Minimal CI SHOULD 包含：
 
+- execution environment preflight；
 - standard/project verifier；
 - format/lint/typecheck 的必要确定性子集；
 - 快速 unit/contract smoke；
@@ -133,7 +138,7 @@ disabled
 - `custom`：明确列出项目需要的最小独立 checks；
 - `disabled`：明确不使用 CI，并记录原因；必须保留 exact-SHA clean validation + review。
 
-CI profile 的选择不能降低 frozen product/release validation。
+启用 CI 时，项目 SHOULD 同时声明 `CI_EXECUTION_STANDARD.md` 所要求的 execution profile。CI profile 的选择不能降低 frozen product/release validation。
 
 ## 6. Required Gate 的确定
 
@@ -184,6 +189,8 @@ evidence-only head = <sha>
 
 不得把 working-tree PASS 宣称为未实际执行的 commit SHA PASS。
 
+对 CI run，还 SHOULD 核对 provider run tested SHA 与当前请求 SHA 是否一致。旧 pipeline 的 rerun/restart 只证明其原有 run subject；不得用旧 SHA 的 rerun 作为新 PR HEAD 的 PASS。
+
 当 CI/自动化 Validation Evidence 发布到外部 artifact store 时，SHOULD 遵循 `CI_EVIDENCE_STANDARD.md`：immutable run 必须绑定 exact SHA，`validation-summary.json` 必须保留 Validation Tuple 和五状态 Gate 语义；`latest.json` 只能作为 discovery pointer，不能替代 exact-SHA evidence lookup。
 
 ## 8. Blocker Propagation
@@ -224,9 +231,39 @@ FAIL/BLOCKED 应尽量记录：
 
 对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact。
 
+CI execution/configuration failure（例如 backend 下配置了不存在的本地 executable）不得写成项目测试 PASS。若 runner/environment 本身因外部前置条件当前无法建立，则按真实状态使用 `BLOCKED`/`NOT_RUN`，不要为了“CI 红”而改变 required gate 语义。
+
 外部 Evidence Contract 中的 `completion.json` 只表示 publication COMPLETE。即使 Validation 为 `FAIL/BLOCKED/NOT_RUN`，只要 evidence truthfully 完整发布，仍可以存在 `completion.json`；不得把 publication complete 误写为 Validation PASS。
 
-## 10. CI Evidence Contract
+## 10. CI Execution Contract
+
+当项目启用 CI，使用 [`CI_EXECUTION_STANDARD.md`](CI_EXECUTION_STANDARD.md) 声明/验证：
+
+```text
+provider
+backend / execution model
+runner role
+workflow config identity/source
+shell / entrypoint model
+runtime/toolchain source
+clone/checkout semantics when material
+fresh-run / rerun semantics
+```
+
+推荐执行顺序：
+
+```text
+clean checkout
+→ environment preflight
+→ bootstrap
+→ project/standard verifier
+→ cheap deterministic checks
+→ evidence publication when configured
+```
+
+provider status 和 pipeline restart 行为不能替代 exact-SHA identity 检查。
+
+## 11. CI Evidence Contract
 
 当项目需要让 CI Evidence 可被 ChatGPT、Agent、Release tooling 或其它消费者稳定读取时，使用 [`CI_EVIDENCE_STANDARD.md`](CI_EVIDENCE_STANDARD.md)。
 
@@ -253,7 +290,7 @@ resolve requested exact SHA
 
 CI provider UI/status 可以帮助发现 execution run，但不能替代上述 exact-SHA Evidence Contract。
 
-## 11. 禁止事项
+## 12. 禁止事项
 
 - 删除有效测试以消除失败。
 - 将 required gate 改为可选以消除失败。
@@ -264,6 +301,8 @@ CI provider UI/status 可以帮助发现 execution run，但不能替代上述 e
 - 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL。
 - 把 CI PASS 当成未执行的 Platform/CJ/Hidden/Packaging PASS。
 - 把 cross-build 当成真实 platform PASS。
+- 把旧-SHA pipeline rerun 当成当前 HEAD PASS。
+- 未声明 CI backend 就按另一个 backend 的语义解释 provider-specific workflow 字段。
 - 把 `latest.json` 当成请求 SHA 的权威 Validation Evidence。
 - 把 `completion.json` 当成 Validation PASS。
 - 发布 producer 未 PASS 的 stale build/package artifact 并把它标记为有效。

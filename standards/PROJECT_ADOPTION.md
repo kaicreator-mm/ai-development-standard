@@ -65,6 +65,7 @@ read AGENTS / concern-specific standards from same revision
 - bootstrap / lint / test / build commands；
 - validation execution environments；
 - CI profile；
+- CI provider/backend/runner/workflow execution profile；
 - platform/runtime/toolchain requirements；
 - project-specific hard boundaries；
 - release gates；
@@ -114,7 +115,43 @@ disabled
 
 CI profile 不能改变 frozen product/release gate。
 
-### 3.3 Required Gate Authority
+### 3.3 CI Execution Profile
+
+当 CI profile 为 `minimal` 或 `custom` 时，项目 SHOULD 按 `CI_EXECUTION_STANDARD.md` 声明真实执行模型，至少包括：
+
+```text
+CI provider
+CI backend / execution model
+CI runner role
+workflow config path
+workflow config source semantics
+execution shell / entrypoint model
+runtime/toolchain source
+fresh-run / rerun policy
+```
+
+如果 clone/checkout 的 provider 默认值会影响可复现性或稳定性，还 SHOULD 明确：
+
+```text
+partial clone/filtering
+submodule recursion
+Git LFS
+clone plugin/entrypoint model
+```
+
+规则：
+
+1. provider/backend 是执行语义，不是装饰性 metadata；修改 provider-specific workflow 前必须先解析它们。
+2. 不得因为字段名叫 `image` 就假设一定代表 container image；含义由 provider + backend 决定。
+3. Local/host backend 使用宿主机 runtime 时，应声明 runtime source 并在 CI preflight 中验证真实版本。
+4. workflow config source 必须足以解释 provider 是读取当前 PR HEAD、merge ref、base branch、stored snapshot 或其它来源。
+5. 新 source SHA 需要能证明该 SHA 的 fresh run；旧 pipeline 的 rerun/restart 不得作为新 HEAD evidence。
+6. provider-specific 绝对路径可以作为项目/runner contract 记录，但不得反向成为全局标准硬编码。
+7. secrets/registration token/private credential 不得写入 `PROJECT_OVERRIDES.md`。
+
+当 CI profile 为 `disabled` 时，CI execution fields MAY 使用 `NOT_APPLICABLE — <reason>`，但 exact-SHA clean-validation fallback 仍必须真实可执行。
+
+### 3.4 Required Gate Authority
 
 项目 mandatory gate 必须遵循：
 
@@ -128,7 +165,7 @@ Frozen PRD / Contract
 
 PROJECT_OVERRIDES 可以增加项目真实需要的 gate，但不得因为历史 workflow/旧脚本存在而推导新 mandatory gate。
 
-### 3.4 Required-but-unestablished command / runner
+### 3.5 Required-but-unestablished command / runner
 
 命令字段必须描述真实可执行能力，不得为满足 checklist 编造 shell command。
 
@@ -155,10 +192,10 @@ Then read pinned AGENTS.md and concern-specific standards.
 1. 确认 repository baseline 和 project type。
 2. 复制 `templates/project/` 中适用文件。
 3. 写入当前采用标准的 version + 40-char revision。
-4. 填写真实 commands、validation environments、CI profile、platform/toolchain matrix、release gates。
+4. 填写真实 commands、validation environments、CI profile、CI execution profile、platform/toolchain matrix、release gates。
 5. 完成 immutable resolution 与 version/revision consistency 验证。
 6. 执行 `scripts/verify_project_standard.py <project-root>` 或 pinned revision 中等价 verifier。
-7. 按 `checklists/project-init.md` 检查 repository structure、docs、tests、Validation、Minimal CI policy 和 release gates。
+7. 按 `checklists/project-init.md` 检查 repository structure、docs、tests、Validation、Minimal CI execution/evidence policy 和 release gates。
 8. 作为独立 PR 合并接入变更。
 
 ## 6. 升级标准版本
@@ -167,7 +204,7 @@ Then read pinned AGENTS.md and concern-specific standards.
 
 1. 选择目标标准 commit SHA 并确认 VERSION/CHANGELOG。
 2. 阅读 breaking changes 与新增/变化 standards/templates。
-3. 判断与项目 override、Validation、CI profile、release policy 是否冲突。
+3. 判断与项目 override、Validation、CI profile、CI execution profile、release policy 是否冲突。
 4. 更新 `.dev-standard/VERSION`。
 5. 必要时同步项目模板；不要机械覆盖已有定制。
 6. 重新完成 immutable resolution。
@@ -183,4 +220,6 @@ Then read pinned AGENTS.md and concern-specific standards.
 - 把领域规则反向塞入全局工程标准。
 - 依赖聊天记忆判断采用 revision。
 - 把 CI 当成完整 Validation 或 Release Qualification。
+- 未声明 backend 就按另一个 CI/backend 的语义修改 workflow。
+- 用旧-SHA pipeline rerun 冒充当前 PR HEAD 的 Validation Evidence。
 - 为追求“绿”把 required gate 从 override 中删除。
