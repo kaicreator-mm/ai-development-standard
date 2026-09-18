@@ -218,6 +218,42 @@ class ProtocolSchemaTests(unittest.TestCase):
             with self.subTest(policy=value["review_policy"], decision=value["decision"]):
                 self.assertEqual(validate_subset(value, schema), [])
 
+    def test_review_decision_contract_policy_only_forms(self) -> None:
+        schema = load_schema("agent-event-v2.schema.json")
+        valid_cases = [
+            ("required", "NOT_RUN", "ready"),
+            ("recommended", "NOT_RUN", "ready"),
+            ("not-required", "NOT_APPLICABLE", "merge-ready"),
+        ]
+        for review_policy, status, next_state in valid_cases:
+            value = self._review_decision(
+                review_policy=review_policy,
+                status=status,
+                next_state=next_state,
+                reason="record Review Policy without choosing an optional execution decision",
+            )
+            del value["decision"]
+            with self.subTest(policy=review_policy):
+                self.assertEqual(validate_subset(value, schema), [])
+
+        required_direct_merge = self._review_decision(
+            review_policy="required",
+            status="NOT_RUN",
+            next_state="merge-ready",
+            reason="policy record must not bypass required Independent Review",
+        )
+        del required_direct_merge["decision"]
+        self.assertTrue(validate_subset(required_direct_merge, schema), required_direct_merge)
+
+        recommended_direct_merge = self._review_decision(
+            review_policy="recommended",
+            status="NOT_RUN",
+            next_state="merge-ready",
+            reason="recommended review requires explicit skipped decision before merge-ready",
+        )
+        del recommended_direct_merge["decision"]
+        self.assertTrue(validate_subset(recommended_direct_merge, schema), recommended_direct_merge)
+
     def test_review_decision_contract_rejects_gate_bypass_combinations(self) -> None:
         schema = load_schema("agent-event-v2.schema.json")
         invalid_cases = [
