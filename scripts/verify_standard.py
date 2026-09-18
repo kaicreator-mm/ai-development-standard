@@ -6,7 +6,79 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "standard-manifest.json"
 
+# Bootstrap inventory is deliberately code-owned rather than manifest-owned.
+# This prevents a single edit from deleting both an active asset and its manifest
+# entry while still passing verification. It is the union of the pre-v3.2
+# hard-required set plus active core assets introduced or identified during v3.2.
+BOOTSTRAP_REQUIRED = {
+    "standard-manifest.json",
+    "VERSION",
+    "README.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    ".github/workflows/verify-standard.yml",
+    "standards/DEVELOPMENT_WORKFLOW.md",
+    "standards/VERSION_INTEGRATION_WORKFLOW.md",
+    "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "standards/CHATGPT_WEB_ROLE.md",
+    "standards/CODEX_ROLE.md",
+    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+    "standards/CODEX_HANDOFF_PROTOCOL.md",
+    "standards/VALIDATION_STANDARD.md",
+    "standards/CI_EVIDENCE_STANDARD.md",
+    "standards/GITHUB_WORKFLOW.md",
+    "standards/RELEASE_STANDARD.md",
+    "standards/MODEL_USAGE_POLICY.md",
+    "standards/PROJECT_ADOPTION.md",
+    "standards/PROJECT_STRUCTURE.md",
+    "standards/REPOSITORY_STANDARD.md",
+    "standards/DOCUMENTATION_STANDARD.md",
+    "standards/TESTING_STANDARD.md",
+    "templates/project/.dev-standard/VERSION",
+    "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+    "templates/project/AGENTS.md",
+    "templates/task-issue.md",
+    "templates/agent-event-comment.md",
+    "templates/local-agent-handoff-issue.md",
+    "templates/codex-handoff-issue.md",
+    "templates/implementation-pr.md",
+    "templates/validation-report.md",
+    "templates/final-closeout.md",
+    "templates/task-dag.md",
+    "checklists/project-init.md",
+    "checklists/pr-review.md",
+    "checklists/version-closure.md",
+    "prompts/L1_PRODUCT_EVIDENCE.md",
+    "prompts/L2_ARCHITECTURE_EVIDENCE.md",
+    "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
+    "prompts/independent-review-bootstrap.md",
+    "prompts/local-agent-bootstrap.md",
+    "prompts/CODEX_EXECUTION.md",
+    "schemas/agent-event-v2.schema.json",
+    "schemas/task-contract.schema.json",
+    "schemas/validation-report.schema.json",
+    "scripts/verify_standard.py",
+    "scripts/test_verify_standard.py",
+    "scripts/verify_project_standard.py",
+    "scripts/test_verify_project_standard.py",
+    "scripts/test_protocol_schemas.py",
+}
+
 errors: list[str] = []
+
+
+def require_file(rel: str) -> Path:
+    path = ROOT / rel
+    if not path.is_file():
+        errors.append(f"missing bootstrap-required file: {rel}")
+    return path
+
+
+def read_required_text(rel: str) -> str:
+    path = require_file(rel)
+    if not path.is_file():
+        return ""
+    return path.read_text(encoding="utf-8")
 
 
 def load_manifest() -> dict:
@@ -56,45 +128,18 @@ def validate_manifest(manifest: dict) -> list[str]:
             if not (ROOT / rel).is_file():
                 errors.append(f"manifest-declared file is missing: {rel}")
 
-    core_required = {
-        "VERSION",
-        "README.md",
-        "AGENTS.md",
-        "CHANGELOG.md",
-        "standards/DEVELOPMENT_WORKFLOW.md",
-        "standards/VERSION_INTEGRATION_WORKFLOW.md",
-        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-        "standards/PROJECT_STRUCTURE.md",
-        "standards/REPOSITORY_STANDARD.md",
-        "standards/DOCUMENTATION_STANDARD.md",
-        "standards/TESTING_STANDARD.md",
-        "standards/VALIDATION_STANDARD.md",
-        "standards/RELEASE_STANDARD.md",
-        "standards/PROJECT_ADOPTION.md",
-        "templates/task-issue.md",
-        "templates/agent-event-comment.md",
-        "templates/implementation-pr.md",
-        "templates/validation-report.md",
-        "checklists/project-init.md",
-        "checklists/pr-review.md",
-        "checklists/version-closure.md",
-        "schemas/agent-event-v2.schema.json",
-        "schemas/task-contract.schema.json",
-        "schemas/validation-report.schema.json",
-        "scripts/verify_project_standard.py",
-        "scripts/test_verify_project_standard.py",
-        "scripts/test_protocol_schemas.py",
-        ".github/workflows/verify-standard.yml",
-    }
-    missing_core = sorted(core_required - seen)
-    for rel in missing_core:
-        errors.append(f"manifest omits core standard asset: {rel}")
+    for rel in sorted(BOOTSTRAP_REQUIRED):
+        if not (ROOT / rel).is_file():
+            errors.append(f"bootstrap-required asset is missing: {rel}")
+        if rel not in seen:
+            errors.append(f"manifest omits bootstrap-required asset: {rel}")
 
     machine_contracts = sections.get("machine_contracts", [])
     if isinstance(machine_contracts, list):
         for rel in machine_contracts:
             path = ROOT / rel
             if not path.is_file():
+                errors.append(f"machine contract file is missing: {rel}")
                 continue
             try:
                 schema = json.loads(path.read_text(encoding="utf-8"))
@@ -116,8 +161,8 @@ manifest_paths = validate_manifest(manifest)
 
 version = None
 version_tuple = None
-version_path = ROOT / "VERSION"
-if version_path.exists():
+version_path = require_file("VERSION")
+if version_path.is_file():
     version = version_path.read_text(encoding="utf-8").strip()
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         errors.append(f"VERSION is not SemVer: {version!r}")
@@ -125,15 +170,11 @@ if version_path.exists():
         version_tuple = tuple(int(part) for part in version.split("."))
 
 if version:
-    readme_path = ROOT / "README.md"
-    if readme_path.is_file():
-        readme = readme_path.read_text(encoding="utf-8")
-        if f"当前版本：`v{version}`" not in readme:
-            errors.append("README current version does not match VERSION")
+    readme = read_required_text("README.md")
+    if f"当前版本：`v{version}`" not in readme:
+        errors.append("README current version does not match VERSION")
 
 # v3+ risk-based Independent Review contract.
-# Historical changelog entries intentionally preserve old v2.3 mandatory wording,
-# so semantic guards target only active operational documents/templates.
 review_policy_files = [
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
     "standards/DEVELOPMENT_WORKFLOW.md",
@@ -147,10 +188,7 @@ review_policy_files = [
 
 if version_tuple and version_tuple[0] >= 3:
     for rel in review_policy_files:
-        path = ROOT / rel
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
+        text = read_required_text(rel)
         if "Review Policy" not in text:
             errors.append(f"{rel} missing Review Policy semantics")
         if "recommended" not in text or "not-required" not in text:
@@ -161,18 +199,13 @@ if version_tuple and version_tuple[0] >= 3:
         "standards/GITHUB_WORKFLOW.md",
         "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
     ):
-        path = ROOT / rel
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
+        text = read_required_text(rel)
         for token in ("review:required", "review:recommended", "review:not-required"):
             if token not in text:
                 errors.append(f"{rel} missing portable Review Policy label: {token}")
 
-    event_protocol_path = ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
-    event_template_path = ROOT / "templates/agent-event-comment.md"
-    event_protocol = event_protocol_path.read_text(encoding="utf-8") if event_protocol_path.is_file() else ""
-    event_template = event_template_path.read_text(encoding="utf-8") if event_template_path.is_file() else ""
+    event_protocol = read_required_text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+    event_template = read_required_text("templates/agent-event-comment.md")
     if "REVIEW_DECISION" not in event_protocol or "REVIEW_DECISION" not in event_template:
         errors.append("REVIEW_DECISION event is not consistently defined")
 
@@ -203,10 +236,7 @@ if version_tuple and version_tuple[0] >= 3:
         "Independent Review 默认 mandatory",
     )
     for rel in operational_review_files:
-        path = ROOT / rel
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
+        text = read_required_text(rel)
         if "REVIEW_POLICY_DECISION" in text:
             errors.append(f"{rel} uses deprecated REVIEW_POLICY_DECISION; use REVIEW_DECISION")
         for phrase in stale_mandatory_phrases:
@@ -232,16 +262,13 @@ if version_tuple and version_tuple >= (3, 1, 0):
         "transport_actor",
     )
     for rel in operator_surfaces:
-        path = ROOT / rel
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
+        text = read_required_text(rel)
         for token in required_tokens:
             if token not in text:
                 errors.append(f"{rel} missing operator attribution token: {token}")
 
-    event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(encoding="utf-8")
-    event_template = (ROOT / "templates/agent-event-comment.md").read_text(encoding="utf-8")
+    event_protocol = read_required_text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+    event_template = read_required_text("templates/agent-event-comment.md")
     for rel, text in (
         ("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md", event_protocol),
         ("templates/agent-event-comment.md", event_template),
@@ -266,3 +293,4 @@ if errors:
 
 print("standard verification: PASS")
 print(f"manifest files: {len(manifest_paths)}")
+print(f"bootstrap-required files: {len(BOOTSTRAP_REQUIRED)}")
