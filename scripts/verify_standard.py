@@ -18,11 +18,13 @@ REQUIRED = [
     "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
     "standards/CODEX_HANDOFF_PROTOCOL.md",
     "standards/VALIDATION_STANDARD.md",
+    "standards/CI_EXECUTION_STANDARD.md",
     "standards/CI_EVIDENCE_STANDARD.md",
     "standards/GITHUB_WORKFLOW.md",
     "standards/RELEASE_STANDARD.md",
     "standards/MODEL_USAGE_POLICY.md",
     "standards/PROJECT_ADOPTION.md",
+    "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
     "templates/project/.dev-standard/VERSION",
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
     "templates/project/AGENTS.md",
@@ -36,6 +38,7 @@ REQUIRED = [
     "templates/validation-report.md",
     "templates/final-closeout.md",
     "templates/task-dag.md",
+    "checklists/project-init.md",
     "checklists/pr-review.md",
     "prompts/L1_PRODUCT_EVIDENCE.md",
     "prompts/L2_ARCHITECTURE_EVIDENCE.md",
@@ -186,6 +189,60 @@ if version_tuple and version_tuple >= (3, 1, 0):
 
     if "ai-dev:event:v1" not in event_protocol or "ai-dev:event:v1" not in event_template:
         errors.append("event v1 backward-compatibility is not documented")
+
+# CI Execution Contract guards. These are intentionally active on this candidate branch
+# before VERSION is promoted, so the feature can be validated before release/version bump.
+ci_execution = ROOT / "standards/CI_EXECUTION_STANDARD.md"
+if ci_execution.is_file():
+    text = ci_execution.read_text(encoding="utf-8")
+    for token in (
+        "Project CI Execution Profile",
+        "Backend Semantics Are Part of the Contract",
+        "Workflow Configuration Identity",
+        "Fresh Pipeline vs Rerun",
+        "Execution Environment Preflight",
+        "Local / Host Backend Rules",
+        "Container Backend Rules",
+        "CI_EVIDENCE_STANDARD.md",
+    ):
+        if token not in text:
+            errors.append(f"CI_EXECUTION_STANDARD missing semantic token: {token}")
+
+    override_template = (ROOT / "templates/project/.dev-standard/PROJECT_OVERRIDES.md").read_text(
+        encoding="utf-8"
+    )
+    for token in (
+        "CI Execution Profile",
+        "CI provider",
+        "CI backend / execution model",
+        "CI runner role",
+        "Workflow config source",
+        "Execution shell / entrypoint model",
+        "Runtime source",
+        "Fresh-run / rerun policy",
+    ):
+        if token not in override_template:
+            errors.append(f"PROJECT_OVERRIDES template missing CI execution token: {token}")
+
+    project_adoption = (ROOT / "standards/PROJECT_ADOPTION.md").read_text(encoding="utf-8")
+    if "CI Execution Profile" not in project_adoption or "CI_EXECUTION_STANDARD.md" not in project_adoption:
+        errors.append("PROJECT_ADOPTION does not wire the CI Execution Contract")
+
+    validation_standard = (ROOT / "standards/VALIDATION_STANDARD.md").read_text(encoding="utf-8")
+    if "CI Execution Contract" not in validation_standard or "CI_EXECUTION_STANDARD.md" not in validation_standard:
+        errors.append("VALIDATION_STANDARD does not wire the CI Execution Contract")
+
+    project_init = (ROOT / "checklists/project-init.md").read_text(encoding="utf-8")
+    for token in ("backend/execution model", "workflow config", "fresh run"):
+        if token.lower() not in project_init.lower():
+            errors.append(f"project-init checklist missing CI execution concept: {token}")
+
+    reference = (ROOT / "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md").read_text(
+        encoding="utf-8"
+    )
+    for token in ("Woodpecker CI 3.18.1", "local", "node:22-bookworm", "pipeline: #55"):
+        if token not in reference:
+            errors.append(f"Woodpecker local reference missing validated fact: {token}")
 
 for md in ROOT.rglob("*.md"):
     text = md.read_text(encoding="utf-8")
