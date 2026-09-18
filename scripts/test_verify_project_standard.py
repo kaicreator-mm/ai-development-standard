@@ -14,12 +14,50 @@ VALID_VERSION = (
     "version=1.2.1\n"
     f"revision={VALID_REVISION}\n"
 )
+VALID_OVERRIDES = """# Project Overrides
+
+## CI Profile
+
+- CI profile: minimal
+- CI checks (for `custom`): NOT_APPLICABLE — minimal profile
+- Disabled reason (for `disabled`): NOT_APPLICABLE — CI enabled
+- Exact-SHA clean-validation fallback: Ubuntu Build Host clean checkout
+
+## CI Execution Profile
+
+- CI provider: woodpecker
+- CI backend / execution model: local
+- CI runner role: ubuntu-build-host
+- Workflow config: .woodpecker/verify.yaml
+- Workflow config source: pr-head
+- Execution shell / entrypoint model: host bash
+- Runtime source: host-managed Node >=22
+- Clone / checkout model: local plugin with explicit settings
+- Partial clone policy: disabled
+- Submodule policy: disabled
+- Git LFS policy: disabled
+- Fresh-run / rerun policy: new exact SHA requires fresh run; rerun proves only its own run subject
+
+## Required Commands
+
+- Bootstrap: npm ci
+- Format: NOT_APPLICABLE — project has no formatter gate
+- Lint: npm run lint
+- Typecheck: npm run typecheck
+- Unit: npm test
+- Contract: npm test
+- Integration: NOT_RUN — integration runner is task-specific
+- Critical Journey: NOT_RUN — version closure only
+- Hidden Validation: NOT_RUN — candidate not frozen
+- Production Build / Package: NOT_APPLICABLE — library package
+"""
 
 
 @dataclass(frozen=True)
 class Case:
     name: str
     version_text: str = VALID_VERSION
+    overrides_text: str = VALID_OVERRIDES
     include_agents: bool = True
     include_overrides: bool = True
     expected_code: int = 0
@@ -28,7 +66,7 @@ class Case:
 
 
 CASES = [
-    Case(name="valid official three-field identity"),
+    Case(name="valid official identity and CI execution profile"),
     Case(
         name="legacy single-line identity rejected",
         version_text="ai-development-standard@v1.2.0\n",
@@ -98,7 +136,7 @@ CASES = [
         diagnostic="missing: .dev-standard/PROJECT_OVERRIDES.md",
     ),
     Case(
-        name="template placeholders rejected",
+        name="template identity placeholders rejected",
         version_text=(
             "repository=kaicreator-mm/ai-development-standard\n"
             "version=<semantic-version>\n"
@@ -127,6 +165,57 @@ CASES = [
         expected_status="FAIL",
         diagnostic="missing key in .dev-standard/VERSION: repository",
     ),
+    Case(
+        name="invalid CI profile rejected",
+        overrides_text=VALID_OVERRIDES.replace("- CI profile: minimal", "- CI profile: full"),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="CI profile must be one of minimal/custom/disabled",
+    ),
+    Case(
+        name="missing backend declaration rejected",
+        overrides_text=VALID_OVERRIDES.replace("- CI backend / execution model: local\n", ""),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="PROJECT_OVERRIDES missing field: CI backend / execution model",
+    ),
+    Case(
+        name="placeholder provider rejected",
+        overrides_text=VALID_OVERRIDES.replace("- CI provider: woodpecker", "- CI provider: <provider>"),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="field contains unreplaced placeholder: CI provider",
+    ),
+    Case(
+        name="enabled CI cannot mark runtime source not applicable",
+        overrides_text=VALID_OVERRIDES.replace(
+            "- Runtime source: host-managed Node >=22",
+            "- Runtime source: NOT_APPLICABLE — unknown",
+        ),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="enabled CI cannot mark Runtime source NOT_APPLICABLE",
+    ),
+    Case(
+        name="required command placeholder rejected",
+        overrides_text=VALID_OVERRIDES.replace("- Lint: npm run lint", "- Lint: <command>"),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="field contains unreplaced placeholder: Lint",
+    ),
+    Case(
+        name="disabled CI requires real reason",
+        overrides_text=(
+            VALID_OVERRIDES.replace("- CI profile: minimal", "- CI profile: disabled")
+            .replace(
+                "- Disabled reason (for `disabled`): NOT_APPLICABLE — CI enabled",
+                "- Disabled reason (for `disabled`): NOT_APPLICABLE — no reason",
+            )
+        ),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="disabled CI requires a real Disabled reason",
+    ),
 ]
 
 
@@ -137,7 +226,7 @@ def run_case(case: Case) -> subprocess.CompletedProcess[str]:
         standard_dir.mkdir()
         (standard_dir / "VERSION").write_text(case.version_text, encoding="utf-8")
         if case.include_overrides:
-            (standard_dir / "PROJECT_OVERRIDES.md").write_text("# Project Overrides\n", encoding="utf-8")
+            (standard_dir / "PROJECT_OVERRIDES.md").write_text(case.overrides_text, encoding="utf-8")
         if case.include_agents:
             (root / "AGENTS.md").write_text("# AGENTS\n", encoding="utf-8")
 
