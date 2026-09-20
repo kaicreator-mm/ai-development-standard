@@ -20,5 +20,6 @@ jobs:
       - run: python scripts/test_verify_project_standard.py
       - run: python scripts/test_project_execution_profile.py
       - run: python scripts/test_protocol_schemas.py
+      - run: python scripts/test_v33_lifecycle_contracts.py
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
