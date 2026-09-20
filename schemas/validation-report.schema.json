@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/validation-report.schema.json",
+  "title": "AI Development Validation Report",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["repository", "tested_sha", "execution_host_role", "platform", "runtime_toolchain", "validation_profile", "command", "state"],
+  "properties": {
+    "repository": {"type": "string", "minLength": 1},
+    "tested_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "candidate_sha": {"type": ["string", "null"], "pattern": "^[0-9a-fA-F]{40}$"},
+    "evidence_only_head": {"type": ["string", "null"], "pattern": "^[0-9a-fA-F]{40}$"},
+    "branch_ref": {"type": "string"},
+    "execution_host_role": {"type": "string", "minLength": 1},
+    "execution_channel": {"type": ["string", "null"]},
+    "provider_state": {"type": ["string", "null"], "enum": ["AVAILABLE", "INFRA_BLOCKED", "TIMED_OUT", "CANCELLED", null]},
+    "platform": {"type": "string", "minLength": 1},
+    "architecture": {"type": "string"},
+    "runtime_toolchain": {"type": "string", "minLength": 1},
+    "validation_profile": {"type": "string", "minLength": 1},
+    "validation_scope": {"type": "string", "enum": ["concern", "integration", "closure"]},
+    "validation_impact": {"type": ["string", "null"], "enum": ["none", "affected", "unknown", null]},
+    "evidence_reuse_basis": {"type": ["string", "null"]},
+    "command": {"type": "string", "minLength": 1},
+    "exit_code": {"type": ["integer", "null"]},
+    "state": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"]},
+    "started_at": {"type": "string"},
+    "ended_at": {"type": "string"},
+    "key_logs": {"type": "array", "items": {"type": "string"}}
+  }
+}

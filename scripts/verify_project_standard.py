@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 EXPECTED_REPOSITORY = "kaicreator-mm/ai-development-standard"
@@ -31,7 +33,9 @@ def parse_version_identity(path: Path) -> tuple[dict[str, str], list[str]]:
     allowed = set(REQUIRED_IDENTITY_KEYS)
     for line_number, line in enumerate(lines, start=1):
         if not line or line != line.strip():
-            errors.append(f"invalid VERSION line {line_number}: expected key=value without blank/outer whitespace")
+            errors.append(
+                f"invalid VERSION line {line_number}: expected key=value without blank/outer whitespace"
+            )
             continue
         key, separator, value = line.partition("=")
         if not separator or not key or not value or "=" in value:
@@ -76,7 +80,79 @@ def parse_version_identity(path: Path) -> tuple[dict[str, str], list[str]]:
     return identity, errors
 
 
-def verify_project(root: Path) -> list[str]:
+def _run_git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def verify_exact_standard_revision(identity: dict[str, str], standard_repo: Path) -> list[str]:
+    """Verify immutable standard identity against a local Git object database.
+
+    This function intentionally performs no fallback to main/latest and no implicit
+    network fetch. The caller must provide a repository that already contains the
+    pinned commit object. That makes resolution deterministic in CI, Build Host,
+    cached clones, and offline validation environments.
+    """
+
+    errors: list[str] = []
+    revision = identity.get("revision")
+    expected_version = identity.get("version")
+    repository = identity.get("repository")
+
+    if not revision or not expected_version or not repository:
+        return ["cannot resolve standard revision because identity is incomplete"]
+
+    if not standard_repo.exists():
+        return [f"standard repository path does not exist: {standard_repo}"]
+
+    inside = _run_git(standard_repo, "rev-parse", "--is-inside-work-tree")
+    if inside.returncode != 0 or inside.stdout.strip() != "true":
+        return [f"standard repository path is not a Git work tree: {standard_repo}"]
+
+    commit_check = _run_git(standard_repo, "cat-file", "-e", f"{revision}^{{commit}}")
+    if commit_check.returncode != 0:
+        errors.append(
+            "pinned standard revision is not resolvable in the provided Git repository: "
+            f"{revision}"
+        )
+        return errors
+
+    resolved = _run_git(standard_repo, "rev-parse", f"{revision}^{{commit}}")
+    if resolved.returncode != 0 or resolved.stdout.strip().lower() != revision.lower():
+        errors.append(
+            "resolved standard commit identity does not equal pinned revision: "
+            f"expected={revision!r} actual={resolved.stdout.strip()!r}"
+        )
+        return errors
+
+    version_result = _run_git(standard_repo, "show", f"{revision}:VERSION")
+    if version_result.returncode != 0:
+        errors.append(f"pinned standard revision does not contain VERSION: {revision}")
+    else:
+        actual_version = version_result.stdout.strip()
+        if actual_version != expected_version:
+            errors.append(
+                "pinned standard VERSION mismatch: "
+                f"declared={expected_version!r} revision_VERSION={actual_version!r}"
+            )
+
+    agents_result = _run_git(standard_repo, "cat-file", "-e", f"{revision}:AGENTS.md")
+    if agents_result.returncode != 0:
+        errors.append(f"pinned standard revision does not contain AGENTS.md: {revision}")
+
+    return errors
+
+
+def verify_project(
+    root: Path,
+    *,
+    standard_repo: Path | None = None,
+    require_resolution: bool = False,
+) -> list[str]:
     errors: list[str] = []
     version_file = root / ".dev-standard" / "VERSION"
     override_file = root / ".dev-standard" / "PROJECT_OVERRIDES.md"
@@ -86,16 +162,31 @@ def verify_project(root: Path) -> list[str]:
         if not path.is_file():
             errors.append(f"missing: {path.relative_to(root)}")
 
+    identity: dict[str, str] = {}
     if version_file.is_file():
-        _, identity_errors = parse_version_identity(version_file)
+        identity, identity_errors = parse_version_identity(version_file)
         errors.extend(identity_errors)
+
+    if errors:
+        return errors
+
+    if standard_repo is not None:
+        errors.extend(verify_exact_standard_revision(identity, standard_repo.resolve()))
+    elif require_resolution:
+        errors.append(
+            "immutable revision resolution required but no standard repository was provided; "
+            "use --standard-repo or AI_DEV_STANDARD_REPO"
+        )
 
     return errors
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Verify a project's minimal immutable ai-development-standard adoption."
+        description=(
+            "Verify a project's ai-development-standard adoption. Structural checks are always "
+            "performed; provide --standard-repo to prove the immutable pinned revision/version."
+        )
     )
     parser.add_argument(
         "project_root",
@@ -103,10 +194,28 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="project repository root (default: current directory)",
     )
+    parser.add_argument(
+        "--standard-repo",
+        default=os.environ.get("AI_DEV_STANDARD_REPO"),
+        help=(
+            "local Git checkout/object database containing the pinned standard commit; "
+            "may also be supplied through AI_DEV_STANDARD_REPO"
+        ),
+    )
+    parser.add_argument(
+        "--require-resolution",
+        action="store_true",
+        help="fail unless immutable revision resolution is actually performed",
+    )
     args = parser.parse_args(argv)
 
     root = Path(args.project_root).resolve()
-    errors = verify_project(root)
+    standard_repo = Path(args.standard_repo).resolve() if args.standard_repo else None
+    errors = verify_project(
+        root,
+        standard_repo=standard_repo,
+        require_resolution=args.require_resolution,
+    )
     if errors:
         print("project standard verification: FAIL")
         for error in errors:
@@ -114,6 +223,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print("project standard verification: PASS")
+    if standard_repo is not None:
+        print("immutable revision resolution: PASS")
+    else:
+        print("immutable revision resolution: NOT_RUN")
     return 0
 
 

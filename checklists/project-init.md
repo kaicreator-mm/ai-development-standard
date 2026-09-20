@@ -6,7 +6,7 @@ Use this checklist when creating a new project or adopting the development stand
 
 - [ ] Repository/product responsibility is clear.
 - [ ] `.dev-standard/VERSION` contains repository + semantic version + immutable commit SHA.
-- [ ] `.dev-standard/PROJECT_OVERRIDES.md` contains real commands, validation environments, CI profile, platforms/toolchains and boundaries.
+- [ ] `.dev-standard/PROJECT_OVERRIDES.md` contains real commands, validation environments, CI profile, CI execution profile, platforms/toolchains and boundaries.
 - [ ] `AGENTS.md` points to the pinned standard and project overrides.
 
 ## Structure
@@ -38,6 +38,12 @@ Use this checklist when creating a new project or adopting the development stand
 
 - [ ] CI profile is explicitly `minimal / custom / disabled`.
 - [ ] `minimal/custom` checks are low-cost, deterministic and clean-checkout reproducible.
+- [ ] CI provider, backend/execution model and runner role are declared for enabled CI.
+- [ ] Authoritative workflow config path/identity and workflow config source semantics are declared.
+- [ ] Provider-specific workflow syntax matches the selected backend semantics; container semantics are not assumed for local/host backends.
+- [ ] Required shell/entrypoint and runtime/toolchain source are declared and can be preflight-checked on the real runner.
+- [ ] Clone/checkout optional features such as partial clone, submodules and Git LFS match actual repository needs when they are material.
+- [ ] A new exact SHA produces/uses a fresh run for that SHA; rerunning an obsolete pipeline is not treated as current-HEAD evidence.
 - [ ] Full platform matrices / CJ / Hidden / expensive E2E / packaging are not duplicated into CI without project-specific reason.
 - [ ] If CI is disabled, the reason and exact-SHA clean-validation + review path are documented.
 

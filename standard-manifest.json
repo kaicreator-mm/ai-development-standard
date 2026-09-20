@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "description": "Canonical inventory of active ai-development-standard v3.3 assets. Compatibility entry files are listed separately and do not duplicate normative authority.",
+  "sections": {
+    "authority": [
+      "standard-manifest.json",
+      "VERSION",
+      "README.md",
+      "AGENTS.md",
+      "CHANGELOG.md"
+    ],
+    "normative_standards": [
+      "standards/DEVELOPMENT_WORKFLOW.md",
+      "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "standards/GITHUB_CAPABILITY_FALLBACK.md",
+      "standards/ISSUE_FIRST_TASK_TRIGGER.md",
+      "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "standards/VALIDATION_STANDARD.md",
+      "standards/RELEASE_STANDARD.md",
+      "standards/CI_EXECUTION_STANDARD.md",
+      "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+      "standards/CI_EVIDENCE_STANDARD.md",
+      "standards/TESTING_STANDARD.md",
+      "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
+      "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+      "standards/PROJECT_ADOPTION.md",
+      "standards/PROJECT_STRUCTURE.md",
+      "standards/REPOSITORY_STANDARD.md",
+      "standards/DOCUMENTATION_STANDARD.md",
+      "standards/MODEL_USAGE_POLICY.md",
+      "standards/CHATGPT_WEB_ROLE.md",
+      "standards/CODEX_ROLE.md",
+      "standards/CODEX_HANDOFF_PROTOCOL.md"
+    ],
+    "compatibility_entries": [
+      "standards/GITHUB_WORKFLOW.md",
+      "standards/VERSION_INTEGRATION_WORKFLOW.md"
+    ],
+    "templates": [
+      "templates/agent-event-comment.md",
+      "templates/local-agent-handoff-issue.md",
+      "templates/task-issue.md",
+      "templates/task-dag.md",
+      "templates/implementation-pr.md",
+      "templates/validation-report.md",
+      "templates/final-closeout.md",
+      "templates/test-data-pack.md",
+      "templates/ci-runner-capability.yaml",
+      "templates/project/.dev-standard/VERSION",
+      "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+      "templates/project/AGENTS.md",
+      "templates/research-demo-issue.md",
+      "templates/research-demo-report.md"
+    ],
+    "checklists": [
+      "checklists/project-init.md",
+      "checklists/pr-review.md",
+      "checklists/version-closure.md",
+      "checklists/test-data-review.md",
+      "checklists/research-demo-validation.md"
+    ],
+    "prompts": [
+      "prompts/L1_PRODUCT_EVIDENCE.md",
+      "prompts/L2_ARCHITECTURE_EVIDENCE.md",
+      "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
+      "prompts/independent-review-bootstrap.md",
+      "prompts/local-agent-bootstrap.md",
+      "prompts/TEST_DATA_GENERATION.md",
+      "prompts/CODEX_EXECUTION.md"
+    ],
+    "machine_contracts": [
+      "schemas/agent-event-v2.schema.json",
+      "schemas/task-contract.schema.json",
+      "schemas/validation-report.schema.json",
+      "schemas/execution-state.schema.json",
+      "schemas/local-agent-handoff.schema.json"
+    ],
+    "references": [
+      "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
+      "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/TEST_DATA_ENGINEERING_REFERENCES.md",
+      "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
+      "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
+    ],
+    "verification": [
+      ".github/workflows/verify-standard.yml",
+      "scripts/verify_standard.py",
+      "scripts/test_verify_standard.py",
+      "scripts/verify_project_standard.py",
+      "scripts/test_verify_project_standard.py",
+      "scripts/verify_project_execution_profile.py",
+      "scripts/test_project_execution_profile.py",
+      "scripts/test_protocol_schemas.py",
+      "scripts/test_v33_lifecycle_contracts.py",
+      "scripts/test_execution_architecture.py",
+      "scripts/verify_runner_capability_reference.py"
+    ]
+  }
+}

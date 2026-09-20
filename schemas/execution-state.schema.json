@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/execution-state.schema.json",
+  "title": "AI Development Derived Execution State",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["repository", "work_item", "workflow_state", "ready_queues", "derived_from"],
+  "properties": {
+    "repository": {"type": "string", "minLength": 1},
+    "work_item": {"type": "string", "minLength": 1},
+    "current_head_sha": {"type": ["string", "null"], "pattern": "^[0-9a-fA-F]{40}$"},
+    "current_target_sha": {"type": ["string", "null"], "pattern": "^[0-9a-fA-F]{40}$"},
+    "workflow_state": {"type": "string", "enum": ["planned", "ready", "implementing", "review-ready", "reviewing", "changes-requested", "validation-needed", "merge-ready", "blocked", "done"]},
+    "review_policy": {"type": ["string", "null"], "enum": ["required", "recommended", "not-required", null]},
+    "provider_state": {"type": ["string", "null"], "enum": ["AVAILABLE", "INFRA_BLOCKED", "TIMED_OUT", "CANCELLED", null]},
+    "candidate_state": {"type": ["string", "null"], "enum": ["PREPARED", "FROZEN", "THAWED", "INVALIDATED", null]},
+    "release_state": {"type": ["string", "null"], "enum": ["NOT_READY", "READY", "CONDITIONAL", "BLOCKED", "FAIL", null]},
+    "active_dispatch": {"type": ["string", "null"]},
+    "stale_evidence": {"type": "array", "items": {"type": "string"}},
+    "stale_dispatch": {"type": "array", "items": {"type": "string"}},
+    "ready_queues": {"type": "array", "items": {"type": "string", "enum": ["builder", "reviewer", "validator", "merge", "release", "human-decision"]}},
+    "derived_from": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+  }
+}
