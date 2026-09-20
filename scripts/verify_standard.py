@@ -32,6 +32,7 @@ BOOTSTRAP_REQUIRED = {
     "scripts/verify_standard.py",
     "scripts/test_verify_standard.py",
     "scripts/test_protocol_schemas.py",
+    "scripts/test_v33_lifecycle_contracts.py",
     "scripts/test_execution_architecture.py",
 }
 
