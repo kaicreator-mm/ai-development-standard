@@ -24,7 +24,7 @@ This standard is normative for the semantics below, but an automation runtime is
 This document owns orchestration semantics only. It does not redefine domain authorities:
 
 - `VALIDATION_STANDARD.md` owns Gate states, Validation Tuples, validation ownership, and evidence meaning.
-- `GITHUB_AGENT_INTERACTION_PROTOCOL.md` owns structured Agent events and logical operator attribution.
+- `GITHUB_AGENT_INTERACTION_PROTOCOL.md` owns short-intent admission/normalization/rejection, structured Agent events, and logical operator attribution.
 - `LOCAL_AGENT_HANDOFF_PROTOCOL.md` owns Local Agent handoff contracts.
 - `RELEASE_STANDARD.md` owns Candidate/Release decisions.
 - `TESTING_STANDARD.md` and `TEST_DATA_AND_SCENARIO_STANDARD.md` own test/scenario quality.
@@ -290,13 +290,13 @@ allowed next transitions
 
 A state card is NON_AUTHORITATIVE_DERIVED_STATE. Historical events and exact evidence remain authoritative. If the card conflicts with GitHub facts, recompute it.
 
-## 10. Intent and canonical event handling
+## 10. Accepted intent/event consumption
 
-Workers MAY submit short intents/results. An executor MAY enrich them with repository identity, full SHA, timestamp, role/operator attribution, and routing metadata only when those fields are deterministically resolvable.
+Canonical short-intent admission, deterministic enrichment, rejection reasons, and the current event-writer protocol are owned exclusively by `GITHUB_AGENT_INTERACTION_PROTOCOL.md`.
 
-Invalid, ambiguous, unauthorized, or stale intent MUST be rejected rather than partially applied.
+This execution architecture consumes only intents that have already passed that protocol and become accepted canonical GitHub events/current-object facts. Raw worker intent is transport input, not a durable reducer fact.
 
-For new work, structured events use `ai-dev:event:v2` unless a future protocol explicitly supersedes it. Historical `ai-dev:event:v1` remains readable historical evidence; new writers MUST NOT emit v1.
+The reducer/controller MUST NOT define a parallel intent schema, independently reinterpret ambiguous/stale input, or bypass the interaction protocol's admission decision. `ai-dev:event:v2` writer rules and historical v1 read compatibility are likewise delegated to the interaction protocol.
 
 ## 11. Dispatch lifecycle and staleness
 
