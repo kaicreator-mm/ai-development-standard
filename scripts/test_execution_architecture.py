@@ -43,11 +43,26 @@ class ExecutionArchitectureRegression(unittest.TestCase):
             self.assertIn("ai-dev:event:v2", text)
             self.assertNotIn("publish `ai-dev:event:v1`", text)
 
+        protocol = self.text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+        self.assertIn("All newly emitted structured Agent events MUST use", protocol)
+        self.assertIn("New writers MUST NOT emit v1", protocol)
+        self.assertIn("scheduler", protocol)
+        self.assertIn("repository-integration-controller", protocol)
+
     def test_event_schema_lifecycle(self) -> None:
         schema = json.loads(self.text("schemas/agent-event-v2.schema.json"))
         events = set(schema["properties"]["event"]["enum"])
         required = {"HANDOFF_READY", "DISPATCH_REQUEST", "DISPATCH_STATE_CHANGED", "CI_INFRA_EXCEPTION", "VALIDATION_IMPACT_DECISION", "CANDIDATE_STATE_CHANGED", "HIDDEN_ESCAPE_DISPOSITION", "RELEASE_QUALIFICATION", "REPOSITORY_INTEGRATION_RESULT"}
         self.assertTrue(required <= events, required - events)
+
+        roles = set(schema["properties"]["actor_role"]["enum"])
+        self.assertTrue({"scheduler", "repository-integration-controller"} <= roles)
+
+        review_rule = next(
+            rule for rule in schema["allOf"]
+            if rule.get("if", {}).get("properties", {}).get("event", {}).get("const") == "REVIEW_DECISION"
+        )
+        self.assertIn("status", review_rule["then"]["required"])
 
     def test_small_project_runtime_is_optional(self) -> None:
         text = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
