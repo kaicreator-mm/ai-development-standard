@@ -13,6 +13,7 @@ BOOTSTRAP_REQUIRED = {
     "standard-manifest.json",
     "VERSION",
     "README.md",
+    "CHANGELOG.md",
     "AGENTS.md",
     "standards/CHATGPT_WEB_ROLE.md",
     "standards/DEVELOPMENT_WORKFLOW.md",
@@ -95,13 +96,18 @@ if not re.fullmatch(r"\d+\.\d+\.\d+", version):
 readme = read("README.md")
 if version and f"当前版本：`v{version}`" not in readme:
     errors.append("README current version does not match VERSION")
+changelog = read("CHANGELOG.md")
+if version and f"## v{version}" not in changelog:
+    errors.append("CHANGELOG does not contain the current VERSION release entry")
 
+parsed_schemas: dict[str, dict] = {}
 for rel in sections.get("machine_contracts", []):
     try:
         schema = json.loads(read(rel))
     except json.JSONDecodeError as exc:
         errors.append(f"invalid machine contract JSON {rel}: {exc}")
         continue
+    parsed_schemas[rel] = schema
     if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
         errors.append(f"machine contract does not declare JSON Schema 2020-12: {rel}")
     if schema.get("type") != "object" or not schema.get("required"):
@@ -147,7 +153,7 @@ for token in ("falsifiable hypothesis", "The component or boundary under test MU
     if token not in demo:
         errors.append(f"Architecture Research Demo regression: missing {token}")
 
-event_schema = json.loads(read("schemas/agent-event-v2.schema.json") or "{}")
+event_schema = parsed_schemas.get("schemas/agent-event-v2.schema.json", {})
 event_enum = event_schema.get("properties", {}).get("event", {}).get("enum", [])
 for event in ("HANDOFF_READY", "DISPATCH_REQUEST", "CI_INFRA_EXCEPTION", "VALIDATION_IMPACT_DECISION", "CANDIDATE_STATE_CHANGED", "HIDDEN_ESCAPE_DISPOSITION", "RELEASE_QUALIFICATION", "REPOSITORY_INTEGRATION_RESULT"):
     if event not in event_enum:
