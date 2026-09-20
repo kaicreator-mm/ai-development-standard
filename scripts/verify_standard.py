@@ -1,236 +1,170 @@
+from __future__ import annotations
+
+import json
 from pathlib import Path
 import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = ROOT / "standard-manifest.json"
 
-REQUIRED = [
+# Code-owned bootstrap set prevents deleting an asset together with its manifest entry.
+BOOTSTRAP_REQUIRED = {
+    "standard-manifest.json",
     "VERSION",
     "README.md",
     "AGENTS.md",
-    "CHANGELOG.md",
-    ".github/workflows/verify-standard.yml",
     "standards/DEVELOPMENT_WORKFLOW.md",
-    "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
-    "standards/VERSION_INTEGRATION_WORKFLOW.md",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-    "standards/CHATGPT_WEB_ROLE.md",
-    "standards/CODEX_ROLE.md",
-    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
-    "standards/CODEX_HANDOFF_PROTOCOL.md",
     "standards/VALIDATION_STANDARD.md",
-    "standards/CI_EVIDENCE_STANDARD.md",
-    "standards/GITHUB_WORKFLOW.md",
     "standards/RELEASE_STANDARD.md",
-    "standards/MODEL_USAGE_POLICY.md",
-    "standards/PROJECT_ADOPTION.md",
-    "templates/project/.dev-standard/VERSION",
-    "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
-    "templates/project/AGENTS.md",
-    "scripts/verify_project_standard.py",
-    "scripts/test_verify_project_standard.py",
-    "templates/task-issue.md",
-    "templates/agent-event-comment.md",
-    "templates/local-agent-handoff-issue.md",
-    "templates/codex-handoff-issue.md",
-    "templates/implementation-pr.md",
-    "templates/validation-report.md",
-    "templates/final-closeout.md",
-    "templates/task-dag.md",
-    "templates/research-demo-issue.md",
-    "templates/research-demo-report.md",
-    "checklists/pr-review.md",
-    "checklists/research-demo-validation.md",
-    "prompts/L1_PRODUCT_EVIDENCE.md",
-    "prompts/L2_ARCHITECTURE_EVIDENCE.md",
-    "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
-    "prompts/independent-review-bootstrap.md",
-    "prompts/local-agent-bootstrap.md",
-    "prompts/CODEX_EXECUTION.md",
-]
+    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+    "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+    "schemas/agent-event-v2.schema.json",
+    "schemas/task-contract.schema.json",
+    "schemas/validation-report.schema.json",
+    "schemas/execution-state.schema.json",
+    "schemas/local-agent-handoff.schema.json",
+    "scripts/verify_standard.py",
+    "scripts/test_verify_standard.py",
+    "scripts/test_protocol_schemas.py",
+    "scripts/test_execution_architecture.py",
+}
 
-errors = []
-for rel in REQUIRED:
+errors: list[str] = []
+
+
+def read(rel: str) -> str:
     path = ROOT / rel
     if not path.is_file():
         errors.append(f"missing required file: {rel}")
+        return ""
+    return path.read_text(encoding="utf-8")
 
-version = None
-version_tuple = None
-version_path = ROOT / "VERSION"
-if version_path.exists():
-    version = version_path.read_text(encoding="utf-8").strip()
-    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
-        errors.append(f"VERSION is not SemVer: {version!r}")
-    else:
-        version_tuple = tuple(int(part) for part in version.split("."))
 
-if version:
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    if f"当前版本：`v{version}`" not in readme:
-        errors.append("README current version does not match VERSION")
+for rel in sorted(BOOTSTRAP_REQUIRED):
+    if not (ROOT / rel).is_file():
+        errors.append(f"bootstrap-required asset is missing: {rel}")
 
-# v3+ risk-based Independent Review contract.
-# Historical changelog entries intentionally preserve old v2.3 mandatory wording,
-# so semantic guards target only active operational documents/templates.
-review_policy_files = [
-    "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-    "standards/DEVELOPMENT_WORKFLOW.md",
+try:
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+except (OSError, json.JSONDecodeError) as exc:
+    errors.append(f"invalid standard-manifest.json: {exc}")
+    manifest = {}
+
+if manifest.get("schema_version") != 1:
+    errors.append("standard-manifest.json schema_version must be 1")
+
+sections = manifest.get("sections")
+if not isinstance(sections, dict) or not sections:
+    errors.append("standard-manifest.json sections must be a non-empty object")
+    sections = {}
+
+seen: set[str] = set()
+manifest_paths: list[str] = []
+for section, values in sections.items():
+    if not isinstance(values, list) or not values:
+        errors.append(f"manifest section {section!r} must be a non-empty list")
+        continue
+    for rel in values:
+        if not isinstance(rel, str) or not rel:
+            errors.append(f"manifest section {section!r} contains invalid path: {rel!r}")
+            continue
+        candidate = Path(rel)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            errors.append(f"manifest path must be repository-relative: {rel}")
+            continue
+        if rel in seen:
+            errors.append(f"manifest path declared more than once: {rel}")
+            continue
+        seen.add(rel)
+        manifest_paths.append(rel)
+        if not (ROOT / rel).is_file():
+            errors.append(f"manifest-declared file is missing: {rel}")
+
+for rel in sorted(BOOTSTRAP_REQUIRED):
+    if rel not in seen:
+        errors.append(f"manifest omits bootstrap-required asset: {rel}")
+
+version = read("VERSION").strip()
+if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+    errors.append(f"VERSION is not SemVer: {version!r}")
+readme = read("README.md")
+if version and f"当前版本：`v{version}`" not in readme:
+    errors.append("README current version does not match VERSION")
+
+# Machine contracts must be parseable JSON Schema documents.
+for rel in sections.get("machine_contracts", []):
+    try:
+        schema = json.loads(read(rel))
+    except json.JSONDecodeError as exc:
+        errors.append(f"invalid machine contract JSON {rel}: {exc}")
+        continue
+    if schema.get("$schema") != "https://json-schema.org/draft/2020-12/schema":
+        errors.append(f"machine contract does not declare JSON Schema 2020-12: {rel}")
+    if schema.get("type") != "object" or not schema.get("required"):
+        errors.append(f"machine contract must be an object with required fields: {rel}")
+
+# v3.3 canonical execution architecture invariants.
+execution = read("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
+for token in (
+    "Durable facts, derived state, actions",
+    "Separate state dimensions",
+    "Validation ownership and cost placement",
+    "Pointer-only agent invocation",
+    "HEAD drift",
+    "BASE drift",
+    "CI infrastructure exceptions",
+    "Candidate Freeze Controller",
+    "Hidden Validation escaped-defect feedback",
+    "Human Decision Queue",
+    "Progressive adoption",
+):
+    if token not in execution:
+        errors.append(f"Execution Architecture missing semantic token: {token}")
+
+validation = read("standards/VALIDATION_STANDARD.md")
+for token in ("concern | integration | closure", "INFRA_BLOCKED", "VALIDATION_IMPACT_DECISION", "evidence_reuse_basis"):
+    if token not in validation:
+        errors.append(f"Validation Standard missing v3.3 semantic token: {token}")
+
+release = read("standards/RELEASE_STANDARD.md")
+for token in ("operational state", "THAWED / INVALIDATED", "HIDDEN_PACK_BLIND_SPOT", "Repository Integration"):
+    if token not in release:
+        errors.append(f"Release Standard missing v3.3 semantic token: {token}")
+
+handoff = read("standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md")
+for token in ("Pointer-only principle", "HANDOFF_READY", "schemas/local-agent-handoff.schema.json"):
+    if token not in handoff:
+        errors.append(f"Local Agent Handoff missing v3.3 semantic token: {token}")
+
+# New-work writer surfaces must not instruct event-v1.
+for rel in (
     "standards/GITHUB_WORKFLOW.md",
     "standards/VERSION_INTEGRATION_WORKFLOW.md",
-    "templates/task-dag.md",
-    "templates/task-issue.md",
-    "templates/implementation-pr.md",
-    "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
-]
+    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+    "templates/local-agent-handoff-issue.md",
+    "README.md",
+):
+    text = read(rel)
+    if "new writers emit `ai-dev:event:v1`" in text or "publish `ai-dev:event:v1`" in text:
+        errors.append(f"{rel} instructs new work to emit event-v1")
+    if "ai-dev:event:v2" not in text:
+        errors.append(f"{rel} missing canonical event-v2 writer guidance")
 
-if version_tuple and version_tuple[0] >= 3:
-    for rel in review_policy_files:
-        text = (ROOT / rel).read_text(encoding="utf-8")
-        if "Review Policy" not in text:
-            errors.append(f"{rel} missing Review Policy semantics")
-        if "recommended" not in text or "not-required" not in text:
-            errors.append(f"{rel} missing risk-based Review Policy choices")
+# Current main Architecture Research Demo capability must survive convergence.
+demo = read("standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md")
+for token in ("falsifiable hypothesis", "The component or boundary under test MUST be real", "What was NOT proven"):
+    if token not in demo:
+        errors.append(f"Architecture Research Demo regression: missing {token}")
 
-    for rel in (
-        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-        "standards/GITHUB_WORKFLOW.md",
-        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
-    ):
-        text = (ROOT / rel).read_text(encoding="utf-8")
-        for token in ("review:required", "review:recommended", "review:not-required"):
-            if token not in text:
-                errors.append(f"{rel} missing portable Review Policy label: {token}")
-
-    event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(
-        encoding="utf-8"
-    )
-    event_template = (ROOT / "templates/agent-event-comment.md").read_text(
-        encoding="utf-8"
-    )
-    if "REVIEW_DECISION" not in event_protocol or "REVIEW_DECISION" not in event_template:
-        errors.append("REVIEW_DECISION event is not consistently defined")
-
-    operational_review_files = [
-        "AGENTS.md",
-        "README.md",
-        "standards/DEVELOPMENT_WORKFLOW.md",
-        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-        "standards/GITHUB_WORKFLOW.md",
-        "standards/VERSION_INTEGRATION_WORKFLOW.md",
-        "standards/CHATGPT_WEB_ROLE.md",
-        "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
-        "templates/project/AGENTS.md",
-        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
-        "templates/task-dag.md",
-        "templates/task-issue.md",
-        "templates/implementation-pr.md",
-        "templates/local-agent-handoff-issue.md",
-        "checklists/pr-review.md",
-        "prompts/independent-review-bootstrap.md",
-        "prompts/local-agent-bootstrap.md",
-    ]
-    stale_mandatory_phrases = (
-        "every Task/Fix PR MUST receive an Independent Review",
-        "Independent Review default is mandatory",
-        "Version Branch Mode default is Independent Review required",
-        "Version Branch Task/Fix PRs require Independent Review",
-        "Independent Review 默认 mandatory",
-    )
-    for rel in operational_review_files:
-        text = (ROOT / rel).read_text(encoding="utf-8")
-        if "REVIEW_POLICY_DECISION" in text:
-            errors.append(f"{rel} uses deprecated REVIEW_POLICY_DECISION; use REVIEW_DECISION")
-        for phrase in stale_mandatory_phrases:
-            if phrase in text:
-                errors.append(f"{rel} contains stale universal Review requirement: {phrase}")
-
-# v3.1+ logical operator attribution contract.
-if version_tuple and version_tuple >= (3, 1, 0):
-    operator_surfaces = [
-        "README.md",
-        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
-        "standards/CHATGPT_WEB_ROLE.md",
-        "templates/agent-event-comment.md",
-        "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
-        "prompts/independent-review-bootstrap.md",
-        "prompts/local-agent-bootstrap.md",
-    ]
-    required_tokens = (
-        "actor_role",
-        "operator_kind",
-        "operator_id",
-        "session_ref",
-        "transport_actor",
-    )
-    for rel in operator_surfaces:
-        text = (ROOT / rel).read_text(encoding="utf-8")
-        for token in required_tokens:
-            if token not in text:
-                errors.append(f"{rel} missing operator attribution token: {token}")
-
-    event_protocol = (ROOT / "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md").read_text(
-        encoding="utf-8"
-    )
-    event_template = (ROOT / "templates/agent-event-comment.md").read_text(
-        encoding="utf-8"
-    )
-    for rel, text in (
-        ("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md", event_protocol),
-        ("templates/agent-event-comment.md", event_template),
-    ):
-        if "ai-dev:event:v2" not in text or "ai-dev/event-v2" not in text:
-            errors.append(f"{rel} missing event v2 schema/marker")
-        for event in ("ROLE_CLAIMED", "ROLE_RELEASED"):
-            if event not in text:
-                errors.append(f"{rel} missing operator lifecycle event: {event}")
-
-    if "transport identity" not in event_protocol and "transport_actor" not in event_protocol:
-        errors.append("GitHub Agent Interaction Protocol does not distinguish transport identity")
-
-    if "ai-dev:event:v1" not in event_protocol or "ai-dev:event:v1" not in event_template:
-        errors.append("event v1 backward-compatibility is not documented")
-
-# Architecture Research Demo contract: risk-driven executable evidence, not a universal gate.
-demo_standard = ROOT / "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md"
-if demo_standard.exists():
-    demo_text = demo_standard.read_text(encoding="utf-8")
-    for token in (
-        "falsifiable hypothesis",
-        "The component or boundary under test MUST be real",
-        "E1 — Executable Logic Evidence",
-        "E2 — Integration Evidence",
-        "E3 — Real Environment / Failure Evidence",
-        "What was NOT proven",
-        "Evidence complete",
-    ):
-        if token not in demo_text:
-            errors.append(f"Architecture Research Demo standard missing semantic token: {token}")
-
-    workflow_text = (ROOT / "standards/DEVELOPMENT_WORKFLOW.md").read_text(encoding="utf-8")
-    for token in (
-        "Architecture UNKNOWN disposition",
-        "EXECUTABLE_DEMO_REQUIRED",
-        "L2 Architecture Freeze",
-        "ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
-    ):
-        if token not in workflow_text:
-            errors.append(f"Development Workflow missing Architecture Demo integration token: {token}")
-
-    l2_text = (ROOT / "prompts/L2_ARCHITECTURE_EVIDENCE.md").read_text(encoding="utf-8")
-    for token in ("Architecture UNKNOWNs", "demo required", "What was NOT proven"):
-        if token not in l2_text:
-            errors.append(f"L2 Architecture Evidence prompt missing demo/unknown token: {token}")
-
-    report_text = (ROOT / "templates/research-demo-report.md").read_text(encoding="utf-8")
-    if "What was NOT proven" not in report_text:
-        errors.append("Research Demo report template must require What was NOT proven")
-
-for md in ROOT.rglob("*.md"):
-    text = md.read_text(encoding="utf-8")
-    if "PASS/FAIL/NOT_RUN/N/A/BLOCKED" in text:
-        # Template shorthand is allowed, but canonical docs should use NOT_APPLICABLE.
-        pass
+# Current event schema must carry v3.3 lifecycle events.
+event_schema = json.loads(read("schemas/agent-event-v2.schema.json") or "{}")
+event_enum = event_schema.get("properties", {}).get("event", {}).get("enum", [])
+for event in ("HANDOFF_READY", "DISPATCH_REQUEST", "CI_INFRA_EXCEPTION", "VALIDATION_IMPACT_DECISION", "CANDIDATE_STATE_CHANGED", "HIDDEN_ESCAPE_DISPOSITION", "RELEASE_QUALIFICATION", "REPOSITORY_INTEGRATION_RESULT"):
+    if event not in event_enum:
+        errors.append(f"agent-event-v2 schema missing v3.3 event: {event}")
 
 if errors:
     print("standard verification: FAIL")
@@ -239,4 +173,5 @@ if errors:
     sys.exit(1)
 
 print("standard verification: PASS")
-print(f"required files: {len(REQUIRED)}")
+print(f"manifest files: {len(manifest_paths)}")
+print(f"bootstrap-required files: {len(BOOTSTRAP_REQUIRED)}")
