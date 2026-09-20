@@ -92,6 +92,7 @@
       "scripts/verify_project_execution_profile.py",
       "scripts/test_project_execution_profile.py",
       "scripts/test_protocol_schemas.py",
+      "scripts/test_v33_lifecycle_contracts.py",
       "scripts/test_execution_architecture.py",
       "scripts/verify_runner_capability_reference.py"
     ]
