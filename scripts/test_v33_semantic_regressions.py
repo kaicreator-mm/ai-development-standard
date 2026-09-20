@@ -72,6 +72,7 @@ def validate_hidden_successor_lifecycle(record: dict) -> list[str]:
         "escape_class",
         "release_significant",
         "product_fix_sha",
+        "product_fix_in_successor",
         "successor_candidate_sha",
         "successor_pack_identity",
         "pack_strengthening_independent",
@@ -90,6 +91,10 @@ def validate_hidden_successor_lifecycle(record: dict) -> list[str]:
         errors.append("release-significant escaped defect must be classified as a Hidden blind spot for this lifecycle")
     if record["release_significant"] is not True:
         errors.append("scenario must be release-significant")
+    if record["product_fix_sha"] == record["prior_candidate_sha"]:
+        errors.append("escaped product defect must be fixed on a new identity")
+    if record["product_fix_in_successor"] is not True:
+        errors.append("successor candidate must actually contain the product fix")
     if record["successor_candidate_sha"] == record["prior_candidate_sha"]:
         errors.append("product fix must create a successor candidate identity")
     if record["successor_pack_identity"] == record["prior_pack_identity"]:
@@ -127,37 +132,30 @@ class V33SemanticRegression(unittest.TestCase):
             with self.subTest(plan=plan):
                 self.assertTrue(validate_validation_plan(plan), plan)
 
-    def test_issue30_hidden_blind_spot_successor_lifecycle(self) -> None:
-        valid = {
+    def hidden_successor_record(self) -> dict:
+        return {
             "prior_candidate_sha": "1" * 40,
             "prior_pack_identity": "hidden-pack-r7:sha256:old",
             "prior_hidden_status": "PASS",
             "escape_class": "HIDDEN_PACK_BLIND_SPOT",
             "release_significant": True,
             "product_fix_sha": "2" * 40,
-            "successor_candidate_sha": "2" * 40,
+            "product_fix_in_successor": True,
+            "successor_candidate_sha": "3" * 40,
             "successor_pack_identity": "hidden-pack-r8:sha256:new",
             "pack_strengthening_independent": True,
             "successor_hidden_status": "PASS",
             "successor_release_state": "READY",
         }
-        self.assertEqual(validate_hidden_successor_lifecycle(valid), [])
+
+    def test_issue30_hidden_blind_spot_successor_lifecycle(self) -> None:
+        self.assertEqual(validate_hidden_successor_lifecycle(self.hidden_successor_record()), [])
 
     def test_issue30_hidden_blind_spot_rejects_evidence_reuse_shortcuts(self) -> None:
-        base = {
-            "prior_candidate_sha": "1" * 40,
-            "prior_pack_identity": "hidden-pack-r7:sha256:old",
-            "prior_hidden_status": "PASS",
-            "escape_class": "HIDDEN_PACK_BLIND_SPOT",
-            "release_significant": True,
-            "product_fix_sha": "2" * 40,
-            "successor_candidate_sha": "2" * 40,
-            "successor_pack_identity": "hidden-pack-r8:sha256:new",
-            "pack_strengthening_independent": True,
-            "successor_hidden_status": "PASS",
-            "successor_release_state": "READY",
-        }
+        base = self.hidden_successor_record()
         mutations = [
+            dict(base, product_fix_sha=base["prior_candidate_sha"]),
+            dict(base, product_fix_in_successor=False),
             dict(base, successor_candidate_sha=base["prior_candidate_sha"]),
             dict(base, successor_pack_identity=base["prior_pack_identity"]),
             dict(base, pack_strengthening_independent=False),
@@ -186,6 +184,12 @@ class V33SemanticRegression(unittest.TestCase):
 
         prohibition = ["New writers MUST NOT emit `ai-dev:event:v1`."]
         self.assertEqual(classify_v1_reference(prohibition, 0), "explicit-prohibition")
+
+        adjacent_mask_attempt = [
+            "Historical `ai-dev:event:v1` remains readable compatibility evidence.",
+            "For new work publish `ai-dev:event:v1`.",
+        ]
+        self.assertEqual(classify_v1_reference(adjacent_mask_attempt, 1), "stale-or-unclassified")
 
 
 if __name__ == "__main__":
