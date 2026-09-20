@@ -254,6 +254,7 @@ class V33LifecycleContractRegression(unittest.TestCase):
 
     def test_issue26_intent_admission_has_one_protocol_authority(self) -> None:
         protocol = self.text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+        architecture = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
         for token in (
             "canonical short-intent admission / normalization / rejection semantics",
             "A short intent/result is a transport input, not yet a durable canonical workflow fact",
@@ -265,6 +266,12 @@ class V33LifecycleContractRegression(unittest.TestCase):
             "MUST NOT define a second intent contract",
         ):
             self.assertIn(token, protocol)
+        for token in (
+            "owned exclusively by `GITHUB_AGENT_INTERACTION_PROTOCOL.md`",
+            "consumes only intents that have already passed that protocol",
+            "MUST NOT define a parallel intent schema",
+        ):
+            self.assertIn(token, architecture)
 
     def test_issue30_hidden_blind_spot_requires_successor_pack_lifecycle(self) -> None:
         release = self.text("standards/RELEASE_STANDARD.md")
