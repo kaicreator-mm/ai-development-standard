@@ -14,6 +14,7 @@ BOOTSTRAP_REQUIRED = {
     "VERSION",
     "README.md",
     "AGENTS.md",
+    "standards/CHATGPT_WEB_ROLE.md",
     "standards/DEVELOPMENT_WORKFLOW.md",
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
@@ -94,7 +95,6 @@ readme = read("README.md")
 if version and f"当前版本：`v{version}`" not in readme:
     errors.append("README current version does not match VERSION")
 
-# Machine contracts must be parseable JSON Schema documents.
 for rel in sections.get("machine_contracts", []):
     try:
         schema = json.loads(read(rel))
@@ -106,21 +106,8 @@ for rel in sections.get("machine_contracts", []):
     if schema.get("type") != "object" or not schema.get("required"):
         errors.append(f"machine contract must be an object with required fields: {rel}")
 
-# v3.3 canonical execution architecture invariants.
 execution = read("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
-for token in (
-    "Durable facts, derived state, actions",
-    "Separate state dimensions",
-    "Validation ownership and cost placement",
-    "Pointer-only agent invocation",
-    "HEAD drift",
-    "BASE drift",
-    "CI infrastructure exceptions",
-    "Candidate Freeze Controller",
-    "Hidden Validation escaped-defect feedback",
-    "Human Decision Queue",
-    "Progressive adoption",
-):
+for token in ("Durable facts, derived state, actions", "Separate state dimensions", "Validation ownership and cost placement", "Pointer-only agent invocation", "HEAD drift", "BASE drift", "CI infrastructure exceptions", "Candidate Freeze Controller", "Hidden Validation escaped-defect feedback", "Human Decision Queue", "Progressive adoption"):
     if token not in execution:
         errors.append(f"Execution Architecture missing semantic token: {token}")
 
@@ -139,27 +126,18 @@ for token in ("Pointer-only principle", "HANDOFF_READY", "schemas/local-agent-ha
     if token not in handoff:
         errors.append(f"Local Agent Handoff missing v3.3 semantic token: {token}")
 
-# New-work writer surfaces must not instruct event-v1.
-for rel in (
-    "standards/GITHUB_WORKFLOW.md",
-    "standards/VERSION_INTEGRATION_WORKFLOW.md",
-    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
-    "templates/local-agent-handoff-issue.md",
-    "README.md",
-):
+for rel in ("standards/GITHUB_WORKFLOW.md", "standards/VERSION_INTEGRATION_WORKFLOW.md", "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md", "templates/local-agent-handoff-issue.md", "README.md"):
     text = read(rel)
     if "new writers emit `ai-dev:event:v1`" in text or "publish `ai-dev:event:v1`" in text:
         errors.append(f"{rel} instructs new work to emit event-v1")
     if "ai-dev:event:v2" not in text:
         errors.append(f"{rel} missing canonical event-v2 writer guidance")
 
-# Current main Architecture Research Demo capability must survive convergence.
 demo = read("standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md")
 for token in ("falsifiable hypothesis", "The component or boundary under test MUST be real", "What was NOT proven"):
     if token not in demo:
         errors.append(f"Architecture Research Demo regression: missing {token}")
 
-# Current event schema must carry v3.3 lifecycle events.
 event_schema = json.loads(read("schemas/agent-event-v2.schema.json") or "{}")
 event_enum = event_schema.get("properties", {}).get("event", {}).get("enum", [])
 for event in ("HANDOFF_READY", "DISPATCH_REQUEST", "CI_INFRA_EXCEPTION", "VALIDATION_IMPACT_DECISION", "CANDIDATE_STATE_CHANGED", "HIDDEN_ESCAPE_DISPOSITION", "RELEASE_QUALIFICATION", "REPOSITORY_INTEGRATION_RESULT"):
