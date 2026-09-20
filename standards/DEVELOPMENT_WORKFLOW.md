@@ -102,7 +102,98 @@ PRD Freeze 和最终被下游依赖的 L1 Evidence MUST 形成远端 checkpoint�
 
 ### Stage 2 — Architecture / Task Definition
 
-按需执行 L2 Architecture Evidence；随后形成 Task DAG。
+Stage 2 的目标是从 Frozen PRD / Scope 得到足够可信的 Architecture Evidence，并在高影响 UNKNOWN 被处理后冻结 L2，再形成 Task DAG。
+
+默认流程：
+
+```text
+Frozen PRD / Scope
+        ↓
+L2 Architecture Evidence
+        ↓
+Architecture UNKNOWN disposition
+   ├── static/source/existing evidence sufficient
+   ├── executable Research Demo required
+   └── BLOCKED / Architecture Contradiction
+        ↓
+L2 Architecture Freeze
+        ↓
+Task DAG
+```
+
+Research Demo 是按风险启用的 Architecture Evidence，不是每个版本/Task 的 mandatory gate。详细规则见 `standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md`。
+
+#### Stage 2.1 — Architecture UNKNOWN disposition
+
+L2 研究必须明确关键 Architecture Drivers / Invariants，以及仍然存在的高影响 UNKNOWN。
+
+对每个 material UNKNOWN 至少给出一个 disposition：
+
+```text
+STATIC_EVIDENCE_SUFFICIENT
+EXECUTABLE_DEMO_REQUIRED
+BLOCKED
+ARCHITECTURE_CONTRADICTION
+```
+
+当以下条件同时成立时，应在 L2 Freeze 前创建 Research Demo / Spike：
+
+```text
+material architecture assumption remains UNKNOWN
++ it can change architecture / public contract / durability / failure semantics
++ static/source/existing evidence is insufficient
+```
+
+如果已有等价 executable evidence、Frozen Architecture 或成熟 project-local evidence 足以证明该假设，不要为了形式重复创建 Demo。
+
+#### Stage 2.2 — Architecture Research Demo / Spike（按需）
+
+需要 executable evidence 时：
+
+```text
+Architecture UNKNOWN
+→ falsifiable Hypothesis
+→ Research Demo Issue
+→ isolated research branch
+→ positive + negative/failure executable evidence
+→ PASS | FAIL | BLOCKED
+→ Architecture Decision / L2 update
+```
+
+硬规则：
+
+- 被验证的 component/boundary 必须真实；只允许对无关依赖使用 deterministic fake；
+- Demo 必须声明 Evidence Strength `E1 | E2 | E3`；
+- 结论必须绑定 baseline/dependency/final exact SHAs；
+- closeout 必须明确 `What was proven` 和 `What was NOT proven`；
+- Demo 是 evidence，不是 production implementation；不得默认 merge 整个 research branch；
+- Demo 完成条件是 **Evidence complete**，不是 Feature complete；
+- missing production seam 应创建 follow-up Issue，不得静默扩大 research scope。
+
+推荐使用：
+
+- `templates/research-demo-issue.md`
+- `templates/research-demo-report.md`
+- `checklists/research-demo-validation.md`
+
+PRD Freeze 后如果某个技术方案 FAIL，默认调整候选 Architecture，而不是自动重开 PRD。只有 evidence 表明 Frozen PRD 的产品要求本身 contradiction/unachievable 时，才发布 Architecture Contradiction 并请求重新打开产品范围。
+
+#### Stage 2.3 — L2 Architecture Freeze
+
+只有当：
+
+- 已识别的高影响 Architecture UNKNOWN 有足够 disposition；
+- required executable demos 已形成 PASS/FAIL/BLOCKED evidence；
+- 被采用架构不依赖伪造或未说明的 UNKNOWN；
+- BLOCKED 项已明确是否阻塞 Freeze；
+
+才能把对应 Architecture Facts 标为 Frozen。
+
+Demo PASS 只证明其明确 Hypothesis；不得外推未测试的 distributed scale、performance、security、multi-platform 或 release readiness。
+
+L2 Freeze 后，普通 implementation Task 直接进入 Task DAG/L3/Implementation。只有开发中新发现的高影响 Architecture UNKNOWN 才重新插入局部 Research Demo；不得形成机械的 `Demo → Implementation` 双实现流程。
+
+#### Stage 2.4 — Task DAG
 
 Task DAG 至少明确：
 
@@ -124,9 +215,9 @@ Tests → Contract/Interface → Core Implementation → Failure Handling → Ex
 
 #### Stage 2 Checkpoint
 
-L2、Task DAG、L3 在成为 implementation dependency 时 MUST 形成 remote checkpoint。
+L2、被 L2 采用的 Research Demo Evidence、Task DAG、L3 在成为 implementation dependency 时 MUST 形成 remote checkpoint。
 
-这些属于 stage artifact，默认 checkpoint，不等于一个独立 branch。
+这些属于 stage artifact，默认 checkpoint，不等于一个独立 branch。Research Demo 可使用隔离的 `research_*` branch 以保护实验 write set，但最终应把 exact evidence identity / validated invariant 引用回 L2，而不是把 research branch 当成 integration branch。
 
 #### Stage 2.5 — Execution DAG Materialization
 
@@ -204,7 +295,9 @@ Task/Agent 不得静默降低更高权威已经声明的 `required`。
 - 不能执行的内容如实进入 gate 状态，不得默认通过；
 - 正式 Concern 达到可合并/可审查状态后形成远端 checkpoint；
 - Task DAG 允许时多个 Task branch MAY 并行；
-- Builder MAY 在上一个 PR 等待 Review/Validation 时继续其它独立 Task。
+- Builder MAY 在上一个 PR 等待 Review/Validation 时继续其它独立 Task；
+- Frozen L2 已提供充分 Architecture Evidence 时直接实现，不为普通 Task 重复 Research Demo；
+- 若实现中新发现会改变架构/公共 contract/durability/failure semantics 的高影响 UNKNOWN，暂停受影响 concern 的架构假设，按 `ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` 建立局部 research evidence，再决定 Architecture Amendment / Task change。
 
 Version Branch Mode 推荐：
 
@@ -480,6 +573,8 @@ Review Policy 使用同一 authority chain。Standard default 不再为所有 Ve
 
 若要新增 mandatory release gate 或强制 Review，必须有相应 authority。
 
+Architecture Research Demo 本身也不是默认 mandatory release gate；它只在 Stage 2 的 material UNKNOWN 需要 executable evidence 时成为 L2 Freeze 的前置证据。
+
 ## 5. Blocker Propagation
 
 Blocker 只沿依赖边传播。
@@ -504,7 +599,7 @@ Release Qualification BLOCKED
 
 开发流程不要求“每个操作都 push”，而要求正式、稳定、可恢复、可交接的结果形成远端 checkpoint。
 
-至少包括：PRD / Scope Freeze、L1（若成为 downstream evidence）、L2 Architecture Evidence、Task DAG、L3、可合并/可审查 Task/Concern、integrated version baseline、Validation/Candidate/Closeout、Release baseline 与正式 release artifact。
+至少包括：PRD / Scope Freeze、L1（若成为 downstream evidence）、L2 Architecture Evidence、被 L2 采用的 Research Demo Evidence、Task DAG、L3、可合并/可审查 Task/Concern、integrated version baseline、Validation/Candidate/Closeout、Release baseline 与正式 release artifact。
 
 草稿、临时修复、单次测试运行、局部编辑不要求每一步 push。
 
@@ -525,4 +620,4 @@ Baseline
 → Release impact decision
 ```
 
-快速路径不为被跳过阶段制造空提交、空 branch、空 Review 或形式化 Issue。
+快速路径不为被跳过阶段制造空提交、空 branch、空 Review、空 Research Demo 或形式化 Issue。

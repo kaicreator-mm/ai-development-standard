@@ -11,6 +11,7 @@ REQUIRED = [
     "CHANGELOG.md",
     ".github/workflows/verify-standard.yml",
     "standards/DEVELOPMENT_WORKFLOW.md",
+    "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
     "standards/VERSION_INTEGRATION_WORKFLOW.md",
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
     "standards/CHATGPT_WEB_ROLE.md",
@@ -36,7 +37,10 @@ REQUIRED = [
     "templates/validation-report.md",
     "templates/final-closeout.md",
     "templates/task-dag.md",
+    "templates/research-demo-issue.md",
+    "templates/research-demo-report.md",
     "checklists/pr-review.md",
+    "checklists/research-demo-validation.md",
     "prompts/L1_PRODUCT_EVIDENCE.md",
     "prompts/L2_ARCHITECTURE_EVIDENCE.md",
     "prompts/L3_IMPLEMENTATION_EVIDENCE.md",
@@ -186,6 +190,41 @@ if version_tuple and version_tuple >= (3, 1, 0):
 
     if "ai-dev:event:v1" not in event_protocol or "ai-dev:event:v1" not in event_template:
         errors.append("event v1 backward-compatibility is not documented")
+
+# Architecture Research Demo contract: risk-driven executable evidence, not a universal gate.
+demo_standard = ROOT / "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md"
+if demo_standard.exists():
+    demo_text = demo_standard.read_text(encoding="utf-8")
+    for token in (
+        "falsifiable hypothesis",
+        "The component or boundary under test MUST be real",
+        "E1 — Executable Logic Evidence",
+        "E2 — Integration Evidence",
+        "E3 — Real Environment / Failure Evidence",
+        "What was NOT proven",
+        "Evidence complete",
+    ):
+        if token not in demo_text:
+            errors.append(f"Architecture Research Demo standard missing semantic token: {token}")
+
+    workflow_text = (ROOT / "standards/DEVELOPMENT_WORKFLOW.md").read_text(encoding="utf-8")
+    for token in (
+        "Architecture UNKNOWN disposition",
+        "EXECUTABLE_DEMO_REQUIRED",
+        "L2 Architecture Freeze",
+        "ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+    ):
+        if token not in workflow_text:
+            errors.append(f"Development Workflow missing Architecture Demo integration token: {token}")
+
+    l2_text = (ROOT / "prompts/L2_ARCHITECTURE_EVIDENCE.md").read_text(encoding="utf-8")
+    for token in ("Architecture UNKNOWNs", "demo required", "What was NOT proven"):
+        if token not in l2_text:
+            errors.append(f"L2 Architecture Evidence prompt missing demo/unknown token: {token}")
+
+    report_text = (ROOT / "templates/research-demo-report.md").read_text(encoding="utf-8")
+    if "What was NOT proven" not in report_text:
+        errors.append("Research Demo report template must require What was NOT proven")
 
 for md in ROOT.rglob("*.md"):
     text = md.read_text(encoding="utf-8")
