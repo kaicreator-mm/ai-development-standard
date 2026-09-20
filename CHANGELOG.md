@@ -71,7 +71,7 @@ Breaking changes:
 - Version Branch Mode 的 Task/Fix PR merge 到 `version/vX.Y.Z` 前默认新增 mandatory Independent Review Gate；Review PASS 绑定 exact PR HEAD SHA，后续 commit 使旧 PASS 只保留历史意义，并要求 delta/full re-review。
 - Independent Reviewer 的 final authority 默认与实现 context 分离；允许另一 ChatGPT session、另一 Agent、人类 reviewer，或同模型 fresh context 从 GitHub 独立重建事实。
 - 新增 Builder / Reviewer / Validator queue model：Builder 主要消费 `state:ready` / `state:changes-requested`，Reviewer 消费 `state:review-ready`，Validator 消费 `state:validation-needed`；单一 blocker 不停止其它独立 implementation/review/validation。
-- 新增 portable workflow metadata：`state:planned / ready / implementing / review-ready / reviewing / state:changes-requested / state:validation-needed / state:merge-ready / state:blocked / state:done`，并明确 workflow state 与 Gate status (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`) 不得混淆。
+- 新增 portable workflow metadata：`state:planned / ready / implementing / review-ready / reviewing / changes-requested / validation-needed / merge-ready / blocked / done`，并明确 workflow state 与 Gate status (`PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`) 不得混淆。
 - 新增 `templates/task-issue.md`，把 Task Issue 固化为 stable work contract；新增 `templates/agent-event-comment.md` 与 `ai-dev:event:v1`，标准化 `IMPLEMENTATION_READY / REVIEW_RESULT / FIX_APPLIED / VALIDATION_REQUEST / VALIDATION_RESULT / DEPENDENCY_CHANGED / MERGE_RESULT` 等跨 Agent 事件。
 - 新增 `prompts/independent-review-bootstrap.md`，让 Reviewer 仅凭 repository + PR/Issue + pinned standard 独立完成 exact-SHA Review。
 - `templates/task-dag.md`、`templates/implementation-pr.md`、`checklists/pr-review.md`、`PROJECT_OVERRIDES`、项目 `AGENTS.md` 同步加入 execution DAG、stack topology、review evidence 与 merge-readiness 规则。
@@ -115,7 +115,7 @@ Breaking changes:
 - Validation 与 CI 解耦：Validation 是 mandatory；CI 是 execution mechanism，不再自动等同于完整验证或 Release Authority。
 - CI profile 改为项目显式声明：`minimal / custom / disabled`；默认推荐 `minimal`，只运行低成本、确定性、clean-checkout 的独立 checks。
 - Minimal CI 默认不承载完整多平台矩阵、Critical Journeys、Hidden Validation、高成本 E2E 或 packaging。
-- 新增 Validation Tuple：`<exact SHA> × <real platform> × <runtime/toolchain> × <validation profile>`；一个 tuple PASS 不能推导另一 tuple PASS。
+- 新增 Validation Tuple：`exact SHA × real platform> × <runtime/toolchain> × <validation profile>`；一个 tuple PASS 不能推导另一 tuple PASS。
 - 新增 Required Gate Authority 顺序：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults；历史 workflow、旧脚本和 Agent 推测不能自动创建 mandatory release gate。
 - 新增 DAG blocker propagation：BLOCKED 只阻塞依赖节点；其它独立工作继续执行，最终统一统计。
 - 开发生命周期从机械 14 Phase 收敛为更少的 Stage：Baseline → Product/Scope → Architecture/Task → Implementation → Validation/PR/Minimal CI → Candidate → Hidden/Closure → Release。
