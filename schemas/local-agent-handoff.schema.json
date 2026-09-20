@@ -211,7 +211,13 @@
       "then": {
         "required": [
           "dispatch_id"
-        ]
+        ],
+        "properties": {
+          "dispatch_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     }
   ]
