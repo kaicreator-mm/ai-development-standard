@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "standard-manifest.json"
 TOKEN = "ai-dev:event:v1"
 
 ACTIVE_SECTIONS = (
@@ -28,11 +26,8 @@ def writer_surface_paths(root: Path = ROOT) -> list[str]:
 
 
 def classify_v1_reference(lines: list[str], index: int) -> str:
-    start = max(0, index - 2)
-    end = min(len(lines), index + 3)
-    context = " ".join(lines[start:end]).replace("`", "").lower()
-
-    if TOKEN not in context:
+    current = lines[index].replace("`", "").lower()
+    if TOKEN not in current:
         return "none"
 
     prohibition_markers = (
@@ -46,9 +41,26 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
         "不得写入 ai-dev:event:v1",
         "不得 emit ai-dev:event:v1",
     )
-    if any(marker in context for marker in prohibition_markers):
+    if any(marker in current for marker in prohibition_markers):
         return "explicit-prohibition"
 
+    stale_writer_markers = (
+        "publish ai-dev:event:v1",
+        "emit ai-dev:event:v1",
+        "write ai-dev:event:v1",
+        "use ai-dev:event:v1",
+        "send ai-dev:event:v1",
+        "create ai-dev:event:v1",
+        "发布 ai-dev:event:v1",
+        "写入 ai-dev:event:v1",
+        "使用 ai-dev:event:v1",
+    )
+    if any(marker in current for marker in stale_writer_markers):
+        return "stale-or-unclassified"
+
+    start = max(0, index - 2)
+    end = min(len(lines), index + 3)
+    context = " ".join(lines[start:end]).replace("`", "").lower()
     historical_markers = (
         "historical",
         "compatib",
