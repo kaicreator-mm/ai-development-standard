@@ -9,20 +9,21 @@
    - ChatGPT Web / Builder / Reviewer → `standards/CHATGPT_WEB_ROLE.md`
    - Codex / Build Host / Local Execution Agent → `standards/CODEX_ROLE.md`
 3. 涉及开发生命周期时读取 `standards/DEVELOPMENT_WORKFLOW.md`。
-4. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event、Review Policy、Operator Attribution 或 Stacked PR 时读取：
+4. 涉及 L2 Architecture Evidence、未决架构假设、Architecture Research Demo / Spike 或 executable architecture evidence 时，读取 `standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` 与 `prompts/L2_ARCHITECTURE_EVIDENCE.md`。
+5. 涉及版本分支、Task 分支、Issue-based Task DAG、Builder/Reviewer/Validator 协作、structured event、Review Policy、Operator Attribution 或 Stacked PR 时读取：
    - `standards/VERSION_INTEGRATION_WORKFLOW.md`
    - `standards/GITHUB_WORKFLOW.md`
    - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
-5. 涉及通过提示词触发 GitHub Issue 任务、向用户生成可复制任务提示词或把任务派发给 LLM/Agent 时，读取 `standards/ISSUE_FIRST_TASK_TRIGGER.md`。
-6. 涉及 repository/project 组织时按需读取：
+6. 涉及通过提示词触发 GitHub Issue 任务、向用户生成可复制任务提示词或把任务派发给 LLM/Agent 时，读取 `standards/ISSUE_FIRST_TASK_TRIGGER.md`。
+7. 涉及 repository/project 组织时按需读取：
    - `standards/REPOSITORY_STANDARD.md`
    - `standards/PROJECT_STRUCTURE.md`
    - `standards/DOCUMENTATION_STANDARD.md`
    - `standards/TESTING_STANDARD.md`
-7. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
-8. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-9. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
-10. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+8. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
+9. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
+10. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
+11. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -39,6 +40,9 @@
 - `review:required` 时，当前 merge-candidate exact SHA 必须有 Independent Review PASS；`review:recommended` 可执行也可显式 SKIP；`review:not-required` 的 Review Gate 为 `NOT_APPLICABLE`。
 - Task/Agent 不得静默降低更高权威来源已经声明的 `required` Review Policy。
 - Review 被执行时，Review PASS 绑定 exact reviewed SHA；若 Review 仍是 merge 所需 evidence 且 PR HEAD 改变，旧 PASS 只保留历史意义，必须 delta/full re-review。
+- Architecture Research Demo 是风险驱动的 L2 evidence，不是每个 Task 的 mandatory stage/gate。只有 material Architecture UNKNOWN 且静态/源码/既有 evidence 不足时才应创建。
+- Research Demo 必须从 falsifiable Hypothesis 开始；被验证边界必须真实，无关依赖才可以 deterministic fake；必须包含 negative/failure evidence、exact identity 与 mandatory `What was NOT proven`，不得用 toy example 外推 production readiness。
+- PRD Freeze 后技术方案失败默认调整候选 Architecture；只有 executable evidence 证明 Frozen PRD 自身 contradiction/unachievable 时才请求重新打开产品范围。L2 Freeze 后普通 Task 直接实现，只有新出现的高影响 Architecture UNKNOWN 才重新进入 research/demo。
 - CI 默认最小化：只做低成本、确定性、clean-checkout 的独立复核；不要默认把多平台矩阵、昂贵 E2E、Critical Journey、Hidden Validation 或 packaging 放入 CI。
 - 启用外部 CI Evidence 发布时，immutable run、exact SHA、Validation Tuple、artifact producer/provenance、`completion.json` publication marker 与 concurrency-safe `latest.json` pointer 必须遵守 `CI_EVIDENCE_STANDARD.md`；`latest.json` 只能做 discovery/cache，不能成为 Release Authority。
 - 正式 Stage 或 Task 形成后续步骤依赖的 Evidence、Contract、Task Definition、Validation 或 Release Artifact 时，必须形成 commit 并 push 为远端 checkpoint；阶段内部临时编辑不要求机械 push。
