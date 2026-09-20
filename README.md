@@ -203,6 +203,7 @@ python scripts/test_verify_standard.py
 python scripts/test_verify_project_standard.py
 python scripts/test_project_execution_profile.py
 python scripts/test_protocol_schemas.py
+python scripts/test_v33_lifecycle_contracts.py
 python scripts/test_execution_architecture.py
 python scripts/verify_runner_capability_reference.py
 ```
