@@ -84,7 +84,18 @@ class V33LifecycleContractRegression(unittest.TestCase):
         schema = load_schema("local-agent-handoff.schema.json")
         dispatched = self.ready_handoff()
         dispatched["handoff_state"] = "DISPATCHED"
-        self.assertTrue(any("dispatch_id" in e for e in validate_subset(dispatched, schema)))
+
+        missing = copy.deepcopy(dispatched)
+        self.assertTrue(any("dispatch_id" in e for e in validate_subset(missing, schema)))
+
+        null_identity = copy.deepcopy(dispatched)
+        null_identity["dispatch_id"] = None
+        self.assertTrue(validate_subset(null_identity, schema), null_identity)
+
+        empty_identity = copy.deepcopy(dispatched)
+        empty_identity["dispatch_id"] = ""
+        self.assertTrue(validate_subset(empty_identity, schema), empty_identity)
+
         dispatched["dispatch_id"] = "dispatch-v33-001"
         self.assertEqual(validate_subset(dispatched, schema), [])
 
