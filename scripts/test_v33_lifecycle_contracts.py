@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import copy
+from pathlib import Path
 import unittest
 
 from test_protocol_schemas import load_schema, validate_subset
 
+ROOT = Path(__file__).resolve().parents[1]
 SHA_A = "1111111111111111111111111111111111111111"
 SHA_B = "2222222222222222222222222222222222222222"
 SHA_C = "3333333333333333333333333333333333333333"
@@ -12,6 +14,9 @@ TREE = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 
 class V33LifecycleContractRegression(unittest.TestCase):
+    def text(self, rel: str) -> str:
+        return (ROOT / rel).read_text(encoding="utf-8")
+
     def event(self, event: str, actor_role: str, **overrides):
         value = {
             "schema": "ai-dev/event-v2",
@@ -224,6 +229,68 @@ class V33LifecycleContractRegression(unittest.TestCase):
         malformed = dict(valid)
         del malformed["evidence"]
         self.assertTrue(any("evidence" in e for e in validate_subset(malformed, schema)))
+
+    def test_issue24_ci_is_finalized_before_expensive_exact_sha_validation(self) -> None:
+        workflow = self.text("standards/DEVELOPMENT_WORKFLOW.md")
+        ci = workflow.index("#### 4.2 PR + Minimal CI Before Expensive Validation")
+        expensive = workflow.index("#### 4.3 Expensive / Real-host Task-owned Validation")
+        self.assertLess(ci, expensive)
+        for token in (
+            "finalize PR + CI/workflow/config",
+            "configured Minimal CI on current exact SHA",
+            "CI/workflow/config change 不是默认的 evidence-only commit",
+            "旧 evidence 只属于原 tested SHA",
+        ):
+            self.assertIn(token, workflow)
+
+    def test_issue25_validation_ownership_is_tiered(self) -> None:
+        architecture = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
+        workflow = self.text("standards/DEVELOPMENT_WORKFLOW.md")
+        for token in ("concern", "integration", "closure"):
+            self.assertIn(token, architecture)
+        self.assertIn("A leaf Task MUST NOT automatically inherit the complete release matrix", architecture)
+        self.assertIn("Gate ownership 仍按 `concern | integration | closure` 分层", workflow)
+        self.assertIn("full regression / release CJ / platform matrix / packaging / Hidden 由 version closure 负责", workflow)
+
+    def test_issue26_intent_admission_has_one_protocol_authority(self) -> None:
+        protocol = self.text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+        for token in (
+            "canonical short-intent admission / normalization / rejection semantics",
+            "A short intent/result is a transport input, not yet a durable canonical workflow fact",
+            "INVALID_SCHEMA",
+            "AMBIGUOUS_IDENTITY",
+            "STALE_IDENTITY",
+            "UNAUTHORIZED",
+            "ILLEGAL_TRANSITION",
+            "MUST NOT define a second intent contract",
+        ):
+            self.assertIn(token, protocol)
+
+    def test_issue30_hidden_blind_spot_requires_successor_pack_lifecycle(self) -> None:
+        release = self.text("standards/RELEASE_STANDARD.md")
+        for token in (
+            "HIDDEN_PACK_BLIND_SPOT",
+            "BOTH_VISIBLE_AND_HIDDEN_GAP",
+            "new immutable private pack identity/revision/checksum",
+            "fix/successor candidate",
+            "new freeze",
+            "new Release Qualification",
+        ):
+            self.assertIn(token, release)
+
+    def test_issue32_new_writer_cannot_regress_to_v1(self) -> None:
+        protocol = self.text("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+        self.assertIn("All newly emitted structured Agent events MUST use", protocol)
+        self.assertIn("New writers MUST NOT emit v1", protocol)
+        for rel in (
+            "standards/GITHUB_WORKFLOW.md",
+            "standards/VERSION_INTEGRATION_WORKFLOW.md",
+            "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+            "templates/local-agent-handoff-issue.md",
+        ):
+            text = self.text(rel)
+            self.assertIn("ai-dev:event:v2", text)
+            self.assertNotIn("publish `ai-dev:event:v1`", text)
 
 
 if __name__ == "__main__":
