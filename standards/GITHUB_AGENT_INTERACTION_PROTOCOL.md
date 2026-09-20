@@ -8,6 +8,7 @@ It owns:
 
 - GitHub work-item / metadata / event responsibilities;
 - logical operator attribution;
+- canonical short-intent admission / normalization / rejection semantics;
 - canonical structured-event writer protocol;
 - Review Policy interaction semantics;
 - recovery from GitHub facts across sessions/agents.
@@ -18,6 +19,8 @@ It does **not** redefine orchestration state reduction, validation truth or rele
 - `VALIDATION_STANDARD.md` — Validation Tuple, evidence and validation ownership;
 - `RELEASE_STANDARD.md` — candidate/release authority;
 - `LOCAL_AGENT_HANDOFF_PROTOCOL.md` — handoff completeness and pointer-only local execution.
+
+`EXECUTION_ARCHITECTURE_STANDARD.md` may describe how an executor/reducer consumes accepted intents/events, but it MUST NOT define a second intent contract. If its operational summary conflicts with this protocol's intent admission or event-writer rules, this protocol is authoritative for GitHub interaction semantics.
 
 Core rule:
 
@@ -218,9 +221,60 @@ Acceptable independent contexts include another ChatGPT session, another coding/
 
 If PR HEAD changes after a required Review PASS, the old result remains historical. Re-establish affected Review on the new exact SHA before merge.
 
-## 8. Canonical event writer protocol
+## 8. Intent admission and canonical event writer protocol
 
-### 8.1 New work
+### 8.1 Canonical short-intent contract
+
+A short intent/result is a transport input, not yet a durable canonical workflow fact. It becomes authoritative only after admission succeeds and a conforming canonical event/current-state mutation is published to GitHub.
+
+A short intent SHOULD contain only the judgment-bearing fields the worker actually knows, for example:
+
+```text
+event or requested action
+issue / PR target
+status / decision when applicable
+asserted SHA or unambiguous SHA prefix when identity is required
+findings / result summary / reason
+requested next route or dispatch when applicable
+```
+
+The executor MAY enrich an intent only with fields that are deterministically resolvable from current GitHub/repository facts, including:
+
+```text
+full exact SHA
+repository / Issue / PR relation
+current target/base identity
+timestamp
+actor_role
+logical operator attribution
+transport identity
+schema-required routing metadata
+```
+
+A SHA prefix is acceptable only as transport input when it resolves to exactly one relevant current immutable identity. The emitted canonical event MUST contain the full exact SHA required by the event-v2 schema/policy.
+
+Before accepting an intent, the executor MUST validate all applicable conditions:
+
+```text
+target/work-item exists and is current
+identity resolves unambiguously
+asserted identity is not stale for the requested action
+operator/role is authorized for the transition
+event payload satisfies the current schema
+requested transition is legal under current durable facts
+no higher-authority gate/contract is bypassed
+```
+
+If an intent is invalid, ambiguous, unauthorized, stale or requests an illegal transition, it MUST be rejected atomically. Rejection means:
+
+- no partial canonical event publication;
+- no workflow/gate state mutation;
+- no silent best-effort interpretation;
+- return/record a reason such as `INVALID_SCHEMA`, `AMBIGUOUS_IDENTITY`, `STALE_IDENTITY`, `UNAUTHORIZED`, or `ILLEGAL_TRANSITION`.
+
+An executor ACK/REJECT transport response is not itself a Gate PASS. Implementations MAY persist transport ACK/rejection metadata for idempotence/audit, but canonical workflow facts remain the accepted GitHub event/current object state.
+
+### 8.2 New-work event writer
 
 All newly emitted structured Agent events MUST use:
 
@@ -242,13 +296,13 @@ Add event-specific identity/status fields required by `schemas/agent-event-v2.sc
 
 The schema is the machine contract. Writers MUST NOT invent a parallel event version or silently redefine existing field semantics.
 
-### 8.2 Historical compatibility
+### 8.3 Historical compatibility
 
 Historical `ai-dev:event:v1` remains readable historical evidence and MUST NOT be rewritten merely to upgrade format.
 
 Consumers MAY read v1 for compatibility. **New writers MUST NOT emit v1.**
 
-### 8.3 Event families
+### 8.4 Event families
 
 Current event-v2 includes, among others:
 
