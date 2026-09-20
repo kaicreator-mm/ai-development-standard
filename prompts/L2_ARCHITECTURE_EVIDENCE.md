@@ -8,25 +8,52 @@
 - Existing architecture and repository
 - Non-functional requirements
 - Deployment / team / cost / security constraints
+- Existing research / demo evidence and exact SHAs when available
 
 ## 研究要求
 
-1. 提取最关键的 architecture drivers 与 invariants。
+1. 提取最关键的 architecture drivers、invariants 与 **Architecture UNKNOWNs**。
 2. 搜索成熟系统、官方设计、开源实现和失败案例来验证候选模式。
 3. 比较数据所有权、边界、同步/异步、失败恢复、幂等、版本、可观测性、升级路径。
-4. 优先选择能从现有代码渐进演进的方案，除非重写有充分证据。
-5. 对每个重大决策给出 alternatives、trade-offs、failure modes 和 rollback/escape hatch。
-6. 明确哪些能力属于公共基础服务，哪些必须留在领域系统。
+4. 对每个重大 UNKNOWN 判断：静态/源码/既有 executable evidence 是否足够。
+5. 当一个高影响架构假设仍为 UNKNOWN、会影响架构/公共 contract/durability/failure semantics，且静态证据不足时，按 `standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` 创建最小 Research Demo / Spike，使用可证伪 Hypothesis 和 exact-SHA executable evidence。
+6. 不要为已有充分证据或 Frozen L2 下的普通实现机械创建 Demo。Demo 是风险驱动证据，不是 universal stage/gate。
+7. 优先选择能从现有代码渐进演进的方案，除非重写有充分证据。
+8. 对每个重大决策给出 alternatives、trade-offs、failure modes 和 rollback/escape hatch。
+9. 明确哪些能力属于公共基础服务，哪些必须留在领域系统。
+10. 如果 Demo 只否定某个技术方案，调整候选架构；只有证据表明 Frozen PRD 本身 contradiction/unachievable 时，才报告 Architecture Contradiction 并请求重新打开产品范围。
+
+## Research Demo 规则
+
+需要 Demo 时，至少要求：
+
+- falsifiable Hypothesis；
+- Real Under Test 与 Deterministic Fakes；
+- positive + negative/failure scenarios；
+- observable counters/state/digests；
+- Evidence Strength `E1 | E2 | E3`；
+- baseline/dependency/final exact SHAs；
+- `What was proven` 与 mandatory `What was NOT proven`；
+- KEEP / ADAPT / DROP 与 Architecture implications。
+
+优先使用：
+
+- `templates/research-demo-issue.md`
+- `templates/research-demo-report.md`
+- `checklists/research-demo-validation.md`
 
 ## 输出
 
 - Architecture Drivers
+- Architecture UNKNOWNs + evidence disposition (`static evidence sufficient | demo required | blocked`)
 - Current-state Findings
 - Candidate Patterns + Evidence
+- Research Demo Evidence references + exact SHAs（如适用）
 - Decision Matrix
 - Recommended Architecture
 - Key ADRs / Invariants
 - Migration Plan
 - Architecture Risks / Open Questions
+- Explicit Architecture Contradictions（如有）
 
-研究结果必须能够直接支撑 Task DAG，而不是停留在概念层。
+研究结果必须能够直接支撑 L2 Freeze 和 Task DAG，而不是停留在概念层。未经所需 executable evidence 支持的高影响 UNKNOWN 不得伪装成已冻结 Architecture Fact。
