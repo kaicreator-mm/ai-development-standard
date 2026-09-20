@@ -13,15 +13,16 @@
    - `standards/VERSION_INTEGRATION_WORKFLOW.md`
    - `standards/GITHUB_WORKFLOW.md`
    - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
-5. 涉及 repository/project 组织时按需读取：
+5. 涉及通过提示词触发 GitHub Issue 任务、向用户生成可复制任务提示词或把任务派发给 LLM/Agent 时，读取 `standards/ISSUE_FIRST_TASK_TRIGGER.md`。
+6. 涉及 repository/project 组织时按需读取：
    - `standards/REPOSITORY_STANDARD.md`
    - `standards/PROJECT_STRUCTURE.md`
    - `standards/DOCUMENTATION_STANDARD.md`
    - `standards/TESTING_STANDARD.md`
-6. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
-7. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-8. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
-9. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+7. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
+8. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
+9. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
+10. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -47,6 +48,8 @@
 - Substantial version SHOULD 使用 Version Branch Mode：Task/Fix 短分支合并到 `version/vX.Y.Z`，最终再由版本分支合并 `main`；小型低风险维护 MAY 使用 trunk/fast path。
 - Implementation 默认以 Task / Concern 为短分支边界，并遵循 One concern, one PR。Validation-only Issue 不因为存在 Issue 而自动创建 branch；只有需要源码修改时才创建 task/fix branch。
 - Issue body 是相对稳定的 work contract；metadata 表示当前路由状态；comments SHOULD 作为 append-oriented event log。跨 Agent 新关键事件优先使用 `templates/agent-event-comment.md` 的 `ai-dev:event:v2` 格式。
+- GitHub Issue 已承载 Task contract 时，触发提示词必须遵守 `ISSUE_FIRST_TASK_TRIGGER.md`：提示词默认只负责触发执行，不重复维护 scope、步骤、baseline/branch、acceptance、gates、tests/CI 或 closeout 等 Issue 细节；执行 Agent 必须重新读取 current Issue，并以当前 GitHub 事实而不是旧复制提示词为准。
+- 向用户同时提供多个任务触发提示词时，必须一任务一个独立可复制区域；不得把多个任务提示词放进同一个可复制块。优先保持 `one task = one Issue = one trigger prompt`。
 - `ROLE_CLAIMED/ROLE_RELEASED` 用于记录哪个 logical operator 正在承担某个角色；它们是 attribution/routing facts，不是 Validation PASS，也不是 distributed lock。
 - Workflow `state:*`、Review Policy `review:*` 与 Gate status 不得混淆。Gate 只能使用 `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`。
 - Required Gate 的来源必须可追溯。优先级：Frozen PRD/Contract → Frozen Architecture → PROJECT_OVERRIDES → Task acceptance → Standard defaults。历史 workflow、旧脚本或 Agent 建议不能自行创建 mandatory release gate。
