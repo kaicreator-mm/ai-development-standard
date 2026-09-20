@@ -35,6 +35,8 @@ Use this Issue as the durable handoff contract. When complete, validate the equi
 |---|---|---|---|
 | <gate> | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | <sha> | <ref> |
 
+If no prior evidence exists, record `NOT_APPLICABLE` explicitly rather than omitting the section from a `HANDOFF_READY` payload.
+
 ## Remaining Work
 
 - <only work that remains>
@@ -42,20 +44,22 @@ Use this Issue as the durable handoff contract. When complete, validate the equi
 ## Validation / Execution
 
 - Validation scope: `<concern|integration|closure>`
+- Required gates: `<gate list|NOT_APPLICABLE>`
+- Required Validation Tuples: `<exact SHA × environment/platform × runtime/toolchain × profile list|NOT_APPLICABLE>`
 - Profile: `<profile>`
-- Environment/capabilities: `<requirements>`
-- Canonical entrypoints: `<commands/refs>`
+- Environment/capabilities: `<requirements|NOT_APPLICABLE>`
+- Canonical entrypoints: `<commands/refs|NOT_APPLICABLE>`
 
 ## Allowed Changes
 
-- <allowlist>
+- <allowlist|NOT_APPLICABLE>
 
 ## Forbidden Changes
 
 - frozen product/architecture/security/public-contract changes unless explicitly authorized
 - weakening required gates/tests
 - unrelated scope
-- <additional constraints>
+- <additional constraints|NOT_APPLICABLE>
 
 ## Expected Output
 
@@ -77,7 +81,7 @@ Use this Issue as the durable handoff contract. When complete, validate the equi
 
 ## Handoff State
 
-`DRAFT` until all material fields above are complete. Then publish `ai-dev:event:v2 HANDOFF_READY` and set `HANDOFF_READY`.
+`DRAFT` may be incomplete. `HANDOFF_READY` is valid only after all machine-required completeness fields are present, including Standard version/revision, frozen inputs, existing evidence, required gates/Validation Tuples, execution environment/profile/entrypoints, allowed/forbidden changes, completion/blocker rules and expected outputs. Then publish `ai-dev:event:v2 HANDOFF_READY` with evidence that the machine payload validated and set `HANDOFF_READY`.
 
 After `HANDOFF_READY`, invoke the worker with only:
 
