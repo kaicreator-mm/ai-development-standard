@@ -18,6 +18,7 @@ BOOTSTRAP_REQUIRED = {
     "standards/DEVELOPMENT_WORKFLOW.md",
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "standards/ISSUE_FIRST_TASK_TRIGGER.md",
     "standards/VALIDATION_STANDARD.md",
     "standards/RELEASE_STANDARD.md",
     "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
@@ -125,6 +126,14 @@ handoff = read("standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md")
 for token in ("Pointer-only principle", "HANDOFF_READY", "schemas/local-agent-handoff.schema.json"):
     if token not in handoff:
         errors.append(f"Local Agent Handoff missing v3.3 semantic token: {token}")
+
+issue_first = read("standards/ISSUE_FIRST_TASK_TRIGGER.md")
+for token in ("Issue = durable task contract and current Source of Truth", "Trigger prompt = short ephemeral execution trigger", "one task = one Issue = one trigger prompt"):
+    if token not in issue_first:
+        errors.append(f"Issue-first trigger regression: missing {token}")
+agents = read("AGENTS.md")
+if "standards/ISSUE_FIRST_TASK_TRIGGER.md" not in agents:
+    errors.append("AGENTS.md does not route Issue-trigger work to ISSUE_FIRST_TASK_TRIGGER.md")
 
 for rel in ("standards/GITHUB_WORKFLOW.md", "standards/VERSION_INTEGRATION_WORKFLOW.md", "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md", "templates/local-agent-handoff-issue.md", "README.md"):
     text = read(rel)
