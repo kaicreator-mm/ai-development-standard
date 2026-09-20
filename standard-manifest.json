@@ -14,6 +14,7 @@
       "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
       "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
       "standards/GITHUB_CAPABILITY_FALLBACK.md",
+      "standards/ISSUE_FIRST_TASK_TRIGGER.md",
       "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
       "standards/VALIDATION_STANDARD.md",
       "standards/RELEASE_STANDARD.md",
