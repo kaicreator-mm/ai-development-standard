@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   verify:
@@ -16,32 +15,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify standard
-        id: verify_standard
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          python scripts/verify_standard.py 2>&1 | tee verify-standard.log
-      - name: Publish verifier diagnostic to Issue 38
-        if: steps.verify_standard.outcome == 'failure'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          {
-            echo '### v3.3 verifier diagnostic'
-            echo
-            echo '```text'
-            cat verify-standard.log
-            echo '```'
-            echo
-            echo "run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo "head: ${{ github.event.pull_request.head.sha || github.sha }}"
-          } > verifier-diagnostic.md
-          gh issue comment 38 --repo "${{ github.repository }}" --body-file verifier-diagnostic.md
-      - name: Enforce verifier result
-        if: steps.verify_standard.outcome == 'failure'
-        run: exit 1
+      - run: python scripts/verify_standard.py
       - run: python scripts/test_verify_standard.py
       - run: python scripts/test_verify_project_standard.py
       - run: python scripts/test_project_execution_profile.py
