@@ -1,175 +1,93 @@
 # Local Agent Handoff — <version/task> <scope>
 
+Use this Issue as the durable handoff contract. When complete, validate the equivalent machine payload against `schemas/local-agent-handoff.schema.json` and emit `HANDOFF_READY`.
+
 ## Standard
 
-Read the business project's `.dev-standard/VERSION` and use exactly that immutable `ai-development-standard` revision.
-
-- Standard version: `<semantic-version>`
-- Standard revision: `<40-char-sha>`
+- Version: `<semantic-version>`
+- Revision: `<40-char-sha>`
 
 ## GitHub Context
 
 - Repository: `<owner/repo>`
-- Version milestone: `<vX.Y.Z or NOT_APPLICABLE>`
-- Parent Task Issue: `<#issue or NOT_APPLICABLE>`
-- Parent Task Review Policy: `<required | recommended | not-required | NOT_APPLICABLE>`
-- Source Review / PR: `<#pr / review event / NOT_APPLICABLE>`
-- Integration mode: `<version-branch | trunk-fast-path>`
-- Integration / target branch: `<version/vX.Y.Z | main | stack parent | other>`
-- Handoff labels/state: `<type:validation, state:validation-needed, handoff:local-agent, ...>`
-- Relevant Issue Dependencies: `<#issues / none>`
+- Issue: `<#N>`
+- Role: `<builder|reviewer|validator>`
+- Integration target: `<branch>`
+- Parent Task/PR: `<refs|NOT_APPLICABLE>`
+- Review Policy: `<required|recommended|not-required|NOT_APPLICABLE>`
+- Issue Dependencies: `<refs|none>`
 
 ## Baseline
 
-- Branch / Ref: `<branch-or-ref>`
-- Baseline commit: `<40-char-sha>`
-- Scope / Task IDs: `<ids>`
+- Ref: `<ref>`
+- Exact SHA: `<40-char-sha>`
+- Scope/Task IDs: `<items>`
 
 ## Frozen Inputs
 
-- PRD / Scope: `<path/ref>`
-- Architecture / Contracts: `<path/ref>`
-- Planning Task DAG: `<path/ref>`
-- L3 / Implementation Evidence: `<path/ref or NOT_APPLICABLE>`
+- PRD/Scope: `<ref|NOT_APPLICABLE>`
+- Architecture/Contract: `<ref|NOT_APPLICABLE>`
+- Task DAG/L3: `<refs|NOT_APPLICABLE>`
 
-GitHub Issue Dependencies are the canonical live execution DAG. A stacked PR, if present, only expresses code-baseline dependency.
+## Existing Evidence
 
-## Web / Reviewer Completed
-
-- <completed item>
-
-## Existing Validation / Review Evidence
-
-| Gate / Tuple | Status | SHA | Evidence |
+| Gate/Tuple | State | SHA | Evidence |
 |---|---|---|---|
-| Independent Review | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | | |
-| Format | | | |
-| Lint | | | |
-| Typecheck | | | |
-| Unit / Contract | | | |
-| Integration | | | |
-| Build Smoke | | | |
-| Critical Journey | | | |
-| Hidden Validation | | | |
-| Platform / Production Build | | | |
+| <gate> | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | <sha> | <ref> |
 
 ## Remaining Work
 
 - <only work that remains>
 
-## Execution Environment
+## Validation / Execution
 
-- Executor: `<codex | claude-code | other>`
-- Host role: `<Ubuntu Build Host | Windows | macOS | GPU host | other>`
-- OS / architecture: `<...>`
-- Runtime / toolchain: `<...>`
-- Required services/devices: `<...>`
-- Credentials / secret assumptions: `<none | description without secret values>`
-- Required fixtures/data: `<...>`
-
-## Validation Profile
-
-`<fast | integration | critical-journey | hidden | platform | release | custom>`
-
-## Required Gates / Validation Tuples
-
-- [ ] `<exact SHA> × <platform> × <runtime/toolchain> × <profile>`
-
-## Exact Commands / Canonical Entrypoints
-
-```text
-<command or project-owned canonical entrypoint>
-```
+- Validation scope: `<concern|integration|closure>`
+- Profile: `<profile>`
+- Environment/capabilities: `<requirements>`
+- Canonical entrypoints: `<commands/refs>`
 
 ## Allowed Changes
 
-- implementation bug fixes
-- dependency/build/platform fixes required by frozen scope
-- tests that preserve or strengthen frozen behavior
-- documentation synchronization required by the actual change
-- <issue-specific additions>
+- <allowlist>
 
 ## Forbidden Changes
 
-- PRD / product scope
-- domain semantics / frozen business rules
-- public API/data semantics unless explicitly authorized
-- security model / frozen architecture boundary
-- weakening required tests or gates
-- changing mandatory release gate authority
+- frozen product/architecture/security/public-contract changes unless explicitly authorized
+- weakening required gates/tests
+- unrelated scope
+- <additional constraints>
 
-## Branch / PR Rule
+## Expected Output
 
-Validation-only execution does not require a branch.
+1. exact final/tested SHA;
+2. actual environment/toolchain and commands;
+3. Gate/Validation results;
+4. commit/PR if code changed;
+5. evidence/result comment;
+6. remaining blocker/downstream impact;
+7. next route.
 
-If a source change is required:
+## Completion Rule
 
-- create a dedicated `task/...` or `fix/<version>-<issue>-<scope>` branch;
-- target `<integration / target branch>` or the justified stack parent;
-- reference this Issue and parent Task from the PR;
-- rerun affected required Validation gates against the resulting exact SHA;
-- apply the parent Task Review Policy to the new PR HEAD:
-  - `required` → route to `state:review-ready` for delta/full re-review;
-  - `recommended` → re-review only if the optional review is being continued; otherwise record `REVIEW_DECISION` and follow remaining merge prerequisites;
-  - `not-required` → do not manufacture a Review Gate because SHA changed.
+`<all required gates PASS + evidence linked, or explicit FAIL/BLOCKED with reproduction/impact>`
 
-Do not create a stacked PR unless the source change truly needs an unmerged upstream code baseline.
+## Blocker Rule
 
-## Expected Output / Artifacts
+`<how to report/route blockers>`
 
-1. Final/current HEAD and tested SHA.
-2. Final commit / PR if code changed.
-3. Validation Report using the pinned standard template.
-4. Exact commands + exit codes.
-5. Gate matrix and Validation Tuple results.
-6. Changed files and fixed failures.
-7. Remaining blockers and downstream Issue dependency/release impact.
-8. `VALIDATION_RESULT` / `BLOCKER_REPORTED` event when `ai-dev:event:v1` is enabled.
-9. `<project-specific artifact>`.
+## Handoff State
 
-## Completion / Routing Rule
+`DRAFT` until all material fields above are complete. Then publish `ai-dev:event:v2 HANDOFF_READY` and set `HANDOFF_READY`.
 
-This Handoff Issue is complete only when:
-
-- all explicitly required gates are PASS and evidence/PR is linked; **or**
-- the remaining path is explicitly FAIL/BLOCKED with reproduction, evidence, impact and any upstream decision required.
-
-Do not close the Issue merely because execution stopped.
-
-If this handoff was requested by Independent Review and validation PASS:
-
-- publish `VALIDATION_RESULT`;
-- route the parent Task back to `state:review-ready` only when Review Policy is `required` or a `recommended` Review is actively being continued;
-- otherwise route according to remaining required gates and merge prerequisites;
-- do not route directly to `state:merge-ready` solely because local validation passed unless all other required merge conditions are also satisfied.
-
-## Failure / Blocker Reporting Rule
-
-For FAIL/BLOCKED include where available:
-
-```text
-exact command
-exit code
-key logs
-reproduction
-expected vs actual
-root cause/evidence
-affected scope
-downstream Issue dependency impact
-release impact
-```
-
-Continue independent work when a blocker affects only part of the DAG.
-
-## Local Agent Bootstrap
-
-Use `prompts/local-agent-bootstrap.md` from the pinned standard revision.
-
-Minimal invocation context:
+After `HANDOFF_READY`, invoke the worker with only:
 
 ```text
 Repository: <owner/repo>
-Handoff Issue: #<issue-number>
+Handoff Issue: #<N>
+Role: <role>
+Dispatch: <id if used>
 
-Read and execute the pinned Local Agent Bootstrap Prompt. Treat this Issue as the task contract and GitHub as the execution fact source.
+Read the pinned standard and current GitHub state. Execute only this handoff.
 ```
+
+Do not duplicate the Issue contract into chat.

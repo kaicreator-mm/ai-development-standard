@@ -1,269 +1,213 @@
 # Validation Standard
 
-## 1. 状态枚举与语义
+## 1. Purpose and states
 
-每个 Gate 只能使用：
-
-- `PASS` = gate 已实际执行，且满足该 gate 的 acceptance criteria。
-- `FAIL` = gate 已实际执行，但结果不满足 acceptance criteria。
-- `BLOCKED` = gate 因前置条件、权限、工具、环境或标准缺陷无法完成。
-- `NOT_RUN` = gate 尚未执行。
-- `NOT_APPLICABLE` = gate 对当前 project/change 确实不适用。
-
-不要使用“应该没问题”“基本通过”等不可审计描述，也不要把不同层级的状态压成一个值。
-
-mandatory downstream gate 仍是 `NOT_RUN` 时，该 gate 保持 `NOT_RUN`；依赖它的 Release Qualification 通常为 `BLOCKED`，而不是把未执行 gate 改写成 `FAIL`。
-
-## 2. Validation 与执行器分离
-
-Validation 是工程要求；执行器只是实现方式。
-
-允许的执行器包括但不限于：
-
-- ChatGPT 可执行环境；
-- Codex / coding agent；
-- Ubuntu Build Host；
-- Windows workstation；
-- macOS host；
-- self-hosted runner；
-- GitHub Actions；
-- 其它可信 clean execution environment。
-
-是否使用 CI 不改变 required gate 的 acceptance criteria。
-
-任何 PASS 都必须来自真实执行证据，不能来自执行器名称、workflow 存在、cross-build 或 Agent 推测。
-
-## 3. Required Gate Authority
-
-Mandatory Gate 必须有可追溯来源。优先级：
+Validation proves behavior on an explicit subject and execution tuple. Every Gate uses exactly one state:
 
 ```text
-1. Frozen PRD / Product Contract
-2. Frozen Architecture / Technical Contract
-3. .dev-standard/PROJECT_OVERRIDES.md
-4. Task-specific acceptance
-5. Standard defaults
+PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 ```
 
-历史 workflow、旧脚本、旧 artifact、旧 CI matrix 或 Agent 建议不能自动创建 mandatory release gate。
+`PASS` requires actual execution. `FAIL` means an executed required check did not meet acceptance. `BLOCKED` means a prerequisite/environment/tool prevents execution. `NOT_RUN` means it has not executed. `NOT_APPLICABLE` means the gate genuinely does not apply.
 
-如果需要新增 mandatory gate，应修改其上游冻结权威并留下审计记录。
+Workflow state, CI/provider health, dispatch state, candidate state, and release verdict are separate dimensions defined by `EXECUTION_ARCHITECTURE_STANDARD.md`.
 
-## 4. Validation Tuple
+## 2. Gate Authority
 
-矩阵验证的最小证据单元是 Validation Tuple：
+Mandatory gates must trace to, in priority order:
 
 ```text
-<exact SHA>
+Frozen PRD / Contract
+→ Frozen Architecture
+→ PROJECT_OVERRIDES
+→ Task acceptance
+→ Standard defaults
+```
+
+Historical workflows, old scripts/artifacts, or Agent preference do not create a mandatory gate.
+
+## 3. Validation Tuple
+
+The smallest platform-sensitive evidence unit is:
+
+```text
+<exact tested SHA>
 × <real platform/environment>
 × <runtime/toolchain>
 × <validation profile>
 ```
 
-示例：
+A tuple proves only itself. Cross-build, another platform/toolchain, CI provider success, or an older SHA cannot be inferred as PASS for an unexecuted tuple.
+
+Validation Reports use `schemas/validation-report.schema.json` when a machine payload is produced.
+
+## 4. Validation ownership
+
+Every Task/validation request SHOULD resolve a validation scope:
 
 ```text
-abc123... × Ubuntu 24.04 × Go 1.26 × visible-release
-abc123... × Ubuntu 24.04 × Go 1.27 × visible-release
+concern | integration | closure
 ```
 
-规则：
+### concern
 
-1. 一个 tuple 的 PASS 只证明该 tuple。
-2. 一个 toolchain PASS 不得推导另一 toolchain PASS。
-3. cross-build 不等价于真实 platform execution。
-4. platform/matrix 聚合 PASS 必须由其 required tuples 全部 PASS 得出。
-5. 如果 candidate SHA 变化，旧 SHA 的 tuple evidence 不能自动迁移成新 candidate PASS。
+Use the smallest strict affected evidence: format/lint/typecheck/unit/contract/build subsets, affected integration checks, and any real platform/runtime gate intrinsic to the concern.
 
-## 5. Gate 分层
+A normal leaf Task SHOULD NOT automatically run full repository regression, the complete OS/device matrix, all Critical Journeys, Hidden Validation, packaging, or unrelated sibling integration.
 
-### A. Fast Gate
+### integration
 
-通常包括：format、lint、typecheck、unit、contract smoke、basic build。
+An explicit integration owner validates cross-component assembly, shared runtime/public wiring, package/dependency composition, and representative integration journeys.
 
-目标：快速发现局部回归，适合每个 Task/Concern。
+### closure
 
-### B. Integration Gate
+The dependency-complete candidate owns full regression and the release-level matrix authorized by frozen scope: Critical Journeys, required real platforms, production build/package/install, external boundaries, Hidden Validation, and Release Qualification inputs.
 
-验证 API、DB、queue、filesystem、frontend-backend、external boundary mock/stub 等组合行为。
+Cost never weakens a required gate. If a platform gate is intrinsic to a host adapter Task, it remains concern-owned even when expensive.
 
-### C. Critical Journey Gate
+## 5. Validation layers
 
-基于真实用户路径验证关键业务闭环。不是单个 API 测试的替代品。
+Useful profiles include:
 
-### D. Hidden Validation
+- Fast — deterministic format/lint/typecheck/unit/contract/basic build;
+- Integration — real component composition and boundary behavior;
+- Critical Journey — critical user/system outcomes;
+- Hidden — independent scenarios unavailable to implementation context;
+- Platform / Production Build — real OS/device/SDK/runtime/package;
+- Minimal CI — low-cost clean-checkout independent sanity.
 
-使用实现 Agent 在开发阶段不依赖其具体答案的独立数据/场景，验证正常路径、边界、错误处理、failure injection、rollback 和关键不变量。
+CI is an executor, not Release Authority. High-cost device/CJ/Hidden/packaging work normally belongs outside Minimal CI unless project authority explicitly says otherwise.
 
-Hidden Validation 默认在 Candidate Freeze 后执行。Pack/design 可以提前准备，但 `Hidden Validation Execution` 不得在未冻结 candidate 上伪造 PASS。
+## 6. Exact-SHA evidence and drift
 
-### E. Platform / Production Build
+Evidence remains attributed to the SHA where it actually ran.
 
-按项目需要验证真实 OS、SDK、device、container、browser bundle、release build 或其它生产环境。
-
-### F. Minimal CI Gate
-
-CI 是低成本、clean-checkout 的独立复核层，不是完整 Validation 的替代品。
-
-默认 Minimal CI SHOULD 包含：
-
-- standard/project verifier；
-- format/lint/typecheck 的必要确定性子集；
-- 快速 unit/contract smoke；
-- basic build smoke。
-
-默认 Minimal CI SHOULD NOT 承载：
-
-- 完整多平台矩阵；
-- 真实设备/SDK；
-- Critical Journeys；
-- Hidden Validation；
-- 高成本 E2E；
-- release packaging。
-
-项目在 `.dev-standard/PROJECT_OVERRIDES.md` 声明 CI profile：
+Distinguish:
 
 ```text
-minimal
-custom
-disabled
+HEAD drift
+BASE drift
+MERGE-RESULT drift
+CANDIDATE drift
 ```
 
-- `minimal`：采用默认低成本 profile；
-- `custom`：明确列出项目需要的最小独立 checks；
-- `disabled`：明确不使用 CI，并记录原因；必须保留 exact-SHA clean validation + review。
+### HEAD drift
 
-CI profile 的选择不能降低 frozen product/release validation。
+A changed PR HEAD invalidates current-SHA evidence for affected required gates. Old evidence remains historical.
 
-## 6. Required Gate 的确定
+### BASE / merge-result drift
 
-Task DAG、PRD 或项目 override 应明确 required gates。
+If the PR HEAD is unchanged but its target advances, do not automatically rewrite old evidence as PASS for the merge result.
 
-如果没有显式声明，至少要求：
+A concern-specific expensive tuple MAY remain usable only through an explicit `VALIDATION_IMPACT_DECISION` proving `validation_impact=none`. The decision should identify, when relevant:
 
-- Fast Gate；
-- 与修改范围相关的 Integration/Build Gate；
-- 项目配置的 Minimal CI（若 CI profile 不是 disabled）。
+```text
+validated_head_sha
+base_sha_at_validation
+current_target_sha
+base delta / write-set comparison
+merge_result_sha/tree or deterministic preview
+validation_impact
+evidence_reuse_basis
+reviewer/controller attribution
+```
 
-版本 Closure 根据 frozen authority 还可能要求：
+Reuse is allowed only when the target delta does not affect relevant source/runtime behavior, tests/fixtures, dependency/lockfile/toolchain/build inputs, public contract/architecture semantics, shared integration wiring, artifact identity, or overlapping write sets, and the target delta has its own required disposition.
 
-- Critical Journey；
-- Hidden Validation；
-- Platform / Production Build；
-- external boundary；
-- project-specific release gates。
+If impact is `affected` or `unknown`, rerun affected gates.
 
-CI 不自动成为 Release Qualification blocker；只有 frozen/project policy 明确把某个 CI gate 列为 release-required 时，它才是版本级 mandatory gate。
+### Evidence-preserving successor
 
-## 7. Exact-SHA Evidence
+A successor commit may use the same explicit impact discipline. CI/workflow/config-only changes are not automatically evidence-preserving because they can alter execution semantics.
 
-Validation Report 应尽量记录：
+No event/report may claim a tuple executed on a SHA where it did not execute.
+
+## 7. Tested checkpoint vs evidence-only head
+
+When a report or evidence index is committed after execution, distinguish:
+
+```text
+tested_sha = actual executed commit
+evidence_only_head = later evidence-recording commit
+```
+
+Evidence-only recording should preferably live in Issue/events/external evidence storage rather than mutate a frozen candidate.
+
+## 8. CI execution channel vs Validation gate
+
+The required Validation profile and its normal provider are different facts.
+
+Provider/channel health may use:
+
+```text
+AVAILABLE / INFRA_BLOCKED / TIMED_OUT / CANCELLED
+```
+
+A stuck/pending CI provider is not candidate FAIL.
+
+### Alternate executor substitution
+
+If authority requires the profile and CI is merely its normal executor, an equivalent or stronger trusted clean executor MAY satisfy the profile when it records:
+
+- exact SHA;
+- clean checkout;
+- equivalent required check set/entrypoints;
+- material environment/toolchain identity;
+- actual commands/results;
+- independent execution context when required;
+- the fact that the normal provider remained unavailable.
+
+If authority explicitly requires a provider-specific attestation/environment, alternate execution cannot substitute; that requirement remains BLOCKED until resolved or authority changes.
+
+Use `CI_INFRA_EXCEPTION` for the infrastructure fact. Do not change the provider UI/history to pretend it passed.
+
+Known broken channels should not be retried indefinitely without new evidence that infrastructure changed.
+
+## 9. CI execution and evidence
+
+When CI is enabled, follow:
+
+- `CI_EXECUTION_STANDARD.md` for provider/backend/checkout/runtime semantics;
+- `CI_RUNNER_CAPABILITY_STANDARD.md` for routing inventory;
+- `CI_EVIDENCE_STANDARD.md` for immutable evidence publication.
+
+A Runner Capability Profile routes work only; actual run preflight and exact-SHA evidence win.
+
+## 10. Blocker propagation
+
+`BLOCKED` propagates only through real dependency edges. Continue all independent work.
+
+A blocked macOS/device tuple may block Candidate Freeze while unrelated docs, another platform tuple, Hidden-pack preparation, or release-note preparation continues.
+
+## 11. Evidence minimum
+
+A useful Validation Report records:
 
 ```text
 repository
-tested SHA
-branch/ref（辅助信息）
-execution host role
-OS/platform
-architecture
+tested_sha
+candidate_sha when relevant
+branch/ref as auxiliary metadata
+execution host role/channel/provider state
+platform/architecture
 runtime/toolchain
-validation profile
-exact command
-start/end timestamp
+validation profile + scope
+exact command/entrypoint
 exit code
-key logs
+key logs/evidence
 state
+validation impact/reuse basis when evidence composition is used
 ```
 
-如果 report commit 晚于被测试 commit，必须区分：
+External CI evidence remains governed by immutable evidence identity/completion rules in `CI_EVIDENCE_STANDARD.md`.
 
-```text
-tested checkpoint = <sha>
-evidence-only head = <sha>
-```
+## 12. Prohibited practices
 
-不得把 working-tree PASS 宣称为未实际执行的 commit SHA PASS。
-
-当 CI/自动化 Validation Evidence 发布到外部 artifact store 时，SHOULD 遵循 `CI_EVIDENCE_STANDARD.md`：immutable run 必须绑定 exact SHA，`validation-summary.json` 必须保留 Validation Tuple 和五状态 Gate 语义；`latest.json` 只能作为 discovery pointer，不能替代 exact-SHA evidence lookup。
-
-## 8. Blocker Propagation
-
-`BLOCKED` 只沿依赖边传播。
-
-一个 gate BLOCKED 时：
-
-1. 标记该 gate 与直接依赖的 downstream state；
-2. 记录原因和 release impact；
-3. 继续执行所有不依赖该 gate 的工作；
-4. 不重复无意义 retry；
-5. 最后统一统计。
-
-示例：
-
-```text
-macOS tuple BLOCKED
-→ Candidate Freeze BLOCKED
-→ Hidden Validation Execution NOT_RUN
-→ Release Qualification BLOCKED
-```
-
-但 Candidate Preparation、Hidden Pack Preparation、其它平台 validation、release notes 等仍应继续。
-
-## 9. 失败与阻塞证据
-
-FAIL/BLOCKED 应尽量记录：
-
-- failing / blocked command or job；
-- exit code（若 command 实际启动）；
-- 关键日志；
-- reproduction；
-- expected vs actual；
-- root cause（若已知）；
-- affected Task/version；
-- downstream blocking level。
-
-对于 `NOT_RUN` 的 mandatory gate，应记录未执行原因和 downstream impact。
-
-外部 Evidence Contract 中的 `completion.json` 只表示 publication COMPLETE。即使 Validation 为 `FAIL/BLOCKED/NOT_RUN`，只要 evidence truthfully 完整发布，仍可以存在 `completion.json`；不得把 publication complete 误写为 Validation PASS。
-
-## 10. CI Evidence Contract
-
-当项目需要让 CI Evidence 可被 ChatGPT、Agent、Release tooling 或其它消费者稳定读取时，使用 [`CI_EVIDENCE_STANDARD.md`](CI_EVIDENCE_STANDARD.md)。
-
-最小职责分离：
-
-```text
-latest.json             = mutable discovery pointer
-manifest.json           = immutable evidence identity root
-validation-summary.json = immutable machine-readable Validation Report
-SHA256SUMS              = immutable integrity inventory
-completion.json         = immutable evidence publication commit marker
-```
-
-推荐 consumer 顺序：
-
-```text
-resolve requested exact SHA
-→ locate matching immutable run
-→ verify completion / identity
-→ read validation-summary
-→ on failure read diagnostic + specific logs
-→ download large artifacts only when required
-```
-
-CI provider UI/status 可以帮助发现 execution run，但不能替代上述 exact-SHA Evidence Contract。
-
-## 11. 禁止事项
-
-- 删除有效测试以消除失败。
-- 将 required gate 改为可选以消除失败。
-- 无依据增大 timeout/retry 掩盖确定性 bug。
-- 在未执行时写 PASS。
-- 把环境不可用写成 PASS。
-- 把已执行失败的具体 gate 因 root cause classification 改写成 BLOCKED。
-- 把 mandatory downstream `NOT_RUN` 自动改写成 FAIL。
-- 把 CI PASS 当成未执行的 Platform/CJ/Hidden/Packaging PASS。
-- 把 cross-build 当成真实 platform PASS。
-- 把 `latest.json` 当成请求 SHA 的权威 Validation Evidence。
-- 把 `completion.json` 当成 Validation PASS。
-- 发布 producer 未 PASS 的 stale build/package artifact 并把它标记为有效。
+- claiming PASS without execution;
+- moving PASS from one SHA/platform/toolchain to another by assertion;
+- using CI PASS as unexecuted platform/CJ/Hidden/packaging PASS;
+- deleting/weaking required tests to clear a gate;
+- changing a required gate to optional to obtain READY;
+- unlimited retries/timeouts that mask deterministic defects;
+- treating `latest.json`, evidence publication completion, artifact presence, or runner capability inventory as Validation PASS;
+- treating infrastructure unavailability as product FAIL or PASS.

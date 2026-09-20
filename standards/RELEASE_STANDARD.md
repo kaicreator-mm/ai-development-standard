@@ -1,162 +1,175 @@
 # Release Standard
 
-## 1. Final Closeout 输入
+## 1. Purpose
 
-- 冻结的 PRD / scope；
-- Task DAG 最终状态；
-- 最终 immutable candidate/baseline commit SHA；
-- Validation Report；
-- required Validation Tuple matrix；
-- Critical Journey 结果；
-- Hidden Validation 结果（若项目定义）；
-- Platform / Production Build evidence（按 frozen authority）；
-- Minimal CI 结果（若项目 profile 启用并要求）；
-- 文档同步状态；
-- 已知限制与 deferred items。
+Release Qualification decides whether one dependency-complete candidate satisfies frozen release authority. Task/PR PASS is not Release PASS.
 
-CI 不再自动作为 Release Qualification 的必要输入。是否为 release-required 由 frozen/project policy 决定。
+The execution state model and bounded release/repository controllers are defined by `EXECUTION_ARCHITECTURE_STANDARD.md`; this file owns candidate and release authority.
 
-当 CI evidence 发布到外部 artifact store 时，Release Closeout 可以引用 `CI_EVIDENCE_STANDARD.md` 定义的 immutable run，但仍必须用 candidate exact SHA 交叉检查，而不能只读取 `latest.json`。
+## 2. Release inputs
 
-## 2. Candidate
+Final qualification consumes, as applicable:
 
-区分：
+- frozen PRD/scope and Architecture/Contract;
+- terminal Task DAG and declared deferred items;
+- immutable candidate SHA + tree;
+- required Validation reports/tuples;
+- full regression/integration evidence;
+- Critical Journeys;
+- Hidden Validation;
+- real platform/production build/package/install evidence;
+- external boundary evidence;
+- project-required Minimal CI/profile evidence;
+- architecture/docs reconciliation;
+- known limitations/deferred items;
+- escaped-defect/Hidden-pack disposition when relevant.
 
-```text
-Candidate Prepared
-Candidate Freeze
-```
+Every mandatory input must trace to Gate Authority. CI is release-required only when frozen/project policy makes it so.
 
-`Candidate Prepared` 表示 release notes、matrix、closeout、Hidden pack 等准备完成。
-
-只有 required visible gates 在同一个 exact SHA 上满足冻结条件后，才能记录：
+## 3. Candidate Prepared vs Candidate Frozen
 
 ```text
-CANDIDATE_FROZEN_SHA=<sha>
+PREPARED
+= identity/matrix/notes/pack/handoff can be prepared
+
+FROZEN
+= all required visible freeze gates PASS on one exact SHA/tree
 ```
 
-Hidden Validation Execution 默认只对 frozen candidate 执行。
+A freeze record SHOULD include:
 
-## 3. Release Decision
+```text
+candidate_sha
+candidate_tree
+candidate_ref
+visible-closure evidence
+pinned standard revision
+frozen_at
+actor/operator
+```
 
-### PASS / READY
+Hidden Validation execution normally targets the frozen candidate.
 
-所有 frozen mandatory release blockers 已解决；required gates PASS；文档与实现一致；没有未声明范围缺口。
+## 4. Operational immutability
+
+`CANDIDATE_FROZEN` is an operational state, not only a SHA variable.
+
+While frozen:
+
+- do not silently commit product/docs/evidence/workflow changes onto or move the declared candidate ref;
+- record post-freeze evidence in Issue/events, immutable evidence storage, or independent Hidden storage when possible;
+- before Hidden Validation, Release Qualification, and final repository integration, verify declared ref SHA and tree still match the freeze record.
+
+If any required content change is needed:
+
+```text
+FROZEN
+→ THAWED / INVALIDATED
+→ fix/successor candidate
+→ affected visible validation
+→ new freeze
+→ required Hidden Validation
+→ new Release Qualification
+```
+
+Old evidence remains valid only for its old candidate/pack identities.
+
+## 5. Hidden Validation and escaped defects
+
+Hidden Validation is independent evidence, not proof that a pack is forever complete.
+
+If a material defect is found after a prior Hidden PASS, classify it:
+
+```text
+OUT_OF_SCOPE
+VISIBLE_TEST_GAP
+HIDDEN_PACK_BLIND_SPOT
+BOTH_VISIBLE_AND_HIDDEN_GAP
+PACK_DEFECT
+PRODUCT_DEFECT_NOT_SUITABLE_FOR_HIDDEN
+```
+
+A release-significant Hidden blind spot must be explicitly dispositioned before a successor release is READY. If the pack is strengthened:
+
+- target the invariant/failure family independently rather than copy the visible regression fixture/test;
+- create a new immutable private pack identity/revision/checksum;
+- preserve prior pack/candidate evidence historically;
+- distinguish pack defects from product defects;
+- expose only public-safe disposition, never private fixture payloads.
+
+`TEST_DATA_AND_SCENARIO_STANDARD.md` owns scenario/provenance/oracle quality.
+
+## 6. Release verdict
+
+Choose exactly one:
+
+### READY
+All frozen mandatory blockers are resolved, required gates PASS, implementation/docs/architecture are reconciled, and no undeclared scope gap remains.
 
 ### CONDITIONAL
-
-required gates 通过，但存在明确、可接受、非阻塞限制。必须记录限制、影响、接受依据与后续 Task。
+All mandatory gates pass, but a documented non-blocking limitation is explicitly accepted by appropriate authority with impact and follow-up.
 
 ### BLOCKED
-
-任一 release blocker 未完成，或 mandatory gate 为 `BLOCKED / NOT_RUN`，或范围存在未解释缺口。
+A release blocker remains, a mandatory gate is BLOCKED/NOT_RUN, candidate identity is not trustworthy, or scope/authority is unresolved.
 
 ### FAIL
+A mandatory gate actually executed and failed, with no newer valid candidate evidence superseding it.
 
-存在已实际执行且失败的 mandatory release gate，且尚未通过修复/重新验证形成新的有效 candidate evidence。
+Never convert NOT_RUN/BLOCKED to PASS or old-candidate evidence to successor PASS.
 
-## 4. Gate Authority
+## 7. Release sequence
 
-Release blocker 与 mandatory gate 必须能追溯到：
-
-```text
-Frozen PRD / Contract
-→ Frozen Architecture
-→ PROJECT_OVERRIDES
-→ Task acceptance
-→ Standard defaults
-```
-
-历史 workflow、旧 packaging script、旧 artifact 或 Agent 推测不能自行扩大 release gate。
-
-## 5. Deferred
-
-Deferred 必须是显式产品/版本决策，不得把失败测试简单改名为 deferred。
-
-必须说明：
-
-- deferred 内容；
-- 为什么不阻塞当前 release；
-- 风险；
-- 后续 Task/Issue。
-
-## 6. Release 动作
-
-建议顺序：
+Recommended Version Branch sequence:
 
 ```text
-Integrated Baseline
-→ Candidate Preparation
-→ Required Visible Validation on exact SHA
+Integrated baseline
+→ Candidate preparation
+→ required visible Validation on exact SHA
 → Candidate Freeze
 → Hidden Validation
 → Final Closeout
 → Release Qualification
-→ record immutable baseline SHA
-→ optional tag / release
+→ READY/CONDITIONAL/BLOCKED/FAIL
+→ Repository Integration
+→ immutable release baseline
+→ optional tag / GitHub Release
 ```
 
-Minimal CI 可以在 PR 或 candidate 阶段提供独立 sanity，但不替代上述真实 release gates。
+Preparation work that does not mutate the future candidate may proceed early.
 
-Tag 不是 release identity 的必要条件。commit SHA 是 canonical immutable identity。
+## 8. Repository Integration
 
-## 7. Release 记录
+After READY, final repository integration is a distinct bounded step.
 
-至少记录：
+Before integration re-read live candidate/main refs. Confirm the frozen candidate still matches its SHA/tree and target branch has not diverged in a way that changes the approved content.
 
-- 产品版本；
-- `CANDIDATE_FROZEN_SHA`（若冻结）；
-- final immutable baseline commit SHA；
-- Development Standard version + revision；
-- required Validation / Critical Journey / Hidden / Platform 结果；
-- Minimal CI 结果（若启用）；
-- artifact/package identity（只有 frozen authority 要求或项目确实发布 artifact 时）；
-- 重要已知限制。
-
-若引用外部 CI Evidence，SHOULD 记录或可解析到：
+Prefer fast-forward when valid. If a merge commit is required, distinguish:
 
 ```text
-evidence_id
-workflow/profile
-exact tested SHA
-immutable run location
-validation-summary
-completion state
-artifact identity（若 relevant）
+validated candidate SHA/tree
+final main baseline SHA/tree
 ```
 
-若创建 tag/release，还应记录其名称，但不得只写 tag 而省略 commit SHA。
+Verify required tree/content equivalence or project-declared final-main sanity. Integration must not smuggle new product changes into a qualified release.
 
-## 8. External CI Evidence 与 Release Authority
+## 9. Release identity
 
-`CI_EVIDENCE_STANDARD.md` 定义的是 evidence transport / publication contract，不改变 Release Authority。
+The canonical identity is immutable Git commit SHA (and tree where useful). Tag/GitHub Release are optional aliases/distribution objects.
 
-因此：
-
-- `latest.json` 只是 workflow discovery cache；
-- `completion.json = COMPLETE` 只证明 evidence publication 完成；
-- `validation-summary.profile_state = PASS` 只证明对应 Validation Tuple/profile；
-- artifact 存在不等于 artifact producer gate PASS；
-- CI provider 的 success 状态不能自动替代 Critical Journey、Hidden、real platform/build 或 packaging gate。
-
-Release Qualification 如果消费外部 CI Evidence，至少应：
+Record at least:
 
 ```text
-resolve candidate exact SHA
-→ locate immutable matching run
-→ require completion COMPLETE
-→ verify evidence_id / tested SHA / tuple
-→ read validation-summary
-→ verify required producer/artifact identity when applicable
-→ aggregate only gates authorized for this release
+version
+candidate frozen SHA/tree
+final immutable baseline SHA/tree
+standard version + revision
+required Validation/CJ/Hidden/platform results
+CI result when release-required
+known limitations/deferred
+pack/artifact identity when relevant
+tag/release name when created
 ```
 
-任何 identity mismatch、incomplete publication 或 stale pointer 都不能被当作 candidate PASS。
+## 10. Version Closure checklist
 
-## 9. Version Closure
-
-版本级收尾使用 `checklists/version-closure.md`。
-
-PR 的局部 Validation 或 Minimal CI PASS 不能替代 integrated candidate 上的 Full Regression、Critical Journeys、Hidden Validation、真实 platform/production build 与 Release Qualification。
-
-Closure 应保留每个 unresolved gate 的真实状态，不得为了输出 READY 而把 `BLOCKED / NOT_RUN / FAIL` 改写成其它状态。
+Use `checklists/version-closure.md`. Closure must preserve truthful unresolved states; it may not rename FAIL/BLOCKED/NOT_RUN to manufacture READY.
