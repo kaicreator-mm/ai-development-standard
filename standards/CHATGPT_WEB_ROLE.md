@@ -215,7 +215,7 @@ MERGE_RESULT
 
 Issue body 保持稳定 contract；metadata 表示当前状态；comments 记录事件历史与 logical operator attribution。
 
-历史 `ai-dev:event:v1` 继续有效，不要为了增加 operator fields 重写历史评论。
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 
 ## CI 职责
 

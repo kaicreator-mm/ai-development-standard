@@ -23,6 +23,7 @@ main
 
 Task/Fix concerns merge when their own authorized prerequisites are satisfied; full release confidence is re-established on the dependency-complete candidate at closure.
 
-Historical `ai-dev:event:v1` comments remain valid history. New writers emit `ai-dev:event:v2` only.
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
+New writers emit `ai-dev:event:v2` only.
 
 This file MUST NOT be used as a second source of orchestration semantics.
