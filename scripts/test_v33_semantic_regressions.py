@@ -4,7 +4,14 @@ from dataclasses import dataclass
 from pathlib import Path
 import unittest
 
-from verify_event_writer_surfaces import classify_v1_reference, scan_writer_surfaces, writer_surface_paths
+from verify_event_writer_surfaces import (
+    ALLOWED_HISTORICAL_V1_REFERENCE_PATHS,
+    CANONICAL_HISTORICAL_V1_REFERENCE,
+    classify_v1_reference,
+    scan_writer_surfaces,
+    validate_historical_v1_inventory,
+    writer_surface_paths,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -175,33 +182,61 @@ class V33SemanticRegression(unittest.TestCase):
         self.assertGreater(len(surfaces), 20)
         self.assertEqual(scan_writer_surfaces(ROOT), [])
 
-    def test_issue32_v1_classifier_is_mutation_sensitive(self) -> None:
-        historical = ["Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence."]
-        self.assertEqual(classify_v1_reference(historical, 0), "historical-compatibility")
+    def test_issue32_v1_allowance_is_path_and_whole_line_exact(self) -> None:
+        canonical_rendered = (
+            "Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence."
+        )
+        for rel in ALLOWED_HISTORICAL_V1_REFERENCE_PATHS:
+            with self.subTest(rel=rel):
+                self.assertEqual(
+                    classify_v1_reference(rel, canonical_rendered),
+                    "historical-compatibility",
+                )
 
-        prohibition = ["New writers MUST NOT emit `ai-dev:event:v1`."]
-        self.assertEqual(classify_v1_reference(prohibition, 0), "explicit-prohibition")
+        self.assertEqual(
+            classify_v1_reference("README.md", canonical_rendered),
+            "stale-or-unclassified",
+        )
+        self.assertEqual(
+            classify_v1_reference(
+                "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+                canonical_rendered + " Writer may serialize it.",
+            ),
+            "stale-or-unclassified",
+        )
 
+    def test_issue32_all_non_inventory_v1_wording_fails_closed(self) -> None:
+        rel = "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
         stale_mutations = [
+            "New writers MUST NOT emit `ai-dev:event:v1`.",
+            "New writers MUST NOT emit `ai-dev:event:v1`; legacy compatibility writer must transmogrify `ai-dev:event:v1`.",
             "For new work publish `ai-dev:event:v1` after validation.",
             "For new work, set schema to `ai-dev:event:v1`.",
-            "Historical `ai-dev:event:v1` is readable; for new work set schema to `ai-dev:event:v1`.",
-            "Legacy compatibility writer: set schema to `ai-dev:event:v1`.",
-            "Historical compatibility writer should publish `ai-dev:event:v1`.",
             "Legacy compatibility writer must serialize `ai-dev:event:v1`.",
             "Historical compatibility writer should generate schema `ai-dev:event:v1`.",
             "Legacy compatibility adapter may transmogrify output into `ai-dev:event:v1`.",
-            "Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence. Writer may serialize it.",
+            "Historical `ai-dev:event:v1` is readable; for new work set schema to `ai-dev:event:v1`.",
         ]
         for line in stale_mutations:
             with self.subTest(line=line):
-                self.assertEqual(classify_v1_reference([line], 0), "stale-or-unclassified")
+                self.assertEqual(classify_v1_reference(rel, line), "stale-or-unclassified")
 
-        adjacent_schema_mask_attempt = [
-            "Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.",
-            "Set schema to `ai-dev:event:v1`.",
-        ]
-        self.assertEqual(classify_v1_reference(adjacent_schema_mask_attempt, 1), "stale-or-unclassified")
+    def test_issue32_historical_inventory_count_is_exact(self) -> None:
+        valid = {rel: 1 for rel in ALLOWED_HISTORICAL_V1_REFERENCE_PATHS}
+        self.assertEqual(validate_historical_v1_inventory(valid), [])
+
+        missing = dict(valid)
+        missing[next(iter(ALLOWED_HISTORICAL_V1_REFERENCE_PATHS))] = 0
+        self.assertTrue(validate_historical_v1_inventory(missing))
+
+        duplicated = dict(valid)
+        duplicated[next(iter(ALLOWED_HISTORICAL_V1_REFERENCE_PATHS))] = 2
+        self.assertTrue(validate_historical_v1_inventory(duplicated))
+
+        self.assertEqual(
+            CANONICAL_HISTORICAL_V1_REFERENCE,
+            "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence.",
+        )
 
 
 if __name__ == "__main__":
