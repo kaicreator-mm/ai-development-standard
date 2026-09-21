@@ -1,0 +1,21 @@
+# Task Pack T-009 — Conformance + Verifier Regression
+
+- Goal: executable positive and adversarial regression covering all reference scenarios and machine contracts.
+- Write set: `scripts/**`, `.github/workflows/verify-standard.yml`.
+- Forbidden: weakening v3.3 regression assertions; green-only tests (adversarial mutations must fail closed).
+- Regression matrix (version plan §24):
+  - Scenario A full local builder positive flow;
+  - Scenario B web builder + local validator queue flow;
+  - Scenario C real validation defect → FAIL, no validator source repair;
+  - Scenario D HEAD drift → SUPERSEDED / HEAD_DRIFT, no evidence for SHA B;
+  - Scenario E environment failure → BLOCKED, no FAIL/PASS;
+  - Scenario F stale execution pack → PACK_STALE_MATERIAL regeneration;
+  - Scenario G worker restart recovery from GitHub facts.
+  - Additional: base drift, duplicate claim, review invalidation on head change, package leakage (execution pack excluded from shipped artifacts), freedom self-promotion prohibition, queue projection determinism with multiple READY/HOLD/SUPERSEDED items, JIT branch predicate, baseline refresh ordering.
+- Deliverables: `scripts/test_v34_lifecycle_contracts.py` (+ shared classifier `scripts/v34_rules.py` from T-003), verify_standard v3.4 semantic tokens, CI workflow wiring.
+- Acceptance: all scripts green on the integration branch; every adversarial mutation is rejected.
+- Required gates: all verifier scripts.
+- Validation ownership: concern.
+- Review policy: required (version-level consolidation).
+- Agent freedom: F1_BOUNDED_IMPLEMENTATION.
+- Dependencies: T-002…T-008.
