@@ -15,14 +15,23 @@ ACTIVE_SECTIONS = (
 )
 AUTHORITY_WRITER_SURFACES = {"README.md", "AGENTS.md"}
 
-# Historical v1 compatibility is deliberately an exact positive allowlist rather
-# than a vocabulary/verb classifier. Any edited, extended, or newly introduced
-# v1-bearing sentence fails closed unless it is an explicit prohibition below.
-# This prevents historical vocabulary from authorizing arbitrary writer wording.
-HISTORICAL_V1_REFERENCE_TEXTS = {
-    "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence.",
-    "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence only.",
-}
+# Issue #32 is a repository invariant, not a natural-language classification
+# problem. Literal event-v1 wording is permitted only for these machine-owned
+# historical/read-only references. The complete normalized line and its path are
+# both authoritative; every registered path must contain exactly one occurrence.
+CANONICAL_HISTORICAL_V1_REFERENCE = (
+    "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence."
+)
+ALLOWED_HISTORICAL_V1_REFERENCE_PATHS = frozenset(
+    {
+        "AGENTS.md",
+        "standards/CHATGPT_WEB_ROLE.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "standards/GITHUB_WORKFLOW.md",
+        "standards/VERSION_INTEGRATION_WORKFLOW.md",
+        "templates/agent-event-comment.md",
+    }
+)
 
 
 def writer_surface_paths(root: Path = ROOT) -> list[str]:
@@ -43,43 +52,46 @@ def normalize_v1_line(line: str) -> str:
     return " ".join(normalized.split())
 
 
-def classify_v1_reference(lines: list[str], index: int) -> str:
-    """Classify a v1 reference from the v1-bearing line only.
+def classify_v1_reference(rel_path: str, line: str) -> str:
+    """Classify one literal event-v1 occurrence structurally and fail closed.
 
-    Allowed states are intentionally narrow:
-    1. an explicit prohibition against emitting/publishing v1; or
-    2. an exact canonical historical/read-only compatibility reference.
-
-    Everything else fails closed. There is no generic historical vocabulary
-    fallback and no writer-verb blacklist to evade with alternate wording.
+    There is deliberately no historical vocabulary fallback, writer-verb list,
+    prohibition substring allowance, or surrounding-context interpretation.
+    A literal v1 occurrence is allowed only when both its repository path and
+    complete normalized line match the machine-owned historical inventory.
     """
-    current = normalize_v1_line(lines[index])
+    current = normalize_v1_line(line)
     if TOKEN not in current:
         return "none"
-
-    prohibition_markers = (
-        "must not emit ai-dev:event:v1",
-        "must not publish ai-dev:event:v1",
-        "do not emit ai-dev:event:v1",
-        "do not publish ai-dev:event:v1",
-        "new writers must not emit v1",
-        "new writers must not emit ai-dev:event:v1",
-        "不得发布 ai-dev:event:v1",
-        "不得写入 ai-dev:event:v1",
-        "不得 emit ai-dev:event:v1",
-    )
-    if any(marker in current for marker in prohibition_markers):
-        return "explicit-prohibition"
-
-    if current in HISTORICAL_V1_REFERENCE_TEXTS:
+    if (
+        rel_path in ALLOWED_HISTORICAL_V1_REFERENCE_PATHS
+        and current == CANONICAL_HISTORICAL_V1_REFERENCE
+    ):
         return "historical-compatibility"
-
     return "stale-or-unclassified"
+
+
+def validate_historical_v1_inventory(observed_counts: dict[str, int]) -> list[str]:
+    violations: list[str] = []
+    for rel in sorted(ALLOWED_HISTORICAL_V1_REFERENCE_PATHS):
+        count = observed_counts.get(rel, 0)
+        if count != 1:
+            violations.append(
+                f"{rel}: canonical historical event-v1 reference count must be exactly 1, got {count}"
+            )
+    return violations
 
 
 def scan_writer_surfaces(root: Path = ROOT) -> list[str]:
     violations: list[str] = []
-    for rel in writer_surface_paths(root):
+    surfaces = writer_surface_paths(root)
+    surface_set = set(surfaces)
+    observed_counts = {rel: 0 for rel in ALLOWED_HISTORICAL_V1_REFERENCE_PATHS}
+
+    for rel in sorted(ALLOWED_HISTORICAL_V1_REFERENCE_PATHS - surface_set):
+        violations.append(f"{rel}: historical event-v1 inventory path is not an active writer surface")
+
+    for rel in surfaces:
         path = root / rel
         if not path.is_file():
             violations.append(f"{rel}: active writer surface is missing")
@@ -88,11 +100,15 @@ def scan_writer_surfaces(root: Path = ROOT) -> list[str]:
         for index, line in enumerate(lines):
             if TOKEN not in normalize_v1_line(line):
                 continue
-            classification = classify_v1_reference(lines, index)
-            if classification not in {"explicit-prohibition", "historical-compatibility"}:
-                violations.append(
-                    f"{rel}:{index + 1}: unclassified/stale new-work event-v1 reference: {line.strip()}"
-                )
+            classification = classify_v1_reference(rel, line)
+            if classification == "historical-compatibility":
+                observed_counts[rel] = observed_counts.get(rel, 0) + 1
+                continue
+            violations.append(
+                f"{rel}:{index + 1}: unregistered/stale event-v1 reference: {line.strip()}"
+            )
+
+    violations.extend(validate_historical_v1_inventory(observed_counts))
     return violations
 
 
@@ -105,6 +121,7 @@ def main() -> int:
         return 1
     print("event writer surface verification: PASS")
     print(f"active writer surfaces: {len(writer_surface_paths(ROOT))}")
+    print(f"registered historical event-v1 references: {len(ALLOWED_HISTORICAL_V1_REFERENCE_PATHS)}")
     return 0
 
 
