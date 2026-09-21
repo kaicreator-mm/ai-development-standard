@@ -160,7 +160,8 @@ def verify_project(
 
     for path in (version_file, override_file, agents_file):
         if not path.is_file():
-            errors.append(f"missing: {path.relative_to(root)}")
+            # Normalize separators so diagnostics are identical on POSIX and Windows.
+            errors.append(f"missing: {path.relative_to(root).as_posix()}")
 
     identity: dict[str, str] = {}
     if version_file.is_file():

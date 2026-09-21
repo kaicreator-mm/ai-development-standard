@@ -13,15 +13,15 @@
 | Task | Issue | Depends On | Parallel | Risk | Input / Reference | Output | Acceptance | Model | Required Validation | Review Policy | Code Baseline | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | T-001 | pending | — | NO | H | version plan §1–§4 | ARCHITECTURE_DECISION.md | one converged architecture; #45/#46 mapped | High | verify-standard | required | independent | DONE |
-| T-002 | pending | T-001 | NO | H | decision §2, §5, §6 | schemas + pack templates | Task Pack / Execution Pack machine contracts; freedom field; staleness rules | High | test_protocol_schemas + test_v34_lifecycle_contracts | required | independent | TODO |
-| T-003 | pending | T-002 | NO | H | decision §1, §7 | schemas + reducer rules | unified dispatch events/state; no parallel state machine | High | test_protocol_schemas + test_v34_lifecycle_contracts | required | independent | TODO |
-| T-004 | pending | T-003 | NO | M | decision §9 | LOCAL_AGENT_HANDOFF + bootstrap | JIT builder flow standardized | High | verify-standard + test_v34_lifecycle_contracts | required | independent | TODO |
-| T-005 | pending | T-003 | YES | H | decision §2.4, §8, §9 | VALIDATION + handoff queue template | validator profile + queue projection; exact-SHA rules | High | verify-standard + test_v34_lifecycle_contracts | required | independent | TODO |
-| T-006 | pending | T-004, T-005 | NO | H | decision §1, §9 | interaction protocol + web role | reviewer/merge/DAG closed loop | High | verify-standard + test_v34_lifecycle_contracts | required | independent | TODO |
-| T-007 | pending | T-006 | YES | M | version plan §16 | CI + validation standards | local-first policy integrated | Low | verify-standard | recommended | independent | TODO |
-| T-008 | pending | T-006 | YES | M | version plan §22 | adoption + templates | templates/overrides/retention/Fast Path | Low | verify-standard | recommended | independent | TODO |
-| T-009 | pending | T-002..T-008 | NO | H | version plan §24 | scenarios A–G | positive + adversarial verifier regression | High | all test scripts green | required | independent | TODO |
-| T-010 | pending | T-009 | NO | H | RELEASE_STANDARD | closure report | full verifier + Fresh Independent Review + release qualification | High | version closure gates | required | independent | TODO |
+| T-002 | pending | T-001 | NO | H | decision §2, §5, §6 | schemas + pack templates | Task Pack / Execution Pack machine contracts; freedom field; staleness rules | High | test_protocol_schemas + test_v34_lifecycle_contracts | required | independent | DONE |
+| T-003 | pending | T-002 | NO | H | decision §1, §7 | schemas + reducer rules | unified dispatch events/state; no parallel state machine | High | test_protocol_schemas + test_v34_lifecycle_contracts | required | independent | DONE |
+| T-004 | pending | T-003 | NO | M | decision §9 | LOCAL_AGENT_HANDOFF + bootstrap | JIT builder flow standardized | High | verify-standard + test_v34_lifecycle_contracts | required | independent | DONE |
+| T-005 | pending | T-003 | YES | H | decision §2.4, §8, §9 | VALIDATION + handoff queue template | validator profile + queue projection; exact-SHA rules | High | verify-standard + test_v34_lifecycle_contracts | required | independent | DONE |
+| T-006 | pending | T-004, T-005 | NO | H | decision §1, §9 | interaction protocol + web role | reviewer/merge/DAG closed loop | High | verify-standard + test_v34_lifecycle_contracts | required | independent | DONE |
+| T-007 | pending | T-006 | YES | M | version plan §16 | CI + validation standards | local-first policy integrated | Low | verify-standard | recommended | independent | DONE |
+| T-008 | pending | T-006 | YES | M | version plan §22 | adoption + templates | templates/overrides/retention/Fast Path | Low | verify-standard | recommended | independent | DONE |
+| T-009 | pending | T-002..T-008 | NO | H | version plan §24 | scenarios A–G | positive + adversarial verifier regression | High | all test scripts green | required | independent | DONE |
+| T-010 | pending | T-009 | NO | H | RELEASE_STANDARD | closure report | full verifier + Fresh Independent Review + release qualification | High | version closure gates | required | independent | DOING |
 
 Planning status values: `TODO / DOING / BLOCKED / DONE / DEFERRED / NOT_APPLICABLE`.
 

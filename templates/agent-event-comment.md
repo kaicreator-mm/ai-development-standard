@@ -20,7 +20,7 @@ GitHub comment author is a **transport identity** and may be the same account fo
 schema: ai-dev/event-v2
 event: <EVENT_TYPE>
 
-actor_role: <planner | builder | reviewer | validator | merge-controller | release-controller>
+actor_role: <planner | builder | reviewer | validator | scheduler | merge-controller | release-controller | repository-integration-controller>
 operator_kind: <chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other>
 operator_id: "<kind>:<project-local-operator-id>"
 session_ref: "<opaque session/page/run alias>" # SHOULD be present when concurrent sessions are possible
@@ -278,6 +278,47 @@ sha: "<merged/integration-sha>"
 status: PASS
 target: version/v0.1.0
 next_state: done
+```
+
+## DISPATCH_CLAIMED example (v3.4 pull workers)
+
+A pull worker claims a READY dispatch and verifies exact identity before executing. `dispatch_state` is `CLAIMED`; `actor_role` is the claiming worker role.
+
+```yaml
+schema: ai-dev/event-v2
+event: DISPATCH_CLAIMED
+actor_role: validator
+operator_kind: claude-code
+operator_id: "claude-code:windows-01"
+session_ref: "validator-run-20260922"
+transport_actor: "github:kaicreator-mm"
+task: "#31"
+pr: "#42"
+dispatch_id: "<dispatch-id>"
+dispatch_state: CLAIMED
+execution_profile: LOCAL_VALIDATOR
+sha: "<requested-head-sha>"
+requested_head_sha: "<requested-head-sha>"
+```
+
+Duplicate claims from a different logical operator are rejected; the same operator re-claiming is idempotent.
+
+## EXECUTION_PACK_STATE_CHANGED example (v3.4)
+
+Derived Execution Pack classification change (`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`), published by scheduler or the claiming builder. Fail closed; never silently rewrite `base_sha`.
+
+```yaml
+schema: ai-dev/event-v2
+event: EXECUTION_PACK_STATE_CHANGED
+actor_role: scheduler
+operator_kind: chatgpt-web
+operator_id: "chatgpt-web:web-a"
+transport_actor: "github:kaicreator-mm"
+task: "#31"
+execution_pack_ref: "<pack-id>"
+pack_state: PACK_STALE_MATERIAL
+reason: "integration advanced; delta overlaps pack material inputs"
+next_state: blocked
 ```
 
 Important history SHOULD be append-oriented. Publish a corrective event instead of silently rewriting a materially wrong prior event.

@@ -14,16 +14,17 @@
    - `standards/VERSION_INTEGRATION_WORKFLOW.md`
    - `standards/GITHUB_WORKFLOW.md`
    - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
-6. 涉及通过提示词触发 GitHub Issue 任务、向用户生成可复制任务提示词或把任务派发给 LLM/Agent 时，读取 `standards/ISSUE_FIRST_TASK_TRIGGER.md`。
-7. 涉及 repository/project 组织时按需读取：
+6. 涉及 Task Pack / Execution Pack / JIT 分支 / 统一 Dispatch / pull worker（Builder/Validator/Reviewer claim、Execution Pack staleness、agent freedom、Validation Handoff Queue 投影）时读取 `standards/EXECUTION_PACK_STANDARD.md` 与 `schemas/dispatch.schema.json`。
+7. 涉及通过提示词触发 GitHub Issue 任务、向用户生成可复制任务提示词或把任务派发给 LLM/Agent 时，读取 `standards/ISSUE_FIRST_TASK_TRIGGER.md`。
+8. 涉及 repository/project 组织时按需读取：
    - `standards/REPOSITORY_STANDARD.md`
    - `standards/PROJECT_STRUCTURE.md`
    - `standards/DOCUMENTATION_STANDARD.md`
    - `standards/TESTING_STANDARD.md`
-8. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
-9. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
-10. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
-11. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
+9. 涉及 Web → 本地/执行 Agent 交接时读取 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`。`standards/CODEX_HANDOFF_PROTOCOL.md` 作为 Codex-specific 兼容入口。
+10. 涉及测试、构建、Validation、Candidate、Closure 或发布判断时读取 `standards/VALIDATION_STANDARD.md` 与 `standards/RELEASE_STANDARD.md`。
+11. 涉及将 CI / automated validation Evidence 发布到 Google Drive、S3、MinIO 或其它外部 Evidence backend 时，还必须读取 `standards/CI_EVIDENCE_STANDARD.md`。
+12. 业务项目存在 `.dev-standard/PROJECT_OVERRIDES.md` 时，在不违反本标准硬约束的前提下应用项目级覆盖。
 
 业务项目不应隐式读取本仓库最新 `main`；应以其 `.dev-standard/VERSION` 中记录的 immutable commit SHA 为准。
 
@@ -68,6 +69,13 @@
 - PR 局部 PASS / Review PASS 不得被解释为版本 Release PASS；Version Closure 必须在 integrated candidate/baseline 上完成 required release gates。
 - 未完成 required gates 时不得宣称版本 READY。
 - 任何无法确定的事实必须标为 `UNKNOWN`、`NOT VERIFIED`、`NOT_RUN` 或 `BLOCKED`，不得猜测为通过。
+- Task Pack 是 durable planning authority；Execution Pack 是 JIT、绑定 exact integration base 的执行权威，从属于 Task Pack，只能收窄执行自由，不得重定义 PRD/Architecture/Task scope/public contract/required invariant/validation ownership/review requirement。
+- Execution Pack staleness 必须 fail-closed 分类（`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`）；executor 不得静默改写 `base_sha`；矛盾路由为 `TASK_PACK_DEFECT / ARCHITECTURE_CONTRADICTION / EXECUTION_PACK_INVALID`，不得由本地 agent 静默 redesign 解决。
+- Queued Task 依赖完成前默认不建长命实现分支（JIT 分支规则）；只有真实 stacked code dependency 例外。
+- Builder/Validator/Reviewer 使用同一个 canonical Dispatch 架构（role + execution profile）；不存在三套队列状态机；version-scoped Validation Handoff Queue 只是 Validator dispatch 的投影，不是第二工作流权威。
+- Validator 不得在 validation dispatch 下隐式修改产品源码或修复缺陷：真实缺陷 → `FAIL`；环境不可用 → `BLOCKED`；修复必须另发 Builder dispatch。Builder 不得自我断言 Independent Review PASS。
+- Exact-SHA dispatch 规则：执行前 `requested_head_sha == current PR HEAD`，否则 `HEAD_DRIFT` → dispatch superseded；PASS 永不挪到 successor SHA 或未 dispatch 的替换候选。
+- `agent_freedom`（F0–F3）由 Task Pack / Execution Pack / Dispatch 授予；executor 不得自我升权。
 
 ## Validation Tuple
 

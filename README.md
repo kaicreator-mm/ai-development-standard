@@ -1,42 +1,35 @@
 # AI Development Standard
 
-当前版本：`v3.3.0`
+当前版本：`v3.4.0`
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
-## 1. v3.3 的核心变化
+## 1. v3.4 的核心变化
 
-v3.3 把标准从“主要靠 Agent 阅读规范后自行推断下一步”推进到“规范 + machine contracts + 可重建 derived state”。
+v3.4 把 v3.3 的执行架构变成可被独立 Web / Local agent 实际拉取执行的 **GitHub-native pull 执行模型**：
 
 ```text
-Frozen Planning Facts
+Strong Web Control Plane（Task Pack 编写/冻结、JIT Execution Pack、统一 Dispatch）
         ↓
-GitHub Execution DAG
+dependencies merged → JIT task branch → Execution Pack 绑定 exact base
         ↓
-Event + Fact Reducer
+统一 Dispatch（builder / validator / reviewer role + execution profile）
         ↓
-Derived Execution State / Ready Queues
+Local / Web execution workers（pointer-only claim，DISPATCH_CLAIMED）
         ↓
-Builder / Reviewer / Validator
+exact-SHA evidence（PASS/FAIL/BLOCKED 严格区分，HEAD_DRIFT 自动 supersede）
         ↓
-Merge Controller
-        ↓
-Integrated Candidate
-        ↓
-Visible Closure
-        ↓
-CANDIDATE_FROZEN
-        ↓
-Hidden Validation
-        ↓
-Release Controller
-        ↓
-Repository Integration
-        ↓
-Immutable Baseline
+Merge Controller → DAG ready-set 重算（无人工提示词转发）→ 下一个 READY
 ```
 
-自动 runtime 是**可选**的。项目可以人工执行完全相同的状态规则；小型维护仍可使用 Trunk/Fast Path。
+要点：
+
+- **Task Pack 与 Execution Pack 分离**：Task Pack 是 durable planning authority（做什么）；Execution Pack 是 JIT、绑定 exact base 的执行权威（怎么安全做），从属于 Task Pack，staleness 分类 fail-closed（`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`）。
+- **一个 Dispatch 架构**：Builder/Validator/Reviewer 不是三套队列状态机；`BuilderReadySet / ValidatorReadySet / ReviewerReadySet` 与版本级 Validation Handoff Queue 都是派生投影。
+- **Exact-SHA 验证交接**：`requested_head_sha == current PR HEAD` 才执行；Validator 不得顺手修源码（缺陷→FAIL，环境不可用→BLOCKED）；PASS 永不挪到 successor SHA。
+- **机器可读执行自由度**：`agent_freedom F0–F3`，executor 不得自我升权。
+- **Local-first**：默认本地实现+验证，CI 只做 required remote certification；provider-specific attestation 不可替代。
+- **Fast Path 保留**：小任务可省略 large pack / seed / validation queue，复杂度与风险成比例。
 
 ## 2. 最短阅读路径
 
@@ -53,6 +46,7 @@ Immutable Baseline
 
 - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`
 - `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`
+- `standards/EXECUTION_PACK_STANDARD.md`（Task Pack / Execution Pack / dispatch / freedom）
 
 ### 做 CI / Build Host
 
@@ -113,7 +107,7 @@ required | recommended | not-required
 
 Version Branch Mode 本身不自动让每个 PR 都 mandatory Review。
 
-## 4. v3.3 的状态分离
+## 4. 状态分离
 
 不要把以下状态混成一个字段：
 

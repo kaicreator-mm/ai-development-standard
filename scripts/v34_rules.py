@@ -123,12 +123,24 @@ def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, obje
     if delta_paths is None:
         # Unknown impact fails closed to material.
         return "PACK_STALE_MATERIAL"
-    material = set(pack.get("material_paths") or ())
     if not isinstance(delta_paths, Sequence):
         return "PACK_INVALID"
-    if material & set(delta_paths):
+    material = set(pack.get("material_paths") or ())
+    if _delta_touches_material(delta_paths, material):
         return "PACK_STALE_MATERIAL"
     return "PACK_STALE_NONMATERIAL"
+
+
+def _delta_touches_material(delta_paths: Sequence[str], material: set[str]) -> bool:
+    """A delta path touches material when it equals, falls under, or covers a
+    declared material path. Conservative overlap fails closed to MATERIAL."""
+    for delta in delta_paths:
+        if not isinstance(delta, str):
+            continue
+        for path in material:
+            if delta == path or delta.startswith(path) or path.startswith(delta):
+                return True
+    return False
 
 
 def rebind_allowed(classification: str, explicit_authorization: bool) -> bool:
