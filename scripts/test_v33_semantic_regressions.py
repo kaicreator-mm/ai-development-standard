@@ -202,6 +202,16 @@ class V33SemanticRegression(unittest.TestCase):
         ]
         self.assertEqual(classify_v1_reference(same_line_mixed_attempt, 0), "stale-or-unclassified")
 
+        legacy_writer_mask_attempt = [
+            "Legacy compatibility writer: set schema to `ai-dev:event:v1`."
+        ]
+        self.assertEqual(classify_v1_reference(legacy_writer_mask_attempt, 0), "stale-or-unclassified")
+
+        legacy_publish_mask_attempt = [
+            "Historical compatibility writer should publish `ai-dev:event:v1`."
+        ]
+        self.assertEqual(classify_v1_reference(legacy_publish_mask_attempt, 0), "stale-or-unclassified")
+
 
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(
