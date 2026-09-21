@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/dispatch.schema.json",
+  "title": "AI Development Canonical Dispatch",
+  "description": "Executable handoff for builder/validator/reviewer pull workers. One dispatch architecture; role and execution_profile configure authority. Pull vocabulary READY/CLAIMED/RUNNING/COMPLETED/BLOCKED/SUPERSEDED aliases the v3.3 lifecycle vocabulary (QUEUED/ACKNOWLEDGED/DONE/STALE).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["dispatch_id", "repository", "version", "task", "role", "execution_profile", "branch", "expected_base_sha", "pinned_standard_revision", "agent_freedom", "dispatch_state"],
+  "properties": {
+    "dispatch_id": {"type": "string", "minLength": 1},
+    "repository": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "task": {"type": "string", "minLength": 1},
+    "issue": {"type": "string", "pattern": "^#[0-9]+$"},
+    "pr": {"type": "string", "pattern": "^#[0-9]+$"},
+    "role": {"type": "string", "enum": ["builder", "validator", "reviewer"]},
+    "execution_profile": {"type": "string", "enum": ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"]},
+    "branch": {"type": "string", "minLength": 1},
+    "expected_base_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "requested_head_sha": {"type": ["string", "null"], "pattern": "^[0-9a-fA-F]{40}$"},
+    "task_pack_ref": {"type": ["string", "null"], "minLength": 1},
+    "execution_pack_ref": {"type": ["string", "null"], "minLength": 1},
+    "validation_profile": {"type": ["string", "null"], "minLength": 1},
+    "pinned_standard_revision": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "agent_freedom": {"type": "string", "enum": ["F0_MECHANICAL", "F1_BOUNDED_IMPLEMENTATION", "F2_ENGINEERING_DISCRETION", "F3_ARCHITECTURE_REQUIRED"]},
+    "dispatch_state": {"type": "string", "enum": ["READY", "CLAIMED", "RUNNING", "COMPLETED", "BLOCKED", "SUPERSEDED"]},
+    "result": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED"]},
+    "superseded_reason": {"type": "string", "minLength": 1},
+    "queue_ref": {"type": ["string", "null"], "minLength": 1},
+    "created_by": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "claimed_by": {"type": ["string", "null"], "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"role": {"const": "validator"}}, "required": ["role"]},
+      "then": {"required": ["requested_head_sha", "validation_profile"]}
+    },
+    {
+      "if": {"properties": {"role": {"const": "reviewer"}}, "required": ["role"]},
+      "then": {"required": ["pr"]}
+    },
+    {
+      "if": {"properties": {"role": {"const": "builder"}}, "required": ["role"]},
+      "then": {"required": ["task_pack_ref"]}
+    },
+    {
+      "if": {"properties": {"dispatch_state": {"const": "COMPLETED"}}, "required": ["dispatch_state"]},
+      "then": {"required": ["result"]}
+    },
+    {
+      "if": {"properties": {"dispatch_state": {"const": "SUPERSEDED"}}, "required": ["dispatch_state"]},
+      "then": {"required": ["superseded_reason"]}
+    },
+    {
+      "if": {"properties": {"dispatch_state": {"enum": ["CLAIMED", "RUNNING"]}}, "required": ["dispatch_state"]},
+      "then": {"required": ["claimed_by"]}
+    },
+    {
+      "if": {"properties": {"execution_profile": {"enum": ["LOCAL_VALIDATOR", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"]}}, "required": ["execution_profile"]},
+      "then": {"properties": {"role": {"const": "validator"}}}
+    },
+    {
+      "if": {"properties": {"execution_profile": {"const": "LOCAL_BUILDER"}}, "required": ["execution_profile"]},
+      "then": {"properties": {"role": {"const": "builder"}}}
+    },
+    {
+      "if": {"properties": {"execution_profile": {"const": "WEB_REVIEWER"}}, "required": ["execution_profile"]},
+      "then": {"properties": {"role": {"const": "reviewer"}}}
+    }
+  ]
+}

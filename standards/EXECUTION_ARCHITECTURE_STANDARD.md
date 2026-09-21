@@ -24,6 +24,7 @@ This standard is normative for the semantics below, but an automation runtime is
 This document owns orchestration semantics only. It does not redefine domain authorities:
 
 - `VALIDATION_STANDARD.md` owns Gate states, Validation Tuples, validation ownership, and evidence meaning.
+- `EXECUTION_PACK_STANDARD.md` owns Task Pack / Execution Pack object authority, JIT generation, staleness classification, agent freedom and retention.
 - `GITHUB_AGENT_INTERACTION_PROTOCOL.md` owns short-intent admission/normalization/rejection, structured Agent events, and logical operator attribution.
 - `LOCAL_AGENT_HANDOFF_PROTOCOL.md` owns Local Agent handoff contracts.
 - `RELEASE_STANDARD.md` owns Candidate/Release decisions.
@@ -110,6 +111,12 @@ ready_for_merge
 candidate_state
 release_state
 active_dispatch
+active_dispatch_role
+dispatch_state
+execution_pack_state
+expected_base_sha
+requested_head_sha
+queue_refs
 stale_evidence
 stale_dispatch
 ```
@@ -172,6 +179,19 @@ TIMEOUT
 STALE
 ```
 
+Pull workers MAY use the equivalent pull vocabulary:
+
+```text
+READY        ≡ QUEUED (deliverable work)
+CLAIMED      ≡ ACKNOWLEDGED
+RUNNING      ≡ RUNNING
+COMPLETED    ≡ DONE (terminal outcome carried separately in result)
+BLOCKED      (shared: environment/infrastructure inability)
+SUPERSEDED   ≡ STALE
+```
+
+Both vocabularies describe the same dispatch dimension. `FAILED`, `CANCELLED` and `TIMEOUT` remain expressible terminal lifecycle forms; `BLOCKED` never becomes Validation `FAIL` or Gate `PASS`.
+
 ### Candidate state
 
 ```text
@@ -224,9 +244,17 @@ ready_merge:
   AND no unresolved release-significant finding
 ```
 
-Queues are projections, not authorities. Typical logical queues are Builder, Reviewer, Validator, Merge, Release, and Human Decision.
+Queues are projections, not authorities. Typical logical queues are Builder, Reviewer, Validator, Merge, Release, and Human Decision. There are no separate Builder/Validator/Reviewer state machines: one canonical dispatch architecture carries `dispatch.role = builder | validator | reviewer` plus an execution profile, and `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` are derived ready-set projections of it.
 
 A scheduler SHOULD prioritize merge-ready concerns that already consumed expensive exact-SHA validation when doing so does not violate dependency/order rules, reducing avoidable target drift.
+
+### Just-in-time task branches
+
+Queued Tasks SHOULD NOT receive long-lived implementation branches before their dependencies are complete. Default: dependencies merged → recompute ready set → read current integration exact SHA → create the task branch JIT → create/bind the Execution Pack → emit the Builder dispatch. Exceptions require a real stacked-code dependency. JIT generation, exact-base binding and staleness classification are owned by `EXECUTION_PACK_STANDARD.md`.
+
+### Baseline refresh ordering
+
+Avoid spending final authoritative validation on a candidate whose baseline is already known to become obsolete. If PR-A blocks PR-B and PR-A validation is pending: validate PR-A → merge → integration advances → refresh/rebase PR-B per policy → establish replacement exact HEAD → create replacement validation dispatch → validate PR-B.
 
 ## 7. Validation ownership and cost placement
 
@@ -310,7 +338,9 @@ QUEUED → DELIVERED → ACKNOWLEDGED/RUNNING → DONE
                               └→ STALE
 ```
 
-At most one incompatible active dispatch should exist per work item/role unless concurrency is explicitly allowed.
+Pull workers express the same lifecycle with the equivalent pull vocabulary (`READY → CLAIMED → RUNNING → COMPLETED`, with `BLOCKED` and `SUPERSEDED` terminal/intermediate forms, see section 5) and publish claims with `DISPATCH_CLAIMED` using `ai-dev:event:v2`. A dispatch object references Task Pack identity and, when generated, Execution Pack identity, role, execution profile, branch, expected base SHA and requested HEAD SHA (`schemas/dispatch.schema.json`).
+
+At most one incompatible active dispatch should exist per work item/role unless concurrency is explicitly allowed. A claim from a different logical operator while another claim is active is rejected as a duplicate claim; the same operator re-claiming is idempotent.
 
 A dispatcher MUST re-evaluate staleness when material facts change. Typical stale causes include:
 
@@ -515,6 +545,75 @@ Projects MAY stop at any level. The same authority, exact-SHA, and Gate semantic
 
 Browser automation, Playwright, a particular CI provider, and a particular dispatcher implementation are non-normative transport choices.
 
-## 23. Non-goals
+## 23. Pull workers and recovery
 
-This standard does not make every project use Version Branch Mode, every PR use Independent Review, every gate use CI, or every agent use an automated dispatcher. It does not expose Hidden fixtures, replace GitHub, or relax exact-SHA/platform/toolchain truth.
+Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook/pointer-driven pull workers claiming READY dispatches. The worker verifies dispatch identity (exact base/requested HEAD, Task Pack / Execution Pack identity, pinned standard revision, branch) before executing, publishes results to GitHub first with operator attribution, and never becomes a state authority.
+
+A worker crash must be recoverable from GitHub facts alone: the replacement worker reads the dispatch state, claimed operator and published results, then resumes (same operator, incomplete work), supersedes and re-dispatches (different operator, no result), or does nothing (result already published). Timer workers are not required when webhook/event-driven execution is available.
+
+## 24. Version-scoped Validation Handoff Queue
+
+Projects MAY expose a stable version-level validation queue, for example:
+
+```text
+[Validation Handoff] v0.3 Build Host exact-SHA validation queue
+```
+
+A queue item logically exposes:
+
+```yaml
+repository:
+version:
+task:
+issue:
+pr:
+validation_scope:
+expected_base_sha:
+requested_head_sha:
+validation_profile:
+focused_gates:
+review_state:
+dispatch_id:
+status:
+```
+
+with derived statuses `READY / HOLD / RUNNING / PASS / FAIL / BLOCKED / SUPERSEDED`.
+
+The queue is a projection of Validator dispatches + gate facts (`NON_AUTHORITATIVE_DERIVED_STATE`). It is a stable entrypoint for READY/HOLD discovery, exact-SHA identity, provenance and restart/recovery — it is not validation authority, not Task authority, and not an independent workflow state machine. Multiple simultaneous READY/HOLD/SUPERSEDED items project deterministically, one row per dispatch, from the same facts.
+
+Pointer-only invocation becomes possible:
+
+```text
+Continue <project> <version> current READY validation work in Issue #NN.
+```
+
+Exact-SHA rule before Validator execution: `requested_head_sha == current PR HEAD`, else `HEAD_DRIFT` → dispatch superseded, no execution as PASS evidence, new candidate requires a new dispatch identity (see `VALIDATION_STANDARD.md`).
+
+## 25. Closed-loop orchestration
+
+```text
+Web Control Plane
+        ↓
+Task Pack / JIT Execution Pack
+        ↓
+BuilderReadySet
+        ↓
+Builder (local or web)
+        ↓
+stable locally validated HEAD
+        ↓
+ReviewerReadySet
+        ↓
+Independent Reviewer
+        ↓
+        ├── CHANGES_REQUESTED → BuilderReadySet
+        ├── VALIDATION_REQUESTED → ValidatorReadySet → Validator → exact-SHA result
+        └── REVIEW_PASS → Merge Controller → integration advances
+                           → DAG ready-set recomputation → next READY
+```
+
+Merge causes DAG ready-set recomputation without human prompt relay between roles. The user is not the message bus between Web agents, Local agents, build hosts, reviewers and CI; GitHub/repository/evidence facts remain the durable coordination layer.
+
+## 26. Non-goals
+
+This standard does not make every project use Version Branch Mode, every PR use Independent Review, every gate use CI, every agent use an automated dispatcher, every task carry an Execution Pack, or every version expose a validation queue. It does not expose Hidden fixtures, replace GitHub, relax exact-SHA/platform/toolchain truth, allow Validators to opportunistically repair product source, or allow Builders to self-assert Independent Review PASS.
