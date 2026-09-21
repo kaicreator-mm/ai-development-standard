@@ -176,41 +176,32 @@ class V33SemanticRegression(unittest.TestCase):
         self.assertEqual(scan_writer_surfaces(ROOT), [])
 
     def test_issue32_v1_classifier_is_mutation_sensitive(self) -> None:
-        stale = ["For new work publish `ai-dev:event:v1` after validation."]
-        self.assertEqual(classify_v1_reference(stale, 0), "stale-or-unclassified")
-
-        historical = ["Historical `ai-dev:event:v1` comments remain readable compatibility evidence only."]
+        historical = ["Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence."]
         self.assertEqual(classify_v1_reference(historical, 0), "historical-compatibility")
 
         prohibition = ["New writers MUST NOT emit `ai-dev:event:v1`."]
         self.assertEqual(classify_v1_reference(prohibition, 0), "explicit-prohibition")
 
-        adjacent_publish_mask_attempt = [
-            "Historical `ai-dev:event:v1` remains readable compatibility evidence.",
-            "For new work publish `ai-dev:event:v1`.",
+        stale_mutations = [
+            "For new work publish `ai-dev:event:v1` after validation.",
+            "For new work, set schema to `ai-dev:event:v1`.",
+            "Historical `ai-dev:event:v1` is readable; for new work set schema to `ai-dev:event:v1`.",
+            "Legacy compatibility writer: set schema to `ai-dev:event:v1`.",
+            "Historical compatibility writer should publish `ai-dev:event:v1`.",
+            "Legacy compatibility writer must serialize `ai-dev:event:v1`.",
+            "Historical compatibility writer should generate schema `ai-dev:event:v1`.",
+            "Legacy compatibility adapter may transmogrify output into `ai-dev:event:v1`.",
+            "Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence. Writer may serialize it.",
         ]
-        self.assertEqual(classify_v1_reference(adjacent_publish_mask_attempt, 1), "stale-or-unclassified")
+        for line in stale_mutations:
+            with self.subTest(line=line):
+                self.assertEqual(classify_v1_reference([line], 0), "stale-or-unclassified")
 
         adjacent_schema_mask_attempt = [
-            "Historical `ai-dev:event:v1` remains readable compatibility evidence.",
-            "For new work, set schema to `ai-dev:event:v1`.",
+            "Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.",
+            "Set schema to `ai-dev:event:v1`.",
         ]
         self.assertEqual(classify_v1_reference(adjacent_schema_mask_attempt, 1), "stale-or-unclassified")
-
-        same_line_mixed_attempt = [
-            "Historical `ai-dev:event:v1` is readable; for new work set schema to `ai-dev:event:v1`."
-        ]
-        self.assertEqual(classify_v1_reference(same_line_mixed_attempt, 0), "stale-or-unclassified")
-
-        legacy_writer_mask_attempt = [
-            "Legacy compatibility writer: set schema to `ai-dev:event:v1`."
-        ]
-        self.assertEqual(classify_v1_reference(legacy_writer_mask_attempt, 0), "stale-or-unclassified")
-
-        legacy_publish_mask_attempt = [
-            "Historical compatibility writer should publish `ai-dev:event:v1`."
-        ]
-        self.assertEqual(classify_v1_reference(legacy_publish_mask_attempt, 0), "stale-or-unclassified")
 
 
 if __name__ == "__main__":
