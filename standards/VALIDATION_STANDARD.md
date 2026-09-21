@@ -93,7 +93,15 @@ CANDIDATE drift
 
 ### HEAD drift
 
-A changed PR HEAD invalidates current-SHA evidence for affected required gates. Old evidence remains historical.
+Before Validator execution the exact-SHA dispatch rule MUST hold:
+
+```text
+requested_head_sha == current PR HEAD
+```
+
+Otherwise the outcome is `HEAD_DRIFT`: the dispatch is stale/superseded, the validator MUST NOT execute it as PASS evidence and MUST NOT silently switch to the new HEAD. A new candidate requires a new dispatch identity.
+
+A changed PR HEAD invalidates current-SHA evidence for affected required gates. Old evidence remains historical; PASS is never rewritten onto a successor SHA.
 
 ### BASE / merge-result drift
 
@@ -163,7 +171,17 @@ Use `CI_INFRA_EXCEPTION` for the infrastructure fact. Do not change the provider
 
 Known broken channels should not be retried indefinitely without new evidence that infrastructure changed.
 
-## 9. CI execution and evidence
+## 9. Validator dispatch and the version-scoped Validation Handoff Queue
+
+A Validator executes under a dispatch with role `validator` and an execution profile (`LOCAL_VALIDATOR / PLATFORM_VALIDATOR / CLOSURE_VALIDATOR`), defined by `schemas/dispatch.schema.json` and `EXECUTION_ARCHITECTURE_STANDARD.md`.
+
+A Validator is allowed to: clean checkout/worktree, verify the exact SHA, verify the current PR HEAD/base, read required authority, execute the declared validation profile, capture OS/runtime/toolchain, capture exact commands + exit codes, and publish exact-SHA validation evidence.
+
+A Validator MUST NOT implicitly: modify product source, repair discovered defects, redesign architecture, weaken tests, change Frozen Authority, merge a PR, close an implementation Issue, or validate an undispatched replacement SHA. A real defect produces `FAIL`. Environment/access/toolchain inability produces `BLOCKED`. Repair requires a separate Builder dispatch.
+
+Projects MAY expose a version-scoped Validation Handoff Queue — a projection/index of Validator dispatches providing a stable entrypoint, READY/HOLD discovery, exact-SHA identity, provenance and restart/recovery (`EXECUTION_ARCHITECTURE_STANDARD.md` §24). The queue is not validation authority, not Task authority and not an independent workflow state machine; its derived item statuses (`READY / HOLD / RUNNING / PASS / FAIL / BLOCKED / SUPERSEDED`) are projections of canonical dispatch/gate facts.
+
+## 10. CI execution and evidence
 
 When CI is enabled, follow:
 
@@ -173,13 +191,13 @@ When CI is enabled, follow:
 
 A Runner Capability Profile routes work only; actual run preflight and exact-SHA evidence win.
 
-## 10. Blocker propagation
+## 11. Blocker propagation
 
 `BLOCKED` propagates only through real dependency edges. Continue all independent work.
 
 A blocked macOS/device tuple may block Candidate Freeze while unrelated docs, another platform tuple, Hidden-pack preparation, or release-note preparation continues.
 
-## 11. Evidence minimum
+## 12. Evidence minimum
 
 A useful Validation Report records:
 
@@ -188,6 +206,8 @@ repository
 tested_sha
 candidate_sha when relevant
 branch/ref as auxiliary metadata
+dispatch identity when executed under a dispatch (dispatch_id)
+expected_base_sha / requested_sha / actual_checked_out_sha / current_pr_head when exact-SHA dispatched
 execution host role/channel/provider state
 platform/architecture
 runtime/toolchain
@@ -196,12 +216,13 @@ exact command/entrypoint
 exit code
 key logs/evidence
 state
+working_tree_clean and source_modifications_after_validation for dispatch validation
 validation impact/reuse basis when evidence composition is used
 ```
 
 External CI evidence remains governed by immutable evidence identity/completion rules in `CI_EVIDENCE_STANDARD.md`.
 
-## 12. Prohibited practices
+## 13. Prohibited practices
 
 - claiming PASS without execution;
 - moving PASS from one SHA/platform/toolchain to another by assertion;
@@ -210,4 +231,7 @@ External CI evidence remains governed by immutable evidence identity/completion 
 - changing a required gate to optional to obtain READY;
 - unlimited retries/timeouts that mask deterministic defects;
 - treating `latest.json`, evidence publication completion, artifact presence, or runner capability inventory as Validation PASS;
-- treating infrastructure unavailability as product FAIL or PASS.
+- treating infrastructure unavailability as product FAIL or PASS;
+- a Validator opportunistically repairing product source under a validation dispatch;
+- rewriting PASS evidence onto a successor SHA or an undispatched replacement candidate;
+- treating a validation queue's derived item status as Gate state or as a second validation authority.
