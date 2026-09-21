@@ -298,7 +298,7 @@ The schema is the machine contract. Writers MUST NOT invent a parallel event ver
 
 ### 8.3 Historical compatibility
 
-Historical `ai-dev:event:v1` remains readable historical evidence and MUST NOT be rewritten merely to upgrade format.
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 
 Consumers MAY read v1 for compatibility. **New writers MUST NOT emit v1.**
 
