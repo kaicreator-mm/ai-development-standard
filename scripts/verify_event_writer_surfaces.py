@@ -28,9 +28,10 @@ def writer_surface_paths(root: Path = ROOT) -> list[str]:
 def classify_v1_reference(lines: list[str], index: int) -> str:
     """Classify a v1 reference using only the v1-bearing line.
 
-    Historical prose on neighboring lines is deliberately ignored. This keeps a
-    stale new-work instruction from borrowing compatibility context from a nearby
-    paragraph or bullet.
+    Historical prose on neighboring lines is deliberately ignored. A v1-bearing
+    line is accepted only when it is an explicit prohibition or a genuinely
+    read-only historical/compatibility reference. Writer/instruction semantics
+    always fail closed before historical allowance is considered.
     """
     current = lines[index].replace("`", "").lower()
     if TOKEN not in current:
@@ -50,8 +51,6 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
     if any(marker in current for marker in prohibition_markers):
         return "explicit-prohibition"
 
-    # Any explicit new/current-work cue on the v1-bearing line is forbidden,
-    # regardless of the verb used (publish, set schema to, select, record, ...).
     new_work_markers = (
         "for new work",
         "new work",
@@ -67,6 +66,34 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
         "当前 writer",
     )
     if any(marker in current for marker in new_work_markers):
+        return "stale-or-unclassified"
+
+    # Historical vocabulary MUST NOT authorize an instruction to write v1.
+    # Keep these action markers ahead of the historical/read-only allowance so
+    # phrases such as "Legacy compatibility writer: set schema to v1" fail.
+    writer_instruction_markers = (
+        "publish ai-dev:event:v1",
+        "emit ai-dev:event:v1",
+        "write ai-dev:event:v1",
+        "use ai-dev:event:v1",
+        "send ai-dev:event:v1",
+        "create ai-dev:event:v1",
+        "post ai-dev:event:v1",
+        "output ai-dev:event:v1",
+        "produce ai-dev:event:v1",
+        "record ai-dev:event:v1",
+        "select ai-dev:event:v1",
+        "configure ai-dev:event:v1",
+        "set schema to ai-dev:event:v1",
+        "schema to ai-dev:event:v1",
+        "发布 ai-dev:event:v1",
+        "写入 ai-dev:event:v1",
+        "使用 ai-dev:event:v1",
+        "发送 ai-dev:event:v1",
+        "设为 ai-dev:event:v1",
+        "设置为 ai-dev:event:v1",
+    )
+    if any(marker in current for marker in writer_instruction_markers):
         return "stale-or-unclassified"
 
     # Historical/read-only compatibility is allowed only when the v1-bearing
