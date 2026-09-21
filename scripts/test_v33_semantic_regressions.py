@@ -185,11 +185,22 @@ class V33SemanticRegression(unittest.TestCase):
         prohibition = ["New writers MUST NOT emit `ai-dev:event:v1`."]
         self.assertEqual(classify_v1_reference(prohibition, 0), "explicit-prohibition")
 
-        adjacent_mask_attempt = [
+        adjacent_publish_mask_attempt = [
             "Historical `ai-dev:event:v1` remains readable compatibility evidence.",
             "For new work publish `ai-dev:event:v1`.",
         ]
-        self.assertEqual(classify_v1_reference(adjacent_mask_attempt, 1), "stale-or-unclassified")
+        self.assertEqual(classify_v1_reference(adjacent_publish_mask_attempt, 1), "stale-or-unclassified")
+
+        adjacent_schema_mask_attempt = [
+            "Historical `ai-dev:event:v1` remains readable compatibility evidence.",
+            "For new work, set schema to `ai-dev:event:v1`.",
+        ]
+        self.assertEqual(classify_v1_reference(adjacent_schema_mask_attempt, 1), "stale-or-unclassified")
+
+        same_line_mixed_attempt = [
+            "Historical `ai-dev:event:v1` is readable; for new work set schema to `ai-dev:event:v1`."
+        ]
+        self.assertEqual(classify_v1_reference(same_line_mixed_attempt, 0), "stale-or-unclassified")
 
 
 if __name__ == "__main__":
