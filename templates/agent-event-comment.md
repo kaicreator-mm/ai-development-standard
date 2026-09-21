@@ -10,7 +10,7 @@ New events under standard v3.1+ SHOULD use:
 <!-- ai-dev:event:v2 -->
 ```
 
-`ai-dev:event:v1` remains valid historical evidence. Do not rewrite old comments only to upgrade their schema.
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 
 ## Actor / operator attribution
 
