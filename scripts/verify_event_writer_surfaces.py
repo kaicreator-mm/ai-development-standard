@@ -15,6 +15,15 @@ ACTIVE_SECTIONS = (
 )
 AUTHORITY_WRITER_SURFACES = {"README.md", "AGENTS.md"}
 
+# Historical v1 compatibility is deliberately an exact positive allowlist rather
+# than a vocabulary/verb classifier. Any edited, extended, or newly introduced
+# v1-bearing sentence fails closed unless it is an explicit prohibition below.
+# This prevents historical vocabulary from authorizing arbitrary writer wording.
+HISTORICAL_V1_REFERENCE_TEXTS = {
+    "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence.",
+    "historical ai-dev:event:v1 comments remain valid history and are read-only compatibility evidence only.",
+}
+
 
 def writer_surface_paths(root: Path = ROOT) -> list[str]:
     manifest = json.loads((root / "standard-manifest.json").read_text(encoding="utf-8"))
@@ -25,15 +34,26 @@ def writer_surface_paths(root: Path = ROOT) -> list[str]:
     return sorted(paths)
 
 
-def classify_v1_reference(lines: list[str], index: int) -> str:
-    """Classify a v1 reference using only the v1-bearing line.
+def normalize_v1_line(line: str) -> str:
+    normalized = line.replace("`", "").strip().lower()
+    for prefix in ("- ", "* ", "+ ", "> "):
+        if normalized.startswith(prefix):
+            normalized = normalized[len(prefix):].strip()
+            break
+    return " ".join(normalized.split())
 
-    Historical prose on neighboring lines is deliberately ignored. A v1-bearing
-    line is accepted only when it is an explicit prohibition or a genuinely
-    read-only historical/compatibility reference. Writer/instruction semantics
-    always fail closed before historical allowance is considered.
+
+def classify_v1_reference(lines: list[str], index: int) -> str:
+    """Classify a v1 reference from the v1-bearing line only.
+
+    Allowed states are intentionally narrow:
+    1. an explicit prohibition against emitting/publishing v1; or
+    2. an exact canonical historical/read-only compatibility reference.
+
+    Everything else fails closed. There is no generic historical vocabulary
+    fallback and no writer-verb blacklist to evade with alternate wording.
     """
-    current = lines[index].replace("`", "").lower()
+    current = normalize_v1_line(lines[index])
     if TOKEN not in current:
         return "none"
 
@@ -51,67 +71,7 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
     if any(marker in current for marker in prohibition_markers):
         return "explicit-prohibition"
 
-    new_work_markers = (
-        "for new work",
-        "new work",
-        "new writer",
-        "new writers",
-        "current work",
-        "current writer",
-        "current writers",
-        "新工作",
-        "新写入",
-        "新 writer",
-        "当前工作",
-        "当前 writer",
-    )
-    if any(marker in current for marker in new_work_markers):
-        return "stale-or-unclassified"
-
-    # Historical vocabulary MUST NOT authorize an instruction to write v1.
-    # Keep these action markers ahead of the historical/read-only allowance so
-    # phrases such as "Legacy compatibility writer: set schema to v1" fail.
-    writer_instruction_markers = (
-        "publish ai-dev:event:v1",
-        "emit ai-dev:event:v1",
-        "write ai-dev:event:v1",
-        "use ai-dev:event:v1",
-        "send ai-dev:event:v1",
-        "create ai-dev:event:v1",
-        "post ai-dev:event:v1",
-        "output ai-dev:event:v1",
-        "produce ai-dev:event:v1",
-        "record ai-dev:event:v1",
-        "select ai-dev:event:v1",
-        "configure ai-dev:event:v1",
-        "set schema to ai-dev:event:v1",
-        "schema to ai-dev:event:v1",
-        "发布 ai-dev:event:v1",
-        "写入 ai-dev:event:v1",
-        "使用 ai-dev:event:v1",
-        "发送 ai-dev:event:v1",
-        "设为 ai-dev:event:v1",
-        "设置为 ai-dev:event:v1",
-    )
-    if any(marker in current for marker in writer_instruction_markers):
-        return "stale-or-unclassified"
-
-    # Historical/read-only compatibility is allowed only when the v1-bearing
-    # line itself carries that characterization. Neighboring context never grants
-    # an exception.
-    historical_markers = (
-        "historical",
-        "compatib",
-        "backward",
-        "legacy",
-        "readable",
-        "read-only",
-        "历史",
-        "兼容",
-        "旧版",
-        "保留",
-    )
-    if any(marker in current for marker in historical_markers):
+    if current in HISTORICAL_V1_REFERENCE_TEXTS:
         return "historical-compatibility"
 
     return "stale-or-unclassified"
@@ -126,7 +86,7 @@ def scan_writer_surfaces(root: Path = ROOT) -> list[str]:
             continue
         lines = path.read_text(encoding="utf-8").splitlines()
         for index, line in enumerate(lines):
-            if TOKEN not in line.replace("`", "").lower():
+            if TOKEN not in normalize_v1_line(line):
                 continue
             classification = classify_v1_reference(lines, index)
             if classification not in {"explicit-prohibition", "historical-compatibility"}:
