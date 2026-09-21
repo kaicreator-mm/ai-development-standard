@@ -12,6 +12,7 @@ For new work, use the following authorities:
 
 GitHub remains the durable execution fact source. Issue Dependencies remain the canonical live execution DAG when Issue-based execution is used.
 
-Historical `ai-dev:event:v1` records remain readable historical evidence. **All newly emitted structured Agent events use `ai-dev:event:v2` unless a future protocol supersedes it.**
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
+All newly emitted structured Agent events use `ai-dev:event:v2` unless a future protocol supersedes it.
 
 This compatibility entry is intentionally short to prevent normative drift between multiple copies of the same workflow.
