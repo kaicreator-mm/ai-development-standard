@@ -96,6 +96,18 @@ trigger prompt -> repository + Issue reference, plus only essential bootstrap
 
 The executor should be able to recover the task without hidden chat history.
 
+## Pull-role pointer invocation (v3.4)
+
+When work is dispatched through the unified dispatch architecture, the same issue-first rule applies per role. The trigger stays a pointer; the dispatch and its Issue remain the contract:
+
+```text
+Continue <project> <version> current READY builder work in Issue #NN.
+Continue <project> <version> current READY validation work in Issue #NN.
+Continue <project> <version> current READY review work in PR #NN.
+```
+
+One task = one dispatch = one trigger prompt. The executor MUST re-read the current dispatch/Issue facts (including `requested_head_sha` for validators) rather than trust the copied prompt.
+
 ## Anti-patterns
 
 Do not:

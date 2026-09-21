@@ -322,6 +322,8 @@ MERGE_RESULT
 HANDOFF_READY
 DISPATCH_REQUEST
 DISPATCH_STATE_CHANGED
+DISPATCH_CLAIMED
+EXECUTION_PACK_STATE_CHANGED
 CI_INFRA_EXCEPTION
 VALIDATION_IMPACT_DECISION
 CANDIDATE_STATE_CHANGED
@@ -367,6 +369,23 @@ A Reviewer SHOULD continue independent reviews even if another concern fails unl
 
 A Validator publishes exact-SHA environment/profile evidence. Validation-only execution does not require a branch; source fixes require a bounded task/fix branch and affected revalidation.
 
+### Execution profiles and pointer-only role invocation
+
+Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`. Profiles configure execution authority; they never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections.
+
+Pointer-only invocation applies to every role:
+
+```text
+Repository: owner/repo
+Issue/PR: #N
+Role: builder|validator|reviewer
+Dispatch: <id>
+
+Continue <project> <version> current READY <role> work in Issue #NN.
+```
+
+A Reviewer acting independently MUST NOT modify product code in the same review role/session; findings route back through a Builder dispatch.
+
 ## 11. Merge interaction
 
 A Task/Fix PR becomes `merge-ready` only when the deterministic prerequisites from `EXECUTION_ARCHITECTURE_STANDARD.md` are satisfied, including:
@@ -381,13 +400,15 @@ current PR HEAD
 + no unresolved release-significant finding
 ```
 
-Before merge, re-read current HEAD/target and stale evidence. After merge, publish `MERGE_RESULT` with the source/current identity and integration target/result as required by the current schema/policy.
+Before merge, re-read current HEAD/target and stale evidence. After merge, publish `MERGE_RESULT` with the source/current identity and integration target/result as required by the current schema/policy, then recompute downstream ready sets — the DAG unlock of downstream READY work is automatic and requires no human prompt relay between roles.
 
 Merge control does not decide Release Qualification.
 
 ## 12. Dispatch / handoff interaction
 
 A handoff becomes dispatchable only after its durable Issue contract is complete according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and the Local Agent Handoff schema.
+
+A dispatch references Task Pack identity and, when generated, Execution Pack identity (`EXECUTION_PACK_STANDARD.md`); workers verify pack staleness and exact identity at claim time and publish `DISPATCH_CLAIMED`. A version-scoped Validation Handoff Queue, when enabled, is a projection of Validator dispatches — pointer-only invocation into the queue never makes the queue Issue a second validation or Task authority.
 
 After `HANDOFF_READY`, prefer pointer-only invocation:
 

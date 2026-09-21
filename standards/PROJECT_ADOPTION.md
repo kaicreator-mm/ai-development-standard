@@ -175,6 +175,25 @@ PROJECT_OVERRIDES 可以增加项目真实需要的 gate，但不得因为历史
 
 不得用 `NOT_APPLICABLE` 隐藏 required gate，也不得用 placeholder command 冒充 executable validation。
 
+### 3.6 Execution Pack / Pull Worker / Validation Queue（v3.4，可选）
+
+v3.4 能力是渐进可选的；不启用不削弱任何 required gate。项目 MAY 在 `PROJECT_OVERRIDES.md` 声明：
+
+```text
+execution_pack.enabled / path / retention / package_exclusion
+pull_worker.builder / validator / reviewer
+validation_queue.enabled / scope
+local_first.enabled
+```
+
+语义：
+
+- Execution Pack 权威低于 Task Pack，只能收窄执行自由（`EXECUTION_PACK_STANDARD.md`）；
+- Builder/Validator/Reviewer 是同一个 canonical dispatch 架构的 role/profile，不是三套队列状态机；
+- version-scoped Validation Handoff Queue 是 Validator dispatch 的投影（`templates/validation-handoff-queue.md`），不是第二工作流权威；
+- Execution Pack 材料（`.agent/execution/`）必须可从 shipped package/product artifacts 中排除，package leakage 属于 packaging gate defect；
+- Fast Path 小任务可省略 large Execution Pack / seed / validation queue / dedicated worker，但保留 authority、exact identity、validation、evidence、merge safety。
+
 ## 4. 业务项目 AGENTS.md
 
 最小逻辑：

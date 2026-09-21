@@ -27,6 +27,28 @@ When Issue-based execution is enabled:
 - GitHub Issue Dependencies are the canonical live execution DAG.
 - Sub-issues express hierarchy, not implicit blocking.
 - Stacked PR MUST NOT replace Issue Dependency.
+- JIT branch rule: task branches are created after dependencies merge, from the current integration exact SHA (exceptions only for real stacked code dependency).
+
+## Execution Pack / Pull Worker Profile (v3.4, optional)
+
+Opt-in; Fast Path projects MAY keep everything disabled.
+
+- execution_pack.enabled: `<true | false>`
+- execution_pack.path: `<.agent/execution/ | project-specific>`
+- execution_pack.retention: `<durable | transient | full-provenance>`
+- execution_pack.package_exclusion: `<packaging rule keeping .agent/ out of shipped artifacts>`
+- pull_worker.builder: `<enabled + operator convention | disabled>`
+- pull_worker.validator: `<enabled + operator convention | disabled>`
+- pull_worker.reviewer: `<enabled + operator convention | disabled>`
+- validation_queue.enabled: `<true | false>`
+- validation_queue.scope: `<version | project | NOT_APPLICABLE>`
+- local_first.enabled: `<true | false>` (default loop per `CI_EXECUTION_STANDARD.md` §10a)
+
+Rules:
+
+- Execution Pack is subordinate to Task Pack; it narrows freedom, never redefines authority.
+- A version-scoped validation queue is a projection of Validator dispatches, never a second workflow authority.
+- Disabling these capabilities does not weaken any required gate.
 
 ## Agent / Operator Attribution Profile
 

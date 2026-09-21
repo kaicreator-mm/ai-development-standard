@@ -205,6 +205,41 @@ clean checkout
 
 Projects MAY customize the order where dependencies require it, but SHOULD keep cheap configuration/runtime failures ahead of expensive validation.
 
+## 10a. Local-first execution
+
+When an authorized equivalent local execution environment exists, the default engineering loop is local-first:
+
+```text
+implement locally
+→ focused tests
+→ lint/typecheck/build
+→ required tests
+→ package check
+→ task-owned platform validation
+→ stable exact HEAD
+→ push
+→ required remote certification only
+```
+
+Remote CI SHOULD NOT be used as the normal compile/debug loop. However:
+
+```text
+provider-specific attestation remains mandatory when explicitly required
+CI outage != PASS
+local Ubuntu evidence != Windows/device evidence
+task validation != version closure validation
+```
+
+Distinguish three facts that MUST NOT be collapsed:
+
+```text
+required validation profile          (what must be proven)
+normal execution provider            (where it normally runs; CI or local host)
+provider-specific attestation        (provider-bound proof that cannot be substituted)
+```
+
+Alternate-executor substitution and `CI_INFRA_EXCEPTION` remain governed by `VALIDATION_STANDARD.md`. Baseline refresh ordering (validate blocking candidates before spendable-obsolete ones) is governed by `EXECUTION_ARCHITECTURE_STANDARD.md` §6.
+
 ## 11. Relationship to Evidence and Gate States
 
 Provider job status is execution metadata. Gate state remains governed by `VALIDATION_STANDARD.md`.

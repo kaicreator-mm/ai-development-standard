@@ -311,6 +311,8 @@ Task/Fix PR 默认 target `version/vX.Y.Z`。
 
 Task branch 应从明确 integration baseline 开始；不得不记录 baseline 就随意从最新 HEAD 开工。
 
+JIT 分支规则（v3.4，详见 `EXECUTION_PACK_STANDARD.md`）：Queued Task 在依赖完成前不应获得长命实现分支。默认顺序是依赖合并 → 重算 ready set → 读取当前 integration exact SHA → **此时**创建 task branch（并 JIT 生成/绑定 Execution Pack）→ 发出 Builder dispatch。只有真实 stacked code dependency 才允许提前建分支。目的是消除 `ahead N / behind M / refresh / revalidate / rereview` 的反复消耗。
+
 #### 3.1 Optional Stacked PR
 
 只有当 Task 的代码必须直接建立在另一个尚未合并的 Task branch 上时，才使用 stacked PR：
