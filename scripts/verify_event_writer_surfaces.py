@@ -26,6 +26,12 @@ def writer_surface_paths(root: Path = ROOT) -> list[str]:
 
 
 def classify_v1_reference(lines: list[str], index: int) -> str:
+    """Classify a v1 reference using only the v1-bearing line.
+
+    Historical prose on neighboring lines is deliberately ignored. This keeps a
+    stale new-work instruction from borrowing compatibility context from a nearby
+    paragraph or bullet.
+    """
     current = lines[index].replace("`", "").lower()
     if TOKEN not in current:
         return "none"
@@ -44,23 +50,28 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
     if any(marker in current for marker in prohibition_markers):
         return "explicit-prohibition"
 
-    stale_writer_markers = (
-        "publish ai-dev:event:v1",
-        "emit ai-dev:event:v1",
-        "write ai-dev:event:v1",
-        "use ai-dev:event:v1",
-        "send ai-dev:event:v1",
-        "create ai-dev:event:v1",
-        "发布 ai-dev:event:v1",
-        "写入 ai-dev:event:v1",
-        "使用 ai-dev:event:v1",
+    # Any explicit new/current-work cue on the v1-bearing line is forbidden,
+    # regardless of the verb used (publish, set schema to, select, record, ...).
+    new_work_markers = (
+        "for new work",
+        "new work",
+        "new writer",
+        "new writers",
+        "current work",
+        "current writer",
+        "current writers",
+        "新工作",
+        "新写入",
+        "新 writer",
+        "当前工作",
+        "当前 writer",
     )
-    if any(marker in current for marker in stale_writer_markers):
+    if any(marker in current for marker in new_work_markers):
         return "stale-or-unclassified"
 
-    start = max(0, index - 2)
-    end = min(len(lines), index + 3)
-    context = " ".join(lines[start:end]).replace("`", "").lower()
+    # Historical/read-only compatibility is allowed only when the v1-bearing
+    # line itself carries that characterization. Neighboring context never grants
+    # an exception.
     historical_markers = (
         "historical",
         "compatib",
@@ -73,7 +84,7 @@ def classify_v1_reference(lines: list[str], index: int) -> str:
         "旧版",
         "保留",
     )
-    if any(marker in context for marker in historical_markers):
+    if any(marker in current for marker in historical_markers):
         return "historical-compatibility"
 
     return "stale-or-unclassified"
