@@ -31,7 +31,8 @@
 
 - GitHub repository state、commit、Issue、Issue Dependency、PR、Review、Validation Evidence 与 Release identity 是执行事实；聊天记录不是事实源。
 - GitHub username/API account 只是 transport identity，不足以区分 ChatGPT Web、Local Agent、CI 或人工的逻辑执行主体。
-- v3.1+ 新 structured Agent events SHOULD 使用 `ai-dev:event:v2`，并记录 `actor_role / operator_kind / operator_id / session_ref / transport_actor`。历史 v1 events 保持有效，不重写历史。
+- v3.1+ 新 structured Agent events SHOULD 使用 `ai-dev:event:v2`，并记录 `actor_role / operator_kind / operator_id / session_ref / transport_actor`。
+- Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 - `actor_role` 表示流程职责；`operator_id/session_ref` 表示具体 Web 页面、Local Agent 或 run；`transport_actor` 表示向 GitHub 写入的账号/API identity。三者不得混为一谈。
 - 多个 Web/Local contexts 使用同一个 GitHub 账号时，必须通过不同的 `operator_id/session_ref` 保持可审计区分；动态 operator/session identity 不应做成 GitHub label。
 - required Independent Review 可以与 Builder 共用同一个 GitHub transport account，但 Reviewer 的 operator/context 必须与 Builder context 可审计地区分。
