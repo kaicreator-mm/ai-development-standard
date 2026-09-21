@@ -1,70 +1,50 @@
 # Validation Report
 
-- Repository: `<owner/repo>`
-- Branch / Ref: `<branch-or-ref>`
-- Tested SHA: `<40-char-sha>`
-- Evidence-only HEAD: `<sha or NOT_APPLICABLE>`
-- Standard: `ai-development-standard@v2.0.0` + immutable revision
-- Task/Issue: `<id>`
-- Execution Host Role: `<ChatGPT env | Ubuntu Build Host | Windows | macOS | self-hosted runner | other>`
-- Platform / Architecture: `<...>`
-- Runtime / Toolchain: `<...>`
-- Validation Profile: `<fast | integration | critical-journey | hidden | platform | release | custom>`
-- CI Profile: `<minimal | custom | disabled>`
-
-## Gate Matrix
-
-| Gate / Tuple | Status | Exact Command / Evidence |
-|---|---|---|
-| Format | PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE | |
-| Lint | | |
-| Typecheck | | |
-| Unit / Contract | | |
-| Integration | | |
-| Critical Journeys | | |
-| Hidden Validation | | |
-| Platform / Production Build | | |
-| Minimal CI | | |
-
-For matrix validation, identify each tuple explicitly, for example:
+## Identity
 
 ```text
-<tested SHA> × <real platform> × <runtime/toolchain> × <profile>
+repository: <owner/repo>
+tested_sha: <40-char SHA>
+candidate_sha: <SHA|NOT_APPLICABLE>
+branch_ref: <auxiliary ref>
+validation_scope: <concern|integration|closure>
+validation_profile: <profile>
 ```
 
-One tuple PASS never implies another tuple PASS.
+## Execution
 
-## Environment Identity
+```text
+execution_host_role: <role>
+execution_channel: <provider/local/build-host>
+provider_state: <AVAILABLE|INFRA_BLOCKED|TIMED_OUT|CANCELLED|NOT_APPLICABLE>
+platform/architecture: <...>
+runtime/toolchain: <...>
+clean_checkout: <yes/no>
+command/entrypoint: <...>
+exit_code: <...>
+```
 
-- OS/version: `<...>`
-- Architecture: `<...>`
-- Runtime/toolchain versions: `<...>`
-- Required service/device identity: `<...>`
-- Start/end timestamp: `<...>`
+## Result
 
-## Changed Files
+`PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE`
 
-- `<path>`
+Record checks, key logs/artifacts, expected vs actual on failure, and environment-sensitive facts.
 
-## Failures Fixed
+## Drift / Evidence Composition
 
-- `<symptom → root cause → fix → rerun evidence>`
+When current candidate/target differs from the actually tested SHA, do not relabel the result. Record instead:
 
-## Remaining Gates / Blockers
+```text
+validated_head_sha: <sha>
+base_sha_at_validation: <sha>
+current_target_sha: <sha>
+merge_result_sha/tree: <identity|NOT_APPLICABLE>
+validation_impact: <none|affected|unknown>
+evidence_reuse_basis: <explicit proof|NOT_APPLICABLE>
+```
 
-- `<gate → state → reason → downstream impact>`
+`validation_impact=none` is a separate decision; it does not mean this tuple executed on the successor/merge result.
 
-A blocker only blocks dependent downstream gates. Independent remaining work should continue where possible.
+## CI Infrastructure Exception
 
-## Known Limitations
-
-- `<none or explicit>`
-
-## Candidate / Release Impact
-
-- Candidate Prepared: `PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE`
-- Candidate Freeze: `PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE`
-- Hidden Validation Execution: `PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE`
-- Release Qualification: `PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE`
-
-Do not infer Release PASS from PR Validation or Minimal CI PASS.
+If the normal channel is unavailable, record the provider state/run identity, required underlying profile, alternate executor/evidence, policy basis for substitution, and remaining impact. Provider failure is not candidate PASS/FAIL by itself.

@@ -330,13 +330,28 @@ Stacked PR 只表达 code-baseline dependency：
 - upstream merge 后，下游 PR 应 rebase/retarget 到正确 parent/integration branch；
 - SHA 改变后，受影响的 **required** Review/Validation 必须重新执行。
 
-### Stage 4 — Task Validation / PR / Optional Review / Minimal CI
+### Stage 4 — Task Candidate / Minimal CI / Required Validation / Optional Review
 
-先执行当前环境或 Build Host 可运行的 Validation，再形成或更新 PR。Review 仅在 Review Policy/decision 选择时进入 Review Queue。
+Stage 4 的默认顺序必须避免把昂贵 exact-SHA Validation 放在仍可能改变 candidate identity 的 CI/workflow 修复之前。对于存在真实设备、平台、Build Host、Critical Journey 或其它高成本 Task-owned gate 的 concern，默认顺序是：
 
-#### 4.1 Local / Build Host Validation
+```text
+implementation complete
+→ finalize PR + CI/workflow/config
+→ cheap/scoped local checks
+→ configured Minimal CI on current exact SHA
+→ task candidate identity stabilized
+→ expensive Task-owned exact-SHA Validation
+→ applicable Independent Review
+→ merge without further candidate commits
+```
 
-根据项目需要执行：
+如果当前 concern 没有高成本/外部 Validation，这些可执行步骤 MAY 在不破坏 exact identity 的前提下并行；但 merge prerequisites 不变。
+
+CI/workflow/config change 不是默认的 evidence-only commit。它可能改变 execution semantics，因此在昂贵 Validation 之后出现时必须产生 successor identity，并按 `VALIDATION_STANDARD.md` 的 impact rules 处理；不得把旧 tuple PASS 自动改写到新 SHA。
+
+#### 4.1 Candidate Preparation + Cheap / Scoped Validation
+
+先完成 implementation，并执行当前环境中的低成本、concern-scoped checks，例如：
 
 ```text
 format
@@ -344,21 +359,15 @@ lint
 typecheck
 unit
 contract
-integration
-build smoke
-platform validation
-Critical Journey
+focused integration
+basic build smoke
 ```
 
-Validation 必须绑定明确 commit SHA。真实平台/运行时矩阵使用 Validation Tuple：
+这些 checks 仍须按项目 authority 绑定正确 identity，但它们不应被误写成未执行的真实 platform/device/Critical Journey PASS。
 
-```text
-<exact SHA> × <real platform> × <runtime/toolchain> × <validation profile>
-```
+在需要昂贵真实环境 Validation 的 Task 上，PR、CI workflow/config、依赖/lockfile/build inputs SHOULD 在进入昂贵 Validation 前完成定稿。
 
-Validation remains mandatory according to required gate authority. Review is not a substitute for Validation.
-
-#### 4.2 PR / Routing Decision
+#### 4.2 PR + Minimal CI Before Expensive Validation
 
 PR 说明：
 
@@ -370,20 +379,65 @@ branch strategy independent/stacked
 integration target / stack parent
 concern scope
 changes
-validation evidence
+cheap/scoped validation evidence
 Review Policy / decision
 known blockers
 required downstream gates
 ```
 
-Builder 完成 implementation + 当前可运行 Validation 后：
+CI 默认只做低成本、确定性、clean-checkout 独立复核。默认 Minimal CI SHOULD 只包含：
+
+- standard/project verifier；
+- format/lint/typecheck 的必要子集；
+- 快速 unit/contract smoke；
+- basic build smoke。
+
+默认不把完整多平台矩阵、真实设备/SDK、Critical Journeys、Hidden Validation、高成本 Docker/E2E、packaging 放入 Minimal CI。
+
+项目通过 `.dev-standard/PROJECT_OVERRIDES.md` 声明：
+
+```text
+minimal
+custom
+disabled
+```
+
+当 CI enabled 且其 profile 是 Task merge prerequisite 时，SHOULD 在高成本 Task-owned Validation 之前让当前 exact candidate SHA 获得该 CI/profile PASS。若 provider/channel `INFRA_BLOCKED`，只能按 `CI_EXECUTION_STANDARD.md` / `VALIDATION_STANDARD.md` 的 authority 使用合法 alternate executor 或保持 BLOCKED；不得把 pending/stuck provider 当 PASS/FAIL。
+
+`disabled` 必须记录理由，并保留 exact-SHA clean validation。CI disabled 不自动意味着 Review required；Review 仍按 Review Policy 决定。
+
+#### 4.3 Expensive / Real-host Task-owned Validation
+
+只有 candidate 的 implementation、CI/workflow/config 和相关 build/dependency inputs 已稳定后，才 SHOULD 启动该 Task 自身 required 的昂贵真实环境 Validation，例如：
+
+```text
+real platform/device/SDK
+Build Host runtime/integration
+crash/restart/recovery tuple
+Task-owned Critical Journey
+other high-cost environment-specific gate
+```
+
+Validation 必须绑定明确 commit SHA。真实平台/运行时矩阵使用 Validation Tuple：
+
+```text
+<exact SHA> × <real platform> × <runtime/toolchain> × <validation profile>
+```
+
+Validation remains mandatory according to required gate authority. Review is not a substitute for Validation。
+
+Gate ownership 仍按 `concern | integration | closure` 分层：普通 leaf Task 不自动执行完整 release matrix；只有 frozen Task acceptance/Architecture 明确拥有的平台/runtime/CJ gate 才在这里提前执行。跨组件 truth 由 integration owner 负责，full regression / release CJ / platform matrix / packaging / Hidden 由 version closure 负责。
+
+昂贵 Validation 开始后，SHOULD 避免再向同一 task candidate 加 commit。若 HEAD 仍发生变化，旧 evidence 只属于原 tested SHA；必须按 drift/impact rules 重新建立 affected evidence。
+
+#### 4.4 Independent Review（按需）
+
+Builder 完成 implementation、适用 Minimal CI 和 required Task-owned Validation 后：
 
 - `review:required` → 发布 `IMPLEMENTATION_READY`，route 到 `state:review-ready`；
 - `review:recommended + PERFORM` → route 到 `state:review-ready`；
 - `review:recommended + SKIP` → 记录 `REVIEW_DECISION`，在其它 merge prerequisites 满足后可进入 `state:merge-ready`；
 - `review:not-required` → Review Gate `NOT_APPLICABLE`，在其它 merge prerequisites 满足后可进入 `state:merge-ready`。
-
-#### 4.3 Independent Review（按需）
 
 当 Review 被选择或 required 时：
 
@@ -411,40 +465,15 @@ blocked → state:blocked
 - `checklists/pr-review.md`
 - `templates/agent-event-comment.md`
 
-#### 4.4 Minimal CI
-
-CI 默认只做低成本、确定性、clean-checkout 独立复核。
-
-默认 Minimal CI SHOULD 只包含：
-
-- standard/project verifier；
-- format/lint/typecheck 的必要子集；
-- 快速 unit/contract smoke；
-- basic build smoke。
-
-默认不把完整多平台矩阵、真实设备/SDK、Critical Journeys、Hidden Validation、高成本 Docker/E2E、packaging 放入 Minimal CI。
-
-项目通过 `.dev-standard/PROJECT_OVERRIDES.md` 声明：
-
-```text
-minimal
-custom
-disabled
-```
-
-`disabled` 必须记录理由，并保留 exact-SHA clean validation。
-
-CI disabled 不自动意味着 Review required；Review 仍按 Review Policy 决定。
-
 #### 4.5 Task Merge Readiness
 
 Task/Fix PR 只有满足以下适用条件才能进入 `state:merge-ready`：
 
 ```text
 current PR HEAD SHA
-+ required task/local Validation PASS
++ required concern/task Validation PASS
 + Review condition satisfied
-+ configured required Minimal CI PASS when enabled
++ configured required Minimal CI/profile PASS when enabled
 + required Issue Dependencies satisfied for merge
 + correct integration target / stack parent
 + no unresolved release-significant finding/blocker
@@ -458,9 +487,9 @@ recommended  → PASS on current SHA OR explicit SKIP decision/rationale
 not-required → Review Gate NOT_APPLICABLE
 ```
 
-PR merge 后记录 integration SHA / `MERGE_RESULT`，Task completion rule 满足后进入 `state:done`。
+Merge controller 在 merge 前 MUST 重新读取 current HEAD/target 并检查 HEAD/BASE/MERGE-RESULT drift。PR merge 后记录 integration SHA / `MERGE_RESULT`，Task completion rule 满足后进入 `state:done`。
 
-### Stage 4.6 — Local Agent Handoff（按需）
+#### 4.6 Local Agent Handoff（按需）
 
 当当前环境无法完成真实 build/platform/integration/CJ/Hidden/packaging 或 Reviewer/Task policy 明确要求真实 execution 时，使用 GitHub Issue 交给 Local Agent / Build Host。
 
@@ -474,9 +503,9 @@ Issue 应通过 Milestone + metadata 表达 version、type、state、executor、
 
 Validation Issue MAY 作为 Task 的 sub-issue 表达层级；如果它真正 blocking 另一个 work item/candidate，应使用 Issue Dependency 表达 blocking 关系。
 
-Validation-only execution不要求 branch。
+Validation-only execution 不要求 branch。
 
-如果发现必须修改源码：
+如果发现必须修改源码或其它 candidate content：
 
 ```text
 Validation Issue

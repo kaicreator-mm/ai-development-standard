@@ -1,164 +1,97 @@
 # GitHub Agent Interaction Protocol
 
-## 1. Purpose
+## 1. Purpose and authority boundary
 
-This protocol defines GitHub-native coordination between Planner, Builder, optional Independent Reviewer, Validator / Local Agent, merge control and release control.
+This protocol defines the GitHub-native contract used by Planner, Builder, Reviewer, Validator, Scheduler, Merge Controller, Release Controller and Repository Integration Controller.
 
-The objective is that multiple sessions or agents can collaborate without exchanging hidden chat context. GitHub carries the durable contract, routing metadata, event history, code change, exact identities and logical operator attribution.
+It owns:
 
-Canonical responsibility model:
+- GitHub work-item / metadata / event responsibilities;
+- logical operator attribution;
+- canonical short-intent admission / normalization / rejection semantics;
+- canonical structured-event writer protocol;
+- Review Policy interaction semantics;
+- recovery from GitHub facts across sessions/agents.
+
+It does **not** redefine orchestration state reduction, validation truth or release authority. Those remain owned by:
+
+- `EXECUTION_ARCHITECTURE_STANDARD.md` — durable facts, derived state, queues, dispatch and controllers;
+- `VALIDATION_STANDARD.md` — Validation Tuple, evidence and validation ownership;
+- `RELEASE_STANDARD.md` — candidate/release authority;
+- `LOCAL_AGENT_HANDOFF_PROTOCOL.md` — handoff completeness and pointer-only local execution.
+
+`EXECUTION_ARCHITECTURE_STANDARD.md` may describe how an executor/reducer consumes accepted intents/events, but it MUST NOT define a second intent contract. If its operational summary conflicts with this protocol's intent admission or event-writer rules, this protocol is authoritative for GitHub interaction semantics.
+
+Core rule:
+
+```text
+GitHub carries durable execution facts.
+Chat is a workspace, not project state.
+```
+
+## 2. Canonical GitHub responsibility model
 
 ```text
 Issue body        = stable work contract
-Issue metadata    = routing and current workflow state
-Issue dependency  = canonical execution dependency graph
-Comments          = append-oriented Agent event log
-Actor role        = responsibility performed by an event
-Logical operator  = concrete Web session / Local Agent / automation / human that performed it
-Transport actor   = GitHub account/API identity that wrote the event
+Issue metadata    = routing/current workflow metadata
+Issue dependency  = canonical live execution dependency graph
+Comments          = append-oriented event/evidence history
+Milestone         = version/release grouping
 Branch            = isolated implementation concern
-PR                = reviewable/mergeable code change
+PR                = reviewable/mergeable change
 Stacked PR        = optional unmerged code-baseline dependency
-Commit SHA        = exact change / execution identity
-Milestone         = version/release aggregation
+Commit SHA        = exact change/execution identity
 Validation        = exact-SHA execution evidence
-Review            = optional or required exact-SHA independent analysis according to Review Policy
+Review            = exact-SHA independent analysis when selected by Review Policy
+State card         = non-authoritative derived projection
 ```
 
-Chat is a workspace. It is not the coordination source of truth.
+Do not overload one object with another object's semantics.
 
-A GitHub username is **not** sufficient Agent identity when several Web sessions, local agents or automations use the same account.
+### Planning DAG vs execution DAG
 
-## 2. Three dependency layers
-
-Do not overload one Git/GitHub mechanism to represent every kind of dependency.
-
-### 2.1 Planning DAG
-
-The frozen Task DAG document/checkpoint records why the work was decomposed, task inputs/outputs, acceptance, risks, parallelism, Review Policy and dependency rationale.
-
-It is a planning/history artifact.
-
-### 2.2 Execution DAG — canonical Task DAG
-
-GitHub Task Issues plus native Issue Dependencies are the canonical execution DAG once the plan is materialized.
-
-Use Issue Dependencies for relationships such as:
+Frozen Task DAG is a planning/history checkpoint. After materialization:
 
 ```text
-T02 blocked by T01
-T03 blocked by T01
-T04 blocked by T02
-T04 blocked by T03
+GitHub Task Issues + native Issue Dependencies = canonical live execution DAG
 ```
 
-This is the authoritative machine-consumable task dependency relation during execution.
+Sub-issue hierarchy is not execution dependency. Stacked PR is not Task DAG; use it only when code truly depends on an unmerged upstream code baseline.
 
-A planning DAG checkpoint and the execution DAG MUST remain traceable to each other. Material changes to dependency semantics SHOULD leave an explicit change event/rationale rather than silently rewriting history.
+If the connected GitHub capability cannot mutate a canonical object, follow `GITHUB_CAPABILITY_FALLBACK.md`; do not silently replace native dependency semantics with prose.
 
-### 2.3 Code-baseline dependency — optional Stacked PR
+## 3. Task Issue contract
 
-Stacked PR is not the canonical Task DAG.
-
-Use a stacked branch/PR only when one task's code must be based on another task branch that has not yet merged to the integration branch.
-
-Example:
+A Task Issue SHOULD remain relatively stable and contain, as applicable:
 
 ```text
-version/vX.Y.Z
-  ↑
-task/T01-contract
-  ↑
-task/T02-core
-```
-
-PR topology:
-
-```text
-T01 PR: task/T01-contract → version/vX.Y.Z
-T02 PR: task/T02-core     → task/T01-contract
-```
-
-Rules:
-
-- Do not create a stack merely to mirror every Issue dependency.
-- Preserve parallel branches when code does not need an unmerged upstream branch.
-- A stack describes Git/code baseline dependency, not product/task planning semantics.
-- Because a Git branch has one direct base while a Task DAG may fork and join, stacked PRs cannot replace the execution DAG.
-- When an upstream stack PR merges, downstream PRs SHOULD be rebased/retargeted onto the correct remaining stack parent or integration branch.
-- Any resulting SHA change invalidates SHA-bound required review/validation evidence according to their rules; affected required evidence MUST be re-executed.
-- When a task's completion depends on another task, the corresponding Issue dependency SHOULD still be recorded even if implementation proceeds early on a stable stacked baseline.
-
-## 3. Hierarchy is not dependency
-
-Use different GitHub mechanisms for different semantics:
-
-```text
-Milestone     = version/release grouping
-Sub-issue     = belongs-to hierarchy (version/epic/task/validation)
-Dependency    = blocked-by / blocking execution relationship
-Branch/PR     = implementation and merge boundary
-Stacked PR    = code-baseline dependency
-```
-
-Do not infer execution order merely from sub-issue hierarchy.
-
-## 4. Task Issue contract
-
-A Task Issue is the durable work contract. Its body SHOULD remain relatively stable and contain:
-
-```text
-Task ID / title
-Milestone / target version
-Goal
-In scope / out of scope
-Frozen PRD / architecture / L3 references
-Planning Task DAG reference
-Baseline / integration target
-Acceptance criteria
-Required task-level gates
+Task ID / goal
+scope / non-scope
+frozen inputs
+planning DAG reference
+baseline / integration target
+acceptance criteria
+required gates
 Review Policy
-Known dependencies
-Allowed changes
-Forbidden changes
-Expected outputs
+dependency summary
+allowed / forbidden changes
+completion rule
 ```
 
-Do not use repeated body rewrites as an event log. State changes, operator claims, review decisions/results, fixes and validation results belong in metadata/comments.
+Do not use repeated Issue-body rewrites as an event log. Current events, claims, validation, review and merge history belong in metadata/comments.
 
-Current logical ownership SHOULD be recovered from structured events such as `ROLE_CLAIMED`, not by rewriting the stable Issue body.
+When an Issue already contains the complete task contract, invocation follows `ISSUE_FIRST_TASK_TRIGGER.md`: send a short repository/Issue pointer instead of copying a second task contract into chat.
 
-## 5. Metadata model
+## 4. Metadata dimensions
 
-### 5.1 Version
-
-Use GitHub Milestone for version/release grouping when available:
-
-```text
-v0.1.0
-v2.9.4
-```
-
-Do not create one-off version labels by default.
-
-### 5.2 Work type
-
-Portable label fallback:
+Portable labels may represent stable routing dimensions:
 
 ```text
 type:task
 type:bug
 type:validation
 type:blocker
-```
 
-If a GitHub Organization provides native Issue Types, projects MAY map these semantics to native types while preserving the same canonical meaning.
-
-### 5.3 Workflow state
-
-Recommended mutable state labels:
-
-```text
 state:planned
 state:ready
 state:implementing
@@ -169,325 +102,26 @@ state:validation-needed
 state:merge-ready
 state:blocked
 state:done
-```
 
-A Task Issue SHOULD have at most one `state:*` label at a time.
-
-Workflow state is not a Validation/Review Gate status. Gate results still use only:
-
-```text
-PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
-```
-
-### 5.4 Review Policy metadata
-
-Independent Review is risk-based; it is not globally mandatory for every Task/Fix PR.
-
-Every implementation Task/PR SHOULD resolve one policy:
-
-```text
 review:required
 review:recommended
 review:not-required
-```
 
-Repositories using custom Issue Fields MAY represent the same dimension as `Review Policy = required | recommended | not-required` instead of labels.
-
-At most one Review Policy value applies to a Task/PR.
-
-Semantics:
-
-- `required`: Independent Review is a merge gate. Current merge-candidate SHA requires Review `PASS`.
-- `recommended`: Review is useful but optional. It MAY be skipped with an explicit decision/rationale. Review Gate may remain `NOT_RUN` without blocking merge.
-- `not-required`: no Independent Review Gate exists for this concern; use `NOT_APPLICABLE`.
-
-Review Policy and Review result are different dimensions. Do not encode `required/recommended/not-required` using Gate states.
-
-### 5.5 Routing / execution dimensions
-
-Recommended labels:
-
-```text
 handoff:local-agent
 executor:codex
 executor:claude-code
 
 gate:review
-gate:fast
 gate:integration
 gate:critical-journey
 gate:hidden
 gate:platform
 gate:packaging
-
-env:ubuntu-build-host
-env:windows
-env:macos
-env:gpu
-
-release-blocker
-blocked:environment
 ```
 
-Projects MAY map stable dimensions to Organization custom Issue Fields where available. The protocol semantics MUST NOT depend on a specific GitHub UI feature; labels remain the portable baseline.
+Projects MAY use native Issue Types/custom fields when available while preserving the same semantics.
 
-`executor:*` is a routing/capability hint. It does not prove which concrete session or process actually performed an event.
-
-### 5.6 Actor role and logical operator identity
-
-Every new structured Agent event under standard v3.1+ SHOULD identify both the **role** and the **logical operator**.
-
-Role vocabulary:
-
-```text
-planner
-builder
-reviewer
-validator
-merge-controller
-release-controller
-```
-
-Operator vocabulary:
-
-```text
-operator_kind: chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other
-operator_id: <logical executor instance>
-session_ref: <opaque page/conversation/process/run alias>
-transport_actor: <GitHub/API identity that wrote the event>
-```
-
-Semantics:
-
-- `actor_role` says **what responsibility** was performed.
-- `operator_kind` says **which execution surface/system** performed it.
-- `operator_id` identifies the logical executor context and SHOULD remain stable for that Web session, local worker or automation identity.
-- `session_ref` identifies the concrete page/conversation/process/run when useful. It SHOULD be present when multiple concurrent sessions of the same kind exist.
-- `transport_actor` identifies the account/API identity that physically wrote to GitHub. It is transport metadata, not logical authorship.
-
-Recommended examples:
-
-```text
-chatgpt-web:web-a
-chatgpt-web:web-b
-codex:ubuntu-build-01
-claude-code:windows-01
-woodpecker:runner-01
-github-actions:verify-standard
-human:owner
-```
-
-For two ChatGPT Web pages sharing one GitHub account:
-
-```text
-Builder page:
-  actor_role=builder
-  operator_id=chatgpt-web:web-a
-  session_ref=domainharness-builder-a
-  transport_actor=github:kaicreator-mm
-
-Reviewer page:
-  actor_role=reviewer
-  operator_id=chatgpt-web:web-b
-  session_ref=domainharness-reviewer-b
-  transport_actor=github:kaicreator-mm
-```
-
-Identity rules:
-
-- `operator_id` need only be unique enough within the repository/version execution window; global identity infrastructure is not required.
-- A new ChatGPT page/session SHOULD receive a new `session_ref`; it MAY keep a stable human-friendly `operator_id` if the project intentionally treats it as the same long-lived logical worker.
-- Never store tokens, cookies, signed URLs, credentials or secrets in identity fields.
-- Dynamic `operator_id/session_ref` SHOULD NOT become GitHub labels; otherwise every session would create label churn. Use structured events instead.
-- The same operator MAY perform different roles on different work items.
-- The same role MAY be performed by different operators over time.
-
-For required Independent Review, the Reviewer MUST be attributable to a context independent from the Builder context. The same `transport_actor` is allowed, but `operator_id/session_ref` must make the separation auditable.
-
-## 6. Review Policy selection
-
-### 6.1 Authority
-
-Review Policy must follow the normal authority order:
-
-```text
-Frozen PRD / Contract
-→ Frozen Architecture
-→ PROJECT_OVERRIDES
-→ Task acceptance / risk classification
-→ Standard defaults
-```
-
-A lower-authority Task or Agent MUST NOT silently downgrade a higher-authority `required` rule.
-
-### 6.2 Standard default
-
-When no higher authority defines a policy, use **risk-based** selection.
-
-The standard does not make Independent Review mandatory merely because Version Branch Mode is used.
-
-Typical guidance:
-
-#### `required` SHOULD be selected when the concern includes
-
-- security, authentication, authorization, permissions, secrets or trust boundaries;
-- public API / external contract semantics;
-- database schema or migration semantics;
-- cross-service / cross-package contracts with meaningful blast radius;
-- concurrency, transactions, locking or data-integrity logic;
-- destructive/irreversible behavior or failure-recovery logic;
-- release blockers or explicitly high-risk Task classification;
-- large/cross-cutting changes where tests/validation alone provide insufficient confidence;
-- sensitive areas required by CODEOWNERS/project policy.
-
-#### `recommended` is normally appropriate for
-
-- medium-risk behavior changes;
-- non-critical integration/refactor work;
-- new functionality with good automated validation but useful independent scrutiny;
-- changes where a fresh-context review is cheap relative to risk.
-
-#### `not-required` MAY be selected for
-
-- docs-only/comment-only work;
-- deterministic mechanical/generated updates with reliable verification;
-- narrowly scoped low-risk changes where independent analysis adds little value;
-- project-specific categories explicitly declared safe to merge without Independent Review.
-
-These examples guide classification. Project policy may be stricter.
-
-### 6.3 Decision record
-
-The selected policy SHOULD be visible in the Task Issue and PR.
-
-For `recommended` review that is skipped, record a concise decision/rationale using Issue/PR metadata or an Agent event. Skipping an optional review is not a Validation PASS and must not be represented as one.
-
-## 7. Agent roles and queues
-
-### 7.1 Planner
-
-Planner creates/finalizes planning facts, Task Issues, Issue Dependencies and initial Review Policy. Planning events SHOULD identify their logical operator when written through a shared GitHub account.
-
-### 7.2 Builder
-
-Builder consumes primarily:
-
-```text
-state:ready
-state:changes-requested
-```
-
-Builder responsibilities:
-
-- claim/implement the Task;
-- create/update the Task branch and PR;
-- run available task-level validation;
-- publish exact HEAD SHA and evidence;
-- resolve Review Policy;
-- when review is selected for execution, transition to `state:review-ready`;
-- when no review is required/performed and all other merge requirements are satisfied, transition directly to `state:merge-ready`;
-- continue other independent Tasks instead of waiting for Reviewer when the execution DAG allows it.
-
-For long-running or concurrent work, Builder SHOULD publish `ROLE_CLAIMED` with its operator attribution before substantial modification.
-
-### 7.3 Independent Reviewer
-
-Reviewer is invoked only for Tasks whose Review Policy/decision selects review.
-
-Reviewer consumes primarily:
-
-```text
-state:review-ready
-```
-
-Reviewer responsibilities:
-
-- publish its own independent operator attribution / role claim;
-- reconstruct context from GitHub and pinned standard, not Builder chat history;
-- review the PR against frozen scope, architecture, Task acceptance, tests and evidence;
-- bind the review result to exact PR HEAD SHA;
-- publish findings and transition to `state:changes-requested`, `state:validation-needed`, `state:merge-ready`, or `state:blocked` as appropriate.
-
-A long-lived Reviewer session MAY process many PRs, but every review must re-read current GitHub facts and must not rely on trust accumulated from earlier tasks.
-
-### 7.4 Validator / Local Agent
-
-Validator consumes primarily:
-
-```text
-state:validation-needed
-```
-
-or dedicated validation sub-issues with appropriate `gate:*`, `env:*` and `handoff:local-agent` metadata.
-
-Validator executes real environment gates and publishes exact-SHA Validation Evidence. Validation-only work does not require a branch. A source fix requires a separate task/fix branch and revalidation.
-
-Local validation events MUST distinguish the logical local operator from the GitHub account used to post evidence.
-
-### 7.5 Merge control
-
-A Task/Fix PR may become mergeable only after its declared merge policy is satisfied.
-
-Canonical merge formula:
-
-```text
-current PR HEAD SHA
-+ required task/local Validation PASS
-+ Review condition satisfied
-+ configured required Minimal CI PASS (when enabled)
-+ required upstream Issue dependencies satisfied for merge
-+ correct integration target / stack topology
-+ no unresolved release-significant blocker/finding
-= state:merge-ready
-```
-
-Review condition means:
-
-```text
-review:required     → Independent Review PASS on current SHA
-review:recommended  → PASS on current SHA OR explicit SKIP decision/rationale
-review:not-required → Review Gate NOT_APPLICABLE
-```
-
-Merge then targets `version/vX.Y.Z`, `main`, or the correct temporary stack parent according to integration mode/topology.
-
-`MERGE_RESULT` SHOULD include the merge-controller's operator attribution.
-
-## 8. Independent Review execution rules
-
-These rules apply whenever Independent Review is performed, and are mandatory when Review Policy is `required`.
-
-### 8.1 Independence
-
-The final review authority SHOULD NOT be the same implementation context that just produced the change.
-
-Acceptable independent review sources include:
-
-- another ChatGPT session;
-- another coding/review agent;
-- a human reviewer;
-- the same model in a fresh context that reconstructs facts from GitHub.
-
-Different model or machine is optional. Independent context and evidence reconstruction are the important properties.
-
-With v2 Agent events, independence SHOULD be auditable from `operator_id/session_ref`. A shared `transport_actor` does not invalidate independence.
-
-### 8.2 Exact-SHA binding
-
-Review PASS is bound to a specific PR HEAD SHA.
-
-If the PR HEAD changes after PASS:
-
-- previous PASS remains historical evidence for the old SHA;
-- if review remains required for merge, current Review Gate becomes `NOT_RUN` until re-review;
-- a narrow fix MAY receive delta review from `old-reviewed-sha..new-head-sha` when the reviewer confirms the change is sufficiently scoped;
-- large or cross-cutting changes require full re-review.
-
-If Review Policy is only `recommended` and the project chooses not to retain review as merge evidence after a later HEAD change, record that decision rather than falsely carrying the old PASS forward.
-
-### 8.3 Review result
-
-Review Gate uses:
+Workflow routing state is not Gate state. Gate state remains only:
 
 ```text
 PASS
@@ -497,54 +131,180 @@ NOT_RUN
 NOT_APPLICABLE
 ```
 
-Rules:
+Execution-channel/provider state, dispatch state, candidate state and release state are also separate dimensions as defined by `EXECUTION_ARCHITECTURE_STANDARD.md`.
 
-- `required`: merge requires `PASS` on current SHA.
-- `recommended`: `NOT_RUN` is allowed when review is explicitly skipped; if review is performed, its material findings must be resolved or dispositioned before merge.
-- `not-required`: use `NOT_APPLICABLE`.
+## 5. Actor role and logical operator identity
 
-Reviewer findings SHOULD identify severity, location/evidence, expected behavior, actual behavior and required change.
+A GitHub account/API identity is only transport. It is not sufficient logical-agent identity when multiple Web sessions, Local Agents or automations share the same account.
 
-When a conclusion requires real execution that the reviewer cannot perform, do not guess. Publish `VALIDATION_REQUEST` and route to the appropriate validation environment.
+All newly emitted structured events under the current standard MUST identify the event role and logical operator according to the event-v2 schema.
 
-## 9. Standard event comment format
+Canonical `actor_role` vocabulary:
 
-Agent-to-agent coordination comments SHOULD include a machine-readable marker and YAML payload, followed by optional human-readable Markdown.
+```text
+planner
+builder
+reviewer
+validator
+scheduler
+merge-controller
+release-controller
+repository-integration-controller
+```
 
-### 9.1 Event v2 — current schema
+Canonical operator fields:
 
-New events under v3.1+ SHOULD use:
+```text
+operator_kind: chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other
+operator_id: <logical executor instance>
+session_ref: <opaque page/conversation/process/run alias when useful>
+transport_actor: <GitHub/API identity that physically wrote the event when useful>
+```
+
+Semantics:
+
+- `actor_role` = workflow responsibility performed by the event;
+- `operator_kind` = execution surface/system;
+- `operator_id` = logical executor identity;
+- `session_ref` = concrete page/session/process/run alias;
+- `transport_actor` = transport provenance, not logical authorship.
+
+Dynamic operator/session identities SHOULD remain in structured events rather than GitHub labels.
+
+`ROLE_CLAIMED` / `ROLE_RELEASED` provide attribution and routing visibility. They are not Validation PASS and not a distributed lock.
+
+## 6. Independent Review policy
+
+Independent Review is risk-based, not universally mandatory.
+
+Every implementation Task/PR SHOULD resolve:
+
+```text
+required
+recommended
+not-required
+```
+
+Authority order remains:
+
+```text
+Frozen PRD / Contract
+→ Frozen Architecture
+→ PROJECT_OVERRIDES
+→ Task acceptance / risk classification
+→ Standard defaults
+```
+
+Semantics:
+
+- `required` — current merge-candidate exact SHA requires Independent Review `PASS`;
+- `recommended` — Review may be performed or explicitly skipped; skip is not PASS;
+- `not-required` — no Review Gate exists; use `NOT_APPLICABLE`.
+
+A lower-authority Task/Agent MUST NOT silently downgrade higher-authority `required` Review.
+
+Typical high-risk concerns that SHOULD select `required` include security/permission/trust boundaries, public contracts, migration/data-integrity, concurrency/recovery, shared infrastructure and release-critical integration.
+
+## 7. Independent Review execution
+
+When Review is performed:
+
+- reconstruct context from GitHub + pinned standard, not Builder chat history;
+- bind the result to exact PR HEAD SHA;
+- identify the independent reviewer operator/context;
+- publish material findings and required routing;
+- request real validation instead of guessing runtime facts.
+
+For required Review, Reviewer MUST be attributable to a context independent from the Builder context. The same GitHub `transport_actor` is allowed, but `operator_id/session_ref` must make the separation auditable.
+
+Acceptable independent contexts include another ChatGPT session, another coding/review agent, a human reviewer, or the same model in a fresh context that reconstructs facts from GitHub.
+
+If PR HEAD changes after a required Review PASS, the old result remains historical. Re-establish affected Review on the new exact SHA before merge.
+
+## 8. Intent admission and canonical event writer protocol
+
+### 8.1 Canonical short-intent contract
+
+A short intent/result is a transport input, not yet a durable canonical workflow fact. It becomes authoritative only after admission succeeds and a conforming canonical event/current-state mutation is published to GitHub.
+
+A short intent SHOULD contain only the judgment-bearing fields the worker actually knows, for example:
+
+```text
+event or requested action
+issue / PR target
+status / decision when applicable
+asserted SHA or unambiguous SHA prefix when identity is required
+findings / result summary / reason
+requested next route or dispatch when applicable
+```
+
+The executor MAY enrich an intent only with fields that are deterministically resolvable from current GitHub/repository facts, including:
+
+```text
+full exact SHA
+repository / Issue / PR relation
+current target/base identity
+timestamp
+actor_role
+logical operator attribution
+transport identity
+schema-required routing metadata
+```
+
+A SHA prefix is acceptable only as transport input when it resolves to exactly one relevant current immutable identity. The emitted canonical event MUST contain the full exact SHA required by the event-v2 schema/policy.
+
+Before accepting an intent, the executor MUST validate all applicable conditions:
+
+```text
+target/work-item exists and is current
+identity resolves unambiguously
+asserted identity is not stale for the requested action
+operator/role is authorized for the transition
+event payload satisfies the current schema
+requested transition is legal under current durable facts
+no higher-authority gate/contract is bypassed
+```
+
+If an intent is invalid, ambiguous, unauthorized, stale or requests an illegal transition, it MUST be rejected atomically. Rejection means:
+
+- no partial canonical event publication;
+- no workflow/gate state mutation;
+- no silent best-effort interpretation;
+- return/record a reason such as `INVALID_SCHEMA`, `AMBIGUOUS_IDENTITY`, `STALE_IDENTITY`, `UNAUTHORIZED`, or `ILLEGAL_TRANSITION`.
+
+An executor ACK/REJECT transport response is not itself a Gate PASS. Implementations MAY persist transport ACK/rejection metadata for idempotence/audit, but canonical workflow facts remain the accepted GitHub event/current object state.
+
+### 8.2 New-work event writer
+
+All newly emitted structured Agent events MUST use:
 
 ```html
 <!-- ai-dev:event:v2 -->
 ```
 
-Base shape:
+and:
 
 ```yaml
 schema: ai-dev/event-v2
 event: <EVENT_TYPE>
-actor_role: planner | builder | reviewer | validator | merge-controller | release-controller
-operator_kind: chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other
+actor_role: <canonical role>
+operator_kind: <canonical operator kind>
 operator_id: "<logical operator id>"
-session_ref: "<opaque page/conversation/process/run alias>" # strongly recommended for concurrent sessions
-transport_actor: "github:<account>"                         # recommended for shared GitHub accounts
-task: "#123"                                                # when applicable
-pr: "#456"                                                  # when applicable
-sha: "<40-char-sha>"                                        # when applicable
-status: PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE
-next_state: <state label without state: prefix, when applicable>
 ```
 
-Event-specific fields MAY be added, but existing field semantics MUST NOT be silently redefined.
+Add event-specific identity/status fields required by `schemas/agent-event-v2.schema.json`.
 
-### 9.2 Event v1 compatibility
+The schema is the machine contract. Writers MUST NOT invent a parallel event version or silently redefine existing field semantics.
 
-Historical `<!-- ai-dev:event:v1 -->` / `schema: ai-dev/event-v1` events remain valid evidence. Do not rewrite history only to add attribution.
+### 8.3 Historical compatibility
 
-When a v1 event lacks operator identity, its GitHub author MAY be used only as transport provenance; do not infer which ChatGPT/local context produced it.
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 
-### 9.3 Recommended event types
+Consumers MAY read v1 for compatibility. **New writers MUST NOT emit v1.**
+
+### 8.4 Event families
+
+Current event-v2 includes, among others:
 
 ```text
 ROLE_CLAIMED
@@ -559,161 +319,104 @@ VALIDATION_RESULT
 BLOCKER_REPORTED
 DEPENDENCY_CHANGED
 MERGE_RESULT
+HANDOFF_READY
+DISPATCH_REQUEST
+DISPATCH_STATE_CHANGED
+CI_INFRA_EXCEPTION
+VALIDATION_IMPACT_DECISION
+CANDIDATE_STATE_CHANGED
+HIDDEN_ESCAPE_DISPOSITION
+RELEASE_QUALIFICATION
+REPOSITORY_INTEGRATION_RESULT
 ```
 
-`TASK_CLAIMED` remains a Builder-specific compatibility event. New cross-role flows SHOULD prefer `ROLE_CLAIMED`.
+`TASK_CLAIMED` is retained for compatibility; cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
-`ROLE_CLAIMED` means a logical operator has started acting in a workflow role. `ROLE_RELEASED` records intentional handoff/abandonment before the normal result event. Neither event is a Validation/Review PASS.
+## 9. Review event invariants
 
-A role claim is attribution/routing evidence, not a distributed lock. If the project needs exclusive ownership, it must define that separately.
+`REVIEW_DECISION` records Review Policy and optional execution decision without fabricating a Review PASS.
 
-`REVIEW_DECISION` MAY record `required/recommended/not-required`, or `recommended + SKIP/PERFORM`, without pretending that the policy/decision itself is a Gate PASS.
-
-Comments are append-oriented history. If an event is materially wrong, publish a corrective event referencing the superseded comment/event rather than silently rewriting important history.
-
-The canonical concrete examples live in `templates/agent-event-comment.md`.
-
-## 10. Canonical state flow
-
-Review is an optional branch in the Task workflow:
+Required safe combinations are machine-validated by `agent-event-v2.schema.json`, including:
 
 ```text
-planned
-  ↓
-ready
-  ↓
-implementing
-  ↓
-implementation ready
-  ├── review required/selected → review-ready → reviewing
-  │      ├── changes-requested → implementing
-  │      ├── validation-needed → validation → review-ready
-  │      ├── blocked
-  │      └── PASS → merge-ready
-  │
-  └── review not required/skipped
-          ↓
-       merge-ready
-          ↓
-        merged
-          ↓
-         done
+required      + perform        + NOT_RUN        → review-ready
+recommended   + perform        + NOT_RUN        → review-ready
+recommended   + skipped        + NOT_RUN        → merge-ready
+not-required  + not-applicable + NOT_APPLICABLE → merge-ready
 ```
 
-`merged` is an event, not a required `state:*` label; the Issue may transition directly from `state:merge-ready` to `state:done` after merge bookkeeping.
+A `required` review cannot be skipped or routed directly to merge-ready. A `recommended` direct merge requires an explicit skip decision rather than an ambiguous policy-only event.
 
-An unresolved Issue dependency normally prevents `state:merge-ready`, but MAY NOT prevent implementation from beginning when the upstream branch exposes a stable code baseline and the frozen Task contract permits early/stacked work.
+`REVIEW_RESULT` must bind to the reviewed SHA and policy. Review `PASS` is not Release PASS.
 
-`ROLE_CLAIMED/ROLE_RELEASED` annotate **who** is working; they do not create new workflow states.
+## 10. Builder / Reviewer / Validator routing
 
-## 11. Builder / Reviewer pipeline
+The execution architecture computes ready sets; this protocol defines how the role results are recorded.
 
-A and B may operate continuously when review work exists:
+Typical routing:
 
 ```text
-Builder A                               Reviewer B
-operator=chatgpt-web:web-a             operator=chatgpt-web:web-b
-T01 implementation
-  ↓
-PR #101 + review-ready ───────────────→ review #101
-T02 implementation                      ↓
-  ↓                                    PASS / findings
-PR #102 (review skipped) → merge-ready
-T03 implementation
-  ↓
-PR #103 + review-ready ───────────────→ review #103
+Builder   → state:ready / state:changes-requested
+Reviewer  → state:review-ready when Review is selected
+Validator → state:validation-needed or dedicated Validation Issue
 ```
 
-Both sessions may post through the same `transport_actor=github:<account>` while remaining distinguishable by `operator_id/session_ref`.
+A Builder SHOULD continue independent executable work rather than waiting idle for Review when the execution DAG permits it.
 
-Builder SHOULD NOT wait idle for Reviewer if independent executable work exists.
+A Reviewer SHOULD continue independent reviews even if another concern fails unless dependency structure makes downstream review meaningless or unsafe.
 
-Reviewer SHOULD continue reviewing independent PRs even if one PR fails, unless the execution DAG makes downstream review meaningless or unsafe.
+A Validator publishes exact-SHA environment/profile evidence. Validation-only execution does not require a branch; source fixes require a bounded task/fix branch and affected revalidation.
 
-Normal chat sessions are not background workers. Queue consumption occurs when an agent/session is invoked, scheduled by supported automation, or triggered by an external orchestrator.
+## 11. Merge interaction
 
-## 12. Validation sub-issues
-
-When review or Task policy requires environment-specific execution, a dedicated Validation Issue MAY be created as a sub-issue of the Task Issue.
-
-Example:
+A Task/Fix PR becomes `merge-ready` only when the deterministic prerequisites from `EXECUTION_ARCHITECTURE_STANDARD.md` are satisfied, including:
 
 ```text
-Task #31
-└── Validation #47 — Windows production build
+current PR HEAD
++ required concern Validation
++ Review condition
++ configured required CI/profile condition
++ Issue Dependencies required for merge
++ correct target/stack topology
++ no unresolved release-significant finding
 ```
 
-Use dependency when the validation result truly blocks another work item/candidate. Do not use sub-issue hierarchy alone to imply blocking.
+Before merge, re-read current HEAD/target and stale evidence. After merge, publish `MERGE_RESULT` with the source/current identity and integration target/result as required by the current schema/policy.
 
-The validation issue records exact target SHA, environment/profile, commands, expected result and completion rule according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and `VALIDATION_STANDARD.md`.
+Merge control does not decide Release Qualification.
 
-Validation evidence SHOULD include v2 operator attribution so a fresh session can distinguish Web-requested validation from the concrete Local Agent/run that executed it.
+## 12. Dispatch / handoff interaction
 
-## 13. Execution DAG materialization
+A handoff becomes dispatchable only after its durable Issue contract is complete according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and the Local Agent Handoff schema.
 
-After Task DAG freeze:
+After `HANDOFF_READY`, prefer pointer-only invocation:
 
 ```text
-Frozen Task DAG checkpoint
-        ↓
-create/update Task Issues
-        ↓
-apply Milestone / type / Review Policy metadata
-        ↓
-materialize Issue Dependencies
-        ↓
-apply initial workflow states
-        ↓
-Builder / optional Reviewer / Validator queues
-        ↓
-ROLE_CLAIMED + operator attribution when work begins
-        ↓
-Task Branch / PR
+Repository: owner/repo
+Issue: #N
+Role: <role>
+Dispatch: <id>
 ```
 
-The Task DAG document remains the planning checkpoint. GitHub Issue Dependencies become the live execution dependency graph.
+Dispatch state is derived/routed according to `EXECUTION_ARCHITECTURE_STANDARD.md`. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
 
-Do not create a Task-DAG branch merely to represent dependencies.
+## 13. Append-oriented history
 
-## 14. Merge and dependency rules
+Comments/events are append-oriented. If an important event is wrong, publish a corrective/superseding event rather than silently rewriting material history.
 
-Before merging a Task/Fix PR, verify:
+A machine-maintained state card MAY summarize current state but is derived, not authority. If it conflicts with durable facts, recompute it.
 
-- Task Issue and PR are linked;
-- PR targets the correct version branch/main branch or correct stack parent;
-- required upstream Issue dependencies for merge are resolved;
-- current HEAD matches the SHA validated by required gates;
-- Review Policy is explicit;
-- review condition is satisfied according to `required/recommended/not-required` semantics;
-- required task/local validation is PASS;
-- configured required CI is PASS when applicable;
-- no unresolved release-significant blocker/finding/thread remains.
+## 14. Recovery rule
 
-Where v2 events are used, merge/release evidence SHOULD identify the logical operator responsible for the decision/result.
-
-If a stacked PR is retargeted/rebased after its parent merges, repeat affected **required** review/validation against the new exact SHA before merge.
-
-## 15. Recovery rule
-
-A fresh agent/session SHOULD be able to recover work from:
+A fresh compatible Agent/session SHOULD be able to recover work from:
 
 ```text
 repository
 + pinned standard revision
-+ Task/Validation Issue
-+ Issue dependencies/metadata
-+ linked PR
-+ exact-SHA evidence/comments
-+ actor role / logical operator attribution
++ assigned Issue / PR
++ Issue Dependencies and metadata
++ exact-SHA Review/Validation evidence
++ structured events / logical operator attribution
 ```
 
-It SHOULD be able to answer from GitHub facts:
-
-```text
-who planned/claimed/implemented/reviewed/validated/merged?
-which ChatGPT Web page/session or Local Agent/run did it?
-which GitHub account transported the event?
-which exact SHA did the result apply to?
-```
-
-It SHOULD NOT require private reasoning or a previous chat transcript.
+It SHOULD be able to determine what is ready, what is stale, which exact identity each result applies to, and which operator/context performed it without private reasoning or previous chat transcripts.

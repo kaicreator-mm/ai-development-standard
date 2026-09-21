@@ -1,5 +1,29 @@
 # Changelog
 
+## v3.3.0 — 2026-09-20
+
+将未发布的 v3.2 machine-verifiable foundations、DomainHarness v0.2 实战暴露的 #24–#33 流程缺口，以及 current-main 的 Issue-first / Architecture Research Demo 增量收敛为一个可执行但不过度官僚化的标准版本。
+
+- 新增 `standards/EXECUTION_ARCHITECTURE_STANDARD.md`，统一定义 durable facts、derived state、ready queues、dispatch lifecycle、staleness、bounded Merge/Candidate Freeze/Release/Repository Integration controllers；runtime automation 可选，GitHub/repository/evidence facts 仍是 durable Source of Truth。
+- 明确 workflow state、Gate state、CI/provider state、dispatch state、candidate state、release state 是互相独立的维度，不得用一个状态替代另一个状态。
+- Validation ownership 标准化为 `concern | integration | closure`：leaf Task 只承担最小严格 affected gates，Integration owner 承担跨组件 truth，Version Closure 承担 full regression/Critical Journeys/platform/packaging/Hidden/Release Qualification；`PR PASS != Release PASS` 保持不变。
+- 精确区分 `HEAD drift / BASE drift / MERGE-RESULT drift / CANDIDATE drift`；旧 evidence 永远归属于实际执行的 `tested_sha`。只有显式 `VALIDATION_IMPACT_DECISION` 能在严格证明 impact=none 时复用 concern evidence，不能把 PASS 改写到未实际执行的 SHA。
+- 将 CI execution channel/provider health 与 Validation Gate 解耦；支持 `AVAILABLE / INFRA_BLOCKED / TIMED_OUT / CANCELLED`。当 authority 要求 validation profile 而非 provider-specific attestation 时，可由等价或更强的 trusted clean exact-SHA executor 替代，并记录 `CI_INFRA_EXCEPTION`；provider-specific requirement 不得静默替代。
+- Candidate Freeze 升级为 operational immutable state：冻结记录绑定 candidate SHA/tree/ref/visible evidence；冻结后禁止静默移动 candidate ref 或加入 product/docs/evidence commit。需要内容变化时必须 `THAWED/INVALIDATED → successor → affected visible validation → new freeze → required Hidden/Release Qualification`。
+- Hidden Validation 增加 escaped-defect feedback loop：后续发现 release-significant defect 时区分 visible gap、hidden blind spot、pack defect 等；material blind spot 必须以独立 failure-family scenario 加强 private pack，并产生新的 immutable pack identity。
+- Local Agent Handoff 增加 machine-verifiable completeness contract 和 `HANDOFF_READY`；完成后优先只发送 `repository + issue + role/dispatch id` pointer，禁止在 chat 中维护第二份 task contract。
+- `ai-dev:event:v2` 成为所有新 structured Agent events 的唯一 writer protocol；历史 v1 保持只读兼容。schema 扩展 dispatch、CI infra、validation impact、candidate、hidden escape、release qualification、repository integration events。
+- 新增 `standard-manifest.json` active asset inventory，以及 Task Contract、Validation Report、Execution State、Local Agent Handoff、Agent Event v2 machine schemas；verifier 对缺失资产、schema drift、protocol/version drift 与关键语义回归 fail closed。
+- 引入 executable immutable standard resolution：项目 pin 的 40-char revision 必须真实 resolve，且 exact revision 的 `VERSION` 必须与声明 SemVer 一致；禁止 syntactically-valid-but-nonexistent SHA 和 fallback 到 `main/latest`。
+- 吸收 `TEST_DATA_AND_SCENARIO_STANDARD.md`：保留 schema/domain-invalid、boundary/adversarial/incomplete cases、risk-driven Golden、deterministic provenance、generator identity/hash 与“LLM 不得同时作为 generator+oracle+sole approver”等规则，并与 current Validation/Hidden authority 对齐。
+- 吸收 provider-neutral `CI_EXECUTION_STANDARD.md` 与 `CI_RUNNER_CAPABILITY_STANDARD.md`，明确 provider/backend/runner/workflow source/shell/runtime/checkout semantics；Runner Capability 仅用于 routing，real preflight + exact-SHA evidence 才是 execution truth。
+- 保留并正式打包 #34 `ISSUE_FIRST_TASK_TRIGGER.md`：Issue 是 durable current task contract，trigger prompt 仅负责短指针触发；`one task = one Issue = one trigger prompt`。该资产现在进入 manifest + bootstrap regression，不能与 manifest entry 一起被静默删除。
+- 保留并正式打包 #36 Architecture Research Demo：只有 material Architecture UNKNOWN 且静态 evidence 不足时才进入 falsifiable executable demo；真实验证目标边界、negative/failure evidence、E1/E2/E3 strength、exact identity 和 mandatory `What was NOT proven` 都保持为回归约束。
+- `GITHUB_WORKFLOW.md` 与 `VERSION_INTEGRATION_WORKFLOW.md` 收敛为稳定路径的 compatibility/navigation entries，不再复制整套 orchestration authority，减少规范漂移；Trunk/Fast Path、risk-based Independent Review 和 optional runtime automation 均继续保留。
+- 标准仓库 CI 扩展为完整自验证链：`verify_standard.py`、verifier regression、project-standard resolution、project execution profile、protocol schemas、execution architecture regression、runner capability reference。
+
+v3.3 是从 v3.1 的兼容 MINOR 演进；未单独发布 v3.2，其已验证 foundations 直接被 v3.3 收敛并由最终 exact-SHA validation/review 重新建立发布证据。
+
 ## v3.1.0 — 2026-09-18
 
 为 GitHub-native Agent Interaction 增加 **Actor Role / Logical Operator Attribution**，解决 ChatGPT Web、Local Agent、CI、人工都通过同一个 GitHub 账号写 Issue/PR 时无法区分真实执行主体的问题。v3.0 的 Review Policy、Validation、Task DAG、Stacked PR 与 Release semantics 保持不变，因此是兼容 MINOR。

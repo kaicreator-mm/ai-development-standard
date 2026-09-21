@@ -1,65 +1,67 @@
 # Version Closure Checklist
 
-Version Closure evaluates the integrated candidate/release baseline. PR PASS is not Release PASS.
+Version Closure evaluates one dependency-complete candidate. PR PASS is not Release PASS.
 
-## Scope / Tasks
+## Authority / Scope
 
-- [ ] Frozen PRD/scope is identified.
-- [ ] Task DAG is terminal (`DONE / DEFERRED with approval / NOT_APPLICABLE`).
-- [ ] Deferred items explain why they do not block this release.
-- [ ] Final intended candidate SHA is recorded.
+- [ ] Frozen PRD/scope and Architecture/Contract identified.
+- [ ] Task DAG terminal or every deferred item has explicit non-blocking authority/rationale.
+- [ ] Every mandatory release gate traces to Gate Authority.
+- [ ] No historical workflow/Agent guess silently created a blocker.
 
-## Validation Matrix
+## Candidate / Visible Closure
 
-- [ ] Required Fast/Integration gates pass on the exact candidate SHA.
-- [ ] Required platform/runtime/toolchain tuples are explicit.
-- [ ] Every required tuple has a truthful state and evidence.
-- [ ] Cross-build is not used as real platform PASS unless frozen authority explicitly allows it.
-- [ ] Critical Journeys pass.
-- [ ] Hidden Validation passes for required blocker scenarios.
-- [ ] Required external-service boundary checks pass or are explicitly BLOCKED/NOT_RUN.
+- [ ] Candidate SHA **and tree SHA** recorded.
+- [ ] Required concern/integration work is merged.
+- [ ] Full required visible regression passes on the intended candidate.
+- [ ] Required Critical Journeys/platform/production build/package/install/external boundary tuples are explicit and truthful.
+- [ ] CI/profile requirement is satisfied or its infrastructure exception/alternate-executor basis is valid.
+- [ ] Candidate Freeze occurs only after required visible freeze gates pass.
 
-## Candidate
+## Freeze Integrity
 
-- [ ] Candidate Prepared artifacts exist.
-- [ ] `CANDIDATE_FROZEN_SHA` is recorded only after required visible gates pass.
-- [ ] Hidden Validation execution targets the frozen SHA.
+- [ ] Freeze record includes SHA/tree/ref/visible evidence/pinned standard.
+- [ ] Declared candidate ref still equals frozen SHA and tree before Hidden Validation.
+- [ ] No post-freeze candidate mutation occurred; if it did, freeze was explicitly thawed/invalidated and successor evidence rebuilt.
 
-## Delivery
+## Hidden Validation
 
-- [ ] Real production/release build gate passes where frozen authority requires it.
-- [ ] Install/start/upgrade smoke passes where applicable.
-- [ ] Migration/rollback/recovery evidence exists where applicable.
-- [ ] Artifact identity/checksum is recorded only when relevant/required.
+- [ ] Required Hidden Validation targets the frozen candidate.
+- [ ] Private pack identity/revision/checksum is recorded without exposing private fixtures.
+- [ ] Any release-significant defect discovered after a prior Hidden PASS is classified and its Hidden-pack blind spot is dispositioned.
+- [ ] Pack defects are distinguished from product defects.
 
-## Documentation
+## Documentation / Reconciliation
 
-- [ ] README/docs match shipped behavior.
-- [ ] Configuration/environment/migration docs are current.
-- [ ] Known limitations are explicit.
-- [ ] Release/closeout report links exact-SHA validation facts.
+- [ ] README/docs/config/migration guidance matches shipped behavior.
+- [ ] Architecture amendments reconcile shipped implementation without rewriting historical decisions.
+- [ ] Known limitations/deferred items are explicit.
 
-## GitHub / Minimal CI
+## Release Qualification
 
-- [ ] Final baseline exists remotely as immutable commit SHA.
-- [ ] Project CI profile (`minimal/custom/disabled`) is recorded.
-- [ ] If CI is enabled and required by project policy, the configured minimal checks pass on the relevant commit.
-- [ ] If CI is disabled, documented exact-SHA clean validation + review policy was followed.
-- [ ] No unreviewed implementation remains only in a local working tree.
-- [ ] Issues/milestone state matches actual completion.
+Choose exactly one:
 
-## Gate Authority
+- `READY`
+- `CONDITIONAL`
+- `BLOCKED`
+- `FAIL`
 
-- [ ] Every mandatory release gate can be traced to Frozen PRD/Contract, Frozen Architecture, PROJECT_OVERRIDES, Task acceptance, or Standard default.
-- [ ] No mandatory gate was inferred only from a historical workflow, old script, obsolete artifact or Agent guess.
+- [ ] Verdict explains the supporting/unsatisfied facts.
+- [ ] No NOT_RUN/BLOCKED/old-SHA evidence was converted into PASS.
 
-## Decision
+## Repository Integration
 
-Choose exactly one release verdict:
+After READY:
 
-- `READY` — all frozen mandatory gates PASS; no release blocker.
-- `CONDITIONAL` — all mandatory gates pass, but an explicitly accepted non-blocking limitation exists.
-- `BLOCKED` — mandatory gate is BLOCKED/NOT_RUN or another release blocker exists.
-- `FAIL` — a mandatory gate executed and failed, and no newer valid candidate evidence supersedes it.
+- [ ] Re-read live candidate/main refs.
+- [ ] Integrate version → main without introducing unqualified content.
+- [ ] Record integration method, final main SHA/tree and canonical validated candidate SHA/tree.
+- [ ] Verify required tree/content equivalence or final-main sanity.
+- [ ] Record immutable final baseline SHA.
+- [ ] Tag/GitHub Release status recorded if used; tag is optional and never replaces commit identity.
 
-A Git tag is optional. Release identity MUST always include the immutable commit SHA.
+## GitHub State
+
+- [ ] Issues/milestone/current state match actual completion.
+- [ ] No active stale dispatch remains for completed release work.
+- [ ] Release evidence is recoverable without chat history.
