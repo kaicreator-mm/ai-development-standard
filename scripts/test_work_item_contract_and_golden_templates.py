@@ -16,6 +16,10 @@ def require(text: str, *tokens: str) -> None:
         assert token in text, f"missing required token: {token}"
 
 
+def ref_path(ref: str) -> str:
+    return ref.split("#", 1)[0]
+
+
 def test_work_item_standard() -> None:
     text = read("standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md")
     require(
@@ -36,7 +40,13 @@ def test_work_item_standard() -> None:
 def test_golden_standard_and_index() -> None:
     standard = read("standards/GOLDEN_TEMPLATE_STANDARD.md")
     index = read("templates/GOLDEN_INDEX.md")
-    require(standard, "Every active normative standard", "Forbidden / Non-conformant", "templates/GOLDEN_INDEX.md")
+    require(
+        standard,
+        "Every active normative standard",
+        "STANDARD_COVERAGE.json",
+        "Forbidden / Non-conformant",
+        "templates/GOLDEN_INDEX.md",
+    )
     for surface in (
         "Version Task DAG",
         "Version umbrella Issue",
@@ -68,6 +78,8 @@ def test_required_templates() -> None:
         "templates/implementation-pr.md",
         "templates/final-closeout.md",
         "templates/golden/ANTI_PATTERNS.md",
+        "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md",
+        "templates/golden/STANDARD_COVERAGE.json",
     ]
     for path in paths:
         read(path)
@@ -87,14 +99,41 @@ def test_negative_examples_cover_core_failures() -> None:
         assert token in text, f"missing anti-pattern: {token}"
 
 
+def test_all_normative_standards_have_golden_forbidden_rationale_coverage() -> None:
+    manifest = json.loads(read("standard-manifest.json"))
+    coverage_doc = json.loads(read("templates/golden/STANDARD_COVERAGE.json"))
+    normative = manifest["sections"]["normative_standards"]
+    records = coverage_doc["coverage"]
+    standards = [record["standard"] for record in records]
+    assert len(standards) == len(set(standards)), "duplicate standard in STANDARD_COVERAGE.json"
+    assert set(standards) == set(normative), (
+        "golden coverage must match active normative standards exactly: "
+        f"missing={sorted(set(normative) - set(standards))}, "
+        f"extra={sorted(set(standards) - set(normative))}"
+    )
+    for record in records:
+        for key in ("golden_ref", "forbidden_ref", "rationale_ref"):
+            ref = record.get(key)
+            assert ref, f"{record['standard']} missing {key}"
+            read(ref_path(ref))
+
+
 def test_manifest_inventory() -> None:
     manifest = json.loads(read("standard-manifest.json"))
     sections = manifest["sections"]
-    # This intentionally fails until the T-012 manifest update is present.
-    assert "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md" in sections["normative_standards"]
-    assert "standards/GOLDEN_TEMPLATE_STANDARD.md" in sections["normative_standards"]
-    assert "templates/GOLDEN_INDEX.md" in sections["templates"]
-    assert "templates/golden/ANTI_PATTERNS.md" in sections["templates"]
+    for path in (
+        "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+        "standards/GOLDEN_TEMPLATE_STANDARD.md",
+    ):
+        assert path in sections["normative_standards"]
+    for path in (
+        "templates/GOLDEN_INDEX.md",
+        "templates/golden/ANTI_PATTERNS.md",
+        "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md",
+        "templates/golden/STANDARD_COVERAGE.json",
+        "templates/codex-handoff-issue.md",
+    ):
+        assert path in sections["templates"], f"manifest missing template: {path}"
     assert "scripts/test_work_item_contract_and_golden_templates.py" in sections["verification"]
 
 
@@ -104,6 +143,7 @@ def main() -> None:
         test_golden_standard_and_index,
         test_required_templates,
         test_negative_examples_cover_core_failures,
+        test_all_normative_standards_have_golden_forbidden_rationale_coverage,
         test_manifest_inventory,
     ]
     for test in tests:
