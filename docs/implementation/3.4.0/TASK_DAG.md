@@ -24,8 +24,8 @@
 | T-008 | #55 | T-006 | YES | M | version plan §22 | adoption + templates | templates/overrides/retention/Fast Path | Low | verify-standard | recommended | independent | DONE |
 | T-009 | #56 | T-002..T-008 | NO | H | version plan §24 | scenarios A–G | positive + adversarial verifier regression | High | all test scripts green | required | independent | DONE |
 | T-011 | #64 | T-009 | NO | H | post-closure defect + ISSUE_FIRST_TASK_TRIGGER | pointer-only trigger authority + regression | durable Issue is complete contract; user-visible trigger pointer-only; incomplete Issue repaired first | High | full verify-standard + pointer-only regression + exact-head CI | required | merged as `dddb3bfe...` | DONE |
-| T-012 | #66 | T-011 | NO | H | Work Item/DAG/metadata/Golden-template gap | canonical Work Item contract + Golden coverage + templates + verifier | recoverable Version DAG; strict metadata/Issue contract; all normative standards have Golden/Forbidden/rationale coverage | High | full verify-standard + focused Work Item/Golden regression + exact-head CI | required | retargeted to `version/v3.4.0@dddb3bfe...` | DOING |
-| T-010 | #57 | T-009, T-011, T-012 | NO | H | RELEASE_STANDARD + post-T012 candidate | closure report | full verifier + Fresh Independent Review + Release Qualification on new exact candidate | High | version closure gates | required | successor candidate after T-012 | REOPENED |
+| T-012 | #66 | T-011 | NO | H | Work Item/DAG/metadata/Golden-template gap | canonical Work Item contract + Golden coverage + templates + verifier | recoverable Version DAG; strict metadata/Issue contract; all normative standards have Golden/Forbidden/rationale coverage | High | full verify-standard + focused Work Item/Golden regression + exact-head CI | required | merged as `94c2dc64...` | DONE |
+| T-010 | #57 | T-009, T-011, T-012 | NO | H | RELEASE_STANDARD + post-T012 candidate | closure report | full verifier + Fresh Independent Review + Release Qualification on new exact candidate | High | version closure gates | required | final post-bookkeeping candidate | DOING |
 
 Planning status values: `TODO / DOING / BLOCKED / REVIEW-READY / DONE / DEFERRED / NOT_APPLICABLE / REOPENED`.
 
@@ -44,7 +44,7 @@ historical TASK_PACKS.json
 = current v3.4.0 planning authority
 ```
 
-The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` is historical evidence only after T-011/T-012 change the version branch. Fresh closure is mandatory on the post-T012 exact candidate.
+The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` is historical evidence only after T-011/T-012 changed the version branch. Fresh closure is mandatory on the final post-bookkeeping candidate.
 
 ## Rules
 
@@ -53,16 +53,18 @@ The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` 
 - A shared Markdown state table MUST NOT become canonical live execution state; derived state cards must be marked `NON_AUTHORITATIVE_DERIVED_STATE`.
 - A task is `DONE` only when its acceptance criteria and required task-level gates are satisfied.
 - T-011 Review Policy was `required`; final exact-head CI + Fresh Independent Re-review passed and PR #65 merged to `version/v3.4.0`.
-- T-012 Review Policy is `required` because it changes canonical GitHub Work Item semantics used by all Agents/projects.
-- T-012 was stacked on T-011 only while the upstream code baseline was unmerged. After T-011 merge it was retargeted to `version/v3.4.0` and explicitly reconciled with integration commit `dddb3bfe...`; its successor exact HEAD requires fresh validation and Independent Review.
-- T-010 remains reopened until T-012 merges and fresh exact-head closure gates pass.
+- T-012 Review Policy was `required`; final exact-head run #246 + Fresh Independent Re-review passed and PR #67 merged with expected-head protection to `version/v3.4.0@94c2dc64a6be3a69eacf7646a84e77fe690d1704`.
+- T-010 is now the only active version task. Closure bookkeeping MUST be reconciled before final candidate validation/review/freeze so later documentation edits do not invalidate exact-SHA evidence.
+- Final version-level Review Policy remains `required`; the reviewer context must be independent from the closure builder/release-preparation context.
 
 ## Review Policy Planning
 
-Version-level Review Policy remains `required`. T-012 requires concern-level Independent Review on its final exact PR HEAD before integration. The final post-T012 version candidate then requires a separate Fresh Independent Review during T-010 closure.
+Version-level Review Policy is `required`. The final candidate requires a separate Fresh Independent Review during T-010 closure after all candidate-mutating bookkeeping has landed, full visible validation has passed, and #45/#46 material acceptance has been reconfirmed. Candidate Freeze occurs only after that required Review passes on the same exact SHA/tree.
 
 ## Execution mode
 
 T-011 completed on `task/v3.4.0-t011-pointer-only-trigger` and merged through PR #65 to `version/v3.4.0@dddb3bfe...`.
 
-T-012 executes on `task/v3.4.0-t012-work-item-contract`, now directly targeting `version/v3.4.0`. The branch contains an explicit two-parent reconciliation commit so the already-developed T-012 concern and merged T-011 integration history are both represented without rewriting the full task history. Current live readiness is derived from GitHub Issue/PR/CI/Review facts, not this Markdown status cell.
+T-012 completed on `task/v3.4.0-t012-work-item-contract`; its final reviewed HEAD `39fa5d2b...` passed full concern validation and Independent Re-review, then merged through PR #67 to `version/v3.4.0@94c2dc64...`.
+
+T-010 final closure performs candidate-mutating bookkeeping first on a bounded closure concern. After that concern is integrated, the resulting exact `version/v3.4.0` SHA/tree becomes the sole final-candidate target for full verifier/coherence, #45/#46 material reconfirmation, Fresh version-level Independent Review, Candidate Freeze, Release Qualification and successor repository integration to `main`. If the Fresh version-level Independent Review requires candidate-content repair, no freeze is recorded; affected visible validation and Fresh Independent Review must be repeated on the successor exact candidate before freeze.
