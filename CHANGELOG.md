@@ -1,5 +1,28 @@
 # Changelog
 
+## v3.4.0 — 2026-09-22
+
+将 v3.3 的执行架构推进为可被独立 Web / Local agent 实际执行的 **GitHub-native pull 执行模型**：吸收 #45（Task/Execution Pack + 双 agent pull 编排）与 #46（version-scoped Validation Handoff Queue）为一个统一 dispatch 架构。不引入并行 scheduler、lifecycle、state authority 或第二套 validation truth（兼容 MINOR）。
+
+- 新增 `standards/EXECUTION_PACK_STANDARD.md`：Task Pack（durable planning authority：做什么）与 Execution Pack（JIT、绑定 exact integration base 的执行权威：怎么安全做）分离；pack 必需核心 artifacts（MANIFEST / EXECUTION_CONTRACT / TEST_MATRIX / FAILURE_MATRIX / IMPLEMENTATION_MAP / REVIEW_CHECKLIST）不要求空占位文件；矛盾向上路由为 `TASK_PACK_DEFECT / ARCHITECTURE_CONTRADICTION / EXECUTION_PACK_INVALID`。
+- Execution Pack staleness 确定性 fail-closed：`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`；claim 时校验 pack base SHA、Task Pack identity、依赖完成 identity、pinned standard revision、branch；executor 不得静默改写 `base_sha`，NONMATERIAL 仅可经显式授权 impact/rebind 继续。
+- Agent freedom 机器可读：`F0_MECHANICAL / F1_BOUNDED_IMPLEMENTATION / F2_ENGINEERING_DISCRETION / F3_ARCHITECTURE_REQUIRED`（task-contract / dispatch / pack manifest / event 均可携带）；executor 不得自我升权，F3 任务要求 `review:required`。
+- 新增 `schemas/dispatch.schema.json`：统一 Dispatch（dispatch_id、role、execution profile `LOCAL_BUILDER / LOCAL_VALIDATOR / WEB_REVIEWER / PLATFORM_VALIDATOR / CLOSURE_VALIDATOR`、branch、expected base SHA、requested HEAD SHA、Task Pack / Execution Pack identity、pinned standard revision、operator freedom、pull 状态机 `READY/CLAIMED/RUNNING/COMPLETED/BLOCKED/SUPERSEDED`）；Builder/Validator/Reviewer 不是三套队列状态机，`BuilderReadySet / ValidatorReadySet / ReviewerReadySet` 均为派生投影。
+- `ai-dev:event:v2` 扩展（不引入 event-v3）：新增 `DISPATCH_CLAIMED`（worker role + CLAIMED 状态绑定）与 `EXECUTION_PACK_STATE_CHANGED`（scheduler/builder 发布 pack 分类）；dispatch_state 增加 pull 词汇（与 v3.3 lifecycle 词汇 alias 映射）；新增 `agent_freedom / pack_state / drift / execution_profile / requested_head_sha / current_pr_head / actual_checked_out_sha / expected_base_sha / queue_ref / task_pack_ref / execution_pack_ref` 字段；`VALIDATION_RESULT` 携带 `drift=HEAD_DRIFT` 时 schema 级禁止 `status=PASS`。
+- JIT 分支规则：Queued Task 依赖完成前不建长命实现分支；默认 依赖合并 → 重算 ready set → 读取当前 integration exact SHA → 建 task 分支 → 生成/绑定 Execution Pack → 发 Builder dispatch；仅真实 stacked code dependency 例外。目标是消除 `ahead N / behind M / refresh / revalidate / rereview` 循环。
+- #46 收敛为 Validator 执行档案 + 版本级 Validation Handoff Queue 投影：queue Issue 提供稳定入口、READY/HOLD 发现、exact-SHA identity、provenance 与 restart/recovery，但不是 validation/Task authority、不是独立 workflow 状态机；派生状态 `READY/HOLD/RUNNING/PASS/FAIL/BLOCKED/SUPERSEDED` 由 dispatch/gate facts 投影，多个并存条目确定性投影。
+- Exact-SHA 验证规则硬化：执行前 `requested_head_sha == current PR HEAD`，否则 `HEAD_DRIFT` → dispatch superseded，不得作为 PASS evidence、不得静默切换新 HEAD；新候选要求新 dispatch identity；PASS 永远绑定 tested SHA × environment × profile × commands，不得改写到 successor SHA。
+- 角色权威边界显式化：Builder 不得自我断言 Independent Review PASS；Validator 不得隐式修改产品源码/修复缺陷/重设计/弱化测试/合并/关闭实现 Issue（真实缺陷→FAIL；环境不可用→BLOCKED；修复必须单独 Builder dispatch）；Reviewer 在同一 review 角色/session 内不得修改产品代码，结果为 `REVIEW_PASS / CHANGES_REQUESTED / VALIDATION_REQUESTED / BLOCKED`，HEAD 变化自动失效 exact-head review。
+- Worker 可恢复性：pull worker 崩溃后，替代 worker 仅凭 GitHub facts（dispatch 状态、claimed operator、已发布结果）决定 resume / supersede / nothing-to-do；duplicate claim 不同 operator 拒绝、相同 operator 幂等。
+- Merge 闭环：merge 后自动重算 DAG ready sets，无人工提示词转发；baseline refresh ordering——不为已知将过期的 baseline 花费最终权威验证（先验证阻塞者、合并、刷新、再验证被阻塞者）。
+- Local-first 执行：默认本地实现→focused tests→lint/typecheck/build→required tests→package→task-owned platform validation→stable HEAD→push→仅 required remote certification；CI 不是常规调试环；区分 required validation profile / normal execution provider / provider-specific attestation（不可替代）。
+- Model preparation split：高风险语义允许 Web/Strong 预备紧凑 Semantic Kernel seed（contracts、predicates、fail-closed validators、negative oracle），repository mechanics 归本地 agent；扩展 MODEL_USAGE_POLICY 而非第二套模型路由。
+- Local Agent Handoff 协议新增执行档案章节（builder/validator claim-time 身份核验、pack staleness、实现顺序、发布规则）与 worker recovery；handoff schema 增加 `execution_profile / agent_freedom / task_pack_ref / execution_pack_ref / expected_base_sha / requested_head_sha / queue_ref`，DISPATCHED validator handoff 强制 `requested_head_sha + validation_profile`。
+- Validation Report schema 扩展 dispatch 身份字段（dispatch_id、expected_base_sha、requested_sha、actual_checked_out_sha、current_pr_head、focused_tests、working_tree_clean、source_modifications_after_validation）。
+- 新模板与 bootstrap：`templates/task-pack.md`、`templates/execution-pack/`（核心 artifacts）、`templates/validation-handoff-queue.md`、`prompts/local-builder-bootstrap.md`、`prompts/local-validator-bootstrap.md`、`prompts/web-reviewer-bootstrap.md`；PROJECT_OVERRIDES 增加 `execution_pack.* / pull_worker.* / validation_queue.* / local_first.enabled` 可选字段；Execution Pack 材料必须可从 shipped artifacts 排除（package leakage 为 packaging gate defect）。
+- 新增 `scripts/v34_rules.py`（确定性分类器：pack staleness、HEAD drift、validator outcome、freedom、queue projection、claim/recovery/merge/baseline-refresh/package-leak）与 `scripts/test_v34_lifecycle_contracts.py`（44 项正/对抗回归，覆盖场景 A–G、base drift、duplicate claim、review invalidation、package leakage）；`verify_standard.py` 增加 v3.4 semantic tokens 与 bootstrap-required 资产。
+- Trunk/Fast Path 保持轻量：小任务可省略 large Execution Pack、Semantic Kernel seed、validation queue、dedicated worker 与非 required review，但保留 authority、exact identity、validation、evidence、merge safety。
+
 ## v3.3.0 — 2026-09-20
 
 将未发布的 v3.2 machine-verifiable foundations、DomainHarness v0.2 实战暴露的 #24–#33 流程缺口，以及 current-main 的 Issue-first / Architecture Research Demo 增量收敛为一个可执行但不过度官僚化的标准版本。

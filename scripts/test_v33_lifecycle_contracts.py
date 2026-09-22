@@ -39,6 +39,7 @@ class V33LifecycleContractRegression(unittest.TestCase):
             "integration_target": "version/v3.3.0",
             "baseline_sha": SHA_B,
             "role": "validator",
+            "requested_head_sha": SHA_B,
             "scope": ["v3.3 release validation"],
             "frozen_inputs": ["Issue #38", "PR #39"],
             "existing_evidence": ["GitHub Actions exact-SHA run"],

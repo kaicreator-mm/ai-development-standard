@@ -72,7 +72,30 @@ session_ref=domainharness-reviewer-b
 
 当 Review Policy=`required` 时，Reviewer 的 `operator_id/session_ref` 必须可审计地区别于实现该变更的 Builder context；GitHub `transport_actor` 可以相同。
 
-推荐 Review bootstrap：`prompts/independent-review-bootstrap.md`。
+推荐 Review bootstrap：`prompts/independent-review-bootstrap.md`（WEB_REVIEWER dispatch profile 见 `prompts/web-reviewer-bootstrap.md`：pointer-driven、exact-HEAD 绑定、review 角色内不修改产品代码）。
+
+## Web 控制平面与 Pull 编排
+
+ChatGPT Web 是 Strong Web Control Plane：负责权威与编排，不做人肉消息总线。用户不应在 ChatGPT Web、Local Agent、Build Host、Reviewer、CI 之间手工转发状态。
+
+控制平面职责：
+
+```text
+Task Pack 编写/冻结（durable planning authority）
+→ 依赖满足后读取当前 integration exact SHA
+→ JIT 生成/绑定 Execution Pack（高风险语义可准备 Semantic Kernel Seed）
+→ 发出统一 Dispatch（builder/validator/reviewer role + execution profile）
+→ 消费 derived ready sets / version-scoped Validation Handoff Queue 投影
+→ Independent Review 裁决与 Merge Controller 判定
+→ merge 后 DAG ready-set 重算，产生下一个 READY
+```
+
+要点：
+
+- Task 分支 JIT 创建：依赖满足前不给 Queued Task 建长命实现分支（真实 stacked code dependency 除外）。
+- Execution Pack 权威低于 Task Pack；只能收窄执行自由，不得重定义 PRD/Architecture/Task scope/public contract/invariant/validation ownership/review requirement。
+- Web Builder + Local Validator + Web Reviewer 是一等组合：Web 产出 candidate、Local Validator 按 exact-SHA dispatch 验证、Web Review 独立裁决、Merge Controller 按 predicate 合并并自动重算下游 READY——各角色之间不需要人工转述提示词。
+- Merge 后的 DAG 重算与下游解锁不需要 human prompt relay；人只出现在 Human Decision Queue。
 
 ## 必须完成
 
@@ -264,6 +287,9 @@ Branch 数量本身不是 CI 成本指标；CI 成本应通过 workflow triggers
 - `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`
 - `templates/local-agent-handoff-issue.md`
 - `prompts/local-agent-bootstrap.md`
+- 角色化 bootstrap：`prompts/local-builder-bootstrap.md`（LOCAL_BUILDER）、`prompts/local-validator-bootstrap.md`（LOCAL/PLATFORM/CLOSURE_VALIDATOR）、`prompts/web-reviewer-bootstrap.md`（WEB_REVIEWER）
+- Task Pack / Execution Pack 权威见 `standards/EXECUTION_PACK_STANDARD.md`；dispatch 机器契约见 `schemas/dispatch.schema.json`
+- 版本级验证交接可用 `templates/validation-handoff-queue.md`（projection-only）
 
 任务特定事实必须进入 GitHub Issue；通用执行规则由 pinned standard 提供。目标是 Execution Agent 能仅凭：
 
