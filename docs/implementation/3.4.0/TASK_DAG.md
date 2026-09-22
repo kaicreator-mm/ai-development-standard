@@ -23,11 +23,13 @@
 | T-007 | #54 | T-006 | YES | M | version plan §16 | CI + validation standards | local-first policy integrated | Low | verify-standard | recommended | independent | DONE |
 | T-008 | #55 | T-006 | YES | M | version plan §22 | adoption + templates | templates/overrides/retention/Fast Path | Low | verify-standard | recommended | independent | DONE |
 | T-009 | #56 | T-002..T-008 | NO | H | version plan §24 | scenarios A–G | positive + adversarial verifier regression | High | all test scripts green | required | independent | DONE |
-| T-011 | #64 | T-009 | NO | H | post-closure defect + ISSUE_FIRST_TASK_TRIGGER | pointer-only trigger authority + regression | durable Issue is complete contract; user-visible trigger pointer-only; incomplete Issue repaired first | High | full verify-standard + pointer-only regression + exact-head CI | required | `version/v3.4.0@f90669ab...` | REVIEW-READY |
-| T-012 | #66 | T-011 | NO | H | Work Item/DAG/metadata/Golden-template gap | canonical Work Item contract + Golden coverage + templates + verifier | recoverable Version DAG; strict metadata/Issue contract; all normative standards have Golden/Forbidden/rationale coverage | High | full verify-standard + focused Work Item/Golden regression + exact-head CI | required | stacked on T-011 exact HEAD until #65 merges | REVIEW-READY |
+| T-011 | #64 | T-009 | NO | H | post-closure defect + ISSUE_FIRST_TASK_TRIGGER | pointer-only trigger authority + regression | durable Issue is complete contract; user-visible trigger pointer-only; incomplete Issue repaired first | High | full verify-standard + pointer-only regression + exact-head CI | required | merged as `dddb3bfe...` | DONE |
+| T-012 | #66 | T-011 | NO | H | Work Item/DAG/metadata/Golden-template gap | canonical Work Item contract + Golden coverage + templates + verifier | recoverable Version DAG; strict metadata/Issue contract; all normative standards have Golden/Forbidden/rationale coverage | High | full verify-standard + focused Work Item/Golden regression + exact-head CI | required | retargeted to `version/v3.4.0@dddb3bfe...` | DOING |
 | T-010 | #57 | T-009, T-011, T-012 | NO | H | RELEASE_STANDARD + post-T012 candidate | closure report | full verifier + Fresh Independent Review + Release Qualification on new exact candidate | High | version closure gates | required | successor candidate after T-012 | REOPENED |
 
 Planning status values: `TODO / DOING / BLOCKED / REVIEW-READY / DONE / DEFERRED / NOT_APPLICABLE / REOPENED`.
+
+The status column is a planning/checkpoint aid, not canonical live execution state. GitHub Task Issues + native Issue Dependencies + events remain the live execution authority.
 
 ## Post-closure correction rule
 
@@ -50,17 +52,17 @@ The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` 
 - Every substantial version MUST keep the DAG recoverable from this checkpoint plus GitHub durable facts.
 - A shared Markdown state table MUST NOT become canonical live execution state; derived state cards must be marked `NON_AUTHORITATIVE_DERIVED_STATE`.
 - A task is `DONE` only when its acceptance criteria and required task-level gates are satisfied.
-- T-011 Review Policy is `required` because it changes normative authority placement and cross-agent invocation semantics.
+- T-011 Review Policy was `required`; final exact-head CI + Fresh Independent Re-review passed and PR #65 merged to `version/v3.4.0`.
 - T-012 Review Policy is `required` because it changes canonical GitHub Work Item semantics used by all Agents/projects.
-- T-012 is intentionally stacked on T-011 while #65 is unmerged because its implementation consumes T-011 pointer-only semantics; after #65 merges, #67 must be retargeted/re-evaluated against `version/v3.4.0`.
-- T-010 remains reopened until T-011 and T-012 merge and fresh exact-head closure gates pass.
+- T-012 was stacked on T-011 only while the upstream code baseline was unmerged. After T-011 merge it was retargeted to `version/v3.4.0` and explicitly reconciled with integration commit `dddb3bfe...`; its successor exact HEAD requires fresh validation and Independent Review.
+- T-010 remains reopened until T-012 merges and fresh exact-head closure gates pass.
 
 ## Review Policy Planning
 
-Version-level Review Policy remains `required`. T-011 and T-012 each require concern-level Independent Review on their own exact PR HEAD before integration. The final post-T012 version candidate then requires a separate Fresh Independent Review during T-010 closure.
+Version-level Review Policy remains `required`. T-012 requires concern-level Independent Review on its final exact PR HEAD before integration. The final post-T012 version candidate then requires a separate Fresh Independent Review during T-010 closure.
 
 ## Execution mode
 
-T-011 executes on `task/v3.4.0-t011-pointer-only-trigger` targeting `version/v3.4.0`.
+T-011 completed on `task/v3.4.0-t011-pointer-only-trigger` and merged through PR #65 to `version/v3.4.0@dddb3bfe...`.
 
-T-012 executes on `task/v3.4.0-t012-work-item-contract`, temporarily stacked on the current T-011 exact HEAD while #65 is open. This stacked topology expresses a real unmerged code-baseline dependency; it does not replace the Task dependency graph. After T-011 merge, T-012 is retargeted to the integration branch and required exact-identity gates are re-evaluated before merge.
+T-012 executes on `task/v3.4.0-t012-work-item-contract`, now directly targeting `version/v3.4.0`. The branch contains an explicit two-parent reconciliation commit so the already-developed T-012 concern and merged T-011 integration history are both represented without rewriting the full task history. Current live readiness is derived from GitHub Issue/PR/CI/Review facts, not this Markdown status cell.
