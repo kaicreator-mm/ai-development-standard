@@ -8,18 +8,34 @@ Supported executors include Codex, Claude Code, Build Host agents, other coding 
 
 ## 2. Pointer-only principle
 
-Once a handoff is complete enough to execute, the preferred invocation is only:
+Once a handoff is complete enough to execute, the user-visible invocation MUST be pointer-only.
+
+Canonical forms:
 
 ```text
-Repository: owner/repo
-Handoff Issue: #N
-Role: builder|reviewer|validator
-Dispatch: <id when used>
-
-Read the pinned Local Agent Bootstrap and current GitHub state. Execute only this handoff.
+完成 `owner/repo` Issue #N。
 ```
 
-Do not copy the full task contract into chat. If the Issue is incomplete, repair the Issue first.
+or, when role/dispatch disambiguation is required:
+
+```text
+执行 `owner/repo` Issue #N 的当前 READY builder dispatch。
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
+完成 `owner/repo` PR #N 的当前 READY Independent Review dispatch。
+```
+
+The trigger MAY identify repository, Issue/PR, role and dispatch id when needed. It MUST NOT duplicate baseline SHA, branch rules, scope, commands, gates, review procedure, repair instructions, evidence requirements or closeout rules.
+
+If the Issue is incomplete, repair/materialize the Issue or its authoritative referenced artifact first. A long chat prompt MUST NOT be used to make an incomplete handoff executable.
+
+Hard invariant:
+
+```text
+No durable contract -> no trigger.
+No Issue update -> no new task-specific instruction in chat.
+```
+
+Generic worker behavior is loaded from the pinned repository bootstrap/standard and MUST NOT be pasted into each task trigger.
 
 ## 3. Machine-verifiable handoff
 
@@ -42,6 +58,8 @@ A handoff is `HANDOFF_READY` only when the durable Issue/payload identifies at l
 - expected outputs/evidence.
 
 `NOT_APPLICABLE` should be explicit for genuinely irrelevant fields rather than silently missing material facts.
+
+Missing machine-required task detail is a handoff completeness defect. It MUST be repaired in GitHub authority before `HANDOFF_READY`; it cannot be supplied only in the copied invocation text.
 
 ## 4. Baseline discipline
 
@@ -139,7 +157,7 @@ GitHub result: <comment/PR>
 next route: review|merge|release|human-decision
 ```
 
-Do not require a human to relay full logs between Web sessions when GitHub already contains them.
+This result summary is not a new task trigger or task authority. Do not require a human to relay full logs between Web sessions when GitHub already contains them.
 
 ## 9. Completion
 
@@ -172,8 +190,11 @@ Use:
 - `prompts/local-agent-bootstrap.md`
 - `prompts/local-builder-bootstrap.md`
 - `prompts/local-validator-bootstrap.md`
+- `prompts/web-reviewer-bootstrap.md`
 - `schemas/local-agent-handoff.schema.json`
 - `schemas/dispatch.schema.json`
 - `standards/EXECUTION_PACK_STANDARD.md` (Task Pack / Execution Pack authority)
+
+Repository bootstrap files may be detailed because they are durable generic authority. They MUST NOT be re-emitted as per-task user-visible prompt text.
 
 A dispatcher MAY automate delivery, but browser automation or any particular transport is not required by this protocol.

@@ -13,4 +13,6 @@ Files:
 
 Optional artifacts (`INTERFACE_SEED.*`, `SEMANTIC_KERNEL_SEED.*`, `REFERENCE_PATCH.diff`, `LOCAL_AGENT_PROMPT.md`, reference fixtures) are added per task; empty placeholders MUST NOT be required.
 
+`LOCAL_AGENT_PROMPT.md`, when retained, is a **durable repository artifact** subordinate to the Task Pack / Execution Contract. It is not the user-visible ChatGPT Web handoff trigger and MUST NOT be copied into chat as a parallel task contract. The user-visible trigger remains a pointer to the Issue/PR and optional role/dispatch identity under `standards/ISSUE_FIRST_TASK_TRIGGER.md`.
+
 Small tasks MAY compress these into minimal content; trivial Fast Path tasks MAY skip the Execution Pack entirely (`standards/EXECUTION_PACK_STANDARD.md` §11).

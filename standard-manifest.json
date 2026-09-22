@@ -101,6 +101,7 @@
     "verification": [
       ".github/workflows/verify-standard.yml",
       "scripts/test_execution_architecture.py",
+      "scripts/test_pointer_only_trigger_contract.py",
       "scripts/test_project_execution_profile.py",
       "scripts/test_protocol_schemas.py",
       "scripts/test_v33_lifecycle_contracts.py",

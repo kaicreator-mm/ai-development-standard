@@ -29,6 +29,8 @@ GitHub carries durable execution facts.
 Chat is a workspace, not project state.
 ```
 
+User-visible task invocation follows `ISSUE_FIRST_TASK_TRIGGER.md`: GitHub owns the complete task contract; chat carries only a pointer to that durable contract.
+
 ## 2. Canonical GitHub responsibility model
 
 ```text
@@ -80,7 +82,9 @@ completion rule
 
 Do not use repeated Issue-body rewrites as an event log. Current events, claims, validation, review and merge history belong in metadata/comments.
 
-When an Issue already contains the complete task contract, invocation follows `ISSUE_FIRST_TASK_TRIGGER.md`: send a short repository/Issue pointer instead of copying a second task contract into chat.
+Before a task is invoked in another Web session, Local Agent, Reviewer, Validator or automation, the assigned Issue MUST contain or reference all task-specific execution facts required by the receiver. Missing task detail MUST be materialized in GitHub authority first; a longer chat prompt is not a valid substitute.
+
+Invocation then follows `ISSUE_FIRST_TASK_TRIGGER.md` and MUST be pointer-only. If a new task-specific requirement is discovered, update the Issue/referenced authority before re-invocation.
 
 ## 4. Metadata dimensions
 
@@ -373,15 +377,15 @@ A Validator publishes exact-SHA environment/profile evidence. Validation-only ex
 
 Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`. Profiles configure execution authority; they never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections.
 
-Pointer-only invocation applies to every role:
+Pointer-only invocation applies to every role and is MUST-level for user-visible task triggers. A trigger MAY identify only repository, Issue/PR, role and dispatch id when required to locate the durable contract. It MUST NOT duplicate task-specific SHA/branch/scope/commands/gates/review/closeout instructions.
+
+Canonical examples:
 
 ```text
-Repository: owner/repo
-Issue/PR: #N
-Role: builder|validator|reviewer
-Dispatch: <id>
-
-Continue <project> <version> current READY <role> work in Issue #NN.
+完成 `owner/repo` Issue #N。
+执行 `owner/repo` Issue #N 的当前 READY builder dispatch。
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
+完成 `owner/repo` PR #N 的当前 READY Independent Review dispatch。
 ```
 
 A Reviewer acting independently MUST NOT modify product code in the same review role/session; findings route back through a Builder dispatch.
@@ -410,16 +414,7 @@ A handoff becomes dispatchable only after its durable Issue contract is complete
 
 A dispatch references Task Pack identity and, when generated, Execution Pack identity (`EXECUTION_PACK_STANDARD.md`); workers verify pack staleness and exact identity at claim time and publish `DISPATCH_CLAIMED`. A version-scoped Validation Handoff Queue, when enabled, is a projection of Validator dispatches — pointer-only invocation into the queue never makes the queue Issue a second validation or Task authority.
 
-After `HANDOFF_READY`, prefer pointer-only invocation:
-
-```text
-Repository: owner/repo
-Issue: #N
-Role: <role>
-Dispatch: <id>
-```
-
-Dispatch state is derived/routed according to `EXECUTION_ARCHITECTURE_STANDARD.md`. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
+After `HANDOFF_READY`, user-visible invocation MUST remain pointer-only. If a new task-specific requirement appears, update the Issue/Dispatch/authoritative artifact first and then invoke with the same pointer form. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
 
 ## 13. Append-oriented history
 

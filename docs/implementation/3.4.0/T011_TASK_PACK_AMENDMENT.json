@@ -1,0 +1,55 @@
+{
+  "schema": "ai-dev/task-pack-amendment:1",
+  "version": "3.4.0",
+  "amendment": "post-closure-correction",
+  "repository": "kaicreator-mm/ai-development-standard",
+  "integration_target": "version/v3.4.0",
+  "historical_candidate_sha": "f90669abda9fab35f4759469f1369ac55ba702fe",
+  "task": {
+    "task_id": "T-011",
+    "execution_issue": 64,
+    "goal": "Enforce pointer-only ChatGPT Web task triggers and require all task-specific execution instructions to be durable in GitHub before invocation",
+    "review_policy": "required",
+    "validation_scope": "concern",
+    "validation_owner": "T-011 then version-closure",
+    "agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+    "dependencies": ["T-009"],
+    "blocks": ["T-010-reclosure"],
+    "required_gates": [
+      "verify-standard",
+      "pointer-only-trigger-regression",
+      "exact-head-ci",
+      "fresh-independent-review"
+    ],
+    "acceptance": [
+      "Issue-first trigger semantics are MUST-level pointer-only",
+      "incomplete Issue must be repaired before invocation",
+      "changed task-specific requirements must be persisted before invocation",
+      "task-specific SHA/branch/scope/commands/gates/review/closeout details are forbidden from user-visible trigger",
+      "LOCAL_AGENT_PROMPT.md is durable repository material and not the user-visible trigger",
+      "existing v3.3/v3.4 verifier regressions remain green",
+      "T-011 merges to version/v3.4.0 before T-010 fresh closure"
+    ],
+    "allowed_changes": [
+      "standards/ISSUE_FIRST_TASK_TRIGGER.md",
+      "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "standards/CHATGPT_WEB_ROLE.md",
+      "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "standards/EXECUTION_PACK_STANDARD.md",
+      "standards/DEVELOPMENT_WORKFLOW.md",
+      "templates/**",
+      "prompts/**",
+      "scripts/**",
+      ".github/workflows/verify-standard.yml",
+      "standard-manifest.json",
+      "docs/implementation/3.4.0/**"
+    ],
+    "forbidden_changes": [
+      "second prompt lifecycle or authority",
+      "weakened Task Pack/Execution Pack/Dispatch authority",
+      "weakened exact-SHA Validation/Review/Release semantics",
+      "unrelated v3.4 behavior changes"
+    ]
+  },
+  "closure_rule": "Historical f90669ab validation/review/qualification remains audit evidence only. After T-011 changes the version candidate, T-010 must execute fresh full verifier, Independent Review and Release Qualification on the new exact candidate."
+}

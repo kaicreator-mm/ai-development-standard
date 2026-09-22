@@ -6,6 +6,8 @@ ChatGPT Web 是主要的分析、设计、实现与审查工作台，优先承�
 
 GitHub 是执行事实源；聊天记录不是项目状态数据库。长任务、多 Agent、跨会话任务必须通过 GitHub checkpoint、Issue、Issue Dependencies、metadata/events、PR、operator attribution 与 exact SHA 可恢复。
 
+用户可见的跨 Agent / 跨会话任务提示词不是任务权威。`standards/ISSUE_FIRST_TASK_TRIGGER.md` 对 ChatGPT Web 的任务触发输出具有约束力：任务特定事实必须先进入 GitHub，随后 Web 只能输出 pointer-only trigger。
+
 ## Web Session Operator Identity
 
 多个 ChatGPT Web 页面可能通过同一个 GitHub 账号写 Issue/PR，因此 GitHub author 不能作为 Web Agent identity。
@@ -97,6 +99,55 @@ Task Pack 编写/冻结（durable planning authority）
 - Web Builder + Local Validator + Web Reviewer 是一等组合：Web 产出 candidate、Local Validator 按 exact-SHA dispatch 验证、Web Review 独立裁决、Merge Controller 按 predicate 合并并自动重算下游 READY——各角色之间不需要人工转述提示词。
 - Merge 后的 DAG 重算与下游解锁不需要 human prompt relay；人只出现在 Human Decision Queue。
 
+## ChatGPT Web 的任务触发输出
+
+当用户要求“给出提示词”、把任务交给另一个 Web 会话、本地 Agent、Codex、Claude Code、Build Host、Reviewer、Validator 或 automation 时，ChatGPT Web MUST 按以下顺序执行：
+
+```text
+确定 repository + Issue/PR
+→ 读取当前 durable task contract
+→ 检查是否缺少执行所需的 task-specific 事实
+→ 缺少则先创建/更新 Issue 或其 authoritative linked artifact
+→ 确认 work item 可执行/可 dispatch
+→ 只输出 pointer-only trigger
+```
+
+硬规则：
+
+```text
+No durable contract -> no trigger.
+No Issue update -> no new task-specific instruction in chat.
+```
+
+用户可见 trigger 只允许包含：
+
+```text
+repository
+Issue/PR number
+role（仅在需要区分 ready work 时）
+dispatch id（仅在必须消歧时）
+```
+
+默认形式：
+
+```text
+完成 `owner/repo` Issue #N。
+```
+
+需要区分角色时：
+
+```text
+执行 `owner/repo` Issue #N 的当前 READY builder dispatch。
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
+完成 `owner/repo` PR #N 的当前 READY Independent Review dispatch。
+```
+
+ChatGPT Web MUST NOT 在用户可见 trigger 中重复 task-specific baseline SHA、branch/base refresh、scope/non-scope、write set、acceptance、implementation steps、commands、validation gates、review checklist、repair procedure、failure handling、closeout/merge instructions 或 evidence payload requirements。
+
+如果 Web 新推导出这些要求，必须先写入 GitHub authority，再输出同样的短 trigger。不得用“更长的提示词”补偿 Issue 不完整。
+
+Repository-owned bootstrap（如 `prompts/local-builder-bootstrap.md`、`prompts/local-validator-bootstrap.md`、`prompts/web-reviewer-bootstrap.md`）可以保持详细，但 Web MUST NOT 每次把 bootstrap 重新粘贴到 task trigger 中。
+
 ## 必须完成
 
 在能力和当前环境允许时，尽可能完成：
@@ -111,7 +162,7 @@ Task Pack 编写/冻结（durable planning authority）
 - Review Policy 解析与记录；
 - Independent Review（仅当处于 Reviewer context 且 Review 被选择/要求）；
 - 所有新 structured Agent events 使用 v2 operator attribution；
-- Local Agent Handoff Issue / Prompt；
+- Local Agent Handoff Issue / Dispatch，并按 `ISSUE_FIRST_TASK_TRIGGER.md` 只向用户返回 pointer-only trigger；
 - Execution Agent / Build Host 返回后的按需 Review Closure 与 Final Closeout。
 
 ## GitHub / Branch / Dependency 职责
@@ -291,18 +342,18 @@ Branch 数量本身不是 CI 成本指标；CI 成本应通过 workflow triggers
 - Task Pack / Execution Pack 权威见 `standards/EXECUTION_PACK_STANDARD.md`；dispatch 机器契约见 `schemas/dispatch.schema.json`
 - 版本级验证交接可用 `templates/validation-handoff-queue.md`（projection-only）
 
-任务特定事实必须进入 GitHub Issue；通用执行规则由 pinned standard 提供。目标是 Execution Agent 能仅凭：
+任务特定事实必须进入 GitHub Issue；通用执行规则由 pinned standard 提供。目标是 Execution Agent 能仅凭 repository + Issue/PR + optional role/dispatch pointer 恢复执行，而不是依赖聊天记录。
 
-```text
-Repository: <owner/repo>
-Handoff Issue: #<number>
-```
+当用户要求 ChatGPT Web “生成提示词”时：
 
-恢复执行，而不是依赖聊天记录。
+1. Web MUST 先确认 Handoff/Task Issue 已包含或引用完整执行事实；
+2. 若缺失，MUST 先更新 GitHub；
+3. 然后只输出 pointer-only trigger；
+4. MUST NOT 把下方“交接最小信息”复制回聊天提示词。
 
 ### 交接最小信息
 
-每次交给 Execution Agent 必须包含：
+以下信息属于 durable Issue/Handoff contract，不属于用户可见 trigger：
 
 1. Standard Version + immutable revision。
 2. Repository。

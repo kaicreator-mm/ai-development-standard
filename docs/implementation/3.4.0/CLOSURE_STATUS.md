@@ -1,24 +1,36 @@
 # v3.4.0 Closure Status
 
-Update: 2026-09-22 · Integration branch: `version/v3.4.0` · Status: **IMPLEMENTATION COMPLETE — CLOSURE RE-REVIEW REPAIR IN PROGRESS**
+Update: 2026-09-22 · Integration branch: `version/v3.4.0` · Status: **REOPENED — T-011 POINTER-ONLY TRIGGER CORRECTION IN PROGRESS**
 
-This is the truthful closure record required by `RELEASE_STANDARD.md` / `AGENTS.md`. It intentionally does **not** claim Release READY while a required Independent Review finding remains unresolved.
+This is the truthful closure record required by `RELEASE_STANDARD.md` / `AGENTS.md`.
 
-The exact live candidate identity is authoritative from PR #58 / `version/v3.4.0` and structured GitHub events. This file avoids embedding a self-referential successor SHA that would itself mutate the candidate.
+The first v3.4.0 closure completed on candidate `f90669abda9fab35f4759469f1369ac55ba702fe`, but Issue #64 identified a normative prompt-authority defect before any GitHub Release was published. v3.4.0 is therefore reopened for bounded corrective Task T-011.
+
+All prior exact-head Validation, Independent Review and Release Qualification remains valid historical evidence for the exact SHA it tested. It MUST NOT be reused as final closure evidence after T-011 changes the version candidate.
 
 ## Durable GitHub execution state
 
-- v3.4 umbrella: #47.
-- T-001…T-009 execution Issues: #48…#56, materialized and closed after their implementation evidence was backfilled.
-- T-010 Version Closure: #57, OPEN until release integration and immutable baseline recording complete.
-- Release PR: #58 (`version/v3.4.0` → `main`).
-- First bounded closure repair: #59 / PR #60, merged into the version branch.
-- Second bounded closure repair: #61, created from the latest Independent Re-review findings.
-- Accidental Issue #62 is explicitly `not_planned` and is not part of v3.4 authority, DAG, validation, or release scope.
+- v3.4 umbrella: #47 — REOPENED.
+- T-001…T-009: #48…#56 — DONE.
+- T-011 pointer-only trigger correction: #64 — DOING.
+- T-010 Version Closure: #57 — REOPENED; blocked on T-011 merge, then fresh final closure.
+- Historical release PR #58 integrated the first closed candidate to `main`; its review/qualification is historical after T-011 changes `version/v3.4.0`.
+- No GitHub Release currently exists for this repository.
 
-GitHub API/event publication is available in the current closure context. Earlier statements that publication was blocked by a local `gh` keyring/token are historical only and no longer describe the active closure path.
+## Planning authority
 
-## Completed implementation lineage (T-001 … T-009)
+The original `TASK_PACKS.json` remains the historical frozen T-001…T-010 planning snapshot.
+
+Post-closure correction authority is explicit and additive:
+
+- `docs/implementation/3.4.0/T011_TASK_PACK_AMENDMENT.json`
+- `docs/implementation/3.4.0/task-packs/T011_pointer_only_trigger.md`
+- `docs/implementation/3.4.0/TASK_DAG.md`
+- Issue #64
+
+This avoids silently rewriting the original planning snapshot while still making T-011 part of current v3.4.0 authority.
+
+## Historical implementation lineage
 
 | Task | Implementation evidence | State |
 |---|---|---|
@@ -28,56 +40,63 @@ GitHub API/event publication is available in the current closure context. Earlie
 | T-004/T-005 builder+validator profiles, exact-SHA rule, queue, bootstraps | `f34e9e4` | DONE |
 | T-006..T-008 closed loop, web control plane, local-first CI, adoption | `0ddba5f` | DONE |
 | T-009 conformance + adversarial regression + verifier + CI wiring | `3bdc534` + follow-up | DONE |
+| T-011 pointer-only trigger correction | Issue #64 / current task branch | DOING |
 
-## Validation history
+## Historical closure evidence
 
-Initial integration-branch Windows real-host evidence (Python 3.13) passed the full pre-repair verifier chain, including v3.4 lifecycle/adversarial tests.
+The first closed candidate was:
 
-After the first closure repair (#59 / PR #60):
+```text
+f90669abda9fab35f4759469f1369ac55ba702fe
+```
 
-- repair PR #60 exact-head `verify-standard` run #184 / `35686539272`: **SUCCESS**;
-- merged version candidate `6d243580032a471ed2083fe8ea8134dccce67e9d` exact-head `verify-standard` run #186 / `35686572832`: **SUCCESS**;
-- the exact-head chain includes `scripts/test_v34_review_repairs.py` in addition to the v3.3/v3.4 baseline suites.
+Historical evidence includes:
 
-Validation PASS is evidence for the tested SHA only and does not substitute for required Independent Review.
+- exact-head `verify-standard` run #193 / `35692606829`: PASS;
+- Fresh Independent Re-review C on PR #58: PASS, P0=0/P1=0;
+- Release Qualification: READY;
+- repository integration to `main@418d244f23a6bf724acf5d4c4eff4ea292f1c4db`.
 
-## Independent Review history
+These facts remain audit history. They do not prove the post-T011 candidate.
 
-### Review A — `20824fb63d0d5708248f4c2d005b3c8cb55e4b45`
+## T-011 defect statement
 
-PR #58 comment `5771113329`: **FAIL**, P0=0 / P1=2 / P2=1 / P3=0.
+Current v3.4 wording allowed ChatGPT Web to regress from pointer-only invocation into bespoke task prompts because key clauses were preference-level (`SHOULD`) and because generic bootstrap / Execution Pack prompt material could be misread as user-visible handoff text.
 
-Findings:
+T-011 enforces:
 
-- Execution Pack manifest/classifier interoperability + staleness fail-closed gap;
-- exact-SHA Validator result binding gap;
-- Execution Pack required core-artifact completeness gap.
+```text
+GitHub Issue + referenced repository authority = complete executable task contract
+user-visible ChatGPT Web trigger = pointer only
+No durable contract -> no trigger
+No Issue update -> no new task-specific instruction in chat
+```
 
-#59 / PR #60 repaired these findings and moved the candidate, invalidating Review A by exact-head rule.
+Task-specific baseline/branch/scope/write-set/acceptance/commands/gates/review/failure/closeout/evidence requirements must be durable before invocation and must not be duplicated in the copied trigger.
 
-### Review B — `6d243580032a471ed2083fe8ea8134dccce67e9d`
+## Current T-011 gates
 
-PR #58 comment `5771563476`: **FAIL**, P0=0 / P1=1 / P2=1 / P3=0.
+1. **Normative authority repair** — DOING on `task/v3.4.0-t011-pointer-only-trigger`.
+2. **Focused pointer-only trigger regression** — NOT_RUN until stable task candidate exists.
+3. **Full existing verify-standard chain** — NOT_RUN on final T-011 exact HEAD.
+4. **Exact-head GitHub Actions verify-standard** — NOT_RUN on final T-011 exact HEAD.
+5. **Required Independent Review of T-011 PR** — NOT_RUN; must use an independent reviewer context and bind to exact PR HEAD.
+6. **Merge T-011 to `version/v3.4.0`** — NOT_RUN until gates 2–5 pass.
 
-Revalidation closed the earlier exact-SHA Validator binding and core-artifact completeness findings, but found one remaining release-significant P1: malformed/unknown `delta_paths` entries could still be silently skipped and allow false `PACK_STALE_NONMATERIAL` classification. It also identified this closure document as stale relative to current GitHub facts (P2).
+## Reopened T-010 gates after T-011 merge
 
-Issue #61 is the bounded repair for those two current findings. Any successor candidate produced by #61 invalidates Review B and requires another Fresh Independent Re-review.
-
-## Current T-010 gates
-
-1. **Second review repair (#61)** — DOING until the malformed-delta fail-open case is fixed, adversarial regression passes, and this closure record is reconciled.
-2. **Exact-head full verifier/coherence evidence on the successor version candidate** — NOT_RUN until #61 merges into `version/v3.4.0`; old PASS remains historical only.
-3. **Fresh Independent Re-review on the successor exact HEAD** — NOT_RUN. Builder/repair context MUST NOT self-assert PASS.
-4. **Release Qualification** — NOT_RUN; requires successful fresh review and exact-head closure evidence.
-5. **#45 / #46 final disposition** — material acceptance mapping is already published, but both remain OPEN until Release Qualification permits closure. #46 remains a Validator Dispatch / version-scoped Validation Handoff **projection**, not an independent queue lifecycle or second validation authority.
-6. **Repository integration** — NOT_RUN; PR #58 must not merge to `main` before gates 1–5 complete.
-7. **Immutable v3.4 baseline recording** — NOT_RUN until repository integration succeeds.
+1. Full verifier/coherence chain on the new exact `version/v3.4.0` candidate — NOT_RUN.
+2. Fresh Independent Review on that exact final candidate — NOT_RUN.
+3. Release Qualification on that exact candidate — NOT_RUN.
+4. Reconfirm #45/#46 material acceptance remains satisfied — NOT_RUN.
+5. Integrate successor v3.4.0 candidate to `main` — NOT_RUN.
+6. Record superseding immutable v3.4.0 baseline — NOT_RUN.
 
 ## Operator / authority boundaries
 
-- Builder/repair work may fix #61 and publish exact-head validation evidence.
-- Independent Reviewer must run in a distinct logical reviewer context and reconstruct facts from GitHub.
-- Release controller may qualify only after all mandatory gates are PASS on one exact candidate.
-- Repository integration remains a distinct bounded step after READY.
+- T-011 Builder may implement only the bounded pointer-trigger concern and publish exact-head validation evidence.
+- T-011 Independent Reviewer must be a distinct logical reviewer context and reconstruct facts from GitHub.
+- T-010 release controller cannot inherit historical qualification onto a successor SHA.
+- Repository integration remains a distinct bounded step after new Release Qualification READY.
 
 Unresolved states stay explicit; `FAIL`, `BLOCKED`, and `NOT_RUN` are never renamed to manufacture `READY`.
