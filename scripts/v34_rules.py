@@ -71,6 +71,15 @@ REQUIRED_PACK_FIELDS = (
     "pinned_standard_revision",
 )
 
+REQUIRED_CORE_ARTIFACTS = (
+    "MANIFEST.yaml",
+    "EXECUTION_CONTRACT.md",
+    "TEST_MATRIX.yaml",
+    "FAILURE_MATRIX.yaml",
+    "IMPLEMENTATION_MAP.md",
+    "REVIEW_CHECKLIST.md",
+)
+
 SHA_LENGTH = 40
 
 
@@ -83,14 +92,55 @@ def _is_sha(value: object) -> bool:
     return isinstance(value, str) and len(value) == SHA_LENGTH and all(c in "0123456789abcdefABCDEF" for c in value)
 
 
+def _dependency_completion_map(value: object) -> dict[str, str] | None:
+    """Normalize dependency identities from either the manifest wire shape
+    (['T-001@<sha>', ...]) or an internal mapping.
+
+    Returning None means malformed/unknown. Duplicate task identities fail
+    closed even when they repeat the same SHA so provenance stays unambiguous.
+    """
+    if value is None:
+        return {}
+    if isinstance(value, Mapping):
+        normalized: dict[str, str] = {}
+        for task, sha in value.items():
+            if not isinstance(task, str) or not task or not _is_sha(sha):
+                return None
+            normalized[task] = str(sha)
+        return normalized
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        normalized = {}
+        for item in value:
+            if not isinstance(item, str) or "@" not in item:
+                return None
+            task, sha = item.rsplit("@", 1)
+            if not task or not _is_sha(sha) or task in normalized:
+                return None
+            normalized[task] = sha
+        return normalized
+    return None
+
+
+def core_artifacts_complete(value: object) -> bool:
+    """Semantic completeness check for the six required pack artifacts.
+
+    The repository's dependency-free JSON-Schema subset does not implement
+    uniqueItems, so claim-time semantics enforce exact set equality.
+    """
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        return False
+    items = list(value)
+    return len(items) == len(REQUIRED_CORE_ARTIFACTS) and set(items) == set(REQUIRED_CORE_ARTIFACTS)
+
+
 def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, object]) -> str:
     """Classify an Execution Pack against current repository facts.
 
-    pack keys: base_sha, task_pack_ref, branch, pinned_standard_revision,
-               dependency_completion (task -> sha), material_paths (list)
-    facts keys: current_integration_sha, task_pack_ref, branch,
-                pinned_standard_revision, dependency_completion (task -> sha),
-                delta_paths (paths changed since pack base; None = unknown)
+    Manifest dependency_completion wire entries use '<task-id>@<40-hex-sha>'.
+    Internal callers may supply a task->sha mapping; both normalize to the same
+    identity model. material_paths is positive impact coverage: if the base
+    moved and this coverage is absent/malformed, classification fails closed to
+    PACK_STALE_MATERIAL rather than assuming the delta is nonmaterial.
     """
     for field in REQUIRED_PACK_FIELDS:
         if field not in pack or pack[field] in (None, ""):
@@ -107,14 +157,20 @@ def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, obje
     if pack["branch"] != facts.get("branch"):
         return "PACK_INVALID"
 
-    pack_deps = pack.get("dependency_completion") or {}
-    current_deps = facts.get("dependency_completion") or {}
-    if not isinstance(pack_deps, Mapping) or not isinstance(current_deps, Mapping):
+    # A real manifest always carries core_artifacts. Keep compatibility with
+    # narrow historical/unit callers that model only staleness inputs, but fail
+    # closed when the field is present and incomplete/duplicated.
+    if "core_artifacts" in pack and not core_artifacts_complete(pack.get("core_artifacts")):
         return "PACK_INVALID"
-    for task, sha in pack_deps.items():
-        if current_deps.get(task) != sha:
-            # A dependency the pack was generated against has moved.
-            return "PACK_STALE_MATERIAL"
+
+    pack_deps = _dependency_completion_map(pack.get("dependency_completion"))
+    if pack_deps is None:
+        return "PACK_INVALID"
+    current_deps = _dependency_completion_map(facts.get("dependency_completion"))
+    if current_deps is None:
+        return "PACK_STALE_MATERIAL"
+    if pack_deps != current_deps:
+        return "PACK_STALE_MATERIAL"
 
     if pack["base_sha"] == facts.get("current_integration_sha"):
         return "PACK_CURRENT"
@@ -123,22 +179,40 @@ def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, obje
     if delta_paths is None:
         # Unknown impact fails closed to material.
         return "PACK_STALE_MATERIAL"
-    if not isinstance(delta_paths, Sequence):
-        return "PACK_INVALID"
-    material = set(pack.get("material_paths") or ())
+    if not isinstance(delta_paths, Sequence) or isinstance(delta_paths, (str, bytes, bytearray)):
+        return "PACK_STALE_MATERIAL"
+
+    material_paths = pack.get("material_paths")
+    if (
+        not isinstance(material_paths, Sequence)
+        or isinstance(material_paths, (str, bytes, bytearray))
+        or not material_paths
+        or not all(isinstance(path, str) and path for path in material_paths)
+    ):
+        # NONMATERIAL requires positive declared impact coverage.
+        return "PACK_STALE_MATERIAL"
+
+    material = set(material_paths)
     if _delta_touches_material(delta_paths, material):
         return "PACK_STALE_MATERIAL"
     return "PACK_STALE_NONMATERIAL"
 
 
 def _delta_touches_material(delta_paths: Sequence[str], material: set[str]) -> bool:
-    """A delta path touches material when it equals, falls under, or covers a
-    declared material path. Conservative overlap fails closed to MATERIAL."""
+    """Conservative path-overlap check with path-segment boundaries."""
     for delta in delta_paths:
-        if not isinstance(delta, str):
+        if not isinstance(delta, str) or not delta:
             continue
+        delta_norm = delta.strip("/")
         for path in material:
-            if delta == path or delta.startswith(path) or path.startswith(delta):
+            path_norm = path.strip("/")
+            if not path_norm:
+                return True
+            if (
+                delta_norm == path_norm
+                or delta_norm.startswith(path_norm + "/")
+                or path_norm.startswith(delta_norm + "/")
+            ):
                 return True
     return False
 
@@ -186,6 +260,42 @@ def validator_may_repair_source(dispatch_role: str) -> bool:
     """A Validator never implicitly repairs product source; repair requires a
     separate Builder dispatch."""
     return dispatch_role == "builder"
+
+
+def validator_result_matches_dispatch(dispatch: Mapping[str, object], result: Mapping[str, object]) -> bool:
+    """Return True only when Validator evidence is bound to its exact dispatch.
+
+    This is the canonical consumption rule for a version-scoped Validation
+    Handoff Queue. A loose/legacy VALIDATION_RESULT may remain valid history,
+    but it cannot complete a v3.4 Validator dispatch unless this identity tuple
+    matches. Both Validation Report naming (`tested_sha`, `requested_sha`) and
+    event naming (`sha`, `requested_head_sha`) are accepted.
+    """
+    if dispatch.get("role") != "validator":
+        return False
+    dispatch_id = dispatch.get("dispatch_id")
+    requested = dispatch.get("requested_head_sha")
+    expected_base = dispatch.get("expected_base_sha")
+    profile = dispatch.get("validation_profile")
+    if not dispatch_id or not _is_sha(requested) or not _is_sha(expected_base) or not profile:
+        return False
+
+    tested = result.get("tested_sha", result.get("sha"))
+    result_requested = result.get("requested_sha", result.get("requested_head_sha"))
+    actual = result.get("actual_checked_out_sha")
+    current = result.get("current_pr_head")
+    result_expected_base = result.get("expected_base_sha")
+    result_profile = result.get("validation_profile")
+
+    return (
+        result.get("dispatch_id") == dispatch_id
+        and tested == requested
+        and result_requested == requested
+        and actual == requested
+        and current == requested
+        and result_expected_base == expected_base
+        and result_profile == profile
+    )
 
 
 def evidence_identity(*, tested_sha: str, environment: str, profile: str, commands: Sequence[str]) -> Mapping[str, object]:
