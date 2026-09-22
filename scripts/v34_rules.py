@@ -133,6 +133,24 @@ def core_artifacts_complete(value: object) -> bool:
     return len(items) == len(REQUIRED_CORE_ARTIFACTS) and set(items) == set(REQUIRED_CORE_ARTIFACTS)
 
 
+def _normalize_impact_path(value: object) -> str | None:
+    """Normalize a repository-relative impact path or return None if unknown.
+
+    NONMATERIAL classification needs positive comparable path evidence. Empty,
+    non-string, traversal-like, or root-only facts are therefore not ignored;
+    callers fail closed to PACK_STALE_MATERIAL when normalization returns None.
+    """
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip().replace("\\", "/").strip("/")
+    if not normalized:
+        return None
+    segments = normalized.split("/")
+    if any(segment in ("", ".", "..") for segment in segments):
+        return None
+    return "/".join(segments)
+
+
 def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, object]) -> str:
     """Classify an Execution Pack against current repository facts.
 
@@ -187,31 +205,38 @@ def classify_pack_staleness(pack: Mapping[str, object], facts: Mapping[str, obje
         not isinstance(material_paths, Sequence)
         or isinstance(material_paths, (str, bytes, bytearray))
         or not material_paths
-        or not all(isinstance(path, str) and path for path in material_paths)
     ):
         # NONMATERIAL requires positive declared impact coverage.
         return "PACK_STALE_MATERIAL"
 
-    material = set(material_paths)
-    if _delta_touches_material(delta_paths, material):
+    normalized_delta: list[str] = []
+    for delta in delta_paths:
+        normalized = _normalize_impact_path(delta)
+        if normalized is None:
+            # Malformed/unknown delta facts are not positive NONMATERIAL proof.
+            return "PACK_STALE_MATERIAL"
+        normalized_delta.append(normalized)
+
+    normalized_material: set[str] = set()
+    for path in material_paths:
+        normalized = _normalize_impact_path(path)
+        if normalized is None:
+            return "PACK_STALE_MATERIAL"
+        normalized_material.add(normalized)
+
+    if _delta_touches_material(normalized_delta, normalized_material):
         return "PACK_STALE_MATERIAL"
     return "PACK_STALE_NONMATERIAL"
 
 
 def _delta_touches_material(delta_paths: Sequence[str], material: set[str]) -> bool:
-    """Conservative path-overlap check with path-segment boundaries."""
+    """Conservative path-overlap check with normalized segment boundaries."""
     for delta in delta_paths:
-        if not isinstance(delta, str) or not delta:
-            continue
-        delta_norm = delta.strip("/")
         for path in material:
-            path_norm = path.strip("/")
-            if not path_norm:
-                return True
             if (
-                delta_norm == path_norm
-                or delta_norm.startswith(path_norm + "/")
-                or path_norm.startswith(delta_norm + "/")
+                delta == path
+                or delta.startswith(path + "/")
+                or path.startswith(delta + "/")
             ):
                 return True
     return False

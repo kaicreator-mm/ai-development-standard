@@ -162,6 +162,45 @@ class ExecutionPackRepairTests(unittest.TestCase):
             "PACK_INVALID",
         )
 
+    def test_malformed_delta_entries_fail_closed_on_base_drift(self) -> None:
+        malformed_delta_entries = [
+            None,
+            7,
+            "",
+            "   ",
+            "/",
+            "\\",
+            "./",
+            "../",
+            "schemas//dispatch.schema.json",
+            "schemas/../README.md",
+        ]
+        for delta in malformed_delta_entries:
+            with self.subTest(delta=delta):
+                self.assertEqual(
+                    classify_pack_staleness(
+                        manifest(),
+                        facts(current_integration_sha=SHA_C, delta_paths=[delta]),
+                    ),
+                    "PACK_STALE_MATERIAL",
+                )
+
+    def test_comparable_delta_normalization_preserves_valid_classification(self) -> None:
+        self.assertEqual(
+            classify_pack_staleness(
+                manifest(),
+                facts(current_integration_sha=SHA_C, delta_paths=["  README.md  "]),
+            ),
+            "PACK_STALE_NONMATERIAL",
+        )
+        self.assertEqual(
+            classify_pack_staleness(
+                manifest(),
+                facts(current_integration_sha=SHA_C, delta_paths=["schemas\\dispatch.schema.json"]),
+            ),
+            "PACK_STALE_MATERIAL",
+        )
+
 
 class ValidatorEvidenceRepairTests(unittest.TestCase):
     def test_dispatched_report_requires_exact_identity_fields(self) -> None:
