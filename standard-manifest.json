@@ -95,8 +95,7 @@
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
-      "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
-      "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
+      "references/WOODPECKER_LOCAL_BACKEND_REFERENCE_2026-09-18.yaml"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -106,6 +105,7 @@
       "scripts/test_v33_lifecycle_contracts.py",
       "scripts/test_v33_semantic_regressions.py",
       "scripts/test_v34_lifecycle_contracts.py",
+      "scripts/test_v34_review_repairs.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/v34_rules.py",
