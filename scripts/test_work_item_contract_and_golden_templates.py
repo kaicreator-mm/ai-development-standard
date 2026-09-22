@@ -22,6 +22,17 @@ FORBIDDEN_TRUTH_LABELS = {
     "validation:pass", "validation:passed", "validation:fail", "validation:failed",
     "validation:blocked",
 }
+GOLDEN_INDEX_REQUIRED_SURFACES = {
+    "Version Task DAG", "Version umbrella Issue", "Planning/DAG amendment",
+    "Implementation Task Issue", "Research Issue", "Research Demo", "Bug/Fix Issue",
+    "Validation request/handoff", "Blocker", "Independent Review", "Pointer-only trigger",
+    "Structured Agent event", "Implementation PR / exact-head evidence",
+    "Derived Version DAG View", "Release/Version closeout",
+}
+REPO_REF_PREFIXES = (
+    "standards/", "templates/", "checklists/", "scripts/", "schemas/",
+    "prompts/", "docs/", ".github/",
+)
 
 REQUIRED_TEMPLATE_SECTIONS = {
     "templates/version-issue.md": {
@@ -101,6 +112,68 @@ def validate_ref(ref: str) -> None:
     if sep:
         assert anchor, f"empty anchor in reference: {ref}"
         assert anchor in markdown_anchors(text), f"missing markdown anchor: {ref}"
+
+
+def markdown_repo_refs(cell: str) -> list[str]:
+    return [
+        ref for ref in re.findall(r"`([^`]+)`", cell)
+        if ref.startswith(REPO_REF_PREFIXES)
+    ]
+
+
+def parse_golden_index(text: str) -> list[dict[str, str]]:
+    lines = text.splitlines()
+    header = "| Surface | Owning standard | Golden template/example | Forbidden/rationale | Verification |"
+    try:
+        header_index = next(i for i, line in enumerate(lines) if line.strip() == header)
+    except StopIteration as exc:
+        raise AssertionError("GOLDEN_INDEX.md missing canonical table header") from exc
+
+    assert header_index + 1 < len(lines), "GOLDEN_INDEX.md missing table separator"
+    separator = lines[header_index + 1].strip()
+    assert separator.startswith("|---|"), "GOLDEN_INDEX.md malformed table separator"
+
+    rows: list[dict[str, str]] = []
+    for line in lines[header_index + 2:]:
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            break
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        assert len(cells) == 5, f"GOLDEN_INDEX.md malformed row: {line}"
+        rows.append({
+            "surface": cells[0],
+            "owner": cells[1],
+            "golden": cells[2],
+            "forbidden": cells[3],
+            "verification": cells[4],
+        })
+    assert rows, "GOLDEN_INDEX.md contains no data rows"
+    return rows
+
+
+def validate_golden_index(text: str | None = None) -> None:
+    body = read("templates/GOLDEN_INDEX.md") if text is None else text
+    rows = parse_golden_index(body)
+    surfaces = [row["surface"] for row in rows]
+    assert len(surfaces) == len(set(surfaces)), "GOLDEN_INDEX.md contains duplicate surface rows"
+    assert set(surfaces) == GOLDEN_INDEX_REQUIRED_SURFACES, (
+        "GOLDEN_INDEX.md required surface set mismatch: "
+        f"missing={sorted(GOLDEN_INDEX_REQUIRED_SURFACES - set(surfaces))}, "
+        f"extra={sorted(set(surfaces) - GOLDEN_INDEX_REQUIRED_SURFACES)}"
+    )
+
+    for row in rows:
+        surface = row["surface"]
+        assert row["golden"], f"{surface} missing Golden template/example linkage"
+        assert row["forbidden"], f"{surface} missing Forbidden/rationale linkage"
+        assert row["verification"], f"{surface} missing Verification linkage"
+
+        golden_refs = markdown_repo_refs(row["golden"])
+        forbidden_refs = markdown_repo_refs(row["forbidden"])
+        assert golden_refs, f"{surface} Golden linkage must contain explicit repository path/anchor reference"
+        assert forbidden_refs, f"{surface} Forbidden/rationale linkage must contain explicit repository path/anchor reference"
+        for ref in golden_refs + forbidden_refs:
+            validate_ref(ref)
 
 
 def section_names(text: str) -> set[str]:
@@ -193,14 +266,34 @@ def test_work_item_standard() -> None:
 def test_golden_standard_and_index() -> None:
     standard = read("standards/GOLDEN_TEMPLATE_STANDARD.md")
     index = read("templates/GOLDEN_INDEX.md")
-    require(standard, "Every active normative standard", "STANDARD_COVERAGE.json", "Forbidden / Non-conformant", "templates/GOLDEN_INDEX.md")
-    for surface in (
-        "Version Task DAG", "Version umbrella Issue", "Implementation Task Issue", "Research Issue",
-        "Validation request/handoff", "Independent Review", "Pointer-only trigger",
-        "Structured Agent event", "Derived Version DAG View", "Release/Version closeout",
-    ):
-        assert surface in index, f"golden index missing surface: {surface}"
-    require(index, "Forbidden/rationale", "Verification")
+    require(
+        standard,
+        "Every active normative standard", "STANDARD_COVERAGE.json",
+        "Forbidden / Non-conformant", "templates/GOLDEN_INDEX.md",
+    )
+    validate_golden_index(index)
+
+    broken_missing = index.replace(
+        "| `templates/golden/ANTI_PATTERNS.md#incomplete-executable-issue` | focused verifier |",
+        "|  | focused verifier |",
+        1,
+    )
+    assert broken_missing != index, "Golden Index mutation fixture did not match expected row"
+    expect_reject(
+        lambda: validate_golden_index(broken_missing),
+        "missing Golden Index Forbidden/rationale linkage was not rejected",
+    )
+
+    broken_anchor = index.replace(
+        "templates/golden/ANTI_PATTERNS.md#live-dag-document-as-authority",
+        "templates/golden/ANTI_PATTERNS.md#definitely-missing-anchor",
+        1,
+    )
+    assert broken_anchor != index, "Golden Index broken-anchor mutation fixture did not match"
+    expect_reject(
+        lambda: validate_golden_index(broken_anchor),
+        "broken Golden Index path/anchor linkage was not rejected",
+    )
 
 
 def test_required_templates_have_contract_sections() -> None:
