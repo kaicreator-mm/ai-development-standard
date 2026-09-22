@@ -179,13 +179,15 @@ A handoff cannot become `HANDOFF_READY` merely because a long chat prompt fills 
 
 ## Pull-role pointer invocation (v3.4)
 
-When work is dispatched through the unified dispatch architecture, the same rule applies per role. The dispatch and its Issue remain the contract; the trigger only selects the work:
+When work is dispatched through the unified dispatch architecture, the same rule applies per role. The dispatch and its Issue/PR remain the contract; the trigger only selects the work. The canonical user-visible forms remain exactly the repository pointer shapes defined above:
 
 ```text
-Continue <project> <version> current READY builder work in Issue #NN.
-Continue <project> <version> current READY validation work in Issue #NN.
-Continue <project> <version> current READY review work in PR #NN.
+执行 `owner/repo` Issue #N 的当前 READY builder dispatch。
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
+完成 `owner/repo` PR #N 的当前 READY Independent Review dispatch。
 ```
+
+Do not add project name, version, SHA, branch, gate, scope, commands or other task-specific context to these user-visible role triggers. If a dispatch id is required to disambiguate multiple READY dispatches, append only that dispatch identity.
 
 One task = one dispatch = one trigger prompt. The executor MUST re-read current dispatch/Issue facts, including `requested_head_sha` when required, instead of trusting copied chat detail.
 
