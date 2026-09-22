@@ -83,15 +83,20 @@ If no prior evidence exists, record `NOT_APPLICABLE` explicitly rather than omit
 
 `DRAFT` may be incomplete. `HANDOFF_READY` is valid only after all machine-required completeness fields are present, including Standard version/revision, frozen inputs, existing evidence, required gates/Validation Tuples, execution environment/profile/entrypoints, allowed/forbidden changes, completion/blocker rules and expected outputs. Then publish `ai-dev:event:v2 HANDOFF_READY` with evidence that the machine payload validated and set `HANDOFF_READY`.
 
-After `HANDOFF_READY`, invoke the worker with only:
+An incomplete Issue MUST be repaired before invocation. Missing task-specific detail MUST NOT be supplied only through a longer chat prompt.
+
+After `HANDOFF_READY`, the user-visible worker invocation MUST be pointer-only:
 
 ```text
-Repository: <owner/repo>
-Handoff Issue: #<N>
-Role: <role>
-Dispatch: <id if used>
-
-Read the pinned standard and current GitHub state. Execute only this handoff.
+完成 `owner/repo` Issue #N。
 ```
 
-Do not duplicate the Issue contract into chat.
+When role/dispatch disambiguation is required:
+
+```text
+执行 `owner/repo` Issue #N 的当前 READY <role> dispatch。
+```
+
+The trigger may add only repository, Issue/PR, role and dispatch id when needed. Do not duplicate baseline SHA, branch rules, scope, commands, gates, review procedure, evidence requirements or closeout rules into chat.
+
+Generic worker behavior comes from the pinned repository bootstrap/standard. Do not paste the bootstrap or the Issue contract into the per-task trigger.
