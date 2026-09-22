@@ -14,9 +14,13 @@ Derived statuses are projections of canonical dispatch/gate facts. Multiple READ
 
 ## Local Validator invocation (pointer-only)
 
+User-visible invocation points only to the durable repository work item/dispatch. Project/version/SHA/profile details are recovered from GitHub authority and MUST NOT be copied into the trigger.
+
 ```text
-Continue <project> <version> current READY validation work in Issue #NN.
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
 ```
+
+If more than one READY Validator dispatch exists for the same Issue and role, append only the dispatch id needed to disambiguate it.
 
 The worker reads this queue, selects the READY item, claims its dispatch (`DISPATCH_CLAIMED`), then follows `prompts/local-validator-bootstrap.md`:
 
