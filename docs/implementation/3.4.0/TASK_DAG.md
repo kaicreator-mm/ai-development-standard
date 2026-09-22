@@ -54,12 +54,12 @@ The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` 
 - A task is `DONE` only when its acceptance criteria and required task-level gates are satisfied.
 - T-011 Review Policy was `required`; final exact-head CI + Fresh Independent Re-review passed and PR #65 merged to `version/v3.4.0`.
 - T-012 Review Policy was `required`; final exact-head run #246 + Fresh Independent Re-review passed and PR #67 merged with expected-head protection to `version/v3.4.0@94c2dc64a6be3a69eacf7646a84e77fe690d1704`.
-- T-010 is now the only active version task. Closure bookkeeping MUST be reconciled before final candidate validation/freeze so later documentation edits do not invalidate exact-SHA evidence.
+- T-010 is now the only active version task. Closure bookkeeping MUST be reconciled before final candidate validation/review/freeze so later documentation edits do not invalidate exact-SHA evidence.
 - Final version-level Review Policy remains `required`; the reviewer context must be independent from the closure builder/release-preparation context.
 
 ## Review Policy Planning
 
-Version-level Review Policy is `required`. The final candidate requires a separate Fresh Independent Review during T-010 closure after all candidate-mutating bookkeeping has landed and full visible validation has passed.
+Version-level Review Policy is `required`. The final candidate requires a separate Fresh Independent Review during T-010 closure after all candidate-mutating bookkeeping has landed, full visible validation has passed, and #45/#46 material acceptance has been reconfirmed. Candidate Freeze occurs only after that required Review passes on the same exact SHA/tree.
 
 ## Execution mode
 
@@ -67,4 +67,4 @@ T-011 completed on `task/v3.4.0-t011-pointer-only-trigger` and merged through PR
 
 T-012 completed on `task/v3.4.0-t012-work-item-contract`; its final reviewed HEAD `39fa5d2b...` passed full concern validation and Independent Re-review, then merged through PR #67 to `version/v3.4.0@94c2dc64...`.
 
-T-010 final closure performs candidate-mutating bookkeeping first on a bounded closure concern. After that concern is integrated, the resulting exact `version/v3.4.0` SHA/tree becomes the sole final-candidate target for full verifier/coherence, candidate freeze, Fresh version-level Independent Review, Release Qualification and successor repository integration to `main`.
+T-010 final closure performs candidate-mutating bookkeeping first on a bounded closure concern. After that concern is integrated, the resulting exact `version/v3.4.0` SHA/tree becomes the sole final-candidate target for full verifier/coherence, #45/#46 material reconfirmation, Fresh version-level Independent Review, Candidate Freeze, Release Qualification and successor repository integration to `main`. If the Fresh version-level Independent Review requires candidate-content repair, no freeze is recorded; affected visible validation and Fresh Independent Review must be repeated on the successor exact candidate before freeze.
