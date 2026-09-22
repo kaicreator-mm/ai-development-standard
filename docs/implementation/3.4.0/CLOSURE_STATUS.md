@@ -20,7 +20,7 @@ The first v3.4.0 closure completed on candidate `f90669abda9fab35f4759469f1369ac
   - exact-head `verify-standard` PR run #246 / `35748934986`: PASS;
   - Fresh Independent Re-review: PASS, P0=0 / P1=0 / P2=0 / P3=0;
   - merged integration commit: `94c2dc64a6be3a69eacf7646a84e77fe690d1704`.
-- T-010 Version Closure: #57 — ACTIVE. Closure bookkeeping is being reconciled before any final exact-candidate validation/freeze so later documentation edits do not invalidate the qualified SHA.
+- T-010 Version Closure: #57 — ACTIVE. Closure bookkeeping is being reconciled before any final exact-candidate validation/review/freeze so later documentation edits do not invalidate the qualified SHA.
 - Historical release PR #58 integrated the first closed candidate to `main`; it is audit history only and MUST NOT be reused as successor release authority.
 
 ## Planning authority
@@ -90,16 +90,18 @@ Closure follows `RELEASE_STANDARD.md` and keeps candidate identity stable:
 2. Merge closure-bookkeeping concern to `version/v3.4.0`; resulting integration SHA becomes the candidate-preparation baseline — NOT_RUN.
 3. Run full verifier/coherence chain on that exact post-bookkeeping candidate — NOT_RUN.
 4. Reconfirm #45/#46 material acceptance remains satisfied — NOT_RUN.
-5. Freeze one exact candidate SHA/tree after required visible gates pass — NOT_RUN.
-6. Fresh version-level Independent Review on that exact candidate — NOT_RUN.
-7. Fresh Release Qualification on that exact candidate — NOT_RUN.
+5. Fresh version-level Independent Review on that exact candidate — NOT_RUN.
+6. Freeze the reviewed exact candidate SHA/tree only after all required visible freeze gates pass — NOT_RUN.
+7. Fresh Release Qualification on that frozen exact candidate — NOT_RUN.
 8. Create a NEW successor `version/v3.4.0 -> main` integration PR; historical PR #58 MUST NOT be reused — NOT_RUN.
 9. Reconfirm frozen candidate/main refs and integrate without introducing unqualified content — NOT_RUN.
 10. Record superseding immutable v3.4.0 baseline/tree and close #57/#47 — NOT_RUN.
 
+If Fresh version-level Independent Review requires any candidate-content repair, the candidate remains unfrozen; repair, re-run affected visible validation and obtain a new Fresh Independent Review before recording `FROZEN`.
+
 ## Operator / authority boundaries
 
-- Closure documentation is reconciled before final candidate freeze; after freeze, candidate content MUST remain operationally immutable.
+- Closure documentation is reconciled before final candidate visible validation; after the reviewed candidate is frozen, candidate content MUST remain operationally immutable.
 - Builder/release preparation cannot self-assert the required Fresh version-level Independent Review PASS.
 - Release Qualification and Repository Integration are distinct steps.
 - Derived DAG views remain non-authoritative and cannot replace Task Issues/native Issue Dependencies.
