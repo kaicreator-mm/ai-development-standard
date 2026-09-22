@@ -150,19 +150,23 @@ def validate_work_item_labels(
 
 
 def validate_live_dag_authority_claim(text: str) -> None:
-    normalized = re.sub(r"\s+", " ", text.lower())
+    normalized = text.lower()
     markdown_dag_markers = (
         "task_dag.md", "task-dag.md", "task_dag_status.md", "task-dag-status.md",
         "markdown status table", "shared markdown",
     )
-    claims_authority = "canonical" in normalized or "authoritative" in normalized
-    claims_live_execution = "live" in normalized or "execution state" in normalized
-    if (
-        any(marker in normalized for marker in markdown_dag_markers)
-        and claims_authority and claims_live_execution
-        and "non_authoritative_derived_state" not in normalized
-    ):
-        raise AssertionError("Markdown Task DAG/status document MUST NOT be canonical live execution authority")
+    for clause in re.split(r"[;\n]+", normalized):
+        clause = re.sub(r"\s+", " ", clause).strip()
+        if not clause:
+            continue
+        claims_authority = "canonical" in clause or "authoritative" in clause
+        claims_live_execution = "live" in clause or "execution state" in clause
+        if (
+            any(marker in clause for marker in markdown_dag_markers)
+            and claims_authority and claims_live_execution
+            and "non_authoritative_derived_state" not in clause
+        ):
+            raise AssertionError("Markdown Task DAG/status document MUST NOT be canonical live execution authority")
 
 
 def expect_reject(fn, message: str) -> None:
