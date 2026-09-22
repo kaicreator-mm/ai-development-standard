@@ -115,7 +115,17 @@ dependency completion identities
 retention class
 ```
 
-Machine contract: `schemas/execution-pack-manifest.schema.json`.
+When dependency identities are serialized in the v3.4 manifest wire format, each entry is:
+
+```text
+<task-id>@<40-hex completion/merge SHA>
+```
+
+`material_paths` is positive impact coverage used only to prove `PACK_STALE_NONMATERIAL` after the integration base advances. If a pack needs that optimization it SHOULD declare the source/contract/test/fixture/toolchain paths whose delta can materially affect execution. Missing, empty or malformed material coverage MUST NEVER be interpreted as proof of nonmaterial drift.
+
+The six core artifact names are a set contract, not merely an array-length contract. Claim-time semantic verification MUST establish that each required core name is present exactly once; duplicates do not satisfy completeness.
+
+Machine contract: `schemas/execution-pack-manifest.schema.json`. Deterministic claim-time semantics: `scripts/v34_rules.py`.
 
 ## 4. Dispatch binding
 
@@ -191,6 +201,7 @@ Task Pack identity
 dependency completion identities
 pinned standard revision
 branch identity
+core artifact completeness
 ```
 
 Canonical classification (deterministic, fail closed):
@@ -199,19 +210,23 @@ Canonical classification (deterministic, fail closed):
 PACK_CURRENT              execution may proceed
 
 PACK_STALE_NONMATERIAL    integration advanced but the delta does not touch the
-                          pack's material inputs; only an explicitly authorized
-                          impact/rebind action may continue execution; the
-                          original base identity remains historical evidence
+                          pack's declared material inputs; only an explicitly
+                          authorized impact/rebind action may continue execution;
+                          the original base identity remains historical evidence
 
-PACK_STALE_MATERIAL       the delta touches the pack's material inputs
-                          (write sets, contracts, tests, fixtures, toolchain);
-                          regenerate affected pack material before execution
+PACK_STALE_MATERIAL       the delta touches the pack's material inputs, dependency
+                          identities changed, delta impact is unknown, or positive
+                          material coverage is absent; regenerate affected pack
+                          material before execution
 
-PACK_INVALID              pack malformed, mis-bound, wrong task/branch, or
-                          pinned-standard mismatch; fail closed
+PACK_INVALID              pack malformed, mis-bound, wrong task/branch, duplicate/
+                          incomplete core inventory, malformed dependency identities,
+                          or pinned-standard mismatch; fail closed
 ```
 
-Classification inputs are facts (SHAs, dependency identities, write-set comparisons); they are not executor discretion. When classification is undeterminable, fail closed to `PACK_STALE_MATERIAL`.
+Classification inputs are facts (SHAs, dependency identities, declared material-path comparisons); they are not executor discretion. When classification is undeterminable, fail closed to `PACK_STALE_MATERIAL` unless the pack itself is malformed, in which case use `PACK_INVALID`.
+
+A base change can be classified `PACK_STALE_NONMATERIAL` only with positive material-impact coverage. An empty/missing `material_paths` set can never establish NONMATERIAL.
 
 The executor MUST NOT silently rewrite `base_sha`. Rebinding is an explicit, attributable action that records both identities.
 
@@ -304,6 +319,7 @@ schemas/task-contract.schema.json             agent_freedom + pack binding field
 schemas/agent-event-v2.schema.json            DISPATCH_CLAIMED / EXECUTION_PACK_STATE_CHANGED
 schemas/execution-state.schema.json           derived pack/queue projections
 schemas/validation-report.schema.json         exact-SHA validation evidence identity
+scripts/v34_rules.py                          claim-time fail-closed semantic oracle
 ```
 
 The repository's supported JSON-Schema subset and verifier regressions apply to all of them.

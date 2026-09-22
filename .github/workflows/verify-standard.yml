@@ -23,6 +23,7 @@ jobs:
       - run: python scripts/test_v33_lifecycle_contracts.py
       - run: python scripts/test_v33_semantic_regressions.py
       - run: python scripts/test_v34_lifecycle_contracts.py
+      - run: python scripts/test_v34_review_repairs.py
       - run: python scripts/verify_event_writer_surfaces.py
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
