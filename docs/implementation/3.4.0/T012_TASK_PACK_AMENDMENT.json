@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "version": "3.4.0",
+  "amendment": "post-first-closure",
+  "task_id": "T-012",
+  "issue": 66,
+  "depends_on": ["T-011"],
+  "integration_target": "version/v3.4.0",
+  "review_policy": "required",
+  "validation_scope": "concern",
+  "agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+  "task_pack": "docs/implementation/3.4.0/task-packs/T012_work_item_contract.md",
+  "reason": "Complete recoverable Version DAG, canonical Work Item metadata/Issue contract, and Golden/Forbidden conformance assets before reopened v3.4.0 closure."
+}
