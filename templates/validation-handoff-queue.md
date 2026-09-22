@@ -24,8 +24,24 @@ The worker reads this queue, selects the READY item, claims its dispatch (`DISPA
 clean checkout at exact SHA
 → verify requested_head_sha == current PR HEAD   (else HEAD_DRIFT → superseded, do not execute)
 → execute declared validation profile
-→ publish exact-SHA evidence (PASS/FAIL/BLOCKED)
+→ publish exact-SHA Validation Report + event (PASS/FAIL/BLOCKED)
 ```
+
+## Exact-identity completion rule
+
+A Validator dispatch MUST NOT project to terminal `PASS` merely because a loose validation event says PASS. The returned Validation Report must be bound back to the dispatch identity:
+
+```text
+dispatch_id            == dispatched id
+requested_sha          == dispatch.requested_head_sha
+tested_sha             == dispatch.requested_head_sha
+actual_checked_out_sha == dispatch.requested_head_sha
+current_pr_head        == dispatch.requested_head_sha
+expected_base_sha      == dispatch.expected_base_sha
+validation_profile     == dispatch.validation_profile
+```
+
+`schemas/validation-report.schema.json` requires the exact identity fields whenever `dispatch_id` is present. Consumers/reducers use the deterministic `validator_result_matches_dispatch(...)` rule from `scripts/v34_rules.py`; an unbound/legacy PASS remains historical evidence but cannot complete a v3.4 Validator dispatch.
 
 ## Rules
 
