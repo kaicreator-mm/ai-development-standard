@@ -246,13 +246,15 @@ Builder / optional Reviewer / Validator queues
 
 ### Stage 2.6 — Review Policy Selection
 
-每个 implementation Task/PR SHOULD 明确：
+每个 implementation Task/PR 在 dispatch 前 MUST 明确且仅解析一个 Review Policy：
 
 ```text
 required
 recommended
 not-required
 ```
+
+该 dispatch prerequisite 的 canonical metadata 语义由 `standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §6 持有；本流程不得降低为 SHOULD 或省略。
 
 权威顺序：
 

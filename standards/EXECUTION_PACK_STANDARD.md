@@ -24,6 +24,8 @@ Dispatch   = the executable handoff (WHO/WHERE/WHICH IDENTITY)
 
 None of the three is a second Product, Architecture, Task or Validation authority.
 
+A user-visible ChatGPT Web task trigger is not an Execution Pack artifact and has no authority to redefine any of the above. User-visible invocation follows `ISSUE_FIRST_TASK_TRIGGER.md` and remains pointer-only.
+
 ## 2. Task Pack
 
 A Task Pack answers: *what must this Task achieve?* It is the durable planning authority for one Task.
@@ -98,6 +100,16 @@ reference fixtures
 ```
 
 Empty placeholder artifacts MUST NOT be required. A minimal task MAY satisfy the core with compact content; a trivial Fast Path task MAY skip the Execution Pack entirely (section 11).
+
+### 3.1 `LOCAL_AGENT_PROMPT.md` boundary
+
+`LOCAL_AGENT_PROMPT.md`, when present, is a durable repository artifact subordinate to the Task Pack and Execution Contract. It may contain reusable executor-oriented guidance that is appropriate to version-control with the exact-base-bound pack.
+
+It is **not** the user-visible ChatGPT Web task trigger.
+
+ChatGPT Web MUST NOT copy or regenerate `LOCAL_AGENT_PROMPT.md` into chat as a parallel handoff contract. User-visible invocation remains limited to repository + Issue/PR + optional role/dispatch pointer under `ISSUE_FIRST_TASK_TRIGGER.md`.
+
+If a task-specific instruction exists only in a chat prompt and not in the Issue/Task Pack/Execution Pack/Dispatch authority, the durable contract is incomplete and must be repaired before invocation.
 
 The manifest identifies at least:
 
@@ -284,9 +296,13 @@ critical semantic/interface seeds where they explain authority
 Potentially transient:
 
 ```text
-verbose prompts           debug notes
-temporary hints           scratch artifacts
+verbose repository-owned prompts
+debug notes
+temporary hints
+scratch artifacts
 ```
+
+Even when retained, prompt artifacts remain repository evidence/guidance; they do not become user-visible chat authority.
 
 Projects MAY retain complete Execution Packs for provenance. Execution Packs and `.agent/execution/` MUST be excludable from shipped package/product artifacts; a project's packaging gates MUST be able to exclude them without weakening product content. Package leakage of execution-pack material into shipped artifacts is a packaging-gate defect.
 
@@ -326,4 +342,4 @@ The repository's supported JSON-Schema subset and verifier regressions apply to 
 
 ## 13. Non-goals
 
-This standard does not require a centralized scheduler, does not create Builder/Validator/Reviewer state machines, does not make Build Host validation mandatory per task, does not make Independent Review universal, does not authorize Local Agent architecture redesign by default, and does not turn the Execution Pack into a second Product/Architecture authority.
+This standard does not require a centralized scheduler, does not create Builder/Validator/Reviewer state machines, does not make Build Host validation mandatory per task, does not make Independent Review universal, does not authorize Local Agent architecture redesign by default, does not turn the Execution Pack into a second Product/Architecture authority, and does not make any prompt artifact a parallel chat task authority.

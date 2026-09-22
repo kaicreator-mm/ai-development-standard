@@ -1,83 +1,110 @@
 # v3.4.0 Closure Status
 
-Update: 2026-09-22 · Integration branch: `version/v3.4.0` · Status: **IMPLEMENTATION COMPLETE — CLOSURE RE-REVIEW REPAIR IN PROGRESS**
+Update: 2026-09-23 · Integration branch: `version/v3.4.0` · Status: **REOPENED — T-011/T-012 DONE; FINAL T-010 CLOSURE IN PROGRESS**
 
-This is the truthful closure record required by `RELEASE_STANDARD.md` / `AGENTS.md`. It intentionally does **not** claim Release READY while a required Independent Review finding remains unresolved.
+This is the truthful closure record required by `RELEASE_STANDARD.md` / `AGENTS.md`.
 
-The exact live candidate identity is authoritative from PR #58 / `version/v3.4.0` and structured GitHub events. This file avoids embedding a self-referential successor SHA that would itself mutate the candidate.
+The first v3.4.0 closure completed on candidate `f90669abda9fab35f4759469f1369ac55ba702fe`, but Issues #64 and #66 identified normative execution-contract defects before any GitHub Release was published. Historical Validation / Review / Release Qualification evidence remains valid only for the exact SHA it tested and MUST NOT be inherited onto the successor candidate.
 
 ## Durable GitHub execution state
 
-- v3.4 umbrella: #47.
-- T-001…T-009 execution Issues: #48…#56, materialized and closed after their implementation evidence was backfilled.
-- T-010 Version Closure: #57, OPEN until release integration and immutable baseline recording complete.
-- Release PR: #58 (`version/v3.4.0` → `main`).
-- First bounded closure repair: #59 / PR #60, merged into the version branch.
-- Second bounded closure repair: #61, created from the latest Independent Re-review findings.
-- Accidental Issue #62 is explicitly `not_planned` and is not part of v3.4 authority, DAG, validation, or release scope.
+- v3.4 umbrella: #47 — REOPENED.
+- T-001…T-009: #48…#56 — DONE.
+- T-011 pointer-only trigger correction: #64 / PR #65 — DONE / MERGED.
+  - final reviewed HEAD: `1d426d805bdf5c818330e2f83dac7a3fabd692e0`;
+  - exact-head `verify-standard` run #228 / `35723319909`: PASS;
+  - Fresh Independent Re-review: PASS, P0=0 / P1=0 / P2=1 / P3=0;
+  - merged integration commit: `dddb3bfe53322df17f712d60f4e9f5582603a921`.
+- T-012 Work Item Contract / Version DAG / metadata / Golden Templates: #66 / PR #67 — DONE / MERGED.
+  - final reviewed HEAD: `39fa5d2b04a59a63ee85ebee95648ab98a36dccf`;
+  - exact-head `verify-standard` PR run #246 / `35748934986`: PASS;
+  - Fresh Independent Re-review: PASS, P0=0 / P1=0 / P2=0 / P3=0;
+  - merged integration commit: `94c2dc64a6be3a69eacf7646a84e77fe690d1704`.
+- T-010 Version Closure: #57 — ACTIVE. Closure bookkeeping is being reconciled before any final exact-candidate validation/review/freeze so later documentation edits do not invalidate the qualified SHA.
+- Historical release PR #58 integrated the first closed candidate to `main`; it is audit history only and MUST NOT be reused as successor release authority.
 
-GitHub API/event publication is available in the current closure context. Earlier statements that publication was blocked by a local `gh` keyring/token are historical only and no longer describe the active closure path.
+## Planning authority
 
-## Completed implementation lineage (T-001 … T-009)
+The original `TASK_PACKS.json` remains the historical frozen T-001…T-010 planning snapshot.
 
-| Task | Implementation evidence | State |
-|---|---|---|
-| T-001 authority convergence + Task DAG + Task Packs | `0760f92` | DONE |
-| T-002 Task Pack / Execution Pack contracts + standard + templates | `ba3c22e` | DONE |
-| T-003 unified dispatch + event-v2/execution-state extensions + v34 rules | `dfad50a` | DONE |
-| T-004/T-005 builder+validator profiles, exact-SHA rule, queue, bootstraps | `f34e9e4` | DONE |
-| T-006..T-008 closed loop, web control plane, local-first CI, adoption | `0ddba5f` | DONE |
-| T-009 conformance + adversarial regression + verifier + CI wiring | `3bdc534` + follow-up | DONE |
+Post-closure correction authority is additive:
 
-## Validation history
+- `docs/implementation/3.4.0/T011_TASK_PACK_AMENDMENT.json`
+- `docs/implementation/3.4.0/task-packs/T011_pointer_only_trigger.md`
+- `docs/implementation/3.4.0/T012_TASK_PACK_AMENDMENT.json`
+- `docs/implementation/3.4.0/task-packs/T012_work_item_contract.md`
+- `docs/implementation/3.4.0/TASK_DAG.md`
+- Issues #64 / #66 / #57
 
-Initial integration-branch Windows real-host evidence (Python 3.13) passed the full pre-repair verifier chain, including v3.4 lifecycle/adversarial tests.
+## Historical first closure evidence
 
-After the first closure repair (#59 / PR #60):
+First closed candidate:
 
-- repair PR #60 exact-head `verify-standard` run #184 / `35686539272`: **SUCCESS**;
-- merged version candidate `6d243580032a471ed2083fe8ea8134dccce67e9d` exact-head `verify-standard` run #186 / `35686572832`: **SUCCESS**;
-- the exact-head chain includes `scripts/test_v34_review_repairs.py` in addition to the v3.3/v3.4 baseline suites.
+```text
+f90669abda9fab35f4759469f1369ac55ba702fe
+```
 
-Validation PASS is evidence for the tested SHA only and does not substitute for required Independent Review.
+Historical evidence:
 
-## Independent Review history
+- exact-head `verify-standard` run #193 / `35692606829`: PASS;
+- Fresh Independent Re-review C on PR #58: PASS, P0=0/P1=0;
+- Release Qualification: READY;
+- repository integration to `main@418d244f23a6bf724acf5d4c4eff4ea292f1c4db`.
 
-### Review A — `20824fb63d0d5708248f4c2d005b3c8cb55e4b45`
+These facts are audit history only and do not prove the post-T012 candidate.
 
-PR #58 comment `5771113329`: **FAIL**, P0=0 / P1=2 / P2=1 / P3=0.
+## T-011 result
 
-Findings:
+T-011 enforces:
 
-- Execution Pack manifest/classifier interoperability + staleness fail-closed gap;
-- exact-SHA Validator result binding gap;
-- Execution Pack required core-artifact completeness gap.
+```text
+GitHub Issue + referenced repository authority = complete executable task contract
+user-visible ChatGPT Web trigger = pointer only
+No durable contract -> no trigger
+No Issue update -> no new task-specific instruction in chat
+```
 
-#59 / PR #60 repaired these findings and moved the candidate, invalidating Review A by exact-head rule.
+Its final exact-head CI and Fresh Independent Re-review passed before PR #65 merged to the integration branch.
 
-### Review B — `6d243580032a471ed2083fe8ea8134dccce67e9d`
+## T-012 result
 
-PR #58 comment `5771563476`: **FAIL**, P0=0 / P1=1 / P2=1 / P3=0.
+T-012 adds and verifies:
 
-Revalidation closed the earlier exact-SHA Validator binding and core-artifact completeness findings, but found one remaining release-significant P1: malformed/unknown `delta_paths` entries could still be silently skipped and allow false `PACK_STALE_NONMATERIAL` classification. It also identified this closure document as stale relative to current GitHub facts (P2).
+```text
+recoverable substantial-version Task DAG
++ canonical live Task Issues/native Issue Dependencies
++ strict Work Item type/state/review/risk semantics
++ stable executable Issue contract/readiness
++ all-standard Golden/Forbidden/rationale coverage
++ concrete critical templates
++ fail-closed machine regression
+```
 
-Issue #61 is the bounded repair for those two current findings. Any successor candidate produced by #61 invalidates Review B and requires another Fresh Independent Re-review.
+The first Fresh Independent Review found P1=2, the successor Re-review found one residual P1, and the final successor `39fa5d2b...` closed all blocking findings. PR #67 then merged with expected-head protection to `version/v3.4.0@94c2dc64...`.
 
-## Current T-010 gates
+## Active T-010 final closure sequence
 
-1. **Second review repair (#61)** — DOING until the malformed-delta fail-open case is fixed, adversarial regression passes, and this closure record is reconciled.
-2. **Exact-head full verifier/coherence evidence on the successor version candidate** — NOT_RUN until #61 merges into `version/v3.4.0`; old PASS remains historical only.
-3. **Fresh Independent Re-review on the successor exact HEAD** — NOT_RUN. Builder/repair context MUST NOT self-assert PASS.
-4. **Release Qualification** — NOT_RUN; requires successful fresh review and exact-head closure evidence.
-5. **#45 / #46 final disposition** — material acceptance mapping is already published, but both remain OPEN until Release Qualification permits closure. #46 remains a Validator Dispatch / version-scoped Validation Handoff **projection**, not an independent queue lifecycle or second validation authority.
-6. **Repository integration** — NOT_RUN; PR #58 must not merge to `main` before gates 1–5 complete.
-7. **Immutable v3.4 baseline recording** — NOT_RUN until repository integration succeeds.
+Closure follows `RELEASE_STANDARD.md` and keeps candidate identity stable:
+
+1. Reconcile terminal Task DAG / closure bookkeeping before final candidate validation — DOING.
+2. Merge closure-bookkeeping concern to `version/v3.4.0`; resulting integration SHA becomes the candidate-preparation baseline — NOT_RUN.
+3. Run full verifier/coherence chain on that exact post-bookkeeping candidate — NOT_RUN.
+4. Reconfirm #45/#46 material acceptance remains satisfied — NOT_RUN.
+5. Fresh version-level Independent Review on that exact candidate — NOT_RUN.
+6. Freeze the reviewed exact candidate SHA/tree only after all required visible freeze gates pass — NOT_RUN.
+7. Fresh Release Qualification on that frozen exact candidate — NOT_RUN.
+8. Create a NEW successor `version/v3.4.0 -> main` integration PR; historical PR #58 MUST NOT be reused — NOT_RUN.
+9. Reconfirm frozen candidate/main refs and integrate without introducing unqualified content — NOT_RUN.
+10. Record superseding immutable v3.4.0 baseline/tree and close #57/#47 — NOT_RUN.
+
+If Fresh version-level Independent Review requires any candidate-content repair, the candidate remains unfrozen; repair, re-run affected visible validation and obtain a new Fresh Independent Review before recording `FROZEN`.
 
 ## Operator / authority boundaries
 
-- Builder/repair work may fix #61 and publish exact-head validation evidence.
-- Independent Reviewer must run in a distinct logical reviewer context and reconstruct facts from GitHub.
-- Release controller may qualify only after all mandatory gates are PASS on one exact candidate.
-- Repository integration remains a distinct bounded step after READY.
+- Closure documentation is reconciled before final candidate visible validation; after the reviewed candidate is frozen, candidate content MUST remain operationally immutable.
+- Builder/release preparation cannot self-assert the required Fresh version-level Independent Review PASS.
+- Release Qualification and Repository Integration are distinct steps.
+- Derived DAG views remain non-authoritative and cannot replace Task Issues/native Issue Dependencies.
+- Old candidate PASS/Review/Qualification never transfers to a successor SHA.
 
 Unresolved states stay explicit; `FAIL`, `BLOCKED`, and `NOT_RUN` are never renamed to manufacture `READY`.

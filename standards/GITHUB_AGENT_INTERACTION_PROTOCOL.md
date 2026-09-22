@@ -13,6 +13,10 @@ It owns:
 - Review Policy interaction semantics;
 - recovery from GitHub facts across sessions/agents.
 
+Canonical Work Item type/state/risk vocabulary, executable Issue readiness, Version Task DAG materialization and mutation safety are owned by `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`.
+
+Golden positive/negative conformance material is owned/indexed by `GOLDEN_TEMPLATE_STANDARD.md` and `templates/GOLDEN_INDEX.md`.
+
 It does **not** redefine orchestration state reduction, validation truth or release authority. Those remain owned by:
 
 - `EXECUTION_ARCHITECTURE_STANDARD.md` — durable facts, derived state, queues, dispatch and controllers;
@@ -28,6 +32,8 @@ Core rule:
 GitHub carries durable execution facts.
 Chat is a workspace, not project state.
 ```
+
+User-visible task invocation follows `ISSUE_FIRST_TASK_TRIGGER.md`: GitHub owns the complete task contract; chat carries only a pointer to that durable contract.
 
 ## 2. Canonical GitHub responsibility model
 
@@ -50,6 +56,8 @@ Do not overload one object with another object's semantics.
 
 ### Planning DAG vs execution DAG
 
+Every substantial version MUST maintain a recoverable Version Task DAG under `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`.
+
 Frozen Task DAG is a planning/history checkpoint. After materialization:
 
 ```text
@@ -58,68 +66,100 @@ GitHub Task Issues + native Issue Dependencies = canonical live execution DAG
 
 Sub-issue hierarchy is not execution dependency. Stacked PR is not Task DAG; use it only when code truly depends on an unmerged upstream code baseline.
 
+A shared Markdown Task DAG status file MUST NOT be used as canonical live state. A version state card is permitted only as `NON_AUTHORITATIVE_DERIVED_STATE` and must be reconstructible from current GitHub facts.
+
 If the connected GitHub capability cannot mutate a canonical object, follow `GITHUB_CAPABILITY_FALLBACK.md`; do not silently replace native dependency semantics with prose.
 
 ## 3. Task Issue contract
 
-A Task Issue SHOULD remain relatively stable and contain, as applicable:
+Executable Issue structure and readiness are defined by `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` and the type-specific templates indexed by `templates/GOLDEN_INDEX.md`.
+
+A Task Issue MUST contain or reference all material execution facts applicable to the assigned role, including:
 
 ```text
 Task ID / goal
 scope / non-scope
 frozen inputs
 planning DAG reference
+Task Pack / durable execution artifact references
 baseline / integration target
 acceptance criteria
-required gates
+required gates and validation ownership
 Review Policy
+risk
 dependency summary
+execution constraints
 allowed / forbidden changes
+failure / blocker handling
 completion rule
 ```
 
-Do not use repeated Issue-body rewrites as an event log. Current events, claims, validation, review and merge history belong in metadata/comments.
+The Issue body SHOULD remain relatively stable. Do not use repeated Issue-body rewrites as an event log. Current events, claims, validation, review and merge history belong in canonical metadata/comments/events.
 
-When an Issue already contains the complete task contract, invocation follows `ISSUE_FIRST_TASK_TRIGGER.md`: send a short repository/Issue pointer instead of copying a second task contract into chat.
+Before a task is invoked in another Web session, Local Agent, Reviewer, Validator or automation, the assigned Issue MUST contain or reference all task-specific execution facts required by the receiver. Missing task detail MUST be materialized in GitHub authority first; a longer chat prompt is not a valid substitute.
+
+Invocation then follows `ISSUE_FIRST_TASK_TRIGGER.md` and MUST be pointer-only. If a new task-specific requirement is discovered, update the Issue/referenced authority before re-invocation.
 
 ## 4. Metadata dimensions
 
-Portable labels may represent stable routing dimensions:
+Canonical metadata vocabulary and invariants are normative in `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`.
+
+Every materialized Work Item MUST resolve exactly one canonical type. Every active executable Work Item MUST resolve exactly one canonical workflow state. Implementation work MUST resolve exactly one Review Policy before dispatch.
+
+Canonical type vocabulary:
 
 ```text
+type:version
+type:planning
+type:research
+type:research-demo
 type:task
 type:bug
+type:fix
 type:validation
 type:blocker
+type:release
+```
 
+Canonical workflow states:
+
+```text
 state:planned
 state:ready
+state:claimed
 state:implementing
 state:review-ready
 state:reviewing
-state:changes-requested
 state:validation-needed
+state:validating
+state:changes-requested
 state:merge-ready
 state:blocked
 state:done
+state:superseded
+state:cancelled
+```
 
+Review Policy:
+
+```text
 review:required
 review:recommended
 review:not-required
-
-handoff:local-agent
-executor:codex
-executor:claude-code
-
-gate:review
-gate:integration
-gate:critical-journey
-gate:hidden
-gate:platform
-gate:packaging
 ```
 
-Projects MAY use native Issue Types/custom fields when available while preserving the same semantics.
+Risk:
+
+```text
+risk:low
+risk:medium
+risk:high
+risk:critical
+```
+
+Projects MAY use native Issue Types/custom fields when available only when semantics map exactly to the canonical vocabulary. Individual Agents MUST NOT invent aliases/synonyms for canonical workflow dimensions.
+
+Portable routing namespaces MAY include `validation:*`, `executor:*`, `handoff:*`, `gate:*`, and project-local `area:*` / `component:*` / `domain:*` classifications.
 
 Workflow routing state is not Gate state. Gate state remains only:
 
@@ -130,6 +170,8 @@ BLOCKED
 NOT_RUN
 NOT_APPLICABLE
 ```
+
+`gate:pass`, `validation:passed`, Agent/session identity labels, and other mutable substitutes for exact evidence are forbidden.
 
 Execution-channel/provider state, dispatch state, candidate state and release state are also separate dimensions as defined by `EXECUTION_ARCHITECTURE_STANDARD.md`.
 
@@ -169,7 +211,7 @@ Semantics:
 - `session_ref` = concrete page/session/process/run alias;
 - `transport_actor` = transport provenance, not logical authorship.
 
-Dynamic operator/session identities SHOULD remain in structured events rather than GitHub labels.
+Dynamic operator/session identities MUST remain in structured events rather than GitHub labels.
 
 `ROLE_CLAIMED` / `ROLE_RELEASED` provide attribution and routing visibility. They are not Validation PASS and not a distributed lock.
 
@@ -177,7 +219,7 @@ Dynamic operator/session identities SHOULD remain in structured events rather th
 
 Independent Review is risk-based, not universally mandatory.
 
-Every implementation Task/PR SHOULD resolve:
+Every implementation Task/PR MUST resolve:
 
 ```text
 required
@@ -373,15 +415,15 @@ A Validator publishes exact-SHA environment/profile evidence. Validation-only ex
 
 Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`. Profiles configure execution authority; they never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections.
 
-Pointer-only invocation applies to every role:
+Pointer-only invocation applies to every role and is MUST-level for user-visible task triggers. A trigger MAY identify only repository, Issue/PR, role and dispatch id when required to locate the durable contract. It MUST NOT duplicate task-specific SHA/branch/scope/commands/gates/review/closeout instructions.
+
+Canonical examples:
 
 ```text
-Repository: owner/repo
-Issue/PR: #N
-Role: builder|validator|reviewer
-Dispatch: <id>
-
-Continue <project> <version> current READY <role> work in Issue #NN.
+完成 `owner/repo` Issue #N。
+执行 `owner/repo` Issue #N 的当前 READY builder dispatch。
+执行 `owner/repo` Issue #N 的当前 READY validation dispatch。
+完成 `owner/repo` PR #N 的当前 READY Independent Review dispatch。
 ```
 
 A Reviewer acting independently MUST NOT modify product code in the same review role/session; findings route back through a Builder dispatch.
@@ -406,26 +448,17 @@ Merge control does not decide Release Qualification.
 
 ## 12. Dispatch / handoff interaction
 
-A handoff becomes dispatchable only after its durable Issue contract is complete according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and the Local Agent Handoff schema.
+A handoff becomes dispatchable only after its durable Issue contract is complete according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md`, `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`, and the Local Agent Handoff schema.
 
 A dispatch references Task Pack identity and, when generated, Execution Pack identity (`EXECUTION_PACK_STANDARD.md`); workers verify pack staleness and exact identity at claim time and publish `DISPATCH_CLAIMED`. A version-scoped Validation Handoff Queue, when enabled, is a projection of Validator dispatches — pointer-only invocation into the queue never makes the queue Issue a second validation or Task authority.
 
-After `HANDOFF_READY`, prefer pointer-only invocation:
-
-```text
-Repository: owner/repo
-Issue: #N
-Role: <role>
-Dispatch: <id>
-```
-
-Dispatch state is derived/routed according to `EXECUTION_ARCHITECTURE_STANDARD.md`. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
+After `HANDOFF_READY`, user-visible invocation MUST remain pointer-only. If a new task-specific requirement appears, update the Issue/Dispatch/authoritative artifact first and then invoke with the same pointer form. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
 
 ## 13. Append-oriented history
 
 Comments/events are append-oriented. If an important event is wrong, publish a corrective/superseding event rather than silently rewriting material history.
 
-A machine-maintained state card MAY summarize current state but is derived, not authority. If it conflicts with durable facts, recompute it.
+A machine-maintained state card MAY summarize current state but is derived, not authority. It MUST use the `NON_AUTHORITATIVE_DERIVED_STATE` semantics from `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`. If it conflicts with durable facts, recompute it.
 
 ## 14. Recovery rule
 
@@ -435,9 +468,24 @@ A fresh compatible Agent/session SHOULD be able to recover work from:
 repository
 + pinned standard revision
 + assigned Issue / PR
-+ Issue Dependencies and metadata
++ Issue Dependencies and canonical metadata
 + exact-SHA Review/Validation evidence
 + structured events / logical operator attribution
 ```
 
 It SHOULD be able to determine what is ready, what is stale, which exact identity each result applies to, and which operator/context performed it without private reasoning or previous chat transcripts.
+
+## 15. Golden / Forbidden guidance
+
+Positive and negative examples for GitHub interaction are indexed in `templates/GOLDEN_INDEX.md`.
+
+At minimum, implementations MUST be able to distinguish:
+
+- complete executable Issue vs chat-repaired incomplete Issue;
+- one canonical workflow state vs duplicate/invented states;
+- required `gate:*` kind vs false `gate:pass` truth;
+- structured Agent identity vs `agent:*` session labels;
+- canonical live Issue Dependency DAG vs a shared live-status Markdown document;
+- pointer-only trigger vs a long second task contract.
+
+The rationale and maintained non-conformant examples are in `templates/golden/ANTI_PATTERNS.md`.
