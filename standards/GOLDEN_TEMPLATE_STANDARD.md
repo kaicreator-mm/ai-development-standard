@@ -6,16 +6,35 @@ Normative standards must be executable and teachable, not only descriptive. This
 
 ## 2. Mandatory coverage
 
-Every active normative standard in `standard-manifest.json` MUST satisfy one of these forms:
+Every active normative standard in `standard-manifest.json` MUST have exactly one coverage record in:
 
-1. **Artifact/protocol standard** — reference at least one maintained Golden Template or Golden Example that demonstrates the compliant shape; or
-2. **Conceptual/policy standard** — contain or reference at least one Golden Conformance Example that demonstrates compliant application.
+```text
+templates/golden/STANDARD_COVERAGE.json
+```
 
-Every normative standard MUST also contain or reference:
+Each coverage record MUST identify:
+
+```text
+standard
+golden_ref
+forbidden_ref
+rationale_ref
+```
+
+The coverage registry is the repository-level reference on behalf of every normative standard. A standard MAY additionally embed direct links/sections, but it is not required to duplicate the registry locally.
+
+Coverage MUST satisfy one of these forms:
+
+1. **Artifact/protocol standard** — point to at least one maintained Golden Template or Golden Example that demonstrates the compliant shape; or
+2. **Conceptual/policy standard** — point to a maintained Golden Conformance Example that demonstrates compliant application.
+
+Every normative standard MUST also have:
 
 - a Forbidden / Non-conformant example;
 - rationale explaining why the forbidden form violates authority, correctness, evidence, recoverability, or maintainability;
 - ownership/authority-boundary explanation when the standard could otherwise be mistaken for another authority.
+
+CI MUST fail when the set of standards in `STANDARD_COVERAGE.json` differs from `standard-manifest.json.sections.normative_standards`, or when a referenced positive/negative/rationale asset is missing.
 
 ## 3. Golden examples are not authority copies
 
@@ -25,9 +44,16 @@ A Golden Task Issue may contain placeholders such as `<baseline-sha>` or `<accep
 
 Authority remains with the actual project Issue, frozen artifact, schema, exact-SHA evidence, or release record.
 
-## 4. Central index
+## 4. Central indexes
 
-`templates/GOLDEN_INDEX.md` is the canonical mapping from normative execution surfaces to:
+Two complementary indexes are maintained:
+
+- `templates/golden/STANDARD_COVERAGE.json` — machine-complete one-to-one coverage for every active normative standard;
+- `templates/GOLDEN_INDEX.md` — human-oriented mapping for important execution surfaces and concrete reusable templates.
+
+`templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md` provides concise positive/forbidden/rationale examples for standards whose primary Golden form is conceptual rather than a copyable artifact template.
+
+The human index maps:
 
 ```text
 owning standard
@@ -36,16 +62,9 @@ owning standard
 → verifier/regression coverage
 ```
 
-The index MUST explain whether the referenced file is:
-
-- a copyable template;
-- a worked conformance example;
-- a checklist/reference surface;
-- a negative example library.
-
 ## 5. Minimum v3.4 critical surfaces
 
-v3.4 MUST maintain Golden coverage for at least:
+In addition to complete standard-wide coverage, v3.4 MUST maintain concrete Golden coverage for at least:
 
 - Version Task DAG;
 - Version umbrella Issue;
@@ -84,32 +103,35 @@ The weak example may be true but does not teach the protocol invariant.
 
 ## 7. Standard authoring rule
 
-When a standard introduces a new durable artifact, workflow state, handoff, gate, event, or authority boundary, the same change MUST update:
+When a standard is added, removed, or changes a durable artifact, workflow state, handoff, gate, event, or authority boundary, the same change MUST update:
 
-1. its Golden Example/Template;
-2. its Forbidden/non-conformant example or shared anti-pattern reference;
-3. the central Golden Index;
-4. focused verifier/regression coverage when machine checking is practical.
+1. `STANDARD_COVERAGE.json`;
+2. its Golden Example/Template or conformance example;
+3. its Forbidden/non-conformant example and rationale;
+4. `templates/GOLDEN_INDEX.md` when a reusable critical surface changes;
+5. focused verifier/regression coverage when machine checking is practical.
 
-A normative change is incomplete if it changes required behavior but leaves its Golden example teaching the old behavior.
+A normative change is incomplete if it changes required behavior but leaves Golden/Forbidden guidance teaching the old behavior.
 
 ## 8. Golden conformance example
 
-A new `Validation Request` contract is introduced. The PR adds:
+A new `Validation Request` contract is introduced. The PR adds/updates:
 
 ```text
-standards/...                     normative semantics
-templates/validation-request-issue.md  compliant shape
-templates/golden/ANTI_PATTERNS.md      forbidden stale-label example
-templates/GOLDEN_INDEX.md              ownership/index row
-scripts/...                             regression
+standards/...                                      normative semantics
+templates/validation-request-issue.md              compliant shape
+templates/golden/STANDARD_COVERAGE.json            standard-wide mapping
+templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md  positive/negative rationale
+templates/golden/ANTI_PATTERNS.md                   shared diagnostic anti-pattern
+templates/GOLDEN_INDEX.md                           execution-surface index
+scripts/...                                         regression
 ```
 
 ## 9. Forbidden examples and rationale
 
-Forbidden: adding a new standard that defines a required artifact but provides no positive example.
+Forbidden: adding a new standard that defines required behavior but omitting it from `STANDARD_COVERAGE.json`.
 
-Reason: Agents must infer shape independently, creating inconsistent project-local dialects.
+Reason: some Agents receive no canonical positive/negative guidance and begin inventing project-local dialects.
 
 Forbidden: copying a live project's current SHA/branch/task status into a Golden Template.
 
