@@ -26,7 +26,7 @@ or, when role/dispatch disambiguation is required:
 
 The trigger MAY identify repository, Issue/PR, role and dispatch id when needed. It MUST NOT duplicate baseline SHA, branch rules, scope, commands, gates, review procedure, repair instructions, evidence requirements or closeout rules.
 
-If the Issue is incomplete, repair/materialize the Issue or its authoritative referenced artifact first. A long chat prompt MUST NOT be used to make an incomplete handoff executable.
+Do not copy the full task contract into chat. If the Issue is incomplete, repair/materialize the Issue or its authoritative referenced artifact first. A long chat prompt MUST NOT be used to make an incomplete handoff executable.
 
 Hard invariant:
 
