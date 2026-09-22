@@ -22,10 +22,10 @@
 | T-007 | #54 | T-006 | YES | M | version plan §16 | CI + validation standards | local-first policy integrated | Low | verify-standard | recommended | independent | DONE |
 | T-008 | #55 | T-006 | YES | M | version plan §22 | adoption + templates | templates/overrides/retention/Fast Path | Low | verify-standard | recommended | independent | DONE |
 | T-009 | #56 | T-002..T-008 | NO | H | version plan §24 | scenarios A–G | positive + adversarial verifier regression | High | all test scripts green | required | independent | DONE |
-| T-011 | #64 | T-009 | NO | H | post-closure defect + ISSUE_FIRST_TASK_TRIGGER | pointer-only trigger authority + regression | durable Issue is complete contract; user-visible trigger pointer-only; incomplete Issue repaired first | High | full verify-standard + pointer-only regression + exact-head CI | required | `version/v3.4.0@f90669ab...` | DOING |
+| T-011 | #64 | T-009 | NO | H | post-closure defect + ISSUE_FIRST_TASK_TRIGGER | pointer-only trigger authority + regression | durable Issue is complete contract; user-visible trigger pointer-only; incomplete Issue repaired first | High | full verify-standard + pointer-only regression + exact-head CI | required | `version/v3.4.0@f90669ab...` | REVIEW-READY |
 | T-010 | #57 | T-009, T-011 | NO | H | RELEASE_STANDARD + post-T011 candidate | closure report | full verifier + Fresh Independent Review + Release Qualification on new exact candidate | High | version closure gates | required | successor candidate after T-011 | REOPENED |
 
-Planning status values: `TODO / DOING / BLOCKED / DONE / DEFERRED / NOT_APPLICABLE / REOPENED`.
+Planning status values: `TODO / DOING / REVIEW-READY / BLOCKED / DONE / DEFERRED / NOT_APPLICABLE / REOPENED`.
 
 ## Post-closure correction rule
 
@@ -46,6 +46,7 @@ The first T-010 closure on candidate `f90669abda9fab35f4759469f1369ac55ba702fe` 
 - A task is `DONE` only when its acceptance criteria and required task-level gates are satisfied.
 - T-011 uses a JIT task branch from the current v3.4 integration baseline because its dependencies are already satisfied.
 - T-011 Review Policy is `required` because it changes normative authority placement and cross-agent invocation semantics.
+- T-011 is `REVIEW-READY` only after its successor exact HEAD passes full CI; Independent Re-review remains required before merge.
 - T-010 remains reopened until T-011 merges and fresh exact-head closure gates pass.
 
 ## Review Policy Planning
@@ -54,4 +55,4 @@ Version-level Review Policy remains `required`. T-011 additionally requires conc
 
 ## Execution mode
 
-T-011 executes on `task/v3.4.0-t011-pointer-only-trigger` from `version/v3.4.0@f90669ab...`, targets `version/v3.4.0`, and does not alter unrelated v3.4 scope. After merge, T-010 reruns closure on the new exact candidate.
+T-011 executes on `task/v3.4.0-t011-pointer-only-trigger` from `version/v3.4.0@f90669ab...`, targets `version/v3.4.0`, and does not alter unrelated v3.4 scope. After merge, downstream corrective work and T-010 rerun closure on successor exact candidates.
