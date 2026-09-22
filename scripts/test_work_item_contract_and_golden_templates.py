@@ -274,11 +274,11 @@ def test_golden_standard_and_index() -> None:
     validate_golden_index(index)
 
     broken_missing = index.replace(
-        "| `templates/golden/ANTI_PATTERNS.md#incomplete-executable-issue` | focused verifier |",
-        "|  | focused verifier |",
+        "`templates/golden/ANTI_PATTERNS.md#incomplete-executable-issue`",
+        "",
         1,
     )
-    assert broken_missing != index, "Golden Index mutation fixture did not match expected row"
+    assert broken_missing != index, "Golden Index mutation fixture did not match expected forbidden reference"
     expect_reject(
         lambda: validate_golden_index(broken_missing),
         "missing Golden Index Forbidden/rationale linkage was not rejected",
