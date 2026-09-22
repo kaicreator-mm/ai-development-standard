@@ -95,7 +95,8 @@
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
-      "references/WOODPECKER_LOCAL_BACKEND_REFERENCE_2026-09-18.yaml"
+      "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
+      "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
