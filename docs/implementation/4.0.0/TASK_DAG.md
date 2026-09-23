@@ -74,7 +74,7 @@ T-013 / #85  Release Qualification + Immutable v4 Baseline
 3. Each PR targets `version/v4.0.0` unless a real stacked dependency requires another parent.
 4. Required Review is exact-head bound; Builder context cannot self-assert PASS.
 5. Validation truth remains exact subject × environment/toolchain × profile; no Operation abstraction can infer an unexecuted PASS.
-6. T-009 is the first Task whose authoritative acceptance explicitly requires repository-real verifier execution; Web static inspection alone is insufficient.
+6. T-009 is the first Task whose deliverables themselves introduce new v4 machine contracts/verifier regressions that require repository-real execution for authoritative acceptance; the released verifier remains an applicable merge gate for earlier changed PRs, including T-001.
 7. T-010/T-012 require model-diverse independent review evidence; the implementing model/context cannot satisfy those independence requirements by self-review.
 8. Blockers propagate only through actual DAG edges; independent work may continue where frozen authority allows.
 
