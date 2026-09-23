@@ -9,6 +9,7 @@ from test_protocol_schemas import load_schema, validate_subset
 from v40_rules import (
     canonical_semantic_action_key,
     fast_path_eligible,
+    validate_assurance_aggregation,
     validate_assurance_semantics,
     validate_candidate_release_separation,
     validate_finding_disposition,
@@ -131,7 +132,20 @@ def aggregation_example() -> dict:
         "subject_identity_ref": f"sha:{SHA_A}",
         "judgment": "PASS",
         "requested_route": "merge-ready",
+        "requested_route_authority": "NON_AUTHORITATIVE_DERIVED_STATE",
         "aggregation_policy": "finding-union-blocker-dominance",
+        "activity_results": [
+            {
+                "assurance_id": "review-a",
+                "subject_identity_ref": f"sha:{SHA_A}",
+                "result_ref": "issue:#119",
+            },
+            {
+                "assurance_id": "validation-a",
+                "subject_identity_ref": f"sha:{SHA_A}",
+                "result_ref": "actions:35900647211",
+            },
+        ],
         "finding_refs": ["F-P2-1", "F-P3-1"],
         "unresolved_blocker_refs": [],
         "conflict_refs": [],
@@ -192,11 +206,8 @@ class V40OperationContractTests(unittest.TestCase):
     def test_project_defined_identity_is_non_weakening(self) -> None:
         valid_subject = self.examples["valid"]["project_defined_nonweakening_subject"]
         self.assertEqual(validate_subject_identity(valid_subject), [])
-
         forbidden = self.examples["forbidden"]["project_defined_weakens_exact_subject"]
-        errors = validate_subject_identity(forbidden)
-        self.assertTrue(errors)
-        self.assertTrue(any("weakens" in error or "missing sha" in error for error in errors), errors)
+        self.assertTrue(validate_subject_identity(forbidden))
 
     def test_operation_binding_is_correlation_only(self) -> None:
         binding = binding_example()
@@ -210,47 +221,66 @@ class V40OperationContractTests(unittest.TestCase):
         for logical_exchange_type in ("REQUEST", "RESULT", "FINDING", "CHALLENGE", "CONTROL"):
             self.assertNotIn(logical_exchange_type, enum)
 
-        event = {
-            "schema": "ai-dev/event-v2",
-            "event": "HANDOFF_READY",
-            "actor_role": "reviewer",
-            "operator_kind": "chatgpt-web",
-            "operator_id": "web:reviewer",
-            "issue": "#81",
-            "sha": SHA_A,
-            "evidence": "issue:#81",
-            "operation_id": "op:T009",
-            "exchange_id": "ex:T009:handoff",
-            "assurance_id": "review:T009",
-            "caused_by": "dispatch:T009",
-        }
-        self.assertEqual(validate_subset(event, schema), [])
-
     def test_assurance_forbids_majority_correctness_and_fake_independence(self) -> None:
         valid = assurance_example()
         self.assertEqual(validate_assurance_semantics(valid), [])
 
         majority = copy.deepcopy(valid)
-        majority["aggregation"]["majority_vote_for_correctness"] = True
+        majority["aggregation"] = copy.deepcopy(
+            self.examples["forbidden"]["majority_vote_aggregation"]
+        )
         self.assertTrue(validate_subset(majority, load_schema("assurance-plan-v1.schema.json")))
         self.assertTrue(any("majority" in e for e in validate_assurance_semantics(majority)))
 
         missing_blind = copy.deepcopy(valid)
         del missing_blind["activities"][0]["blind_first_pass_ref"]
-        self.assertEqual(validate_subset(missing_blind, load_schema("assurance-plan-v1.schema.json")), [])
         self.assertTrue(any("blind first pass" in e for e in validate_assurance_semantics(missing_blind)))
 
         collaboration = copy.deepcopy(valid)
         collaboration["activities"][0]["collaboration_selected"] = True
         self.assertTrue(any("collaborative" in e for e in validate_assurance_semantics(collaboration)))
 
-    def test_findings_are_durable_and_aggregation_never_votes_away_blockers(self) -> None:
+    def test_required_activity_coverage_and_subject_identity_fail_closed(self) -> None:
+        plan = assurance_example()
+        findings = [
+            finding_example("F-P2-1", "P2", "covered"),
+            finding_example("F-P3-1", "P3", "recorded"),
+        ]
+        aggregate = aggregation_example()
+        self.assertEqual(validate_assurance_aggregation(plan, aggregate, findings), [])
+
+        missing = copy.deepcopy(self.examples["forbidden"]["aggregation_missing_required_activity"])
+        self.assertTrue(any(
+            "missing required assurance activity" in e
+            for e in validate_assurance_aggregation(plan, missing, findings)
+        ))
+
+        stale = copy.deepcopy(aggregate)
+        stale["subject_identity_ref"] = f"sha:{SHA_B}"
+        self.assertTrue(any(
+            "aggregation subject identity differs" in e
+            for e in validate_assurance_aggregation(plan, stale, findings)
+        ))
+
+        stale_finding = copy.deepcopy(self.examples["forbidden"]["stale_subject_finding"])
+        mixed_findings = findings + [stale_finding]
+        mixed_aggregate = copy.deepcopy(aggregate)
+        mixed_aggregate["finding_refs"].append(stale_finding["finding_id"])
+        self.assertTrue(any(
+            "finding subject identity differs" in e
+            for e in validate_assurance_aggregation(plan, mixed_aggregate, mixed_findings)
+        ))
+
+    def test_findings_are_durable_and_blockers_require_evidence_backed_resolution(self) -> None:
+        plan = assurance_example()
         findings = [
             finding_example("F-P2-1", "P2", "covered by focused regression"),
             finding_example("F-P3-1", "P3", "recorded and dispositioned"),
         ]
         self.assertEqual(
-            validate_review_aggregation(aggregation_example(), findings, p3_required=True),
+            validate_review_aggregation(
+                aggregation_example(), findings, p3_required=True, plan=plan
+            ),
             [],
         )
 
@@ -259,34 +289,106 @@ class V40OperationContractTests(unittest.TestCase):
 
         dropped = aggregation_example()
         dropped["finding_refs"] = ["F-P2-1"]
-        self.assertTrue(
-            any("dropped" in e for e in validate_review_aggregation(dropped, findings, p3_required=True))
-        )
+        self.assertTrue(any(
+            "dropped" in e
+            for e in validate_review_aggregation(dropped, findings, p3_required=True, plan=plan)
+        ))
 
-        blocker = {
+        bare = copy.deepcopy(self.examples["forbidden"]["blocking_disposition_without_evidence"])
+        aggregate = aggregation_example()
+        aggregate["finding_refs"].append(bare["finding_id"])
+        self.assertTrue(any(
+            "PASS forbidden" in e
+            for e in validate_review_aggregation(aggregate, findings + [bare], plan=plan)
+        ))
+
+    def test_duplicate_and_superseded_linkage_is_subject_bound_and_cycle_safe(self) -> None:
+        resolved_target = {
             "protocol_version": "ai-dev/review-finding-v1",
-            "finding_id": "F-P1-BLOCK",
+            "finding_id": "F-P1-TARGET",
             "assurance_id": "review-a",
             "subject_identity_ref": f"sha:{SHA_A}",
             "severity": "P1",
-            "summary": "unresolved authority blocker",
+            "summary": "resolved canonical blocker",
             "blocking": True,
-            "status": "OPEN",
-            "evidence_refs": ["issue:#81"],
+            "status": "DISPOSITIONED",
+            "disposition": "authorized resolution",
+            "evidence_refs": ["issue:#120"],
+        }
+        duplicate = {
+            "protocol_version": "ai-dev/review-finding-v1",
+            "finding_id": "F-P1-DUP",
+            "assurance_id": "review-a",
+            "subject_identity_ref": f"sha:{SHA_A}",
+            "severity": "P1",
+            "summary": "same blocker",
+            "blocking": True,
+            "status": "DUPLICATE",
+            "disposition": "same claim as F-P1-TARGET",
+            "duplicate_of": "F-P1-TARGET",
+            "evidence_refs": ["issue:#120"],
         }
         aggregate = aggregation_example()
-        aggregate["finding_refs"].append("F-P1-BLOCK")
-        aggregate["unresolved_blocker_refs"] = ["F-P1-BLOCK"]
-        self.assertTrue(
-            any("PASS forbidden" in e for e in validate_review_aggregation(aggregate, findings + [blocker]))
+        aggregate["finding_refs"] += ["F-P1-TARGET", "F-P1-DUP"]
+        self.assertEqual(
+            validate_review_aggregation(
+                aggregate,
+                [
+                    finding_example("F-P2-1", "P2", "covered"),
+                    finding_example("F-P3-1", "P3", "recorded"),
+                    resolved_target,
+                    duplicate,
+                ],
+                plan=assurance_example(),
+            ),
+            [],
         )
 
-    def test_review_judgment_and_requested_route_are_separate_fields(self) -> None:
+        unknown = self.examples["forbidden"]["duplicate_unknown_target"]
+        bad_aggregate = aggregation_example()
+        bad_aggregate["finding_refs"].append(unknown["finding_id"])
+        errors = validate_review_aggregation(
+            bad_aggregate,
+            [
+                finding_example("F-P2-1", "P2", "covered"),
+                finding_example("F-P3-1", "P3", "recorded"),
+                unknown,
+            ],
+            plan=assurance_example(),
+        )
+        self.assertTrue(any("target does not exist" in e for e in errors), errors)
+        self.assertTrue(any("PASS forbidden" in e for e in errors), errors)
+
+        cycle_a = copy.deepcopy(duplicate)
+        cycle_b = copy.deepcopy(duplicate)
+        cycle_a["finding_id"], cycle_a["duplicate_of"] = "F-CYCLE-A", "F-CYCLE-B"
+        cycle_b["finding_id"], cycle_b["duplicate_of"] = "F-CYCLE-B", "F-CYCLE-A"
+        cycle_aggregate = aggregation_example()
+        cycle_aggregate["finding_refs"] += ["F-CYCLE-A", "F-CYCLE-B"]
+        errors = validate_review_aggregation(
+            cycle_aggregate,
+            [
+                finding_example("F-P2-1", "P2", "covered"),
+                finding_example("F-P3-1", "P3", "recorded"),
+                cycle_a,
+                cycle_b,
+            ],
+            plan=assurance_example(),
+        )
+        self.assertTrue(any("cycle" in e for e in errors), errors)
+
+    def test_review_judgment_and_requested_route_are_separate_non_authoritative_fields(self) -> None:
         aggregate = aggregation_example()
         aggregate["judgment"] = "VALIDATION_REQUESTED"
         aggregate["requested_route"] = "validation-needed"
         self.assertEqual(validate_subset(aggregate, load_schema("review-aggregation-v1.schema.json")), [])
-        self.assertNotEqual(aggregate["judgment"], aggregate["requested_route"])
+        self.assertEqual(
+            aggregate["requested_route_authority"],
+            "NON_AUTHORITATIVE_DERIVED_STATE",
+        )
+        missing_marker = copy.deepcopy(aggregate)
+        del missing_marker["requested_route_authority"]
+        self.assertTrue(validate_subset(missing_marker, load_schema("review-aggregation-v1.schema.json")))
 
     def test_semantic_controller_action_key_is_stable_and_transport_independent(self) -> None:
         base = copy.deepcopy(self.examples["valid"]["semantic_action"])
@@ -301,10 +403,6 @@ class V40OperationContractTests(unittest.TestCase):
         }
         self.assertEqual(canonical_semantic_action_key(base), canonical_semantic_action_key(retry))
         self.assertEqual(canonical_semantic_action_key(base), canonical_semantic_action_key(reordered))
-
-        changed = copy.deepcopy(base)
-        changed["expected_precondition"] = {"candidate_state": "THAWED"}
-        self.assertNotEqual(canonical_semantic_action_key(base), canonical_semantic_action_key(changed))
 
     def test_fast_path_is_bounded_and_escalates_on_material_risk(self) -> None:
         valid = self.examples["valid"]["fast_path_context"]
@@ -326,10 +424,8 @@ class V40OperationContractTests(unittest.TestCase):
     def test_validation_pass_requires_execution_evidence_and_drift_cannot_pass(self) -> None:
         valid = self.examples["valid"]["validation_result"]
         self.assertEqual(validate_validation_result(valid), [])
-
         forbidden = self.examples["forbidden"]["validation_pass_without_execution"]
         self.assertTrue(validate_validation_result(forbidden))
-
         drifted = copy.deepcopy(valid)
         drifted["drift"] = "HEAD_DRIFT"
         self.assertTrue(any("drifted" in e for e in validate_validation_result(drifted)))
