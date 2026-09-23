@@ -349,6 +349,23 @@ def validate_review_aggregation(
 ) -> list[str]:
     errors: list[str] = []
     findings = list(findings)
+
+    finding_ids = [
+        finding.get("finding_id")
+        for finding in findings
+        if isinstance(finding.get("finding_id"), str) and finding.get("finding_id")
+    ]
+    seen_ids: set[str] = set()
+    duplicate_ids: set[str] = set()
+    for finding_id in finding_ids:
+        if finding_id in seen_ids:
+            duplicate_ids.add(finding_id)
+        seen_ids.add(finding_id)
+    if duplicate_ids:
+        errors.append(
+            "duplicate finding identities are forbidden: " + ", ".join(sorted(duplicate_ids))
+        )
+
     by_id = {f.get("finding_id"): f for f in findings if f.get("finding_id")}
     refs = aggregate.get("finding_refs", [])
     missing = sorted(set(by_id) - set(refs))
