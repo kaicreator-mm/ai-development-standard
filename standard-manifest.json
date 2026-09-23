@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Canonical inventory of active ai-development-standard v3.4 assets. Compatibility entry files are listed separately and do not duplicate normative authority.",
+  "description": "Canonical inventory of active ai-development-standard assets. Compatibility entry files are listed separately and do not duplicate normative authority.",
   "sections": {
     "authority": [
       "AGENTS.md",
@@ -58,6 +58,7 @@
       "templates/golden/ANTI_PATTERNS.md",
       "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md",
       "templates/golden/STANDARD_COVERAGE.json",
+      "templates/golden/V4_OPERATION_ASSURANCE_EXAMPLES.json",
       "templates/implementation-pr.md",
       "templates/local-agent-handoff-issue.md",
       "templates/planning-amendment-issue.md",
@@ -98,10 +99,16 @@
     ],
     "machine_contracts": [
       "schemas/agent-event-v2.schema.json",
+      "schemas/assurance-plan-v1.schema.json",
       "schemas/dispatch.schema.json",
       "schemas/execution-pack-manifest.schema.json",
       "schemas/execution-state.schema.json",
+      "schemas/interchange-envelope-v1.schema.json",
       "schemas/local-agent-handoff.schema.json",
+      "schemas/operation-binding-v1.schema.json",
+      "schemas/operation-v1.schema.json",
+      "schemas/review-aggregation-v1.schema.json",
+      "schemas/review-finding-v1.schema.json",
       "schemas/task-contract.schema.json",
       "schemas/validation-report.schema.json"
     ],
@@ -122,10 +129,12 @@
       "scripts/test_v33_semantic_regressions.py",
       "scripts/test_v34_lifecycle_contracts.py",
       "scripts/test_v34_review_repairs.py",
+      "scripts/test_v40_operation_contracts.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
       "scripts/v34_rules.py",
+      "scripts/v40_rules.py",
       "scripts/verify_event_writer_surfaces.py",
       "scripts/verify_project_execution_profile.py",
       "scripts/verify_project_standard.py",
