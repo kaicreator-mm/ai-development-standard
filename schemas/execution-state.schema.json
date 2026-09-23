@@ -26,5 +26,17 @@
     "stale_dispatch": {"type": "array", "items": {"type": "string"}},
     "ready_queues": {"type": "array", "items": {"type": "string", "enum": ["builder", "reviewer", "validator", "merge", "release", "human-decision"]}},
     "derived_from": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"release_state": {"enum": ["READY", "CONDITIONAL", "BLOCKED", "FAIL"]}},
+        "required": ["release_state"]
+      },
+      "then": {
+        "required": ["candidate_state"],
+        "properties": {"candidate_state": {"const": "FROZEN"}}
+      }
+    }
+  ]
 }

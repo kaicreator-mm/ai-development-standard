@@ -36,6 +36,7 @@
     "evidence_reuse_basis": {"type": ["string", "null"]},
     "command": {"type": "string", "minLength": 1},
     "exit_code": {"type": ["integer", "null"]},
+    "drift": {"type": ["string", "null"], "enum": ["HEAD_DRIFT", "BASE_DRIFT", "MERGE-RESULT_DRIFT", "CANDIDATE_DRIFT", null]},
     "state": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"]},
     "started_at": {"type": "string"},
     "ended_at": {"type": "string"},
@@ -66,7 +67,25 @@
       },
       "then": {
         "required": ["exit_code"],
-        "properties": {"exit_code": {"const": 0}}
+        "properties": {
+          "actual_checked_out_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+          "working_tree_clean": {"const": true},
+          "source_modifications_after_validation": {"const": false},
+          "provider_state": {"const": "AVAILABLE"},
+          "exit_code": {"const": 0},
+          "drift": {"const": null}
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"provider_state": {"const": "AVAILABLE"}},
+              "required": ["provider_state"]
+            },
+            "then": {
+              "required": ["actual_checked_out_sha", "working_tree_clean", "source_modifications_after_validation"]
+            }
+          }
+        ]
       }
     }
   ]
