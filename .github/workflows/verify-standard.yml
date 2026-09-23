@@ -25,6 +25,7 @@ jobs:
       - run: python scripts/test_v34_lifecycle_contracts.py
       - run: python scripts/test_v34_review_repairs.py
       - run: python scripts/test_v40_operation_contracts.py
+      - run: python scripts/test_v40_final_hardening.py
       - run: python scripts/test_pointer_only_trigger_contract.py
       - run: python scripts/test_work_item_contract_and_golden_templates.py
       - run: python scripts/verify_event_writer_surfaces.py

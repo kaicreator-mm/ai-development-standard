@@ -163,6 +163,31 @@
       "disposition": "duplicate claim",
       "duplicate_of": "F-NOT-THERE",
       "evidence_refs": ["issue:#120"]
-    }
+    },
+    "duplicate_finding_identity_shadow": [
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "F-SHADOW",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P1",
+        "summary": "blocking identity collision source",
+        "blocking": true,
+        "status": "OPEN",
+        "evidence_refs": ["issue:#122"]
+      },
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "F-SHADOW",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P3",
+        "summary": "later benign collision must not shadow blocker",
+        "blocking": false,
+        "status": "DISPOSITIONED",
+        "disposition": "benign entry",
+        "evidence_refs": ["issue:#122"]
+      }
+    ]
   }
 }
