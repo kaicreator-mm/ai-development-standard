@@ -139,11 +139,13 @@ def aggregation_example() -> dict:
                 "assurance_id": "review-a",
                 "subject_identity_ref": f"sha:{SHA_A}",
                 "result_ref": "issue:#119",
+                "coverage": ["schema-nonweakening", "aggregation", "compatibility"],
             },
             {
                 "assurance_id": "validation-a",
                 "subject_identity_ref": f"sha:{SHA_A}",
                 "result_ref": "actions:35900647211",
+                "coverage": ["focused-v4-regression", "full-repository-verifier"],
             },
         ],
         "finding_refs": ["F-P2-1", "F-P3-1"],
