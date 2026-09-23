@@ -129,6 +129,7 @@
       "scripts/test_v33_semantic_regressions.py",
       "scripts/test_v34_lifecycle_contracts.py",
       "scripts/test_v34_review_repairs.py",
+      "scripts/test_v40_final_hardening.py",
       "scripts/test_v40_operation_contracts.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
