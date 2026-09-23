@@ -120,7 +120,8 @@
         {
           "assurance_id": "review-a",
           "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-          "result_ref": "issue:#119"
+          "result_ref": "issue:#119",
+          "coverage": ["schema-nonweakening", "aggregation", "compatibility"]
         }
       ],
       "finding_refs": ["F-P2-1", "F-P3-1"],
