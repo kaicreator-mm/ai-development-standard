@@ -1,0 +1,111 @@
+{
+  "schema": "ai-dev/v4-golden-examples:1",
+  "description": "Positive and forbidden v4 Operation/Assurance semantic examples. These examples supplement, not replace, the owning schemas and standards.",
+  "valid": {
+    "project_defined_nonweakening_subject": {
+      "ref": "PR:#118",
+      "identity_binding": "project-defined",
+      "owning_required_binding": "exact-sha",
+      "identity": {
+        "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "project_key": "t009-candidate"
+      }
+    },
+    "fast_path_context": {
+      "scope_bounded": true,
+      "validation_ownership_known": true,
+      "review_policy_resolved": true
+    },
+    "hidden_metadata": {
+      "pack_identity": "hidden:v4:001",
+      "pack_revision": "r1",
+      "pack_checksum": "sha256:abc",
+      "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "semantic_action": {
+      "controller_kind": "candidate-freeze",
+      "authority_ref": "version:#72",
+      "subject_identity": {
+        "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "tree_sha": "cccccccccccccccccccccccccccccccccccccccc"
+      },
+      "expected_precondition": {
+        "candidate_state": "PREPARED"
+      },
+      "effect_target": {
+        "candidate_state": "FROZEN"
+      },
+      "exchange_id": "ex:1"
+    },
+    "validation_result": {
+      "schema": "ai-dev/event-v2",
+      "event": "VALIDATION_RESULT",
+      "actor_role": "validator",
+      "operator_kind": "github-actions",
+      "operator_id": "gha:run",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "gate": "verify-standard",
+      "environment": "ubuntu-latest",
+      "command": "python scripts/test_v40_operation_contracts.py",
+      "exit_code": 0,
+      "evidence": "actions:run",
+      "status": "PASS"
+    }
+  },
+  "forbidden": {
+    "project_defined_weakens_exact_subject": {
+      "ref": "PR:#118",
+      "identity_binding": "project-defined",
+      "owning_required_binding": "exact-sha",
+      "identity": {
+        "project_key": "weak"
+      }
+    },
+    "fast_path_public_contract": {
+      "scope_bounded": true,
+      "validation_ownership_known": true,
+      "review_policy_resolved": true,
+      "public_contract_change": true
+    },
+    "validation_pass_without_execution": {
+      "schema": "ai-dev/event-v2",
+      "event": "VALIDATION_RESULT",
+      "actor_role": "validator",
+      "operator_kind": "github-actions",
+      "operator_id": "gha:run",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "gate": "verify-standard",
+      "environment": "ubuntu-latest",
+      "command": "python scripts/test_v40_operation_contracts.py",
+      "exit_code": 1,
+      "evidence": "command failed",
+      "status": "PASS"
+    },
+    "hidden_payload_leak": {
+      "pack_identity": "hidden:v4:001",
+      "pack_revision": "r1",
+      "pack_checksum": "sha256:abc",
+      "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "fixture": {
+        "secret": "do-not-share"
+      }
+    },
+    "p2_without_disposition": {
+      "protocol_version": "ai-dev/review-finding-v1",
+      "finding_id": "F-P2-1",
+      "assurance_id": "review-a",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "severity": "P2",
+      "summary": "Machine identity rule requires verifier coverage",
+      "blocking": false,
+      "status": "OPEN",
+      "evidence_refs": ["issue:#81"]
+    },
+    "majority_vote_aggregation": {
+      "policy": "finding-union-blocker-dominance",
+      "blocker_resolution": "unresolved-valid-blocker-dominates",
+      "majority_vote_for_correctness": true,
+      "conflict_route": "validation-needed"
+    }
+  }
+}
