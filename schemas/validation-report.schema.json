@@ -58,6 +58,16 @@
           "source_modifications_after_validation": {"type": "boolean"}
         }
       }
+    },
+    {
+      "if": {
+        "properties": {"state": {"const": "PASS"}},
+        "required": ["state"]
+      },
+      "then": {
+        "required": ["exit_code"],
+        "properties": {"exit_code": {"const": 0}}
+      }
     }
   ]
 }

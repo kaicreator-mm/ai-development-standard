@@ -16,6 +16,7 @@ FAST_PATH_DISQUALIFIERS = (
     "cross_repository_or_authority_coupling",
     "unknown_validation_ownership",
     "unresolved_blocking_finding",
+    "unresolved_authority_contradiction",
     "model_diverse_or_coherence_assurance_required",
     "nontrivial_execution_pack_required",
     "material_dependency_graph",
@@ -27,6 +28,8 @@ IDENTITY_REQUIREMENTS = {
     "validation-tuple": ("tested_sha", "environment", "runtime_toolchain", "validation_profile"),
     "candidate": ("candidate_sha", "tree_sha"),
 }
+
+SEVERITY_RANK = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 
 
 def validate_subject_identity(subject: dict) -> list[str]:
@@ -134,6 +137,24 @@ def _nonempty_refs(value) -> bool:
     )
 
 
+def _is_blocker_class(finding: dict) -> bool:
+    return finding.get("severity") in {"P0", "P1"} or finding.get("blocking") is True
+
+
+def _target_preserves_blocker_severity(source: dict, target: dict) -> bool:
+    source_severity = source.get("severity")
+    target_severity = target.get("severity")
+    if source_severity in {"P0", "P1"}:
+        if target_severity not in {"P0", "P1"}:
+            return False
+        if SEVERITY_RANK[target_severity] > SEVERITY_RANK[source_severity]:
+            return False
+        return target.get("blocking") is True
+    if source.get("blocking") is True:
+        return _is_blocker_class(target)
+    return True
+
+
 def validate_finding_disposition(finding: dict, *, p3_required: bool = False) -> list[str]:
     errors: list[str] = []
     severity = finding.get("severity")
@@ -143,6 +164,9 @@ def validate_finding_disposition(finding: dict, *, p3_required: bool = False) ->
     disposition_ok = isinstance(disposition, str) and bool(disposition)
     evidence_ok = _nonempty_refs(evidence_refs)
 
+    if severity in {"P0", "P1"} and finding.get("blocking") is not True:
+        errors.append("P0/P1 finding must declare blocking=true")
+
     if severity == "P2":
         if status not in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"} or not disposition_ok:
             errors.append("P2 finding requires durable explicit disposition")
@@ -150,11 +174,7 @@ def validate_finding_disposition(finding: dict, *, p3_required: bool = False) ->
         if status not in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"} or not disposition_ok:
             errors.append("P3 finding requires durable explicit disposition when policy requires it")
 
-    if (
-        finding.get("blocking") is True
-        and severity in {"P0", "P1"}
-        and status in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"}
-    ):
+    if severity in {"P0", "P1"} and status in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"}:
         if not disposition_ok:
             errors.append("blocking P0/P1 resolution requires durable disposition")
         if not evidence_ok:
@@ -198,6 +218,9 @@ def _validate_finding_links(findings: list[dict]) -> list[str]:
             continue
         if target.get("subject_identity_ref") != finding.get("subject_identity_ref"):
             errors.append(f"{finding_id}: finding linkage crosses subject identity")
+            continue
+        if not _target_preserves_blocker_severity(finding, target):
+            errors.append(f"{finding_id}: finding linkage weakens blocker severity through {target_id}")
             continue
         edges[finding_id] = target_id
 
@@ -257,6 +280,7 @@ def _finding_effectively_resolved(
             and target_id != finding_id
             and target is not None
             and target.get("subject_identity_ref") == finding.get("subject_identity_ref")
+            and _target_preserves_blocker_severity(finding, target)
         )
     elif status == "DUPLICATE":
         target_id = finding.get("duplicate_of")
@@ -268,6 +292,7 @@ def _finding_effectively_resolved(
             and target_id != finding_id
             and target is not None
             and target.get("subject_identity_ref") == finding.get("subject_identity_ref")
+            and _target_preserves_blocker_severity(finding, target)
             and _finding_effectively_resolved(
                 target_id,
                 by_id,
@@ -299,15 +324,16 @@ def validate_assurance_aggregation(
     if aggregate.get("subject_identity_ref") != subject_identity_ref:
         errors.append("aggregation subject identity differs from Assurance Plan")
 
-    activity_ids = {
-        activity.get("assurance_id")
+    activities = {
+        activity.get("assurance_id"): activity
         for activity in plan.get("activities", [])
         if activity.get("assurance_id")
     }
+    activity_ids = set(activities)
     required_ids = {
-        activity.get("assurance_id")
-        for activity in plan.get("activities", [])
-        if activity.get("assurance_id") and activity.get("policy") == "required"
+        assurance_id
+        for assurance_id, activity in activities.items()
+        if activity.get("policy") == "required"
     }
 
     result_ids: list[str] = []
@@ -319,6 +345,18 @@ def validate_assurance_aggregation(
             errors.append(f"{assurance_id}: activity result subject identity differs from Assurance Plan")
         if assurance_id not in activity_ids:
             errors.append(f"{assurance_id}: activity result does not belong to Assurance Plan")
+            continue
+        if aggregate.get("judgment") == "PASS" and assurance_id in required_ids:
+            required_coverage = set(activities[assurance_id].get("coverage", []))
+            attested_coverage = {
+                item for item in result.get("coverage", []) if isinstance(item, str) and item
+            }
+            missing_coverage = sorted(required_coverage - attested_coverage)
+            if missing_coverage:
+                errors.append(
+                    f"{assurance_id}: PASS activity result missing required coverage: "
+                    + ", ".join(missing_coverage)
+                )
 
     if len(result_ids) != len(set(result_ids)):
         errors.append("aggregation contains duplicate activity results")
@@ -371,6 +409,9 @@ def validate_review_aggregation(
     missing = sorted(set(by_id) - set(refs))
     if missing:
         errors.append("aggregation silently dropped finding identities: " + ", ".join(missing))
+    ghost_refs = sorted(set(refs) - set(by_id))
+    if ghost_refs:
+        errors.append("aggregation references nonexistent finding identities: " + ", ".join(ghost_refs))
 
     errors.extend(_validate_finding_links(findings))
 
@@ -378,7 +419,7 @@ def validate_review_aggregation(
     unresolved_blockers = [
         finding_id
         for finding_id, finding in by_id.items()
-        if finding.get("blocking") is True
+        if _is_blocker_class(finding)
         and not _finding_effectively_resolved(
             finding_id,
             by_id,
@@ -444,11 +485,15 @@ def validate_candidate_release_separation(candidate_event: dict, release_event: 
                 if not candidate_event.get(field):
                     errors.append(f"frozen candidate missing {field}")
     if release_event is not None and release_event.get("event") == "RELEASE_QUALIFICATION":
-        if release_event.get("release_state") == "READY":
+        release_state = release_event.get("release_state")
+        verdictive_states = {"READY", "CONDITIONAL", "BLOCKED", "FAIL"}
+        if release_state in verdictive_states:
+            if candidate_event.get("candidate_state") != "FROZEN":
+                errors.append(f"release {release_state} requires a FROZEN candidate")
             if release_event.get("candidate_sha") != candidate_event.get("candidate_sha"):
-                errors.append("release READY candidate identity differs from frozen candidate")
+                errors.append(f"release {release_state} candidate identity differs from frozen candidate")
             if release_event.get("tree_sha") != candidate_event.get("tree_sha"):
-                errors.append("release READY tree identity differs from frozen candidate")
+                errors.append(f"release {release_state} tree identity differs from frozen candidate")
     return errors
 
 

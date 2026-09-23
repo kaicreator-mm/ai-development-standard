@@ -1,0 +1,147 @@
+{
+  "schema": "ai-dev/v4-dogfood-hardening-examples:1",
+  "source": "T-010 dogfood coordinator #127",
+  "subject_sha": "21301c89dd48542238a06c6264cb715f33f0648d",
+  "forbidden": {
+    "p0_open_with_false_blocking": {
+      "protocol_version": "ai-dev/review-finding-v1",
+      "finding_id": "DOG-G1-P0",
+      "assurance_id": "review-a",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "severity": "P0",
+      "summary": "P0 must block regardless of a contradictory blocking flag",
+      "blocking": false,
+      "status": "OPEN",
+      "evidence_refs": ["issue:#127"]
+    },
+    "p1_superseded_to_p3": [
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "DOG-G2-SOURCE",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P1",
+        "summary": "blocking source finding",
+        "blocking": true,
+        "status": "SUPERSEDED",
+        "disposition": "claimed replacement",
+        "superseded_by": "DOG-G2-TARGET",
+        "evidence_refs": ["issue:#127"]
+      },
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "DOG-G2-TARGET",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P3",
+        "summary": "lower severity replacement cannot erase P1",
+        "blocking": false,
+        "status": "DISPOSITIONED",
+        "disposition": "minor finding disposition",
+        "evidence_refs": ["issue:#127"]
+      }
+    ],
+    "p1_duplicate_to_p3": [
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "DOG-G2-DUP-SOURCE",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P1",
+        "summary": "blocking duplicate source",
+        "blocking": true,
+        "status": "DUPLICATE",
+        "disposition": "claimed duplicate",
+        "duplicate_of": "DOG-G2-DUP-TARGET",
+        "evidence_refs": ["issue:#127"]
+      },
+      {
+        "protocol_version": "ai-dev/review-finding-v1",
+        "finding_id": "DOG-G2-DUP-TARGET",
+        "assurance_id": "review-a",
+        "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "severity": "P3",
+        "summary": "lower severity duplicate target cannot erase P1",
+        "blocking": false,
+        "status": "DISPOSITIONED",
+        "disposition": "minor finding disposition",
+        "evidence_refs": ["issue:#127"]
+      }
+    ],
+    "aggregation_missing_coverage_dimension": {
+      "protocol_version": "ai-dev/review-aggregation-v1",
+      "aggregate_id": "dogfood:coverage-gap",
+      "assurance_plan_id": "assurance:T009",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "judgment": "PASS",
+      "requested_route": "merge-ready",
+      "requested_route_authority": "NON_AUTHORITATIVE_DERIVED_STATE",
+      "aggregation_policy": "finding-union-blocker-dominance",
+      "activity_results": [
+        {
+          "assurance_id": "review-a",
+          "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "result_ref": "issue:#127",
+          "coverage": ["schema-nonweakening", "aggregation"]
+        },
+        {
+          "assurance_id": "validation-a",
+          "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "result_ref": "actions:dogfood",
+          "coverage": ["focused-v4-regression", "full-repository-verifier"]
+        }
+      ],
+      "finding_refs": ["F-P2-1", "F-P3-1"],
+      "unresolved_blocker_refs": [],
+      "conflict_refs": []
+    },
+    "validation_report_pass_with_failed_exit": {
+      "repository": "kaicreator-mm/ai-development-standard",
+      "tested_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "execution_host_role": "github-actions",
+      "platform": "ubuntu-latest",
+      "runtime_toolchain": "python-3.12",
+      "validation_profile": "concern",
+      "command": "python scripts/test_v40_dogfood_hardening.py",
+      "exit_code": 1,
+      "state": "PASS"
+    },
+    "release_ready_from_prepared": {
+      "candidate": {
+        "event": "CANDIDATE_STATE_CHANGED",
+        "candidate_state": "PREPARED",
+        "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "tree_sha": "cccccccccccccccccccccccccccccccccccccccc"
+      },
+      "release": {
+        "event": "RELEASE_QUALIFICATION",
+        "release_state": "READY",
+        "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "tree_sha": "cccccccccccccccccccccccccccccccccccccccc"
+      }
+    },
+    "release_conditional_wrong_identity": {
+      "candidate": {
+        "event": "CANDIDATE_STATE_CHANGED",
+        "candidate_state": "FROZEN",
+        "candidate_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "tree_sha": "cccccccccccccccccccccccccccccccccccccccc",
+        "candidate_ref": "refs/heads/version/v4.0.0",
+        "visible_closure_evidence": "evidence:closure"
+      },
+      "release": {
+        "event": "RELEASE_QUALIFICATION",
+        "release_state": "CONDITIONAL",
+        "candidate_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "tree_sha": "cccccccccccccccccccccccccccccccccccccccc"
+      }
+    },
+    "ghost_finding_ref": "DOG-GHOST",
+    "fast_path_authority_contradiction": {
+      "scope_bounded": true,
+      "validation_ownership_known": true,
+      "review_policy_resolved": true,
+      "unresolved_authority_contradiction": true
+    }
+  }
+}
