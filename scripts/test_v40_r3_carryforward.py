@@ -32,7 +32,7 @@ def two_lane_plan_and_aggregate() -> tuple[dict, dict, list[dict]]:
     result_a = aggregate["activity_results"][0]
     result_b = copy.deepcopy(result_a)
     result_b["assurance_id"] = "review-b"
-    result_b["result_ref"] = "issue:#r3-review-b"
+    result_b["result_ref"] = "issue:#143"
     result_b["reviewer_provenance"] = {
         "provider": "deepseek",
         "model_family": "deepseek",
