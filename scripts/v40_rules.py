@@ -128,19 +128,215 @@ def validate_assurance_semantics(plan: dict) -> list[str]:
     return errors
 
 
+def _nonempty_refs(value) -> bool:
+    return isinstance(value, list) and bool(value) and all(
+        isinstance(item, str) and bool(item) for item in value
+    )
+
+
 def validate_finding_disposition(finding: dict, *, p3_required: bool = False) -> list[str]:
     errors: list[str] = []
     severity = finding.get("severity")
     status = finding.get("status")
     disposition = finding.get("disposition")
+    evidence_refs = finding.get("evidence_refs")
+    disposition_ok = isinstance(disposition, str) and bool(disposition)
+    evidence_ok = _nonempty_refs(evidence_refs)
+
     if severity == "P2":
-        if status != "DISPOSITIONED" or not isinstance(disposition, str) or not disposition:
+        if status not in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"} or not disposition_ok:
             errors.append("P2 finding requires durable explicit disposition")
     if severity == "P3" and p3_required:
-        if status != "DISPOSITIONED" or not isinstance(disposition, str) or not disposition:
+        if status not in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"} or not disposition_ok:
             errors.append("P3 finding requires durable explicit disposition when policy requires it")
+
+    if (
+        finding.get("blocking") is True
+        and severity in {"P0", "P1"}
+        and status in {"DISPOSITIONED", "DUPLICATE", "SUPERSEDED"}
+    ):
+        if not disposition_ok:
+            errors.append("blocking P0/P1 resolution requires durable disposition")
+        if not evidence_ok:
+            errors.append("blocking P0/P1 resolution requires evidence refs")
+
+    if status in {"DUPLICATE", "SUPERSEDED"}:
+        if not disposition_ok:
+            errors.append(f"{status.lower()} finding requires durable disposition")
+        if not evidence_ok:
+            errors.append(f"{status.lower()} finding requires evidence refs")
+
     if status == "DUPLICATE" and not finding.get("duplicate_of"):
         errors.append("duplicate finding must preserve duplicate_of identity")
+    if status == "SUPERSEDED" and not finding.get("superseded_by"):
+        errors.append("superseded finding must preserve superseded_by identity")
+    return errors
+
+
+def _validate_finding_links(findings: list[dict]) -> list[str]:
+    errors: list[str] = []
+    by_id = {f.get("finding_id"): f for f in findings if f.get("finding_id")}
+    edges: dict[str, str] = {}
+
+    for finding_id, finding in by_id.items():
+        status = finding.get("status")
+        if status == "DUPLICATE":
+            target_id = finding.get("duplicate_of")
+        elif status == "SUPERSEDED":
+            target_id = finding.get("superseded_by")
+        else:
+            continue
+
+        if not isinstance(target_id, str) or not target_id:
+            continue
+        if target_id == finding_id:
+            errors.append(f"{finding_id}: finding linkage cannot target itself")
+            continue
+        target = by_id.get(target_id)
+        if target is None:
+            errors.append(f"{finding_id}: finding linkage target does not exist: {target_id}")
+            continue
+        if target.get("subject_identity_ref") != finding.get("subject_identity_ref"):
+            errors.append(f"{finding_id}: finding linkage crosses subject identity")
+            continue
+        edges[finding_id] = target_id
+
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def walk(finding_id: str, path: list[str]) -> None:
+        if finding_id in visited:
+            return
+        if finding_id in visiting:
+            cycle_start = path.index(finding_id) if finding_id in path else 0
+            cycle = path[cycle_start:] + [finding_id]
+            errors.append("finding linkage cycle: " + " -> ".join(cycle))
+            return
+        visiting.add(finding_id)
+        target_id = edges.get(finding_id)
+        if target_id is not None:
+            walk(target_id, path + [finding_id])
+        visiting.remove(finding_id)
+        visited.add(finding_id)
+
+    for finding_id in edges:
+        walk(finding_id, [])
+
+    return errors
+
+
+def _finding_effectively_resolved(
+    finding_id: str,
+    by_id: dict[str, dict],
+    *,
+    memo: dict[str, bool],
+    visiting: set[str],
+) -> bool:
+    if finding_id in memo:
+        return memo[finding_id]
+    if finding_id in visiting:
+        return False
+    finding = by_id.get(finding_id)
+    if finding is None:
+        return False
+
+    visiting.add(finding_id)
+    status = finding.get("status")
+    disposition_ok = isinstance(finding.get("disposition"), str) and bool(finding.get("disposition"))
+    evidence_ok = _nonempty_refs(finding.get("evidence_refs"))
+
+    if status == "DISPOSITIONED":
+        resolved = disposition_ok and evidence_ok
+    elif status == "SUPERSEDED":
+        target_id = finding.get("superseded_by")
+        target = by_id.get(target_id)
+        resolved = (
+            disposition_ok
+            and evidence_ok
+            and isinstance(target_id, str)
+            and target_id != finding_id
+            and target is not None
+            and target.get("subject_identity_ref") == finding.get("subject_identity_ref")
+        )
+    elif status == "DUPLICATE":
+        target_id = finding.get("duplicate_of")
+        target = by_id.get(target_id)
+        resolved = (
+            disposition_ok
+            and evidence_ok
+            and isinstance(target_id, str)
+            and target_id != finding_id
+            and target is not None
+            and target.get("subject_identity_ref") == finding.get("subject_identity_ref")
+            and _finding_effectively_resolved(
+                target_id,
+                by_id,
+                memo=memo,
+                visiting=visiting,
+            )
+        )
+    else:
+        resolved = False
+
+    visiting.remove(finding_id)
+    memo[finding_id] = resolved
+    return resolved
+
+
+def validate_assurance_aggregation(
+    plan: dict,
+    aggregate: dict,
+    findings: Iterable[dict],
+) -> list[str]:
+    """Bind a PASS aggregate to the exact Assurance Plan coverage and subject identity."""
+    errors: list[str] = []
+    findings = list(findings)
+    plan_id = plan.get("assurance_plan_id")
+    subject_identity_ref = plan.get("subject_identity_ref")
+
+    if aggregate.get("assurance_plan_id") != plan_id:
+        errors.append("aggregation assurance_plan_id differs from Assurance Plan")
+    if aggregate.get("subject_identity_ref") != subject_identity_ref:
+        errors.append("aggregation subject identity differs from Assurance Plan")
+
+    activity_ids = {
+        activity.get("assurance_id")
+        for activity in plan.get("activities", [])
+        if activity.get("assurance_id")
+    }
+    required_ids = {
+        activity.get("assurance_id")
+        for activity in plan.get("activities", [])
+        if activity.get("assurance_id") and activity.get("policy") == "required"
+    }
+
+    result_ids: list[str] = []
+    for result in aggregate.get("activity_results", []):
+        assurance_id = result.get("assurance_id")
+        if assurance_id:
+            result_ids.append(assurance_id)
+        if result.get("subject_identity_ref") != subject_identity_ref:
+            errors.append(f"{assurance_id}: activity result subject identity differs from Assurance Plan")
+        if assurance_id not in activity_ids:
+            errors.append(f"{assurance_id}: activity result does not belong to Assurance Plan")
+
+    if len(result_ids) != len(set(result_ids)):
+        errors.append("aggregation contains duplicate activity results")
+
+    if aggregate.get("judgment") == "PASS":
+        missing_required = sorted(required_ids - set(result_ids))
+        if missing_required:
+            errors.append(
+                "PASS missing required assurance activity results: " + ", ".join(missing_required)
+            )
+
+    for finding in findings:
+        finding_id = finding.get("finding_id", "<unknown>")
+        if finding.get("subject_identity_ref") != subject_identity_ref:
+            errors.append(f"{finding_id}: finding subject identity differs from Assurance Plan")
+        if finding.get("assurance_id") not in activity_ids:
+            errors.append(f"{finding_id}: finding assurance_id does not belong to Assurance Plan")
+
     return errors
 
 
@@ -149,6 +345,7 @@ def validate_review_aggregation(
     findings: Iterable[dict],
     *,
     p3_required: bool = False,
+    plan: dict | None = None,
 ) -> list[str]:
     errors: list[str] = []
     findings = list(findings)
@@ -158,12 +355,19 @@ def validate_review_aggregation(
     if missing:
         errors.append("aggregation silently dropped finding identities: " + ", ".join(missing))
 
+    errors.extend(_validate_finding_links(findings))
+
+    memo: dict[str, bool] = {}
     unresolved_blockers = [
-        f["finding_id"]
-        for f in findings
-        if f.get("finding_id")
-        and f.get("blocking") is True
-        and f.get("status") not in {"DISPOSITIONED", "SUPERSEDED"}
+        finding_id
+        for finding_id, finding in by_id.items()
+        if finding.get("blocking") is True
+        and not _finding_effectively_resolved(
+            finding_id,
+            by_id,
+            memo=memo,
+            visiting=set(),
+        )
     ]
     if unresolved_blockers and aggregate.get("judgment") == "PASS":
         errors.append("PASS forbidden while unresolved valid blocker exists")
@@ -173,8 +377,18 @@ def validate_review_aggregation(
     if missing_blockers:
         errors.append("unresolved blockers missing from aggregate: " + ", ".join(missing_blockers))
 
+    stale_declared = sorted(declared - set(unresolved_blockers))
+    if stale_declared:
+        errors.append("aggregate declares resolved/nonexistent blockers as unresolved: " + ", ".join(stale_declared))
+
     for finding in findings:
         errors.extend(validate_finding_disposition(finding, p3_required=p3_required))
+
+    if aggregate.get("requested_route_authority") != "NON_AUTHORITATIVE_DERIVED_STATE":
+        errors.append("requested_route must remain NON_AUTHORITATIVE_DERIVED_STATE")
+
+    if plan is not None:
+        errors.extend(validate_assurance_aggregation(plan, aggregate, findings))
     return errors
 
 

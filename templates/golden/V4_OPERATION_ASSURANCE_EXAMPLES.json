@@ -106,6 +106,63 @@
       "blocker_resolution": "unresolved-valid-blocker-dominates",
       "majority_vote_for_correctness": true,
       "conflict_route": "validation-needed"
+    },
+    "aggregation_missing_required_activity": {
+      "protocol_version": "ai-dev/review-aggregation-v1",
+      "aggregate_id": "agg:T009:missing-validation",
+      "assurance_plan_id": "assurance:T009",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "judgment": "PASS",
+      "requested_route": "merge-ready",
+      "requested_route_authority": "NON_AUTHORITATIVE_DERIVED_STATE",
+      "aggregation_policy": "finding-union-blocker-dominance",
+      "activity_results": [
+        {
+          "assurance_id": "review-a",
+          "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "result_ref": "issue:#119"
+        }
+      ],
+      "finding_refs": ["F-P2-1", "F-P3-1"],
+      "unresolved_blocker_refs": [],
+      "conflict_refs": []
+    },
+    "stale_subject_finding": {
+      "protocol_version": "ai-dev/review-finding-v1",
+      "finding_id": "F-STALE-SUBJECT",
+      "assurance_id": "review-a",
+      "subject_identity_ref": "sha:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "severity": "P3",
+      "summary": "finding from stale subject",
+      "blocking": false,
+      "status": "DISPOSITIONED",
+      "disposition": "historical only",
+      "evidence_refs": ["issue:#119"]
+    },
+    "blocking_disposition_without_evidence": {
+      "protocol_version": "ai-dev/review-finding-v1",
+      "finding_id": "F-P1-BARE-DISPOSITION",
+      "assurance_id": "review-a",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "severity": "P1",
+      "summary": "blocking finding claims resolution without evidence",
+      "blocking": true,
+      "status": "DISPOSITIONED",
+      "disposition": "resolved by assertion",
+      "evidence_refs": []
+    },
+    "duplicate_unknown_target": {
+      "protocol_version": "ai-dev/review-finding-v1",
+      "finding_id": "F-P1-UNKNOWN-DUP",
+      "assurance_id": "review-a",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "severity": "P1",
+      "summary": "duplicate references missing target",
+      "blocking": true,
+      "status": "DUPLICATE",
+      "disposition": "duplicate claim",
+      "duplicate_of": "F-NOT-THERE",
+      "evidence_refs": ["issue:#120"]
     }
   }
 }
