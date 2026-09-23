@@ -1,0 +1,50 @@
+{
+  "schema": "ai-dev/v4-r2-machine-hardening:1",
+  "source": "T-010 R2 dogfood #135",
+  "subject_sha": "123c80420c6ae519e18647a76b30e489d52a8fe7",
+  "required_groups": ["GR1","GR2","GR3","GR4","GR5","GR6","GR7","GR8","GR9","GR10","GR11","GR12","GR13","GR14","GR15","GR16"],
+  "enforcement": {
+    "GR1": ["validation-report.schema.json", "validate_validation_report"],
+    "GR2": ["validate_fast_path_context"],
+    "GR3": ["operation-v1.schema.json", "validate_operation_semantics"],
+    "GR4": ["assurance-plan-v1.schema.json", "validate_subject_identity_hardening"],
+    "GR5": ["review-aggregation-v1.schema.json", "validate_review_aggregation"],
+    "GR6": ["assurance-plan-v1.schema.json", "validate_assurance_aggregation_hardening"],
+    "GR7": ["interchange-envelope-v1.schema.json"],
+    "GR8": ["validate_hidden_metadata"],
+    "GR9": ["operation-v1.schema.json", "validate_operation_semantics"],
+    "GR10": ["validate_validation_result"],
+    "GR11": ["validate_review_decision_hardening"],
+    "GR12": ["review-aggregation-v1.schema.json", "validate_review_aggregation"],
+    "GR13": ["execution-state.schema.json", "validate_execution_state_hardening"],
+    "GR14": ["validate_release_qualification_event"],
+    "GR15": ["validate_candidate_freeze_evidence"],
+    "GR16": ["test_v40_r2_machine_hardening.py"]
+  },
+  "forbidden": {
+    "validation_report_wrong_checkout": {
+      "repository": "kaicreator-mm/ai-development-standard",
+      "tested_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "actual_checked_out_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "working_tree_clean": true,
+      "source_modifications_after_validation": false,
+      "provider_state": "AVAILABLE",
+      "execution_host_role": "github-actions",
+      "platform": "ubuntu-latest",
+      "runtime_toolchain": "python-3.12",
+      "validation_profile": "concern",
+      "command": "python scripts/test_v40_r2_machine_hardening.py",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    "operation_kind_mismatch": {"operation_type":"release-qualification","operation_kind":"PRODUCE"},
+    "fast_path_unknown_key": "material_dependency_grap",
+    "hidden_alias": "fixture_content",
+    "review_route_contradiction": {"judgment":"BLOCKED","requested_route":"merge-ready"},
+    "execution_state_contradiction": {"candidate_state":"PREPARED","release_state":"READY"},
+    "validation_event_float_exit": 0.0,
+    "review_skip_without_policy_basis": true,
+    "release_without_frozen_binding": true,
+    "freeze_evidence_wrong_identity": true
+  }
+}
