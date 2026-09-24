@@ -46,7 +46,7 @@ def operation_example() -> dict:
         "assurance_plan_ref": "evidence:assurance:T009",
         "acceptance_criteria": ["v4 machine contracts validate", "focused regressions pass"],
         "failure_routes": ["changes-requested", "blocked"],
-        "next_operations": ["assure:T009"],
+        "next_operations": ["op:T009:assure|work-item:#81"],
         "operation_binding_authority": "CORRELATION_ONLY_NON_AUTHORITATIVE",
     }
 
@@ -130,7 +130,34 @@ def finding_example(finding_id: str, severity: str, disposition: str) -> dict:
     }
 
 
+def _provenance(provider: str, family: str, model_id: str, suffix: str) -> dict:
+    return {
+        "provider": provider,
+        "model_family": family,
+        "model_id": model_id,
+        "executor_id": f"fresh-reviewer-{suffix}",
+        "context_ref": f"context:review-{suffix}",
+        "blind_first_pass_ref": f"evidence:review-{suffix}-blind",
+    }
+
+
 def aggregation_example() -> dict:
+    validation_execution = {
+        "requested_sha": SHA_A,
+        "tested_sha": SHA_A,
+        "actual_checked_out_sha": SHA_A,
+        "environment": "ubuntu-latest",
+        "runtime_toolchain": "Python 3.12",
+        "validation_profile": "concern",
+        "command": "python scripts/test_v40_operation_contracts.py",
+        "exit_code": 0,
+        "provider_state": "AVAILABLE",
+        "working_tree_clean": True,
+        "source_modifications_after_validation": False,
+        "drift": None,
+    }
+    provenance_a = _provenance("openai", "gpt-5", "gpt-5.6-sol", "a")
+    provenance_b = _provenance("deepseek", "deepseek-v4", "deepseek-v4-pro", "b")
     return {
         "protocol_version": "ai-dev/review-aggregation-v1",
         "aggregate_id": "agg:T009",
@@ -147,15 +174,10 @@ def aggregation_example() -> dict:
                 "result_ref": "issue:#119",
                 "result_identity_ref": f"sha:{SHA_A}",
                 "result_state": "PASS",
+                "result_kind": "review",
                 "coverage": ["schema-nonweakening", "aggregation", "compatibility"],
-                "reviewer_provenance": {
-                    "provider": "openai",
-                    "model_family": "gpt-5",
-                    "model_id": "gpt-5.6-sol",
-                    "executor_id": "fresh-reviewer",
-                    "context_ref": "context:review-a",
-                    "blind_first_pass_ref": "evidence:review-a-blind",
-                },
+                "reviewer_provenance": provenance_a,
+                "reviewer_provenances": [provenance_a, provenance_b],
             },
             {
                 "assurance_id": "validation-a",
@@ -163,7 +185,9 @@ def aggregation_example() -> dict:
                 "result_ref": "actions:35900647211",
                 "result_identity_ref": f"sha:{SHA_A}",
                 "result_state": "PASS",
+                "result_kind": "validation-execution",
                 "coverage": ["focused-v4-regression", "full-repository-verifier"],
+                "validation_execution": validation_execution,
             },
         ],
         "finding_refs": ["F-P2-1", "F-P3-1"],
@@ -343,10 +367,12 @@ class V40OperationContractTests(unittest.TestCase):
             "operator_kind": "github-actions",
             "operator_id": "gha:run",
             "sha": SHA_A,
+            "requested_head_sha": SHA_A,
             "actual_checked_out_sha": SHA_A,
             "gate": "verify-standard",
             "environment": "ubuntu-latest",
             "validation_profile": "concern",
+            "provider_state": "AVAILABLE",
             "command": "python scripts/test_v40_operation_contracts.py",
             "exit_code": 0,
             "evidence": "actions:run",
