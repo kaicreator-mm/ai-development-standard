@@ -30,6 +30,7 @@ jobs:
       - run: python scripts/test_v40_r2_machine_hardening.py
       - run: python scripts/test_v40_r3_carryforward.py
       - run: python scripts/test_v40_t010_successor_hardening.py
+      - run: python scripts/test_v40_t010_canonical_surface.py
       - run: python scripts/test_v40_reference_flows.py
       - run: python scripts/test_pointer_only_trigger_contract.py
       - run: python scripts/test_work_item_contract_and_golden_templates.py
