@@ -21,7 +21,7 @@ from v40_r2_hardening import (
     validate_candidate_freeze_evidence as _r2_validate_candidate_freeze_evidence,
     validate_execution_state_hardening as _r2_validate_execution_state_hardening,
     validate_hidden_metadata as _r2_validate_hidden_metadata,
-    validate_operation_semantics,
+    validate_operation_semantics as _r2_validate_operation_semantics,
     validate_release_qualification_event as _r2_validate_release_qualification_event,
     validate_review_aggregation_hardening,
     validate_review_decision_hardening as _r2_validate_review_decision_hardening,
@@ -35,6 +35,17 @@ from v40_r3_hardening import (
     validate_hidden_metadata_value_shapes,
     validate_model_diversity_basis,
 )
+from v40_t010_successor_hardening import (
+    validate_blocker_resolution_contract,
+    validate_candidate_freeze_sha_format,
+    validate_decision_interchange_binding,
+    validate_mda_cardinality,
+    validate_operation_machine_edges,
+    validate_release_freeze_evidence_binding,
+    validate_requested_validation_event_identity,
+    validate_requested_validation_report_identity,
+    validate_validation_activity_execution,
+)
 
 
 def validate_subject_identity(subject: dict) -> list[str]:
@@ -42,6 +53,13 @@ def validate_subject_identity(subject: dict) -> list[str]:
     if guard:
         return guard
     return _legacy_validate_subject_identity(subject) + validate_subject_identity_hardening(subject)
+
+
+def validate_operation_semantics(operation: dict) -> list[str]:
+    guard = object_guard(operation, label="Operation")
+    if guard:
+        return guard
+    return _r2_validate_operation_semantics(operation) + validate_operation_machine_edges(operation)
 
 
 def validate_assurance_semantics(plan: dict) -> list[str]:
@@ -70,6 +88,8 @@ def validate_assurance_aggregation(
         _legacy_validate_assurance_aggregation(plan, aggregate, normalized_findings)
         + validate_assurance_aggregation_hardening(plan, aggregate)
         + validate_model_diversity_basis(plan, aggregate)
+        + validate_mda_cardinality(plan, aggregate)
+        + validate_validation_activity_execution(plan, aggregate)
     )
 
 
@@ -96,8 +116,11 @@ def validate_review_aggregation(
         plan=plan,
     )
     errors.extend(validate_review_aggregation_hardening(aggregate, plan=plan))
+    errors.extend(validate_blocker_resolution_contract(aggregate, normalized_findings))
     if plan is not None:
         errors.extend(validate_model_diversity_basis(plan, aggregate))
+        errors.extend(validate_mda_cardinality(plan, aggregate))
+        errors.extend(validate_validation_activity_execution(plan, aggregate))
     return errors
 
 
@@ -105,14 +128,18 @@ def validate_validation_report(report: dict) -> list[str]:
     guard = object_guard(report, label="Validation report")
     if guard:
         return guard
-    return _r2_validate_validation_report(report)
+    return _r2_validate_validation_report(report) + validate_requested_validation_report_identity(report)
 
 
 def validate_validation_result(event: dict) -> list[str]:
     guard = object_guard(event, label="Validation event")
     if guard:
         return guard
-    return _legacy_validate_validation_result(event) + validate_validation_result_hardening(event)
+    return (
+        _legacy_validate_validation_result(event)
+        + validate_validation_result_hardening(event)
+        + validate_requested_validation_event_identity(event)
+    )
 
 
 def validate_hidden_metadata(metadata: dict) -> list[str]:
@@ -126,7 +153,7 @@ def validate_candidate_freeze_evidence(event: dict) -> list[str]:
     guard = object_guard(event, label="Candidate Freeze event")
     if guard:
         return guard
-    return _r2_validate_candidate_freeze_evidence(event)
+    return _r2_validate_candidate_freeze_evidence(event) + validate_candidate_freeze_sha_format(event)
 
 
 def validate_execution_state_hardening(state: dict) -> list[str]:
@@ -140,7 +167,7 @@ def validate_release_qualification_event(event: dict) -> list[str]:
     guard = object_guard(event, label="Release Qualification event")
     if guard:
         return guard
-    return _r2_validate_release_qualification_event(event)
+    return _r2_validate_release_qualification_event(event) + validate_release_freeze_evidence_binding(event)
 
 
 def validate_review_decision_hardening(event: dict) -> list[str]:
@@ -168,6 +195,13 @@ def validate_candidate_release_separation(candidate_event: dict, release_event: 
     return _legacy_validate_candidate_release_separation(candidate_event, release_event)
 
 
+def validate_interchange_semantics(envelope: dict) -> list[str]:
+    guard = object_guard(envelope, label="interchange envelope")
+    if guard:
+        return guard
+    return validate_decision_interchange_binding(envelope)
+
+
 __all__ = [
     "canonical_semantic_action_key",
     "canonical_semantic_action_payload",
@@ -179,6 +213,7 @@ __all__ = [
     "validate_execution_state_hardening",
     "validate_finding_disposition",
     "validate_hidden_metadata",
+    "validate_interchange_semantics",
     "validate_operation_semantics",
     "validate_release_qualification_event",
     "validate_review_aggregation",
