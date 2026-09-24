@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/repository-integration-v4-precondition.schema.json",
+  "title": "v4 Repository Integration Release Preconditions",
+  "type": "object",
+  "required": [
+    "schema",
+    "event",
+    "candidate_sha",
+    "tree_sha",
+    "merge_result_sha",
+    "merge_result_tree",
+    "evidence",
+    "release_qualification_ref",
+    "release_qualification_state",
+    "release_candidate_identity"
+  ],
+  "properties": {
+    "schema": {"const": "ai-dev/event-v2"},
+    "event": {"const": "REPOSITORY_INTEGRATION_RESULT"},
+    "candidate_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "tree_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "merge_result_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "merge_result_tree": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "evidence": {"type": "string", "minLength": 1},
+    "release_qualification_ref": {
+      "type": "string",
+      "pattern": "^(issue:#\\d+|pr:#\\d+|actions:[^\\s]+|evidence:[^\\s]+|file:[^\\s]+|ref:[^\\s]+|sha:[0-9a-fA-F]{40}|version:#\\d+)$"
+    },
+    "release_qualification_state": {"type": "string", "enum": ["READY", "CONDITIONAL"]},
+    "release_candidate_identity": {
+      "type": "string",
+      "pattern": "^candidate:[0-9a-fA-F]{40}:[0-9a-fA-F]{40}$"
+    }
+  },
+  "additionalProperties": true
+}
