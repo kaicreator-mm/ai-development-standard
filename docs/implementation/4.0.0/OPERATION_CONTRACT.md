@@ -136,7 +136,7 @@ operation:
 
   subject:
     refs: [<durable refs>]
-    identity_binding: <none | exact | tuple | candidate | project-defined>
+    identity_binding: <exact-sha | validation-tuple | candidate | project-defined>
     identity: <when applicable>
 
   inputs:
@@ -156,6 +156,8 @@ operation:
   failure_routes: [<route definitions>]
   next_operations: [<dependency/successor refs>]
 ```
+
+When a subject has no identity-sensitive truth requirement, the binding field is omitted or represented by the owning contract's explicit not-applicable mechanism; v4 does not invent `none`, `exact`, or `tuple` aliases outside the machine vocabulary.
 
 This is a logical contract. T-009 decides the minimum machine schema representation. GitHub reference implementations SHOULD reuse Issue/Task Pack/Execution Pack/event fields rather than duplicate the whole object in one payload.
 
@@ -385,7 +387,7 @@ The planning DAG and live GitHub Issue Dependency DAG remain distinct exactly as
 | Independent Review | Review | ASSURE | risk-based, exact-head when executed |
 | real-host/platform Validation | Validation | ASSURE | actual execution required for PASS |
 | merge controller | Integration transition | CONTROL | predicates re-read before merge |
-| integration owner work | Integration | PRODUCE + ASSURE as applicable | cross-component behavior |
+| integration owner work | Integration composition | separate PRODUCE and ASSURE Operations as applicable | cross-component behavior; each material Operation still has exactly one kind |
 | Candidate Preparation | closure preparation | PRODUCE/CONTROL sub-operations | not Candidate Freeze |
 | Candidate Freeze | Candidate Freeze | CONTROL | exact candidate visible gates required |
 | Hidden Validation | Hidden Validation | ASSURE | independent evidence |
