@@ -29,6 +29,60 @@ When Issue-based execution is enabled:
 - Stacked PR MUST NOT replace Issue Dependency.
 - JIT branch rule: task branches are created after dependencies merge, from the current integration exact SHA (exceptions only for real stacked code dependency).
 
+## v4 Adoption / Compatibility Profile
+
+Adoption level controls how much v4 implementation machinery this project uses. It does **not** reduce the mandatory truth/authority floor.
+
+Choose exactly one:
+
+```text
+A0_COMPATIBILITY
+A1_MANUAL_PROTOCOL
+A2_MACHINE_CONTRACTS
+A3_DERIVED_AUTOMATION
+A4_FULL_ORCHESTRATION
+```
+
+Canonical project fields:
+
+- `v4.adoption_level`: `<A0_COMPATIBILITY | A1_MANUAL_PROTOCOL | A2_MACHINE_CONTRACTS | A3_DERIVED_AUTOMATION | A4_FULL_ORCHESTRATION>`
+- `v4.compatibility_mode`: `<v3.4-bridge | native-v4 | project-specific + reason>`
+- `v4.assurance.default`: `<manual-minimum | machine-checked | project-specific stronger default>`
+- `v4.model_diversity.default_basis`: `<none | provider-diverse | model-family-diverse | architecture-system-diverse | configuration-fingerprint | project-specific>`
+- `v4.interchange`: `<disabled | enabled + transport; authority must remain CORRELATION_ONLY_NON_AUTHORITATIVE>`
+- `v4.reducer`: `<disabled | enabled + durable fact source>`
+- `v4.controllers`: `<disabled | enabled + bounded owned concerns>`
+- `v4.fast_path`: `<disabled | canonical | canonical + stricter project disqualifiers>`
+
+Level semantics:
+
+- `A0_COMPATIBILITY`: v4 pin + v3.4-compatible durable execution; v4 machine records/reducer/controllers are not required.
+- `A1_MANUAL_PROTOCOL`: A0 + durable Operation/Assurance concepts recorded manually.
+- `A2_MACHINE_CONTRACTS`: A1 + schema/semantic verification for adopted v4 records.
+- `A3_DERIVED_AUTOMATION`: A2 + reducer/queue/routing/controller-derived state from durable facts.
+- `A4_FULL_ORCHESTRATION`: A3 + project-selected full Operation/Assurance/Interchange/controller automation.
+
+Non-weakening rules:
+
+- Project overrides **MUST NOT weaken** any higher-authority required Review, Validation tuple, Candidate Freeze, Release Qualification or Repository Integration requirement.
+- `v4.assurance.default` and `v4.model_diversity.default_basis` are defaults only when Frozen PRD/Architecture/Task authority has not already required something stronger.
+- Model/reviewer agreement never becomes executable Validation truth.
+- `v4.interchange` is correlation/transport only; it never owns lifecycle, Validation, Candidate or Release truth.
+- `v4.reducer` / `v4.controllers` may derive routing and dispatch state but cannot manufacture owning facts.
+- Disabling reducer/controllers is valid at A0/A1/A2 only if required gates still have a truthful manual/fallback execution path; otherwise the project is `BLOCKED`.
+- `v4.fast_path` may be disabled or strengthened, but canonical v4 disqualifiers MUST NOT be removed.
+- A low adoption level is not evidence that a Task is low-risk or Fast Path eligible.
+- Exact-SHA/current-subject binding remains mandatory; branch/latest/chat identity cannot replace it.
+- `NOT_RUN`, `BLOCKED` and `NOT_APPLICABLE` retain their standard meanings; do not rewrite an unavailable required gate as `NOT_APPLICABLE` merely to obtain green state.
+- Candidate PREPARED != FROZEN; PR PASS != Release PASS; Release READY != Repository Integration complete at every adoption level.
+
+Migration guidance:
+
+- Existing v3.4 projects SHOULD begin at the smallest truthful level (usually A0/A1) and move upward only when the corresponding mechanisms really execute.
+- Historical v3.4 evidence keeps its original subject identity and status; migration MUST NOT relabel old PASS/FAIL/CHANGES_REQUESTED as v4-produced evidence.
+- `ai-dev:event:v2` remains valid; v4 adoption does not require event-v3.
+- See pinned `standards/PROJECT_ADOPTION.md` and `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md` for the compatibility matrix and examples.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.
