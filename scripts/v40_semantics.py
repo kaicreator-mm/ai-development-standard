@@ -46,6 +46,12 @@ from v40_t010_successor_hardening import (
     validate_requested_validation_report_identity,
     validate_validation_activity_execution,
 )
+from v40_t012_pre_release_hardening import (
+    validate_aggregation_judgment,
+    validate_assurance_plan_pre_release_hardening,
+    validate_mda_declared_bases,
+    validate_repository_integration_precondition,
+)
 
 
 def validate_subject_identity(subject: dict) -> list[str]:
@@ -68,8 +74,12 @@ def validate_assurance_semantics(plan: dict) -> list[str]:
         return guard
     _, activity_errors = validate_dict_sequence(plan.get("activities", []), label="Assurance Plan activities")
     if activity_errors:
-        return activity_errors + validate_assurance_plan_hardening(plan)
-    return _legacy_validate_assurance_semantics(plan) + validate_assurance_plan_hardening(plan)
+        return activity_errors + validate_assurance_plan_hardening(plan) + validate_assurance_plan_pre_release_hardening(plan)
+    return (
+        _legacy_validate_assurance_semantics(plan)
+        + validate_assurance_plan_hardening(plan)
+        + validate_assurance_plan_pre_release_hardening(plan)
+    )
 
 
 def validate_assurance_aggregation(
@@ -85,10 +95,13 @@ def validate_assurance_aggregation(
     if errors:
         return errors
     return (
-        _legacy_validate_assurance_aggregation(plan, aggregate, normalized_findings)
+        validate_aggregation_judgment(aggregate)
+        + validate_assurance_plan_pre_release_hardening(plan)
+        + _legacy_validate_assurance_aggregation(plan, aggregate, normalized_findings)
         + validate_assurance_aggregation_hardening(plan, aggregate)
         + validate_model_diversity_basis(plan, aggregate)
         + validate_mda_cardinality(plan, aggregate)
+        + validate_mda_declared_bases(plan, aggregate)
         + validate_validation_activity_execution(plan, aggregate)
     )
 
@@ -108,18 +121,24 @@ def validate_review_aggregation(
     if errors:
         return errors
 
+    errors.extend(validate_aggregation_judgment(aggregate))
+    if plan is not None:
+        errors.extend(validate_assurance_plan_pre_release_hardening(plan))
     effective_p3 = p3_required or p3_required_from_plan(plan)
-    errors = _legacy_validate_review_aggregation(
-        aggregate,
-        normalized_findings,
-        p3_required=effective_p3,
-        plan=plan,
+    errors.extend(
+        _legacy_validate_review_aggregation(
+            aggregate,
+            normalized_findings,
+            p3_required=effective_p3,
+            plan=plan,
+        )
     )
     errors.extend(validate_review_aggregation_hardening(aggregate, plan=plan))
     errors.extend(validate_blocker_resolution_contract(aggregate, normalized_findings))
     if plan is not None:
         errors.extend(validate_model_diversity_basis(plan, aggregate))
         errors.extend(validate_mda_cardinality(plan, aggregate))
+        errors.extend(validate_mda_declared_bases(plan, aggregate))
         errors.extend(validate_validation_activity_execution(plan, aggregate))
     return errors
 
@@ -170,6 +189,13 @@ def validate_release_qualification_event(event: dict) -> list[str]:
     return _r2_validate_release_qualification_event(event) + validate_release_freeze_evidence_binding(event)
 
 
+def validate_repository_integration_event(event: dict) -> list[str]:
+    guard = object_guard(event, label="Repository Integration event")
+    if guard:
+        return guard
+    return validate_repository_integration_precondition(event)
+
+
 def validate_review_decision_hardening(event: dict) -> list[str]:
     guard = object_guard(event, label="Review Decision event")
     if guard:
@@ -216,6 +242,7 @@ __all__ = [
     "validate_interchange_semantics",
     "validate_operation_semantics",
     "validate_release_qualification_event",
+    "validate_repository_integration_event",
     "validate_review_aggregation",
     "validate_review_decision_hardening",
     "validate_subject_identity",
