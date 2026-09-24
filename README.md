@@ -1,35 +1,37 @@
 # AI Development Standard
 
-当前版本：`v3.4.0`
+当前版本：`v4.0.0`
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
-## 1. v3.4 的核心变化
+## 1. v4.0 的核心变化
 
-v3.4 把 v3.3 的执行架构变成可被独立 Web / Local agent 实际拉取执行的 **GitHub-native pull 执行模型**：
+v4.0 在 v3.4 GitHub-native pull 执行模型之上统一引入 **AI Development Operation Protocol + Multi-Agent Assurance**，但不建立第二套生命周期或新的 truth authority：
 
 ```text
-Strong Web Control Plane（Task Pack 编写/冻结、JIT Execution Pack、统一 Dispatch）
+Durable authority / Work Item
         ↓
-dependencies merged → JIT task branch → Execution Pack 绑定 exact base
+Canonical Operation（PRODUCE / RESEARCH / ASSURE / DECIDE / CONTROL）
         ↓
-统一 Dispatch（builder / validator / reviewer role + execution profile）
+Assurance Plan（Review / Validation / adversarial challenge / coherence）
         ↓
-Local / Web execution workers（pointer-only claim，DISPATCH_CLAIMED）
+Derived routing / dispatch / interchange correlation
         ↓
-exact-SHA evidence（PASS/FAIL/BLOCKED 严格区分，HEAD_DRIFT 自动 supersede）
-        ↓
-Merge Controller → DAG ready-set 重算（无人工提示词转发）→ 下一个 READY
+exact-subject evidence + orthogonal Gate / Candidate / Release truth
 ```
 
 要点：
 
-- **Task Pack 与 Execution Pack 分离**：Task Pack 是 durable planning authority（做什么）；Execution Pack 是 JIT、绑定 exact base 的执行权威（怎么安全做），从属于 Task Pack，staleness 分类 fail-closed（`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`）。
-- **一个 Dispatch 架构**：Builder/Validator/Reviewer 不是三套队列状态机；`BuilderReadySet / ValidatorReadySet / ReviewerReadySet` 与版本级 Validation Handoff Queue 都是派生投影。
-- **Exact-SHA 验证交接**：`requested_head_sha == current PR HEAD` 才执行；Validator 不得顺手修源码（缺陷→FAIL，环境不可用→BLOCKED）；PASS 永不挪到 successor SHA。
-- **机器可读执行自由度**：`agent_freedom F0–F3`，executor 不得自我升权。
-- **Local-first**：默认本地实现+验证，CI 只做 required remote certification；provider-specific attestation 不可替代。
-- **Fast Path 保留**：小任务可省略 large pack / seed / validation queue，复杂度与风险成比例。
+- **Operation 是组合协议，不是新 Source of Truth**：workflow、Gate、Validation、provider、dispatch、candidate、release 继续保持正交，单一 flat state 被禁止。
+- **Assurance 是 DAG/partial order**：Review Policy、Review Mode、Coverage、Independence、Aggregation 分离；context/model/executor/evidence independence 分别记录。
+- **Multi-model 不等于 Validation**：模型一致不能制造 runtime/platform truth；多数票不能覆盖 unresolved blocker。
+- **Agent Interchange 只做 correlation**：传输/交换不能获得 owning authority，GitHub durable facts 和 exact identity 仍是 reference profile。
+- **Validation / Freeze / Release 分离**：Review != Validation，Candidate PREPARED != FROZEN，PR PASS != Release PASS，Release READY != Repository Integration complete。
+- **Machine contracts fail-closed**：v4 schemas、semantic facade、Golden/Forbidden regressions 对 identity、aggregation、Validation truth、Candidate/Release transitions、Fast Path 等提供机器约束。
+- **Reference-flow self-dogfood**：v4 自身经过多轮 blind provider-diverse adversarial review；历史 CHANGES_REQUESTED 保留，最终 PASS 绑定 exact subject 与 durable evidence。
+- **渐进采用**：项目可从 `A0_COMPATIBILITY` 到 `A4_FULL_ORCHESTRATION` 逐级采用；adoption level 只改变 implementation surface，不削弱 truth strength。
+
+v3.4 的 Task Pack / Execution Pack、统一 Dispatch、exact-SHA validation、Local-first、Issue Dependency live DAG 与 Fast Path 基线全部保留并兼容。
 
 ## 2. 最短阅读路径
 
@@ -126,7 +128,7 @@ release state
 
 ## 5. Candidate Freeze
 
-Candidate Freeze 在 v3.3 是 operational immutable state：required visible freeze gates 在一个 exact SHA/tree 上通过后冻结；冻结后不得静默向 candidate ref 写 commit。
+Candidate Freeze 在 v3.3 起是 operational immutable state：required visible freeze gates 在一个 exact SHA/tree 上通过后冻结；冻结后不得静默向 candidate ref 写 commit。
 
 需要内容修改时：
 
@@ -161,16 +163,19 @@ Dispatch: <id>
 
 ## 8. Progressive adoption
 
+v4 的 adoption level 只描述项目实际启用多少协议/自动化能力，不降低任何 mandatory truth/gate：
+
 ```text
-Level 0  manual standard
-Level 1  schemas + verifier
-Level 2  reducer + state card
-Level 3  ready queues + pointer-only dispatch
-Level 4  bounded merge/freeze/release controllers
-Level 5  optional automated delivery adapters
+A0_COMPATIBILITY       v3.4-compatible durable facts + v4 pin
+A1_MANUAL_PROTOCOL     手工记录 v4 Operation / Assurance durable facts
+A2_MACHINE_CONTRACTS   adopted records 实际经过 schema / semantic verification
+A3_DERIVED_AUTOMATION  reducer / routing / controllers 从 durable facts 派生运行
+A4_FULL_ORCHESTRATION  项目需要的完整 Operation / Assurance / Interchange automation
 ```
 
-浏览器自动化、Playwright、特定 CI/dispatcher 都不是标准强制组件。
+项目可以长期停留在任何满足自身需求的 level；A0/A1 不要求部署 reducer/controller，也不能被当作跳过 required Validation/Review/Freeze/Release gate 的依据。
+
+详细迁移/override 规则见 `standards/PROJECT_ADOPTION.md` 与 `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md`。
 
 ## 9. Project adoption
 
@@ -198,6 +203,12 @@ python scripts/test_verify_project_standard.py
 python scripts/test_project_execution_profile.py
 python scripts/test_protocol_schemas.py
 python scripts/test_v33_lifecycle_contracts.py
+python scripts/test_v33_semantic_regressions.py
+python scripts/test_v34_lifecycle_contracts.py
+python scripts/test_v34_review_repairs.py
+python scripts/test_v40_operation_contracts.py
+python scripts/test_v40_adoption_migration.py
+python scripts/test_v40_reference_flows.py
 python scripts/test_execution_architecture.py
 python scripts/verify_runner_capability_reference.py
 ```
@@ -210,7 +221,7 @@ Legacy Codex-specific handoff 仍可兼容；新任务优先使用 generic Local
 
 ## 11. Source of Truth
 
-- repository `main` + immutable pinned revision = standard content authority;
-- `standard-manifest.json` = active asset inventory;
-- `schemas/` = machine contracts;
-- project Frozen PRD/Architecture/Overrides = project-specific higher authority where applicable.
+- repository `main` + immutable pinned revision = standard content authority；
+- `standard-manifest.json` = active asset inventory；
+- `schemas/` = machine contracts；
+- project Frozen PRD/Architecture/Overrides = project-specific higher authority where applicable。

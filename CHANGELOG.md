@@ -1,8 +1,25 @@
 # Changelog
 
+## v4.0.0 — 2026-09-24
+
+将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
+
+- 新增 canonical Operation Protocol：每个 material Operation 精确归一为 `PRODUCE / RESEARCH / ASSURE / DECIDE / CONTROL`，Operation 是 lifecycle/correlation abstraction，不替代 Work Item、GitHub durable facts 或 owning authority。
+- 明确正交 truth dimensions：workflow routing、Gate/Validation、provider/channel、dispatch、candidate、release 不能压缩成一个 flat state；routing/reducer/controller 只能派生投影，不能制造 owning truth。
+- 新增 Assurance Plan 与独立性轴：Review Policy、Review Mode、Coverage、Independence、Aggregation 分离；context/model/executor/evidence independence 分别记录，Assurance 采用 DAG/partial order 而不是固定 Challenge→Validate 流程。
+- 新增 model-diverse adversarial review 语义：blind first pass → finding union → optional cross-challenge → conflict disposition → aggregation；majority vote 不能覆盖 unresolved blocker，模型一致不能替代 executable Validation。
+- 新增 transport-neutral Agent Interchange/correlation envelope，同时保持 `CORRELATION_ONLY_NON_AUTHORITATIVE`；GitHub 继续作为 durable reference profile，exchange/ACK/timestamp 不改变 authority 或 exact identity。
+- 将 Operation routing 集成进现有 execution architecture：统一 dispatch/reducer/controllers 与 Work Item/Task Pack/Execution Pack/Fast Path，同时保留 Task DAG、Issue Dependencies、Candidate Freeze、Release Qualification、Repository Integration 的原有权威边界。
+- 强化 Validation/Release contract：Review != Validation；Validation PASS 必须来自 required tuple 的真实执行；Candidate `PREPARED != FROZEN`；`PR PASS != Release PASS`；`Release READY != Repository Integration complete`；freeze/release/integration 均绑定 exact SHA/tree 与 fail-closed preconditions。
+- 新增 v4 machine contracts、Golden/Forbidden examples 与 semantic hardening：覆盖 Operation/Assurance identity、finding/blocker dominance、aggregation、Validation report truth、Hidden metadata leakage、Fast Path disqualifiers、Candidate/Release transitions、Interchange、Repository Integration 等反例。
+- 完成八类 end-to-end reference flows，并对 v4 自身执行多轮 blind provider-diverse dogfood；历史 R1/R2/R3 `CHANGES_REQUESTED` 保留为 durable evidence，R4 在修复后的 exact subject 上 PASS，随后完成 evidence-only closeout 与 Fresh Independent Review。
+- 新增 v3.4→v4 migration/adoption contract：`A0_COMPATIBILITY / A1_MANUAL_PROTOCOL / A2_MACHINE_CONTRACTS / A3_DERIVED_AUTOMATION / A4_FULL_ORCHESTRATION`；adoption level 只改变 implementation surface，不削弱 immutable pin、authority、exact identity、required Validation/Review、blocker dominance、Candidate/Release/Integration 分离或 truthful status semantics。
+- `PROJECT_OVERRIDES` 增加 v4 adoption、Assurance/model-diversity、Interchange、reducer/controller、Fast Path 配置边界；项目可以加强规则，不得削弱 Frozen PRD/Architecture 等更高 authority。
+- 标准仓库 CI 扩展为完整 v3.3/v3.4/v4 自验证链，包含 Operation、adoption/migration、reference flows、dogfood hardening、canonical surface 与 pre-release semantic regressions。
+
 ## v3.4.0 — 2026-09-22
 
-将 v3.3 的执行架构推进为可被独立 Web / Local agent 实际执行的 **GitHub-native pull 执行模型**：吸收 #45（Task/Execution Pack + 双 agent pull 编排）与 #46（version-scoped Validation Handoff Queue）为一个统一 dispatch 架构。不引入并行 scheduler、lifecycle、state authority 或第二套 validation truth（兼容 MINOR）。
+将 v3.3 的执行架构推进为可被独立 Web / Local agent 实际拉取执行的 **GitHub-native pull 执行模型**：吸收 #45（Task/Execution Pack + 双 agent pull 编排）与 #46（version-scoped Validation Handoff Queue）为一个统一 dispatch 架构。不引入并行 scheduler、lifecycle、state authority 或第二套 validation truth（兼容 MINOR）。
 
 - 新增 `standards/EXECUTION_PACK_STANDARD.md`：Task Pack（durable planning authority：做什么）与 Execution Pack（JIT、绑定 exact integration base 的执行权威：怎么安全做）分离；pack 必需核心 artifacts（MANIFEST / EXECUTION_CONTRACT / TEST_MATRIX / FAILURE_MATRIX / IMPLEMENTATION_MAP / REVIEW_CHECKLIST）不要求空占位文件；矛盾向上路由为 `TASK_PACK_DEFECT / ARCHITECTURE_CONTRADICTION / EXECUTION_PACK_INVALID`。
 - Execution Pack staleness 确定性 fail-closed：`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`；claim 时校验 pack base SHA、Task Pack identity、依赖完成 identity、pinned standard revision、branch；executor 不得静默改写 `base_sha`，NONMATERIAL 仅可经显式授权 impact/rebind 继续。
@@ -32,9 +49,9 @@
 - Validation ownership 标准化为 `concern | integration | closure`：leaf Task 只承担最小严格 affected gates，Integration owner 承担跨组件 truth，Version Closure 承担 full regression/Critical Journeys/platform/packaging/Hidden/Release Qualification；`PR PASS != Release PASS` 保持不变。
 - 精确区分 `HEAD drift / BASE drift / MERGE-RESULT drift / CANDIDATE drift`；旧 evidence 永远归属于实际执行的 `tested_sha`。只有显式 `VALIDATION_IMPACT_DECISION` 能在严格证明 impact=none 时复用 concern evidence，不能把 PASS 改写到未实际执行的 SHA。
 - 将 CI execution channel/provider health 与 Validation Gate 解耦；支持 `AVAILABLE / INFRA_BLOCKED / TIMED_OUT / CANCELLED`。当 authority 要求 validation profile 而非 provider-specific attestation 时，可由等价或更强的 trusted clean exact-SHA executor 替代，并记录 `CI_INFRA_EXCEPTION`；provider-specific requirement 不得静默替代。
-- Candidate Freeze 升级为 operational immutable state：冻结记录绑定 candidate SHA/tree/ref/visible evidence；冻结后禁止静默移动 candidate ref 或加入 product/docs/evidence commit。需要内容变化时必须 `THAWED/INVALIDATED → successor → affected visible validation → new freeze → required Hidden/Release Qualification`。
+- Candidate Freeze 升级为 operational immutable state：冻结记录绑定 candidate SHA/tree/ref/visible evidence；冻结后禁止静默移动 candidate ref 或加入 product/docs/evidence commit。需要内容变化时必须 `THAWED/INVALIDATED → successor → affected visible validation → new freeze → required Hidden Validation → new Release Qualification`。
 - Hidden Validation 增加 escaped-defect feedback loop：后续发现 release-significant defect 时区分 visible gap、hidden blind spot、pack defect 等；material blind spot 必须以独立 failure-family scenario 加强 private pack，并产生新的 immutable pack identity。
-- Local Agent Handoff 增加 machine-verifiable completeness contract 和 `HANDOFF_READY`；完成后优先只发送 `repository + issue + role/dispatch id` pointer，禁止在 chat 中维护第二份 task contract。
+- Local Agent Handoff 增加 machine-verifiable completeness contract 和 `HANDOFF_READY`；完成后优先只发送 `repository + handoff issue` pointer，禁止在 chat 中维护第二份 task contract。
 - `ai-dev:event:v2` 成为所有新 structured Agent events 的唯一 writer protocol；历史 v1 保持只读兼容。schema 扩展 dispatch、CI infra、validation impact、candidate、hidden escape、release qualification、repository integration events。
 - 新增 `standard-manifest.json` active asset inventory，以及 Task Contract、Validation Report、Execution State、Local Agent Handoff、Agent Event v2 machine schemas；verifier 对缺失资产、schema drift、protocol/version drift 与关键语义回归 fail closed。
 - 引入 executable immutable standard resolution：项目 pin 的 40-char revision 必须真实 resolve，且 exact revision 的 `VERSION` 必须与声明 SemVer 一致；禁止 syntactically-valid-but-nonexistent SHA 和 fallback 到 `main/latest`。
