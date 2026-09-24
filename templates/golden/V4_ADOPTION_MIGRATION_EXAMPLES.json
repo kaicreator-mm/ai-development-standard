@@ -1,0 +1,104 @@
+{
+  "schema": "ai-dev/v4-adoption-migration-examples:1",
+  "common_non_weakening_invariants": [
+    "immutable-standard-pin",
+    "durable-authority",
+    "exact-subject-identity",
+    "actual-required-validation-execution",
+    "review-policy-authority",
+    "review-not-validation",
+    "blocker-dominance",
+    "candidate-prepared-not-frozen",
+    "pr-pass-not-release-pass",
+    "release-ready-not-repository-integration",
+    "interchange-correlation-only-non-authoritative",
+    "truthful-not-run-blocked-not-applicable"
+  ],
+  "adoption_levels": [
+    {
+      "level": "A0_COMPATIBILITY",
+      "capabilities": [],
+      "required_truth_floor": "common_non_weakening_invariants"
+    },
+    {
+      "level": "A1_MANUAL_PROTOCOL",
+      "capabilities": ["manual-operation-assurance-records"],
+      "required_truth_floor": "common_non_weakening_invariants"
+    },
+    {
+      "level": "A2_MACHINE_CONTRACTS",
+      "capabilities": ["manual-operation-assurance-records", "schema-semantic-verification"],
+      "required_truth_floor": "common_non_weakening_invariants"
+    },
+    {
+      "level": "A3_DERIVED_AUTOMATION",
+      "capabilities": ["manual-operation-assurance-records", "schema-semantic-verification", "derived-reducer-routing-controllers"],
+      "required_truth_floor": "common_non_weakening_invariants"
+    },
+    {
+      "level": "A4_FULL_ORCHESTRATION",
+      "capabilities": ["manual-operation-assurance-records", "schema-semantic-verification", "derived-reducer-routing-controllers", "project-selected-interchange-and-full-orchestration"],
+      "required_truth_floor": "common_non_weakening_invariants"
+    }
+  ],
+  "migration_matrix": [
+    {"v34":"immutable-standard-pin","v4":"preserved","action":"pin-exact-v4-revision"},
+    {"v34":"frozen-product-architecture-authority","v4":"preserved","action":"no-authority-migration"},
+    {"v34":"task-dag-and-issue-dependencies","v4":"preserved","action":"operation-does-not-replace-live-dag"},
+    {"v34":"task-pack","v4":"preserved","action":"operation-may-reference-but-not-own"},
+    {"v34":"execution-pack","v4":"preserved-optional","action":"still-subordinate-and-fast-path-elidable"},
+    {"v34":"exact-sha-validation","v4":"preserved-strengthened","action":"keep-actual-execution-evidence"},
+    {"v34":"review-policy-required-recommended-not-required","v4":"preserved","action":"may-map-to-assurance-without-moving-policy-authority"},
+    {"v34":"builder-validator-reviewer-roles","v4":"preserved","action":"may-map-to-assurance-activities"},
+    {"v34":"ai-dev-event-v2","v4":"preserved","action":"no-event-v3-required"},
+    {"v34":"fast-path","v4":"preserved-hardened","action":"canonical-disqualifiers-remain"},
+    {"v34":"candidate-freeze","v4":"preserved","action":"separate-authority"},
+    {"v34":"release-qualification","v4":"preserved","action":"separate-from-freeze-and-integration"},
+    {"v34":"repository-integration","v4":"preserved","action":"does-not-manufacture-release-ready"},
+    {"v34":"github-durable-facts","v4":"preserved","action":"may-carry-v4-records-chat-still-not-state"}
+  ],
+  "valid_overrides": [
+    {"name":"small-manual","adoption_level":"A1_MANUAL_PROTOCOL","fast_path":"canonical-plus-stricter","reducer":"disabled","controllers":"disabled","interchange":"disabled"},
+    {"name":"substantial-derived","adoption_level":"A3_DERIVED_AUTOMATION","fast_path":"canonical-plus-stricter","reducer":"enabled","controllers":"enabled","interchange":"correlation-only"}
+  ],
+  "forbidden_overrides": [
+    {"name":"skip-required-validation","reason":"override-cannot-downgrade-higher-authority-required-validation"},
+    {"name":"review-majority-is-validation","reason":"model-or-review-agreement-is-not-executable-validation"},
+    {"name":"remove-fast-path-disqualifier","reason":"project-may-strengthen-but-not-remove-canonical-disqualifiers"},
+    {"name":"authoritative-interchange","reason":"interchange-remains-correlation-only-non-authoritative"},
+    {"name":"release-ready-implies-merged","reason":"release-and-repository-integration-remain-separate"},
+    {"name":"branch-latest-replaces-exact-sha","reason":"exact-subject-binding-is-mandatory"},
+    {"name":"blocked-becomes-not-applicable","reason":"status-semantics-must-remain-truthful"}
+  ],
+  "reference_profiles": {
+    "small_project": {
+      "adoption_level": "A1_MANUAL_PROTOCOL",
+      "ci_profile": "minimal",
+      "reducer": "disabled",
+      "controllers": "disabled",
+      "interchange": "disabled"
+    },
+    "substantial_project": {
+      "adoption_level": "A3_DERIVED_AUTOMATION",
+      "machine_contracts": "enabled",
+      "reducer": "enabled",
+      "controllers": "enabled",
+      "interchange": "correlation-only"
+    }
+  },
+  "fast_path": {
+    "orthogonal_to_adoption_level": true,
+    "project_may_disable": true,
+    "project_may_strengthen": true,
+    "project_may_remove_canonical_disqualifiers": false,
+    "low_adoption_level_proves_eligibility": false
+  },
+  "historical_evidence": {
+    "migration_rewrites_prior_results": false,
+    "prior_identity_and_status_preserved": true
+  },
+  "successor_task_boundary": {
+    "t011_executes_t012": false,
+    "t011_executes_t013": false
+  }
+}
