@@ -138,6 +138,7 @@
       "scripts/test_v40_r2_machine_hardening.py",
       "scripts/test_v40_r3_carryforward.py",
       "scripts/test_v40_reference_flows.py",
+      "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
