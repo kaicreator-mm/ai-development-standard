@@ -1,0 +1,103 @@
+{
+  "schema": "ai-dev/v4-reference-flows:1",
+  "subject_baseline": "7a8c3c3608bc42325a1ac3c15a335747dea25ddb",
+  "historical_dogfood": [
+    {"coordinator":"#127","outcome":"CHANGES_REQUESTED"},
+    {"coordinator":"#135","outcome":"CHANGES_REQUESTED"}
+  ],
+  "hardening_merge": "7a8c3c3608bc42325a1ac3c15a335747dea25ddb",
+  "scenarios": [
+    {
+      "id": "major-product-definition",
+      "operation_kinds": ["RESEARCH", "PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "project-defined",
+      "assurance": {"policy":"required","modes":["single-independent","model-diverse-adversarial"],"coverage":["scope","authority","acceptance","failure-semantics"],"independence_axes":["context","model"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "review", "authority"],
+      "non_substitution": "product evidence is input evidence, not Product authority",
+      "failure_routes": ["CHANGES_REQUIRED", "AUTHORITY_CONTRADICTION", "STALE_IDENTITY"]
+    },
+    {
+      "id": "major-architecture-freeze",
+      "operation_kinds": ["RESEARCH", "PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "project-defined",
+      "assurance": {"policy":"required","modes":["model-diverse-adversarial","executable-validation"],"coverage":["architecture","authority-boundary","failure-semantics","validation-evidence"],"independence_axes":["context","model","executor","evidence"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "review", "validation", "gate"],
+      "non_substitution": "architecture review cannot manufacture unexecuted runtime Validation PASS",
+      "failure_routes": ["VALIDATION_NEEDED", "CHANGES_REQUIRED", "AUTHORITY_CONTRADICTION"]
+    },
+    {
+      "id": "bounded-implementation",
+      "operation_kinds": ["PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "exact-sha",
+      "assurance": {"policy":"required","modes":["executable-validation"],"coverage":["implementation","validation-evidence"],"independence_axes":["executor"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "validation", "review-policy", "dispatch"],
+      "non_substitution": "derived operation routing is not Validation or Review truth",
+      "failure_routes": ["CHANGES_REQUIRED", "VALIDATION_NEEDED", "STALE_IDENTITY"]
+    },
+    {
+      "id": "high-risk-contract-security",
+      "operation_kinds": ["PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "exact-sha",
+      "assurance": {"policy":"required","modes":["model-diverse-adversarial","specialist","executable-validation"],"coverage":["contract","security","authority-boundary","failure-semantics","validation-evidence"],"independence_axes":["context","model","executor","evidence"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "review", "validation", "gate", "dispatch"],
+      "non_substitution": "model diversity is a risk control and never executable evidence",
+      "failure_routes": ["CHANGES_REQUIRED", "VALIDATION_NEEDED", "BLOCKED"]
+    },
+    {
+      "id": "cross-artifact-coherence",
+      "operation_kinds": ["ASSURE"],
+      "identity_binding": "project-defined",
+      "assurance": {"policy":"required","modes":["coherence-review","executable-validation"],"coverage":["cross-artifact-coherence","authority-boundary","recovery","validation-evidence"],"independence_axes":["context","executor","evidence"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["review", "validation", "authority"],
+      "non_substitution": "coherence review does not substitute for Integration Validation",
+      "failure_routes": ["VALIDATION_NEEDED", "CHANGES_REQUIRED", "AUTHORITY_CONTRADICTION"]
+    },
+    {
+      "id": "version-closure-release",
+      "operation_kinds": ["PRODUCE", "ASSURE", "CONTROL", "DECIDE"],
+      "identity_binding": "candidate",
+      "assurance": {"policy":"required","modes":["executable-validation","hidden-validation","coherence-review"],"coverage":["release-evidence","validation-evidence","cross-artifact-coherence"],"independence_axes":["context","executor","evidence"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "validation", "candidate", "release", "gate"],
+      "non_substitution": "PR PASS, Candidate Freeze, Release READY and repository integration are distinct truths",
+      "failure_routes": ["VALIDATION_NEEDED", "BLOCKED", "STALE_IDENTITY"]
+    },
+    {
+      "id": "fast-path",
+      "operation_kinds": ["PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "exact-sha",
+      "assurance": {"policy":"required","modes":["executable-validation"],"coverage":["implementation","validation-evidence"],"independence_axes":["executor"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "validation", "review-policy"],
+      "non_substitution": "Fast Path reduces operations and ceremony, never required truth; unresolved authority contradiction disqualifies Fast Path",
+      "failure_routes": ["CHANGES_REQUIRED", "VALIDATION_NEEDED", "AUTHORITY_CONTRADICTION"]
+    },
+    {
+      "id": "stale-identity-conflict-recovery",
+      "operation_kinds": ["PRODUCE", "ASSURE", "CONTROL"],
+      "identity_binding": "exact-sha",
+      "assurance": {"policy":"required","modes":["single-independent","executable-validation"],"coverage":["identity","conflict","validation-evidence","failure-semantics"],"independence_axes":["context","executor"],"aggregation":"finding-union-blocker-dominance"},
+      "truth_dimensions": ["routing", "review", "validation", "gate"],
+      "non_substitution": "stale evidence remains historical and a requested route remains non-authoritative derived state",
+      "failure_routes": ["STALE_IDENTITY", "VALIDATION_NEEDED", "AUTHORITY_CONTRADICTION", "CHANGES_REQUIRED"]
+    }
+  ],
+  "dogfood": {
+    "assurance_plan_id": "dogfood:v4:t010:r3",
+    "operation_id": "op:v4:t010:dogfood:r3",
+    "subject_identity_ref": "sha:7a8c3c3608bc42325a1ac3c15a335747dea25ddb",
+    "blind_first_pass_count": 2,
+    "blind_assurance_ids": ["dogfood:r3:blind-a", "dogfood:r3:blind-b"],
+    "mode": "model-diverse-adversarial",
+    "model_diversity_basis": "provider-diverse",
+    "context_independence": "required",
+    "model_independence": "required",
+    "executor_independence": "required",
+    "collaboration_before_first_pass": false,
+    "provenance_fields_required": ["provider","model_family","model_id","executor_id","context_ref","blind_first_pass_ref"],
+    "aggregation": "finding-union-blocker-dominance",
+    "majority_vote_for_correctness": false,
+    "coverage_attestation_required": true,
+    "p0_p1_blocker_by_severity": true,
+    "p2_p3_explicit_disposition": true,
+    "requested_route_authority": "NON_AUTHORITATIVE_DERIVED_STATE"
+  }
+}

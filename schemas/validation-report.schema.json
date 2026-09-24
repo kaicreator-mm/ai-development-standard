@@ -66,23 +66,30 @@
         "required": ["state"]
       },
       "then": {
-        "required": ["exit_code"],
-        "properties": {
-          "actual_checked_out_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
-          "working_tree_clean": {"const": true},
-          "source_modifications_after_validation": {"const": false},
-          "provider_state": {"const": "AVAILABLE"},
-          "exit_code": {"const": 0},
-          "drift": {"const": null}
-        },
         "allOf": [
           {
             "if": {
-              "properties": {"provider_state": {"const": "AVAILABLE"}},
-              "required": ["provider_state"]
+              "properties": {"version": {"const": "3.4.0"}},
+              "required": ["version"]
             },
             "then": {
-              "required": ["actual_checked_out_sha", "working_tree_clean", "source_modifications_after_validation"]
+              "required": ["exit_code"],
+              "properties": {
+                "exit_code": {"const": 0},
+                "drift": {"const": null}
+              }
+            },
+            "else": {
+              "required": ["requested_sha", "actual_checked_out_sha", "working_tree_clean", "source_modifications_after_validation", "provider_state", "exit_code"],
+              "properties": {
+                "requested_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+                "actual_checked_out_sha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+                "working_tree_clean": {"const": true},
+                "source_modifications_after_validation": {"const": false},
+                "provider_state": {"const": "AVAILABLE"},
+                "exit_code": {"const": 0},
+                "drift": {"const": null}
+              }
             }
           }
         ]

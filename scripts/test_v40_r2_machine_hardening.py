@@ -173,7 +173,7 @@ class V40R2MachineHardeningTests(unittest.TestCase):
         self.assertTrue(any("self-authority" in e for e in validate_operation_semantics(self_auth)))
 
     def test_gr10_validation_event_guard_rejects_weak_tuple(self) -> None:
-        valid = {"schema":"ai-dev/event-v2","event":"VALIDATION_RESULT","actor_role":"validator","operator_kind":"github-actions","operator_id":"gha:1","sha":SHA_A,"actual_checked_out_sha":SHA_A,"gate":"verify-standard","environment":"ubuntu-latest","validation_profile":"concern","command":"python tests","exit_code":0,"evidence":"actions:1","status":"PASS"}
+        valid = {"schema":"ai-dev/event-v2","event":"VALIDATION_RESULT","actor_role":"validator","operator_kind":"github-actions","operator_id":"gha:1","sha":SHA_A,"requested_head_sha":SHA_A,"actual_checked_out_sha":SHA_A,"gate":"verify-standard","environment":"ubuntu-latest","validation_profile":"concern","provider_state":"AVAILABLE","command":"python tests","exit_code":0,"evidence":"actions:1","status":"PASS"}
         self.assertEqual(validate_validation_result(valid), [])
         cases = []
         bad = copy.deepcopy(valid); bad["exit_code"] = 0.0; cases.append(bad)
@@ -206,7 +206,13 @@ class V40R2MachineHardeningTests(unittest.TestCase):
     def test_gr14_standalone_release_qualification_requires_frozen_candidate_binding(self) -> None:
         event = {"event":"RELEASE_QUALIFICATION","release_state":"READY","candidate_sha":SHA_A,"tree_sha":TREE_A,"evidence":"issue:#85"}
         self.assertTrue(validate_release_qualification_event(event))
-        event["candidate_state"] = "FROZEN"; event["candidate_ref"] = "refs/heads/version/v4.0.0"
+        event.update({
+            "candidate_state": "FROZEN",
+            "candidate_ref": "refs/heads/version/v4.0.0",
+            "candidate_freeze_ref": "evidence:freeze-v4",
+            "candidate_freeze_identity": f"candidate:{SHA_A}:{TREE_A}",
+            "visible_closure_evidence_ref": "evidence:closure-v4",
+        })
         self.assertEqual(validate_release_qualification_event(event), [])
 
     def test_gr15_frozen_closure_evidence_is_durable_and_identity_bound(self) -> None:

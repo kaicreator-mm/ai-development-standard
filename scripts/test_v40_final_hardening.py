@@ -41,6 +41,7 @@ def resolved_blocker(finding_id: str, *, subject: str = SHA_A) -> dict:
         "blocking": True,
         "status": "DISPOSITIONED",
         "disposition": "authorized resolution",
+        "resolution_code": "FIXED",
         "evidence_refs": ["issue:#123"],
     }
 
@@ -56,6 +57,7 @@ def superseded_blocker(finding_id: str, target_id: str | None, *, subject: str =
         "blocking": True,
         "status": "SUPERSEDED",
         "disposition": "replaced by newer durable finding",
+        "resolution_code": "SUPERSEDED",
         "evidence_refs": ["issue:#123"],
     }
     if target_id is not None:

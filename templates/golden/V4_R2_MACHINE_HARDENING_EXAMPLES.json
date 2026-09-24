@@ -25,6 +25,7 @@
     "validation_report_wrong_checkout": {
       "repository": "kaicreator-mm/ai-development-standard",
       "tested_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "requested_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "actual_checked_out_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "working_tree_clean": true,
       "source_modifications_after_validation": false,

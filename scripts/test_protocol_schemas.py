@@ -189,30 +189,10 @@ class ProtocolSchemaTests(unittest.TestCase):
     def test_review_decision_contract_valid_combinations(self) -> None:
         schema = load_schema("agent-event-v2.schema.json")
         valid_cases = [
-            self._review_decision(
-                review_policy="required",
-                decision="perform",
-                status="NOT_RUN",
-                next_state="review-ready",
-            ),
-            self._review_decision(
-                review_policy="recommended",
-                decision="perform",
-                status="NOT_RUN",
-                next_state="review-ready",
-            ),
-            self._review_decision(
-                review_policy="recommended",
-                decision="skipped",
-                status="NOT_RUN",
-                next_state="merge-ready",
-            ),
-            self._review_decision(
-                review_policy="not-required",
-                decision="not-applicable",
-                status="NOT_APPLICABLE",
-                next_state="merge-ready",
-            ),
+            self._review_decision(review_policy="required", decision="perform", status="NOT_RUN", next_state="review-ready"),
+            self._review_decision(review_policy="recommended", decision="perform", status="NOT_RUN", next_state="review-ready"),
+            self._review_decision(review_policy="recommended", decision="skipped", status="NOT_RUN", next_state="merge-ready"),
+            self._review_decision(review_policy="not-required", decision="not-applicable", status="NOT_APPLICABLE", next_state="merge-ready"),
         ]
         for value in valid_cases:
             with self.subTest(policy=value["review_policy"], decision=value["decision"]):
@@ -257,36 +237,11 @@ class ProtocolSchemaTests(unittest.TestCase):
     def test_review_decision_contract_rejects_gate_bypass_combinations(self) -> None:
         schema = load_schema("agent-event-v2.schema.json")
         invalid_cases = [
-            self._review_decision(
-                review_policy="required",
-                decision="skipped",
-                status="NOT_RUN",
-                next_state="merge-ready",
-            ),
-            self._review_decision(
-                review_policy="required",
-                decision="perform",
-                status="NOT_RUN",
-                next_state="merge-ready",
-            ),
-            self._review_decision(
-                review_policy="recommended",
-                decision="not-applicable",
-                status="NOT_APPLICABLE",
-                next_state="merge-ready",
-            ),
-            self._review_decision(
-                review_policy="recommended",
-                decision="skipped",
-                status="PASS",
-                next_state="merge-ready",
-            ),
-            self._review_decision(
-                review_policy="not-required",
-                decision="perform",
-                status="NOT_RUN",
-                next_state="review-ready",
-            ),
+            self._review_decision(review_policy="required", decision="skipped", status="NOT_RUN", next_state="merge-ready"),
+            self._review_decision(review_policy="required", decision="perform", status="NOT_RUN", next_state="merge-ready"),
+            self._review_decision(review_policy="recommended", decision="not-applicable", status="NOT_APPLICABLE", next_state="merge-ready"),
+            self._review_decision(review_policy="recommended", decision="skipped", status="PASS", next_state="merge-ready"),
+            self._review_decision(review_policy="not-required", decision="perform", status="NOT_RUN", next_state="review-ready"),
         ]
         for value in invalid_cases:
             with self.subTest(policy=value["review_policy"], decision=value["decision"], state=value["next_state"]):
@@ -391,9 +346,15 @@ class ProtocolSchemaTests(unittest.TestCase):
 
     def test_validation_report_examples(self) -> None:
         schema = load_schema("validation-report.schema.json")
+        sha = "d7273fc7f1300c1fda5d36e38aed641865b0addc"
         valid = {
             "repository": "kaicreator-mm/ai-development-standard",
-            "tested_sha": "d7273fc7f1300c1fda5d36e38aed641865b0addc",
+            "tested_sha": sha,
+            "requested_sha": sha,
+            "actual_checked_out_sha": sha,
+            "working_tree_clean": True,
+            "source_modifications_after_validation": False,
+            "provider_state": "AVAILABLE",
             "execution_host_role": "github-actions",
             "platform": "ubuntu-latest",
             "runtime_toolchain": "Python 3.13",
