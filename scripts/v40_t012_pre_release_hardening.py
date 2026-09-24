@@ -27,10 +27,11 @@ def _durable_ref(value) -> bool:
     return isinstance(value, str) and DURABLE_REF.fullmatch(value) is not None
 
 
-def _provenances(result: dict) -> list[dict]:
-    many = result.get("reviewer_provenances")
-    if isinstance(many, list) and many:
-        return [item for item in many if isinstance(item, dict)]
+def _provenances(result: dict, *, composite: bool) -> list[dict]:
+    if composite:
+        many = result.get("reviewer_provenances")
+        if isinstance(many, list) and many:
+            return [item for item in many if isinstance(item, dict)]
     one = result.get("reviewer_provenance")
     return [one] if isinstance(one, dict) else []
 
@@ -135,6 +136,7 @@ def validate_mda_declared_bases(plan: dict, aggregate: dict) -> list[str]:
     if not activities:
         return errors
 
+    composite = len(activities) == 1
     basis_records: dict[str, list[dict]] = {basis: [] for basis in MDA_BASES}
     for activity in activities:
         assurance_id = activity.get("assurance_id")
@@ -146,12 +148,17 @@ def validate_mda_declared_bases(plan: dict, aggregate: dict) -> list[str]:
         if not isinstance(result, dict):
             errors.append(f"{assurance_id}: required MDA result missing")
             continue
-        records = _provenances(result)
-        if len(activities) == 1 and len(records) < 2:
+        records = _provenances(result, composite=composite)
+        if composite and len(records) < 2:
             errors.append(f"{assurance_id}: single-composite MDA requires at least two reviewer provenances")
         basis_records[basis].extend(records)
 
-    for basis in {item.get("model_diversity_basis") for item in activities if item.get("model_diversity_basis") in MDA_BASES}:
+    declared_bases = {
+        item.get("model_diversity_basis")
+        for item in activities
+        if item.get("model_diversity_basis") in MDA_BASES
+    }
+    for basis in declared_bases:
         records = basis_records[basis]
         if len(records) < 2:
             errors.append(f"{basis}: MDA PASS requires at least two provenance records")
