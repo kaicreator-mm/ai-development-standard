@@ -1,10 +1,59 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, replace
 import json
 from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@dataclass(frozen=True)
+class ClaimCell:
+    generation: int = 0
+    dispatch_id: str | None = None
+    operator_id: str | None = None
+    phase: str = "EMPTY"
+
+
+def reserve_dispatch(cell: ClaimCell, *, expected_generation: int, dispatch_id: str) -> tuple[str, ClaimCell]:
+    """Reference CAS oracle for one non-concurrent (work item, role) claim key."""
+    if expected_generation != cell.generation:
+        return "STALE", cell
+    if cell.dispatch_id is not None:
+        if cell.dispatch_id == dispatch_id:
+            return "IDEMPOTENT", cell
+        return "DUPLICATE", cell
+    return "ACCEPTED", replace(
+        cell,
+        generation=cell.generation + 1,
+        dispatch_id=dispatch_id,
+        phase="DISPATCHED",
+    )
+
+
+def claim_dispatch(
+    cell: ClaimCell,
+    *,
+    expected_generation: int,
+    dispatch_id: str,
+    operator_id: str,
+) -> tuple[str, ClaimCell]:
+    """Reference CAS oracle for worker claim admission after one dispatch reservation."""
+    if cell.dispatch_id == dispatch_id and cell.operator_id == operator_id and cell.phase == "CLAIMED":
+        return "IDEMPOTENT", cell
+    if expected_generation != cell.generation:
+        return "STALE", cell
+    if cell.dispatch_id != dispatch_id:
+        return "DUPLICATE", cell
+    if cell.operator_id is not None and cell.operator_id != operator_id:
+        return "DUPLICATE", cell
+    return "ACCEPTED", replace(
+        cell,
+        generation=cell.generation + 1,
+        operator_id=operator_id,
+        phase="CLAIMED",
+    )
 
 
 class ExecutionArchitectureRegression(unittest.TestCase):
@@ -26,6 +75,10 @@ class ExecutionArchitectureRegression(unittest.TestCase):
             "only the first claim accepted against the still-current predicates may become canonical",
             "MUST be rejected atomically as duplicate/stale",
             "same logical operator re-claiming the same dispatch is idempotent",
+            "SINGLE_WRITER_ADMISSION",
+            "LINEARIZABLE_CONDITIONAL_WRITE",
+            "BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE",
+            "Re-read alone is not an atomic primitive",
         ):
             self.assertIn(token, execution)
 
@@ -39,6 +92,53 @@ class ExecutionArchitectureRegression(unittest.TestCase):
             self.assertIn(token, work_item)
 
         self.assertIn("claimed", execution.split("### Workflow routing state", 1)[1].split("### Gate state", 1)[0])
+
+    def test_atomic_claim_race_oracle(self) -> None:
+        # Two schedulers race after both observed generation 0. Only one dispatch reservation wins.
+        initial = ClaimCell()
+        result_a, after_a = reserve_dispatch(initial, expected_generation=0, dispatch_id="D-A")
+        result_b, after_b = reserve_dispatch(after_a, expected_generation=0, dispatch_id="D-B")
+        self.assertEqual("ACCEPTED", result_a)
+        self.assertEqual("STALE", result_b)
+        self.assertEqual("D-A", after_b.dispatch_id)
+        self.assertEqual("DISPATCHED", after_b.phase)
+
+        # A distinct dispatch cannot claim the already-reserved claim key.
+        result_wrong, unchanged = claim_dispatch(
+            after_b,
+            expected_generation=after_b.generation,
+            dispatch_id="D-B",
+            operator_id="worker-b",
+        )
+        self.assertEqual("DUPLICATE", result_wrong)
+        self.assertEqual(after_b, unchanged)
+
+        # The reserved dispatch claims once; a competing operator's stale observation cannot win later.
+        result_claim, claimed = claim_dispatch(
+            after_b,
+            expected_generation=after_b.generation,
+            dispatch_id="D-A",
+            operator_id="worker-a",
+        )
+        self.assertEqual("ACCEPTED", result_claim)
+        result_competing, still_claimed = claim_dispatch(
+            claimed,
+            expected_generation=after_b.generation,
+            dispatch_id="D-A",
+            operator_id="worker-b",
+        )
+        self.assertEqual("STALE", result_competing)
+        self.assertEqual(claimed, still_claimed)
+
+        # Same dispatch + same operator retry is idempotent and does not advance generation.
+        retry_result, retry_state = claim_dispatch(
+            claimed,
+            expected_generation=claimed.generation,
+            dispatch_id="D-A",
+            operator_id="worker-a",
+        )
+        self.assertEqual("IDEMPOTENT", retry_result)
+        self.assertEqual(claimed, retry_state)
 
     def test_validation_layering_and_drift(self) -> None:
         text = self.text("standards/VALIDATION_STANDARD.md")
