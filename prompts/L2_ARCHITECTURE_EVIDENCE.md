@@ -22,6 +22,8 @@
 8. 对每个重大决策给出 alternatives、trade-offs、failure modes 和 rollback/escape hatch。
 9. 明确哪些能力属于公共基础服务，哪些必须留在领域系统。
 10. 如果 Demo 只否定某个技术方案，调整候选架构；只有证据表明 Frozen PRD 本身 contradiction/unachievable 时，才报告 Architecture Contradiction 并请求重新打开产品范围。
+11. 为后续 Task DAG 明确可并行的 ownership/write-set boundaries：哪些 contract/core/adapter/UI/validation/platform/domain concerns 可以形成独立 lane，哪些必须因为共享 mutable contract、central wiring、未冻结 architecture 或真实 code-baseline dependency 保持串行。
+12. 不要为了“看起来并行”制造伪 lane；目标是让 Task DAG 暴露 **maximum safe parallelism**，从而允许多个 Agent 在真实独立边界上并行推进并缩短 wall-clock development time。
 
 ## Research Demo 规则
 
@@ -55,5 +57,6 @@
 - Migration Plan
 - Architecture Risks / Open Questions
 - Explicit Architecture Contradictions（如有）
+- Task DAG Lane Hints：候选 lane、各 lane 的稳定输入/ownership/write-set 边界、必须串行的真实依赖、建议 convergence/integration point
 
-研究结果必须能够直接支撑 L2 Freeze 和 Task DAG，而不是停留在概念层。未经所需 executable evidence 支持的高影响 UNKNOWN 不得伪装成已冻结 Architecture Fact。
+研究结果必须能够直接支撑 L2 Freeze 和 Task DAG，而不是停留在概念层。未经所需 executable evidence 支持的高影响 UNKNOWN 不得伪装成已冻结 Architecture Fact。进入 Task DAG 生成时，应使用 `templates/task-dag.md` 的 Lane-Oriented Decomposition Prompt 主动寻找安全并行 lane，而不是默认把工作排成单一串行链。
