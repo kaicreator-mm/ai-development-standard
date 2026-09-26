@@ -1,10 +1,75 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, replace
 import json
 from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@dataclass(frozen=True)
+class ClaimCell:
+    generation: int = 0
+    dispatch_id: str | None = None
+    operator_id: str | None = None
+    phase: str = "EMPTY"
+
+
+def reserve_dispatch(
+    cell: ClaimCell,
+    *,
+    expected_generation: int,
+    dispatch_id: str,
+    serialization_available: bool = True,
+    compatible_parallel_authorized: bool = False,
+) -> tuple[str, ClaimCell]:
+    """Reference admission oracle for one (work item, role) protected claim key."""
+    if not serialization_available:
+        return "BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE", cell
+    if expected_generation != cell.generation:
+        return "STALE", cell
+    if cell.dispatch_id is not None:
+        if cell.dispatch_id == dispatch_id:
+            return "IDEMPOTENT", cell
+        if compatible_parallel_authorized:
+            # Parallel admission is allowed only by explicit durable authority. The
+            # compact oracle does not model the sibling cell; it proves the gate.
+            return "COMPATIBLE_PARALLEL_AUTHORIZED", cell
+        return "DUPLICATE", cell
+    return "ACCEPTED", replace(
+        cell,
+        generation=cell.generation + 1,
+        dispatch_id=dispatch_id,
+        phase="DISPATCHED",
+    )
+
+
+def claim_dispatch(
+    cell: ClaimCell,
+    *,
+    expected_generation: int,
+    dispatch_id: str,
+    operator_id: str,
+    serialization_available: bool = True,
+) -> tuple[str, ClaimCell]:
+    """Reference admission oracle for worker claim after one dispatch reservation."""
+    if not serialization_available:
+        return "BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE", cell
+    if cell.dispatch_id == dispatch_id and cell.operator_id == operator_id and cell.phase == "CLAIMED":
+        return "IDEMPOTENT", cell
+    if expected_generation != cell.generation:
+        return "STALE", cell
+    if cell.dispatch_id != dispatch_id:
+        return "DUPLICATE", cell
+    if cell.operator_id is not None and cell.operator_id != operator_id:
+        return "DUPLICATE", cell
+    return "ACCEPTED", replace(
+        cell,
+        generation=cell.generation + 1,
+        operator_id=operator_id,
+        phase="CLAIMED",
+    )
 
 
 class ExecutionArchitectureRegression(unittest.TestCase):
@@ -15,6 +80,127 @@ class ExecutionArchitectureRegression(unittest.TestCase):
         text = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
         for token in ("Workflow routing state", "Gate state", "Execution-channel/provider state", "Dispatch state", "Candidate state", "Release state"):
             self.assertIn(token, text)
+
+    def test_atomic_claim_duplicate_exclusion(self) -> None:
+        execution = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
+        work_item = self.text("standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md")
+
+        for token in (
+            "At most one incompatible active dispatch MUST exist per `(work item, role)`",
+            "Claim admission is a compare-and-set style transition",
+            "only the first claim accepted against the still-current predicates may become canonical",
+            "MUST be rejected atomically as duplicate/stale",
+            "same logical operator re-claiming the same dispatch is idempotent",
+            "SINGLE_WRITER_ADMISSION",
+            "LINEARIZABLE_CONDITIONAL_WRITE",
+            "BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE",
+            "Re-read alone is not an atomic primitive",
+        ):
+            self.assertIn(token, execution)
+
+        for token in (
+            "Claim admission is a compare-and-set operation over current durable GitHub facts",
+            "At most one incompatible active claim/dispatch per `(work item, role)` is permitted",
+            "A worker MUST NOT create or mutate implementation work before its claim is accepted",
+            "TASK_DAG.md` remains a frozen planning/history checkpoint",
+            "competing claim MUST be rejected before it can enter RUNNING or mutate implementation work",
+        ):
+            self.assertIn(token, work_item)
+
+        self.assertIn("claimed", execution.split("### Workflow routing state", 1)[1].split("### Gate state", 1)[0])
+
+    def test_atomic_claim_race_oracle(self) -> None:
+        # 1/2. Two schedulers share generation 0: one active dispatch wins.
+        initial = ClaimCell()
+        result_a, after_a = reserve_dispatch(initial, expected_generation=0, dispatch_id="D-A")
+        result_b, after_b = reserve_dispatch(after_a, expected_generation=0, dispatch_id="D-B")
+        self.assertEqual("ACCEPTED", result_a)
+        self.assertEqual("STALE", result_b)
+        self.assertEqual("D-A", after_b.dispatch_id)
+        self.assertEqual("DISPATCHED", after_b.phase)
+
+        # A distinct dispatch cannot claim the already-reserved key.
+        result_wrong, unchanged = claim_dispatch(
+            after_b,
+            expected_generation=after_b.generation,
+            dispatch_id="D-B",
+            operator_id="worker-b",
+        )
+        self.assertEqual("DUPLICATE", result_wrong)
+        self.assertEqual(after_b, unchanged)
+
+        # 1. Two logical operators share the same READY/dispatch snapshot: one claim wins.
+        result_claim, claimed = claim_dispatch(
+            after_b,
+            expected_generation=after_b.generation,
+            dispatch_id="D-A",
+            operator_id="worker-a",
+        )
+        self.assertEqual("ACCEPTED", result_claim)
+        result_competing, still_claimed = claim_dispatch(
+            claimed,
+            expected_generation=after_b.generation,
+            dispatch_id="D-A",
+            operator_id="worker-b",
+        )
+        self.assertEqual("STALE", result_competing)
+        self.assertEqual(claimed, still_claimed)
+
+        # 3. Same dispatch + same operator retry is idempotent and creates no new identity.
+        retry_result, retry_state = claim_dispatch(
+            claimed,
+            expected_generation=claimed.generation,
+            dispatch_id="D-A",
+            operator_id="worker-a",
+        )
+        self.assertEqual("IDEMPOTENT", retry_result)
+        self.assertEqual(claimed, retry_state)
+
+        # 4. A stale expected snapshot rejects without mutation.
+        stale_result, stale_state = reserve_dispatch(
+            after_a,
+            expected_generation=0,
+            dispatch_id="D-stale",
+        )
+        self.assertEqual("STALE", stale_result)
+        self.assertEqual(after_a, stale_state)
+
+        # 5. Without an atomic-admission capability, both dispatch and claim fail closed.
+        blocked_dispatch, blocked_dispatch_state = reserve_dispatch(
+            initial,
+            expected_generation=0,
+            dispatch_id="D-blocked",
+            serialization_available=False,
+        )
+        self.assertEqual("BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE", blocked_dispatch)
+        self.assertEqual(initial, blocked_dispatch_state)
+        blocked_claim, blocked_claim_state = claim_dispatch(
+            after_a,
+            expected_generation=after_a.generation,
+            dispatch_id="D-A",
+            operator_id="worker-blocked",
+            serialization_available=False,
+        )
+        self.assertEqual("BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE", blocked_claim)
+        self.assertEqual(after_a, blocked_claim_state)
+
+        # 6. Incompatible parallelism stays rejected; explicit durable compatibility authority is required.
+        incompatible_result, incompatible_state = reserve_dispatch(
+            after_a,
+            expected_generation=after_a.generation,
+            dispatch_id="D-parallel",
+            compatible_parallel_authorized=False,
+        )
+        self.assertEqual("DUPLICATE", incompatible_result)
+        self.assertEqual(after_a, incompatible_state)
+        compatible_result, compatible_state = reserve_dispatch(
+            after_a,
+            expected_generation=after_a.generation,
+            dispatch_id="D-parallel",
+            compatible_parallel_authorized=True,
+        )
+        self.assertEqual("COMPATIBLE_PARALLEL_AUTHORIZED", compatible_result)
+        self.assertEqual(after_a, compatible_state)
 
     def test_validation_layering_and_drift(self) -> None:
         text = self.text("standards/VALIDATION_STANDARD.md")

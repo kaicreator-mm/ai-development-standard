@@ -52,6 +52,8 @@ Rules:
 7. execution-time dependency changes MUST record rationale and update the native dependency graph when the connected capability supports it;
 8. a change that invalidates frozen architecture/planning decomposition requires an explicit planning/architecture amendment.
 
+`TASK_DAG.md` remains a frozen planning/history checkpoint during execution. A Task being claimed, started, reviewed, validated, blocked or completed MUST be reflected through the owning Issue metadata, native dependency facts, PR/evidence and structured events rather than by turning the frozen Task DAG artifact into a live lock/status table.
+
 ## 4. Canonical Work Item type
 
 Every materialized work item MUST resolve exactly one canonical type, represented by native GitHub Issue Type when available or by one portable `type:*` label.
@@ -128,6 +130,8 @@ reviewing | validating
 `superseded` and `cancelled` are terminal routing states.
 
 An Agent MUST NOT jump from `implementing` to `done` when required Review, Validation, or merge conditions remain unsatisfied.
+
+The `ready → claimed` transition is an admission decision, not a courtesy status update. Claim admission MUST use current durable GitHub facts and the atomic/compare-and-set semantics in section 12.1 before implementation execution begins.
 
 ## 6. Review Policy and risk
 
@@ -261,6 +265,40 @@ A stale or duplicate claim MUST NOT overwrite a newer claim/state.
 
 `ROLE_CLAIMED` is attribution/routing evidence, not a distributed lock. Controllers/reducers MUST still use current durable state.
 
+### 12.1 Atomic Task claim / compare-and-set admission
+
+Claim admission is a compare-and-set operation over current durable GitHub facts. For a non-concurrent `(work item, role)` claim to be accepted, the claim writer MUST re-read and verify immediately before acceptance that all applicable predicates still hold:
+
+```text
+workflow_state is claimable for this role
+AND contract/dependencies/gates still permit execution
+AND no incompatible active dispatch/claim exists
+AND bound Task Pack / Execution Pack is current when applicable
+AND expected base / requested immutable identity is current when applicable
+```
+
+For ordinary Builder work, the normal claimable states are `state:ready` and an explicitly routed repair `state:changes-requested`. A project MAY define another role-specific claimable state only when that state is already part of the canonical workflow model and the dispatch contract authorizes it.
+
+A successful claim MUST durably identify the dispatch, work item, role and logical operator, and MUST move the owning work item through the valid `ready → claimed → implementing` path (or the canonical role-equivalent running path). The claim event/history and Issue workflow metadata together are the durable execution facts; a derived DAG view is not the lock.
+
+At most one incompatible active claim/dispatch per `(work item, role)` is permitted unless durable higher-authority project/task policy explicitly authorizes parallel execution and defines how those dispatches are compatible.
+
+If two schedulers/workers race from the same observed READY facts, only the first claim that is accepted against the still-current predicates may become canonical. A later competing logical operator MUST re-read current facts and reject atomically as duplicate/stale when the expected previous state or active-dispatch predicate no longer holds. Rejection means:
+
+```text
+no accepted claim event for the competing operator
+no transition to claimed/RUNNING
+no implementation execution or source mutation
+no partial workflow-state mutation
+recompute current state / ready set
+```
+
+A worker MUST NOT create or mutate implementation work before its claim is accepted. Scheduler-side JIT preparation that is part of one canonical dispatch (for example creating the predetermined task branch or Execution Pack) remains allowed, but it MUST NOT be interpreted as a worker claim and MUST be idempotent/reconstructible.
+
+The same logical operator re-claiming the same dispatch is idempotent: it may recover/resume from the existing durable claim but MUST NOT create a second active claim or dispatch identity.
+
+`ROLE_CLAIMED` remains attribution only. Neither a role label, a Task DAG Markdown status, a state card, nor an in-memory scheduler mutex may substitute for the durable workflow + dispatch claim predicate.
+
 ## 13. Golden conformance example
 
 A conformant implementation Task looks like:
@@ -276,7 +314,7 @@ Body: complete Task Issue contract
 Trigger: 完成 `owner/repo` Issue #123。
 ```
 
-The Agent reads the Issue, claims the role, changes state through a valid transition, writes implementation/PR/evidence, and never needs hidden chat instructions.
+The Agent reads the Issue, claims the role using the section 12.1 admission predicate, changes state through a valid transition, writes implementation/PR/evidence, and never needs hidden chat instructions.
 
 ## 14. Forbidden examples and rationale
 
@@ -313,6 +351,14 @@ TASK_DAG_STATUS.md is edited by every Agent and treated as current execution tru
 ```
 
 Reason: concurrent document edits create a second state authority and are not an atomic representation of Issue/PR/evidence facts.
+
+Forbidden:
+
+```text
+Agent A and Agent B both read state:ready; both begin implementation; claims are reconciled later.
+```
+
+Reason: claim admission is compare-and-set against current durable facts. The competing claim MUST be rejected before it can enter RUNNING or mutate implementation work.
 
 Forbidden:
 
