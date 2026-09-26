@@ -361,6 +361,33 @@ When two schedulers or workers race from the same previously observed READY stat
 
 The same logical operator re-claiming the same dispatch is idempotent and may resume/recover from that durable claim. It MUST NOT create a second active claim or second dispatch identity.
 
+### 11.1 Required claim serialization capability
+
+Re-read alone is not an atomic primitive. A conforming implementation that can expose the same claim key to more than one scheduler/worker MUST serialize both incompatible dispatch materialization and worker claim acceptance through one of these modes:
+
+```text
+SINGLE_WRITER_ADMISSION
+LINEARIZABLE_CONDITIONAL_WRITE
+```
+
+`SINGLE_WRITER_ADMISSION` means one logical claim-admission controller is the only writer authorized to reserve/create an incompatible dispatch and accept a claim for the protected claim key. Multiple scheduler processes or workers MAY exist, but they submit admission requests through that one serialized writer. The writer publishes the accepted dispatch/claim to GitHub as durable facts before allowing implementation execution.
+
+`LINEARIZABLE_CONDITIONAL_WRITE` means the adapter/storage layer provides a real conditional mutation with one serialization point for a claim key, using an expected revision/generation or equivalent compare-and-set token. A stale expected revision MUST fail the write rather than allow two accepted dispatches/claims. The protected key is at least `(repository, work item, role)` and MAY include a higher-authority compatibility/concurrency group when explicitly authorized parallelism exists.
+
+The same serialization mode MUST protect the earlier dispatch-reservation step. Two schedulers that both observed no active dispatch MUST NOT be able to publish two incompatible READY/QUEUED dispatch identities for the same protected key. Dispatch reservation and later worker claim may be separate lifecycle transitions, but each must advance the same serialized claim key/generation or pass through the same single writer.
+
+A transient mutex/lease MAY implement the serialization mechanism, but it is coordination only and MUST NOT become unrecoverable project authority. Accepted canonical dispatch/claim facts still have to be published to GitHub and reconstructible after runtime loss. If a crash leaves publication outcome ambiguous, the controller MUST fail closed, re-read/reconcile durable facts, and MUST NOT issue another incompatible dispatch until the ambiguity is resolved.
+
+If neither serialization mode is available, shared concurrent claiming is not conformant. The scheduler MUST NOT expose that READY work to multiple potential claimers and MUST route it exclusively to one identified operator, or report:
+
+```text
+BLOCKED_CLAIM_SERIALIZATION_UNAVAILABLE
+```
+
+A Level-0/manual project satisfies `SINGLE_WRITER_ADMISSION` only when one designated human/Agent is the sole claim-admission writer for that protected key. Opening the same READY Task in two independent manual/Web sessions without a serialization point is forbidden even if both sessions promise to re-read first.
+
+Implementations SHOULD durably record the selected admission mode, protected claim key and generation/revision when their transport supports it. Historical `ai-dev:event:v2` claims remain readable; this hardening does not retroactively make old events invalid merely because those optional audit details were not recorded.
+
 A dispatcher MUST re-evaluate staleness when material facts change. Typical stale causes include:
 
 - PR HEAD changed;
@@ -560,13 +587,13 @@ Level 4 — bounded merge/freeze/release controllers
 Level 5 — optional automated delivery adapters
 ```
 
-Projects MAY stop at any level. The same authority, exact-SHA, and Gate semantics apply at every level.
+Projects MAY stop at any level. The same authority, exact-SHA, and Gate semantics apply at every level. A project that allows more than one potential claimer for the same protected claim key must still satisfy section 11.1; progressive adoption does not waive duplicate-execution exclusion.
 
 Browser automation, Playwright, a particular CI provider, and a particular dispatcher implementation are non-normative transport choices.
 
 ## 23. Pull workers and recovery
 
-Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook/pointer-driven pull workers claiming READY dispatches. Before execution, the worker MUST pass the section 11 atomic claim admission, then verify dispatch identity (exact base/requested HEAD, Task Pack / Execution Pack identity, pinned standard revision, branch), publish results to GitHub first with operator attribution, and never become a state authority.
+Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook/pointer-driven pull workers claiming READY dispatches. Before execution, the worker MUST pass the section 11 atomic claim admission and section 11.1 serialization capability, then verify dispatch identity (exact base/requested HEAD, Task Pack / Execution Pack identity, pinned standard revision, branch), publish results to GitHub first with operator attribution, and never become a state authority.
 
 A worker crash must be recoverable from GitHub facts alone: the replacement worker reads the dispatch state, claimed operator and published results, then resumes (same operator, incomplete work), supersedes and re-dispatches (different operator, no result), or does nothing (result already published). Timer workers are not required when webhook/event-driven execution is available.
 
