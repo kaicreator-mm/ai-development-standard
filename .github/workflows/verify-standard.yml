@@ -36,6 +36,7 @@ jobs:
       - run: python scripts/test_v40_reference_flows.py
       - run: python scripts/test_pointer_only_trigger_contract.py
       - run: python scripts/test_work_item_contract_and_golden_templates.py
+      - run: python scripts/test_task_dag_lane_parallelism.py
       - run: python scripts/verify_event_writer_surfaces.py
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
