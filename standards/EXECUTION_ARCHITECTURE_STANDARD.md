@@ -136,6 +136,7 @@ Do not collapse unrelated states into one field.
 ```text
 planned
 ready
+claimed
 implementing
 review-ready
 reviewing
@@ -252,6 +253,8 @@ A scheduler SHOULD prioritize merge-ready concerns that already consumed expensi
 
 Queued Tasks SHOULD NOT receive long-lived implementation branches before their dependencies are complete. Default: dependencies merged → recompute ready set → read current integration exact SHA → create the task branch JIT → create/bind the Execution Pack → emit the Builder dispatch. Exceptions require a real stacked-code dependency. JIT generation, exact-base binding and staleness classification are owned by `EXECUTION_PACK_STANDARD.md`.
 
+A scheduler MAY create the predetermined JIT branch/Execution Pack while materializing one canonical dispatch. That preparation is not a worker claim. A worker MUST NOT mutate implementation source or begin execution until its claim has been accepted under section 11.
+
 ### Baseline refresh ordering
 
 Avoid spending final authoritative validation on a candidate whose baseline is already known to become obsolete. If PR-A blocks PR-B and PR-A validation is pending: validate PR-A → merge → integration advances → refresh/rebase PR-B per policy → establish replacement exact HEAD → create replacement validation dispatch → validate PR-B.
@@ -326,7 +329,7 @@ This execution architecture consumes only intents that have already passed that 
 
 The reducer/controller MUST NOT define a parallel intent schema, independently reinterpret ambiguous/stale input, or bypass the interaction protocol's admission decision. `ai-dev:event:v2` writer rules and historical v1 read compatibility are likewise delegated to the interaction protocol.
 
-## 11. Dispatch lifecycle and staleness
+## 11. Dispatch lifecycle, atomic claim, and staleness
 
 Each dispatch has a unique id and role/work-item target.
 
@@ -340,7 +343,23 @@ QUEUED → DELIVERED → ACKNOWLEDGED/RUNNING → DONE
 
 Pull workers express the same lifecycle with the equivalent pull vocabulary (`READY → CLAIMED → RUNNING → COMPLETED`, with `BLOCKED` and `SUPERSEDED` terminal/intermediate forms, see section 5) and publish claims with `DISPATCH_CLAIMED` using `ai-dev:event:v2`. A dispatch object references Task Pack identity and, when generated, Execution Pack identity, role, execution profile, branch, expected base SHA and requested HEAD SHA (`schemas/dispatch.schema.json`).
 
-At most one incompatible active dispatch should exist per work item/role unless concurrency is explicitly allowed. A claim from a different logical operator while another claim is active is rejected as a duplicate claim; the same operator re-claiming is idempotent.
+At most one incompatible active dispatch MUST exist per `(work item, role)` unless durable higher-authority policy explicitly authorizes compatible parallel dispatches. `ROLE_CLAIMED` is attribution and is not the lock; duplicate exclusion is decided from current durable workflow + dispatch facts.
+
+Claim admission is a compare-and-set style transition. Immediately before accepting `DISPATCH_CLAIMED`, the worker/controller MUST re-read current durable facts and verify all applicable predicates:
+
+```text
+work item is still in a claimable workflow state
+AND contract/dependency/gate prerequisites still permit the role
+AND no incompatible active dispatch/claim exists
+AND Task Pack / Execution Pack identity is current when applicable
+AND expected base / requested immutable identity is current when applicable
+```
+
+For ordinary Builder work the claimable states are `ready` and an explicitly routed `changes-requested` repair. Successful admission records the dispatch/operator/role durably and advances the owning work item through `ready → claimed → implementing` (or the canonical role-equivalent running path).
+
+When two schedulers or workers race from the same previously observed READY state, only the first claim accepted against the still-current predicates may become canonical. A competing logical operator that re-reads a non-claimable state or incompatible active claim MUST be rejected atomically as duplicate/stale. Rejection MUST NOT publish a canonical accepted claim, enter RUNNING, mutate implementation source, or partially mutate workflow state; the caller recomputes current state/ready-set instead.
+
+The same logical operator re-claiming the same dispatch is idempotent and may resume/recover from that durable claim. It MUST NOT create a second active claim or second dispatch identity.
 
 A dispatcher MUST re-evaluate staleness when material facts change. Typical stale causes include:
 
@@ -547,7 +566,7 @@ Browser automation, Playwright, a particular CI provider, and a particular dispa
 
 ## 23. Pull workers and recovery
 
-Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook/pointer-driven pull workers claiming READY dispatches. The worker verifies dispatch identity (exact base/requested HEAD, Task Pack / Execution Pack identity, pinned standard revision, branch) before executing, publishes results to GitHub first with operator attribution, and never becomes a state authority.
+Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook/pointer-driven pull workers claiming READY dispatches. Before execution, the worker MUST pass the section 11 atomic claim admission, then verify dispatch identity (exact base/requested HEAD, Task Pack / Execution Pack identity, pinned standard revision, branch), publish results to GitHub first with operator attribution, and never become a state authority.
 
 A worker crash must be recoverable from GitHub facts alone: the replacement worker reads the dispatch state, claimed operator and published results, then resumes (same operator, incomplete work), supersedes and re-dispatches (different operator, no result), or does nothing (result already published). Timer workers are not required when webhook/event-driven execution is available.
 
