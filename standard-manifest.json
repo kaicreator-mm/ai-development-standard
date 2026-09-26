@@ -130,6 +130,7 @@
       "scripts/test_pointer_only_trigger_contract.py",
       "scripts/test_project_execution_profile.py",
       "scripts/test_protocol_schemas.py",
+      "scripts/test_task_dag_lane_parallelism.py",
       "scripts/test_v33_lifecycle_contracts.py",
       "scripts/test_v33_semantic_regressions.py",
       "scripts/test_v34_lifecycle_contracts.py",
