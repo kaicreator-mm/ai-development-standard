@@ -16,6 +16,30 @@ class ExecutionArchitectureRegression(unittest.TestCase):
         for token in ("Workflow routing state", "Gate state", "Execution-channel/provider state", "Dispatch state", "Candidate state", "Release state"):
             self.assertIn(token, text)
 
+    def test_atomic_claim_duplicate_exclusion(self) -> None:
+        execution = self.text("standards/EXECUTION_ARCHITECTURE_STANDARD.md")
+        work_item = self.text("standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md")
+
+        for token in (
+            "At most one incompatible active dispatch MUST exist per `(work item, role)`",
+            "Claim admission is a compare-and-set style transition",
+            "only the first claim accepted against the still-current predicates may become canonical",
+            "MUST be rejected atomically as duplicate/stale",
+            "same logical operator re-claiming the same dispatch is idempotent",
+        ):
+            self.assertIn(token, execution)
+
+        for token in (
+            "Claim admission is a compare-and-set operation over current durable GitHub facts",
+            "At most one incompatible active claim/dispatch per `(work item, role)` is permitted",
+            "A worker MUST NOT create or mutate implementation work before its claim is accepted",
+            "TASK_DAG.md` remains a frozen planning/history checkpoint",
+            "competing claim MUST be rejected before it can enter RUNNING or mutate implementation work",
+        ):
+            self.assertIn(token, work_item)
+
+        self.assertIn("claimed", execution.split("### Workflow routing state", 1)[1].split("### Gate state", 1)[0])
+
     def test_validation_layering_and_drift(self) -> None:
         text = self.text("standards/VALIDATION_STANDARD.md")
         for token in ("concern | integration | closure", "HEAD drift", "BASE / merge-result drift", "VALIDATION_IMPACT_DECISION", "Alternate executor substitution"):
