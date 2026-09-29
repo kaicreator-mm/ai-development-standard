@@ -64,7 +64,7 @@ class V41AdoptionWiringTests(unittest.TestCase):
         self.assertIn("The shared `Execution Context` is a non-authoritative projection", self.migration)
         self.assertIn("## 4. Owner map", self.migration)
         self.assertIn("risk disposition, never Validation PASS", self.migration)
-        self.assertIn("old executions are not retroactively", self.migration)
+        self.assertIn("do not retroactively claim old executions", self.migration)
 
     def test_checklists_surface_execution_facts_without_new_gate_states(self) -> None:
         self.assertIn("Execution Foundation Profile", self.project_init)
