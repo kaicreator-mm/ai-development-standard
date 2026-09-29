@@ -1,328 +1,332 @@
-# ai-development-standard v4.7.0 PRD — AI-native Development Convergence & Repository Refactor
+# ai-development-standard v4.7.0 PRD — AI-native Development Convergence
 
-Status: **DRAFT PRODUCT AUTHORITY — requires L1 Product Evidence review and explicit PRD Freeze before implementation**
+Status: **REVISED DRAFT — L1/inventory complete, Product Freeze BLOCKED until v4.1–v4.6 owner boundaries are stable**
 
 ## 1. Product intent
 
-v4.7.0 is the convergence/refactor release for the complete v4 series. Its purpose is not primarily to add more development capabilities. It restructures, normalizes and self-validates the repository so v4.0–v4.6 capabilities form one coherent AI-native Development Standard rather than a growing collection of individually good but partially overlapping documents.
+v4.7.0 is the convergence release for the complete v4 series. Its purpose is not to add another major functional domain or collapse all standards into one system. It makes the accumulated v4 standards deterministically discoverable, state-safe, machine-consistent and self-conformant for fresh Agents.
 
-The final product should allow a capable Agent with no prior chat/session history to read the repository and determine, from durable facts:
+The target end state is:
 
-1. What standards apply to this project/version/task?
-2. Which document/object owns each semantic concern?
-3. What is Product, Architecture, Planning, Execution, Assurance, Release, Deployment and Operations authority?
-4. Which states belong to which lifecycle dimension and which inferences are prohibited?
-5. Which machine contracts, profiles and project overrides apply?
-6. What may the Agent decide autonomously, what requires escalation, and what must never be inferred?
-7. How can the complete lifecycle be executed and reconstructed without hidden conversational context?
+> A capable Agent with no historical chat can determine the applicable normative owners, current authority/state dimensions, machine contracts/profiles, allowed autonomy and required evidence from durable repository/GitHub facts, then execute or escalate correctly.
 
-## 2. Problem
+## 2. Product shape
 
-Incremental evolution from v4.0 through v4.6 is expected to add many standards, schemas, profiles, templates, checklists and compatibility entries. Without an explicit convergence release, the repository risks:
+L1 narrows v4.7 to four convergence products plus two acceptance mechanisms:
 
-- duplicate normative rules across multiple files;
-- multiple documents appearing to own the same semantic concern;
-- inconsistent terminology and state names;
-- prose/schema/template/checklist drift;
-- Agent context overload and poor discoverability;
-- historical compatibility files retaining stale normative text;
-- language/archetype/project profiles composing ambiguously;
-- AI-native governance remaining scattered across role/handoff/execution documents;
-- repository structure reflecting chronological growth rather than the final conceptual model.
+### Convergence products
+1. **Canonical Authority / Applicability Registry**
+2. **Qualified State-Dimension & Non-Inference Registry**
+3. **Machine-contract Identity / Reference Convergence Rules**
+4. **Progressive Disclosure + Compatibility-preserving Repository Information Architecture**
 
-## 3. Scope
+### Acceptance mechanisms
+5. **Unified Cross-standard Conformance Suite**
+6. **Self-dogfood + Future-major Migration Register**
 
-### 3.1 Unified Canonical Meta Model
+v4.7 does not create a new global lifecycle owner over all domain standards.
 
-Define one conceptual model covering at least:
+## 3. Canonical Authority / Applicability Registry
+
+Extend the existing `standard-manifest.json` model so a fresh Agent can resolve at least:
 
 ```text
-Intent
-Product Authority
-Architecture Authority
-Planning Authority
-Task / Task DAG / Task Pack
-Execution Pack / Dispatch / Agent
-Git / Toolchain / Config / Workspace / External Systems
-Implementation
-Testing / Review / Validation
-Build / Artifact
-Candidate / Release
-Deployment
-Runtime / Observability
-Incident / Recovery
-Maintenance / EOL
-Feedback / Evolution
-```
-
-The model must clearly distinguish authority, immutable identity, derived state and local observations.
-
-### 3.2 Unified Authority Map
-
-Establish one repository-visible authority registry answering:
-
-```text
-semantic concern → normative owner
+semantic concern
+canonical normative owner
+lifecycle / applicability tags
+machine-contract refs
+compatibility aliases / prior paths
+supersession/version metadata
+related non-authoritative references
 ```
 
 Core invariant:
 
-> One semantic concern has one normative owner. Other documents may reference, summarize or map it, but must not create competing authority.
+> **One semantic concern has one discoverable normative owner.**
 
-v4.7 must audit and resolve duplicate ownership across standards, README, AGENTS, templates, checklists, schemas and compatibility entries.
+Other standards/templates/checklists/AGENTS/README/profile files may reference or summarize that owner but MUST NOT create competing normative authority.
 
-### 3.3 Unified State Taxonomy
+The registry must point to owners rather than copying their rules into a second fact source.
 
-Normalize states by dimension rather than creating one overloaded global state machine.
+## 4. Qualified State-Dimension Registry
 
-At minimum distinguish:
+v4.7 preserves separate state dimensions rather than one overloaded state machine.
+
+At minimum, the final registry must distinguish equivalents of:
 
 ```text
-Work Item / Task State
-Dispatch / Execution State
-Gate / Validation State
-Review Result
-Candidate State
-Release Verdict
-Deployment State
-Runtime / Incident State
-Maintenance / Support State
+work_item.state
+dispatch.state
+execution_pack.state
+validation.state
+review.judgment
+candidate.state
+release.state
+deployment.state
+runtime / incident state
+maintenance / support state
+provider / execution availability
 ```
 
-Required non-inference examples include:
+The exact naming belongs to L2 after upstream owners are stable.
+
+Required principle:
+
+> Identical-looking strings in different dimensions do not imply identical semantics.
+
+Examples: `BLOCKED`, `PASS`, `READY` may occur under different owners and must remain qualified by owner/dimension.
+
+## 5. Cross-dimension forbidden inferences
+
+The final conformance system must reject at least:
 
 ```text
-Task DONE != Validation PASS
-PR merged != Release READY
-Release READY != Deployment SUCCESS
-Deployment SUCCESS != Runtime Healthy
-worktree exists != Task RUNNING
-old-SHA PASS != successor-SHA PASS
+Task DONE -> Validation PASS
+PR merged -> Release READY
+Review PASS -> Validation PASS
+Validation PASS -> Release READY
+Release READY -> Deployment SUCCESS
+Deployment SUCCESS -> Runtime Healthy
+worktree/branch exists -> Task RUNNING/claimed
+Dispatch COMPLETED -> product/release PASS
+PACK_CURRENT -> implementation correct
+old exact-SHA PASS -> successor exact-SHA PASS
+provider AVAILABLE -> side-effect authority
+waiver/exception -> PASS
+fresh DB PASS -> upgrade PASS
+mock/sandbox PASS -> higher-fidelity PASS
+artifact tag/filename -> immutable artifact identity
+incident recovered -> permanent defect/follow-up closed
+branch/tag exists -> maintenance-supported
 ```
 
-Schemas, prose and examples must agree on these boundaries.
+Later Frozen v4.1–v4.6 owner semantics may add further families.
 
-### 3.4 Standard Document Contract
+## 6. Machine-contract identity/reference convergence
 
-Refactor normative documents toward one consistent structure, where applicable:
+Audit v4 machine contracts for repeated concepts such as:
 
 ```text
-1. Purpose
-2. Scope
-3. Non-goals
-4. Terminology
-5. Authority
-6. Canonical durable facts
-7. Required semantics
-8. Agent MUST / MUST NOT
-9. Evidence
-10. Validation / assurance integration
-11. Exceptions / waivers
-12. Capability fallback
-13. Machine contract
-14. Conformance tests
-15. Migration / adoption
-16. References
+repository / version / task / Issue / PR
+subject identity / exact SHA / candidate
+expected base / requested / tested / current head
+operator / executor / context / provenance refs
+artifact / environment refs
+validation tuple / profile / toolchain
+protocol/schema version / compatibility marker
 ```
 
-Not every document must mechanically contain empty sections; the objective is predictable semantics and discoverability rather than formatting bureaucracy.
-
-### 3.5 Repository Information Architecture Refactor
-
-Evaluate and, if evidence supports it, reorganize repository content into coherent domains such as:
+v4.7 should prefer compatible reusable definitions/conventions where they reduce ambiguity, but MUST NOT collapse distinct owner objects such as:
 
 ```text
-standards/
-  lifecycle/
-  execution/
-  engineering/
-  evolution/
-  delivery/
-  operations/
-  ai-native/
-
-profiles/
-  languages/
-  archetypes/
+Dispatch
+Validation Report
+Review Aggregation
+Assurance Plan
+Operation
+Release / Deployment records
 ```
 
-Existing stable paths required by adopters should retain compatibility entries/pointers during the v4 line. Path reorganization MUST NOT silently break pinned adopters.
+Repeated identity data is valid when it intentionally snapshots currentness/evidence for that object's claim.
 
-### 3.6 Standard Manifest / Progressive Disclosure
+Existing `operation-v1` remains correlation-oriented/non-authoritative; it MUST NOT become the universal lifecycle state object by convergence.
 
-Introduce a canonical machine-readable or deterministic top-level manifest/resolver so Agents do not need to scan the entire repository to discover authority.
+## 7. Progressive disclosure
 
-The effective resolution path should approximate:
+The final repository must make the minimum applicable read set deterministic enough that Agents do not need repository-wide guessing.
+
+Candidate resolution path:
 
 ```text
-repository AGENTS / .dev-standard/VERSION
+repository AGENTS + project .dev-standard/VERSION
         ↓
 pinned ADS revision
         ↓
-Standard Manifest / authority registry
+authority/applicability registry
         ↓
-project adoption + PROJECT_OVERRIDES
+project adoption / PROJECT_OVERRIDES
         ↓
-applicable lifecycle/execution standards
+applicable lifecycle / execution owners
         ↓
-language/archetype profiles
+applicable language / archetype profiles
         ↓
-Task/Execution-specific authority
+Task / Execution-specific authority
 ```
 
-The design should follow progressive disclosure: read only the standard/profile material required for the current operation while preserving deterministic authority.
+Required semantics:
 
-### 3.7 Machine Contract Convergence
+- higher-authority/current sources override stale lower-authority history;
+- optional/non-applicable capability does not force unnecessary context;
+- fail-closed/fallback behavior exists when applicability cannot be determined;
+- progressive disclosure improves correctness/context quality, not merely token usage.
 
-Audit schemas/events/manifests introduced through v4.x for:
+## 8. Repository information architecture
 
-- naming consistency;
-- identity fields;
-- exact-SHA/tree/artifact bindings;
-- state/value reuse;
-- override/precedence semantics;
-- compatibility/version markers;
-- duplicated fields representing the same concept;
-- prose/schema mismatch.
+A physical directory refactor is **optional/evidence-driven**, not an automatic Product acceptance requirement.
 
-Prefer extending canonical shared concepts over parallel schemas with subtly different meanings.
-
-### 3.8 Unified Conformance Suite
-
-Build a cross-standard conformance suite that tests semantic invariants, not only JSON Schema syntax.
-
-Required negative families should include examples such as:
+Potential conceptual domains remain useful:
 
 ```text
-PR PASS → Release PASS                 MUST fail
-old SHA Validation → new SHA PASS      MUST fail
-mock PASS → real external PASS         MUST fail
-worktree exists → Task RUNNING         MUST fail
-Agent overrides Frozen Architecture    MUST fail
-waiver → PASS                          MUST fail
-Release READY → Deployment SUCCESS     MUST fail
-fresh DB PASS → upgrade PASS           MUST fail
+lifecycle
+execution
+evolution
+engineering
+delivery
+operations
+ai-native
+profiles
+machine-contracts
 ```
 
-Conformance should cover normative owner uniqueness, authority precedence, state separation, schema/prose compatibility and profile/override resolution.
-
-### 3.9 Compatibility & Migration Layer
-
-v4.7 must provide a clear migration/adoption path from earlier v4 releases:
-
-- stable path compatibility entries where needed;
-- deprecated path/term inventory;
-- schema compatibility/migration notes;
-- project adoption guidance;
-- no retroactive rewriting of historical evidence;
-- explicit distinction between compatibility alias and canonical authority.
-
-### 3.10 Self-hosting / Dogfood
-
-v4.7 development must use the v4.7 candidate model to develop and validate itself as far as practicable:
+Preferred sequence:
 
 ```text
-Product
-→ Architecture
-→ Task DAG
-→ Task Packs / Execution
-→ Git/Toolchain/Context/Profile resolution
-→ Testing / Review / Validation
-→ Build / Release / Deployment simulation where applicable
-→ Operations/incident feedback simulation
+1. authority/applicability registry
+2. deterministic read routing
+3. owner/alias conformance
+4. measure remaining discoverability/path problems
+5. move paths only where evidence supports value
+6. preserve compatibility aliases/pointers throughout v4
 ```
 
-Dogfood findings are first-class product evidence. Any point where a fresh Agent cannot locate authority, resolve context, reconstruct state or execute safely is a v4.7 product defect or an explicitly documented non-goal.
+Directory aesthetics alone do not justify breaking stable pinned adopters.
 
-## 4. SemVer / breaking-change boundary
+## 9. Compatibility / migration layer
 
-v4.7 is intended as a convergence release inside the v4 compatibility line.
+Inside v4.7, compatible convergence may include:
 
-Allowed:
+- additive manifest/registry fields;
+- stable compatibility aliases for moved/renamed paths;
+- shared schema definitions referenced compatibly;
+- terminology normalization with documented aliases;
+- duplicate prose removal after one canonical owner is established;
+- stronger conformance that rejects interpretations never actually authorized.
 
-- directory reorganization with stable compatibility pointers;
-- terminology normalization with aliases/migration guidance;
-- additive schemas/manifests/resolvers;
-- duplicate-rule removal while preserving semantics;
-- stronger conformance that exposes invalid interpretations not actually authorized by prior v4 rules.
-
-Not allowed to be silently introduced as v4.7:
+Not silently allowed in v4.7:
 
 - incompatible core authority hierarchy changes;
-- incompatible lifecycle semantics that make compliant v4 projects invalid without migration;
-- destructive schema/wire changes without compatibility path;
-- rewriting historical evidence meanings.
+- incompatible lifecycle/state semantics;
+- destructive schema/wire replacement without migration;
+- historical evidence reinterpretation;
+- stable path deletion without compatibility path;
+- replacing optional capabilities with mandatory global gates.
 
-If convergence demonstrates that a truly incompatible architecture is required, v4.7 must document/prepare the migration and route the breaking semantic change to a future **v5.0** rather than forcing it into v4.7.
+Such findings are recorded as future **v5.0** migration candidates.
 
-## 5. Non-goals
+## 10. Standard document consistency
+
+v4.7 may normalize normative-document structure where useful, but MUST NOT require empty boilerplate sections merely for formatting consistency.
+
+A predictable owner document should expose, where applicable:
+
+```text
+Purpose / Scope / Non-goals
+Terminology / Authority
+Canonical durable facts
+Required semantics / Agent MUST-MUST NOT
+Evidence / Validation-Assurance integration
+Exceptions / capability fallback
+Machine contract
+Conformance
+Migration / adoption / references
+```
+
+Semantic discoverability matters more than mechanical heading uniformity.
+
+## 11. Unified cross-standard conformance
+
+Build an executable semantic suite covering:
+
+1. owner uniqueness / no competing normative authority;
+2. authority precedence;
+3. state-dimension non-inference;
+4. exact identity/currentness;
+5. compatibility alias/path resolution;
+6. profile + PROJECT_OVERRIDES resolution;
+7. machine-contract/prose consistency;
+8. progressive-disclosure read routing;
+9. historical payload/alias compatibility;
+10. representative fresh-Agent lifecycle reconstruction.
+
+JSON Schema meta-validation alone is insufficient; semantic contradictions between prose/owner boundaries/tests must also be detected.
+
+## 12. Self-hosting / dogfood
+
+Develop and validate v4.7 with the candidate registry/read-routing/conformance as far as practicable.
+
+Principal dogfood test:
+
+> A fresh high-capability Agent with no prior session can locate the correct owners, reconstruct current lifecycle/identity, determine allowed autonomy/evidence and hand off correctly using durable facts only.
+
+Dogfood findings classify as:
+
+```text
+product gap
+owner ambiguity
+state ambiguity
+schema/prose drift
+read-routing/discoverability gap
+compatibility/migration gap
+future-major / non-goal
+```
+
+## 13. Future-major migration register
+
+v4.7 explicitly records incompatible candidates instead of hiding them inside a v4 convergence PR, including potential:
+
+- core authority-chain redesign;
+- incompatible Dispatch/Event protocol redesign;
+- state-semantic collapse/change;
+- exact-SHA evidence meaning change;
+- breaking role/profile/schema renames;
+- stable-path removal without compatible aliasing;
+- historical evidence reinterpretation.
+
+The register prepares v5; it does not authorize those changes in v4.7.
+
+## 14. Non-goals
 
 v4.7 does not:
 
-- add another major functional domain merely because one is interesting;
 - replace all standards with one giant document;
+- centralize every lifecycle dimension into one state machine;
+- create another major functional domain;
+- require physical directory reorganization for aesthetics;
 - eliminate domain-specific standards/profiles;
-- centralize every workflow into one state machine;
-- remove compatibility solely for repository aesthetic cleanup;
-- require all projects to adopt every optional capability;
-- turn ADS into a specific CI/orchestrator/IDE/runtime product.
+- remove compatibility solely to simplify repository layout;
+- require every project to adopt every optional capability;
+- turn ADS into a specific CI/orchestrator/IDE/Agent runtime product.
 
-## 6. Final target architecture
-
-The v4.7 repository should express a coherent layered model approximately like:
-
-```text
-Lifecycle
-Product → Architecture → Planning → Implementation → Assurance → Release → Deployment → Operations
-
-Execution Foundation
-Git / Dependency / Toolchain / Config / Workspace / External Systems
-
-Evolution
-Interface / Compatibility / Data / Migration
-
-Engineering
-Architecture Design / Task Decomposition / DAG Governance / Implementation Profiles / Testing
-
-AI-native Vertical
-Intent / Context / Skills / Autonomy / Provenance / Assurance / Handoff / Recovery
-
-Profiles
-Language + Archetype + Project Overrides
-
-Machine Layer
-Manifest / Schemas / Events / Conformance / Resolver
-```
-
-This is a conceptual target; L2 may choose a different physical directory arrangement if it better preserves compatibility and discoverability.
-
-## 7. Product acceptance
+## 15. Product acceptance
 
 v4.7.0 is complete when:
 
-1. every material semantic concern has one discoverable normative owner;
-2. authority/state terminology is consistent across prose, schemas, templates and examples;
-3. a top-level manifest/resolution path lets an Agent discover applicable standards without repository-wide guessing;
-4. stable v4 adopters retain a documented compatibility path;
-5. no required project truth depends on historical chat context;
-6. negative conformance rejects known cross-layer inference shortcuts;
-7. a fresh high-capability Agent can reconstruct and execute a representative project lifecycle using only durable GitHub/repository facts;
-8. v4.7 self-dogfood completes with explicit findings and disposition;
-9. unresolved breaking semantic changes are separated into a future-major migration plan rather than hidden in v4.7.
+1. every material semantic concern has one discoverable owner in the canonical registry;
+2. state dimensions and forbidden cross-state inferences are explicit and conformance-tested;
+3. machine contracts use compatible, consistent subject/identity/reference conventions without owner-object collapse;
+4. progressive-disclosure routing lets Agents discover applicable standards without repository-wide guessing;
+5. stable v4 adopters retain compatibility paths/aliases for changed names/paths/contracts;
+6. profile/PROJECT_OVERRIDES resolution is deterministic;
+7. cross-standard conformance detects owner/state/schema/prose drift;
+8. a fresh Agent can reconstruct and execute a representative lifecycle from durable facts only;
+9. v4.7 self-dogfood completes with explicit findings/disposition;
+10. incompatible convergence needs are separated into future-major migration planning.
 
-## 8. Success criterion
+## 16. Freeze basis / next gate
 
-The principal end-state test is:
+Current evidence:
 
-> A capable Agent that has never participated in the project can read the repository and durable GitHub facts, determine which standards apply, understand the current lifecycle/authority/state, know its permitted autonomy and required evidence, execute or escalate correctly, and hand off without relying on prior chat memory.
+- `docs/implementation/4.7.0/AUTHORITY_STATE_SCHEMA_INVENTORY.md`
+- `docs/implementation/4.7.0/L1_PRODUCT_EVIDENCE.md`
 
-## 9. Next gate
+Product Freeze is intentionally BLOCKED until:
 
-Before Freeze:
+1. v4.1–v4.6 canonical Product/L2 semantic-owner boundaries are sufficiently stable;
+2. the owner/state/schema inventory is refreshed against those exact revisions;
+3. physical-refactor necessity is re-evaluated rather than assumed;
+4. future-major candidates are separated from additive v4.7 scope;
+5. a final L1 currentness review confirms the convergence target.
 
-1. complete v4.1–v4.6 or establish stable candidate authorities sufficient for convergence design;
-2. run L1 Product Evidence focused on standards architecture, progressive disclosure, schema governance and self-hosted Agent development;
-3. perform full repository authority/duplicate/information-architecture inventory;
-4. revise and explicitly Freeze this PRD;
-5. run L2 Architecture Evidence with compatibility/migration constraints;
-6. generate a Task DAG separating inventory/meta-model/repository-refactor/schema/conformance/dogfood lanes with an explicit convergence task.
+Only then may v4.7 explicitly Freeze and run L2 Architecture Evidence.
+
+`LOCAL_ENV=NOT_REQUIRED` for current inventory/L1 work. Repository-wide migration/conformance/self-dogfood execution belongs after Product/L2 Freeze and exact candidate identity.
