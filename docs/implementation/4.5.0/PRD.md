@@ -1,6 +1,6 @@
 # ai-development-standard v4.5.0 PRD — Operations, Incident & Maintenance
 
-Status: **FREEZE CANDIDATE — revised from L1; explicit Product Freeze waits for stable v4.4 Deployment Product boundary**
+Status: **FROZEN PRODUCT AUTHORITY — 2026-09-30**
 
 ## 1. Product intent
 
@@ -278,18 +278,22 @@ v4.5.0 is complete when:
 8. hotfix/backport cannot transfer old exact-SHA evidence or silently weaken release truth;
 9. at least one real or simulated incident dogfood demonstrates detection → mitigation/recovery → verification → regression/follow-up closure.
 
-## 16. Freeze basis / next gate
+## 16. Product Freeze basis
 
-Freeze candidate basis:
+Explicit Product Freeze is recorded by this commit after re-reading the previously blocked upstream Deployment Product boundary.
 
-- `docs/implementation/4.5.0/L1_PRODUCT_EVIDENCE.md`
-- existing Testing/Test Data/Validation/Release ownership
-- v4.4 delivery/deployment Product evidence on the parallel lane
+Freeze inputs:
 
-Before explicit Product Freeze:
+- `docs/implementation/4.5.0/L1_PRODUCT_EVIDENCE.md`;
+- existing Testing/Test Data/Validation/Release ownership;
+- v4.4 Frozen Product Authority `0acbc82b031bc5870589fc1a899b679b0290d40a`;
+- v4.4 Frozen L2 `5c19eb7f53c179b4e0068371fc546bbe8bc14784` as supporting architecture context.
 
-1. v4.4 must explicitly Freeze a stable Deployment Product boundary;
-2. re-read v4.4 exact Product authority for drift in Deployment result/rollback semantics;
-3. then record v4.5 Product Freeze and proceed to L2.
+Upstream re-read found no Product-boundary drift requiring v4.5 L1 reopening:
+
+- v4.4 owns artifact-to-environment Deployment Plan/Result and rollout/rollback orchestration;
+- v4.2 still owns persistent-state migration transition/recovery semantics;
+- v4.5 therefore remains the runtime observation, incident/recovery/feedback and maintenance/hotfix owner after deployment;
+- `Deployment SUCCESS != Runtime Healthy` remains valid and becomes a cross-version non-inference invariant.
 
 `LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research. Real incident/telemetry exercises belong later exact-environment dogfood/Validation Tasks.
