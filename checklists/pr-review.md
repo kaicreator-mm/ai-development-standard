@@ -26,6 +26,8 @@ When review is performed:
 - [ ] Change matches frozen PRD/Architecture/Task or has an approved scope update.
 - [ ] Public contract changes are explicit.
 - [ ] No new mandatory gate was inferred from a historical workflow/script without authority.
+- [ ] Material dependency/toolchain, Git-workspace, configuration/secret, artifact/workspace or external-system effects are routed to the corresponding v4.1 owner instead of inferred from local state.
+- [ ] A non-authoritative Execution Context, if present, is not treated as Product/Task/Validation/Release authority.
 
 ## Task / Dependency Semantics
 
@@ -56,6 +58,9 @@ When review is performed:
 - [ ] Required Validation Tuples are explicit where platform/toolchain matrix applies.
 - [ ] One tuple PASS is not reused as another tuple PASS.
 - [ ] Mock/sandbox/cross-build evidence is not misreported as real platform/external validation.
+- [ ] Dependency/toolchain, config, environment and external fidelity facts used by the evidence match the actual validated subject where material.
+- [ ] Secret values are absent from ordinary durable logs/evidence; refs/identity are used when secret binding matters.
+- [ ] Build output/cache/runtime state is not presented as Validation or Release artifact merely because it exists.
 - [ ] When a reviewer cannot establish a runtime/platform fact statically, a VALIDATION_REQUEST is created rather than guessing.
 
 ## Independent Review Result
