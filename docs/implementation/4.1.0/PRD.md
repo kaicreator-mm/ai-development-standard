@@ -1,6 +1,12 @@
 # ai-development-standard v4.1.0 PRD — Agent Execution Foundation
 
-Status: **DRAFT PRODUCT AUTHORITY — L1 COMPLETE / FREEZE CANDIDATE**
+Status: **FROZEN PRODUCT AUTHORITY — L1 COMPLETE / 2026-09-29**
+
+Freeze basis:
+
+- revised Freeze Candidate commit: `20d75fa962b01aa1de8588886895d56ee55f2d6d`
+- L1 Product Evidence: `docs/implementation/4.1.0/L1_PRODUCT_EVIDENCE.md`
+- explicit Freeze decision: the commit that changes this status to `FROZEN PRODUCT AUTHORITY`, recorded in Draft PR #189
 
 Product Evidence:
 
@@ -323,9 +329,9 @@ These are L2 Architecture Evidence subjects. High-impact UNKNOWNs must receive e
 - `TESTING_STANDARD.md`
 - `RELEASE_STANDARD.md`
 
-## 14. Freeze gate
+## 14. Freeze decision
 
-L1 Product Evidence is complete and supports Freeze after this revision because:
+L1 Product Evidence is complete and this PRD is explicitly Frozen because:
 
 - each of the five concerns has real workflow/problem evidence;
 - existing tools/alternatives and counter-evidence were considered;
@@ -336,4 +342,6 @@ L1 Product Evidence is complete and supports Freeze after this revision because:
 - architecture/schema questions remain explicitly open for L2 rather than being disguised as Product facts;
 - no L1 evidence currently requires a breaking v4 lifecycle/authority/wire change.
 
-The next Product action is an **explicit PRD Freeze checkpoint**. Only after that checkpoint may L2 Architecture Evidence become authoritative input.
+Any later evidence that changes these Product requirements requires an explicit Product amendment/reopen; L2/implementation may not silently change them.
+
+**Freeze decision: FROZEN — proceed to L2 Architecture Evidence.**
