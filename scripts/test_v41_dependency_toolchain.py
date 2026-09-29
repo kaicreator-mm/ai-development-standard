@@ -69,7 +69,7 @@ class V41DependencyToolchainTests(unittest.TestCase):
         self.assertEqual(result["dependency_class"], "test")
         self.assertEqual(result["exposure"], "test-only")
         self.assertIn("dependency path/chain", self.standard)
-        self.assertIn("Scanner severity alone", self.standard)
+        self.assertIn("A scanner severity alone", self.standard)
 
     def test_material_dependency_or_toolchain_delta_requires_validation_impact(self) -> None:
         self.assertTrue(dependency_change_requires_impact({"lock_changed": True}))
