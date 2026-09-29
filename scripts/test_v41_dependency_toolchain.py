@@ -83,7 +83,7 @@ class V41DependencyToolchainTests(unittest.TestCase):
         self.assertNotIn("PASS", statuses)
         self.assertNotIn("pass", statuses)
         self.assertIn("accepted-risk", statuses)
-        self.assertIn("not Validation PASS", self.standard)
+        self.assertIn("It is **not** Validation PASS", self.standard)
         self.assertIn("does not mean the vulnerability was remediated", self.reference)
 
     def test_examples_cover_node_and_non_node_ecosystems(self) -> None:
