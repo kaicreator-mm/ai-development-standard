@@ -17,8 +17,24 @@
         "identity": {"type": "string", "minLength": 1}
       }
     },
-    "baseline": {"$ref": "#/$defs/subject_identity"},
-    "candidate": {"$ref": "#/$defs/subject_identity"},
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha_or_digest"],
+      "properties": {
+        "version_ref": {"type": ["string", "null"], "minLength": 1},
+        "sha_or_digest": {"type": "string", "minLength": 1}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha_or_digest"],
+      "properties": {
+        "version_ref": {"type": ["string", "null"], "minLength": 1},
+        "sha_or_digest": {"type": "string", "minLength": 1}
+      }
+    },
     "change_operations": {
       "type": "array",
       "minItems": 1,
@@ -50,16 +66,5 @@
     "consumer_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "compatibility_window_ref": {"type": ["string", "null"], "minLength": 1},
     "notes_ref": {"type": ["string", "null"], "minLength": 1}
-  },
-  "$defs": {
-    "subject_identity": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["sha_or_digest"],
-      "properties": {
-        "version_ref": {"type": ["string", "null"], "minLength": 1},
-        "sha_or_digest": {"type": "string", "minLength": 1}
-      }
-    }
   }
 }
