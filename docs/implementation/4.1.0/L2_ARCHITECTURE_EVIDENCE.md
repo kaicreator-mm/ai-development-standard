@@ -1,6 +1,11 @@
 # v4.1.0 L2 Architecture Evidence — Agent Execution Foundation
 
-Status: **L2 FREEZE CANDIDATE — Architecture UNKNOWNs dispositioned**
+Status: **FROZEN L2 ARCHITECTURE AUTHORITY — 2026-09-29**
+
+Freeze basis:
+
+- L2 Freeze Candidate: `62f7e6e968c0ee333736276e06a13a07e3010316`
+- explicit Freeze decision: the commit that changes this file to `FROZEN L2 ARCHITECTURE AUTHORITY`
 
 Research date: 2026-09-29
 
@@ -521,11 +526,11 @@ Mitigation: normative contract says isolated worktree **or equivalent isolated c
 
 No Frozen Product requirement is technically contradictory with the existing v4 architecture. The recommended design remains additive and non-weakening.
 
-## 15. L2 Freeze readiness
+## 15. L2 Freeze decision
 
 All identified high-impact Architecture UNKNOWNs have an explicit disposition. No Research Demo is required before Freeze because static repository/schema/official mechanism evidence is sufficient for the architecture decisions.
 
-Freeze candidate decisions to preserve:
+Frozen decisions:
 
 - five normative owners + one non-authoritative Execution Context projection;
 - exactly three new v4.1 machine-contract families by default: Execution Context, Dependency/Toolchain Profile, Dependency Risk Exception;
@@ -537,4 +542,6 @@ Freeze candidate decisions to preserve:
 - optional/materiality-driven Fast Path adoption;
 - deterministic verifier/conformance implementation instead of an architecture Research Demo.
 
-**Candidate verdict: READY FOR EXPLICIT L2 FREEZE.**
+Any later change to these Frozen Architecture facts requires explicit Architecture Amendment / contradiction handling; implementation Tasks may not redefine them silently.
+
+**Freeze decision: FROZEN — proceed to Task DAG.**
