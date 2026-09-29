@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/dependency-risk-exception-v1.schema.json",
+  "title": "AI Development Dependency Risk Exception v1",
+  "description": "Durable accepted/deferred dependency-risk record. This exception is not PASS and is not proof of remediation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "exception_id", "advisory_id", "package", "version", "dependency_class", "exposure", "severity", "reason", "authority", "created_at", "review_by", "release_scope", "status"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "exception_id": {"type": "string", "minLength": 1},
+    "advisory_id": {"type": "string", "minLength": 1},
+    "package": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "dependency_class": {
+      "type": "string",
+      "enum": ["runtime", "development", "build", "test", "optional", "platform", "transitive", "other"]
+    },
+    "dependency_path": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "exposure": {
+      "type": "string",
+      "enum": ["runtime-exposed", "build-only", "development-only", "test-only", "not-applicable", "unknown", "other"]
+    },
+    "severity": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1},
+    "mitigation": {"type": ["string", "null"], "minLength": 1},
+    "authority": {"type": "string", "minLength": 1},
+    "owner": {"type": ["string", "null"], "minLength": 1},
+    "created_at": {"type": "string", "minLength": 1},
+    "review_by": {"type": "string", "minLength": 1},
+    "release_scope": {"type": "string", "minLength": 1},
+    "status": {
+      "type": "string",
+      "enum": ["accepted-risk", "deferred", "expired", "closed-remediated", "closed-not-applicable"]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
