@@ -1,11 +1,12 @@
 # v4.3.0 Task DAG — Engineering Design & Implementation Profiles
 
-Status: **FROZEN TASK DAG — 2026-09-30**
+Status: **FROZEN TASK DAG — 2026-09-30; contract-metadata repair after #223 review, topology unchanged**
 
 Freeze inputs:
 
 - Frozen Product Authority: `68ce6fd157a0b932651c42f67627e9dc0b8880c3`
 - Frozen L2 Architecture: `b90f9b698edcc426051a93569634fcef7a74e644`
+- Integration target: `version/v4.3.0`
 
 ## 1. DAG
 
@@ -146,11 +147,31 @@ T01/T02/T03/T04 are initial parallel roots.
 
 ## 4. Integration / branch posture
 
-Planning branch/PR integrates Frozen Product/L2/DAG/L3/Task Packs first. Create `version/v4.3.0` only after planning integration under repository authority. Execution Task branches are JIT from the current version target only after native dependencies are satisfied.
+Planning branch/PR integrates Frozen Product/L2/DAG/L3/Task Packs first. The single execution integration target is `version/v4.3.0`, created only after planning integration under repository authority. Execution Task branches are JIT from the current `version/v4.3.0` exact SHA only after native dependencies are satisfied.
 
 One concern per PR. Stacked PR only for real unmerged code-baseline dependency; the DAG above is not implemented as a PR stack.
 
-## 5. Review / Validation posture
+## 5. Per-Task risk and executor/model suitability
+
+These routing defaults do not change Task authority or allow an executor to self-promote `agent_freedom`.
+
+| Task | Risk | Suitable builder/executor | Review posture |
+|---|---|---|---|
+| T01 | high | bounded lower-cost/local builder after exact contract is frozen; Strong model for semantic repair | required Fresh Independent Review |
+| T02 | high | Strong/Web for profile-composition semantics; bounded executor for mechanical fixtures | required Fresh Independent Review |
+| T03 | high | Strong/Web because it creates normative architecture-design semantics | required Fresh Independent Review |
+| T04 | high | Strong/Web because decomposition changes planning authority boundaries | required Fresh Independent Review |
+| T05 | high | Strong/Web or bounded builder with exact T01 contract; native GitHub mutation may require controller/local capability | required Fresh Independent Review |
+| T06 | high | Strong/Web for normative neutral quality contract; bounded executor for deterministic tests | required Fresh Independent Review |
+| T07 | medium | bounded lower-cost/local builder using official TypeScript/Python evidence; escalate semantic conflict | required Fresh Independent Review |
+| T08 | medium | bounded lower-cost/local builder using official Go/Java/Rust evidence; escalate semantic conflict | required Fresh Independent Review |
+| T09 | medium | bounded lower-cost/Web builder inside frozen three-archetype set | required Fresh Independent Review |
+| T10 | high | Strong/Web integration owner; mechanical wiring may be delegated | required Fresh Independent Review + integration Validation |
+| T11 | high | Strong planner + independent validator/reviewer; bounded lower-cost interpretation is a dogfood subject, not authority | required integration Review/Validation |
+
+Profile-scope evidence is indexed in `docs/implementation/4.3.0/PROFILE_SCOPE_EVIDENCE.md`.
+
+## 6. Review / Validation posture
 
 T01–T06: required concern Validation + Fresh Independent Review.
 
@@ -160,7 +181,7 @@ T10: required Review/Validation due central wiring.
 
 T11: required integration Review/Validation and durable handoff to Version Closure.
 
-## 6. Local environment posture
+## 7. Local environment posture
 
 Planning and T01–T06 are expected to be repository/Web/CI executable.
 
@@ -168,4 +189,4 @@ T07/T08 may require ecosystem toolchain probes only if profile claims cannot be 
 
 T11 dogfood may use existing repository task materialization; no local environment is assumed unless executable profile proof is explicitly required.
 
-`LOCAL_ENV=NOT_REQUIRED` at Task DAG Freeze.
+`LOCAL_ENV=NOT_REQUIRED` at Task DAG Freeze and at this #223 metadata repair.
