@@ -1,6 +1,6 @@
 # ai-development-standard v4.4.0 PRD — Build, Packaging & Deployment
 
-Status: **FREEZE CANDIDATE — revised from L1; explicit Product Freeze waits for canonical v4.2 planning integration/currentness**
+Status: **FROZEN PRODUCT AUTHORITY — 2026-09-30**
 
 ## 1. Product intent
 
@@ -279,18 +279,19 @@ v4.4.0 is complete when:
 8. partial/failure/rollback deployment truth is reconstructible;
 9. at least one container/service path and one non-container packaging/install path are dogfooded or evidenced.
 
-## 16. Freeze basis / next gate
+## 16. Product Freeze basis
 
-Freeze candidate basis:
+Explicit Product Freeze is recorded by this commit after re-reading the previously blocked upstream boundary.
 
-- `docs/implementation/4.4.0/L1_PRODUCT_EVIDENCE.md`
-- v4.1 Frozen Workspace/Artifact + Config/Secrets Product semantics
-- v4.2 Frozen Product/L2 migration boundary on planning PR #219
+Freeze inputs:
 
-Before explicit Product Freeze:
+- `docs/implementation/4.4.0/L1_PRODUCT_EVIDENCE.md`;
+- v4.1 Frozen Workspace/Artifact, Config/Secrets and External System Product semantics;
+- v4.2 Frozen Product `fc68e869c18cec07e2a72b8fa5e4520ade1dc5a9`;
+- v4.2 Frozen L2 `ea4532cacf87c03689351e43363580e2a14acd95`;
+- v4.2 planning Fresh Independent Review #221 = PASS;
+- v4.2 canonical planning integration/main merge `7bef72d4c686bf206a163d421396af72aab2b247`.
 
-1. v4.2 planning authority must pass independent review and be canonically integrated/current, or an explicit equivalent stable-authority decision must be recorded;
-2. re-read upstream boundaries for drift;
-3. then record Product Freeze and proceed to L2 Architecture Evidence.
+Upstream re-read found no ownership drift requiring Product changes: v4.2 continues to own migration transition/recovery semantics while v4.4 owns deployment sequencing/result. Product Freeze therefore proceeds without reopening L1 scope.
 
 `LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research. Real build/package/install/deployment proof belongs later exact-subject Validation/dogfood Tasks.
