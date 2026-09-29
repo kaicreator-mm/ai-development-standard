@@ -1,103 +1,149 @@
 # v4.7.0 Authority / State / Schema Convergence Inventory
 
-Status: **RESEARCH INVENTORY — non-normative, pre-Freeze**
+Status: **REFRESHED FINAL PRE-FREEZE INVENTORY — non-normative**
 
-Inventory baseline: `main@e9eb39235e45e9ad90407b803ab1c8679d348dbf`
+Refresh date: 2026-09-30
+Current canonical main: `bc3feeccf130fcfc7b49efaf44983e4dcdac6e5d`
 
-This inventory records the current v4 repository shape before v4.1–v4.6 are canonically converged. It MUST NOT be used to refactor paths, rename states or migrate schemas before v4.7 Product/L2 Freeze.
+This inventory records the semantic-owner, state-dimension and machine-contract shape after v4.1–v4.6 Product/L2 authorities became sufficiently stable for final v4.7 Product-currentness review. It does **not** authorize implementation, path migration, schema replacement, state collapse or historical reinterpretation.
 
-## 1. Current top-level discoverability model
+## 1. Convergence premise
 
-`standard-manifest.json` already provides a useful canonical inventory split into:
+The repository already has the major mechanisms v4.7 needs:
+
+- `standard-manifest.json` for canonical asset discovery;
+- root `AGENTS.md` for progressive-disclosure/read routing;
+- explicit Product / Architecture / Task / Task Pack / Execution authority precedence;
+- compatibility-entry patterns for stable legacy paths;
+- machine contracts for Operation, Dispatch, Execution Pack, Assurance, Review, Validation and related claims;
+- exact-SHA/currentness rules and strong non-inference boundaries.
+
+The convergence problem is therefore **discoverability and semantic consistency**, not absence of a universal state object.
+
+## 2. Refreshed semantic-owner map
+
+### Core lifecycle / assurance owners
+
+- Product/L1/PRD Freeze — Development Workflow / Product authority;
+- Architecture/L2 — Architecture evidence/freeze authority;
+- Task decomposition / Task DAG / Task Pack — planning authorities, with GitHub Issue Dependencies as live DAG after materialization;
+- Implementation execution — Execution Pack / Dispatch / Git and Task authority;
+- Testing — Testing Standard;
+- Validation — Validation Standard / validation-report;
+- Review / assurance — Assurance Plan + Review aggregation / Review standards;
+- Release Qualification — Release Standard.
+
+### v4.1 Execution Foundation
+
+Distinct owners:
+
+- Dependency & Toolchain Governance;
+- Git Execution & Worktree Isolation;
+- Configuration & Secrets Governance;
+- Workspace & Artifact Governance;
+- External System Execution.
+
+Execution Context is non-authoritative reconstruction/evidence, not a second workflow state machine.
+
+### v4.2 Evolution Governance
+
+Distinct owners:
+
+- Interface & Compatibility Governance;
+- Data & Migration Governance.
+
+Machine families:
+
+- Compatibility Record;
+- Migration Transition.
+
+Compatibility outcome is multi-dimensional and does not become Validation PASS. Migration source→target/recovery does not become Deployment or Incident authority.
+
+### v4.3 Engineering Design & Implementation Profiles
+
+Distinct owners include:
+
+- Architecture Design;
+- Task Decomposition;
+- Task DAG Governance;
+- Implementation Quality;
+- subordinate Language and Archetype Profiles.
+
+GitHub Issue Dependencies remain live execution DAG; profiles do not become a repository-wide v4.7 resolver.
+
+### v4.4 Build / Packaging / Deployment
+
+Distinct owners:
+
+- Build & Artifact Governance;
+- Distribution Governance;
+- Deployment Governance.
+
+Machine families:
+
+- Build Manifest;
+- Artifact Promotion;
+- Deployment Plan;
+- Deployment Result.
+
+`Release READY != Deployment SUCCESS`; artifact rollback != data migration rollback.
+
+### v4.5 Operations / Incident / Maintenance
+
+Distinct owners:
+
+- Observability & Runtime Evidence;
+- Incident / Recovery / Engineering Feedback;
+- Maintenance / EOL / Hotfix.
+
+Machine families:
+
+- Runtime Observation Context;
+- Incident Event;
+- Maintenance Policy.
+
+Deployment success does not imply runtime health. Incident recovered does not imply permanent fix/follow-up closure. Backported SHA does not inherit source SHA Validation.
+
+### v4.6 AI-native / Agentic Governance
+
+Frozen Product `e6aa04981110376e623d19b7dd4d0c6d0e139bdf`; Frozen L2 `f47ea81e8f8df32ac6c8b7cc922c405a17b704d9`.
+
+Exactly three new owners:
+
+- Intent & Assumption Governance;
+- Context Engineering;
+- Skill / Reusable Agent Procedure Governance.
+
+Exactly two new default machine families:
+
+- Intent / Assumption Record;
+- Skill Metadata.
+
+No Context Snapshot database/family and no duplicate Assurance, autonomy, Dispatch/Handoff, Validation or Release result state.
+
+## 3. Authority uniqueness rule
+
+v4.7 should make the map `semantic concern -> one canonical normative owner` machine-discoverable where useful.
+
+A registry entry may contain:
 
 ```text
-authority
-normative_standards
-compatibility_entries
-templates
-checklists
-prompts
-machine_contracts
-references
-verification
+semantic_concern
+canonical_owner
+applicability_tags
+machine_contract_refs
+compatibility_aliases
+read_routing / progressive-disclosure tags
+supersession / migration metadata
 ```
 
-It explicitly states that compatibility entry files do not duplicate normative authority.
+The registry itself is **discovery metadata**. It MUST NOT silently become a second copy of each owner's normative semantics.
 
-**Finding:** v4.7 should evolve this existing manifest/inventory into an authority/discovery registry rather than invent a parallel catalog. The current manifest is primarily an asset list; it does not yet answer all of:
+## 4. Qualified state dimensions
 
-```text
-semantic concern -> normative owner
-applicability / lifecycle dimension
-machine contract -> prose owner
-compatibility alias -> canonical target
-profile / project override resolution
-minimum progressive-disclosure read set
-```
+The following state/result vocabularies remain separate claim dimensions even when strings overlap.
 
-## 2. Current AGENTS progressive-disclosure behavior
-
-Root `AGENTS.md` already defines role/operation-based read routing, for example:
-
-- VERSION + AGENTS first;
-- role-specific standards;
-- Development Workflow for lifecycle work;
-- L2 Research Demo material only when architecture evidence applies;
-- GitHub/Task/Dispatch standards only for those operations;
-- Validation/Release standards for assurance/release work;
-- PROJECT_OVERRIDES when present.
-
-It also freezes several core non-inference rules:
-
-```text
-chat != fact source
-PR/Review PASS != Release PASS
-workflow state != Gate result
-Issue hierarchy != dependency
-PR stack != Issue DAG
-one Validation tuple != another tuple
-Builder != Independent Reviewer
-```
-
-**Finding:** v4.7 progressive disclosure should preserve/normalize this read-routing behavior rather than require every Agent to load the entire repository.
-
-## 3. Current normative-owner families
-
-The current manifest lists mature owner families including:
-
-### Lifecycle / assurance
-- `DEVELOPMENT_WORKFLOW.md`
-- `TESTING_STANDARD.md`
-- `TEST_DATA_AND_SCENARIO_STANDARD.md`
-- `VALIDATION_STANDARD.md`
-- `RELEASE_STANDARD.md`
-
-### Execution / Agent coordination
-- `EXECUTION_ARCHITECTURE_STANDARD.md`
-- `EXECUTION_PACK_STANDARD.md`
-- `GITHUB_AGENT_INTERACTION_PROTOCOL.md`
-- `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`
-- `LOCAL_AGENT_HANDOFF_PROTOCOL.md`
-- `ISSUE_FIRST_TASK_TRIGGER.md`
-- `MODEL_USAGE_POLICY.md`
-- role-specific ChatGPT/Codex documents
-
-### Repository / adoption / CI
-- Repository/Project/Documentation standards
-- CI Execution/Evidence/Runner Capability standards
-- Project Adoption
-
-### Compatibility aliases
-- `GITHUB_WORKFLOW.md`
-- `VERSION_INTEGRATION_WORKFLOW.md`
-
-**Finding:** the repository already follows “one owner + compatibility entry/reference” in some areas, but ownership is not yet machine-discoverable by semantic concern.
-
-## 4. State dimensions currently present
-
-### 4.1 Work-item workflow state
-
-`execution-state.schema.json` currently projects:
+### Work-item/router state
 
 ```text
 planned
@@ -112,11 +158,7 @@ blocked
 done
 ```
 
-This is a work-item/router projection, not a Validation Gate.
-
-### 4.2 Dispatch state
-
-Canonical Dispatch uses:
+### Dispatch lifecycle
 
 ```text
 READY
@@ -127,9 +169,7 @@ BLOCKED
 SUPERSEDED
 ```
 
-with role/profile-specific authority.
-
-### 4.3 Execution Pack state
+### Execution Pack currentness
 
 ```text
 PACK_CURRENT
@@ -138,9 +178,7 @@ PACK_STALE_MATERIAL
 PACK_INVALID
 ```
 
-### 4.4 Validation state
-
-`validation-report.schema.json` owns:
+### Validation state
 
 ```text
 PASS
@@ -150,9 +188,7 @@ NOT_RUN
 NOT_APPLICABLE
 ```
 
-### 4.5 Review judgment
-
-`review-aggregation-v1.schema.json` owns:
+### Review judgment
 
 ```text
 PASS
@@ -161,53 +197,15 @@ VALIDATION_REQUESTED
 BLOCKED
 ```
 
-and emits only a `NON_AUTHORITATIVE_DERIVED_STATE` requested route.
+### Candidate / Release / Deployment / Runtime / Incident / Maintenance
 
-### 4.6 Candidate state
+These remain their owning dimensions. Similar labels such as READY, PASS, BLOCKED, SUCCESS, RECOVERED or SUPPORTED do not collapse their meanings.
 
-Projected in `execution-state.schema.json`:
+**Frozen convergence direction:** qualify state by owner/dimension rather than deduplicate equal strings into one global enum.
 
-```text
-PREPARED
-FROZEN
-THAWED
-INVALIDATED
-```
+## 5. Cross-dimension forbidden-inference registry
 
-### 4.7 Release state
-
-Projected in `execution-state.schema.json`:
-
-```text
-NOT_READY
-READY
-CONDITIONAL
-BLOCKED
-FAIL
-```
-
-### 4.8 Provider/execution availability
-
-```text
-AVAILABLE
-INFRA_BLOCKED
-TIMED_OUT
-CANCELLED
-```
-
-### 4.9 Future dimensions from planned v4.4/v4.5
-
-Expected but not yet canonical at this baseline:
-
-- Deployment result dimension;
-- Runtime/Incident dimension;
-- Maintenance/Support dimension.
-
-**Inventory conclusion:** v4.7 must normalize vocabulary **by dimension**, not collapse these into one master enum.
-
-## 5. Required cross-state non-inference registry
-
-The following should become explicit cross-standard conformance families:
+At minimum v4.7 conformance must preserve these negatives:
 
 ```text
 work item done != Validation PASS
@@ -216,223 +214,136 @@ Review PASS != Validation PASS
 Validation PASS != Release READY
 Release READY != Deployment SUCCESS
 Deployment SUCCESS != Runtime Healthy
-worktree/branch exists != Task RUNNING/claimed
-Dispatch COMPLETED != product/release PASS unless result/gate owner says so
+Dispatch COMPLETED != product/release PASS
 PACK_CURRENT != implementation correct
 old exact-SHA PASS != successor exact-SHA PASS
-provider AVAILABLE != side-effect authority
+provider/tool/credential AVAILABLE != mutation authority
 waiver/exception != PASS
 fresh install PASS != upgrade PASS
+wire/schema compatible != behavior/source/consumer compatible
 mock/sandbox PASS != higher-fidelity PASS
-artifact tag/filename != immutable artifact identity
-incident recovered != permanent defect/follow-up closed
-branch exists != maintenance-supported
+artifact alias/tag != immutable artifact identity
+incident RECOVERED != permanent defect/follow-up closed
+branch/package exists != maintenance-supported
+Skill installed/capable != trusted/authorized
+Intent/Assumption record != Frozen Product authority
+historical chat/memory != current durable authority
 ```
 
-## 6. Machine-contract inventory and convergence pressure
+## 6. Machine-contract convergence
 
-Current machine contracts include:
-
-```text
-agent-event-v2
-assurance-plan-v1
-dispatch
-execution-pack-manifest
-execution-state
-interchange-envelope-v1
-local-agent-handoff
-operation-binding-v1
-operation-v1
-repository-integration-v4-precondition
-review-aggregation-v1
-review-finding-v1
-task-contract
-validation-report
-```
-
-### 6.1 Identity fields repeat across contracts
-
-Observed recurring concepts:
+Recurring machine concepts include:
 
 ```text
-repository
-version/task/issue/pr
+repository / version / task / issue / PR
 subject_ref / subject_identity_ref
-exact SHA / requested SHA / tested SHA / current PR head
-expected base SHA
-operator/executor/session/context refs
+exact/requested/tested/current SHA
+expected base
+operator / executor / session / context refs
 provider/model provenance
 validation tuple/profile/environment/toolchain
 state/result/judgment
 ```
 
-Repeated fields are not automatically defects: each object has a different owner/claim. v4.7 should identify where a **shared identity reference convention** can replace subtly different encodings without changing evidence meaning.
+Repeated fields are not automatically duplication defects because each record owns a different claim.
 
-### 6.2 Subject identity is already converging
+v4.7 may standardize **reference conventions** such as subject identity, authority reference, applicability and provenance pointers, but MUST preserve object ownership and historical wire meaning.
 
-`operation-v1` and `assurance-plan-v1` both use identity-binding concepts such as:
+Candidate convergence targets:
 
-```text
-exact-sha
-validation-tuple
-candidate
-project-defined
-```
+- common Subject Identity reference vocabulary;
+- common Authority Reference convention;
+- qualified state-dimension metadata;
+- optional applicability/read-routing tags;
+- compatibility alias/canonical-target metadata.
 
-Review aggregation also uses `subject_identity_ref`.
+Non-targets:
 
-**Candidate convergence:** document a canonical Subject Identity reference vocabulary/contract or reusable schema definition, while preserving each object owner's meaning.
+- one universal event/result object;
+- one master state enum;
+- rewriting historical Validation/Review/Dispatch payloads;
+- converting correlation objects into normative authority.
 
-### 6.3 Result vocabularies must not be unified mechanically
+## 7. Assurance / provenance / handoff relationship
 
-The same string `BLOCKED` appears in workflow/provider/dispatch/Validation/Review/Release contexts with different semantics.
+`assurance-plan-v1` already owns activity policy, independence dimensions and open coverage. `review-aggregation-v1` already owns Review judgment/finding aggregation and can carry reviewer provider/model/executor/context provenance. Dispatch already owns executable handoff; Execution Pack owns Task execution identity.
 
-**Finding:** v4.7 MUST NOT deduplicate states merely because strings match. Convergence should use qualified dimensions/owner maps, e.g. `validation.state`, `review.judgment`, `dispatch.state`.
+v4.6 correctly reuses these rather than creating a new AI Assurance/Handoff state family.
 
-### 6.4 Review provenance already overlaps v4.6 Product research
+v4.7 may improve discoverability/naming/reference consistency, but MUST NOT create a duplicate assurance or Agent lifecycle merely for symmetry.
 
-`review-aggregation-v1` can carry provider/model family/model/executor/context/blind-first-pass provenance. `assurance-plan-v1` can require model/context/executor/evidence independence and model-diverse-adversarial modes.
+## 8. #281 authority-repair lesson
 
-**Finding:** v4.6 should extend/reference these instead of introducing duplicate AI-review/provenance schemas; v4.7 should later normalize discoverability/field naming if necessary.
+Fresh Independent Review #281 on v4.1 T07 found a concrete planning-authority defect: a technically required Golden coverage file was modified without being present in the Frozen Task Pack allowed write-set.
 
-### 6.5 Dispatch and Local Handoff overlap intentionally
+This is important convergence evidence:
 
-`dispatch.schema.json` is canonical executable handoff/lifecycle identity, while `local-agent-handoff.schema.json` is an environment-specific durable handoff package/contract.
+- Task Pack remains durable mutation authority;
+- a registry/discovery layer MUST NOT imply mutation authority;
+- technical necessity, CI PASS or Validation PASS does not retroactively create write authority;
+- authority amendments must be explicit/current and scoped;
+- current repair path is #285 / PR #286 / Fresh Review #288.
 
-Potential convergence question for v4.7: which local-handoff fields should become references to Dispatch/Execution Pack instead of duplicated values? Do not remove redundancy until compatibility/currentness needs are understood.
+The finding does **not** reveal a semantic-owner contradiction in v4.1 Product/L2 and therefore does not justify redesigning the owner map.
 
-## 7. Operation model inventory
+## 9. Repository information architecture
 
-`operation-v1.schema.json` already supplies a cross-lifecycle operation concept with categories such as:
+The flat `standards/` layout is increasingly crowded, but stable paths are valuable compatibility surfaces.
 
-```text
-product-evidence
-product-definition
-architecture-research
-architecture-definition
-task-decomposition
-task-materialization
-implementation
-integration
-review
-validation
-coherence-review
-candidate-freeze
-hidden-validation
-release-qualification
-repository-integration
-```
+Current evidence supports this order:
 
-and kinds:
+1. improve concern→owner discovery through manifest/registry metadata;
+2. improve progressive disclosure/read routing;
+3. inventory all stable paths and downstream aliases;
+4. move/rename files only when evidence shows material benefit exceeding compatibility cost;
+5. retain compatibility aliases/entries for any stable path migration.
 
-```text
-PRODUCE
-RESEARCH
-ASSURE
-DECIDE
-CONTROL
-```
+Aesthetic directory cleanup alone is not sufficient reason for a breaking refactor.
 
-Its `operation_binding_authority` is explicitly `CORRELATION_ONLY_NON_AUTHORITATIVE`.
+## 10. Compatibility-entry and migration posture
 
-**Finding:** v4.7 should assess whether later v4.1–v4.6 lifecycle domains extend this operation taxonomy additively. It MUST NOT reinterpret Operation as a universal state/authority object.
-
-## 8. Compatibility-entry inventory
-
-Current manifest separates compatibility entries from normative owners:
+Existing compatibility entries demonstrate the preferred migration shape:
 
 ```text
-standards/GITHUB_WORKFLOW.md
-standards/VERSION_INTEGRATION_WORKFLOW.md
+old stable path -> compatibility entry / alias -> canonical owner
 ```
 
-This is the correct migration pattern for future repository/path refactor:
+v4.7 may formalize canonical-target metadata and deprecation/sunset evidence, but must not remove aliases merely because the registry can point elsewhere.
 
-```text
-old stable path -> compatibility entry/alias -> canonical normative owner
-```
+## 11. Progressive disclosure
 
-v4.7 should inventory every path/name that downstream pinned adopters may consume before moving/renaming files. Directory aesthetics alone are not sufficient justification for breaking paths.
+Root `AGENTS.md` already routes readers by operation/role and avoids unconditional repository-wide loading. v4.6 Context Engineering freezes the same principle at the AI-native layer.
 
-## 9. Repository information-architecture pressures
+v4.7 should make this routing more deterministic through registry tags, not replace it with a “load everything” context snapshot.
 
-Current `standards/` is flat and contains lifecycle, execution, CI, roles, adoption and compatibility documents together. Flat structure has one major benefit: stable simple paths. Its pressure points are:
+## 12. Future-major / v5 register
 
-- growing document count;
-- less obvious domain grouping;
-- role/protocol/standard/compatibility entries visually mixed;
-- later profile domains will add another axis;
-- Agents currently depend on AGENTS/manual routing rather than a concern-to-owner registry.
+The following remain outside additive/non-weakening v4.7 if they prove necessary:
 
-**Candidate v4.7 direction:** improve discoverability first through manifest/authority map and progressive disclosure. Physical directory refactor should be evidence-driven and compatibility-preserving, not assumed mandatory.
+- collapsing state dimensions into one enum/state machine;
+- replacing dispatch/event protocol incompatibly;
+- changing Product/Architecture/Task/Task Pack authority precedence;
+- deleting/moving stable normative paths without compatible aliases/migration;
+- changing exact-SHA evidence semantics;
+- changing Review/Validation/Release/Deployment result semantics incompatibly;
+- reinterpreting historical events/payloads;
+- mandatory adoption of optional capabilities;
+- destructive role/object renames requiring downstream simultaneous migration.
 
-## 10. Authority-owner inventory gaps
+If required, v4.7 should produce explicit v5 migration inputs instead of hiding the break inside “convergence.”
 
-Current manifest identifies files as normative but does not machine-state which file owns specific concerns such as:
+## 13. Final pre-Freeze verdict
 
-```text
-Validation state
-Review judgment
-Task Pack authority
-Dispatch lifecycle
-Issue Dependency truth
-model routing
-local handoff
-CI evidence publication
-candidate/release truth
-```
+Current evidence supports a narrowed v4.7 Product centered on:
 
-v4.7 should produce a canonical registry such as:
+- authority/applicability discovery;
+- qualified state dimensions and forbidden-inference registry;
+- compatible machine reference conventions;
+- progressive disclosure;
+- compatibility-preserving repository IA;
+- integrated semantic conformance/self-dogfood;
+- future-major separation.
 
-```text
-semantic_concern
-canonical_owner
-machine_contract_refs
-compatibility_aliases
-applicability/read-routing tags
-supersession/migration metadata
-```
+Current evidence does **not** support a global state machine, object collapse, mandatory physical directory refactor, historical reinterpretation or incompatible v4 wire rewrite.
 
-The exact format belongs to Product/L2; this inventory only establishes the need.
-
-## 11. Future v4.1–v4.6 merge points
-
-The convergence inventory must later incorporate, after those owners stabilize:
-
-- v4.1 execution foundation: Git/Dependency/Config/Workspace/External System + Execution Context;
-- v4.2 Interface Compatibility + Data Migration + records;
-- v4.3 Architecture/Task/DAG/Implementation Quality + profiles;
-- v4.4 Build/Artifact/Distribution/Deployment;
-- v4.5 Observability/Incident/Maintenance;
-- v4.6 Intent/Context/Skills + assurance/provenance extensions.
-
-Do not freeze a final authority map using draft owner names that may still change.
-
-## 12. Future-major candidate register
-
-Potentially incompatible changes that MUST NOT be smuggled into v4.7:
-
-- collapsing distinct state dimensions into one enum/state machine;
-- replacing current dispatch/event protocol without compatibility migration;
-- changing core Product/Architecture/Task authority precedence;
-- deleting/moving stable normative paths without aliases/migration;
-- changing exact-SHA evidence meaning;
-- changing Review/Validation/Release result semantics incompatibly;
-- redefining historical event/payload meanings;
-- removing project ability to mark optional/non-applicable capabilities truthfully.
-
-If evidence shows these are required, v4.7 should prepare a v5 migration plan rather than claim additive v4 compatibility.
-
-## 13. Inventory verdict
-
-The repository already contains the seeds of v4.7 convergence:
-
-- `standard-manifest.json` inventory;
-- root `AGENTS.md` progressive-disclosure routing;
-- explicit compatibility entries;
-- operation/assurance/dispatch schemas with non-authoritative correlation boundaries;
-- strong state-dimension separation rules.
-
-The primary v4.7 problem is therefore **not lack of mechanisms**. It is making semantic ownership, applicability, state dimension, machine-contract relationships and compatibility aliases deterministically discoverable and self-conformant as v4.1–v4.6 grow.
-
-`LOCAL_ENV=NOT_REQUIRED` for this inventory. Repository-wide executable conformance/migration experiments remain blocked until v4.7 Product/L2 and stable upstream owners exist.
+`LOCAL_ENV=NOT_REQUIRED` for this inventory. The next gate is a Fresh Independent final L1/currentness review before any explicit v4.7 Product Freeze.
