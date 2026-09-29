@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/compatibility-record-v1.schema.json",
+  "title": "AI Development Compatibility Record v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_id", "contract", "baseline", "candidate", "change_operations", "dimensions"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_id": {"type": "string", "minLength": 1},
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "identity"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1},
+        "identity": {"type": "string", "minLength": 1}
+      }
+    },
+    "baseline": {"$ref": "#/$defs/subject_identity"},
+    "candidate": {"$ref": "#/$defs/subject_identity"},
+    "change_operations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "outcome", "evidence_refs"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "outcome": {
+            "type": "string",
+            "enum": ["COMPATIBLE", "CONDITIONALLY_COMPATIBLE", "INCOMPATIBLE", "UNKNOWN", "NOT_APPLICABLE"]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          },
+          "notes_ref": {"type": ["string", "null"], "minLength": 1}
+        }
+      }
+    },
+    "producer_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "consumer_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "compatibility_window_ref": {"type": ["string", "null"], "minLength": 1},
+    "notes_ref": {"type": ["string", "null"], "minLength": 1}
+  },
+  "$defs": {
+    "subject_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha_or_digest"],
+      "properties": {
+        "version_ref": {"type": ["string", "null"], "minLength": 1},
+        "sha_or_digest": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
