@@ -1,6 +1,12 @@
 # ai-development-standard v4.2.0 PRD — Evolution Governance
 
-Status: **FREEZE CANDIDATE — revised from `L1_PRODUCT_EVIDENCE.md`; explicit Product Freeze required before L2 implementation authority**
+Status: **FROZEN PRODUCT AUTHORITY**
+
+Product Freeze basis:
+
+- L1 evidence: `docs/implementation/4.2.0/L1_PRODUCT_EVIDENCE.md`
+- revised Freeze Candidate: `6a59ad3b194a93ad9aa1bdafc6064b52ed3ee515`
+- Freeze date: 2026-09-30
 
 ## 1. Product intent
 
@@ -259,20 +265,14 @@ v4.2.0 is complete when:
 9. negative conformance covers the forbidden inferences in §7;
 10. at least one service/API case and one persistent-database case are dogfooded during implementation/closure.
 
-## 12. Freeze basis and next gate
+## 12. Next gate
 
-Freeze basis:
+Product Authority is Frozen. Before implementation:
 
-- `docs/implementation/4.2.0/L1_PRODUCT_EVIDENCE.md`
-- L1 conclusion: **PROCEED WITH NARROWING / evidence sufficient after the corrections encoded in this revision**
+1. run L2 Architecture Evidence;
+2. decide machine-contract composition and owner map;
+3. materialize Task DAG only after L2;
+4. create Task Packs/Issues and native dependencies;
+5. execute concern Validation/Review followed by Version Closure.
 
-Before implementation:
-
-1. record explicit Product Freeze for this revised PRD;
-2. run L2 Architecture Evidence;
-3. decide machine-contract composition and owner map;
-4. materialize Task DAG only after L2;
-5. create Task Packs/Issues and native dependencies;
-6. execute concern Validation/Review followed by Version Closure.
-
-`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research by default. Executable database/service proof must use an explicit later handoff/validation subject.
+`LOCAL_ENV=NOT_REQUIRED` for L2 research by default. Executable database/service proof must use an explicit later handoff/validation subject.
