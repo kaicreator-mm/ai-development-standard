@@ -24,8 +24,9 @@ class V42EvolutionContractTests(unittest.TestCase):
     def test_compatibility_requires_exact_subject_sides(self) -> None:
         required = set(self.compat["required"])
         self.assertTrue({"baseline", "candidate", "contract"}.issubset(required))
-        identity_required = set(self.compat["$defs"]["subject_identity"]["required"])
-        self.assertIn("sha_or_digest", identity_required)
+        for side in ("baseline", "candidate"):
+            identity_required = set(self.compat["properties"][side]["required"])
+            self.assertIn("sha_or_digest", identity_required)
 
     def test_change_operation_and_outcome_are_orthogonal(self) -> None:
         props = self.compat["properties"]
