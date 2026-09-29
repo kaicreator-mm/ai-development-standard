@@ -1,107 +1,179 @@
 # ai-development-standard v4.5.0 PRD — Operations, Incident & Maintenance
 
-Status: **DRAFT PRODUCT AUTHORITY — requires L1 Product Evidence review and explicit PRD Freeze before implementation**
+Status: **FREEZE CANDIDATE — revised from L1; explicit Product Freeze waits for stable v4.4 Deployment Product boundary**
 
 ## 1. Product intent
 
-v4.5.0 extends the standard beyond deployment into runtime operations. The objective is to make production behavior observable, failures recoverable and maintenance/support decisions explicit, without turning ADS into an infrastructure platform or prescribing one monitoring stack.
+v4.5.0 extends ADS from deployment into runtime truth, incident learning and version-line maintenance without turning ADS into an observability/on-call platform.
 
-The version should let a project answer:
+The version must let a project answer, from durable facts:
 
-1. Is the deployed system healthy, and what evidence supports that conclusion?
-2. Can material user-visible/runtime failures be diagnosed without ad-hoc access?
-3. What happens when a production incident occurs?
-4. How does an incident become a regression, Hidden/Visible coverage update or product/architecture correction?
-5. Which versions are supported, maintained, deprecated or EOL?
-6. How are hotfix/backport/maintenance releases governed without weakening current release truth?
+1. What runtime/artifact/environment is actually being observed?
+2. Which signals support a health/readiness/liveness/business claim?
+3. What happened during a material incident, what mitigation/recovery occurred, and what remains open?
+4. How does escaped production failure create regression/scenario/product/architecture/standard follow-up?
+5. Which product/version lines are supported and under what maintenance policy?
+6. How can hotfix/backport work move quickly without transferring stale exact-SHA truth?
 
-## 2. Problem
+## 2. Product owners
 
-Current ADS is strong through Candidate/Release and will gain Deployment in v4.4, but after rollout there is no unified normative owner for observability, incident recovery or product-version maintenance.
+v4.5 introduces three normative owners:
 
-Without such standards, projects may:
+1. **Observability & Runtime Evidence Standard** — technology-neutral runtime signal semantics, runtime identity/correlation and privacy/secret boundaries.
+2. **Incident, Recovery & Engineering Feedback Standard** — incident facts, mitigation/recovery/verification and deterministic engineering feedback.
+3. **Maintenance, EOL & Hotfix Standard** — support-line state, backport/hotfix provenance and maintenance Fast Path boundaries.
 
-- declare a deployment successful without enough runtime observability to detect latent failure;
-- conflate liveness/readiness/health/business success;
-- leak secrets or PII through logs/telemetry;
-- perform production fixes without a durable incident record or regression path;
-- repeatedly rediscover the same failure because incidents never feed tests/scenarios/Hidden Validation;
-- maintain unsupported branches indefinitely or backport changes without explicit support policy;
-- treat a hotfix as exempt from normal exact-SHA/release evidence.
+These are separate lifecycle dimensions. v4.5 MUST NOT create one overloaded global Operations state machine.
 
-## 3. Scope
+v4.4 remains the Deployment result/rollback-orchestration owner. v4.2 remains persistent-state migration/recovery semantic owner. Existing Testing/Test Data/Validation/Release owners remain authoritative for their results.
 
-### 3.1 Observability Standard
+## 3. Observability & Runtime Evidence
 
-Create a technology-neutral standard for runtime evidence. It should support, where applicable:
+Runtime evidence may include, where material:
 
 ```text
-logs
+logs / events
 metrics
-traces
-health / liveness / readiness
-business/critical-journey runtime signals
+traces / spans
+profiles
+health / readiness / liveness
+business / critical-journey signals
 alerts
-runtime version/artifact identity
+runtime resource/version/artifact identity
 ```
 
-Required principles:
+Required semantics:
 
-- critical runtime behavior should be observable at a level proportional to risk;
-- health, readiness and liveness are distinct concepts where the platform uses them;
-- user-visible failures should be diagnosable through bounded identifiers/context rather than secret-bearing raw dumps;
-- runtime evidence should bind version/artifact/environment identity when material;
-- secret/credential/unapproved PII MUST NOT be emitted as ordinary telemetry;
-- observability quality is evidence input, not automatic proof that product behavior is correct;
-- SLO/SLI targets are project/product authority, not universal ADS thresholds.
+- projects use only signals material to risk/product behavior;
+- health, readiness and liveness remain distinct where the platform uses them;
+- infrastructure/process health does not automatically prove business/critical-journey success;
+- telemetry availability/existence does not itself prove product correctness;
+- runtime evidence binds artifact/version/environment and observation time/window when material;
+- user-visible failures should be diagnosable through bounded non-secret identifiers/context rather than unrestricted raw dumps;
+- secret values, credentials and unapproved sensitive/PII content MUST NOT enter ordinary durable telemetry/incident evidence;
+- SLO/SLI targets and severity thresholds remain project/product authority, not universal ADS constants.
 
-### 3.2 Incident & Recovery Standard
+## 4. Runtime identity
 
-Define a minimal incident lifecycle such as:
+Material runtime evidence should be able to reference:
+
+```text
+release / immutable artifact identity
+deployment/environment identity
+service/component/fleet scope when material
+configuration/profile reference when material
+observation timestamp/window
+```
+
+Friendly environment/service labels are insufficient when materially different runtime identities could make evidence substitution unsafe.
+
+Runtime identity consumes v4.4 Deployment/artifact facts; it does not create a second deployment record.
+
+## 5. Deployment result vs runtime health
+
+Frozen invariant:
+
+> **Deployment SUCCESS != Runtime Healthy.**
+
+Deployment result is a historical fact about rollout execution. Runtime health is time-varying evidence after/during operation.
+
+Forbidden shortcuts include:
+
+```text
+Deployment SUCCESS -> Runtime Healthy
+/health 200 -> critical journey PASS
+metrics exist -> product healthy
+no alert fired -> no user-visible failure
+```
+
+## 6. Incident & Recovery semantics
+
+A material incident should preserve append-oriented facts sufficient to reconstruct, where applicable:
+
+```text
+incident identity
+observed/affected runtime identity
+impact/scope/severity under project authority
+detection evidence/timeline
+classification
+containment/mitigation
+recovery action
+recovery verification
+root/contributing cause evidence when known
+follow-up/action ownership
+closure state/reason
+```
+
+Semantic phases include:
 
 ```text
 DETECTED
-→ CLASSIFIED
-→ CONTAINED / MITIGATED
-→ RECOVERED
-→ VERIFIED
-→ FOLLOW_UP / CLOSED
+CLASSIFIED
+CONTAINED / MITIGATED
+RECOVERED
+VERIFIED
+FOLLOW_UP / CLOSED
 ```
 
-The exact state model may be refined in L2, but must preserve these semantics:
+L2 may choose event/append-oriented representation instead of one mutable enum. Product invariants:
 
-- incident severity/impact is evidence-based and project-defined;
-- emergency mitigation and permanent fix are distinct;
-- recovery may involve rollback, failover, configuration correction, data repair or forward fix;
-- an incident record should preserve affected version/artifact/environment and timeline/evidence sufficient for later diagnosis;
-- incident handling MUST NOT rewrite previous Release/Deployment evidence; it adds new runtime facts;
-- material product defects should create a durable follow-up path.
+- detection != mitigation;
+- mitigation != permanent fix;
+- recovered service != verified fix;
+- verified recovery != all follow-up completed;
+- incident facts add runtime history and MUST NOT rewrite prior Release/Deployment evidence;
+- severity/impact is evidence-based/project-defined, not universal ADS scoring.
 
-### 3.3 Incident → Engineering Feedback Loop
+## 7. Operational recovery boundary
 
-Establish the canonical learning loop:
+Operational recovery may reference:
 
 ```text
-Production Incident / Escaped Defect
-        ↓
-Minimal Reproduction
-        ↓
-Regression Case / Scenario
-        ↓
-Visible Test / Hidden Pack / Architecture / Product gap classification
-        ↓
-Fix Task
-        ↓
-Validation / Release
-        ↓
-Standard or project-rule feedback when systemic
+artifact rollback / redeploy
+configuration correction
+traffic reroute / failover
+feature disablement
+capacity response
+data restore/repair
+forward fix
 ```
 
-The standard should compose with existing `TEST_DATA_AND_SCENARIO_STANDARD.md` and `RELEASE_STANDARD.md` escaped-defect classifications.
+v4.5 owns incident runtime handling/verification. It references rather than redefines:
 
-### 3.4 Maintenance & EOL Standard
+- v4.4 Deployment rollback/result semantics;
+- v4.2 persistent-state migration/recovery semantics;
+- v4.1 external-system/config/secret authority.
 
-Create explicit lifecycle concepts for product versions, such as:
+Credential/access capability never implies production mutation authority.
+
+## 8. Incident → Engineering Feedback
+
+Frozen feedback path:
+
+```text
+Incident / Escaped Defect
+        ↓
+minimal reproduction / observed evidence
+        ↓
+regression test / scenario / critical journey
+        ↓
+classification:
+product | architecture | implementation | test | validation | standard/process gap
+        ↓
+fix / follow-up Task(s)
+        ↓
+normal Review / Validation / Release
+        ↓
+systemic standard/project feedback where warranted
+```
+
+Material follow-up ownership must be durable even when the incident is operationally recovered before engineering work completes.
+
+Incident closure MUST NOT erase skipped/blocked evidence or open required follow-up.
+
+## 9. Maintenance & support-line truth
+
+Projects may use their own vocabulary, but the product must represent equivalent states such as:
 
 ```text
 CURRENT
@@ -111,96 +183,113 @@ DEPRECATED
 EOL
 ```
 
-Projects may use a different vocabulary, but must be able to represent:
+Required semantics:
 
-- currently supported line(s);
-- allowed change classes per support state;
-- hotfix/backport authority;
+- supported line(s)/baseline(s) explicitly identified;
+- allowed change classes per support state explicit;
+- maintenance branch/source baseline identity reconstructible;
+- hotfix/backport authority explicit;
 - security-fix policy where applicable;
-- deprecation/EOL announcement/effective date when external consumers matter;
-- maintenance branch/source baseline identity;
-- migration/upgrade guidance to a supported line.
+- deprecation/EOL effective timing/communication where external consumers matter;
+- upgrade/migration path to supported line referenced;
+- branch/tag/package existence MUST NOT be interpreted as supported status.
 
-### 3.5 Hotfix / Backport Governance
+L2 may use extensible project-mapped vocabulary rather than one closed global enum.
 
-Define a bounded path for urgent fixes that reduces ceremony without weakening truth.
+## 10. Hotfix / backport governance
 
-Required rules:
+Urgency can reduce ceremony, not truth.
 
-- hotfix scope is minimized and explicit;
-- backport/cherry-pick provenance is recorded;
-- exact-SHA testing/validation remains truthful;
-- release qualification may use a risk-adjusted Fast Path only if project authority permits it;
-- emergency deployment does not retroactively become normal PASS without required follow-up evidence;
-- follow-up tasks may be mandatory for skipped/non-blocking evidence.
+Required semantics:
 
-## 4. Non-goals
+- exact urgent scope/baseline explicit;
+- backport/cherry-pick provenance recorded;
+- the resulting maintenance-branch exact SHA receives its own applicable testing/Validation evidence;
+- PASS from source/original branch MUST NOT transfer automatically after backport;
+- risk-adjusted Fast Path may omit non-required gates only under applicable project authority;
+- emergency mitigation/deployment may proceed under explicit emergency authority, but skipped/not-run evidence remains truthful and creates required follow-up where policy requires;
+- hotfix Release/Deployment results remain separate dimensions.
+
+## 11. Product-level forbidden inferences
+
+v4.5 conformance MUST reject at least:
+
+```text
+Deployment SUCCESS -> Runtime Healthy
+health endpoint PASS -> business journey PASS
+monitoring backend available -> product healthy
+no alert -> no incident
+incident recovered -> permanent defect fixed
+incident record -> rewrite earlier Release/Deployment evidence
+telemetry usefulness -> permission to persist secrets/PII
+branch/tag exists -> version supported
+backport/cherry-pick -> old exact-SHA Validation transfers
+hotfix urgency -> release/validation truth waived
+mitigation -> follow-up complete
+```
+
+## 12. Machine-readable expectations
+
+L2 should minimize contract count and first evaluate reuse/extensions of existing/future v4.4 records.
+
+Conceptual durable records:
+
+1. **Runtime Observation Context** — preferably refs/reuse of Deployment/artifact/environment identity rather than duplicate deployment schema.
+2. **Incident Record / Event History** — incident identity, affected runtime, impact/timeline/evidence, mitigation/recovery/verification/follow-up refs.
+3. **Maintenance Policy / Support Matrix** — version-line/baseline state, allowed changes, dates/policy refs.
+4. **Backport/Hotfix Provenance** — preferably an extension/reference to existing change/release records if deterministic.
+
+A separate Recovery Verification schema is not automatically required; L2 should prefer incident events/refs if sufficient.
+
+ADS does not store raw telemetry. Durable references to approved external telemetry/incident systems may satisfy evidence linkage.
+
+## 13. Non-goals
 
 v4.5 does not:
 
-- prescribe Prometheus, OpenTelemetry, Grafana, Sentry, PagerDuty or a specific observability stack;
-- establish universal SLO values;
-- replace organization-specific incident management/compliance policy;
-- authorize production data access by default;
-- make every minor runtime warning an incident;
-- exempt hotfixes from immutable identity, testing or release truth.
+- prescribe OpenTelemetry, Prometheus, Grafana, Sentry, PagerDuty or another stack;
+- establish universal SLO/SLI/severity values;
+- require production deployment for projects where operations is not applicable;
+- replace organization-specific incident/compliance policy;
+- authorize production data/system access by default;
+- make every warning/error an incident;
+- redefine Deployment result/rollback (v4.4), migration recovery (v4.2), Validation or Release states;
+- exempt hotfixes from exact identity/testing/release truth.
 
-## 5. Cross-standard model
+## 14. Compatibility posture
 
-```text
-Release-qualified Artifact
-        ↓
-Deployment
-        ↓
-Runtime
-        ↓
-Observability
-        ↓
-Healthy ──────────────┐
-        │             │
-        └→ Incident → Recovery
-                     ↓
-                Engineering Feedback
-                     ↓
-         Product / Architecture / Test / Standard
-```
+Target: additive/non-weakening v4 minor release.
 
-The lifecycle is a feedback system, not a one-way pipeline.
+Operational capabilities can be `NOT_APPLICABLE` with rationale for projects without persistent deployed runtime. Historical releases MUST NOT receive retroactive runtime/incident/maintenance evidence that did not exist.
 
-## 6. Machine-readable expectations
+If convergence requires incompatible incident/execution/release wire changes, route them to v4.7/future-major planning rather than hiding them in v4.5.
 
-L2 should evaluate lightweight records for:
-
-- Runtime Identity / Deployment-to-runtime binding;
-- Incident Record;
-- Recovery/Verification Result;
-- Maintenance Policy / Version Support Matrix;
-- Backport/Hotfix provenance.
-
-Do not require centralized telemetry storage to conform to ADS; durable references may point to approved external systems when policy permits.
-
-## 7. Compatibility posture
-
-Target: additive/non-weakening minor release. Projects without production deployment remain able to mark operational capabilities NOT_APPLICABLE with rationale. Historical releases are not retroactively assigned operational evidence that did not exist.
-
-## 8. Product acceptance
+## 15. Product acceptance
 
 v4.5.0 is complete when:
 
-1. Observability, Incident/Recovery and Maintenance/EOL have clear normative ownership;
-2. deployment success is not equivalent to runtime health;
-3. runtime evidence is version/artifact/environment attributable where material;
-4. incident handling has a deterministic engineering-feedback path;
-5. security/privacy constraints apply to telemetry and incident evidence;
-6. maintenance/hotfix/backport policy cannot silently weaken exact-SHA/release truth;
-7. one real or simulated production-incident dogfood demonstrates detection → recovery → regression/follow-up closure.
+1. three owners in §2 have clear non-overlapping authority;
+2. deployment result cannot be interpreted as runtime health;
+3. runtime evidence is version/artifact/environment/time attributable where material;
+4. privacy/secret constraints cover telemetry and incident evidence;
+5. incident handling preserves mitigation/recovery/verification/follow-up distinctions;
+6. escaped incidents have deterministic engineering-feedback paths;
+7. maintenance/support state is explicit and branch existence is not support authority;
+8. hotfix/backport cannot transfer old exact-SHA evidence or silently weaken release truth;
+9. at least one real or simulated incident dogfood demonstrates detection → mitigation/recovery → verification → regression/follow-up closure.
 
-## 9. Next gate
+## 16. Freeze basis / next gate
 
-Before Freeze:
+Freeze candidate basis:
 
-1. run L1 Product Evidence against mature SRE/observability/incident/version-maintenance practices;
-2. verify overlap with Release, Deployment, Testing and Test Data standards;
-3. revise and Freeze this PRD;
-4. run L2 Architecture Evidence;
-5. generate Task DAG with observability/incident/maintenance/conformance lanes where safe.
+- `docs/implementation/4.5.0/L1_PRODUCT_EVIDENCE.md`
+- existing Testing/Test Data/Validation/Release ownership
+- v4.4 delivery/deployment Product evidence on the parallel lane
+
+Before explicit Product Freeze:
+
+1. v4.4 must explicitly Freeze a stable Deployment Product boundary;
+2. re-read v4.4 exact Product authority for drift in Deployment result/rollback semantics;
+3. then record v4.5 Product Freeze and proceed to L2.
+
+`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research. Real incident/telemetry exercises belong later exact-environment dogfood/Validation Tasks.
