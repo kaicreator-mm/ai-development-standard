@@ -1,6 +1,6 @@
 # ai-development-standard v4.6.0 PRD — AI-native / Agentic Development Governance
 
-Status: **REVISED DRAFT — L1-complete, Product Freeze waits for stable v4.1–v4.5 semantic-owner boundaries**
+Status: **FROZEN PRODUCT — 2026-09-30; authorized by Fresh Independent owner-currentness Review #280**
 
 ## 1. Product intent
 
@@ -12,7 +12,7 @@ v4.6 adds only the cross-lifecycle governance that is currently missing. Existin
 
 ## 2. New normative owners
 
-L1 freezes the candidate Product shape to three new owner domains:
+Product Freeze establishes exactly three new owner domains:
 
 1. **Intent & Assumption Governance**
 2. **Context Engineering Standard**
@@ -245,7 +245,7 @@ Fast Path label -> required gates waived
 
 ## 12. Machine-readable expectations
 
-L2 should **prefer extension/reuse before new schema creation**.
+L2 MUST **prefer extension/reuse before new schema creation**.
 
 Evaluate:
 
@@ -295,18 +295,26 @@ v4.6.0 is complete when:
 10. Fast Path remains low ceremony without allowing gate bypass;
 11. at least one dogfood scenario demonstrates session/model/operator handoff without loss of authority truth.
 
-## 16. Freeze basis / next gate
+## 16. Product Freeze basis and next gate
 
-Evidence:
+Product Freeze is authorized by Fresh Independent owner-overlap/currentness Review **#280**, which verified the current v4.1–v4.5 Product/L2 owner map, canonical v4.3–v4.5 planning merges, non-duplication of assurance/autonomy/handoff/lifecycle states, and eligibility to Freeze without waiting for full upstream implementation completion.
 
-- `docs/implementation/4.6.0/AI_NATIVE_AUTHORITY_INVENTORY.md`
-- `docs/implementation/4.6.0/L1_PRODUCT_EVIDENCE.md`
+Frozen Product evidence:
 
-Before explicit Product Freeze:
+- `docs/implementation/4.6.0/AI_NATIVE_AUTHORITY_INVENTORY.md` — historical/non-normative inventory; its earlier fourth candidate is superseded by L1/Product Freeze;
+- `docs/implementation/4.6.0/L1_PRODUCT_EVIDENCE.md`;
+- `docs/implementation/4.6.0/UPSTREAM_OWNER_CURRENTNESS.md`;
+- #280 exact-subject PASS on planning HEAD `9b168097cadeb36784f937f645d087a4e7da5d17` against `main@bc3feeccf130fcfc7b49efaf44983e4dcdac6e5d`.
 
-1. v4.1–v4.5 Product/L2 semantic owner boundaries must be stable enough for this vertical layer to reference them without stealing ownership;
-2. re-run owner-overlap/currentness review against those exact revisions;
-3. revise only if upstream semantics materially changed;
-4. then Freeze and run L2 Architecture Evidence.
+Frozen decisions:
 
-`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research. Session-loss/handoff dogfood or real multi-Agent capability experiments must use an explicit exact-scope handoff Issue later.
+1. exactly three new normative owner domains are introduced (§2);
+2. autonomy/Assurance/Review/Dispatch/Handoff/Validation/Release/Fast Path and v4.1–v4.5 semantic owners remain existing authorities;
+3. no required truth may exist only in ephemeral Agent/session/chat context;
+4. Skill/procedure authority remains subordinate to Product/Architecture/Task/side-effect authority;
+5. no provider/model mandate or private chain-of-thought evidence requirement is introduced;
+6. v4.6 remains additive/non-weakening and may not create a parallel lifecycle state machine.
+
+Next gate: **L2 Architecture Evidence**. L2 must select the minimum new machine-contract set and reuse/extension points without reopening these Product decisions.
+
+`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2. Session-loss/handoff dogfood or real multi-Agent capability experiments require an explicit exact-scope handoff only at their later executable gate.
