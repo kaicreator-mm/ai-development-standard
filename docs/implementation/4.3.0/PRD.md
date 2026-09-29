@@ -1,6 +1,13 @@
 # ai-development-standard v4.3.0 PRD — Engineering Design & Implementation Profiles
 
-Status: **FREEZE CANDIDATE — revised from L1 Product Evidence**
+Status: **FROZEN PRODUCT AUTHORITY**
+
+Product Freeze basis:
+
+- L1 evidence: `docs/implementation/4.3.0/L1_PRODUCT_EVIDENCE.md`
+- revised Freeze Candidate: `64cf817d7898edfd730343c06cf788d760661196`
+- v4.2 Product ownership boundary: `fc68e869c18cec07e2a72b8fa5e4520ade1dc5a9`
+- Freeze date: 2026-09-30
 
 ## 1. Product intent
 
@@ -274,18 +281,13 @@ v4.3.0 is complete when:
 8. effective policy resolution with PROJECT_OVERRIDES is deterministic and non-weakening;
 9. dogfood demonstrates a high-capability planner producing safe parallel lanes that lower-cost executors can consume without redesign.
 
-## 15. Freeze basis / next gate
+## 15. Next gate
 
-Freeze basis:
-
-- `docs/implementation/4.3.0/L1_PRODUCT_EVIDENCE.md`
-- v4.2 Product Freeze confirms compatibility/migration ownership remains outside v4.3.
-
-After explicit Product Freeze:
+Product Authority is Frozen. Next:
 
 1. run L2 Architecture Evidence;
 2. decide machine-contract/profile information architecture;
 3. materialize Task DAG only after L2;
 4. create separate standards/profile/conformance lanes with JIT branches after dependency completion.
 
-`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/L2 research by default.
+`LOCAL_ENV=NOT_REQUIRED` for L2 research by default.
