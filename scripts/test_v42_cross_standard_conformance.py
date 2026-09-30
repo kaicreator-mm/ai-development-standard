@@ -9,8 +9,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "docs/implementation/4.2.0/dogfood/T07_cross_standard_cases.json"
-# Execute existing owner assertions, not a T07-only oracle that can stay green
-# after a material T01–T06 weakening.
+# Run actual T01–T06 owners, not only a T07-local fixture oracle.
 OWNER_SUITES = (
     "test_v42_evolution_contracts.py",            # T01
     "test_v42_interface_compatibility.py",       # T02
@@ -19,6 +18,7 @@ OWNER_SUITES = (
     "test_v42_migration_conformance.py",         # T05: real isolated SQLite
     "test_v42_adoption_wiring.py",               # T06
 )
+HISTORICAL_PROTOCOL_SUITE = "test_protocol_schemas.py"
 
 
 def allowed(case: dict) -> bool:
@@ -38,6 +38,7 @@ def allowed(case: dict) -> bool:
                 "claim_migration_is_deployment_success",
                 "claim_validation_is_release_ready",
                 "claim_risk_exception_is_remediation",
+                "claim_risk_exception_is_validation_pass",
                 "claim_new_sha_inherits_old_evidence",
                 "claim_fresh_install_proves_upgrade",
             )
@@ -49,19 +50,29 @@ def allowed(case: dict) -> bool:
     raise ValueError(f"unknown illustrative category: {category}")
 
 
+def required_external_evidence_state(*, required: bool, available: bool, executed: bool) -> str:
+    # This is only the non-inference boundary. An executed product result
+    # still belongs to the independent owning Validation runner.
+    if not required:
+        return "NOT_APPLICABLE"
+    if not available:
+        return "BLOCKED"
+    if not executed:
+        return "NOT_RUN"
+    return "EXECUTION_RESULT_OWNED_ELSEWHERE"
+
+
 class CrossStandardConformanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.fixture = json.loads(CASES.read_text(encoding="utf-8"))
 
     def test_real_owner_regressions_execute(self) -> None:
-        # The real-owner regression path is the central protection; fixture
-        # cases below are illustrative cross-boundary negatives only.
         self.assertEqual(self.fixture["owner_suites"], list(OWNER_SUITES))
-        for name in OWNER_SUITES:
+        for name in (*OWNER_SUITES, HISTORICAL_PROTOCOL_SUITE):
             with self.subTest(owner_suite=name):
                 path = ROOT / "scripts" / name
-                self.assertTrue(path.is_file(), f"missing canonical owner suite: {path}")
+                self.assertTrue(path.is_file(), f"missing owner/protocol suite: {path}")
                 env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
                 completed = subprocess.run(
                     [sys.executable, str(path)], cwd=ROOT, env=env,
@@ -95,10 +106,34 @@ class CrossStandardConformanceTests(unittest.TestCase):
         self.assertTrue({"baseline", "candidate", "contract"}.issubset(compat["required"]))
         self.assertTrue({"source_state_ref", "target_state_ref", "recovery"}.issubset(migration["required"]))
         self.assertFalse({"state", "result", "deployment_result"} & set(migration["properties"]))
-        # Historical v4 Validation remains valid without v4.2 projections.
         for ref in ("compatibility_record_refs", "migration_transition_refs"):
             self.assertIn(ref, validation["properties"])
             self.assertNotIn(ref, validation["required"])
+
+    def test_representative_historical_v4_validation_payload_remains_accepted(self) -> None:
+        # A real schema-validator acceptance test, not merely optional-field inspection.
+        from test_protocol_schemas import load_schema, validate_subset
+
+        historical = {
+            "repository": "example/repo",
+            "tested_sha": "a" * 40,
+            "execution_host_role": "local-validator",
+            "platform": "linux-x64",
+            "runtime_toolchain": "python 3.12",
+            "validation_profile": "concern",
+            "command": "python scripts/test_protocol_schemas.py",
+            "state": "BLOCKED",
+        }
+        self.assertEqual(validate_subset(historical, load_schema("validation-report.schema.json")), [])
+        self.assertNotIn("compatibility_record_refs", historical)
+        self.assertNotIn("migration_transition_refs", historical)
+
+    def test_required_external_unavailability_and_risk_cannot_be_upgraded(self) -> None:
+        self.assertEqual(required_external_evidence_state(required=True, available=False, executed=False), "BLOCKED")
+        self.assertEqual(required_external_evidence_state(required=True, available=True, executed=False), "NOT_RUN")
+        self.assertEqual(required_external_evidence_state(required=False, available=False, executed=False), "NOT_APPLICABLE")
+        self.assertEqual(required_external_evidence_state(required=True, available=True, executed=True), "EXECUTION_RESULT_OWNED_ELSEWHERE")
+        self.assertFalse(allowed({"category": "evidence_non_inference", "facts": {"claim_risk_exception_is_validation_pass": True}}))
 
     def test_dogfood_is_declared_not_extrapolated(self) -> None:
         self.assertEqual(self.fixture["runtime_dogfood_owner"], "test_v42_migration_conformance.py")
