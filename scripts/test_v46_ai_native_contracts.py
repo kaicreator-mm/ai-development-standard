@@ -26,6 +26,18 @@ class AINativeContractTests(unittest.TestCase):
         self.assertFalse((SCHEMAS / "context-snapshot-v1.schema.json").exists())
         self.assertFalse((SCHEMAS / "agent-lifecycle-result-v1.schema.json").exists())
 
+    def test_intent_record_carries_frozen_minimum_semantics(self) -> None:
+        props = self.intent["properties"]
+        required = set(self.intent["required"])
+        for field in ("materiality", "currentness_ref", "disposition"):
+            self.assertIn(field, required)
+        for field in ("contradiction_refs", "supersedes_refs"):
+            self.assertIn(field, props)
+        classifications = props["classification"]["enum"]
+        self.assertIn("DURABLE_REQUIREMENT_REF", classifications)
+        self.assertNotIn("DURABLE_REQUIREMENT", classifications)
+        self.assertIn("target_ref", props["disposition"]["properties"])
+
     def test_intent_classification_does_not_self_promote_to_authority(self) -> None:
         classifications = self.intent["properties"]["classification"]["enum"]
         for value in (
@@ -34,7 +46,7 @@ class AINativeContractTests(unittest.TestCase):
             "ASSUMPTION",
             "UNKNOWN",
             "DECISION_REQUIRED",
-            "DURABLE_REQUIREMENT",
+            "DURABLE_REQUIREMENT_REF",
         ):
             self.assertIn(value, classifications)
         durable_rule = self.intent["allOf"][0]["then"]["required"]
@@ -43,9 +55,25 @@ class AINativeContractTests(unittest.TestCase):
         for forbidden in ("product_authority", "architecture_authority", "task_authority", "mutation_allowed"):
             self.assertNotIn(forbidden, self.intent["properties"])
 
+    def test_skill_metadata_carries_frozen_governance_dimensions(self) -> None:
+        props = self.skill["properties"]
+        required = set(self.skill["required"])
+        self.assertIn("scope", required)
+        for field in (
+            "side_effect_classes",
+            "durable_result_surface_refs",
+            "evaluation_refs",
+            "compatibility_refs",
+            "deprecation_ref",
+            "security_refs",
+            "provenance_refs",
+        ):
+            self.assertIn(field, props)
+
     def test_skill_metadata_records_capability_but_not_authorization(self) -> None:
         props = self.skill["properties"]
         self.assertIn("tool_capability_refs", props)
+        self.assertIn("side_effect_classes", props)
         self.assertIn("required_authority_refs", props)
         for forbidden in ("trusted", "authorized", "mutation_allowed", "side_effect_allowed", "dispatch_state"):
             self.assertNotIn(forbidden, props)
