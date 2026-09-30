@@ -52,15 +52,15 @@ def git(repo: Path, *args: str, date: str | None = None) -> str:
 def provision(repo: Path) -> dict[str, str]:
     """Controlled disposable source/maintenance divergence, then true cherry-pick."""
     git(repo, "init", "-q", "--object-format=sha1", "--initial-branch=main")
-    (repo / "service.txt").write_text("line=v2\nsecurity_bug=vulnerable\n", encoding="utf-8")
+    (repo / "service.txt").write_bytes(b"line=v2\nsecurity_bug=vulnerable\n")
     git(repo, "add", "service.txt")
     git(repo, "commit", "-qm", "fixture: v2 maintained baseline", date="2001-01-01T00:00:00+0000")
     baseline_sha = git(repo, "rev-parse", "HEAD")
 
-    (repo / "next-release.txt").write_text("new-main-only-context=true\n", encoding="utf-8")
+    (repo / "next-release.txt").write_bytes(b"new-main-only-context=true\n")
     git(repo, "add", "next-release.txt")
     git(repo, "commit", "-qm", "fixture: main-only context", date="2001-01-02T00:00:00+0000")
-    (repo / "service.txt").write_text("line=v2\nsecurity_bug=patched\n", encoding="utf-8")
+    (repo / "service.txt").write_bytes(b"line=v2\nsecurity_bug=patched\n")
     git(repo, "add", "service.txt")
     git(repo, "commit", "-qm", "fixture: source security correction", date="2001-01-03T00:00:00+0000")
     source_sha = git(repo, "rev-parse", "HEAD")
