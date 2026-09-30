@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/skill-metadata-v1.schema.json",
+  "title": "AI Development Skill Metadata v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "skill_id",
+    "skill_version",
+    "purpose",
+    "applicability",
+    "source_ref",
+    "procedure_ref",
+    "failure_escalation_ref",
+    "maintenance_owner_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "skill_version": {"type": "string", "minLength": 1},
+    "purpose": {"type": "string", "minLength": 1},
+    "applicability": {"type": "string", "minLength": 1},
+    "source_ref": {"type": "string", "minLength": 1},
+    "procedure_ref": {"type": "string", "minLength": 1},
+    "required_input_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "tool_capability_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "required_authority_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "output_contract_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "validation_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "compatibility_ref": {"type": "string", "minLength": 1},
+    "failure_escalation_ref": {"type": "string", "minLength": 1},
+    "maintenance_owner_ref": {"type": "string", "minLength": 1}
+  }
+}
