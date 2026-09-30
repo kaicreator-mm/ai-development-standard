@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""T05 fixture-level runtime-observation conformance; NOT live telemetry validation.
+"""T05 fixture conformance, NOT real telemetry Validation.
 
 Run: python3 scripts/test_v45_runtime_observation_conformance.py
-Uses only Python stdlib. Reads the committed v4.5 schema, normative standard and
-fixture cases; never connects to a telemetry backend or asserts a live-runtime PASS.
+Only Python stdlib; reads committed frozen-owner sources and bounded fixtures.
 """
 import copy
 import json
@@ -24,19 +23,41 @@ def time_value(s):
     try:
         dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
         return dt if dt.tzinfo is not None else None
-    except (ValueError, AttributeError):
+    except (ValueError, AttributeError, TypeError):
         return None
 
 
-def evaluate(case, schema):
-    """Conservative fixture oracle, separate from the normative machine schema.
+def expand_cases(raw):
+    """Resolve immutable baseline+bounded test deltas; do not mutate source fixture."""
+    resolved = {}
+    for spec in raw:
+        if 'copy' in spec:
+            if spec['copy'] not in resolved:
+                raise ValueError('fixture parent must precede child')
+            case = copy.deepcopy(resolved[spec['copy']])
+            case['id'], case['expect'] = spec['id'], spec['expect']
+            for path, value in spec.get('overrides', {}).items():
+                node, *parts = path.split('.')
+                node = case if not parts else case[node]
+                for key in parts[:-1]:
+                    node = node[int(key)] if isinstance(node, list) else node[key]
+                key = parts[-1] if parts else path
+                if parts:
+                    node[int(key) if isinstance(node, list) else key] = value
+                else:
+                    node[key] = value
+        else:
+            case = copy.deepcopy(spec)
+        resolved[case['id']] = case
+    return list(resolved.values())
 
-    `status` is a fixture-only conclusion, NEVER a persisted runtime-health result.
-    """
-    obs = case.get('observation', {})
-    expected = case.get('expected_subject', {})
-    required = set(schema['required'])
-    if not isinstance(obs, dict) or required - obs.keys():
+
+def evaluate(case, schema):
+    """Fixture-only decision: never a universal runtime health/result object."""
+    obs, expected = case.get('observation', {}), case.get('expected_subject', {})
+    if not isinstance(obs, dict) or set(schema['required']) - obs.keys():
+        return 'BLOCKED'
+    if set(obs) - set(schema['properties']):
         return 'BLOCKED'
     if obs.get('schema_version') != 1 or not all(
         isinstance(obs.get(k), str) and obs[k].strip()
@@ -53,40 +74,37 @@ def evaluate(case, schema):
     if not isinstance(window, dict) or set(window) != {'start_ref', 'end_ref'}:
         return 'BLOCKED'
     start, end = time_value(window['start_ref']), time_value(window['end_ref'])
-    expected_window = expected.get('observation_window', {})
-    if not start or not end or start > end or window != expected_window:
+    if not start or not end or start > end or window != expected.get('observation_window'):
         return 'BLOCKED'
-    signals = case.get('signals', [])
-    if not isinstance(signals, list) or not signals:
+    signals, refs = case.get('signals', []), obs.get('signal_refs', [])
+    if not isinstance(signals, list) or not signals or not isinstance(refs, list) or not refs:
         return 'BLOCKED'
-    refs = obs.get('signal_refs', [])
-    if not isinstance(refs, list) or not refs or len(refs) != len(set(refs)):
+    if any(not isinstance(s, dict) for s in signals):
         return 'BLOCKED'
-    if {s.get('ref') for s in signals if isinstance(s, dict)} != set(refs) or len(signals) != len(refs):
+    if len(refs) != len(set(refs)) or len(signals) != len(refs) or {s.get('ref') for s in signals} != set(refs):
         return 'BLOCKED'
-    if any(not isinstance(s, dict) or s.get('source_ref') != expected['signal_source_ref']
-           or s.get('dimension') not in DIMENSIONS | set(case.get('project_dimensions', []))
-           or not time_value(s.get('observed_at')) or not start <= time_value(s['observed_at']) <= end
-           for s in signals):
+    custom = case.get('project_dimensions', [])
+    if not isinstance(custom, list) or any(not isinstance(x, str) or not x.strip() for x in custom):
         return 'BLOCKED'
-    if any(not isinstance(label, str) or not label.strip() for label in case.get('project_dimensions', [])):
+    if any(s.get('source_ref') != expected['signal_source_ref']
+           or s.get('dimension') not in DIMENSIONS | set(custom)
+           or not time_value(s.get('observed_at'))
+           or not start <= time_value(s['observed_at']) <= end for s in signals):
         return 'BLOCKED'
-    # Only approved opaque refs/labels belong in durable ordinary evidence.
-    for key in ('signal_refs', 'evidence_refs'):
-        if any(not isinstance(ref, str) or not ref.startswith('ref:') or SENSITIVE.search(ref)
-               for ref in obs.get(key, [])):
+    for field in ('signal_refs', 'evidence_refs'):
+        if not isinstance(obs.get(field, []), list) or any(
+            not isinstance(ref, str) or not ref.startswith('ref:') or SENSITIVE.search(ref)
+            for ref in obs.get(field, [])):
             return 'BLOCKED'
     if any(SENSITIVE.search(json.dumps(s)) for s in signals):
         return 'BLOCKED'
     if case.get('historical') and not case.get('historical_qualification_ref'):
         return 'BLOCKED'
-    # Backend accessibility, no alerts, or deployment success cannot substitute
-    # for actual required signal evidence. No universal healthy state is produced.
-    required_dimensions = set(case.get('required_dimensions', []))
-    if not required_dimensions or not required_dimensions <= DIMENSIONS | set(case.get('project_dimensions', [])):
+    required = set(case.get('required_dimensions', []))
+    if not required or not required <= DIMENSIONS | set(custom):
         return 'BLOCKED'
     available = {s['dimension'] for s in signals if s.get('state') == 'OBSERVED'}
-    if not required_dimensions <= available:
+    if not required <= available:
         return 'NOT_RUN'
     if case.get('attempted_inference') in {
         'DEPLOYMENT_SUCCESS_IS_HEALTHY', 'HEALTH_IS_BUSINESS_PASS',
@@ -104,6 +122,7 @@ class RuntimeObservationConformance(unittest.TestCase):
         cls.schema = json.loads(SCHEMA.read_text(encoding='utf-8'))
         cls.standard = STANDARD.read_text(encoding='utf-8')
         cls.fixture = json.loads(FIXTURES.read_text(encoding='utf-8'))
+        cls.cases = expand_cases(cls.fixture['cases'])
 
     def test_source_binding(self):
         self.assertEqual(self.schema['$schema'], 'https://json-schema.org/draft/2020-12/schema')
@@ -117,23 +136,22 @@ class RuntimeObservationConformance(unittest.TestCase):
             self.assertIn(phrase, self.standard)
 
     def test_positive_and_negative_fixtures(self):
-        cases = self.fixture['cases']
-        self.assertGreaterEqual(len(cases), 12)
-        self.assertEqual(len({c['id'] for c in cases}), len(cases))
+        self.assertEqual(self.fixture['evidence_level'], 'COMMITTED_FIXTURE_ONLY_NOT_REAL_RUNTIME')
+        self.assertGreaterEqual(len(self.cases), 20)
+        self.assertEqual(len({c['id'] for c in self.cases}), len(self.cases))
         seen = set()
-        for case in cases:
+        for case in self.cases:
             with self.subTest(case=case['id']):
                 self.assertEqual(evaluate(case, self.schema), case['expect'])
                 seen.add(case['expect'])
         self.assertEqual(seen, {'FIXTURE_CONFORMANT', 'BLOCKED', 'NOT_RUN', 'REJECT_INFERENCE'})
 
     def test_schema_and_privacy_boundary(self):
-        # Guard explicit contract shape without introducing a second authoritative schema.
         self.assertFalse(self.schema.get('additionalProperties', True))
         self.assertNotIn('raw_payload', self.schema['properties'])
         self.assertNotIn('secret', self.schema['properties'])
         self.assertIn('secret', self.standard.lower())
-        valid = next(c for c in self.fixture['cases'] if c['id'] == 'dimensioned-positive')
+        valid = next(c for c in self.cases if c['id'] == 'dimensioned-positive')
         for name, secret in [('bearer', 'Bearer abc123'), ('email', 'person@example.com'),
                              ('token', 'token=plaintext')]:
             with self.subTest(secret=name):
