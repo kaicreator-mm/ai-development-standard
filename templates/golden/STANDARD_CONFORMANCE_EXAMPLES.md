@@ -60,6 +60,14 @@ This companion registry gives every active normative standard a concise positive
 
 **Why:** Executor authority is bounded by frozen upstream authority.
 
+## data-migration-governance-standard
+
+**Golden:** A material persistent-state change binds exact source state A, target state B, transition identity, runtime/environment applicability and the evidence for upgrade/recovery. Fresh-B installation remains a distinct subject.
+
+**Forbidden:** Treating `fresh install PASS` as upgrade PASS, treating `migration file exists` as migration execution, or reusing source/original evidence for a new result SHA/runtime without applicable evidence.
+
+**Why:** Migration truth is directional and evidence-bearing. Presence, freshness, recovery and runtime applicability are separate dimensions; v4.2 does not own Deployment rollout/result semantics.
+
 ## development-workflow
 
 **Golden:** Frozen PRD → L2 evidence/freeze → Task DAG → materialized Task Issues/dependencies → implementation/validation/review → version closure.
@@ -123,6 +131,14 @@ This companion registry gives every active normative standard a concise positive
 **Forbidden:** Adding/changing a normative standard while leaving no maintained positive/negative conformance guidance.
 
 **Why:** Agents otherwise infer incompatible local dialects.
+
+## interface-compatibility-governance-standard
+
+**Golden:** A material contract change binds exact contract/baseline/candidate identities, records the actual change operation and separately evaluates every material compatibility dimension for the supported consumer/window population.
+
+**Forbidden:** Promoting `wire-safe` or schema/checker PASS into source/behavior/consumer compatibility, using new/new success to hide old/new breakage, or normalizing UNKNOWN/unexecuted dimensions to compatible.
+
+**Why:** Compatibility is multi-dimensional and evidence-scoped. Generated artifacts and checkers are evidence, not the canonical contract or universal compatibility authority.
 
 ## issue-first-task-trigger
 

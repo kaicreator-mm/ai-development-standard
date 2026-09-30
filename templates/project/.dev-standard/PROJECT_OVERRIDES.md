@@ -83,6 +83,24 @@ Migration guidance:
 - `ai-dev:event:v2` remains valid; v4 adoption does not require event-v3.
 - See pinned `standards/PROJECT_ADOPTION.md` and `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md` for the compatibility matrix and examples.
 
+## Evolution Governance Profile (v4.2, materiality-driven)
+
+This profile selects project defaults/applicability for v4.2 evolution concerns. It is not a second compatibility/migration owner and it does not grant mutation, Validation, Release or Deployment authority.
+
+- `evolution.compatibility`: `<materiality-driven | always-evaluate | project-specific stronger rule>`
+- `evolution.compatibility_window`: `<project policy/ref | determined per material change>`
+- `evolution.migration`: `<materiality-driven | always-evaluate | project-specific stronger rule>`
+- `evolution.runtime_evidence`: `<required when material | stricter project rule>`
+
+Rules:
+
+- Projects MAY strengthen when compatibility/migration analysis is required, but project defaults **MUST NOT weaken** Frozen Product/Architecture/Task authority or the pinned Interface/Compatibility and Data/Migration owners.
+- Fast Path/non-material changes need not create empty Compatibility or Migration records; a material contract or persistent-state transition MUST NOT be hidden as non-applicable to avoid evidence.
+- Compatibility window/runtime requirements come from project/domain facts and the owning standards, not from whichever tool/runtime an Agent happens to have installed.
+- Historical evidence keeps its original exact subject; adoption MUST NOT retroactively relabel old evidence as proof for a new candidate, consumer window, state transition or runtime.
+- Testing, Validation and Release remain their existing authorities. v4.4 Deployment remains the rollout/result owner when Deployment is applicable; compatibility/migration evidence does not imply Deployment success.
+- Machine-contract availability, manifest/Golden discovery and technical necessity do not grant Task Pack mutation authority.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.
