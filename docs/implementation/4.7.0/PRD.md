@@ -1,6 +1,6 @@
 # ai-development-standard v4.7.0 PRD — AI-native Development Convergence
 
-Status: **PRODUCT FREEZE CANDIDATE — final independent L1/currentness review required; NOT Frozen Product Authority**
+Status: **FROZEN PRODUCT AUTHORITY — 2026-09-30**
 
 ## 1. Product intent
 
@@ -12,20 +12,22 @@ The Product goal is:
 
 ## 2. Evidence basis
 
-Current Freeze-candidate evidence:
+Frozen Product evidence:
 
 - `docs/implementation/4.7.0/L1_PRODUCT_EVIDENCE.md`;
-- `docs/implementation/4.7.0/AUTHORITY_STATE_SCHEMA_INVENTORY.md` — refreshed through frozen v4.6 Product/L2;
+- `docs/implementation/4.7.0/AUTHORITY_STATE_SCHEMA_INVENTORY.md` — refreshed through canonical v4.6 integration and #318 PASS;
 - `docs/implementation/4.7.0/UPSTREAM_CONVERGENCE_CURRENTNESS.md` — exact v4.1–v4.6 authority/currentness map;
 - v4.1–v4.5 Frozen Product/L2 authorities recorded there;
 - v4.6 Frozen Product `e6aa04981110376e623d19b7dd4d0c6d0e139bdf` and Frozen L2 `f47ea81e8f8df32ac6c8b7cc922c405a17b704d9`;
-- v4.6 owner-currentness Review #280 PASS.
+- v4.6 canonical planning merge/current main at Freeze basis `6f2fb482812b17289b4f3d89ccf096ef6f618123`;
+- v4.6 owner-currentness Review #280 PASS and planning Review #301 PASS;
+- final Fresh Independent v4.7 Product/currentness Review #318 PASS with `PRODUCT_FREEZE_AUTHORIZATION=YES`, P0=0, P1=0.
 
-Current implementation findings do not show a known semantic-owner contradiction. In particular, v4.1 #281 is classified as a Task Pack mutation-authority defect requiring repair, not Product/L2 semantic-owner drift.
+Current implementation findings do not show a known semantic-owner contradiction. In particular, v4.1 #281 is a repaired Task Pack mutation-authority defect rather than Product/L2 semantic-owner drift, while the v4.5 #316 implementation P1 remains bounded to result/evidence association within the already-frozen three-family architecture.
 
-## 3. Product shape
+## 3. Frozen Product shape
 
-v4.7 freezes only if independent review confirms these four convergence products plus two acceptance mechanisms:
+v4.7 freezes these four convergence products plus two acceptance mechanisms:
 
 ### Convergence products
 
@@ -56,7 +58,7 @@ progressive-disclosure / read-routing tags
 related non-authoritative references
 ```
 
-Frozen candidate invariant:
+Frozen invariant:
 
 > One material semantic concern has one discoverable normative owner.
 
@@ -138,7 +140,7 @@ Repeated identity data remains valid when it intentionally snapshots currentness
 
 The minimum applicable read set should be deterministic enough that Agents do not need repository-wide guessing.
 
-Candidate resolution path:
+Frozen resolution direction:
 
 ```text
 repository AGENTS + project .dev-standard/VERSION
@@ -160,7 +162,7 @@ Required semantics:
 
 - current higher-authority durable facts beat stale/lower historical context;
 - optional/non-applicable capability does not force unnecessary context;
-- applicability uncertainty fails closed/routs to the owner;
+- applicability uncertainty fails closed/routes to the owner;
 - larger context volume is not automatically higher context quality;
 - no required truth may exist only in ephemeral chat/session state.
 
@@ -279,20 +281,22 @@ v4.7.0 Product is complete when:
 8. a fresh Agent can reconstruct representative work from durable facts only;
 9. incompatible convergence needs are separated into future-major planning.
 
-## 17. Freeze gate
+## 17. Product Freeze record
 
-This document is **not yet Frozen Product Authority**.
+Product Freeze is explicitly authorized and recorded after Fresh Independent final L1/currentness Review #318:
 
-The remaining Product Freeze gate is a Fresh Independent final L1/currentness review that must confirm:
+```text
+review_subject_head = c7aaef0839be9a5765b19c57b51d2cd28d36c2bd
+review_main = 6f2fb482812b17289b4f3d89ccf096ef6f618123
+review_verdict = PASS
+product_freeze_authorization = YES
+P0 = 0
+P1 = 0
+P2 = 1 (currentness-hygiene only; closed before this Freeze record)
+```
 
-- exact v4.1–v4.6 Product/L2 owner map is current;
-- #281 is correctly classified and does not reveal semantic-owner drift;
-- no known pending implementation finding creates a material Product/L2 contradiction;
-- owner uniqueness and state-dimension separation remain coherent;
-- physical refactor remains evidence-driven/optional;
-- compatibility aliases and future-major separation are sufficient;
-- this candidate remains additive/non-weakening inside v4.
+The Product Freeze does not authorize implementation, repository path moves, schema migration, alias removal, historical reinterpretation, global state collapse or provider/model mandates. Those actions require Frozen L2/Task authority and their own gates.
 
-Only after that PASS may v4.7 record explicit Product Freeze and proceed to L2.
+Full implementation completion of v4.1–v4.6 is not a prerequisite to this Product Freeze because their semantic owner authorities are stable. Any later implementation finding that demonstrates a real Product/L2 contradiction MUST trigger explicit currentness review; local implementation defects do not silently rewrite this Frozen Product.
 
-`LOCAL_ENV=NOT_REQUIRED` for Product Freeze/currentness review.
+`LOCAL_ENV=NOT_REQUIRED` for Product Freeze. Proceed next to L2 Architecture Evidence/Freeze.
