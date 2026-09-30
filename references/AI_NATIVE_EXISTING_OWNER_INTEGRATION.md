@@ -2,7 +2,7 @@
 
 Status: non-normative integration map for v4.6.
 
-v4.6 adds Intent/Assumption, Context Engineering and Skill governance. It does **not** create replacement owners for autonomy, Assurance/Review, Dispatch/Handoff, Validation or Release.
+v4.6 adds Intent/Assumption, Context Engineering and Skill governance. It does not create replacement owners for autonomy, Assurance/Review, Dispatch/Handoff, Validation or Release.
 
 ## 1. Autonomy / execution freedom
 
