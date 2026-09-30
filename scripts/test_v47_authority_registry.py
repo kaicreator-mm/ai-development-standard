@@ -69,9 +69,9 @@ def resolve_registry(manifest: dict, schema: dict, *, root: Path | None = None) 
     if set(normative) & set(compatibility):
         raise RegistryError("alias cannot be normative owner")
 
-    optional = manifest.get("semantic_authorities")
-    if optional is None:
+    if "semantic_authorities" not in manifest:
         return {}  # historical manifest remains valid for legacy readers
+    optional = manifest["semantic_authorities"]
     if not isinstance(optional, dict) or set(optional) != {"schema_version", "entries"}:
         raise RegistryError("invalid semantic registry envelope")
     if type(optional["schema_version"]) is not int or optional["schema_version"] != 1:
@@ -133,6 +133,11 @@ class AuthorityRegistryTests(unittest.TestCase):
         del historical["semantic_authorities"]
         self.assertEqual(resolve_registry(historical, self.schema), {})
         self.assertEqual(historical["sections"], self.manifest["sections"])
+
+    def test_explicit_null_registry_fails_closed(self) -> None:
+        mutant = deepcopy(self.manifest)
+        mutant["semantic_authorities"] = None
+        self.expect_rejected(mutant)
 
     def test_competing_owners_fail_regardless_of_file_or_entry_order(self) -> None:
         mutant = deepcopy(self.manifest)
