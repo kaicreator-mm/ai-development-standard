@@ -22,6 +22,7 @@ TESTS = {
     "scripts/test_v44_build_artifact.py",
     "scripts/test_v44_distribution.py",
     "scripts/test_v44_deployment.py",
+    "scripts/test_v44_distribution_deployment_conformance.py",
     "scripts/test_v44_adoption_wiring.py",
 }
 
