@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.1.0 — candidate / unreleased（发布日期未定）
+
+这是 `version/v4.1.0` 上已合并 T01–T08 的**候选内容记录**，不表示 v4.1.0 已冻结、通过 Hidden Validation、取得 Release Qualification、发布 tag 或集成至 `main`。已发布 `main` 的 v4.0.0 历史条目与日期保留在下方。实际消费时必须以 `version=4.1.0` 加对应候选提交的不可变 `revision` 配对验证，不能将旧候选验证结果转移到后续元数据提交。
+
+- **T01 共享机器契约**：新增非权威 Execution Context、Dependency/Toolchain Profile、Dependency Risk Exception 三类 v1 schema，并以可选引用接入既有契约，保留历史 v4 payload 兼容性。
+- **T02 依赖与工具链**：新增 `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md`，定义项目声明的依赖/工具链要求、兼容性与认证区别及风险例外边界。
+- **T03 Git 执行**：新增 `standards/GIT_EXECUTION_STANDARD.md`，明确独立可写工作区、exact-SHA、危险操作与恢复约束，不使本地 Git 状态成为工作流权威。
+- **T04 配置与秘密**：新增 `standards/CONFIGURATION_SECRETS_STANDARD.md`，明确配置优先级、secret reference/value 分离、最小权限及不可用时的真实状态。
+- **T05 工作区与制品**：新增 `standards/WORKSPACE_ARTIFACT_STANDARD.md`，定义产物分类、所有权、清理和证据/发布制品提升约束；未引入 v4.4 预留的完整 Artifact Manifest。
+- **T06 外部系统执行**：新增 `standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md`，明确保真度、真实环境/状态、副作用授权及低保真结果不能提升为未执行的真实验证。
+- **T07 集中接入与采用**：更新 manifest、项目采用/override 模板、现有规范引用与相关工作流/检查清单，新增 `docs/implementation/4.1.0/MIGRATION_ADOPTION.md`；根据实际适用性采用，Fast Path 无须制造空对象。
+- **T08 集成 Conformance/Dogfood**：合并 owner suites 传播、历史兼容/负例、Golden 与 self-dogfood/closure 输入；`docs/implementation/4.1.0/CONFORMANCE_STATUS.md` 和 `SELF_DOGFOOD_EVIDENCE.md` 记录范围与局限，不能替代独立版本级真实验证或发布门禁。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
