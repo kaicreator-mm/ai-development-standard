@@ -19,8 +19,16 @@ class DistributionGovernanceTests(unittest.TestCase):
         self.assertIn("tag/channel/package-name points somewhere -> exact qualified bytes established", self.standard)
 
     def test_publication_binds_immutable_artifact_where_supported(self) -> None:
-        self.assertIn("bind the publication to the immutable artifact identity", self.standard)
+        self.assertIn(
+            "Where the publication system supports immutable binding, a distribution claim MUST bind the publication to the immutable artifact identity",
+            self.standard,
+        )
         self.assertIn("immutable_binding_evidence_ref", self.reference)
+
+    def test_provider_without_immutable_binding_fails_closed(self) -> None:
+        self.assertIn("does not expose an immutable-binding mechanism", self.standard)
+        self.assertIn("MUST record that limitation", self.standard)
+        self.assertIn("mutable locator alone remains insufficient proof of bytes identity", self.standard)
 
     def test_repointed_alias_does_not_inherit_prior_qualification(self) -> None:
         self.assertIn("prior qualification/publication evidence for the old immutable artifact MUST NOT transfer", self.standard)
