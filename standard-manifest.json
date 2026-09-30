@@ -161,5 +161,72 @@
       "scripts/verify_runner_capability_reference.py",
       "scripts/verify_standard.py"
     ]
+  },
+  "semantic_authorities": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "schema_version": 1,
+        "entry_id": "development-lifecycle",
+        "semantic_concern": "development.lifecycle_and_task_stage",
+        "canonical_owner_ref": "standards/DEVELOPMENT_WORKFLOW.md",
+        "applicability_posture": "ALWAYS",
+        "compatibility_alias_refs": [
+          "standards/VERSION_INTEGRATION_WORKFLOW.md"
+        ]
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "github-agent-coordination",
+        "semantic_concern": "github.issue_pr_event_coordination",
+        "canonical_owner_ref": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "applicability_posture": "MATERIALITY_DRIVEN",
+        "compatibility_alias_refs": [
+          "standards/GITHUB_WORKFLOW.md"
+        ]
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "execution-state",
+        "semantic_concern": "execution.controller_and_dispatch_state",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "work-item-contract",
+        "semantic_concern": "github.work_item_contract",
+        "canonical_owner_ref": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "validation-evidence",
+        "semantic_concern": "validation.concern_evidence_and_exact_subject",
+        "canonical_owner_ref": "standards/VALIDATION_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "release-qualification",
+        "semantic_concern": "release.qualification_and_candidate_gate",
+        "canonical_owner_ref": "standards/RELEASE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "runner-capability",
+        "semantic_concern": "ci.runner_capability_adoption",
+        "canonical_owner_ref": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+        "applicability_posture": "PROJECT_DEFINED"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "research-demo",
+        "semantic_concern": "architecture.research_demo",
+        "canonical_owner_ref": "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+        "applicability_posture": "OPTIONAL"
+      }
+    ]
   }
 }
