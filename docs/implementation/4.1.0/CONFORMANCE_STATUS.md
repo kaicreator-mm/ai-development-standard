@@ -1,35 +1,40 @@
 # v4.1 Conformance Status / Version Closure Inputs
 
-Status: **T08 IMPLEMENTATION CANDIDATE — exact-SHA Validation and Fresh Independent Review still required**
+Status: **T08 REPAIRED IMPLEMENTATION CANDIDATE — new exact-SHA Validation and Fresh Independent Review REQUIRED**
 
-This status is a durable input to Version Closure. It is not the Version Closure verdict and not Release Qualification.
+This file is a durable *input* to Version Closure. It is not a Closure or Release Qualification verdict. Predecessor #363 Validation PASS and #364 Review CHANGES_REQUESTED apply only to predecessor SHA; neither transfers to this successor.
 
-| Concern | T08 evidence input | Claim boundary |
+## Actual executable gate and evidence strength
+
+`python scripts/test_v41_execution_foundation_conformance.py` runs seven **real, existing** T01–T07 owner suites using the current checkout's `sys.executable` and absolute script paths, then runs T08's illustrative integrated matrix/direct schema-owner checks. These seven include the contract suite's historical v4 Dispatch/Validation Report/Execution Pack payload fixtures, Dependency/Toolchain's risk-exception checks, Git exact-SHA/local-authority/cleanup checks, Config/Secrets checks, Workspace/Artifact producer/promotion checks, External-System BLOCKED/fidelity/retry checks, and actual adoption wiring. `scripts/test_verify_standard.py`, already invoked by repository `verify-standard` CI, calls this integrated T08 runner and also tests that a material owner-standard mutation in an isolated copied repo makes the integrated gate FAIL. This is not merely a separately green T08 oracle.
+
+| Concern | Executable input | Claim boundary |
 |---|---|---|
-| backward compatibility | optional/additive v4.1 contract checks + minimal fixture | no historical payload reinterpretation |
-| Execution Context authority | negative fixture + schema authority-field absence | Context is non-authoritative |
-| dependency/toolchain | Node/npm + Python examples; local-runtime narrowing negative | compatibility != certification; Agent tooling != repository authority |
-| secrets/config | secret-ref-only positive + secret-value negative | no durable secret value claim |
-| Git/workspace | isolated workspace + shared-writable negative + recovery fixture | fixture semantics, not proof of an external worktree host |
-| artifacts | cache/build-output negatives + explicit promotion positive | no v4.4 full build/package manifest claim |
-| external systems | sandbox/production and credential/write negatives | no real production side effect claimed |
-| Fast Path | minimal positive | non-material only |
-| evidence separation | Task PASS -> Release READY negative | T08 cannot issue Release verdict |
+| historical compatibility | actual T01 owner contract suite: old Dispatch/Validation Report/Execution Pack, with and without optional v4.1 refs | additive; no historical reinterpretation |
+| Context/Toolchain/Config | actual T01/T02/T04 suites + direct schema checks and Node/npm/non-Node examples | context is non-authoritative; local tools cannot rewrite repository truth |
+| risk exception | actual T02 schema checks + accepted-risk-not-PASS/remediation negatives | disposition cannot grant PASS or prove remediation |
+| Git/workspace | actual T03/T05 tests + local/unpushed task-claim, rewritten exact SHA and unknown-ownership cleanup negatives | local branch is not live Issue; no old evidence reuse or destructive unowned cleanup |
+| artifacts | actual T05 tests + cache/build-output/promotion matrix requiring source/build refs | producer/build/identity binding is modeled; no real release artifact qualification |
+| external | actual T06 tests + unavailable/NOT_RUN, sandbox/write, project-defined fidelity and overall deadline negatives | provider labels extensible; no real production/provider or higher-fidelity PASS |
+| adoption and Fast Path | actual T07 suite + non-material Fast Path positive | no optional-contract adoption by symmetry |
+| evidence separation | Task/Review -> Release READY negative | T08 cannot issue Release or Closure verdict |
 
-## Required exact-candidate gates after implementation
+The T08 example evaluator is a **supplementary deterministic conformance model**, not a replacement for the real owner suites, a real external provider, real artifact production or a full project test strategy. The custom fidelity/deadline examples lock the forbidden inferences for their declared toy tuples; actual project-defined equivalence/retry policy still belongs to the project/external owner.
 
-1. run `python scripts/test_v41_execution_foundation_conformance.py` on the exact T08 HEAD;
-2. run `python scripts/test_verify_standard.py` and `python scripts/verify_standard.py` / repository-required full verifier on that same candidate;
-3. record exact-SHA environment/procedure/result evidence;
-4. obtain required Fresh Independent Review on the current candidate;
-5. merge to `version/v4.1.0` only after those gates pass/currentness remains safe;
-6. enter separate Version Closure / Release Qualification under existing Release authority.
+## Required successor gates
 
-## Explicit non-verdicts
+1. On current successor exact HEAD, run `python scripts/test_v41_execution_foundation_conformance.py`; confirm all seven owner suites actually executed and the expanded matrix passes.
+2. Run `python scripts/test_verify_standard.py` and `python scripts/verify_standard.py`; confirm the isolated copied-repository owner-weakening adversarial regression *fails its mutated child run as designed* while the parent suite passes.
+3. Bind tested SHA, live version base, Python/platform, command/exit results and clean worktree to new exact-subject Validation. Missing required environment remains BLOCKED/NOT_RUN, not guessed PASS.
+4. Obtain a genuinely NEW Fresh Independent Review for the successor HEAD, including all #364 P1/P2 findings and exact five-file Task Pack write-set.
+5. If both gates PASS and currentness is safe, expected-head merge to `version/v4.1.0`; only then hand these bounded inputs to a **separate** Version Closure / Release Qualification authority.
+
+## Non-verdicts
 
 - `RELEASE_READY = NOT_DECIDED_HERE`
 - `VERSION_CLOSURE = NOT_EXECUTED_HERE`
 - `HIDDEN_VALIDATION = NOT_CLAIMED_BY_T08`
 - `REAL_PRODUCTION_EXTERNAL_EXECUTION = NOT_CLAIMED_BY_T08`
+- `MULTI_PLATFORM_PACKAGE_INSTALL = NOT_CLAIMED_BY_T08`
 
-A future Closure step must preserve these distinctions and must not upgrade static/repository dogfood evidence into a higher-fidelity PASS by inference.
+No test-only success, CI success or supplementary fixture result can be promoted to higher-fidelity/Release evidence by inference.
