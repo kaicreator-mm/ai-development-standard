@@ -14,12 +14,28 @@ class ContextEngineeringTests(unittest.TestCase):
         cls.standard = STANDARD.read_text(encoding="utf-8")
         cls.reference = REFERENCE.read_text(encoding="utf-8")
 
-    def test_authority_precedence_and_currentness_are_explicit(self) -> None:
-        self.assertIn("highest-currentness applicable durable authority", self.standard)
-        self.assertIn("Frozen Product / Architecture", self.standard)
-        self.assertIn("Frozen Task DAG / Task Pack", self.standard)
-        self.assertIn("live Issue / PR / exact Git identity", self.standard)
-        self.assertIn("historical chat / memory", self.standard)
+    def test_authority_resolution_uses_owner_override_and_currentness(self) -> None:
+        self.assertIn("does not define one universal total ordering", self.standard)
+        self.assertIn("semantic owner", self.standard)
+        self.assertIn("override surface", self.standard)
+        self.assertIn("live currentness", self.standard)
+        self.assertIn("This is a read sequence, not a universal authority ranking", self.reference)
+
+    def test_project_overrides_can_specialize_defaults_without_weakening_hard_constraints(self) -> None:
+        self.assertIn("PROJECT_OVERRIDES.md", self.standard)
+        self.assertIn("may specialize standard defaults where allowed", self.standard)
+        self.assertIn("cannot weaken a hard constraint", self.standard)
+        self.assertIn("pinned standard default exists | valid PROJECT_OVERRIDES specialization is ignored", self.standard)
+
+    def test_native_dependencies_own_live_topology_after_materialization(self) -> None:
+        self.assertIn("GitHub native Issue Dependencies own the canonical live blocked-by topology", self.standard)
+        self.assertIn("Frozen Task DAG remains planning/history authority", self.standard)
+        self.assertIn("MUST NOT override the current native Issue Dependency graph", self.standard)
+        self.assertIn("Frozen Task DAG has edge X | edge X is still live after native dependency materialization/change", self.standard)
+
+    def test_task_pack_scope_is_not_rewritten_by_live_topology(self) -> None:
+        self.assertIn("Task Pack continues to own Task scope/acceptance", self.standard)
+        self.assertIn("live Issue dependency changed | Task Pack scope/acceptance changed automatically", self.standard)
 
     def test_currentness_sensitive_action_requires_live_reread(self) -> None:
         self.assertIn("Before a currentness-sensitive action, re-read the live durable facts", self.standard)
@@ -42,11 +58,11 @@ class ContextEngineeringTests(unittest.TestCase):
 
     def test_historical_chat_cannot_override_current_authority(self) -> None:
         self.assertIn("Historical chat or memory may help discovery, but it cannot override current durable authority", self.standard)
-        self.assertIn("current durable authority wins", self.standard)
+        self.assertIn("applicable durable owner wins", self.standard)
 
     def test_same_level_conflict_fails_closed(self) -> None:
-        self.assertIn("Same-level material conflicts stay explicit", self.standard)
-        self.assertIn("fails closed", self.standard)
+        self.assertIn("same authority/currentness level", self.standard)
+        self.assertIn("fail closed", self.standard)
         self.assertIn("Agent may pick preferred answer", self.standard)
 
     def test_no_context_snapshot_or_v47_resolver(self) -> None:
