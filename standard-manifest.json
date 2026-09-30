@@ -160,6 +160,7 @@
       "scripts/test_v44_delivery_contracts.py",
       "scripts/test_v44_deployment.py",
       "scripts/test_v44_distribution.py",
+      "scripts/test_v44_distribution_deployment_conformance.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
