@@ -6,24 +6,26 @@ Status: **Normative — v4.6**
 
 This standard governs how an Agent reconstructs the minimum current context needed to act correctly. Context selection is an authority/currentness problem, not a prompt-size maximization problem.
 
-## 2. Authority precedence
+## 2. Authority resolution
 
-When facts conflict, use the highest-currentness applicable durable authority. A default ordering is:
+Context Engineering does not define one universal total ordering across all durable sources. Resolve a material fact by the authority that owns that fact, the override surface that authority permits, and the live currentness required by the next action.
 
-```text
-system / organization constraints
-pinned ai-development-standard revision
-repository AGENTS + PROJECT_OVERRIDES
-Frozen Product / Architecture
-Frozen Task DAG / Task Pack
-Execution Pack / Dispatch
-live Issue / PR / exact Git identity
-source / tests / durable evidence
-external tool/resource data
-historical chat / memory
-```
+Use this resolution model:
 
-This ordering does not permit a lower layer to rewrite a higher owner. Same-level material conflicts stay explicit and route to the owning authority.
+1. System/organization constraints and standard hard constraints cannot be weakened by project or Task material.
+2. Identify the semantic owner of the disputed fact before comparing sources.
+3. Apply an authorized specialization/override only within the surface the owner permits. For example, `PROJECT_OVERRIDES.md` may specialize standard defaults where allowed, but it cannot weaken a hard constraint.
+4. Preserve frozen scope/acceptance authority separately from live execution currentness. Frozen Product/Architecture and Task Packs own their applicable frozen semantics; after Issue-based materialization, GitHub native Issue Dependencies own the canonical live blocked-by topology.
+5. Exact PR/HEAD/base, current branch target and other mutable execution identities must be re-read from their live owning surfaces before currentness-sensitive actions.
+6. When two applicable sources claim the same owned fact at the same authority/currentness level and materially conflict, fail closed and route to the owner.
+
+Required examples:
+
+- A pinned standard default MUST NOT override a valid project specialization merely because the standard file is globally higher-level; first determine whether the rule is a hard constraint or an overridable default.
+- A Frozen Task DAG remains planning/history authority after materialization, but it MUST NOT override the current native Issue Dependency graph for live blocked-by topology.
+- A Task Pack continues to own Task scope/acceptance even when live Issue dependencies or PR/HEAD identities change.
+
+No source gains authority merely because it is newer, easier to access, closer to the Agent, or listed earlier in a read sequence.
 
 ## 3. Currentness reread
 
@@ -69,7 +71,7 @@ Material context should remain attributable to durable source refs where ambigui
 
 ## 8. Historical chat / memory
 
-Historical chat or memory may help discovery, but it cannot override current durable authority. When a remembered fact and current Git/GitHub/Frozen authority disagree, current durable authority wins and the stale historical fact is not silently propagated.
+Historical chat or memory may help discovery, but it cannot override current durable authority. When a remembered fact and the applicable current owner/currentness facts disagree, the applicable durable owner wins and the stale historical fact is not silently propagated.
 
 ## 9. Missing or conflicting context
 
@@ -89,7 +91,10 @@ This standard does not create:
 
 | Input | Forbidden conclusion |
 |---|---|
-| historical chat says X | X overrides current durable authority |
+| pinned standard default exists | valid PROJECT_OVERRIDES specialization is ignored |
+| Frozen Task DAG has edge X | edge X is still live after native dependency materialization/change |
+| live Issue dependency changed | Task Pack scope/acceptance changed automatically |
+| historical chat says X | X overrides current durable owner/currentness |
 | more files/tokens loaded | context quality/authority is higher |
 | tool/resource returned X | X is Product truth |
 | earlier PR HEAD observed | same HEAD is current now |
