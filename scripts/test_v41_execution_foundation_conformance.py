@@ -93,7 +93,8 @@ def evaluate(case: dict) -> bool:
     if category == "deadline":
         return bool(facts.get("deadline_authorized")) and (
             0 <= facts["timeout_seconds"] <= facts["overall_deadline_seconds"]
-            and facts["elapsed_seconds"] <= facts["overall_deadline_seconds"]
+            and 0 <= facts["elapsed_seconds"] <= facts["overall_deadline_seconds"]
+            and facts["elapsed_seconds"] + facts["timeout_seconds"] <= facts["overall_deadline_seconds"]
         )
     if category == "recovery":
         return bool(facts.get("durable_handoff_present") and facts.get("unpublished_work_protected"))
@@ -206,6 +207,8 @@ class V41ExecutionFoundationConformanceTests(unittest.TestCase):
         self.assertTrue(evaluate(self.by_id["bounded-timeout-within-deadline"]))
         self.assertFalse(evaluate(self.by_id["timeout-extended-beyond-overall-deadline"]))
         self.assertFalse(evaluate(self.by_id["elapsed-exceeds-overall-deadline"]))
+        self.assertFalse(evaluate(self.by_id["remaining-budget-insufficient-for-next-attempt"]))
+        self.assertTrue(evaluate(self.by_id["remaining-budget-exact-boundary"]))
         self.assertIn("Retries MUST be bounded", self.external_standard)
         self.assertIn("## 11. Timeouts and deadlines", self.external_standard)
 
