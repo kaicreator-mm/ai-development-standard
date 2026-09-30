@@ -6,6 +6,7 @@ Integration target: `version/v4.6.0`
 Risk: high
 Review: required Fresh Independent Review
 Validation: concern
+Validation owner: T01
 Agent freedom: `F1_BOUNDED_IMPLEMENTATION`
 
 ## Allowed write-set
@@ -21,8 +22,15 @@ No normative Intent/Context/Skill policy. No Context Snapshot family. No new Ass
 ## Acceptance
 Exactly two new default machine-contract families. Existing-schema additions, if needed, are optional references and backward compatible. Intent records do not create Product/Architecture/Task authority. Skill metadata does not create mutation authority. Historical Dispatch and Execution Pack payloads remain valid when new references are absent.
 
+## Adversarial minimum
+At minimum, focused conformance MUST reject:
+- intent or assumption classification being treated as Frozen Product, Architecture, or Task authority;
+- skill metadata or skill installation being treated as mutation or side-effect authority;
+- a Context Snapshot or parallel Agent lifecycle/result family being introduced as a substitute for durable authority refs;
+- optional AI-native references becoming mandatory for historical Dispatch or Execution Pack payloads.
+
 ## Required gates
-Focused contract tests, verify-standard CI, exact-head concern Validation, and Fresh Independent Review.
+Focused contract tests, verify-standard CI, exact-head concern Validation owned by T01, and Fresh Independent Review.
 
 ## L3
 `docs/implementation/4.6.0/L3_REFERENCE_PACKS.md#t01--shared-ai-native-machine-contracts`
