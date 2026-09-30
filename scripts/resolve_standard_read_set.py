@@ -22,6 +22,8 @@ CAPABILITY_KEYS = {
     "execution_pack.enabled", "validation_queue.enabled",
 }
 PROFILE_KEYS = {"language_profile_ref", "archetype_profile_ref"}
+STAGES = frozenset({"read", "task", "execution"})
+INTENTS = frozenset({"read", "mutation"})
 
 
 @dataclass(frozen=True)
@@ -51,18 +53,34 @@ def _parse_version(path: Path) -> dict[str, str]:
     return result
 
 
-def _parse_overrides(text: str) -> tuple[dict[str, str], list[str]]:
+def _parse_overrides(text: str) -> tuple[dict[str, str], list[str], list[RoutingBlocker]]:
+    """Reject any repeated routing-relevant declaration, regardless of order.
+
+    Even identical repetitions are ambiguous configuration provenance; silently
+    deduplicating them would conceal contradictory project adoption or profiles.
+    """
     values: dict[str, str] = {}
     profiles: list[str] = []
-    for raw in text.splitlines():
+    first_line: dict[str, int] = {}
+    blockers: list[RoutingBlocker] = []
+    for lineno, raw in enumerate(text.splitlines(), start=1):
         match = re.match(r"^\s*-\s*`?([A-Za-z0-9_.-]+)`?\s*:\s*(.*?)\s*$", raw)
         if not match:
             continue
         key, value = match.groups()
+        if key in CAPABILITY_KEYS | PROFILE_KEYS and key in first_line:
+            code = "CONFLICTING_PROJECT_OVERRIDE" if values[key] != value else "DUPLICATE_PROJECT_OVERRIDE"
+            blockers.append(RoutingBlocker(
+                code, "project overrides",
+                f"{key}: repeated declaration at line {lineno}; first declared at line {first_line[key]}",
+                "project:.dev-standard/PROJECT_OVERRIDES.md",
+            ))
+            continue
         values[key] = value
+        first_line.setdefault(key, lineno)
         if key in PROFILE_KEYS and value and not value.startswith("<"):
             profiles.append(value)
-    return values, profiles
+    return values, profiles, blockers
 
 
 def _safe_relative(root: Path, relative: str) -> Path:
@@ -134,6 +152,21 @@ def resolve_standard_read_set(
     blockers: list[RoutingBlocker] = []
     trace: list[dict[str, Any]] = []
     read_set: list[dict[str, str]] = []
+    # Only omitted/None/empty legacy modes receive defaults. Never trim or
+    # normalize an unsupported nonempty mode into an authorized read plan.
+    stage = request.get("stage", "task")
+    intent = request.get("intent", "read")
+    if stage is None or stage == "":
+        stage = "task"
+    if intent is None or intent == "":
+        intent = "read"
+    if not isinstance(stage, str) or stage not in STAGES:
+        blockers.append(RoutingBlocker("INVALID_ROUTING_STAGE", "planning/human authority", f"unsupported stage {stage!r}; expected one of {sorted(STAGES)}"))
+    if not isinstance(intent, str) or intent not in INTENTS:
+        blockers.append(RoutingBlocker("INVALID_ROUTING_INTENT", "planning/human authority", f"unsupported intent {intent!r}; expected one of {sorted(INTENTS)}"))
+    if blockers:
+        return _blocked(read_set, blockers, trace)
+
     project_agents = project_root / "AGENTS.md"
     version_file = project_root / ".dev-standard" / "VERSION"
     overrides_file = project_root / ".dev-standard" / "PROJECT_OVERRIDES.md"
@@ -178,7 +211,9 @@ def resolve_standard_read_set(
         blockers.append(RoutingBlocker("REGISTRY_UNRESOLVED", "T02 semantic registry", str(exc), "ads:standard-manifest.json"))
         return _blocked(read_set, blockers, trace)
     entries = {e["semantic_concern"]: e for e in manifest.get("semantic_authorities", {}).get("entries", [])}
-    override_values, selected_profiles = _parse_overrides(overrides_file.read_text(encoding="utf-8"))
+    override_values, selected_profiles, override_blockers = _parse_overrides(overrides_file.read_text(encoding="utf-8"))
+    if override_blockers:
+        return _blocked(read_set, override_blockers, trace)
     requested_capabilities = request.get("requested_capabilities", [])
     if not isinstance(requested_capabilities, list) or any(not isinstance(v, str) for v in requested_capabilities):
         return _blocked(read_set, [RoutingBlocker("INVALID_REQUEST", "planning/human authority", "requested_capabilities must be a string list")], trace)
@@ -284,7 +319,7 @@ def resolve_standard_read_set(
     _append_unique(read_set, "task-pack", f"project:{task_pack_ref}", "exact durable Task authority")
     _append_unique(read_set, "task-issue", issue_ref, "current GitHub Task/currentness authority")
 
-    if request.get("stage") == "execution":
+    if stage == "execution":
         dispatch_ref = facts.get("dispatch_ref")
         execution_pack_ref = facts.get("execution_pack_ref")
         if not dispatch_ref or not execution_pack_ref:
@@ -305,7 +340,7 @@ def resolve_standard_read_set(
             if not blockers:
                 _append_unique(read_set, "execution-pack", str(execution_pack_ref), "existing subordinate execution authority")
                 _append_unique(read_set, "dispatch", str(dispatch_ref), "existing exact-subject dispatch/currentness authority")
-    if request.get("intent") == "mutation" and (not facts.get("mutation_authority_ref") or facts.get("mutation_subject_sha") != expected_subject):
+    if intent == "mutation" and (not facts.get("mutation_authority_ref") or facts.get("mutation_subject_sha") != expected_subject):
         blockers.append(RoutingBlocker("MUTATION_AUTHORITY_NOT_PROVEN", "Task/Dispatch authority", "exact-subject authority not independently verified; provider availability is irrelevant", str(issue_ref)))
     if blockers:
         return _blocked(read_set, blockers, trace)
