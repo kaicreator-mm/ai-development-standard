@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "registry_id": "ads-v4.7-state-dimensions-v1",
+  "dimensions": [
+    {
+      "dimension_id": "work_item_workflow",
+      "canonical_owner_ref": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "vocabulary_ref": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#5-canonical-workflow-state"
+    },
+    {
+      "dimension_id": "dispatch_lifecycle",
+      "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "vocabulary_ref": "schemas/dispatch.schema.json"
+    },
+    {
+      "dimension_id": "execution_pack_currentness",
+      "canonical_owner_ref": "standards/EXECUTION_PACK_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#ownership-boundaries"
+    },
+    {
+      "dimension_id": "validation_gate",
+      "canonical_owner_ref": "standards/VALIDATION_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "vocabulary_ref": "standards/VALIDATION_STANDARD.md#1-purpose-and-states"
+    },
+    {
+      "dimension_id": "review_judgment",
+      "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "vocabulary_posture": "OWNER_DEFINED",
+      "vocabulary_ref": "schemas/review-aggregation-v1.schema.json"
+    },
+    {
+      "dimension_id": "release_qualification",
+      "canonical_owner_ref": "standards/RELEASE_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#ownership-boundaries"
+    },
+    {
+      "dimension_id": "deployment_result",
+      "canonical_owner_ref": "github:kaicreator-mm/ai-development-standard@88f5ba907513338192c6ae27d48880de13f1b98e:standards/DEPLOYMENT_GOVERNANCE_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "vocabulary_ref": "github:kaicreator-mm/ai-development-standard@88f5ba907513338192c6ae27d48880de13f1b98e:schemas/deployment-result-v1.schema.json",
+      "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#upstream-owner-posture"
+    },
+    {
+      "dimension_id": "runtime_health",
+      "canonical_owner_ref": "github:kaicreator-mm/ai-development-standard@2acf8bb020d76d6bb90bcfbb0bf1580e2d2f20ea:docs/implementation/4.5.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "vocabulary_posture": "OWNER_DEFINED",
+      "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#upstream-owner-posture"
+    },
+    {
+      "dimension_id": "runner_capability",
+      "canonical_owner_ref": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+      "vocabulary_posture": "OWNER_DEFINED",
+      "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#ownership-boundaries"
+    }
+  ],
+  "forbidden_inferences": [
+    {
+      "rule_id": "F01_TASK_DONE_NOT_VALIDATION_PASS",
+      "source_dimension_ref": "work_item_workflow",
+      "source_fact_ref": "state:done",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS"
+    },
+    {
+      "rule_id": "F02_REVIEW_PASS_NOT_VALIDATION_PASS",
+      "source_dimension_ref": "review_judgment",
+      "source_fact_ref": "PASS",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS"
+    },
+    {
+      "rule_id": "F03_VALIDATION_PASS_NOT_RELEASE_READY",
+      "source_dimension_ref": "validation_gate",
+      "source_fact_ref": "PASS",
+      "target_dimension_ref": "release_qualification",
+      "prohibited_conclusion_ref": "READY"
+    },
+    {
+      "rule_id": "F04_RELEASE_READY_NOT_DEPLOYMENT_SUCCESS",
+      "source_dimension_ref": "release_qualification",
+      "source_fact_ref": "READY",
+      "target_dimension_ref": "deployment_result",
+      "prohibited_conclusion_ref": "DEPLOYMENT_SUCCEEDED"
+    },
+    {
+      "rule_id": "F05_DEPLOYMENT_SUCCESS_NOT_RUNTIME_HEALTH",
+      "source_dimension_ref": "deployment_result",
+      "source_fact_ref": "DEPLOYMENT_SUCCEEDED",
+      "target_dimension_ref": "runtime_health",
+      "prohibited_conclusion_ref": "runtime-health-established",
+      "rationale_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#upstream-owner-posture"
+    },
+    {
+      "rule_id": "F06_RUNNER_AVAILABLE_NOT_MUTATION_AUTHORITY",
+      "source_dimension_ref": "runner_capability",
+      "source_fact_ref": "observed-or-declared-AVAILABLE",
+      "target_dimension_ref": "work_item_workflow",
+      "prohibited_conclusion_ref": "task-mutation-authorized"
+    },
+    {
+      "rule_id": "F07_OLD_SHA_VALIDATION_NOT_SUCCESSOR_PASS",
+      "source_dimension_ref": "validation_gate",
+      "source_fact_ref": "PASS@original-exact-SHA",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS@successor-exact-SHA"
+    },
+    {
+      "rule_id": "F08_SANDBOX_PASS_NOT_REAL_ENV_PASS",
+      "source_dimension_ref": "validation_gate",
+      "source_fact_ref": "PASS@sandbox-tuple",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS@unexecuted-real-environment-tuple"
+    },
+    {
+      "rule_id": "F09_DISPATCH_COMPLETED_NOT_RELEASE_READY",
+      "source_dimension_ref": "dispatch_lifecycle",
+      "source_fact_ref": "COMPLETED",
+      "target_dimension_ref": "release_qualification",
+      "prohibited_conclusion_ref": "READY"
+    },
+    {
+      "rule_id": "F10_PACK_CURRENT_NOT_VALIDATION_PASS",
+      "source_dimension_ref": "execution_pack_currentness",
+      "source_fact_ref": "PACK_CURRENT",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS"
+    }
+  ]
+}
