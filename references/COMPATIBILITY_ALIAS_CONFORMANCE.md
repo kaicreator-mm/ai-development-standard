@@ -19,7 +19,7 @@ At the T06 JIT baseline, these existing stable paths are compatibility commitmen
 - `standards/GITHUB_WORKFLOW.md`
 - `standards/VERSION_INTEGRATION_WORKFLOW.md`
 
-They must remain present in the compatibility inventory, remain real repository files, and resolve through current semantic metadata to exactly one canonical normative owner for the indexed concern. A later retirement or physical move requires separately authorized compatibility/migration work; deleting a baseline path from both the inventory and registry is not a valid way to make conformance green.
+They must remain present in the compatibility inventory, remain real repository files, and resolve through current semantic metadata to exactly one canonical normative owner for the indexed concern. A later retirement or physical move requires separately authorized compatibility/migration work; deleting a baseline path from both the inventory and registry is not a valid way to make conformance green. Conformance **cannot silently delete** these committed stable paths even if their canonical owner file remains discoverable.
 
 ## 3. One-hop resolution invariants
 
