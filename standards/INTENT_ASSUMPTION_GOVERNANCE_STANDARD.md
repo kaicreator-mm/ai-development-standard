@@ -19,7 +19,7 @@ A record does not become more authoritative because a powerful model, long reaso
 
 Each material record MUST identify exact `record_id`, `repository`, `subject_ref`, `classification`, `content_ref`, `materiality`, `currentness_ref`, structured `disposition`, `created_by_ref` and `created_at` per the existing T01 contract. `content_ref` is a durable, reviewable statement/evidence pointer or digest, not necessarily a transcript; where interpretation, assumption or promotion depends on a distinct original source, record `source_ref` and applicable `evidence_refs` without copying secrets or granting that source authority. Record `contradiction_refs` and `supersedes_refs` when material; append a new durable fact instead of silently rewriting prior records. Broken or unresolvable source/currentness references must fail closed for material actions.
 
-Historical v4/v4.1–v4.5 Dispatch or Execution Pack payloads without the new optional `intent_assumption_record_refs` remain valid. Record creation is materiality-driven: Fast Path does not require empty records for genuinely non-material intent handling, but it cannot omit a material unresolved question that changes scope, authority or required gate.
+Historical v4/v4.1–v4.5 Dispatch or Execution Pack payloads without the new optional `intent_assumption_refs` remain valid. This is the actual optional field in both merged T01 wire contracts; `skill_metadata_refs` is likewise optional. Record creation is materiality-driven: Fast Path does not require empty records for genuinely non-material intent handling, but it cannot omit a material unresolved question that changes scope, authority or required gate.
 
 ## 3. Disposition mapping: Frozen L2 conceptual to actual v1 wire
 
