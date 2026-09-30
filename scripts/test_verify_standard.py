@@ -10,6 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 VERIFY = ROOT / "scripts" / "verify_standard.py"
+V41_CONFORMANCE = ROOT / "scripts" / "test_v41_execution_foundation_conformance.py"
 
 
 class StandardVerifierRegressionTests(unittest.TestCase):
@@ -34,6 +35,19 @@ class StandardVerifierRegressionTests(unittest.TestCase):
 
     def test_repository_baseline_passes(self) -> None:
         result = self.run_verifier(ROOT)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_v41_execution_foundation_conformance_suite_passes(self) -> None:
+        self.assertTrue(V41_CONFORMANCE.is_file())
+        fixture = ROOT / "templates" / "golden" / "V41_EXECUTION_FOUNDATION_EXAMPLES.json"
+        self.assertTrue(fixture.is_file())
+        result = subprocess.run(
+            [sys.executable, str(V41_CONFORMANCE)],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_asset_and_manifest_entry_cannot_be_deleted_together(self) -> None:
