@@ -31,22 +31,34 @@ def text(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
+def markdown_slug(heading: str) -> str:
+    heading = re.sub(r"<[^>]+>", "", heading).replace("`", "").strip().lower()
+    heading = re.sub(r"[^\w\- ]", "", heading, flags=re.UNICODE)
+    return re.sub(r"\s+", "-", heading).strip("-")
+
+
+def markdown_anchors(body: str) -> set[str]:
+    anchors: set[str] = set()
+    counts: dict[str, int] = {}
+    for line in body.splitlines():
+        match = re.match(r"^#{1,6}\s+(.+?)\s*#*\s*$", line)
+        if not match:
+            continue
+        base = markdown_slug(match.group(1))
+        if not base:
+            continue
+        count = counts.get(base, 0)
+        anchors.add(base if count == 0 else f"{base}-{count}")
+        counts[base] = count + 1
+    return anchors
+
+
 def ref_resolves(ref: str) -> bool:
     path, _, fragment = ref.partition("#")
     source = ROOT / path
     if not source.is_file():
         return False
-    if not fragment:
-        return True
-    # Match GitHub-style anchor for headings, preserving anchored legacy links.
-    headings = re.findall(r"^#{1,6}\s+(.+?)\s*#*\s*$", source.read_text(encoding="utf-8"), re.M)
-    slugs = set()
-    for heading in headings:
-        slug = heading.strip().lower()
-        slug = re.sub(r"[^\w\- ]", "", slug, flags=re.UNICODE)
-        slug = re.sub(r"\s+", "-", slug)
-        slugs.add(slug)
-    return fragment in slugs
+    return not fragment or fragment in markdown_anchors(source.read_text(encoding="utf-8"))
 
 
 class TestV45AdoptionWiring(unittest.TestCase):
