@@ -26,7 +26,7 @@ class ObservabilityRuntimeEvidenceTests(unittest.TestCase):
     def test_observation_binds_material_identity(self) -> None:
         for token in ("exact artifact/content identity", "deployment/result reference", "environment/tenant/account identity", "observation window/time reference"):
             self.assertIn(token, self.standard)
-        self.assertIn("existing v4.4 artifact/deployment/environment identities", self.standard)
+        self.assertIn("reuses v4.4 artifact/deployment/environment identity", self.standard)
 
     def test_signal_availability_or_silence_is_not_health(self) -> None:
         self.assertIn("no alert observed != healthy", self.standard)
@@ -40,7 +40,7 @@ class ObservabilityRuntimeEvidenceTests(unittest.TestCase):
 
     def test_no_universal_stack_slo_or_result_authority(self) -> None:
         self.assertIn("does not mandate one telemetry vendor", self.standard)
-        self.assertIn("does not create Validation PASS/FAIL, Release READY, Deployment result or Task state", self.standard)
+        self.assertIn("Runtime observations do not create Validation PASS/FAIL, Release READY, Deployment result or Task state", self.standard)
 
 
 if __name__ == "__main__":
