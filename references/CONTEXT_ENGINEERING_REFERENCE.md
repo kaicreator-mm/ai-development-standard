@@ -16,6 +16,8 @@ A practical sequence is:
 7. expand outward when a conflict or missing dependency requires it
 ```
 
+This is a read sequence, not a universal authority ranking. Resolve each fact by its semantic owner, allowed override surface and required live currentness. In particular, valid `PROJECT_OVERRIDES.md` specialization may refine standard defaults without weakening hard constraints, and native Issue Dependencies are the canonical live blocked-by topology after materialization even though the Frozen DAG remains planning/history authority.
+
 Do not start by loading the whole repository or a historical chat transcript.
 
 ## Currentness-sensitive actions
@@ -32,11 +34,12 @@ Re-read live facts immediately before actions such as:
 ## Context quality questions
 
 1. What authority owns this fact?
-2. Is it current enough for the next action?
-3. Is the source durable/recoverable?
-4. Is this fact required or merely useful?
-5. Does another same-level source disagree?
-6. Am I confusing availability/provenance with authority?
+2. Is this a hard constraint, default, allowed override, frozen semantic, or live execution fact?
+3. Is it current enough for the next action?
+4. Is the source durable/recoverable?
+5. Is this fact required or merely useful?
+6. Does another same-level source disagree?
+7. Am I confusing availability/provenance with authority?
 
 ## Lost-session test
 
