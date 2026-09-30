@@ -43,9 +43,12 @@ class StandardVerifierRegressionTests(unittest.TestCase):
     def test_v41_execution_foundation_conformance_suite_passes(self) -> None:
         self.assertTrue(V41_CONFORMANCE.is_file())
         self.assertTrue((ROOT / "templates" / "golden" / "V41_EXECUTION_FOUNDATION_EXAMPLES.json").is_file())
+        source = V41_CONFORMANCE.read_text(encoding="utf-8")
+        self.assertIn("test_dependency_complete_real_owner_suites_execute", source)
+        self.assertIn("OWNER_SUITES", source)
         result = self.run_v41_conformance(ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("test_dependency_complete_real_owner_suites_execute", result.stdout + result.stderr)
+        self.assertIn("Ran ", result.stdout + result.stderr)
 
     def test_v41_owner_weakening_is_caught_by_integrated_gate(self) -> None:
         temp, repo = self.copied_repo()
