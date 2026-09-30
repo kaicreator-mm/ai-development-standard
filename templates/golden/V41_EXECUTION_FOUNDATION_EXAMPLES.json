@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "purpose": "Dependency-complete v4.1 execution-foundation conformance and dogfood examples. These fixtures are evidence inputs, not Release Qualification.",
+  "cases": [
+    {
+      "id": "fast-path-minimal",
+      "category": "fast_path",
+      "facts": {"material_execution_concerns": [], "optional_contracts_present": false},
+      "expected": {"allowed": true, "reason": "non-material concerns do not require empty execution records"}
+    },
+    {
+      "id": "execution-context-no-authority-escalation",
+      "category": "authority",
+      "facts": {"execution_context_present": true, "claims_workflow_or_release_authority": true},
+      "expected": {"allowed": false, "reason": "Execution Context is non-authoritative"}
+    },
+    {
+      "id": "node-npm-toolchain",
+      "category": "dependency_toolchain",
+      "facts": {"ecosystem": "node", "manifest": "package.json", "lock": "package-lock.json", "compatibility": ">=22", "certification_tuple": "node@24/linux/contract"},
+      "expected": {"allowed": true, "reason": "compatibility and certification are distinct facts"}
+    },
+    {
+      "id": "python-toolchain",
+      "category": "dependency_toolchain",
+      "facts": {"ecosystem": "python", "manifest": "pyproject.toml", "lock": "uv.lock", "compatibility": ">=3.12", "certification_tuple": "python@3.14/linux/contract"},
+      "expected": {"allowed": true, "reason": "non-Node ecosystem is representable without a universal package-manager command"}
+    },
+    {
+      "id": "agent-runtime-does-not-rewrite-repository",
+      "category": "dependency_toolchain",
+      "facts": {"repository_compatibility": ">=3.12", "agent_runtime": "3.14.7", "agent_claims_repository_minimum": ">=3.14"},
+      "expected": {"allowed": false, "reason": "Agent-local runtime cannot narrow repository authority"}
+    },
+    {
+      "id": "secret-ref-only",
+      "category": "configuration",
+      "facts": {"secret_ref": "secret://ci/signing-key", "secret_value_present": false},
+      "expected": {"allowed": true, "reason": "durable execution context carries references, not secret values"}
+    },
+    {
+      "id": "secret-value-in-evidence",
+      "category": "configuration",
+      "facts": {"secret_ref": "secret://ci/signing-key", "secret_value_present": true},
+      "expected": {"allowed": false, "reason": "ordinary durable evidence must not persist secret values"}
+    },
+    {
+      "id": "multi-agent-isolated-workspaces",
+      "category": "git_workspace",
+      "facts": {"builder_workspace": "wt-builder-1", "reviewer_workspace": "wt-reviewer-1", "same_writable_workspace": false, "handoff_ref": "issue:#199/comment:evidence"},
+      "expected": {"allowed": true, "reason": "concurrent writers/readers use isolated materializations and durable handoff"}
+    },
+    {
+      "id": "shared-writable-workspace",
+      "category": "git_workspace",
+      "facts": {"builder_workspace": "wt-1", "validator_workspace": "wt-1", "same_writable_workspace": true},
+      "expected": {"allowed": false, "reason": "independent concurrent execution cannot share one writable workspace"}
+    },
+    {
+      "id": "cache-is-not-validation-evidence",
+      "category": "artifact",
+      "facts": {"artifact_class": "CACHE", "exists": true, "claimed_validation_pass": true},
+      "expected": {"allowed": false, "reason": "cache existence cannot satisfy an evidence requirement"}
+    },
+    {
+      "id": "build-output-not-release-artifact",
+      "category": "artifact",
+      "facts": {"artifact_class": "BUILD_OUTPUT", "exists": true, "promotion_authorized": false, "claimed_release_artifact": true},
+      "expected": {"allowed": false, "reason": "file presence does not perform authorized promotion"}
+    },
+    {
+      "id": "authorized-artifact-promotion",
+      "category": "artifact",
+      "facts": {"artifact_class": "BUILD_OUTPUT", "promotion_authorized": true, "promoted_class": "RELEASE_ARTIFACT", "identity_bound": true, "provenance_bound": true},
+      "expected": {"allowed": true, "reason": "promotion is explicit and evidence-bearing"}
+    },
+    {
+      "id": "sandbox-does-not-prove-production",
+      "category": "external_system",
+      "facts": {"dependency_fidelity": "real-service", "environment_class": "sandbox", "required_environment": "production", "claimed_pass": true},
+      "expected": {"allowed": false, "reason": "sandbox fidelity does not satisfy a production-environment requirement"}
+    },
+    {
+      "id": "credential-does-not-grant-write-authority",
+      "category": "external_system",
+      "facts": {"credential_available": true, "side_effect_authority": "read-only", "attempted_action": "write"},
+      "expected": {"allowed": false, "reason": "capability/credential availability is not write authority"}
+    },
+    {
+      "id": "durable-handoff-recovery",
+      "category": "recovery",
+      "facts": {"builder_session_lost": true, "task_ref": "#199", "exact_sha_ref": "candidate-sha", "durable_handoff_present": true, "unpublished_work_protected": true},
+      "expected": {"allowed": true, "reason": "new executor can reconstruct subject and next action from durable facts"}
+    },
+    {
+      "id": "task-pass-not-release-pass",
+      "category": "evidence_boundary",
+      "facts": {"task_validation_pass": true, "task_review_pass": true, "release_qualification_executed": false, "claimed_release_ready": true},
+      "expected": {"allowed": false, "reason": "Task/integration evidence cannot manufacture Release Qualification"}
+    }
+  ]
+}
