@@ -83,6 +83,28 @@ Migration guidance:
 - `ai-dev:event:v2` remains valid; v4 adoption does not require event-v3.
 - See pinned `standards/PROJECT_ADOPTION.md` and `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md` for the compatibility matrix and examples.
 
+## v4.4 Delivery Applicability Profile (materiality-driven; optional concerns)
+
+These fields identify project-owned delivery applicability and evidence locations; they are not new workflow states and do not make all four stages mandatory. For applicable stages, declare the actual product/project authority and exact platform or environment Validation tuples where material. Select each concern independently:
+
+- `v4.delivery.build`: `<REQUIRED | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.packaging`: `<REQUIRED + actual format/installation tuple | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.distribution`: `<REQUIRED + publication system | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.deployment`: `<REQUIRED + exact environment/side-effect authority | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- Material exact immutable artifact identity / source-profile-toolchain refs: `<owning Build & Artifact refs or NOT_APPLICABLE — reason>`
+- Applicable distribution publication/binding evidence refs: `<owned evidence refs or NOT_RUN/BLOCKED with reason or NOT_APPLICABLE — reason>`
+- Applicable Deployment Plan and executed Result refs: `<separate owned refs or NOT_RUN/BLOCKED with reason or NOT_APPLICABLE — reason>`
+- Applicable non-container package/install and real environment Validation tuples: `<actual tested platform × runtime/toolchain × profile or NOT_RUN/BLOCKED with reason>`
+
+Rules:
+
+- Build & Artifact owns exact source/profile/toolchain/output and separate promotion to immutable artifact identity. Distribution owns publication; its alias/tag is only a locator. Deployment owns an exact Plan and an independently observed Result for exact artifact/environment/side-effect authorization. Release qualification stays with its own authority.
+- Project overrides MUST NOT weaken Frozen Product/Architecture/Task, applicable package-content security rules, any required exact-subject Validation/Review or Release Qualification.
+- `NOT_APPLICABLE` is permitted only when a concern is genuinely non-material (for example no publication for an internal source-only tool, no deployment for a library); missing required tooling/external registry/production access must remain `NOT_RUN` or `BLOCKED`, not fabricated N/A.
+- Fast Path may avoid empty delivery records only when changes truly do not materially affect the corresponding stage; material rebuilt bytes, required publication or target deployment cannot inherit historical PASS from matching version/tag/alias text.
+- Build succeeded != artifact promoted; artifact published != Deployment succeeded; Deployment Plan exists != executed Result; staging/mock succeeded != production succeeded; Release READY != Deployment SUCCESS.
+- The v4 adoption A0–A4 setting controls automation depth, not delivery applicability and not the truth floor. See pinned `standards/PROJECT_ADOPTION.md`, `standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md`, `standards/DISTRIBUTION_GOVERNANCE_STANDARD.md`, and `standards/DEPLOYMENT_GOVERNANCE_STANDARD.md`.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.
@@ -229,7 +251,7 @@ Interpret provider-specific workflow syntax only after declaring the real execut
 - Workflow config source: `<pr-head | merge-ref | base-branch | provider-snapshot | other | NOT_APPLICABLE — reason>`
 - Execution shell / entrypoint model: `<host shell/path | container entrypoint | provider-managed | NOT_APPLICABLE — reason>`
 - Runtime source: `<host-managed | container-image | setup-action/toolcache | other | NOT_APPLICABLE — reason>`
-- Clone / checkout model: `<provider default | local plugin | explicit settings | other | NOT_APPLICABLE — reason>`
+- Clone / checkout model: `<provider default | local plugin | explicit settings | NOT_APPLICABLE — reason>`
 - Partial clone policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
 - Submodule policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
 - Git LFS policy: `<enabled + reason | disabled | provider default | NOT_APPLICABLE — reason>`
