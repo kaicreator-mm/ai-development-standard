@@ -25,7 +25,9 @@ Not owned here:
 
 ## 3. Immutable artifact binding
 
-A distribution claim SHOULD bind the publication to the immutable artifact identity established by the artifact owner. A registry digest, checksum/content digest, immutable package revision or equivalent mechanism-specific evidence MAY support that binding.
+Where the publication system supports immutable binding, a distribution claim MUST bind the publication to the immutable artifact identity established by the artifact owner. A registry digest, checksum/content digest, immutable package revision or equivalent mechanism-specific evidence MAY support that binding.
+
+If the publication system does not expose an immutable-binding mechanism, the claim MUST record that limitation and use alternative evidence required by the owning project; a mutable locator alone remains insufficient proof of bytes identity.
 
 A mutable locator alone is not sufficient proof of bytes identity.
 
