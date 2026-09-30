@@ -66,12 +66,37 @@ class OperationsContractTests(unittest.TestCase):
         self.assertNotIn("tag", line["properties"])
         self.assertNotIn("package", line["properties"])
 
-    def test_backport_result_has_fresh_identity_and_evidence_refs(self) -> None:
+    def test_backport_result_binds_source_target_result_and_evidence(self) -> None:
         props = self.maintenance["properties"]
-        self.assertIn("backport_source_refs", props)
-        self.assertIn("result_sha_refs", props)
-        self.assertIn("validation_refs", props)
-        self.assertIn("review_refs", props)
+        self.assertIn("backport_results", props)
+        result = props["backport_results"]["items"]
+        required = set(result["required"])
+        self.assertTrue({
+            "source_ref",
+            "target_support_line_ref",
+            "target_baseline_ref",
+            "result_sha_ref",
+            "validation_refs",
+        }.issubset(required))
+        self.assertEqual(result["properties"]["validation_refs"]["minItems"], 1)
+        self.assertIn("review_refs", result["properties"])
+        self.assertIn("release_refs", result["properties"])
+
+    def test_source_only_pass_cannot_satisfy_result_sha_evidence(self) -> None:
+        props = self.maintenance["properties"]
+        result = props["backport_results"]["items"]
+        required = set(result["required"])
+        self.assertIn("result_sha_ref", required)
+        self.assertIn("validation_refs", required)
+        self.assertNotIn("validation_ref", result["properties"]["source_ref"])
+        for ambiguous_top_level in (
+            "backport_source_refs",
+            "result_sha_refs",
+            "validation_refs",
+            "review_refs",
+            "release_refs",
+        ):
+            self.assertNotIn(ambiguous_top_level, props)
 
     def test_no_contract_stores_ordinary_sensitive_values(self) -> None:
         combined = json.dumps([self.observation, self.incident, self.maintenance]).lower()
