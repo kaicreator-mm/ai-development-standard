@@ -11,6 +11,9 @@
     "subject_ref",
     "classification",
     "content_ref",
+    "materiality",
+    "currentness_ref",
+    "disposition",
     "created_by_ref",
     "created_at"
   ],
@@ -27,12 +30,37 @@
         "ASSUMPTION",
         "UNKNOWN",
         "DECISION_REQUIRED",
-        "DURABLE_REQUIREMENT"
+        "DURABLE_REQUIREMENT_REF"
       ]
     },
     "content_ref": {"type": "string", "minLength": 1},
     "source_ref": {"type": "string", "minLength": 1},
     "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "materiality": {
+      "type": "string",
+      "enum": ["MATERIAL", "NON_MATERIAL", "UNKNOWN"]
+    },
+    "currentness_ref": {"type": "string", "minLength": 1},
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["RETAIN", "CLARIFY", "PROMOTE_BY_OWNER", "REJECT", "SUPERSEDE", "BLOCK"]
+        },
+        "target_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "contradiction_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "supersedes_refs": {
       "type": "array",
       "items": {"type": "string", "minLength": 1}
     },
@@ -44,7 +72,7 @@
   "allOf": [
     {
       "if": {
-        "properties": {"classification": {"const": "DURABLE_REQUIREMENT"}},
+        "properties": {"classification": {"const": "DURABLE_REQUIREMENT_REF"}},
         "required": ["classification"]
       },
       "then": {
