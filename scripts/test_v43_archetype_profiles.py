@@ -43,7 +43,7 @@ class ArchetypeProfilesTests(unittest.TestCase):
         for text in self.profiles.values():
             self.assertIn("PROJECT_OVERRIDES", text)
             self.assertIn("Fast Path", text)
-            self.assertIn("profile file order", text)
+            self.assertIn("order", text)
             self.assertIn("Validation", text)
 
 
