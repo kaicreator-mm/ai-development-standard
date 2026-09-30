@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.1.0 — candidate / unreleased（发布日期未定）
+
+这是 `version/v4.1.0` 上已合并 T01–T08 的**候选内容记录**，不表示 v4.1.0 已冻结、通过 Hidden Validation、取得 Release Qualification、发布 tag 或集成至 `main`。已发布 `main` 的 v4.0.0 历史条目与日期保留在下方。实际消费时必须以 `version=4.1.0` 加对应候选提交的不可变 `revision` 配对验证，不能将旧候选验证结果转移到后续元数据提交。
+
+- **T01 共享机器契约**：新增非权威 Execution Context、Dependency/Toolchain Profile、Dependency Risk Exception 三类 v1 schema，并以可选引用接入既有契约，保留历史 v4 payload 兼容性。
+- **T02 依赖与工具链**：新增 `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md`，定义项目声明的依赖/工具链要求、兼容性与认证区别及风险例外边界。
+- **T03 Git 执行**：新增 `standards/GIT_EXECUTION_STANDARD.md`，明确独立可写工作区、exact-SHA、危险操作与恢复约束，不使本地 Git 状态成为工作流权威。
+- **T04 配置与秘密**：新增 `standards/CONFIGURATION_SECRETS_STANDARD.md`，明确配置优先级、secret reference/value 分离、最小权限及不可用时的真实状态。
+- **T05 工作区与制品**：新增 `standards/WORKSPACE_ARTIFACT_STANDARD.md`，定义产物分类、所有权、清理和证据/发布制品提升约束；未引入 v4.4 预留的完整 Artifact Manifest。
+- **T06 外部系统执行**：新增 `standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md`，明确保真度、真实环境/状态、副作用授权及低保真结果不能提升为未执行的真实验证。
+- **T07 集中接入与采用**：更新 manifest、项目采用/override 模板、现有规范引用与相关工作流/检查清单，新增 `docs/implementation/4.1.0/MIGRATION_ADOPTION.md`；根据实际适用性采用，Fast Path 无须制造空对象。
+- **T08 集成 Conformance/Dogfood**：合并 owner suites 传播、历史兼容/负例、Golden 与 self-dogfood/closure 输入；`docs/implementation/4.1.0/CONFORMANCE_STATUS.md` 和 `SELF_DOGFOOD_EVIDENCE.md` 记录范围与局限，不能替代独立版本级真实验证或发布门禁。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
@@ -34,7 +47,7 @@
 - Merge 闭环：merge 后自动重算 DAG ready sets，无人工提示词转发；baseline refresh ordering——不为已知将过期的 baseline 花费最终权威验证（先验证阻塞者、合并、刷新、再验证被阻塞者）。
 - Local-first 执行：默认本地实现→focused tests→lint/typecheck/build→required tests→package→task-owned platform validation→stable HEAD→push→仅 required remote certification；CI 不是常规调试环；区分 required validation profile / normal execution provider / provider-specific attestation（不可替代）。
 - Model preparation split：高风险语义允许 Web/Strong 预备紧凑 Semantic Kernel seed（contracts、predicates、fail-closed validators、negative oracle），repository mechanics 归本地 agent；扩展 MODEL_USAGE_POLICY 而非第二套模型路由。
-- Local Agent Handoff 协议新增执行档案章节（builder/validator claim-time 身份核验、pack staleness、实现顺序、发布规则）与 worker recovery；handoff schema 增加 `execution_profile / agent_freedom / task_pack_ref / execution_pack_ref / expected_base_sha / requested_head_sha / queue_ref`，DISPATCHED validator handoff 强制 `requested_head_sha + validation_profile`。
+- Local Agent Handoff 协议新增执行档案章节（builder/validator claim-time 身份核验、pack staleness、实现顺序、发布规则）与 worker recovery；handoff schema 增加 `execution_profile / agent_freedom / task_pack_ref / execution_pack_ref / expected_base_sha / requested_head_sha / queue_ref` 字段，DISPATCHED validator handoff 强制 `requested_head_sha + validation_profile`。
 - Validation Report schema 扩展 dispatch 身份字段（dispatch_id、expected_base_sha、requested_sha、actual_checked_out_sha、current_pr_head、focused_tests、working_tree_clean、source_modifications_after_validation）。
 - 新模板与 bootstrap：`templates/task-pack.md`、`templates/execution-pack/`（核心 artifacts）、`templates/validation-handoff-queue.md`、`prompts/local-builder-bootstrap.md`、`prompts/local-validator-bootstrap.md`、`prompts/web-reviewer-bootstrap.md`；PROJECT_OVERRIDES 增加 `execution_pack.* / pull_worker.* / validation_queue.* / local_first.enabled` 可选字段；Execution Pack 材料必须可从 shipped artifacts 排除（package leakage 为 packaging gate defect）。
 - 新增 `scripts/v34_rules.py`（确定性分类器：pack staleness、HEAD drift、validator outcome、freedom、queue projection、claim/recovery/merge/baseline-refresh/package-leak）与 `scripts/test_v34_lifecycle_contracts.py`（44 项正/对抗回归，覆盖场景 A–G、base drift、duplicate claim、review invalidation、package leakage）；`verify_standard.py` 增加 v3.4 semantic tokens 与 bootstrap-required 资产。
