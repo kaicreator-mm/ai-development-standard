@@ -34,7 +34,13 @@ A project may select language/archetype profile files in `PROJECT_OVERRIDES.md` 
 - archetype_profile_ref: ads:<relative-path> | project:<relative-path>
 ```
 
-Only explicit selections are loaded. Missing/escaping selections fail closed; no default profile is guessed.
+Only explicit selections are loaded. Missing/escaping selections fail closed; no default profile is guessed. Each routing-relevant `v4.*`, `execution_pack.enabled`, `validation_queue.enabled`, or profile-selection key may be declared **once**. Identical repeats are `DUPLICATE_PROJECT_OVERRIDE`; contradictory repeats are `CONFLICTING_PROJECT_OVERRIDE`. Both return `BLOCKED` with the offending key, line locations, and project-overrides source, regardless of declaration order. No last-line winner or silent profile deduplication is permitted. Unrelated project-specific keys are outside this derived router's configuration vocabulary.
+
+## Bounded request mode contract
+
+`stage` accepts exactly `read`, `task`, or `execution`. `intent` accepts exactly `read` or `mutation`. Omitted, `null`, or empty legacy values default to `task`/`read`, respectively; this preserves requests that previously omitted the fields without adding permission. Every other explicit value is rejected **without trimming, case-folding, or guessing**: `INVALID_ROUTING_STAGE` or `INVALID_ROUTING_INTENT` produces `BLOCKED`, including non-string values and `execution ` / `mutation `.
+
+`stage=execution` always requires verified existing exact-subject Dispatch **and** Execution Pack sources. `intent=mutation` requires the separate exact-subject mutation-authority fact, even if a provider/tool is available. A read plan, including one resolving with a valid mutation-intent fact, never itself grants mutation; `mutation_authorized=false` remains invariant.
 
 ## Fail-closed cases
 
@@ -42,6 +48,8 @@ Routing is `BLOCKED` and names the owner/source when any material input is unres
 
 - missing or mismatched project ADS pin;
 - duplicate/conflicting/broken canonical registry owners;
+- duplicate or conflicting routing-relevant project override declarations or profile selections;
+- unsupported nonempty request stage or intent (without fallback to a weaker mode);
 - requested concern with unknown or contradictory applicability;
 - disabled/unknown project capability requested by the Task;
 - missing Task Pack/Issue identity;
