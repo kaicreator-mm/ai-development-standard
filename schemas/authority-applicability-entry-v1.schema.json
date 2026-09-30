@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/authority-applicability-entry-v1.schema.json",
+  "title": "AI Development Authority / Applicability Entry v1",
+  "description": "Discovery metadata for locating the canonical owner of one semantic concern. It does not grant mutation, merge, side-effect, Validation, Review, Deployment or Release authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "entry_id", "semantic_concern", "canonical_owner_ref", "applicability_posture"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "entry_id": {"type": "string", "minLength": 1},
+    "semantic_concern": {"type": "string", "minLength": 1},
+    "canonical_owner_ref": {"type": "string", "minLength": 1},
+    "applicability_posture": {"type": "string", "enum": ["ALWAYS", "MATERIALITY_DRIVEN", "OPTIONAL", "PROJECT_DEFINED"]},
+    "applicability_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "compatibility_alias_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "notes_ref": {"type": "string", "minLength": 1}
+  }
+}
