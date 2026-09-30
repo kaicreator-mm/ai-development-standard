@@ -14,7 +14,7 @@ Baseline reviewed:
 - Frozen v4.7 Product/L2/DAG;
 - v4.5 engineering-feedback dogfood/task evidence;
 - `ai-development-standard#45`, `#184` and `#469`;
-- `ux-harness#223` current #469 validation handoff.
+- `#469` checkpoint/currentness through comment `5918608303`: validated/reviewed/merged UX v0.4 L3 checkpoint, native DAG materialized 15/15, S00 low-cost Builder dogfood dispatched, actual low-cost implementation outcome still pending.
 
 This document is Product evidence only. It does not authorize Product Freeze, schemas, runtime services, scheduler deployment, Agent transport migration or Task DAG execution.
 
@@ -81,9 +81,9 @@ v4.5 incident/recovery work requires durable engineering feedback/follow-up and 
 
 ### 2.6 #469 proves a real measurement gap, not yet an L3 default
 
-`#469` explicitly tracks whether Git-tracked L3 references plus compact Issue dispatch improve low-cost local execution. Its current result remains `ACTUAL_LOCAL_OUTCOME=NOT_MEASURED` and `STANDARD_CHANGE=NOT_AUTHORIZED`; the pilot requires real execution, negative/failure evidence, stale-pack/rebind events and measured strong-vs-local effort before recommending a standard change.
+`#469` explicitly tracks whether Git-tracked L3 references plus compact Issue dispatch improve low-cost local execution. Currentness has advanced beyond the earlier pre-review handoff: comment `5918608303` records real clean Build Host docs validation PASS, genuinely fresh independent review PASS, Controller merge to stable UX v0.4 integration `1ac0487df72fc20d55b99e4b0cf08ec990af723c` with the reviewed tree preserved, all ten Task pointers rebound to the merged L3 checkpoint, and native Task DAG materialization/read-back at 15/15 exact mandatory edges.
 
-`ux-harness#223` further requires a genuinely independent real Build Host validation before the L3 candidate can even unlock fresh review.
+The first actual low-cost Builder dogfood is now dispatched on S00 `ux-harness#210` with an exact JIT pack bound to that stable task base and merged L3 checkpoint. However, `ACTUAL_LOW_COST_IMPLEMENTATION_OUTCOME=PENDING`, no effectiveness/cost saving is yet proven, and `STANDARD_CHANGE=NOT_AUTHORIZED`; the normative disposition remains `MORE_EVIDENCE` pending actual implementation plus independent exact-head validation/review and preferably later C01/A01 comparison.
 
 **Finding:** v4.8 should standardize the evidence loop around such experiments, not predetermine the outcome.
 
