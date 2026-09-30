@@ -47,7 +47,7 @@
 - Merge 闭环：merge 后自动重算 DAG ready sets，无人工提示词转发；baseline refresh ordering——不为已知将过期的 baseline 花费最终权威验证（先验证阻塞者、合并、刷新、再验证被阻塞者）。
 - Local-first 执行：默认本地实现→focused tests→lint/typecheck/build→required tests→package→task-owned platform validation→stable HEAD→push→仅 required remote certification；CI 不是常规调试环；区分 required validation profile / normal execution provider / provider-specific attestation（不可替代）。
 - Model preparation split：高风险语义允许 Web/Strong 预备紧凑 Semantic Kernel seed（contracts、predicates、fail-closed validators、negative oracle），repository mechanics 归本地 agent；扩展 MODEL_USAGE_POLICY 而非第二套模型路由。
-- Local Agent Handoff 协议新增执行档案章节（builder/validator claim-time 身份核验、pack staleness、实现顺序、发布规则）与 worker recovery；handoff schema 增加 `execution_profile / agent_freedom / task_pack_ref / execution_pack_ref / expected_base_sha / requested_head_sha / queue_ref` 字段，DISPATCHED validator handoff 强制 `requested_head_sha + validation_profile`。
+- Local Agent Handoff 协议新增执行档案章节（builder/validator claim-time 身份核验、pack staleness、实现顺序、发布规则）与 worker recovery；handoff schema 增加 `execution_profile / agent_freedom / task_pack_ref / execution_pack_ref / expected_base_sha / requested_head_sha / queue_ref`，DISPATCHED validator handoff 强制 `requested_head_sha + validation_profile`。
 - Validation Report schema 扩展 dispatch 身份字段（dispatch_id、expected_base_sha、requested_sha、actual_checked_out_sha、current_pr_head、focused_tests、working_tree_clean、source_modifications_after_validation）。
 - 新模板与 bootstrap：`templates/task-pack.md`、`templates/execution-pack/`（核心 artifacts）、`templates/validation-handoff-queue.md`、`prompts/local-builder-bootstrap.md`、`prompts/local-validator-bootstrap.md`、`prompts/web-reviewer-bootstrap.md`；PROJECT_OVERRIDES 增加 `execution_pack.* / pull_worker.* / validation_queue.* / local_first.enabled` 可选字段；Execution Pack 材料必须可从 shipped artifacts 排除（package leakage 为 packaging gate defect）。
 - 新增 `scripts/v34_rules.py`（确定性分类器：pack staleness、HEAD drift、validator outcome、freedom、queue projection、claim/recovery/merge/baseline-refresh/package-leak）与 `scripts/test_v34_lifecycle_contracts.py`（44 项正/对抗回归，覆盖场景 A–G、base drift、duplicate claim、review invalidation、package leakage）；`verify_standard.py` 增加 v3.4 semantic tokens 与 bootstrap-required 资产。
@@ -64,7 +64,7 @@
 - 将 CI execution channel/provider health 与 Validation Gate 解耦；支持 `AVAILABLE / INFRA_BLOCKED / TIMED_OUT / CANCELLED`。当 authority 要求 validation profile 而非 provider-specific attestation 时，可由等价或更强的 trusted clean exact-SHA executor 替代，并记录 `CI_INFRA_EXCEPTION`；provider-specific requirement 不得静默替代。
 - Candidate Freeze 升级为 operational immutable state：冻结记录绑定 candidate SHA/tree/ref/visible evidence；冻结后禁止静默移动 candidate ref 或加入 product/docs/evidence commit。需要内容变化时必须 `THAWED/INVALIDATED → successor → affected visible validation → new freeze → required Hidden Validation → new Release Qualification`。
 - Hidden Validation 增加 escaped-defect feedback loop：后续发现 release-significant defect 时区分 visible gap、hidden blind spot、pack defect 等；material blind spot 必须以独立 failure-family scenario 加强 private pack，并产生新的 immutable pack identity。
-- Local Agent Handoff 增加 machine-verifiable completeness contract 和 `HANDOFF_READY`；完成后优先只发送 `repository + handoff issue` pointer，禁止在 chat 中维护第二份 task contract。
+- Local Agent Handoff 增加 machine-verifiable completeness contract 和 `HANDOFF_READY`；完成后优先只发送 `repository + handoff issue` pointer，禁止在 chat 中复制第二份 task contract。
 - `ai-dev:event:v2` 成为所有新 structured Agent events 的唯一 writer protocol；历史 v1 保持只读兼容。schema 扩展 dispatch、CI infra、validation impact、candidate、hidden escape、release qualification、repository integration events。
 - 新增 `standard-manifest.json` active asset inventory，以及 Task Contract、Validation Report、Execution State、Local Agent Handoff、Agent Event v2 machine schemas；verifier 对缺失资产、schema drift、protocol/version drift 与关键语义回归 fail closed。
 - 引入 executable immutable standard resolution：项目 pin 的 40-char revision 必须真实 resolve，且 exact revision 的 `VERSION` 必须与声明 SemVer 一致；禁止 syntactically-valid-but-nonexistent SHA 和 fallback 到 `main/latest`。
@@ -90,7 +90,7 @@ v3.3 是从 v3.1 的兼容 MINOR 演进；未单独发布 v3.2，其已验证 fo
 - required Independent Review 现在可以通过 operator attribution 审计 context independence：Builder 与 Reviewer 可共用同一个 GitHub transport account，但必须是可区分的逻辑 context。
 - `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`、`templates/agent-event-comment.md`、`standards/CHATGPT_WEB_ROLE.md`、Web/Local bootstrap prompts、项目 `PROJECT_OVERRIDES` 与 `AGENTS` 模板同步 Operator Attribution 语义。
 - Local Agent / Validation event 必须能区分真正执行命令的本地 operator/run 与发起请求的 Web session，避免共享 GitHub author 造成错误归属。
-- `verify_standard.py` 新增 v3.1 semantic guards：检查 Event v2、operator attribution 五字段、`ROLE_CLAIMED/ROLE_RELEASED` 与 v1 backward compatibility。
+- `verify_standard.py` 新增 v3.1 semantic guards：检查 Event v2、operator attribution 五字段、v1 backward compatibility。
 
 ## v3.0.0 — 2026-09-18
 
@@ -138,7 +138,7 @@ Breaking changes:
 - 新增 `standards/CI_EVIDENCE_STANDARD.md`：定义 `manifest.json`、`validation-summary.json`、`environment.json`、`diagnostic.json`、`SHA256SUMS`、`completion.json` 与 workflow-level `latest.json` 的非重叠职责。
 - immutable run identity 绑定 provider run + rerun/attempt + exact SHA，避免同一 pipeline rerun 覆盖历史 Evidence。
 - `completion.json` 被定义为 Evidence publication commit marker；Validation FAIL 也可以 publication COMPLETE，反之 Validation PASS 也不能把 incomplete publication 视为完整证据。
-- `latest.json` 只作为 mutable discovery/cache pointer，必须在 completion 之后更新，并要求 serialization / monotonic compare / CAS 等等价 stale-write protection；它不能成为 Validation 或 Release Authority。
+- `latest.json` 只作为 mutable discovery/cache pointer，必须在 completion 之后更新，并要求 serialization / monotonic compare / CAS 等价 stale-write protection；它不能成为 Validation 或 Release Authority。
 - artifact 必须记录 producer check/state/provenance；producer 未 PASS 时不能把残留 workspace 文件包装成有效 build/package artifact。
 - consumer-facing metadata 必须使用 Evidence-relative path；合法的 `artifacts/...` published namespace 与本地 staging root 必须按类型/存在性区分，不能靠简单字符串禁用。
 - Validation profile 应保持 Validation Tuple 边界；不要用一个粗粒度命令混合 Windows packaged、Linux logic、visual/golden、Critical Journey、Hidden 或 release packaging 后再输出低信息量 blanket status。
@@ -156,7 +156,7 @@ Breaking changes:
 - 推荐版本使用 GitHub Milestone，Label 表达稳定属性；新增 `type:*`、`handoff:local-agent`、`executor:*`、`gate:*`、`env:*`、`release-blocker`、`blocked:environment` 分类建议。
 - 新增 `standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md`，将 Codex-specific handoff 泛化为 Codex、Claude Code、Build Host Agent 或其它可信 execution agent 共用的 Issue contract。
 - 新增 `templates/local-agent-handoff-issue.md`，补齐 Execution Environment、Validation Profile、Exact Commands、fixtures/services/credential assumptions、completion rule 与 blocker reporting。
-- 新增 `prompts/local-agent-bootstrap.md`，使本地 Agent 只需 `repository + handoff issue` 即可按 pinned standard、baseline SHA、allowed/forbidden changes 和 required gates 初始化并执行。
+- 新增 `prompts/local-agent-bootstrap.md`，使本地 Agent 只需 `repository + handoff issue` 即可按 pinned standard、baseline SHA、allowed changes and required gates 初始化并执行。
 - 分支数量本身不作为限制 Task isolation 的理由；成本敏感项目继续通过 Minimal CI 与本地/self-hosted validation 控制 GitHub-hosted CI 消耗，并遵守 repository large-file/artifact hygiene。
 
 ## v2.0.0 — 2026-09-15
