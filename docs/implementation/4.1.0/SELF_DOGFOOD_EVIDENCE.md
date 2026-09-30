@@ -1,56 +1,40 @@
 # v4.1 Execution Foundation — Self-Dogfood Evidence
 
-Status: **T08 candidate evidence input — not Version Closure / Release Qualification**
+Status: **REPAIRED T08 CANDIDATE — pending successor exact-SHA Validation and Fresh Independent Review. No Version Closure / Release Qualification claim.**
 
-## Subject
+## Execution subject
 
-T08 exercises the dependency-complete v4.1 Execution Foundation after T01–T07 integration. The executable matrix is `templates/golden/V41_EXECUTION_FOUNDATION_EXAMPLES.json` and `scripts/test_v41_execution_foundation_conformance.py`.
+T08 consumes dependency-complete v4.1 T01–T07 after their merges. Its primary executable entrypoint is `scripts/test_v41_execution_foundation_conformance.py`, launched by `scripts/test_verify_standard.py` in repository CI. On its actual checked-out SHA it invokes these **seven actual owner suites**, not fixture substitutes:
 
-This document records what the repository fixture/test layer is intended to prove. Exact candidate Validation must still execute the focused suite and full repository verifier on the final T08 SHA.
+1. `test_v41_execution_foundation_contracts.py` (including historical v4 Dispatch, Validation Report and Execution Pack payload compatibility).
+2. `test_v41_dependency_toolchain.py` (risk exception != Validation PASS/remediation, Node + non-Node toolchains, Agent-local tooling non-authority).
+3. `test_v41_git_execution.py` (local/unpushed Git, independent workspaces, SHA rewrite, unknown-ownership cleanup).
+4. `test_v41_configuration_secrets.py` (secret reference boundaries).
+5. `test_v41_workspace_artifact.py` (classes, producer/build provenance, authorized promotion, destructive cleanup).
+6. `test_v41_external_systems.py` (actual fidelity/non-escalation, unavailable BLOCKED/NOT_RUN, bounded retries, project-defined taxonomy).
+7. `test_v41_adoption_wiring.py` (integrated adoption/Golden coverage).
 
-## Covered journeys
+The T08 Golden matrix complements these owner suites; it does not replace their assertions. Its additional negatives cover accepted-risk-not-PASS/remediation, unpushed/local Task claim, stale exact-SHA reuse, unknown ownership cleanup, promotion missing producer/build source refs, unavailable/unexecuted external journey, custom project fidelity labels and per-attempt versus overall deadline. The supplementary evaluator's toy records are not real provider/package/build output or production proof.
 
-### Minimal / Fast Path
+## Adversarial owner-weakening test
 
-A non-material change can proceed without constructing empty Execution Context, dependency profile, secret, artifact or external-system records. Fast Path reduces ceremony only; a material concern remains subject to its owner.
+`test_verify_standard.py` clones the repository into an isolated temporary directory (without `.git`/Python bytecode), weakens a material T02 normative phrase, then executes the **same** T08 integrated runner against that copy. It asserts non-zero child exit and identifies the broken owner test by name. The deliberate child FAIL demonstrates that a weakened T01–T07 owner is not masked by an independently green T08 fixture oracle. No canonical owner file is modified by this adversarial test.
 
-### Dependency / toolchain language neutrality
+## Covered boundaries and carry-forwards
 
-The matrix contains both Node/npm and Python examples. Compatibility requirements and certification tuples remain separate facts, and an Agent-local runtime cannot narrow repository authority merely because that runtime is installed.
+- Fast Path: no empty projection for a non-material concern, while material owner obligations persist.
+- Historical/additive: old v4 machine payloads still validate without optional v4.1 fields; optional references do not rewrite historic authority or exact subject.
+- Toolchain: Node/npm plus Python; compatibility, preferred development, deployment identity and certified tuple must not collapse; local installed runtime does not rewrite repository authority.
+- Security/risk: durable secret *references*, not values; accepted-risk remains a disposition, never PASS or vulnerability remediation.
+- Git/workspaces: distinct writable materializations and durable recovery; local branch/unpublished work and rewritten old exact-SHA evidence cannot become canonical live Task/Validation facts. Unknown/unowned state is preserved, isolated and escalated rather than destructively cleaned.
+- Artifacts: `CACHE` != evidence, `BUILD_OUTPUT` != RELEASE_ARTIFACT; supplementary trial promotion requires authorization, identity plus explicit source and build references. Actual artifact Release qualification remains a different owner.
+- External systems: sandbox cannot claim production, credential capability cannot grant write; required unavailable journey is BLOCKED and available-but-unexecuted is NOT_RUN. Project-defined fidelity labels are extensible, and per-attempt timeout cannot exceed an authorized overall deadline; actual equivalence/retry policy requires real project authority.
+- Evidence boundary: Task/integration PASS and CI success never manufacture Release READY or Version Closure.
 
-### Configuration / secrets
+## Required successor evidence
 
-Durable execution context uses secret references only. A secret value in ordinary evidence is rejected by the conformance matrix. Credential availability is capability, not side-effect authority.
+A clean exact-SHA independent Validator must execute the T08 focused integrated runner, `test_verify_standard.py` (including the adversarial weakening negative) and `verify_standard.py`; capture requested/tested/current HEAD, live base, command exit codes, environment identity and cleanliness. A Fresh Independent reviewer must re-assess the updated evidence against #364's two P1/four P2 without inheriting #363's historical predecessor PASS.
 
-### Multi-Agent workspace isolation and recovery
+## Explicit evidence limits
 
-The positive scenario uses distinct Builder/Reviewer workspace identities plus a durable Issue/evidence handoff. A shared writable workspace is negative. Lost-session recovery requires durable subject identity/handoff and protection of unpublished work rather than destructive cleanup.
-
-### Artifact classification and promotion
-
-CACHE existence cannot satisfy Validation evidence. BUILD_OUTPUT existence cannot self-promote to RELEASE_ARTIFACT. The positive promotion case requires explicit promotion authority plus bound identity/provenance.
-
-### External dependency fidelity
-
-A real-service sandbox remains a sandbox; it does not prove production when production is the required environment. Read/credential capability does not authorize unapproved writes.
-
-### Evidence boundary
-
-Task/integration Validation + Review evidence is not Release Qualification. T08 produces Version Closure inputs only and does not declare Release READY.
-
-## Historical compatibility posture
-
-v4.1 machine contracts were introduced additively. T08 checks the core backward-compatibility posture by requiring that the new Execution Context and Dependency/Toolchain profile remain optional projections rather than retroactive requirements on historical/minimal v4 evidence. Historical evidence keeps its original subject and meaning.
-
-## Evidence strength and limits
-
-The checked-in matrix proves repository contract/conformance semantics when executed on an exact SHA. It does **not** claim:
-
-- production provider access;
-- an actual secret value read;
-- a live external production side effect;
-- Release Qualification;
-- Hidden Validation;
-- a package/release artifact qualification.
-
-If Version Closure requires any higher-fidelity claim, it must obtain separate exact-subject evidence under the owning gate rather than promoting this fixture result.
+This repository dogfood does **not** claim authenticated production provider access, actual external writes, secret-value reads, Hidden Validation, a qualified release artifact, multi-platform installer behavior, or any Release/Version Closure verdict. If a later Gate requires real runtime/provider/platform evidence not executed here, use an exact-subject handoff and preserve BLOCKED/NOT_RUN instead of upgrading fixture/CI truth by assertion.
