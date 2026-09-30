@@ -26,4 +26,4 @@ Map actual project-selected compiler, unit/integration test, static-analysis, pa
 
 ## Applicability and conflict
 
-If this project does not materially use Java, Fast Path permits non-applicability without empty profile records. Unverified vendor/JDK/target behavior stays UNKNOWN with bounded exact-tuple Validation. Compose with an independently applicable archetype and non-weakening PROJECT_OVERRIDES. Core/Frozen/project authority wins conflicts; profile file order, default tools and local JDK availability confer no policy authority or Validation/Release PASS.
+If this project does not materially use Java, Fast Path permits non-applicability without empty profile records. Unverified vendor/JDK/target behavior stays UNKNOWN with bounded exact-tuple Validation. Compose with an independently applicable archetype and non-weakening PROJECT_OVERRIDES. Frozen/Core/project authority wins conflicts; profile file order, default tools and local JDK availability confer no policy authority or Validation/Release PASS.
