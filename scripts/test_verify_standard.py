@@ -10,6 +10,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 VERIFY = ROOT / "scripts" / "verify_standard.py"
+V42_INTEGRATION = ROOT / "scripts" / "test_v42_cross_standard_conformance.py"
 
 
 class StandardVerifierRegressionTests(unittest.TestCase):
@@ -35,6 +36,42 @@ class StandardVerifierRegressionTests(unittest.TestCase):
     def test_repository_baseline_passes(self) -> None:
         result = self.run_verifier(ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_v42_actual_owner_integration_runner_passes(self) -> None:
+        # Narrow T07 authority: invoke the real T01–T06 owner/dogfood suites
+        # via the integration runner; fixture-only success is insufficient.
+        self.assertTrue(V42_INTEGRATION.is_file())
+        self.assertTrue((ROOT / "docs/implementation/4.2.0/dogfood/T07_cross_standard_cases.json").is_file())
+        result = subprocess.run(
+            [sys.executable, str(V42_INTEGRATION)],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=180,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_v42_owner_weakening_is_caught_by_integration_runner(self) -> None:
+        # Keep owner text anchors in place except the target assertion, to
+        # establish that T07 really depends on an existing owner suite.
+        temp, repo = self.copied_repo()
+        self.addCleanup(temp.cleanup)
+        owner = repo / "standards" / "INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md"
+        source = owner.read_text(encoding="utf-8")
+        marker = "wire-safe"
+        self.assertIn(marker, source)
+        owner.write_text(source.replace(marker, "wire-fragile"), encoding="utf-8")
+        result = subprocess.run(
+            [sys.executable, str(repo / "scripts" / "test_v42_cross_standard_conformance.py")],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=180,
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("test_v42_interface_compatibility.py", result.stdout + result.stderr)
 
     def test_asset_and_manifest_entry_cannot_be_deleted_together(self) -> None:
         temp, repo = self.copied_repo()
