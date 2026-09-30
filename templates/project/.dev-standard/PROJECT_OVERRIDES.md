@@ -175,6 +175,14 @@ recommended
 not-required
 ```
 
+Portable label mapping when labels are used:
+
+```text
+review:required
+review:recommended
+review:not-required
+```
+
 Rules:
 
 - `required` is a real merge gate and requires PASS on the current merge-candidate SHA.
@@ -292,4 +300,5 @@ Historical workflows, old scripts or obsolete artifacts do not automatically cre
 
 - `<path or concern → owner/review rule>`
 
-Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims. When Review is required by project/task authority, its exact-SHA evidence is also mandatory.
+Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims.
+When Review is required by project/task authority, its exact-SHA evidence is also mandatory.
