@@ -1,11 +1,11 @@
 # v4.7.0 Authority / State / Schema Convergence Inventory
 
-Status: **REFRESHED FINAL PRE-FREEZE INVENTORY — non-normative**
+Status: **FINAL PRE-FREEZE INVENTORY — non-normative; current through #318 PASS**
 
 Refresh date: 2026-09-30
-Current canonical main: `bc3feeccf130fcfc7b49efaf44983e4dcdac6e5d`
+Current canonical main: `6f2fb482812b17289b4f3d89ccf096ef6f618123`
 
-This inventory records the semantic-owner, state-dimension and machine-contract shape after v4.1–v4.6 Product/L2 authorities became sufficiently stable for final v4.7 Product-currentness review. It does **not** authorize implementation, path migration, schema replacement, state collapse or historical reinterpretation.
+This inventory records the semantic-owner, state-dimension and machine-contract shape after v4.1–v4.6 Product/L2 authorities became sufficiently stable for v4.7 Product Freeze. It does **not** authorize implementation, path migration, schema replacement, state collapse or historical reinterpretation.
 
 ## 1. Convergence premise
 
@@ -106,7 +106,7 @@ Deployment success does not imply runtime health. Incident recovered does not im
 
 ### v4.6 AI-native / Agentic Governance
 
-Frozen Product `e6aa04981110376e623d19b7dd4d0c6d0e139bdf`; Frozen L2 `f47ea81e8f8df32ac6c8b7cc922c405a17b704d9`.
+Frozen Product `e6aa04981110376e623d19b7dd4d0c6d0e139bdf`; Frozen L2 `f47ea81e8f8df32ac6c8b7cc922c405a17b704d9`; canonical planning merge/current `main@6f2fb482812b17289b4f3d89ccf096ef6f618123`.
 
 Exactly three new owners:
 
@@ -281,10 +281,9 @@ This is important convergence evidence:
 - Task Pack remains durable mutation authority;
 - a registry/discovery layer MUST NOT imply mutation authority;
 - technical necessity, CI PASS or Validation PASS does not retroactively create write authority;
-- authority amendments must be explicit/current and scoped;
-- current repair path is #285 / PR #286 / Fresh Review #288.
+- authority amendments must be explicit/current and scoped.
 
-The finding does **not** reveal a semantic-owner contradiction in v4.1 Product/L2 and therefore does not justify redesigning the owner map.
+The repair path is now durable and explicit: #285 / PR #286 amended only the missing Golden coverage authority, #288 independently reviewed it PASS, and the amendment was merged into `version/v4.1.0@63585b5b59f2c294f9c5e029c52c855f7e75a88b`; T07 successor Validation #300 PASS confirms the repaired authority is in the tested ancestry. The finding does **not** reveal a semantic-owner contradiction in v4.1 Product/L2 and therefore does not justify redesigning the owner map.
 
 ## 9. Repository information architecture
 
@@ -332,7 +331,19 @@ The following remain outside additive/non-weakening v4.7 if they prove necessary
 
 If required, v4.7 should produce explicit v5 migration inputs instead of hiding the break inside “convergence.”
 
-## 13. Final pre-Freeze verdict
+## 13. Implementation-currentness classification at Freeze authorization
+
+The final Product-currentness review #318 independently confirmed that current implementation findings do not expose a material Frozen Product/L2 contradiction. In particular:
+
+- v4.2 T02/T03 Review #313 PASS and both owner concerns have since merged to their version branch;
+- v4.3 root Review ultimately PASS for T01/T03/T04; T02's prior failure was a local test/Markdown mismatch and its successor Validation #317 PASS, not an owner contradiction;
+- v4.4 T01 Review #315 PASS and the machine-contract concern has merged; T02–T04 remain implementation concerns under the already-frozen owner map;
+- v4.5 #316 found one T01 implementation P1 in backport result/evidence association; the required repair preserves the Frozen three-family architecture and does not require Product/L2 owner change;
+- v4.6 planning Review #301 PASS and planning is canonically integrated at current main.
+
+Any later finding that demonstrates a real Product/L2 contradiction invalidates this currentness conclusion and requires an explicit refresh; ordinary implementation/test defects do not silently rewrite Frozen Product authority.
+
+## 14. Final pre-Freeze verdict
 
 Current evidence supports a narrowed v4.7 Product centered on:
 
@@ -346,4 +357,6 @@ Current evidence supports a narrowed v4.7 Product centered on:
 
 Current evidence does **not** support a global state machine, object collapse, mandatory physical directory refactor, historical reinterpretation or incompatible v4 wire rewrite.
 
-`LOCAL_ENV=NOT_REQUIRED` for this inventory. The next gate is a Fresh Independent final L1/currentness review before any explicit v4.7 Product Freeze.
+Fresh Independent final L1/currentness Review #318 returned PASS with `PRODUCT_FREEZE_AUTHORIZATION=YES` on PR #227 HEAD `c7aaef0839be9a5765b19c57b51d2cd28d36c2bd` × `main@6f2fb482812b17289b4f3d89ccf096ef6f618123`. Its only P2 was currentness-hygiene in this inventory/PR metadata; this refresh closes that non-semantic issue before the explicit Product Freeze commit.
+
+`LOCAL_ENV=NOT_REQUIRED` for this inventory and Product Freeze.
