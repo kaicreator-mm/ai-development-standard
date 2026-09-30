@@ -23,7 +23,40 @@ REQUIRED_NEGATIVES = {
     "F06_RUNNER_AVAILABLE_NOT_MUTATION_AUTHORITY": ("runner_capability", "work_item_workflow"),
     "F07_OLD_SHA_VALIDATION_NOT_SUCCESSOR_PASS": ("validation_gate", "validation_gate"),
     "F08_SANDBOX_PASS_NOT_REAL_ENV_PASS": ("validation_gate", "validation_gate"),
+    "F09_DISPATCH_COMPLETED_NOT_RELEASE_READY": ("dispatch_lifecycle", "release_qualification"),
+    "F10_PACK_CURRENT_NOT_VALIDATION_PASS": ("execution_pack_currentness", "validation_gate"),
 }
+
+# Actual separately merged immutable v4.5 normative runtime owner (#445 / #441 P2).
+RUNTIME_OWNER_COMMIT = "c9ee9249999aa5463ce880bc7674b732979009b3"
+RUNTIME_OWNER_PATH = "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md"
+RUNTIME_OWNER_REF = f"github:kaicreator-mm/ai-development-standard@{RUNTIME_OWNER_COMMIT}:{RUNTIME_OWNER_PATH}"
+# Historically valid conceptual provenance, superseded as owner discovery.
+OLD_CONCEPTUAL_RUNTIME_OWNER_REF = (
+    "github:kaicreator-mm/ai-development-standard@"
+    "2acf8bb020d76d6bb90bcfbb0bf1580e2d2f20ea:docs/implementation/4.5.0/L2_ARCHITECTURE_EVIDENCE.md"
+)
+# Unrelated pinned v4.4 deployment owner; must remain unchanged.
+DEPLOYMENT_OWNER_REF = (
+    "github:kaicreator-mm/ai-development-standard@"
+    "88f5ba907513338192c6ae27d48880de13f1b98e:standards/DEPLOYMENT_GOVERNANCE_STANDARD.md"
+)
+
+
+def runtime_owner_errors(registry: dict) -> list[str]:
+    """Committed strict fail-closed oracle: runtime_health must pin the exact merged v4.5 normative owner.
+
+    Test-only structural oracle for the committed pointer/currentness correction (#445);
+    it is not a repo-wide currentness engine and not a runtime observation.
+    """
+    errors = []
+    runtime = next((d for d in registry.get("dimensions", []) if d.get("dimension_id") == "runtime_health"), None)
+    if runtime is None:
+        return ["missing runtime_health dimension"]
+    owner = runtime.get("canonical_owner_ref", "")
+    if owner != RUNTIME_OWNER_REF:
+        errors.append(f"runtime_health owner not exact merged v4.5 normative owner tuple: {owner}")
+    return errors
 
 
 def consistency_errors(registry: dict) -> list[str]:
@@ -122,14 +155,44 @@ class StateDimensionRegistryTests(unittest.TestCase):
 
     def test_upstream_owner_limitations_are_explicit_and_non_authoritative(self) -> None:
         dims = {d["dimension_id"]: d for d in self.data["dimensions"]}
+        self.assertEqual(dims["deployment_result"]["canonical_owner_ref"], DEPLOYMENT_OWNER_REF)
         self.assertRegex(dims["deployment_result"]["canonical_owner_ref"], EXACT_UPSTREAM)
         runtime = dims["runtime_health"]
+        self.assertEqual(runtime["canonical_owner_ref"], RUNTIME_OWNER_REF)
         self.assertRegex(runtime["canonical_owner_ref"], EXACT_UPSTREAM)
-        self.assertIn("L2_ARCHITECTURE_EVIDENCE.md", runtime["canonical_owner_ref"])
+        self.assertNotIn("L2_ARCHITECTURE_EVIDENCE.md", runtime["canonical_owner_ref"])
         self.assertEqual(runtime["vocabulary_posture"], "OWNER_DEFINED")
-        for token in ("BLOCKED until", "not an active local normative Runtime vocabulary", "not a live state store", "does not prove Runtime health"):
+        self.assertEqual(runtime_owner_errors(self.data), [])
+        for token in ("NOT imported into the local v4.7 branch",
+                      "not an active local normative Runtime vocabulary",
+                      "not a live state store",
+                      "does not prove Runtime health"):
             self.assertIn(token, self.reference)
-        self.assertIn("not an active local normative Runtime vocabulary", self.reference)
+        self.assertNotIn("BLOCKED until", self.reference)
+
+    def test_runtime_owner_pointer_fails_closed_on_old_or_unqualified_owner(self) -> None:
+        old = deepcopy(self.data)
+        old_runtime = next(d for d in old["dimensions"] if d["dimension_id"] == "runtime_health")
+        old_runtime["canonical_owner_ref"] = OLD_CONCEPTUAL_RUNTIME_OWNER_REF
+        # The old conceptual-only pointer is structurally valid upstream provenance, yet it is
+        # no longer current normative owner discovery and must fail the committed strict oracle.
+        self.assertRegex(OLD_CONCEPTUAL_RUNTIME_OWNER_REF, EXACT_UPSTREAM)
+        self.assertTrue(runtime_owner_errors(old))
+        # A fabricated/new owner with a structurally valid immutable github:<sha> string is
+        # still not the exact merged normative owner tuple and must fail closed as well.
+        fabricated = deepcopy(self.data)
+        fabricated_runtime = next(d for d in fabricated["dimensions"] if d["dimension_id"] == "runtime_health")
+        fabricated_runtime["canonical_owner_ref"] = (
+            "github:kaicreator-mm/ai-development-standard@"
+            "1111111111111111111111111111111111111111:" + RUNTIME_OWNER_PATH
+        )
+        self.assertRegex(fabricated_runtime["canonical_owner_ref"], EXACT_UPSTREAM)
+        self.assertTrue(runtime_owner_errors(fabricated))
+        # A mutable upstream ref fails the structural upstream oracle independently.
+        mutable = deepcopy(self.data)
+        mutable_runtime = next(d for d in mutable["dimensions"] if d["dimension_id"] == "runtime_health")
+        mutable_runtime["canonical_owner_ref"] = f"github:kaicreator-mm/ai-development-standard@main:{RUNTIME_OWNER_PATH}"
+        self.assertTrue(any("mutable/unqualified" in x for x in consistency_errors(mutable)))
 
     def test_owner_vocabularies_remain_separate(self) -> None:
         self.assertIn("state:done", (ROOT / "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md").read_text(encoding="utf-8"))
