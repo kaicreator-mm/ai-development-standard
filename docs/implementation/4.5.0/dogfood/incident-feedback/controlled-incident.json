@@ -1,0 +1,38 @@
+{
+  "classification": "SYNTHETIC_FIXTURE_ONLY",
+  "scenario_id": "v45-t06-controlled-incident-001",
+  "subject": "artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim",
+  "baseline_evidence": {
+    "deployment_result_ref": "deployment:historical-fixture-001",
+    "deployment_result_digest": "sha256:fixture-deployment-immutable-placeholder",
+    "release_result_ref": "release:historical-fixture-001",
+    "release_result_digest": "sha256:fixture-release-immutable-placeholder"
+  },
+  "authorized_simulated_actions": [
+    {"ref": "action:sim-mitigation-001", "kind": "FIXTURE_ONLY", "authority_ref": "fixture-authority:simulation"},
+    {"ref": "action:sim-recovery-001", "kind": "FIXTURE_ONLY", "authority_ref": "fixture-authority:simulation"}
+  ],
+  "events": [
+    {"schema_version": 1, "incident_id": "incident:fixture-001", "event_id": "event:001-detect", "event_kind": "DETECTED", "occurred_at": "2026-09-30T08:00:00Z", "runtime_subject_refs": ["artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim"], "evidence_refs": ["evidence:redacted-signal-001"], "actor_or_authority_ref": "fixture-actor:detector"},
+    {"schema_version": 1, "incident_id": "incident:fixture-001", "event_id": "event:002-mitigate", "event_kind": "MITIGATED", "occurred_at": "2026-09-30T08:01:00Z", "runtime_subject_refs": ["artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim"], "evidence_refs": ["evidence:redacted-mitigation-001"], "actor_or_authority_ref": "fixture-authority:simulation", "mitigation_action_refs": ["action:sim-mitigation-001"]},
+    {"schema_version": 1, "incident_id": "incident:fixture-001", "event_id": "event:003-recovered", "event_kind": "RECOVERED", "occurred_at": "2026-09-30T08:02:00Z", "runtime_subject_refs": ["artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim"], "evidence_refs": ["evidence:redacted-recovery-001"], "actor_or_authority_ref": "fixture-authority:simulation", "recovery_action_refs": ["action:sim-recovery-001"]},
+    {"schema_version": 1, "incident_id": "incident:fixture-001", "event_id": "event:004-verified", "event_kind": "VERIFIED", "occurred_at": "2026-09-30T08:03:00Z", "runtime_subject_refs": ["artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim"], "evidence_refs": ["evidence:fixture-isolated-recheck-001"], "actor_or_authority_ref": "fixture-actor:verifier"},
+    {"schema_version": 1, "incident_id": "incident:fixture-001", "event_id": "event:005-follow-up", "event_kind": "FOLLOW_UP_CREATED", "occurred_at": "2026-09-30T08:04:00Z", "runtime_subject_refs": ["artifact:sha256:fixture-only/deployment:fixture-001/environment:isolated-sim"], "evidence_refs": ["evidence:redacted-reproduction-001", "decision:fixture-regression-001"], "actor_or_authority_ref": "fixture-actor:triage", "engineering_follow_up_refs": ["work-item:fixture-regression-001"]}
+  ],
+  "follow_up": {
+    "classification_disposition": "REQUIRED_ENGINEERING_WORK",
+    "classification_decision_ref": "decision:fixture-regression-001",
+    "classification_owner_ref": "fixture-actor:triage",
+    "reproduction_ref": "evidence:redacted-reproduction-001",
+    "regression_scenario_ref": "scenario:fixture-regression-001",
+    "engineering_work_item_ref": "work-item:fixture-regression-001",
+    "engineering_work_verified_by_owner": false,
+    "completion_claim": false
+  },
+  "validation_request": {
+    "scope": "Real authorized incident detection, mitigation/recovery, post-recovery verification and durable follow-up on one exact host/deployment/artifact/environment tuple",
+    "execution": "NOT_RUN",
+    "gate": "BLOCKED",
+    "reason": "No production/sandbox side-effect owner authorization or real exact host tuple is provided by this fixture. No live mutations are executed."
+  }
+}
