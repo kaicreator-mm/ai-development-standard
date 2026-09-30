@@ -154,6 +154,44 @@ class ProgressiveDisclosureRoutingTests(unittest.TestCase):
         result = self.resolve(request)
         self.assertIn("CAPABILITY_DISABLED", {b["code"] for b in result["blockers"]})
 
+    def test_conflicting_duplicate_capability_fails_closed_in_both_orders(self) -> None:
+        request = deepcopy(self.request)
+        request["requested_capabilities"] = ["v4.reducer"]
+        path = self.project / ".dev-standard/PROJECT_OVERRIDES.md"
+        for first, second in (("disabled", "enabled"), ("enabled", "disabled")):
+            with self.subTest(first=first, second=second):
+                self.set_overrides(profile=False, reducer=first)
+                path.write_text(path.read_text(encoding="utf-8") + f"- v4.reducer: {second}\n", encoding="utf-8")
+                result = self.resolve(request)
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["complete"])
+                self.assertIn("CONFLICTING_PROJECT_OVERRIDE", {b["code"] for b in result["blockers"]})
+                self.assertEqual(result["gate_effect"], "NONE")
+
+    def test_duplicate_capability_even_if_identical_is_not_silent(self) -> None:
+        path = self.project / ".dev-standard/PROJECT_OVERRIDES.md"
+        path.write_text(path.read_text(encoding="utf-8") + "- v4.reducer: enabled + durable facts\n", encoding="utf-8")
+        result = self.resolve()
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertIn("DUPLICATE_PROJECT_OVERRIDE", {b["code"] for b in result["blockers"]})
+
+    def test_profile_duplicates_and_conflicts_fail_closed_in_both_orders(self) -> None:
+        path = self.project / ".dev-standard/PROJECT_OVERRIDES.md"
+        for first, second in (
+            ("project:profiles/python.md", "ads:profiles/python.md"),
+            ("ads:profiles/python.md", "project:profiles/python.md"),
+            ("project:profiles/python.md", "project:profiles/python.md"),
+        ):
+            with self.subTest(first=first, second=second):
+                self.set_overrides(profile=False)
+                path.write_text(path.read_text(encoding="utf-8") +
+                                f"- language_profile_ref: {first}\n- language_profile_ref: {second}\n", encoding="utf-8")
+                result = self.resolve()
+                self.assertEqual(result["status"], "BLOCKED")
+                expected = "DUPLICATE_PROJECT_OVERRIDE" if first == second else "CONFLICTING_PROJECT_OVERRIDE"
+                self.assertIn(expected, {b["code"] for b in result["blockers"]})
+                self.assertFalse(any(item["kind"] == "selected-profile" for item in result["read_set"]))
+
     def test_pin_and_exact_subject_drift_fail_closed(self) -> None:
         result = resolve_standard_read_set(
             self.project, self.ads, self.request,
@@ -172,6 +210,55 @@ class ProgressiveDisclosureRoutingTests(unittest.TestCase):
         request["provider_available"] = True
         result = self.resolve(request)
         self.assertIn("MUTATION_AUTHORITY_NOT_PROVEN", {b["code"] for b in result["blockers"]})
+
+    def test_invalid_nonempty_stage_and_intent_never_fall_back_to_read(self) -> None:
+        for field, invalid, blocker in (
+            ("stage", "execution ", "INVALID_ROUTING_STAGE"),
+            ("stage", "EXECUTION", "INVALID_ROUTING_STAGE"),
+            ("stage", "unrecognized", "INVALID_ROUTING_STAGE"),
+            ("stage", 123, "INVALID_ROUTING_STAGE"),
+            ("intent", "mutation ", "INVALID_ROUTING_INTENT"),
+            ("intent", "MUTATION", "INVALID_ROUTING_INTENT"),
+            ("intent", "write", "INVALID_ROUTING_INTENT"),
+            ("intent", ["mutation"], "INVALID_ROUTING_INTENT"),
+        ):
+            with self.subTest(field=field, invalid=invalid):
+                request = deepcopy(self.request)
+                request[field] = invalid
+                result = self.resolve(request)
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertFalse(result["complete"])
+                self.assertIn(blocker, {b["code"] for b in result["blockers"]})
+                self.assertFalse(result["mutation_authorized"])
+
+    def test_omitted_legacy_modes_and_explicit_read_task_modes_resolve(self) -> None:
+        for stage, intent in ((None, None), ("", ""), ("read", "read"), ("task", "read")):
+            with self.subTest(stage=stage, intent=intent):
+                request = deepcopy(self.request)
+                if stage is None:
+                    request.pop("stage")
+                else:
+                    request["stage"] = stage
+                if intent is None:
+                    request.pop("intent")
+                else:
+                    request["intent"] = intent
+                result = self.resolve(request)
+                self.assertEqual(result["status"], "RESOLVED")
+                self.assertEqual(result["gate_effect"], "NONE")
+                self.assertFalse(result["mutation_authorized"])
+
+    def test_valid_mutation_mode_preserves_separate_exact_subject_check(self) -> None:
+        request = deepcopy(self.request)
+        request["intent"] = "mutation"
+        self.facts["mutation_authority_ref"] = "project:.agent/execution/T05/dispatch.json"
+        self.facts["mutation_subject_sha"] = "f" * 40
+        self.assertIn("MUTATION_AUTHORITY_NOT_PROVEN", {b["code"] for b in self.resolve(request)["blockers"]})
+        self.facts["mutation_subject_sha"] = SUBJECT
+        result = self.resolve(request)
+        self.assertEqual(result["status"], "RESOLVED")
+        self.assertFalse(result["mutation_authorized"])
+        self.assertEqual(result["authority_effect"], "NONE")
 
     def test_unknown_owner_never_guesses_from_unmerged_history(self) -> None:
         request = deepcopy(self.request)
