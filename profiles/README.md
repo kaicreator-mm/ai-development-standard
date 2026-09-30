@@ -2,7 +2,7 @@
 
 Status: **Profile framework / mapping contract — v4.3**
 
-Profiles translate language- and archetype-specific ecosystem facts into the language-neutral requirements owned by normative standards. Profiles are **not** independent lifecycle or Product/Architecture authorities.
+Profiles translate language- and archetype-specific ecosystem facts into the language-neutral requirements owned by normative standards. Profiles are not independent lifecycle or Product/Architecture authorities.
 
 ## 1. Profile identity
 
