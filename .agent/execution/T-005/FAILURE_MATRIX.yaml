@@ -1,0 +1,18 @@
+task: T-005
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: implementation_needs_write_outside_two_file_set
+    action: STOP_AND_REQUEST_CONTROLLER_WRITESET_AMENDMENT
+  - condition: observation_classification_directly_mutates_normative_standard
+    action: FAIL_SELF_AMENDMENT
+  - condition: numeric_score_or_threshold_auto_promotes_change
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: project_agent_or_environment_defect_is_promoted_to_ads_evolution
+    action: FAIL_FALSE_POSITIVE
+  - condition: privacy_publication_classification_missing_or_private_evidence_auto_published
+    action: FAIL_PRIVACY_BOUNDARY
+  - condition: existing_v45_incident_or_v46_intent_skill_owner_is_replaced
+    action: STOP_ARCHITECTURE_CONTRADICTION
+  - condition: required_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
