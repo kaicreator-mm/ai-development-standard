@@ -18,6 +18,18 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] CI/profile requirement is satisfied or its infrastructure exception/alternate-executor basis is valid.
 - [ ] Candidate Freeze occurs only after required visible freeze gates pass.
 
+## v4.6 AI-native Cross-standard Reconciliation (when v4.6 is in candidate)
+
+This is reconciliation only; it does not create a new Closure gate family.
+
+- [ ] The canonical manifest exposes exactly the three v4.6 normative AI-native owners and both new default machine-contract families.
+- [ ] Golden coverage remains exactly aligned with the active normative-standard set.
+- [ ] Project adoption/migration guidance is materiality-driven and non-weakening; Fast Path does not require empty Intent/Assumption or Skill records for genuinely non-material concerns.
+- [ ] Material intent/assumption promotion, context currentness and Skill admission remain subordinate to their owning authority and do not manufacture Product/Architecture/Task, mutation or side-effect authority.
+- [ ] Assurance/Review, F0–F3, Dispatch/Handoff, Validation and Release continue to use their existing owners; no duplicate AI-native lifecycle/result vocabulary is treated as closure evidence.
+- [ ] Historical evidence has not been retrofitted or relabeled as newly produced v4.6 evidence.
+- [ ] No Context Snapshot/database or repository-wide v4.7 resolver was introduced as part of v4.6 adoption wiring.
+
 ## Freeze Integrity
 
 - [ ] Freeze record includes SHA/tree/ref/visible evidence/pinned standard.
