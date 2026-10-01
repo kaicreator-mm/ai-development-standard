@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/agent-capability-profile-v1.schema.json",
+  "title": "AI Development Logical Agent Capability Profile v1",
+  "description": "Provider-neutral logical Agent/operator/model capability claims. Infrastructure inventory, current Availability, proof and authority remain external owners.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_version",
+    "logical_agent_or_runtime_class_ref",
+    "eligible_role_claims"
+  ],
+  "properties": {
+    "schema_version": {"const": "ai-dev/agent-capability-profile-v1"},
+    "profile_id": {"type": "string", "minLength": 1},
+    "profile_version": {"type": "string", "minLength": 1},
+    "logical_agent_or_runtime_class_ref": {"type": "string", "minLength": 1},
+    "provider_model_provenance": {"type": "string", "minLength": 1},
+    "eligible_role_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "reasoning_or_semantic_capability_claims": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "language_archetype_claims": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "logical_tool_use_class_claims": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "max_agent_freedom_claim": {
+      "type": "string",
+      "enum": ["F0_MECHANICAL", "F1_BOUNDED_IMPLEMENTATION", "F2_ENGINEERING_DISCRETION", "F3_ARCHITECTURE_REQUIRED"]
+    },
+    "skill_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "security_or_side_effect_class_claims": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "environment_or_runner_requirement_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "compatibility_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
