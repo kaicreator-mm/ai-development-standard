@@ -14,7 +14,7 @@ Baseline reviewed:
 - Frozen v4.7 Product/L2/DAG;
 - v4.5 engineering-feedback dogfood/task evidence;
 - `ai-development-standard#45`, `#184` and `#469`;
-- `#469` checkpoint/currentness through comment `5918608303`: validated/reviewed/merged UX v0.4 L3 checkpoint, native DAG materialized 15/15, S00 low-cost Builder dogfood dispatched, actual low-cost implementation outcome still pending.
+- `#469` checkpoint/currentness through comment `5925124956`: actual bounded low-cost implementation has progressed through independent gates—S00/C01/A01a/C02 are merged after Validation + fresh Review, while A01b has independent real-Chrome Validation PASS with fresh Review still pending. Economic savings remain unmeasured and no blanket low-cost routing rule is supported.
 
 This document is Product evidence only. It does not authorize Product Freeze, schemas, runtime services, scheduler deployment, Agent transport migration or Task DAG execution.
 
@@ -79,13 +79,35 @@ v4.5 incident/recovery work requires durable engineering feedback/follow-up and 
 
 **Finding:** v4.8 should generalize only the development-learning gap; it should not duplicate incident postmortem ownership.
 
-### 2.6 #469 proves a real measurement gap, not yet an L3 default
+### 2.6 #469 proves bounded execution feasibility while preserving independent gates
 
-`#469` explicitly tracks whether Git-tracked L3 references plus compact Issue dispatch improve low-cost local execution. Currentness has advanced beyond the earlier pre-review handoff: comment `5918608303` records real clean Build Host docs validation PASS, genuinely fresh independent review PASS, Controller merge to stable UX v0.4 integration `1ac0487df72fc20d55b99e4b0cf08ec990af723c` with the reviewed tree preserved, all ten Task pointers rebound to the merged L3 checkpoint, and native Task DAG materialization/read-back at 15/15 exact mandatory edges.
+`#469` explicitly tracks whether Git-tracked L3 references plus compact Issue dispatch improve bounded lower-cost execution. Current checkpoint `5925124956` advances the prior historical `5918608303` state: the earlier statement `ACTUAL_LOW_COST_IMPLEMENTATION_OUTCOME=PENDING` is no longer current.
 
-The first actual low-cost Builder dogfood is now dispatched on S00 `ux-harness#210` with an exact JIT pack bound to that stable task base and merged L3 checkpoint. However, `ACTUAL_LOW_COST_IMPLEMENTATION_OUTCOME=PENDING`, no effectiveness/cost saving is yet proven, and `STANDARD_CHANGE=NOT_AUTHORIZED`; the normative disposition remains `MORE_EVIDENCE` pending actual implementation plus independent exact-head validation/review and preferably later C01/A01 comparison.
+Observed execution/gate state is now:
 
-**Finding:** v4.8 should standardize the evidence loop around such experiments, not predetermine the outcome.
+- S00 PR #230: bounded low-cost Builder completed; independent Build Host Validation PASS and fresh high-capability Review #231 PASS; Controller merged as `47ee4b0548776b54210882b0228439d4e5d74221`.
+- C01 PR #232: bounded Builder completed; independent Validation and fresh Review #234 PASS; Controller merged as `cdebcc45c80e64477a32eb4ffb35fda8f6e0e608`.
+- A01a PR #235: bounded Builder path completed; independent Build Host Validation and fresh Review #237 PASS; Controller merged as `c2f206f7669cd3d6e575761675e2b90765159a0e`.
+- C02 PR #238: bounded low-cost Builder completed; independent Build Host Validation and fresh Review #241 PASS; Controller merged as `c7e546df11a08a3b2a48285d4fda79f768c5c15e`.
+- A01b PR #240: bounded low-cost Builder candidate plus independent real Chrome 154 Validation #242 comment `5924983582` PASS; required fresh Review #243 remains pending and the PR remains unmerged, so `A01b=VALIDATED_REVIEW_PENDING`.
+
+Several Builders reported `CLARIFICATIONS=0`, bounded edit/test loops and no drift, which is useful task-class capability evidence. But comparable input-pack/token/cost baselines were not measured. Fresh high-capability Reviews also surfaced nonblocking P2/P3 findings and downstream design obligations after green Builder/Validation work. That supports continued role/risk separation and independent strong review rather than eliminating it.
+
+The evidence boundary is explicit:
+
+`ACTUAL_LOW_COST_IMPLEMENTATION_OUTCOME=PARTIALLY_MEASURED_POSITIVE_EXECUTION`
+
+`ECONOMIC_SAVINGS=NOT_MEASURED`
+
+`BLANKET_STRONG_TO_LOW_COST_RULE=NOT_SUPPORTED`
+
+`STANDARD_CHANGE=NOT_AUTHORIZED`
+
+`PROPOSED_DISPOSITION=MORE_EVIDENCE`
+
+Provider/model identity remains provenance, not normative policy; Product routing should continue to rely on task-class capability evidence, current availability, risk, environment and independence constraints. Success in these bounded UX Harness tasks does not establish universal capability across unrelated tasks/platforms.
+
+**Finding:** v4.8 should standardize the evidence loop around such experiments, including currentness and independent-gate evidence, without predetermining a universal low-cost outcome or claiming unmeasured economic benefit.
 
 ## 3. External evidence — learning/provenance should be explicit but bounded
 
