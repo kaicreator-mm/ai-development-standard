@@ -1,0 +1,15 @@
+task_id: T-009
+required:
+  - duplicate_same_identity_same_payload_idempotent
+  - same_identity_conflicting_payload_or_digest_fails_closed
+  - lost_delivery_recoverable_from_durable_facts
+  - replayed_delivery_no_duplicate_authoritative_effect
+  - stale_exact_subject_request_rejected
+  - ack_progress_non_authoritative
+  - canonical_effect_materializes_through_existing_owner
+  - restart_reconstructs_without_queue_or_chat_history
+  - event_v2_writer_admission_preserved
+commands:
+  - python -B scripts/test_v48_interchange_replay_restart.py
+  - python -B scripts/test_protocol_schemas.py
+  - python -B scripts/verify_standard.py
