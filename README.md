@@ -1,6 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.0.0`
+当前版本：`v4.3.0`
+
+> **未发布版本分支候选（unpublished version-branch candidate）**：该版本标记仅对齐 `version/v4.3.0` 当前 candidate identity，不表示 `main` 已发布、已创建 tag，或已完成 Candidate Freeze、Version Closure、Release Qualification / Release。v4.3 的已存在 authority/adoption material 见 [`docs/implementation/4.3.0/PRD.md`](docs/implementation/4.3.0/PRD.md)、[`L2_ARCHITECTURE_EVIDENCE.md`](docs/implementation/4.3.0/L2_ARCHITECTURE_EVIDENCE.md)、[`TASK_DAG.md`](docs/implementation/4.3.0/TASK_DAG.md)、[`L3_REFERENCE_PACKS.md`](docs/implementation/4.3.0/L3_REFERENCE_PACKS.md)、[`profiles/README.md`](profiles/README.md) 与 [`references/IMPLEMENTATION_PROFILE_ADOPTION_REFERENCE.md`](references/IMPLEMENTATION_PROFILE_ADOPTION_REFERENCE.md)。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
