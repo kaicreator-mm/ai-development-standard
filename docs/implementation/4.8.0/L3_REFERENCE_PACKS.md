@@ -131,9 +131,10 @@ NOT_MEASURED economics -> savings claim
 
 ## T-013 — Cross-project evolution dogfood
 
-**Tests/evidence:** at least two materially distinct streams when available; classification agreement/challenge; false-positive rejection; repeated friction; privacy/publication; NO_CHANGE/MORE_EVIDENCE/evolution-candidate routes.
-**Contract:** evidence producer only; standard change still follows ordinary ADS governance.
-**Failure handling:** single-project/provider anecdote cannot justify universal policy.
+**Tests/evidence:** at least two materially distinct streams when available; classification agreement/challenge; false-positive rejection; repeated friction; privacy/publication; NO_CHANGE/MORE_EVIDENCE/evolution-candidate routes; verify that synthetic evidence cannot satisfy a real external/runtime/provider/project claim.
+**Contract:** evidence producer only; standard change still follows ordinary ADS governance. Claim strength is bounded by the strongest eligible evidence in the matrix; `SYNTHETIC` and `REAL` are not interchangeable evidence classes.
+**Implementation:** maintain a per-stream/per-scenario evidence matrix containing at least `evidence_kind=SYNTHETIC|REAL`, exact subject/evidence-stream identity, source project/task, material environment/runtime identity, expected oracle, actual result, privacy/publication classification, and `external_claim_eligible=YES|NO` with supporting evidence ref. A real/external claim requires exact-subject external or independent evidence appropriate to that claim. Synthetic scenarios remain useful for falsification and conformance but must stay labeled synthetic and cannot be promoted to real-world proof.
+**Failure handling:** single-project/provider anecdote cannot justify universal policy. If required real/external evidence is unavailable, record `NOT_RUN|BLOCKED` plus an explicit validation handoff; never substitute synthetic PASS or inferred provider/model capability.
 
 ## T-014 — Integrated convergence / closure inputs
 
