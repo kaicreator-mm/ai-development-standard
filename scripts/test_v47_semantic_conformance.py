@@ -1,0 +1,147 @@
+"""v4.7 T07 unified semantic conformance tests.
+
+These tests compose the already-merged T01-T06 owner surfaces and add only
+cross-standard non-transfer/write-authority regressions. They are ordinary
+test evidence, not Validation/Review/Release authority.
+"""
+from __future__ import annotations
+
+from copy import deepcopy
+import json
+from pathlib import Path
+import unittest
+
+from v47_conformance import (
+    DEPENDENCY_TEST_SCRIPTS,
+    EvidenceTuple,
+    RUNTIME_OWNER_REF,
+    STATE_RULE_EXPECTATIONS,
+    T07_TASK_PACK,
+    T07_WRITE_SET,
+    current_repo_conformance_errors,
+    evidence_applies_to,
+    historical_manifest_compatible,
+    manifest_conformance_errors,
+    mutation_authorized_by_task_pack,
+    parse_allowed_write_set,
+    run_dependency_suites,
+    state_registry_conformance_errors,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class UnifiedSemanticConformanceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.manifest = json.loads(
+            (ROOT / "standard-manifest.json").read_text(encoding="utf-8")
+        )
+        cls.registry = json.loads(
+            (ROOT / "registries/state-dimensions-v1.json").read_text(encoding="utf-8")
+        )
+        cls.task_pack = (ROOT / T07_TASK_PACK).read_text(encoding="utf-8")
+
+    def test_u01_current_repository_composes_without_semantic_error(self) -> None:
+        self.assertEqual(current_repo_conformance_errors(ROOT), [])
+
+    def test_u02_task_pack_is_only_mutation_input(self) -> None:
+        self.assertEqual(frozenset(parse_allowed_write_set(self.task_pack)), T07_WRITE_SET)
+        self.assertTrue(mutation_authorized_by_task_pack(self.task_pack, T07_WRITE_SET))
+        # This is a real canonical owner/discovery target in the manifest, but
+        # registry presence must not grant T07 mutation authority over it.
+        owner = "standards/DEVELOPMENT_WORKFLOW.md"
+        self.assertIn(owner, self.manifest["sections"]["normative_standards"])
+        self.assertFalse(mutation_authorized_by_task_pack(self.task_pack, [owner]))
+        # Tool/provider/technical-necessity facts are deliberately not parameters
+        # of mutation_authorized_by_task_pack and therefore cannot widen scope.
+
+    def test_u03_same_pass_token_remains_dimension_qualified(self) -> None:
+        rules = {r["rule_id"]: r for r in self.registry["forbidden_inferences"]}
+        review_rule = rules["F02_REVIEW_PASS_NOT_VALIDATION_PASS"]
+        self.assertEqual(review_rule["source_fact_ref"], "PASS")
+        self.assertEqual(review_rule["prohibited_conclusion_ref"], "PASS")
+        self.assertNotEqual(
+            review_rule["source_dimension_ref"], review_rule["target_dimension_ref"]
+        )
+        for rule_id, expected in STATE_RULE_EXPECTATIONS.items():
+            rule = rules[rule_id]
+            actual = (
+                rule["source_dimension_ref"],
+                rule["source_fact_ref"],
+                rule["target_dimension_ref"],
+                rule["prohibited_conclusion_ref"],
+            )
+            self.assertEqual(actual, expected, rule_id)
+
+    def test_u03_runtime_owner_is_corrected_exact_v45_pointer(self) -> None:
+        runtime = next(
+            d for d in self.registry["dimensions"] if d["dimension_id"] == "runtime_health"
+        )
+        self.assertEqual(runtime["canonical_owner_ref"], RUNTIME_OWNER_REF)
+        self.assertEqual(state_registry_conformance_errors(self.registry), [])
+
+    def test_u04_exact_sha_and_fidelity_evidence_never_transfer(self) -> None:
+        source = EvidenceTuple("a" * 40, "sandbox", "focused")
+        self.assertTrue(evidence_applies_to(source, source))
+        self.assertFalse(
+            evidence_applies_to(
+                source, EvidenceTuple("b" * 40, "sandbox", "focused")
+            )
+        )
+        self.assertFalse(
+            evidence_applies_to(
+                source, EvidenceTuple("a" * 40, "real-host", "focused")
+            )
+        )
+        self.assertFalse(
+            evidence_applies_to(
+                source, EvidenceTuple("a" * 40, "sandbox", "integration")
+            )
+        )
+
+    def test_u06_owner_conflict_fails_independent_of_entry_order(self) -> None:
+        for reverse in (False, True):
+            mutant = deepcopy(self.manifest)
+            contender = deepcopy(mutant["semantic_authorities"]["entries"][0])
+            contender["entry_id"] = "t07-competing-owner"
+            contender["canonical_owner_ref"] = "standards/RELEASE_STANDARD.md"
+            mutant["semantic_authorities"]["entries"].append(contender)
+            if reverse:
+                mutant["semantic_authorities"]["entries"].reverse()
+            errors = manifest_conformance_errors(ROOT, mutant)
+            self.assertTrue(
+                any("competing canonical owner" in error for error in errors), errors
+            )
+
+    def test_u06_historical_manifest_keeps_sections_without_semantic_registry(self) -> None:
+        self.assertTrue(historical_manifest_compatible(self.manifest))
+        historical = deepcopy(self.manifest)
+        historical.pop("semantic_authorities")
+        self.assertEqual(historical["schema_version"], 1)
+        self.assertEqual(historical["sections"], self.manifest["sections"])
+
+    def test_u07_state_rule_mutation_fails_with_precise_rule_identity(self) -> None:
+        mutant = deepcopy(self.registry)
+        rule = next(
+            r
+            for r in mutant["forbidden_inferences"]
+            if r["rule_id"] == "F07_OLD_SHA_VALIDATION_NOT_SUCCESSOR_PASS"
+        )
+        rule["prohibited_conclusion_ref"] = "PASS@any-successor"
+        errors = state_registry_conformance_errors(mutant)
+        self.assertTrue(
+            any("F07_OLD_SHA_VALIDATION_NOT_SUCCESSOR_PASS" in error for error in errors),
+            errors,
+        )
+
+    def test_u08_t01_through_t06_focused_suites_remain_green(self) -> None:
+        results = run_dependency_suites(ROOT)
+        self.assertEqual(set(results), set(DEPENDENCY_TEST_SCRIPTS))
+        self.assertEqual(
+            {name: code for name, code in results.items() if code != 0}, {}
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
