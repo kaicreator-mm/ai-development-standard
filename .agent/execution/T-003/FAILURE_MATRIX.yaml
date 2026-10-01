@@ -1,0 +1,18 @@
+task: T-003
+failures:
+  - condition: base_sha_or_t015_completion_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: mutation_attempted_without_concrete_existing_contract_gap
+    action: FAIL_SCOPE_EXPANSION
+  - condition: new_exchange_owner_family_or_event_v3_required_without_architecture_authority
+    action: STOP_ARCHITECTURE_CONTRADICTION
+  - condition: capability_or_eligibility_semantics_embedded_as_ad_hoc_interchange_owner
+    action: FAIL_OWNER_BOUNDARY
+  - condition: ack_delivery_progress_becomes_workflow_gate_truth
+    action: FAIL_AUTHORITY_BOUNDARY
+  - condition: historical_interchange_or_event_payloads_require_breaking_rewrite
+    action: FAIL_BACKWARD_COMPATIBILITY
+  - condition: required_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_commit_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE
