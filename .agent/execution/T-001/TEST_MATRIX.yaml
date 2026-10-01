@@ -1,0 +1,22 @@
+task: T-001
+required:
+  - id: schema-positive-material
+    proves: material learning carries exact work/subject/evidence identity and bounded rationale
+  - id: fast-path-none-material
+    proves: NONE_MATERIAL remains valid without fabricating a learning object
+  - id: no-private-cot
+    proves: private chain-of-thought/debug transcript is not part of the contract
+  - id: stale-subject-negative
+    proves: stale exact-subject learning cannot bind successor truth
+  - id: authority-negative
+    proves: learning cannot encode Product/Architecture/Task/ADR/Incident/Review/Validation authority
+  - id: malformed-identity-negative
+    proves: missing or mutable material identity fails closed
+  - id: focused-suite
+    command: python -B scripts/test_v48_task_learning.py
+  - id: protocol-regression
+    command: python -B scripts/test_protocol_schemas.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent concern validation on final exact PR HEAD
+review: fresh exact-HEAD review required after validation

@@ -1,0 +1,16 @@
+task: T-001
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: implementation_requires_sibling_capability_or_execution_architecture_scope
+    action: STOP_TASK_PACK_DEFECT_OR_UPWARD_ROUTING
+  - condition: private_chain_of_thought_becomes_required_contract_data
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: stale_learning_is_treated_as_successor_truth
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: learning_grants_review_validation_product_or_task_authority
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: required_validation_environment_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: final_candidate_changes_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE
