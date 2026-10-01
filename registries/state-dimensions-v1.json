@@ -47,7 +47,7 @@
     },
     {
       "dimension_id": "runtime_health",
-      "canonical_owner_ref": "github:kaicreator-mm/ai-development-standard@2acf8bb020d76d6bb90bcfbb0bf1580e2d2f20ea:docs/implementation/4.5.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "canonical_owner_ref": "github:kaicreator-mm/ai-development-standard@c9ee9249999aa5463ce880bc7674b732979009b3:standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
       "vocabulary_posture": "OWNER_DEFINED",
       "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#upstream-owner-posture"
     },
