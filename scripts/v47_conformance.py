@@ -79,11 +79,11 @@ STATE_RULE_EXPECTATIONS: Mapping[str, tuple[str, str, str, str]] = {
     ),
 }
 
-# Frozen Product v4.7 §6 / L3 T07 carry-forward negatives. These strings are
-# checked as frozen Product evidence, not re-declared here as a new owner.
-# The fixed cardinality is deliberate: if a required executable check is
-# removed, the T07 runner fails closed instead of silently shrinking coverage.
+# Frozen Product v4.7 §6 is the canonical authority for these identities. This
+# executable catalog is only a conformance surface and MUST stay set-equal to
+# the owner-derived §6 set below; it does not become a second Product owner.
 FROZEN_PRODUCT_NEGATIVE_COUNT = 21
+FROZEN_PRODUCT_SECTION6_HEADING = "## 6. Required forbidden inferences"
 FROZEN_PRODUCT_NEGATIVES = (
     "Task DONE -> Validation PASS",
     "Review PASS -> Validation PASS",
@@ -292,8 +292,71 @@ def state_registry_conformance_errors(registry: dict) -> list[str]:
     return errors
 
 
+def parse_frozen_product_section6_negatives(prd_text: str) -> tuple[str, ...]:
+    """Read the authoritative forbidden-inference identities from Frozen Product §6."""
+    lines = prd_text.splitlines()
+    try:
+        heading_index = lines.index(FROZEN_PRODUCT_SECTION6_HEADING)
+    except ValueError as exc:
+        raise ValueError("Frozen Product §6 heading missing") from exc
+
+    section_end = next(
+        (
+            index
+            for index in range(heading_index + 1, len(lines))
+            if lines[index].startswith("## ")
+        ),
+        None,
+    )
+    if section_end is None:
+        raise ValueError("Frozen Product §6 next section boundary missing")
+
+    section_lines = lines[heading_index + 1 : section_end]
+    fence_start = next(
+        (
+            index
+            for index, line in enumerate(section_lines)
+            if line.strip() == "```text"
+        ),
+        None,
+    )
+    if fence_start is None:
+        raise ValueError("Frozen Product §6 text fence missing")
+    fence_end = next(
+        (
+            index
+            for index in range(fence_start + 1, len(section_lines))
+            if section_lines[index].strip() == "```"
+        ),
+        None,
+    )
+    if fence_end is None:
+        raise ValueError("Frozen Product §6 text fence is unterminated")
+
+    negatives = tuple(
+        line.strip()
+        for line in section_lines[fence_start + 1 : fence_end]
+        if line.strip()
+    )
+    if not negatives:
+        raise ValueError("Frozen Product §6 forbidden-inference set is empty")
+    if len(negatives) != len(set(negatives)):
+        raise ValueError("Frozen Product §6 forbidden-inference set contains duplicates")
+    return negatives
+
+
 def frozen_product_conformance_errors(prd_text: str) -> list[str]:
     errors: list[str] = []
+    try:
+        product_negatives = parse_frozen_product_section6_negatives(prd_text)
+    except ValueError as exc:
+        return [f"U08: {exc}"]
+
+    if len(product_negatives) != FROZEN_PRODUCT_NEGATIVE_COUNT:
+        errors.append(
+            "U08: Frozen Product §6 negative cardinality drift: "
+            f"expected {FROZEN_PRODUCT_NEGATIVE_COUNT}, got {len(product_negatives)}"
+        )
     if len(FROZEN_PRODUCT_NEGATIVES) != FROZEN_PRODUCT_NEGATIVE_COUNT:
         errors.append(
             "U08: Frozen Product executable negative catalog cardinality drift: "
@@ -302,9 +365,19 @@ def frozen_product_conformance_errors(prd_text: str) -> list[str]:
         )
     if len(set(FROZEN_PRODUCT_NEGATIVES)) != len(FROZEN_PRODUCT_NEGATIVES):
         errors.append("U08: Frozen Product executable negative catalog contains duplicates")
-    for negative in FROZEN_PRODUCT_NEGATIVES:
-        if negative not in prd_text:
-            errors.append(f"U08: Frozen Product negative missing: {negative}")
+
+    product_set = set(product_negatives)
+    executable_set = set(FROZEN_PRODUCT_NEGATIVES)
+    for negative in sorted(product_set - executable_set):
+        errors.append(
+            "U08: Product §6 required negative missing from executable catalog: "
+            f"{negative}"
+        )
+    for negative in sorted(executable_set - product_set):
+        errors.append(
+            "U08: executable negative absent from Product §6 authority: "
+            f"{negative}"
+        )
     return errors
 
 

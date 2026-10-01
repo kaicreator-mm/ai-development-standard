@@ -29,6 +29,7 @@ from v47_conformance import (
     manifest_conformance_errors,
     mutation_authorized_by_task_pack,
     parse_allowed_write_set,
+    parse_frozen_product_section6_negatives,
     run_dependency_suites,
     state_registry_conformance_errors,
 )
@@ -145,6 +146,9 @@ class UnifiedSemanticConformanceTests(unittest.TestCase):
         self.assertEqual(FROZEN_PRODUCT_NEGATIVE_COUNT, 21)
         self.assertEqual(len(FROZEN_PRODUCT_NEGATIVES), FROZEN_PRODUCT_NEGATIVE_COUNT)
         self.assertEqual(len(set(FROZEN_PRODUCT_NEGATIVES)), FROZEN_PRODUCT_NEGATIVE_COUNT)
+        product_negatives = parse_frozen_product_section6_negatives(self.prd)
+        self.assertEqual(len(product_negatives), FROZEN_PRODUCT_NEGATIVE_COUNT)
+        self.assertEqual(set(product_negatives), set(FROZEN_PRODUCT_NEGATIVES))
         self.assertEqual(frozen_product_conformance_errors(self.prd), [])
 
         omitted_p1_families = {
@@ -163,6 +167,43 @@ class UnifiedSemanticConformanceTests(unittest.TestCase):
                 any(negative in error for error in errors),
                 f"missing Product negative did not fail closed: {negative}",
             )
+
+        unrelated_prd_string = "JSON Schema meta-validation alone is insufficient."
+        self.assertIn(unrelated_prd_string, self.prd)
+        self.assertNotIn(unrelated_prd_string, set(product_negatives))
+        removed_negative = FROZEN_PRODUCT_NEGATIVES[0]
+        same_cardinality_substitution = tuple(
+            unrelated_prd_string if negative == removed_negative else negative
+            for negative in FROZEN_PRODUCT_NEGATIVES
+        )
+        self.assertEqual(
+            len(same_cardinality_substitution), FROZEN_PRODUCT_NEGATIVE_COUNT
+        )
+        self.assertEqual(
+            len(set(same_cardinality_substitution)), FROZEN_PRODUCT_NEGATIVE_COUNT
+        )
+        with patch.object(
+            conformance,
+            "FROZEN_PRODUCT_NEGATIVES",
+            same_cardinality_substitution,
+        ):
+            errors = conformance.frozen_product_conformance_errors(self.prd)
+        self.assertTrue(
+            any(
+                "Product §6 required negative missing from executable catalog" in error
+                and removed_negative in error
+                for error in errors
+            ),
+            errors,
+        )
+        self.assertTrue(
+            any(
+                "executable negative absent from Product §6 authority" in error
+                and unrelated_prd_string in error
+                for error in errors
+            ),
+            errors,
+        )
 
         with patch.object(
             conformance,
