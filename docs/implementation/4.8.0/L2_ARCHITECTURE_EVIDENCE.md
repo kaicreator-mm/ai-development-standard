@@ -1,6 +1,6 @@
 # v4.8.0 L2 Architecture Evidence — Evidence-Driven Agent Orchestration & Standard Evolution
 
-Status: **L2 CANDIDATE — NOT FROZEN; FRESH INDEPENDENT ARCHITECTURE REVIEW REQUIRED**
+Status: **L2 REPAIRED CANDIDATE — NOT FROZEN; FRESH INDEPENDENT ARCHITECTURE RE-REVIEW REQUIRED**
 
 Frozen Product authority:
 
@@ -9,24 +9,32 @@ Frozen Product authority:
 - Fresh Independent Product Review R3 #490 terminal `5926142930`;
 - Product dogfood basis `#469@5925124956`.
 
+Architecture review history:
+
+- #494 terminal `5926563715` = `CHANGES_REQUESTED`;
+- P0=0 / P1=3 / P2=0 / P3=0;
+- Product Freeze validity PASS;
+- Research Demo disposition PASS / no pre-Freeze executable demo required;
+- the three P1 repairs are incorporated below.
+
 Architecture baseline: current v4.1–v4.7 owners on `main@e75fe834469c5ea9f9a384f7d84e38c3a48afa46` plus the Product Freeze checkpoint on `planning/v4.8-evidence-orchestration`.
 
 ## 1. Architecture decision
 
-v4.8 extends the existing execution architecture with **evidence-aware eligibility, resource-aware admission, a transport-neutral exchange binding, and compact Task Learning**, while preserving all current Product/Architecture/Task/Dispatch/Review/Validation/Release authorities.
+v4.8 extends the existing execution architecture with **compact Task Learning, logical-Agent capability evidence, constraint-first eligibility/resource admission, reuse of the existing transport-neutral Interchange contract, and evidence-driven ADS evolution feedback**.
 
-The architecture is:
+It does **not** create another Product/Task/Dispatch/Review/Validation lifecycle, another Agent-message authority, another Runner Capability owner, or a second scheduler state machine.
 
 ```text
 Frozen Task / Task Pack authority
         │
-        ├── optional execution-requirement metadata
-        │
+        ├── optional execution requirements
         ▼
 canonical READY set
         │
-        ├── Agent Capability Claim/Profile
-        ├── current Availability / Resource Facts
+        ├── Logical Agent Capability Profile
+        ├── existing Runner/Host Capability owner facts
+        ├── current derived Availability View
         ├── exact-subject Capability Evidence
         └── authority/currentness/independence/security constraints
         │
@@ -34,76 +42,83 @@ canonical READY set
 Derived Eligibility Resolver
         │
         ├── hard filter: ELIGIBLE / INELIGIBLE / UNKNOWN
-        └── optional project ranking among ELIGIBLE choices only
+        └── optional ranking among ELIGIBLE choices only
         │
         ▼
-existing Dispatch reservation + atomic Claim admission
-        │
-        ├── optional resource/capacity binding under the same serialization authority
-        └── transport-neutral Agent Exchange envelope/adapters
+COMPOSITE atomic admission
+(work claim + every required scarce-resource/capacity binding)
         │
         ▼
-existing Builder / Validator / Reviewer execution
+existing Dispatch reservation + Claim admission
+        │
+        ├── existing Interchange Envelope v1 / compatible extension
+        └── GitHub ai-dev:event:v2 reference writer profile
+        │
+        ▼
+existing Builder / Reviewer / Validator execution
         │
         ▼
 existing durable Result / Review / Validation / Merge facts
         │
         ├── Task Learning Evidence v1
-        └── Standard-friction classification / ordinary ADS Intake
+        └── friction classification -> ordinary ADS Intake
 ```
 
-GitHub/repository/evidence stores remain durable facts. Eligibility, ranking, queues and resource-selection views remain derived state. No scheduler database, Agent profile registry, message bus, telemetry store, or ranking output becomes project authority.
+GitHub/repository/evidence stores remain durable facts. Eligibility, ranking, queue and availability views remain derived. Runtime caches, schedulers, queues and transports are disposable.
 
 ## 2. Architecture invariants
 
-The following are frozen candidates for v4.8 L2:
-
-1. **Task requirements remain Task authority.** Eligibility metadata may extend Task Pack/Execution Pack/Dispatch references but cannot become a second Task contract.
-2. **Capability claim != availability != capability evidence.** None implies authority.
-3. **Capability evidence is historical/exact-subject evidence.** It may inform selection but never substitutes for current Review/Validation.
-4. **Current availability is time/currentness scoped.** Stale or missing material availability becomes UNKNOWN/ineligible rather than optimistic truth.
-5. **Hard eligibility precedes optimization.** Cost, latency, throughput or provider preference never makes an ineligible choice eligible.
-6. **READY/Dispatch/Claim remain canonical scheduling/admission owners.** v4.8 adds no second task state machine or claim authority.
-7. **Scarce resource reservation uses existing atomic admission semantics.** Resource/capacity keys extend the protected admission set; they do not create an independent scheduler authority.
-8. **Reviewer/validator independence is a hard filter, not a ranking preference.**
-9. **Agent Exchange is a wrapper/binding only.** Existing semantic owners still define Dispatch, Result, Blocker, Handoff, Review, Validation and Decision meaning.
-10. **Transport delivery/acknowledgement is not workflow/gate truth.** Material results become durable through the existing owner before they can affect authoritative current state.
-11. **Task Learning is evidence/history, not Product/Architecture/Task/ADR/incident authority.**
-12. **No private chain-of-thought is required or retained.** Concise engineering rationale means externally useful decision summary/evidence refs only.
-13. **Standard-friction observations cannot self-amend ADS.** Promotion returns through ordinary ADS Intake → L1 → PRD → L2 → Task/Review/Validation.
-14. **v4.6 Skill Metadata remains procedure metadata, not Agent capability proof.** Skill presence may contribute to a claim but cannot prove current executor eligibility.
-15. **v4.7 registry/discovery remains metadata.** New v4.8 schemas/owners are registered there but registry entries do not grant authority.
-16. **v4.8 is additive/non-weakening.** Any required rewrite of historical event/Dispatch/Task authority routes to future-major instead of being hidden in v4.8.
+1. Task requirements remain Task authority; lower artifacts may narrow but never weaken them.
+2. Logical Agent capability, Runner/Host capability, current Availability and Capability Evidence are separate dimensions.
+3. Capability never implies authorization, side-effect permission, Review PASS or Validation PASS.
+4. `CI_RUNNER_CAPABILITY_STANDARD.md` remains canonical for mutable CI/Build Host platform/toolchain/resource/concurrency capability profiles.
+5. v4.6 Skill Metadata remains reusable procedure metadata, not executor capability proof.
+6. Capability Evidence is historical/exact-subject evidence and never substitutes for current Validation/Review.
+7. Missing/stale material Availability is `UNKNOWN`; UNKNOWN fails closed for hard requirements.
+8. Hard eligibility precedes optimization; ranking cannot make an ineligible or unknown choice eligible.
+9. READY / Dispatch / Claim and existing admission authority remain canonical.
+10. Work admission and all required scarce-resource/capacity reservations share one all-or-none linearization point.
+11. Independent per-key successful writes are insufficient for composite admission.
+12. Capacity-N active accepted bindings MUST never exceed N; exclusive resource is N=1.
+13. Partial canonical states such as `work claimed / resource not held` or `resource held / work not admitted` are forbidden.
+14. Accepted work/resource binding facts remain durably reconstructible; transient locks/leases are coordination only.
+15. Existing `interchange-envelope-v1` and v4.0 `AGENT_INTERCHANGE.md` remain the transport-neutral correlation owner/family.
+16. `ai-dev:event:v2` remains the GitHub writer/admission protocol; v4.8 does not create a competing Agent Exchange owner.
+17. Transport ACK/delivery/progress is never workflow/gate truth.
+18. Task Learning is evidence/history, not Product/Architecture/Task/ADR/incident authority.
+19. No private chain-of-thought, credentials or hidden-evaluator payload is required or retained.
+20. Standard-friction observations cannot self-amend ADS; promotion re-enters normal governance.
+21. v4.8 remains additive/non-weakening; incompatible rewrites route to future-major.
 
 ## 3. Owner map
 
-| Concern | Canonical owner after v4.8 | v4.8 change | Must not duplicate |
+| Concern | Canonical owner after v4.8 | v4.8 role | Must not duplicate |
 |---|---|---|---|
-| Task scope / execution requirements | Task DAG / Task Pack; exact-base narrowing in Execution Pack | optional requirement fields/refs | Product/L2/Validation authority |
-| Task Learning evidence semantics | `EXECUTION_ARCHITECTURE_STANDARD.md` | new evidence family + closeout semantics | Task Pack, ADR, Review/Validation result, incident history |
-| Execution Pack inputs/retention refs | `EXECUTION_PACK_STANDARD.md` | optional learning/capability refs where useful | Task Learning owner |
-| model/risk strength policy | `MODEL_USAGE_POLICY.md` | consume capability evidence but retain risk policy | universal ranking/scoring |
-| reusable procedure/Skill | v4.6 `SKILL_PROCEDURE_GOVERNANCE_STANDARD` / Skill Metadata | referenced by capability claims | Agent capability proof |
-| Agent capability claim/evidence interpretation | `EXECUTION_ARCHITECTURE_STANDARD.md` | new profile/evidence metadata families | Skill, Dispatch, Validation |
-| live provider/runner/resource state | existing provider/runner/environment owner | normalized derived Availability View | capability profile/history |
-| READY set / dispatch / claim / atomic admission | `EXECUTION_ARCHITECTURE_STANDARD.md` | eligibility + resource-capacity pre-admission | second scheduler state machine |
-| GitHub event writer / logical operator attribution | `GITHUB_AGENT_INTERACTION_PROTOCOL.md` | GitHub adapter consumes/produces exchange binding | transport-neutral semantic owner |
-| transport-neutral exchange wrapper | new `AGENT_EXCHANGE_BINDING_STANDARD.md` | one new normative binding owner | Dispatch/Review/Validation lifecycle |
-| incident engineering feedback | v4.5 Incident/Recovery/Engineering Feedback | may emit Task Learning/friction refs | ADS evolution decision |
-| ADS Intake / standard evolution governance | `DEVELOPMENT_WORKFLOW.md` + normal Product/L1/L2 path | explicit friction classification/promotion route | self-amending telemetry lifecycle |
-| authority/applicability discovery | v4.7 canonical manifest/registry | register v4.8 owner/schema refs | semantic owner rules |
+| Product / Architecture / Task scope | existing Product/L2/Task owners | consume only | all lower evidence/routing |
+| Task execution requirements | Task Pack; exact-base narrowing in Execution Pack | optional requirement refs/fields | Product/L2 authority |
+| Task Learning evidence semantics | `EXECUTION_ARCHITECTURE_STANDARD.md` | new evidence family + closeout semantics | Task Pack, ADR, incident, Review/Validation result |
+| logical-Agent capability claim/evidence | `EXECUTION_ARCHITECTURE_STANDARD.md` | new Agent Profile + Capability Evidence families | Runner Capability, Skill Metadata, Validation |
+| CI / Build Host capability inventory | `CI_RUNNER_CAPABILITY_STANDARD.md` | referenced/composed, not copied | Agent Profile |
+| device / provider / project resource capability | applicable existing owner | referenced/composed | generic Agent Profile |
+| reusable procedure / Skill | v4.6 Skill owner | referenced by Agent Profile | Agent capability proof |
+| current Availability | derived normalization over applicable owners | no durable authority | capability history/profile |
+| READY / dispatch / claim / admission | `EXECUTION_ARCHITECTURE_STANDARD.md` | eligibility + composite resource admission | second scheduler lifecycle |
+| GitHub event writing / logical operator attribution | `GITHUB_AGENT_INTERACTION_PROTOCOL.md` | reference GitHub profile | Interchange semantics |
+| transport-neutral correlation/interchange | existing v4.0 `AGENT_INTERCHANGE.md` + `schemas/interchange-envelope-v1.schema.json` | compatible extension/profile only | new Exchange owner/family |
+| ADS evolution governance | normal Development Workflow / Intake / L1 / PRD / L2 | explicit classification/promotion route | self-amending telemetry lifecycle |
+| authority discovery | v4.7 manifest/registry | register new refs | owner rules |
 
 ## 4. Default machine-contract families
 
-v4.8 L2 proposes exactly **four new default machine-contract families**.
+v4.8 introduces exactly **three new default machine-contract families**.
 
 ### 4.1 Task Learning Evidence v1
 
 Candidate file: `schemas/task-learning-v1.schema.json`.
 
-Purpose: preserve compact reusable implementation learning bound to the work/exact subject and existing evidence.
+Purpose: preserve compact reusable implementation learning bound to work identity, exact subject where material, and existing evidence.
 
-Minimum conceptual fields:
+Conceptual fields:
 
 ```text
 schema_version
@@ -127,64 +142,72 @@ disposition
 
 Rules:
 
-- `summary` / `rationale_summary` are concise externally useful engineering summaries, never private chain-of-thought;
-- references are preferred over copied evidence bodies;
-- exact-code behavioral claims bind to the implementation subject they actually describe;
-- `TASK_LEARNING=NONE_MATERIAL` remains the proportional Fast Path and does not require an empty schema object;
-- `friction_classification` may classify an observation but cannot create Product/Architecture/standard authority.
+- summaries are externally useful engineering rationale, not private chain-of-thought;
+- refs/digests are preferred over copied evidence bodies;
+- exact-code claims bind to the subject actually evidenced;
+- later drift does not inherit stale claims;
+- Fast Path may record `TASK_LEARNING=NONE_MATERIAL` without instantiating an empty record.
 
-### 4.2 Agent Capability Profile v1
+### 4.2 Logical Agent Capability Profile v1
 
 Candidate file: `schemas/agent-capability-profile-v1.schema.json`.
 
-Purpose: record **declared/reusable capability claims** for an Agent/runtime/operator class without implying current availability, trust or proof.
+Purpose: describe **logical Agent/operator/model execution claims** without duplicating infrastructure inventory or implying proof/authority.
 
-Minimum conceptual fields:
+Conceptual fields:
 
 ```text
 schema_version
 profile_id
 profile_version
-agent_or_runtime_class_ref
-provenance_ref
+logical_agent_or_runtime_class_ref
+provider_model_provenance?
 eligible_role_claims[]
-declared_capability_classes[]
+reasoning_or_semantic_capability_claims[]
 language_archetype_claims[]
-tool_class_claims[]
-environment_class_claims[]
+logical_tool_use_class_claims[]
 max_agent_freedom_claim?
-resource_class_claims[]
 skill_refs[]
 security_or_side_effect_class_claims[]
+environment_or_runner_requirement_refs[]
 compatibility_refs[]
 ```
 
-Rules:
+Explicitly excluded from this generic profile when already owned elsewhere:
 
-- profile content is a claim, not proof;
-- provider/model identity may be provenance but is not a correctness score;
-- Skill Metadata references describe procedures available to the Agent, not demonstrated executor ability;
-- credentials/tool installation do not grant side-effect authority;
-- profile version changes do not rewrite historical capability evidence.
+```text
+host OS / architecture
+installed runtime/toolchain inventory
+device inventory
+runner CPU/memory/disk
+runner/provider concurrency limits
+network reachability observations
+current resource capacity
+```
+
+Those facts remain in `CI_RUNNER_CAPABILITY_STANDARD.md` or the applicable host/device/resource owner and are referenced during eligibility composition.
+
+Profile content is a claim, not proof. Provider/model identity is provenance, not a universal score. Skill presence is procedure availability, not demonstrated executor ability. Tool/credential possession does not grant side-effect authority.
 
 ### 4.3 Agent Capability Evidence v1
 
 Candidate file: `schemas/agent-capability-evidence-v1.schema.json`.
 
-Purpose: record bounded observed evidence about a capability/task class without turning historical success into current PASS.
+Purpose: record bounded observed evidence about a logical Agent/task capability without converting historical success into current PASS.
 
-Minimum conceptual fields:
+Conceptual fields:
 
 ```text
 schema_version
 evidence_id
-profile_ref?
+agent_profile_ref?
 logical_operator_or_executor_ref
 provider_model_provenance?
 task_class_or_capability_class
-environment_or_resource_class?
 role
 exact_subject_ref
+environment_ref?
+runner_or_resource_capability_ref?
 task_pack_execution_pack_refs[]
 result_refs[]
 validation_refs[]
@@ -196,90 +219,69 @@ observed_at/currentness_scope
 negative_or_failure_observation?
 ```
 
-Rules:
+Positive and negative evidence are both valid. Environment/runner facts are referenced, not copied as generic Agent profile ownership. No global scalar quality score is created. Economic/performance conclusions require comparable methodology.
 
-- positive and negative evidence are both valid evidence;
-- evidence is exact-subject / environment scoped where material;
-- no universal scalar quality score is generated;
-- economic/performance conclusions require comparable methodology and cannot be inferred from one task or provider label;
-- historical evidence can affect assignment confidence but never current Validation or Review truth.
+## 5. Existing Interchange family — reused, not replaced
 
-### 4.4 Agent Exchange Envelope v1
+v4.8 creates **no new Agent Exchange Envelope family and no new `AGENT_EXCHANGE_BINDING_STANDARD.md`**.
 
-Candidate file: `schemas/agent-exchange-envelope-v1.schema.json`.
+Existing authority already provides:
 
-Normative owner: new `AGENT_EXCHANGE_BINDING_STANDARD.md`.
+- `docs/implementation/4.0.0/AGENT_INTERCHANGE.md` — transport-neutral correlation, subject identity, actor/causation, stale/duplicate/superseded/conflict, idempotency, durable-owner boundaries and mapping to GitHub events;
+- `schemas/interchange-envelope-v1.schema.json` — active machine contract;
+- `GITHUB_AGENT_INTERACTION_PROTOCOL.md` / `ai-dev:event:v2` — GitHub writer/admission semantics.
 
-Purpose: carry or reference an existing ADS semantic object across GitHub/webhook/queue/local/A2A-style transports while preserving provenance, exact identity, causation and idempotency.
+v4.8 may require an **additive compatible extension/profile** of Interchange v1 only where Frozen Product semantics are not already expressible, for example bounded receiver capability target, expiry/currentness metadata, or payload digest/idempotency hardening. Implementation must first prove the field is absent/needed. A compatible optional field addition or an explicitly versioned successor of the same canonical family is allowed; a parallel envelope family is not.
 
-Minimum conceptual fields:
+Hard rules remain:
 
 ```text
-schema_version
-exchange_id
-semantic_type
-semantic_owner_ref
-payload_ref | bounded_payload
-payload_digest?
-repository/work_item/dispatch refs when applicable
-sender_logical_operator_ref
-sender_role
-receiver_role_or_capability_target?
-subject_ref?
-authority_refs[]
-causation_ref?
-correlation_ref?
-reply_to_ref?
-created_at
-expires_at/currentness_ref?
-idempotency_key
-transport_provenance_ref
+Interchange correlation != semantic authority
+transport ACK != completion
+exchange identity != permission
+same idempotency identity + same payload -> safe replay
+same identity + conflicting payload/digest -> fail closed
+stale exchange -> historical only
+critical result -> canonical durable owner materialization
 ```
 
-Rules:
+A `REVIEW_RESULT` remains owned by Review, a `VALIDATION_RESULT` by Validation, Dispatch by Dispatch, and controller decisions by their existing owners.
 
-- envelope validation never validates the embedded semantic result beyond confirming the declared owner/schema/ref;
-- a `REVIEW_RESULT` remains owned by Review; a `VALIDATION_RESULT` remains owned by Validation; a `DISPATCH` remains owned by Dispatch;
-- transport ACK/delivery/progress is never Gate PASS, Review PASS or Task completion;
-- critical semantic changes must be materialized durably through their canonical owner;
-- duplicate delivery with same idempotency identity and same payload is safe/idempotent; same identity with conflicting payload/digest fails closed;
-- transient exchange state can be discarded and reconstructed from durable facts where the semantic action is authoritative.
+## 6. Availability / Resource Facts — derived normalization
 
-## 5. Availability / Resource Facts — derived normalization, no fifth default schema
+v4.8 introduces no universal durable Availability schema.
 
-v4.8 does **not** introduce a universal durable `ResourceAvailability` authority.
-
-Current availability is sourced from the existing applicable owner: CI runner/provider state, Build Host/device inventory, orchestrator adapter, project-local resource controller, or explicit manual fact. The eligibility layer normalizes those current facts into a derived view equivalent to:
+Availability is a `NON_AUTHORITATIVE_DERIVED_STATE` over current facts from the applicable owner:
 
 ```text
 resource_ref
 source_owner_ref
 state = AVAILABLE | UNAVAILABLE | UNKNOWN
-capability/resource classes
-capacity / exclusive-group facts when known
+capability_ref(s)
+current_capacity / exclusive_group when owner exposes it
 observed_at
-expires_at/currentness condition
+expires_at/currentness rule
 source_fact_ref
 ```
 
-This view is `NON_AUTHORITATIVE_DERIVED_STATE`.
+Runner/host capability may be current enough for routing but still remains distinct from current run preflight and Validation PASS.
 
 Rules:
 
-- stale/missing material availability => `UNKNOWN`, not AVAILABLE;
-- UNKNOWN cannot satisfy a hard environment/resource requirement;
-- current provider availability does not prove capability quality;
-- a capability profile does not prove the resource is currently reachable;
-- projects may retain provider-specific richer facts; normalization must not erase their owner meaning.
+- stale/missing material fact -> UNKNOWN;
+- UNKNOWN cannot satisfy a hard resource/environment requirement;
+- Agent Profile cannot prove host reachability;
+- Availability cannot prove logical-Agent quality;
+- actual run facts supersede stale inventory for that execution.
 
-## 6. Task execution requirement extension
+## 7. Task execution requirements and eligibility composition
 
-Task requirements stay with Task Pack authority. v4.8 may add backward-compatible optional fields/refs equivalent to:
+Task Pack remains the owner of execution requirements. Optional additive fields/refs may express:
 
 ```text
 execution_requirements:
-  required_capability_classes[]
-  required_environment_classes[]
+  required_agent_capability_classes[]
+  required_environment_or_runner_capability_refs[]
   required_resource_classes[]
   independence_constraints[]
   security_or_side_effect_constraints[]
@@ -289,154 +291,147 @@ execution_requirements:
   optimization_hints?
 ```
 
-Exact-base narrowing may be repeated/referenced in the Execution Pack/Dispatch only where needed for current execution. Lower artifacts may narrow but never weaken Task requirements.
-
-Missing optional v4.8 fields preserve historical behavior; existing Task Packs remain valid.
-
-## 7. Eligibility Resolver
-
-Eligibility is a deterministic **derived projection**, not a new durable lifecycle state.
-
-For each READY `(work item, role)` candidate:
+Eligibility for each READY `(work item, role)` composes:
 
 ```text
 Frozen/current Task requirements
 + current authority/currentness
-+ Agent Capability Profile claims
++ Logical Agent Capability Profile
++ existing Runner/Host/Device capability facts
 + current Availability View
 + relevant Capability Evidence
-+ independence/security/write-set/concurrency constraints
++ independence/security/write-set constraints
         ↓
 hard predicates
         ↓
 ELIGIBLE | INELIGIBLE | UNKNOWN
 ```
 
-`UNKNOWN` is fail-closed for any material requirement.
+`ELIGIBLE | INELIGIBLE | UNKNOWN` is derived, not durable authority.
 
-Minimum hard predicates where applicable:
+Capability Evidence is advisory by default. A project/Task may explicitly require a demonstrated evidence class; absence of historical success is not a universal ban on new Agents.
+
+## 8. Hard eligibility before optional ranking
+
+Hard predicates include, where applicable:
 
 ```text
-work item remains READY/claimable
+work item still READY/claimable
 Task Pack / Execution Pack current
-required role allowed
+role allowed
 agent freedom sufficient but not self-elevated
-required capability class claimed
-required current environment/resource AVAILABLE
-required security/side-effect authority present from canonical owner
+logical Agent capability claim satisfies Task need
+required runner/host/device capability facts satisfy Task need
+required current resource AVAILABLE
+security/side-effect authority present from canonical owner
 reviewer/validator independence satisfied
-write-set / concurrency compatibility satisfied
-exact subject/base current
-capability evidence policy satisfied when Task authority requires prior proof
-scarce resource capacity can be atomically reserved
+write-set/concurrency compatibility satisfied
+subject/base current
+required capability-evidence policy satisfied
+composite scarce-resource admission can succeed atomically
 ```
 
-Capability Evidence is normally advisory unless a higher-authority Task/project policy explicitly requires a demonstrated evidence class. Absence of historical success must not become a universal prohibition for new Agents unless the applicable authority says so.
+Only ELIGIBLE candidates enter optional ranking.
 
-Eligibility reasons SHOULD be inspectable for debugging/dogfood, but the projection is recomputed from source facts rather than becoming durable authority.
+Projects MAY rank by priority, critical path, queue age, cost class, latency class, utilization, scarcity, retry/escalation history, drift risk and relevant evidence strength. Ranking cannot change INELIGIBLE/UNKNOWN to ELIGIBLE. No universal Agent score or economic optimizer is introduced.
 
-## 8. Optional ranking / assignment policy
+## 9. Composite work + scarce-resource admission
 
-Only `ELIGIBLE` candidates enter optional ranking.
+v4.8 reuses and tightens `EXECUTION_ARCHITECTURE_STANDARD.md` §11.1 rather than creating a second reservation authority.
 
-Projects/controllers MAY rank by:
+For any dispatch needing scarce/exclusive/bounded resources, the protected admission set is:
 
 ```text
-Task priority / critical path
-queue age
-cost class
-latency class
-resource utilization
-resource scarcity
-recent retry/escalation history
-integration drift risk
-relevant capability evidence strength
+A = {
+  work_claim_key(repository, work_item, role),
+  resource_group_1 + required_units,
+  resource_group_2 + required_units,
+  ...
+}
 ```
 
-Hard rules:
+**All members of A MUST be admitted through one all-or-none linearization point.**
 
-- ranking cannot change `INELIGIBLE` or `UNKNOWN` to `ELIGIBLE`;
-- no default global scalar Agent score is introduced;
-- no mandatory economic optimizer is introduced;
-- cost/latency fields may be absent/NOT_MEASURED;
-- provider/model labels alone cannot determine correctness ranking;
-- project ranking policy is configuration/derived policy, not Product/Task authority.
+Conforming modes:
 
-## 9. Resource reservation and parallelism
+### Mode A — SINGLE_WRITER_ADMISSION
 
-v4.8 reuses `EXECUTION_ARCHITECTURE_STANDARD.md` section 11.1 atomic admission.
+One designated logical admission writer owns one critical section covering:
 
-For exclusive or bounded shared resources, dispatch reservation MUST include the applicable resource/capacity key in the serialized admission decision. The existing protected key may be extended by higher-authority compatibility/concurrency grouping, for example:
+1. current work claimability;
+2. incompatible active dispatch check;
+3. every required resource/capacity availability check;
+4. capacity counters/tokens;
+5. dispatch reservation;
+6. accepted work/resource binding publication decision.
+
+No competing writer may independently reserve any member of the same admission set.
+
+### Mode B — LINEARIZABLE_COMPOSITE_CONDITIONAL_WRITE
+
+The adapter/storage layer provides a genuine atomic transaction/CAS over the **entire admission set**, using expected revision/generation (or equivalent). A stale or partially unsatisfied predicate fails the whole mutation. Independent per-key CAS operations are not equivalent.
+
+### Capacity invariant
+
+For each capacity group G with configured capacity N:
 
 ```text
-work_claim_key = (repository, work item, role)
-resource_claim_key = (resource_or_capacity_group, slot_or_generation)
+sum(active accepted units bound to G) <= N
 ```
 
-A dispatch is publishable only when both the work claim and required resource reservation are admitted consistently.
+at every canonical state transition.
 
-Allowed implementations remain:
+Exclusive resource = `N=1`.
+
+A task requiring `k` units must fail admission if the post-admission active total would exceed N.
+
+### No partial canonical state
+
+These are forbidden as accepted states:
 
 ```text
-SINGLE_WRITER_ADMISSION
-LINEARIZABLE_CONDITIONAL_WRITE
+work claimed + required resource not durably bound
+resource durably bound + work/dispatch not admitted
+subset of required resources admitted while others failed
 ```
 
-A project with no safe reservation primitive MUST serialize use through one designated admission writer or mark the affected concurrent assignment unavailable/blocked. A transient lease may coordinate but cannot become unrecoverable authority; accepted Dispatch/Claim/resource binding refs must remain reconstructible from durable facts.
+If an implementation internally acquires multiple transient locks, it must not publish a canonical accepted admission until the full set succeeds atomically.
 
-This solves cross-Task scarce-resource races without creating a second scheduler state machine.
+### Crash / ambiguity recovery
 
-## 10. Dispatch / schema extensions
-
-`schemas/dispatch.schema.json` may receive backward-compatible optional references such as:
+Accepted binding facts record, where applicable:
 
 ```text
-capability_profile_ref?
+dispatch/work claim ref
+resource group + units/slot
+generation/revision
+admission mode
+accepted-at / durable event ref
+release/supersession ref
+```
+
+If a crash makes publication outcome ambiguous, the controller fails closed, reconstructs durable work/resource facts, reconciles capacity and **does not issue a replacement incompatible admission** until ambiguity is resolved.
+
+If no composite atomic mechanism is available, shared concurrent admission is non-conformant. Route through one exclusive `SINGLE_WRITER_ADMISSION` path or mark the assignment `BLOCKED/UNAVAILABLE`; do not expose the same capacity concurrently to independent claimers.
+
+This architecture is statically decidable and does not mandate distributed transactions. A later implementation choosing a novel distributed multi-key CAS/lease mechanism must separately prove that mechanism with a narrow Research Demo/Validation before relying on it.
+
+## 10. Dispatch extensions
+
+`schemas/dispatch.schema.json` may receive backward-compatible optional refs such as:
+
+```text
+agent_capability_profile_ref?
 capability_evidence_refs[]?
+runner_or_environment_capability_refs[]?
 eligibility_basis_ref?
 resource_binding_refs[]?
 assignment_policy_ref?
 ```
 
-These fields explain selection/binding. They do not grant Task scope, Review/Validation authority, or side-effect permission.
+These fields explain selection/binding; they do not grant Task scope, Review/Validation authority or side-effect permission. Historical Dispatch payloads remain valid.
 
-Historical Dispatch payloads remain valid when these refs are absent.
-
-## 11. Agent Exchange architecture
-
-### 11.1 Semantic owner vs transport
-
-The exchange envelope distinguishes:
-
-```text
-semantic_type / semantic_owner
-from
-transport adapter / delivery state
-```
-
-GitHub `ai-dev:event:v2` remains the canonical GitHub event writer protocol. An adapter may translate between an Exchange Envelope and the existing GitHub event/current-object facts, but it MUST NOT reinterpret semantic owner rules or create a second accepted-intent schema.
-
-Webhook, queue, local IPC, orchestrator and A2A-style transports are adapters only.
-
-### 11.2 Delivery and replay
-
-The binding is compatible with at-least-once delivery:
-
-- same `exchange_id`/idempotency key + same semantic payload/ref => idempotent replay;
-- same identity + conflicting payload/digest => fail closed;
-- expired/currentness-sensitive work is re-read against durable facts before action;
-- transport retry never bypasses Dispatch claim admission;
-- transport delivery ACK is not semantic completion.
-
-### 11.3 Durable materialization
-
-If an exchange changes authoritative workflow/gate/side-effect/evidence truth, the receiving controller/worker first validates authority/currentness and then publishes the canonical durable result through the existing owner. The exchange can subsequently carry/reference that durable identity.
-
-After crash/restart, a conforming controller can recover authoritative current state without transient queue history or private chat.
-
-## 12. Task Learning lifecycle
-
-Task Learning is created/updated only from material execution evidence. Recommended closeout flow:
+## 11. Task Learning lifecycle
 
 ```text
 implementation / tests / Validation / Review / merge facts
@@ -445,18 +440,16 @@ material-learning check
         ├── none -> TASK_LEARNING=NONE_MATERIAL
         └── material -> Task Learning Evidence v1
                          ↓
-                   Reviewable evidence/history
+                   reviewable history/evidence
                          ↓
-               optional friction classification
+                   optional friction classification
 ```
 
-A Task Learning record may point to an ADR/incident/Product issue where one exists; it does not replace those owners.
+A Task Learning record may reference ADR/incident/Product work but never replaces those owners. Successor code does not silently inherit exact-subject learning claims.
 
-Later source drift leaves the old learning record historical. A reusable invariant that remains valid on a successor must be re-supported/rebound or cited as historical context rather than silently treated as exact-current truth.
+## 12. ADS evolution feedback
 
-## 13. ADS evolution feedback architecture
-
-Task Learning / incident / Review / Validation findings may classify observations as:
+Classify execution observations before standard promotion:
 
 ```text
 PROJECT_DEFECT
@@ -467,157 +460,126 @@ STANDARD_FRICTION_CANDIDATE
 ADS_EVOLUTION_CANDIDATE
 ```
 
-No new evolution lifecycle schema is required by default.
+No new evolution lifecycle schema is required by default. Promotion is an ordinary durable ADS Intake action with evidence refs and proceeds through normal L1 -> PRD -> L2 -> Task -> Review/Validation governance.
 
-Promotion is an ordinary durable GitHub/ADS Intake action carrying evidence refs. A candidate becomes Product/Architecture authority only through the normal ADS process.
+Recommended evidence includes affected owner/version, materiality/risk, reproduction/counterexample, independent evidence where feasible, project/task diversity, measured rework/friction, publication/privacy classification and counterevidence/NO_CHANGE/MORE_EVIDENCE disposition.
 
-Recommended promotion evidence includes:
+Telemetry, provider label, one success/failure or heuristic threshold cannot self-amend ADS.
 
-```text
-affected standard owner/version
-materiality/risk
-reproduction or strong falsifying counterexample
-independent evidence where feasible
-project/task diversity
-measured failures/rework/friction
-privacy/publication classification
-counterevidence / NO_CHANGE / MORE_EVIDENCE disposition
-```
+## 13. Privacy / security / evidence minimization
 
-A single successful/failed model run, provider label, telemetry threshold, or project-specific preference cannot self-promote into a standard change.
+- no credentials/secrets/private chain-of-thought;
+- no hidden-validation/evaluator leakage;
+- refs/digests over copied sensitive bodies;
+- explicit project-private vs publishable evidence classification;
+- logical operator identity distinct from transport account/session;
+- capability/tool/credential availability never becomes side-effect authority;
+- measured performance/resource data only when actually observed.
 
-## 14. Privacy / security / evidence minimization
+## 14. Compatibility / progressive adoption
 
-Machine records MUST exclude ordinary secret values and private chain-of-thought.
+v4.8 remains additive:
 
-Cross-project capability/learning evidence records SHOULD prefer:
-
-```text
-stable refs/digests
-bounded task/capability classes
-approved summaries
-measured fields only when actually observed
-project-private vs publishable classification
-```
-
-Hidden Validation details/evaluator secrets are referenced only through allowed evidence surfaces and never copied into learning/capability records.
-
-Authenticated transport identity remains distinct from logical operator/session identity and from independence eligibility.
-
-## 15. Compatibility / progressive adoption
-
-v4.8 is additive:
-
-- existing Task Packs/Execution Packs/Dispatch/events remain valid;
-- new schema refs are optional unless a v4.8 Task/profile requires them;
-- Level-0/manual execution can use one designated admission writer and manual capability/availability facts;
+- historical Task Packs, Execution Packs, Dispatches, `interchange-envelope-v1`, `ai-dev:event:v2` and Validation/Review payloads remain valid;
+- new refs are optional unless v4.8 Task/project authority requires them;
+- no new Interchange family is required;
+- no universal Availability schema is required;
+- Level-0/manual projects may use one designated composite admission writer;
 - centralized scheduler/orchestrator is not required;
-- GitHub remains the reference durable fact chain;
-- no historical evidence is rewritten;
-- Fast Path can use direct eligibility + ordinary Dispatch/Claim + `TASK_LEARNING=NONE_MATERIAL`.
+- Fast Path can use one directly eligible executor + ordinary Dispatch/Claim + `TASK_LEARNING=NONE_MATERIAL`.
 
-Projects may stop at any progressive-adoption level while preserving the same authority/currentness/serialization semantics.
+## 15. Architecture UNKNOWNs and disposition
 
-## 16. Architecture UNKNOWNs and disposition
-
-| ID | UNKNOWN | Impact | Disposition | Decision |
+| ID | UNKNOWN | Impact | Disposition | Repaired decision |
 |---|---|---|---|---|
-| U1 | Does generic Agent capability duplicate v4.6 Skill Metadata? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Skill describes reusable procedure metadata; Agent Capability Profile describes executor claims; Capability Evidence records observed executor/task-class evidence. |
-| U2 | Is a durable universal Availability schema required? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Normalize current owner facts into a derived Availability View with currentness/TTL; no fifth default schema. |
-| U3 | Does resource scheduling require a second reservation authority? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Extend existing atomic dispatch/claim admission with resource/capacity protected keys. |
-| U4 | Can optional ranking weaken independence/currentness/security? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Ranking receives only hard-filtered ELIGIBLE choices. |
-| U5 | Does transport-neutral exchange require a universal lifecycle/result object? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Envelope carries/refers to existing semantic owners; delivery state remains transport-only. |
-| U6 | Must GitHub `ai-dev:event:v2` be replaced? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. It remains the GitHub adapter/writer protocol; envelope is additive and historical events remain readable. |
-| U7 | Does Task Learning need a new standalone normative owner? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Execution Architecture owns learning evidence semantics; existing ADR/incident/Product owners remain distinct. |
-| U8 | Does ADS evolution need an automated promotion state machine? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Classification feeds ordinary GitHub/ADS Intake and governance. |
-| U9 | Is a pre-L2 real multi-Agent/queue/transport demo required? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Architecture changes are additive around already-frozen READY/Dispatch/Claim/serialization semantics; real heterogeneous/resource/transport claims are mandatory later dogfood/Validation. |
-| U10 | Does #469 justify default lower-cost routing or economic optimization? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Economic savings remain NOT_MEASURED; evidence supports bounded task-class feasibility + continued strong review value only. |
+| U1 | Does generic Agent capability duplicate v4.6 Skill Metadata? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Skill = reusable procedure; logical Agent Profile = execution claim; Capability Evidence = observed execution evidence. |
+| U2 | Is durable universal Availability required? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Derived currentness view over existing owners. |
+| U3 | Does scarce-resource scheduling require a second reservation authority / can separate keys race? | Critical | `STATIC_EVIDENCE_SUFFICIENT` after #494 repair | No second authority. Require one all-or-none composite linearization point across work + all resources; per-key independent CAS is forbidden. |
+| U4 | Can ranking weaken independence/currentness/security? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Ranking sees ELIGIBLE only. |
+| U5 | Does transport-neutral exchange require a new owner/family? | Critical | `STATIC_EVIDENCE_SUFFICIENT` after #494 repair | No. Reuse existing v4.0 Interchange owner and `interchange-envelope-v1`; compatible extension/profile only. |
+| U6 | Must `ai-dev:event:v2` be replaced? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. It remains GitHub writer/admission profile. |
+| U7 | Does Task Learning need a standalone owner? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Execution Architecture owns evidence semantics. |
+| U8 | Does ADS evolution need automated promotion lifecycle? | Critical | `STATIC_EVIDENCE_SUFFICIENT` | No. Ordinary ADS Intake/governance. |
+| U9 | Is a pre-L2 distributed resource/queue demo required? | High | `STATIC_EVIDENCE_SUFFICIENT` | No, because architecture permits single-writer composite admission and does not depend on unproven distributed multi-key mechanisms. A later novel mechanism requires its own narrow demo. |
+| U10 | Does #469 justify default low-cost routing/economic optimization? | High | `STATIC_EVIDENCE_SUFFICIENT` | No. Savings remain NOT_MEASURED; blanket routing unsupported. |
 
 ### Research Demo decision
 
-**No executable Research Demo is required before L2 Freeze on the current evidence.**
+**No executable Research Demo is required before L2 Freeze for this repaired architecture.**
 
-Reason: all critical owner/authority/concurrency decisions reduce to existing frozen durable-state/atomic-admission semantics plus additive metadata/binding contracts. The Product intentionally does not mandate a specific external queue, A2A runtime, scheduler service, provider, host or economic optimizer whose behavior must be proven before choosing the architecture.
+#494 explicitly found the P1 repairs statically decidable. This decision depends on not requiring an unproven distributed multi-key admission mechanism. Real heterogeneous Agent/resource contention, transport replay/restart and external-runtime behavior remain later dogfood/Validation obligations.
 
-This does **not** waive later executable evidence. Multi-Agent/resource contention/transport replay/restart and real external-runtime claims remain required dogfood/Validation concerns. If Architecture Review finds an assumption that changes public wire/atomicity/durability semantics and cannot be resolved statically, reopen the relevant UNKNOWN as `EXECUTABLE_DEMO_REQUIRED` before L2 Freeze.
+## 16. Conformance / negative oracles
 
-## 17. Conformance / negative-oracle architecture
-
-At minimum reject these inference families:
+At minimum reject:
 
 ```text
-Capability Profile claim -> proven capability                 reject
-Skill installed -> executor capability proven                 reject
-Capability Evidence PASS -> current Task Validation PASS      reject
-historical capability success -> current resource AVAILABLE   reject
-provider/model label -> authorization                         reject
-credential/tool available -> side-effect authority            reject
-stale Availability fact -> hard eligibility satisfied         reject
-cost/latency ranking -> ineligible Agent becomes eligible     reject
-reviewer independence conflict -> rank around the conflict     reject
-same exclusive resource -> two admitted incompatible uses      reject
-no serialization primitive -> shared concurrent claiming       reject
-transport delivered/ACK -> Task/Review/Validation completion   reject
-exchange retry -> bypass Dispatch/Claim admission               reject
-same exchange id + conflicting payload -> accept latest         reject
-transient queue state -> durable authority                      reject
-Task Learning rationale -> Product/Architecture authority       reject
-Task Learning old exact subject -> successor behavioral truth   reject
-STANDARD_FRICTION_CANDIDATE -> STANDARD_CHANGE                  reject
-#469 bounded successes -> blanket strong-to-low-cost rule       reject
-NOT_MEASURED economic fields -> savings claim                   reject
-Fast Path -> authority/currentness/gate waiver                  reject
+Agent Profile claim -> proven capability
+Runner Capability Profile -> Validation PASS
+Skill installed -> Agent capability proven
+Capability Evidence success -> current Validation/Review PASS
+historical capability success -> current Availability
+provider/model label -> authorization
+credential/tool available -> side-effect authority
+stale Availability -> eligible
+cost/latency ranking -> ineligible becomes eligible
+reviewer independence conflict -> rank around it
+capacity N -> N+1 active accepted bindings
+per-key CAS success -> composite admission proven
+work claimed -> resource reservation inferred
+resource reserved -> work claim inferred
+ambiguous crash -> immediate replacement admission
+transport ACK -> Task/Review/Validation completion
+new Exchange family -> bypass existing Interchange owner
+exchange retry -> bypass Dispatch/Claim
+same idempotency identity + conflicting payload -> accept latest
+transient queue state -> durable authority
+Task Learning rationale -> Product/Architecture authority
+old exact-subject learning -> successor truth
+STANDARD_FRICTION_CANDIDATE -> STANDARD_CHANGE
+#469 bounded successes -> blanket strong-to-low-cost rule
+NOT_MEASURED -> savings claim
+Fast Path -> gate/authority waiver
 ```
 
-Positive conformance/dogfood must cover:
+Positive later dogfood must cover multiple READY tasks, heterogeneous logical Agent profiles, existing Runner/Host capability refs, stale/fresh Availability, capacity N and exclusive-resource races, independence conflicts, optional ranking after hard filters, Interchange duplicate/replay/loss/recovery, crash reconstruction, bounded low-cost execution with required strong review, escalation on ambiguity, Task Learning material/NONE_MATERIAL paths, and `MORE_EVIDENCE` evolution routing.
 
-- multiple simultaneously READY tasks;
-- at least two heterogeneous capability profiles;
-- stale and fresh Availability facts;
-- scarce/exclusive shared resource with competing assignments;
-- incompatible reviewer/validator independence candidate;
-- capability evidence that helps selection without becoming authority;
-- optional ranking after hard filtering;
-- duplicate/replayed/lost exchange delivery;
-- crash/restart reconstruction from durable facts;
-- lower-cost bounded task success plus required strong review;
-- escalation from bounded executor on semantic ambiguity;
-- Task Learning `NONE_MATERIAL` and material-learning paths;
-- friction classification with both `MORE_EVIDENCE` and candidate-promotion paths.
+## 17. Expected implementation touchpoints
 
-## 18. Expected implementation touchpoints
+After L2 Freeze, Task DAG should decompose at least:
 
-L2 expects later Task DAG decomposition to cover, at minimum:
+1. Task Learning schema/profile;
+2. Logical Agent Capability Profile schema;
+3. Agent Capability Evidence schema;
+4. Task/Dispatch optional requirement/reference extensions;
+5. Execution Architecture eligibility + composite resource-admission semantics;
+6. existing Interchange v1 compatibility extension/profile only if implementation gap is proven;
+7. Task Learning closeout + ADS friction/Intake integration;
+8. v4.7 manifest/registry/discoverability wiring;
+9. deterministic conformance for owner composition, eligibility and composite admission;
+10. heterogeneous multi-Agent/resource/interchange dogfood;
+11. #469/cross-project evidence dogfood and measured-field discipline;
+12. integrated compatibility/closure inputs.
 
-1. shared schemas for Task Learning / Capability Profile / Capability Evidence;
-2. Execution Architecture eligibility + resource-admission semantics and optional Task/Dispatch refs;
-3. Agent Exchange Binding owner + envelope schema + GitHub adapter mapping;
-4. Task Learning closeout/profile integration;
-5. ADS evolution/friction classification + Intake/template integration;
-6. manifest/v4.7 registry/discoverability/adoption wiring;
-7. deterministic eligibility/serialization/exchange conformance;
-8. heterogeneous multi-Agent/resource/transport dogfood;
-9. #469/cross-project evidence dogfood and measured-field discipline;
-10. integrated currentness/backward-compatibility/closure inputs.
+Exact Task IDs/dependencies/write sets/Review Policies are not frozen here; they belong to the Task DAG after L2 Freeze.
 
-Exact Task IDs, dependencies, write sets and Review Policies are **not frozen here**; they belong to the Task DAG after L2 Freeze.
-
-## 19. Local environment posture
+## 18. Local environment posture
 
 `LOCAL_ENV=NOT_REQUIRED` for L2 planning/review/freeze.
 
-Real host/device/provider/transport behavior must not be claimed from static fixtures. Later dogfood must create exact-subject Validation handoffs for any external runtime/resource that Web/CI cannot execute.
+Real host/device/provider/transport behavior must not be claimed from static evidence. Later tasks create exact-subject Validation handoffs where required.
 
-## 20. L2 Freeze gate
+## 19. L2 Freeze gate
 
-This L2 is **NOT FROZEN**.
+This repaired L2 is **NOT FROZEN**.
 
 Before L2 Freeze:
 
-1. a genuinely fresh high-capability Architecture Reviewer must review this exact L2 candidate against Frozen Product Authority and current v4.1–v4.7 owners;
-2. P0/P1 Architecture findings must be resolved;
-3. reviewer must specifically falsify owner duplication, capability-vs-authority leakage, scarce-resource race semantics, exchange-vs-event duplication, backward compatibility and Research Demo disposition;
-4. any newly discovered material Architecture UNKNOWN must receive `STATIC_EVIDENCE_SUFFICIENT | EXECUTABLE_DEMO_REQUIRED | BLOCKED | ARCHITECTURE_CONTRADICTION` disposition;
-5. only after a current exact-subject PASS may Controller record L2 Freeze and create the Task DAG.
+1. a genuinely fresh high-capability Architecture Reviewer must review the exact repaired L2 candidate;
+2. it must explicitly verify closure of #494 P1-1/P1-2/P1-3;
+3. P0/P1 must be zero;
+4. Product Freeze validity, owner non-duplication, three-family count, composite resource atomicity, existing Interchange reuse, Runner-vs-Agent capability boundary, backward compatibility and Research Demo disposition must PASS;
+5. any newly discovered material UNKNOWN must receive an explicit disposition;
+6. only then may Controller record L2 Freeze and create the Task DAG.
 
-Task DAG remains **NOT AUTHORIZED** until that Freeze.
+Task DAG remains **NOT AUTHORIZED** until L2 Freeze.
