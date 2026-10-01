@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.4.0 — unreleased candidate
+
+`v4.4.0` 当前是 `version/v4.4.0` 上的未发布候选，不代表 Candidate Freeze、Version Closure、Hidden Validation、Release Qualification、tag 或正式发布已经完成。
+
+- 新增 shared delivery machine contracts：build manifest、artifact promotion、deployment plan/result schemas 及 focused backward-compatibility/negative contract coverage。
+- 新增 Build & Artifact Governance：绑定 source/profile/toolchain/output identity，区分 build output 与 promoted immutable artifact，并约束 content-policy evidence、rebuild qualification 不可继承。
+- 新增 optional Distribution Governance：区分 immutable digest/bytes 与可变 alias/tag/channel，publication/distribution success 不得被提升为 Deployment truth。
+- 新增 Deployment Governance：分离 plan/result，绑定 exact artifact/environment/authority，保留 staging/production、rollback、migration 与 side-effect authority 边界，`Release READY != Deployment SUCCESS`。
+- 完成 package/install dogfood 与 Build/Artifact conformance，包含 non-container package/install path、content-policy negatives、promotion identity 和 rebuild non-transfer 等实际证据。
+- 完成 Distribution/Deployment conformance dogfood，覆盖 immutable digest vs alias、publication vs deployment、plan/result binding、environment/authority/rollback 等负向推断边界。
+- 完成 adoption & cross-standard wiring：manifest、PROJECT_OVERRIDES/project-adoption guidance、Validation/Release/checklist references 与 v4.4 migration/adoption notes 的 additive wiring。
+- 完成 cross-standard conformance 与 durable closure inputs，覆盖 integrated negative inference、historical compatibility、Fast Path proportionality 及 v4.1/v4.2 composition；这些 closure inputs 仍须由后续独立 Version Closure 绑定和裁定，本条目不声明 Release/Closure PASS。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
@@ -147,7 +160,6 @@ Breaking changes:
 - 分支数量本身不作为限制 Task isolation 的理由；成本敏感项目继续通过 Minimal CI 与本地/self-hosted validation 控制 GitHub-hosted CI 消耗，并遵守 repository large-file/artifact hygiene。
 
 ## v2.0.0 — 2026-09-15
-
 基于 FastDev 真实 Pilot 重构执行模型：保留 CI，但默认最小化；将 Validation Evidence 提升为版本判断主链，并形式化 Gate Authority、Validation Tuple 与 blocker propagation。
 
 Breaking changes:
