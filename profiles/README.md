@@ -128,6 +128,32 @@ profiles/
 
 This file defines profile composition only. It is **not** the repository-wide owner/applicability resolver. Canonical concern-to-owner resolution and broader progressive disclosure belong to v4.7.
 
+### 9.1 v4.3 static catalog
+
+For an exact pinned standard revision, `standard-manifest.json` section `profiles` is the canonical static discovery index for the v4.3 profile framework and initial mappings:
+
+```text
+profiles/README.md
+profiles/languages/typescript.md
+profiles/languages/python.md
+profiles/languages/go.md
+profiles/languages/java.md
+profiles/languages/rust.md
+profiles/archetypes/library.md
+profiles/archetypes/service.md
+profiles/archetypes/cli.md
+```
+
+Consumers resolve these explicit pinned paths. They MUST NOT use glob order, directory order, file order, IDE discovery or Agent-local tool availability to decide applicability or resolve a conflict. The catalog makes known mappings discoverable; it does not decide which mapping applies and it does not create a repository-wide resolver.
+
+### 9.2 Progressive adoption
+
+Existing projects and historical Task/Validation/Review evidence remain valid under their original subject and authority. Adopting v4.3 profiles is prospective: select applicable mappings when an implementation-profile decision becomes material; do not rewrite historical evidence or synthesize retroactive profile records.
+
+Fast Path and genuinely non-material changes remain lightweight. They do not need empty profile-selection artifacts merely because the pinned standard exposes the catalog. If a change materially depends on a language/runtime/public-contract/archetype fact, the applicable mapping still participates in authority composition.
+
+Project-specific selection, specialization and strengthening belongs in the pinned `.dev-standard/PROJECT_OVERRIDES.md`; see `standards/PROJECT_ADOPTION.md` for the broader adoption contract.
+
 ## 10. Conflict / failure handling
 
 Fail closed when:
