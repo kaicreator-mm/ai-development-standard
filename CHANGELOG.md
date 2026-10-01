@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.3.0 — Unreleased candidate
+
+这是 `version/v4.3.0` 的**未发布版本分支候选**条目，仅记录已合并到当前候选的 v4.3 Frozen T01–T10 scope；不声明发布日期、tag、Candidate Freeze、Version Closure、Release Qualification，亦不制造任何 READY/PASS 发布结论。
+
+- 新增 DAG mutation machine contract，并建立 Architecture Design、Task Decomposition、Task DAG Governance 的明确工程设计/规划治理边界；GitHub Issue Dependencies 继续作为 canonical live execution DAG，新增标准不创建第二套执行 truth。
+- 新增 language-neutral `IMPLEMENTATION_QUALITY_STANDARD` 与 profile framework，定义 deterministic applicability/composition、冲突 fail-closed 与 profile/default layering；明确不在 v4.3 引入 repository-wide v4.7 resolver。
+- 新增 TypeScript、Python、Go、Java、Rust implementation profiles，把语言中立要求映射到生态事实；项目通过 explicit pinned profile refs 与 `PROJECT_OVERRIDES` 选择、specialize 或 strengthen，且不得削弱 Frozen/Core authority。
+- 新增 `library / service / cli` archetype profiles，并形成 profile catalog / progressive adoption 规则；历史 Task/Validation/Review evidence 保持原 subject/authority，不要求 retroactive profile records。
+- Task Pack / Execution Pack 接入 governance/profile pointers（`authority_refs`、`implementation_profile_refs`、`project_overrides_ref`），只消费已解析的 authority/profile selection，不复制 Task object，也不自行重新解析更高 authority。
+- 完成 T10 Adoption & Cross-standard Wiring：把 normative owners、DAG mutation schema、profile catalog、implementation/adoption references 与 v4.3 verification surface 接入 `standard-manifest.json`，并同步 selected Task Pack / Execution Pack / PROJECT_OVERRIDES adoption guidance。
+- T11 Conformance & Dogfood、Version Closure、Candidate Freeze 与 Release 均不属于本条 metadata reconciliation 的已完成声明，仍按其独立 authority/gates 处理。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
