@@ -654,3 +654,61 @@ Baseline
 ```
 
 快速路径不为被跳过阶段制造空提交、空 branch、空 Review、空 Research Demo 或形式化 Issue。
+
+## 8. ADS Evolution Feedback / Intake
+
+Implementation, Validation, Review, Incident, Task Learning, dogfood, CI/Build Host and project-operation observations MAY produce evidence for ADS evolution, but observation capture is not standard mutation. Every observation MUST be classified before any promotion decision.
+
+### 8.1 Observation classification and deterministic route
+
+Use exactly one primary class for the current observation:
+
+| Classification | Meaning | Allowed route / disposition |
+|---|---|---|
+| `PROJECT_DEFECT` | Defect in project code, data, configuration or project-owned contract. | `ROUTE_PROJECT`; fix through the project owner. It does not open an ADS standard change. |
+| `AGENT_EXECUTION_DEFECT` | Execution mistake, contract violation, hallucination, write-set drift or other Agent-run defect. | `ROUTE_EXECUTION`; repair/escalate through the existing execution owner. It does not open an ADS standard change. |
+| `ENVIRONMENT_OR_TOOL_DEFECT` | Runner, Build Host, CI/provider, network, toolchain or external-tool failure. | `ROUTE_ENVIRONMENT`; route to the applicable environment/tool owner. It does not open an ADS standard change. |
+| `PROJECT_SPECIFIC_REQUIREMENT` | Valid requirement that is intentionally local to one project/domain/deployment. | `ROUTE_PROJECT_SPECIFIC`; keep it in project Product/Architecture/Task/override authority. It does not open an ADS standard change. |
+| `STANDARD_FRICTION_CANDIDATE` | Evidence that ADS may be causing repeated ambiguity, rework or avoidable friction, but the evidence is not yet sufficient for a normative proposal. | `NO_CHANGE` or `MORE_EVIDENCE`. Any later reclassification to `ADS_EVOLUTION_CANDIDATE` is an explicit new decision, never automatic. |
+| `ADS_EVOLUTION_CANDIDATE` | Evidence is sufficient to justify considering a normative ADS change. | `OPEN_ADS_INTAKE`; create an ordinary durable ADS Intake with evidence refs, then use `Intake -> L1 -> PRD -> L2 -> Task -> Review/Validation`. |
+
+Classification is about the observed cause/ownership, not the desired fix. If cause is ambiguous, choose `MORE_EVIDENCE`; do not classify upward to obtain a standard change.
+
+`NO_CHANGE` and `MORE_EVIDENCE` are first-class terminal/current dispositions. `NO_CHANGE` records that the current evidence does not justify a standard change. `MORE_EVIDENCE` records the missing counterexample, reproduction, cross-project diversity, independent challenge, measurement or owner evidence needed before reclassification.
+
+### 8.2 Promotion boundary: ordinary ADS governance only
+
+`ADS_EVOLUTION_CANDIDATE` is not approval and not a mutation authority. The only path that can promote a normative ADS change is the ordinary ADS governance chain:
+
+```text
+OPEN_ADS_INTAKE
+→ Intake
+→ L1 Product Evidence
+→ PRD / Scope Freeze
+→ L2 Architecture Evidence / Freeze
+→ Task DAG / Task
+→ Implementation
+→ required Validation
+→ applicable fresh Review
+→ normal integration / release authority
+```
+
+Telemetry, model/provider output, scheduler/ranking output, counters, scores, logs, Task Learning records, CI results and dogfood observations MAY be evidence refs only. They MUST NOT edit normative ADS files, mark an evolution candidate approved, or bypass any stage above.
+
+There is no universal numeric promotion threshold. No count, score, success rate, failure rate, cost value, latency value or heuristic can automatically convert `STANDARD_FRICTION_CANDIDATE` into `ADS_EVOLUTION_CANDIDATE` or directly authorize a standard change. Numeric signals are evidence only and remain subject to owner/currentness/counterevidence review.
+
+This feedback path does not replace existing owners: the v4.5 Incident feedback owner remains intact, and the v4.6 Intent/Skill owners remain intact. Incident, Intent and Skill facts may be referenced as evidence, but their canonical semantics and lifecycles stay with those owners.
+
+### 8.3 Privacy / publication classification
+
+Every evolution evidence item MUST carry an explicit publication class before it is copied, quoted or linked outside its source boundary:
+
+```text
+PROJECT_PRIVATE
+RESTRICTED
+PUBLISHABLE
+```
+
+Default is fail-closed: absent an explicit `PUBLISHABLE` classification from the applicable source authority, evidence remains `PROJECT_PRIVATE` or `RESTRICTED` and MUST NOT be published as standard evidence. Prefer minimal refs/digests and non-sensitive summaries over copied bodies. Secrets, credentials, private chain-of-thought and hidden-evaluator/Hidden Validation payloads are never publication material.
+
+Changing publication class does not change evidence strength, owner authority or promotion status. A private observation can still lead to `NO_CHANGE`, `MORE_EVIDENCE` or a private ADS Intake; publication is a separate decision.
