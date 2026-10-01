@@ -41,15 +41,46 @@ NEGATIVE_INFERENCE_FAMILIES = {
     "mitigation -> follow-up complete",
 }
 
+EXPECTED_IDENTITY_FIELDS = (
+    "candidate_sha",
+    "candidate_tree",
+    "target_sha",
+    "target_tree",
+    "combined_tree",
+)
+EXPECTED_REQUIRED_TUPLE_IDS = (
+    "local-real-exact-current-target-integration",
+)
+EXPECTED_REQUIRED_GATES = (
+    "integration conformance regression",
+    "exact-candidate integration Validation",
+    "Fresh Independent Review",
+)
 
-def _exact_tested_tuple_is_bound(item: dict, candidate: dict) -> bool:
+
+def _exact_required_set(items: object, identity_key: str, expected_names: tuple[str, ...]) -> bool:
+    if not isinstance(items, list) or len(items) != len(expected_names):
+        return False
+
+    actual_names: list[str] = []
+    for item in items:
+        if not isinstance(item, dict) or item.get("required") is not True:
+            return False
+        name = item.get(identity_key)
+        if not isinstance(name, str):
+            return False
+        actual_names.append(name)
+
+    return len(set(actual_names)) == len(actual_names) and set(actual_names) == set(expected_names)
+
+
+def _exact_tested_tuple_is_bound(item: dict, expected: dict) -> bool:
     tested = item.get("tested_identity")
     if not isinstance(tested, dict):
         return False
-    sha_fields = ("candidate_sha", "candidate_tree", "target_sha", "target_tree", "combined_tree")
-    if not all(SHA40.fullmatch(str(tested.get(field, ""))) for field in sha_fields):
+    if not all(SHA40.fullmatch(str(tested.get(field, ""))) for field in EXPECTED_IDENTITY_FIELDS):
         return False
-    if tested["candidate_sha"] != candidate["candidate_sha"] or tested["candidate_tree"] != candidate["candidate_tree"]:
+    if not all(tested[field] == expected[field] for field in EXPECTED_IDENTITY_FIELDS):
         return False
     if not tested.get("environment_ref") or not tested.get("commands_profile_ref"):
         return False
@@ -58,22 +89,30 @@ def _exact_tested_tuple_is_bound(item: dict, candidate: dict) -> bool:
 
 def closure_input_can_be_green(payload: dict) -> bool:
     """Fail-closed projection for T09 closure inputs, never a Version Closure verdict."""
-    candidate = payload.get("exact_candidate_binding", {})
-    if candidate.get("status") != "BOUND":
+    expected = payload.get("exact_candidate_binding", {})
+    if expected.get("status") != "BOUND":
         return False
-    if not SHA40.fullmatch(str(candidate.get("candidate_sha", ""))):
-        return False
-    if not SHA40.fullmatch(str(candidate.get("candidate_tree", ""))):
+    if not all(SHA40.fullmatch(str(expected.get(field, ""))) for field in EXPECTED_IDENTITY_FIELDS):
         return False
 
-    for item in payload.get("required_tuples", []):
-        if not item.get("required"):
-            continue
-        if item.get("status") != "PASS" or not _exact_tested_tuple_is_bound(item, candidate):
+    baseline = payload.get("builder_source_baseline", {})
+    if expected["target_sha"] != baseline.get("commit_sha"):
+        return False
+    if expected["target_tree"] != baseline.get("tree_sha"):
+        return False
+
+    required_tuples = payload.get("required_tuples")
+    if not _exact_required_set(required_tuples, "id", EXPECTED_REQUIRED_TUPLE_IDS):
+        return False
+    for item in required_tuples:
+        if item.get("status") != "PASS" or not _exact_tested_tuple_is_bound(item, expected):
             return False
 
-    for gate in payload.get("required_gates", []):
-        if gate.get("required") and gate.get("status") != "PASS":
+    required_gates = payload.get("required_gates")
+    if not _exact_required_set(required_gates, "gate", EXPECTED_REQUIRED_GATES):
+        return False
+    for gate in required_gates:
+        if gate.get("status") != "PASS":
             return False
 
     for finding in payload.get("known_findings", []):
@@ -144,10 +183,15 @@ class V45CrossStandardConformanceTests(unittest.TestCase):
 
     def bound_payload(self) -> dict:
         payload = copy.deepcopy(self.closure_input)
+        target_sha = payload["builder_source_baseline"]["commit_sha"]
+        target_tree = payload["builder_source_baseline"]["tree_sha"]
         payload["exact_candidate_binding"] = {
             "status": "BOUND",
             "candidate_sha": "1" * 40,
             "candidate_tree": "2" * 40,
+            "target_sha": target_sha,
+            "target_tree": target_tree,
+            "combined_tree": "5" * 40,
             "evidence_location": "synthetic-test-only",
             "reason": "synthetic-test-only",
         }
@@ -156,8 +200,8 @@ class V45CrossStandardConformanceTests(unittest.TestCase):
             item["tested_identity"] = {
                 "candidate_sha": "1" * 40,
                 "candidate_tree": "2" * 40,
-                "target_sha": "3" * 40,
-                "target_tree": "4" * 40,
+                "target_sha": target_sha,
+                "target_tree": target_tree,
                 "combined_tree": "5" * 40,
                 "environment_ref": "synthetic-test-only",
                 "commands_profile_ref": "synthetic-test-only",
@@ -170,6 +214,25 @@ class V45CrossStandardConformanceTests(unittest.TestCase):
 
     def test_synthetic_fully_bound_inputs_can_be_green_without_becoming_a_release_verdict(self) -> None:
         self.assertTrue(closure_input_can_be_green(self.bound_payload()))
+
+    def test_required_set_deletion_empty_duplicate_substitution_or_downgrade_cannot_be_green(self) -> None:
+        mutations = (
+            ("tuple-key-deleted", lambda p: p.pop("required_tuples")),
+            ("tuple-empty", lambda p: p.__setitem__("required_tuples", [])),
+            ("tuple-duplicate", lambda p: p["required_tuples"].append(copy.deepcopy(p["required_tuples"][0]))),
+            ("tuple-substitution", lambda p: p["required_tuples"][0].__setitem__("id", "substituted-tuple")),
+            ("tuple-downgrade", lambda p: p["required_tuples"][0].__setitem__("required", False)),
+            ("gate-key-deleted", lambda p: p.pop("required_gates")),
+            ("gate-empty", lambda p: p.__setitem__("required_gates", [])),
+            ("gate-duplicate", lambda p: p["required_gates"].append(copy.deepcopy(p["required_gates"][0]))),
+            ("gate-substitution", lambda p: p["required_gates"][0].__setitem__("gate", "substituted-gate")),
+            ("gate-downgrade", lambda p: p["required_gates"][0].__setitem__("required", False)),
+        )
+        for label, mutate in mutations:
+            with self.subTest(case=label):
+                payload = self.bound_payload()
+                mutate(payload)
+                self.assertFalse(closure_input_can_be_green(payload))
 
     def test_required_not_run_or_blocked_tuple_cannot_be_green(self) -> None:
         for status in ("NOT_RUN", "BLOCKED"):
@@ -190,6 +253,28 @@ class V45CrossStandardConformanceTests(unittest.TestCase):
         for field, value in mutations:
             with self.subTest(field=field):
                 payload = self.bound_payload()
+                payload["required_tuples"][0]["tested_identity"][field] = value
+                self.assertFalse(closure_input_can_be_green(payload))
+
+    def test_wrong_well_formed_target_tree_or_combined_identity_cannot_be_green(self) -> None:
+        for field, value in (
+            ("target_sha", "6" * 40),
+            ("target_tree", "7" * 40),
+            ("combined_tree", "8" * 40),
+        ):
+            with self.subTest(field=field):
+                payload = self.bound_payload()
+                payload["required_tuples"][0]["tested_identity"][field] = value
+                self.assertFalse(closure_input_can_be_green(payload))
+
+    def test_wrong_well_formed_expected_target_identity_cannot_be_green(self) -> None:
+        for field, value in (
+            ("target_sha", "6" * 40),
+            ("target_tree", "7" * 40),
+        ):
+            with self.subTest(field=field):
+                payload = self.bound_payload()
+                payload["exact_candidate_binding"][field] = value
                 payload["required_tuples"][0]["tested_identity"][field] = value
                 self.assertFalse(closure_input_can_be_green(payload))
 
