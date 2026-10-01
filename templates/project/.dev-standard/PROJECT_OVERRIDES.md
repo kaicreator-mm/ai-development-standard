@@ -83,6 +83,16 @@ Migration guidance:
 - `ai-dev:event:v2` remains valid; v4 adoption does not require event-v3.
 - See pinned `standards/PROJECT_ADOPTION.md` and `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md` for the compatibility matrix and examples.
 
+### v4.5 Operations / Incident / Maintenance applicability (independent axes)
+
+For projects pinning v4.5+, declare **each** axis independently; do not equate A0–A4 adoption level or repository profile with applicability. These describe project-specific *scope* and implementation evidence, not a global Operations machine or a new mandatory gate.
+
+- `v4.runtime`: `<APPLICABLE — authority / subject / environment / evidence source / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+- `v4.incident`: `<APPLICABLE — authority / incident and feedback owner / safe evidence route / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+- `v4.maintenance`: `<APPLICABLE — authority / support line / baseline / backport-result validation policy / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+
+`APPLICABLE` is a scope declaration **not** a PASS: specify separate real execution state (`NOT_RUN`, `BLOCKED` or exact-subject evidence with its owning result) for every required activity. An unknown required runtime obligation MUST remain `NOT_RUN/BLOCKED`, never default to `NOT_APPLICABLE`. Non-deployed libraries MAY truthfully set runtime/incident `NOT_APPLICABLE` with concrete reasons, while maintenance/support may still apply. Conversely a deployed service cannot treat missing telemetry as health or `NOT_APPLICABLE` where observation is required. Do not retrofit historical Release/incident/support facts. For owner documents, T01 schemas, migration matrix and negative examples see the pinned `docs/implementation/4.5.0/MIGRATION_ADOPTION.md` and manifest; existing Testing, Test Data, Validation and Release owners remain authoritative.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.
@@ -290,4 +300,5 @@ Historical workflows, old scripts or obsolete artifacts do not automatically cre
 
 - `<path or concern → owner/review rule>`
 
-Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims. When Review is required by project/task authority, its exact-SHA evidence is also mandatory.
+Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims.
+When Review is required by project/task authority, its exact-SHA evidence is also mandatory.

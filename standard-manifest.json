@@ -3,11 +3,7 @@
   "description": "Canonical inventory of active ai-development-standard assets. Compatibility entry files are listed separately and do not duplicate normative authority.",
   "sections": {
     "authority": [
-      "AGENTS.md",
-      "CHANGELOG.md",
-      "README.md",
-      "VERSION",
-      "standard-manifest.json"
+      "AGENTS.md", "CHANGELOG.md", "README.md", "VERSION", "standard-manifest.json"
     ],
     "normative_standards": [
       "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
@@ -25,9 +21,12 @@
       "standards/GITHUB_CAPABILITY_FALLBACK.md",
       "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
       "standards/GOLDEN_TEMPLATE_STANDARD.md",
+      "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md",
       "standards/ISSUE_FIRST_TASK_TRIGGER.md",
       "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
       "standards/MODEL_USAGE_POLICY.md",
+      "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
       "standards/PROJECT_ADOPTION.md",
       "standards/PROJECT_STRUCTURE.md",
       "standards/RELEASE_STANDARD.md",
@@ -37,8 +36,7 @@
       "standards/VALIDATION_STANDARD.md"
     ],
     "compatibility_entries": [
-      "standards/GITHUB_WORKFLOW.md",
-      "standards/VERSION_INTEGRATION_WORKFLOW.md"
+      "standards/GITHUB_WORKFLOW.md", "standards/VERSION_INTEGRATION_WORKFLOW.md"
     ],
     "templates": [
       "templates/GOLDEN_INDEX.md",
@@ -107,19 +105,25 @@
       "schemas/dispatch.schema.json",
       "schemas/execution-pack-manifest.schema.json",
       "schemas/execution-state.schema.json",
+      "schemas/incident-event-v1.schema.json",
       "schemas/interchange-envelope-v1.schema.json",
       "schemas/local-agent-handoff.schema.json",
+      "schemas/maintenance-policy-v1.schema.json",
       "schemas/operation-binding-v1.schema.json",
       "schemas/operation-v1.schema.json",
       "schemas/repository-integration-v4-precondition.schema.json",
       "schemas/review-aggregation-v1.schema.json",
       "schemas/review-finding-v1.schema.json",
+      "schemas/runtime-observation-context-v1.schema.json",
       "schemas/task-contract.schema.json",
       "schemas/validation-report.schema.json"
     ],
     "references": [
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/INCIDENT_RECOVERY_REFERENCE.md",
+      "references/MAINTENANCE_EOL_HOTFIX_REFERENCE.md",
+      "references/OBSERVABILITY_RUNTIME_REFERENCE.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
@@ -145,6 +149,7 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v45_adoption_wiring.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
