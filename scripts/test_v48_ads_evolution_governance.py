@@ -65,7 +65,7 @@ for token in (
     "`NO_CHANGE` and `MORE_EVIDENCE` are first-class",
     "They MUST NOT edit normative ADS files",
     "There is no universal numeric promotion threshold.",
-    "can automatically convert `STANDARD_FRICTION_CANDIDATE` into `ADS_EVOLUTION_CANDIDATE`",
+    "No count, score, success rate, failure rate, cost value, latency value or heuristic can automatically convert `STANDARD_FRICTION_CANDIDATE` into `ADS_EVOLUTION_CANDIDATE`",
     "v4.5 Incident feedback owner remains intact",
     "v4.6 Intent/Skill owners remain intact",
 ):
