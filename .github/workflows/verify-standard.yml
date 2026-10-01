@@ -40,3 +40,4 @@ jobs:
       - run: python scripts/verify_event_writer_surfaces.py
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
+      - run: python -B scripts/test_v45_cross_standard_conformance.py
