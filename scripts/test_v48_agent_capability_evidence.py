@@ -16,7 +16,7 @@ def valid_evidence() -> dict:
         "provider_model_provenance": "provider-model:example/model-a",
         "task_class_or_capability_class": "schema-contract-authoring",
         "role": "builder",
-        "exact_subject_ref": "git:repo@1111111111111111111111111111111111111111",
+        "exact_subject_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
         "environment_ref": "environment:python3",
         "runner_or_resource_capability_ref": "runner-capability:ubuntu-build-01@obs-1",
         "task_pack_execution_pack_refs": ["task-pack:T-016", "execution-pack:T-016@base"],
@@ -67,6 +67,29 @@ class AgentCapabilityEvidenceSchemaTests(unittest.TestCase):
         value = valid_evidence()
         del value["exact_subject_ref"]
         self.assertTrue(validate_subset(value, SCHEMA))
+
+    def test_mutable_or_malformed_exact_subject_is_rejected(self) -> None:
+        invalid_refs = (
+            "git:kaicreator-mm/ai-development-standard@main",
+            "git:kaicreator-mm/ai-development-standard@release-v4.8.0",
+            "git:kaicreator-mm/ai-development-standard@refs/tags/v4.8.0",
+            "git:kaicreator-mm/ai-development-standard",
+            "git:kaicreator-mm/ai-development-standard@1111111",
+            "git:kaicreator-mm/ai-development-standard@GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
+        )
+        for exact_subject_ref in invalid_refs:
+            with self.subTest(exact_subject_ref=exact_subject_ref):
+                value = valid_evidence()
+                value["exact_subject_ref"] = exact_subject_ref
+                self.assertTrue(validate_subset(value, SCHEMA))
+
+    def test_same_textual_mutable_alias_cannot_rebind_across_drift(self) -> None:
+        old_observation = valid_evidence()
+        successor_observation = valid_evidence()
+        old_observation["exact_subject_ref"] = "git:kaicreator-mm/ai-development-standard@main"
+        successor_observation["exact_subject_ref"] = "git:kaicreator-mm/ai-development-standard@main"
+        self.assertTrue(validate_subset(old_observation, SCHEMA))
+        self.assertTrue(validate_subset(successor_observation, SCHEMA))
 
     def test_evidence_strength_is_bounded(self) -> None:
         value = valid_evidence()
