@@ -14,7 +14,10 @@
     "provider_model_provenance": {"type": "string", "minLength": 1},
     "task_class_or_capability_class": {"type": "string", "minLength": 1},
     "role": {"type": "string", "minLength": 1},
-    "exact_subject_ref": {"type": "string", "minLength": 1},
+    "exact_subject_ref": {
+      "type": "string",
+      "pattern": "^git:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{40}$"
+    },
     "environment_ref": {"type": "string", "minLength": 1},
     "runner_or_resource_capability_ref": {"type": "string", "minLength": 1},
     "task_pack_execution_pack_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
