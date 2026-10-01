@@ -168,6 +168,9 @@ class V45CrossStandardConformanceTests(unittest.TestCase):
         payload["known_findings"] = []
         return payload
 
+    def test_synthetic_fully_bound_inputs_can_be_green_without_becoming_a_release_verdict(self) -> None:
+        self.assertTrue(closure_input_can_be_green(self.bound_payload()))
+
     def test_required_not_run_or_blocked_tuple_cannot_be_green(self) -> None:
         for status in ("NOT_RUN", "BLOCKED"):
             with self.subTest(status=status):
