@@ -291,3 +291,27 @@ Historical workflows, old scripts or obsolete artifacts do not automatically cre
 - `<path or concern → owner/review rule>`
 
 Project overrides may specialize the global standard but must not weaken its hard requirements on truthfulness, required exact-SHA Validation evidence, frozen product semantics or release claims. When Review is required by project/task authority, its exact-SHA evidence is also mandatory.
+
+## v4.6 AI-native / Agentic Governance Profile
+
+This profile is **materiality-driven**. It does not require projects to manufacture empty Intent/Assumption or Skill records for work where those records are not material, and it does not change the A0–A4 adoption level.
+
+Canonical project fields:
+
+- `v4.ai_native.intent_assumption`: `<materiality-driven | always-record + project reason | project-specific stronger policy>`
+- `v4.ai_native.context_currentness`: `<canonical | project-specific stricter live-reread policy>`
+- `v4.ai_native.skill_admission`: `<disabled | materiality-driven | project-specific stronger admission/evaluation policy>`
+- `v4.ai_native.durable_truth_surface`: `<GitHub/repository refs | project-specific durable owner surfaces>`
+
+Rules:
+
+- `standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md`, `standards/CONTEXT_ENGINEERING_STANDARD.md`, and `standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md` are the three v4.6 normative AI-native owners. Project overrides may specialize allowed defaults but MUST NOT weaken their hard constraints.
+- Material interpretation, assumption, UNKNOWN, promotion and contradiction handling use the Intent/Assumption owner and `schemas/intent-assumption-record-v1.schema.json` when a durable machine record is needed. Record shape never creates Product/Architecture/Task authority.
+- Context currentness uses durable owner references and live rereads; do not create a project-local Context Snapshot/database as a substitute for current authority.
+- Skill admission is required only when reusable procedure governance is material. Installed/discoverable Skill != trusted Skill, tool capability != side-effect authority, and Skill instructions never override current Product/Architecture/Task/Validation/Release authority.
+- Assurance/Review, F0–F3, Dispatch/Handoff, Validation and Release remain owned by their existing standards/contracts. Use `references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md` for the v4.6 cross-owner map instead of copying those semantics here.
+- Fast Path reduces ceremony, not truth. It does **not** require empty Intent/Assumption or Skill records when those concerns are genuinely non-material; material unresolved authority/currentness still fails closed.
+- Historical evidence is not retrofitted with v4.6 records or relabeled as newly produced v4.6 evidence.
+- This profile does not introduce a repository-wide v4.7 resolver, a second autonomy vocabulary, or parallel Review/Validation/Release state.
+
+Migration guidance: see `docs/implementation/4.6.0/MIGRATION_ADOPTION.md` after the project pins a v4.6 revision.

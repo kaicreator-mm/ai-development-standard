@@ -27,6 +27,18 @@ When review is performed:
 - [ ] Public contract changes are explicit.
 - [ ] No new mandatory gate was inferred from a historical workflow/script without authority.
 
+## v4.6 AI-native Governance (when material)
+
+- [ ] Intent/Assumption, Context Engineering, and Skill/Reusable Procedure semantics come from their three v4.6 normative owners; this PR does not invent a competing Product/Task/Assurance/Dispatch/Handoff/Validation/Release owner.
+- [ ] Material interpretation/assumption/UNKNOWN is not restated as user fact or promoted into durable Product/Architecture/Task truth without the owning authority.
+- [ ] Currentness-sensitive claims re-read the live owning fact; stale chat/memory or a larger context dump is not treated as higher authority.
+- [ ] Required development truth needed by a successor Agent is durable outside the current chat/session.
+- [ ] Skill installation/discovery/tool capability is not treated as trust, Task scope, merge permission or external side-effect authority.
+- [ ] AI-native Assurance/Review coverage reuses existing assurance/review owners; model/provider metadata by itself is not proof of independence.
+- [ ] Fast Path omits only non-material ceremony. It does not require empty Intent/Skill records, and it does not waive material authority/currentness or required gates.
+- [ ] Historical evidence is not retrofitted with v4.6 records or relabeled as current v4.6 evidence.
+- [ ] No Context Snapshot/database, repository-wide v4.7 resolver, second autonomy scale, or parallel Review/Validation/Release state was introduced.
+
 ## Task / Dependency Semantics
 
 - [ ] PR is linked to the correct Task/Issue.
