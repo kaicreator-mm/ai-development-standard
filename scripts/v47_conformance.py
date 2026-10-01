@@ -79,16 +79,33 @@ STATE_RULE_EXPECTATIONS: Mapping[str, tuple[str, str, str, str]] = {
     ),
 }
 
-# Frozen Product v4.7 §5.2 / L3 T07 carry-forward negatives. These strings are
+# Frozen Product v4.7 §6 / L3 T07 carry-forward negatives. These strings are
 # checked as frozen Product evidence, not re-declared here as a new owner.
+# The fixed cardinality is deliberate: if a required executable check is
+# removed, the T07 runner fails closed instead of silently shrinking coverage.
+FROZEN_PRODUCT_NEGATIVE_COUNT = 21
 FROZEN_PRODUCT_NEGATIVES = (
     "Task DONE -> Validation PASS",
     "Review PASS -> Validation PASS",
     "Validation PASS -> Release READY",
+    "PR merged -> Release READY",
     "Release READY -> Deployment SUCCESS",
     "Deployment SUCCESS -> Runtime Healthy",
+    "Dispatch COMPLETED -> product/release PASS",
+    "PACK_CURRENT -> implementation correct",
     "old exact-SHA PASS -> successor exact-SHA PASS",
+    "provider/tool/credential AVAILABLE -> mutation authority",
+    "waiver/exception -> PASS",
+    "fresh DB/install PASS -> upgrade PASS",
+    "wire/schema compatible -> behavior/source/consumer compatible",
     "mock/sandbox PASS -> higher-fidelity PASS",
+    "artifact alias/tag -> immutable artifact identity",
+    "incident RECOVERED -> permanent fix/follow-up closed",
+    "branch/package exists -> maintenance-supported",
+    "Skill installed/capable -> trusted/authorized",
+    "Intent/Assumption record -> Frozen Product authority",
+    "historical chat/memory -> current durable authority",
+    "technical necessity -> Task Pack write authority",
 )
 
 
@@ -276,7 +293,15 @@ def state_registry_conformance_errors(registry: dict) -> list[str]:
 
 
 def frozen_product_conformance_errors(prd_text: str) -> list[str]:
-    errors = []
+    errors: list[str] = []
+    if len(FROZEN_PRODUCT_NEGATIVES) != FROZEN_PRODUCT_NEGATIVE_COUNT:
+        errors.append(
+            "U08: Frozen Product executable negative catalog cardinality drift: "
+            f"expected {FROZEN_PRODUCT_NEGATIVE_COUNT}, "
+            f"got {len(FROZEN_PRODUCT_NEGATIVES)}"
+        )
+    if len(set(FROZEN_PRODUCT_NEGATIVES)) != len(FROZEN_PRODUCT_NEGATIVES):
+        errors.append("U08: Frozen Product executable negative catalog contains duplicates")
     for negative in FROZEN_PRODUCT_NEGATIVES:
         if negative not in prd_text:
             errors.append(f"U08: Frozen Product negative missing: {negative}")

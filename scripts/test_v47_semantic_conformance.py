@@ -10,16 +10,21 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
+import v47_conformance as conformance
 from v47_conformance import (
     DEPENDENCY_TEST_SCRIPTS,
     EvidenceTuple,
+    FROZEN_PRODUCT_NEGATIVE_COUNT,
+    FROZEN_PRODUCT_NEGATIVES,
     RUNTIME_OWNER_REF,
     STATE_RULE_EXPECTATIONS,
     T07_TASK_PACK,
     T07_WRITE_SET,
     current_repo_conformance_errors,
     evidence_applies_to,
+    frozen_product_conformance_errors,
     historical_manifest_compatible,
     manifest_conformance_errors,
     mutation_authorized_by_task_pack,
@@ -41,6 +46,7 @@ class UnifiedSemanticConformanceTests(unittest.TestCase):
             (ROOT / "registries/state-dimensions-v1.json").read_text(encoding="utf-8")
         )
         cls.task_pack = (ROOT / T07_TASK_PACK).read_text(encoding="utf-8")
+        cls.prd = (ROOT / "docs/implementation/4.7.0/PRD.md").read_text(encoding="utf-8")
 
     def test_u01_current_repository_composes_without_semantic_error(self) -> None:
         self.assertEqual(current_repo_conformance_errors(ROOT), [])
@@ -132,6 +138,40 @@ class UnifiedSemanticConformanceTests(unittest.TestCase):
         errors = state_registry_conformance_errors(mutant)
         self.assertTrue(
             any("F07_OLD_SHA_VALIDATION_NOT_SUCCESSOR_PASS" in error for error in errors),
+            errors,
+        )
+
+    def test_u08_full_frozen_product_negative_catalog_fails_closed(self) -> None:
+        self.assertEqual(FROZEN_PRODUCT_NEGATIVE_COUNT, 21)
+        self.assertEqual(len(FROZEN_PRODUCT_NEGATIVES), FROZEN_PRODUCT_NEGATIVE_COUNT)
+        self.assertEqual(len(set(FROZEN_PRODUCT_NEGATIVES)), FROZEN_PRODUCT_NEGATIVE_COUNT)
+        self.assertEqual(frozen_product_conformance_errors(self.prd), [])
+
+        omitted_p1_families = {
+            "waiver/exception -> PASS",
+            "fresh DB/install PASS -> upgrade PASS",
+            "incident RECOVERED -> permanent fix/follow-up closed",
+            "Skill installed/capable -> trusted/authorized",
+            "Intent/Assumption record -> Frozen Product authority",
+        }
+        self.assertTrue(omitted_p1_families.issubset(set(FROZEN_PRODUCT_NEGATIVES)))
+
+        for negative in FROZEN_PRODUCT_NEGATIVES:
+            mutant = self.prd.replace(negative, "<removed-product-negative>", 1)
+            errors = frozen_product_conformance_errors(mutant)
+            self.assertTrue(
+                any(negative in error for error in errors),
+                f"missing Product negative did not fail closed: {negative}",
+            )
+
+        with patch.object(
+            conformance,
+            "FROZEN_PRODUCT_NEGATIVES",
+            FROZEN_PRODUCT_NEGATIVES[:-1],
+        ):
+            errors = conformance.frozen_product_conformance_errors(self.prd)
+        self.assertTrue(
+            any("catalog cardinality drift" in error for error in errors),
             errors,
         )
 
