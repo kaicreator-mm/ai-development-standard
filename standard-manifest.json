@@ -10,6 +10,7 @@
       "standard-manifest.json"
     ],
     "normative_standards": [
+      "standards/ARCHITECTURE_DESIGN_STANDARD.md",
       "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
       "standards/CHATGPT_WEB_ROLE.md",
       "standards/CI_EVIDENCE_STANDARD.md",
@@ -25,6 +26,7 @@
       "standards/GITHUB_CAPABILITY_FALLBACK.md",
       "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
       "standards/GOLDEN_TEMPLATE_STANDARD.md",
+      "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
       "standards/ISSUE_FIRST_TASK_TRIGGER.md",
       "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
       "standards/MODEL_USAGE_POLICY.md",
@@ -32,6 +34,8 @@
       "standards/PROJECT_STRUCTURE.md",
       "standards/RELEASE_STANDARD.md",
       "standards/REPOSITORY_STANDARD.md",
+      "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+      "standards/TASK_DECOMPOSITION_STANDARD.md",
       "standards/TESTING_STANDARD.md",
       "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
       "standards/VALIDATION_STANDARD.md"
@@ -104,6 +108,7 @@
     "machine_contracts": [
       "schemas/agent-event-v2.schema.json",
       "schemas/assurance-plan-v1.schema.json",
+      "schemas/dag-mutation-record-v1.schema.json",
       "schemas/dispatch.schema.json",
       "schemas/execution-pack-manifest.schema.json",
       "schemas/execution-state.schema.json",
@@ -117,9 +122,25 @@
       "schemas/task-contract.schema.json",
       "schemas/validation-report.schema.json"
     ],
+    "profiles": [
+      "profiles/README.md",
+      "profiles/languages/typescript.md",
+      "profiles/languages/python.md",
+      "profiles/languages/go.md",
+      "profiles/languages/java.md",
+      "profiles/languages/rust.md",
+      "profiles/archetypes/library.md",
+      "profiles/archetypes/service.md",
+      "profiles/archetypes/cli.md"
+    ],
     "references": [
+      "references/ARCHITECTURE_DECISION_REFERENCE.md",
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/IMPLEMENTATION_PROFILE_ADOPTION_REFERENCE.md",
+      "references/IMPLEMENTATION_QUALITY_REFERENCE.md",
+      "references/TASK_DAG_GOVERNANCE_REFERENCE.md",
+      "references/TASK_DECOMPOSITION_REFERENCE.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
@@ -145,6 +166,16 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v43_adoption_wiring.py",
+      "scripts/test_v43_archetype_profiles.py",
+      "scripts/test_v43_architecture_design.py",
+      "scripts/test_v43_dag_mutation_contract.py",
+      "scripts/test_v43_go_java_rust_profiles.py",
+      "scripts/test_v43_implementation_quality.py",
+      "scripts/test_v43_profile_framework.py",
+      "scripts/test_v43_task_dag_governance.py",
+      "scripts/test_v43_task_decomposition.py",
+      "scripts/test_v43_ts_python_profiles.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
