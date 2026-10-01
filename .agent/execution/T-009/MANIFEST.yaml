@@ -1,0 +1,15 @@
+task_id: T-009
+issue: 515
+integration_branch: version/v4.8.0
+base_sha: 22e8e1701661689fb39a5c363eed424cf827c403
+branch: task/v4.8.0-t09-interchange-conformance
+frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
+task_pack: docs/implementation/4.8.0/task-packs/T09_interchange_conformance.md
+l3: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+review_policy: required
+validation_owner: independent-from-builder
+allowed_write_set:
+  - scripts/test_v48_interchange_replay_restart.py
+  - fixtures/v48_interchange_replay/**
+forbidden: [new_exchange_lifecycle, new_exchange_family, delivery_chronology_as_authority, event_v2_replacement, schema_mutation]
+status: JIT_READY
