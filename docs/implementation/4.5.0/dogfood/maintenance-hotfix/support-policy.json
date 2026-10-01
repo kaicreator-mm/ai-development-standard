@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "policy_id": "fixture-policy-v2-security-only",
+  "product_or_component_ref": "fixture://demo-service",
+  "support_lines": [
+    {
+      "line_id": "maintenance/v2",
+      "baseline_ref": "fda33c596039f19f124be57053c07c76806572bf",
+      "support_state": "SECURITY_ONLY",
+      "allowed_change_classes": [
+        "security-fix"
+      ],
+      "authority_ref": "fixture://demo-service/owner/maintenance-team",
+      "effective_from": "2001-01-01",
+      "upgrade_or_migration_ref": "fixture://demo-service/upgrade-to-current"
+    }
+  ]
+}
