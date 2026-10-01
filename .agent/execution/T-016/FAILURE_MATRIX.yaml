@@ -1,0 +1,16 @@
+task: T-016
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: historical_evidence_is_promoted_to_current_availability_validation_or_review
+    action: FAIL_FALSE_AUTHORITY
+  - condition: evidence_strength_becomes_global_scalar_score
+    action: FAIL_CONTRACT
+  - condition: economic_or_performance_claim_without_comparable_measurement
+    action: FAIL_NON_INFERENCE
+  - condition: evidence_copies_runner_or_agent_owner_facts_instead_of_refs
+    action: FAIL_OWNER_BOUNDARY
+  - condition: required_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_commit_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE
