@@ -1,12 +1,12 @@
 # ai-development-standard v4.8.0 PRD — Evidence-Driven Agent Orchestration & Standard Evolution
 
-Status: **REVISED AFTER L1 — NOT FROZEN; FRESH INDEPENDENT PRODUCT REVIEW REQUIRED**
+Status: **FROZEN PRODUCT AUTHORITY — 2026-10-01**
 
 Planning baseline: `main@e75fe834469c5ea9f9a384f7d84e38c3a48afa46`
 
 L1 evidence: `docs/implementation/4.8.0/L1_PRODUCT_EVIDENCE.md`
 
-This PRD is the revised Product candidate after L1 research. It is still not Frozen Product Authority. It does not authorize implementation, schema migration, scheduler deployment, new Agent runtime infrastructure, or changes to existing v4.1–v4.7 Frozen semantics.
+This PRD is Frozen Product Authority after L1 research/currentness repair and Fresh Independent Product Review R3 #490. It does not itself authorize implementation, schema migration, scheduler deployment, new Agent runtime infrastructure, or changes to existing v4.1–v4.7 Frozen semantics.
 
 ## 1. Product intent
 
@@ -65,7 +65,7 @@ Projects discover standard friction, but local observations can be confused with
 
 ## 3. Product shape
 
-v4.8 freezes, if Product Review authorizes it, these five concerns:
+v4.8 freezes these five concerns:
 
 1. **Task Learning Evidence**
 2. **Agent Capability Evidence & Eligibility**
@@ -515,17 +515,27 @@ v4.8 does not:
 - adopt A2A, CloudEvents, PROV or Kubernetes as normative wire/runtime dependencies;
 - guarantee economic/performance improvement before measured dogfood evidence.
 
-## 19. Product Freeze gate
+## 19. Product Freeze record
 
-This revised PRD remains **NOT FROZEN**.
+Product Freeze is explicitly authorized and recorded after Fresh Independent Product Review R3 #490:
 
-Before Product Freeze:
+```text
+review_subject_head = b8c3879a65c9159759457744c2a24e7e5777c8c1
+review_subject_tree = 14c1bf8dd4e684b90c633ca50ff1762471f21f1c
+review_main = e75fe834469c5ea9f9a384f7d84e38c3a48afa46
+dogfood_input = #469@5925124956
+review_verdict = PASS
+product_freeze_authorization = YES
+P0 = 0
+P1 = 0
+P2 = 0
+P3 = 0
+```
 
-1. a genuinely fresh high-capability reviewer must independently review the exact PRD/L1 planning candidate;
-2. P0/P1 Product findings must be resolved;
-3. current `main` / v4.7 owner assumptions must be rechecked for material drift;
-4. Product Freeze must be explicitly recorded on one exact planning subject.
+The Freeze basis includes the bounded currentness repair #489 and treats #488 as historical stale-input review evidence only. Immediately before this Freeze record, Controller re-read #469 and found no materially newer checkpoint than `5925124956`; therefore the #490 before/after currentness result remains valid.
 
-Only after Product Freeze may L2 Architecture Evidence determine exact owner/file/schema changes and Architecture UNKNOWN disposition. Only after L2 Freeze may the Task DAG become Frozen/executable planning authority.
+This Product Freeze does not authorize implementation, schema migration, scheduler deployment, new Agent runtime infrastructure, L2 conclusions, Task DAG execution, or changes to existing v4.1–v4.7 Frozen semantics. Proceed next to L2 Architecture Evidence and Architecture UNKNOWN disposition. Only after L2 Freeze may Task DAG become Frozen/executable planning authority.
 
-`LOCAL_ENV=NOT_REQUIRED` for Product Freeze. Real Agent/resource/transport claims are later dogfood/Validation concerns.
+If later evidence demonstrates a material contradiction in this Frozen Product authority, the contradiction must be recorded explicitly and the Product scope reopened through normal ADS governance; implementation findings do not silently rewrite Frozen Product semantics.
+
+`LOCAL_ENV=NOT_REQUIRED` for Product Freeze. Real Agent/resource/transport claims remain later dogfood/Validation concerns.
