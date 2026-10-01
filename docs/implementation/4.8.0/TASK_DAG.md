@@ -1,6 +1,8 @@
 # v4.8.0 Task DAG — Evidence-Driven Agent Orchestration & Standard Evolution
 
-Status: **FROZEN TASK DAG — 2026-10-01**
+Status: **FROZEN TASK DAG R1 — 2026-10-01**
+
+## 0. Authority and repair history
 
 Freeze inputs:
 
@@ -13,465 +15,16 @@ Freeze inputs:
 - planning baseline: `main@e75fe834469c5ea9f9a384f7d84e38c3a48afa46`;
 - intended implementation integration target: `version/v4.8.0` after canonical planning integration.
 
-This DAG is subordinate to the Frozen Product and Frozen L2. It cannot weaken owner boundaries, exact-subject/currentness, Review/Validation authority, composite resource admission, Interchange reuse, or the evidence limitations frozen above.
+Historical DAG R0 was commit `0a4607e857c3971b9eff6092de46f67ba0a698f5`, blob `16ff752ba9c42ee037bb6939c4beb7d235f87cd6`. Controller audit #504 comment `5927557494` found one bounded planning defect before any Task Pack/L3/JIT/Builder dispatch: R0 T-001 combined all three independent new machine-contract families into one Task/PR. R1 repairs only Task granularity and dependency topology. It does **not** change Frozen Product/L2 semantics.
 
-## 1. Planning DAG
+R1 preserves T-002..T-014 stable identities, narrows T-001 to Task Learning Evidence, and adds:
 
-```text
-ROOTS
+- T-015 — Logical Agent Capability Profile Contract;
+- T-016 — Agent Capability Evidence Contract.
 
-T-001 Machine Contract Families ───────────────┐
-                                               ├─────► T-002 Execution Architecture Core
-                                               │            │
-                                               │            ├─────► T-008 Eligibility / Resource Conformance
-                                               │            │
-                                               │            └─────► T-012 #469 Task-Class Dogfood
-                                               │
-                                               ├─────► T-004 Task Learning Closeout Wiring
-                                               │            │
-                                               │            ├─────► T-010 Learning / Evolution Conformance
-                                               │            │
-                                               │            └─────► T-012 #469 Task-Class Dogfood
-                                               │
-                                               └─────► T-007 Contract / Compatibility Conformance
+This restores one-concern-per-PR for the three new machine families and increases safe root parallelism without creating shared-owner false parallelism.
 
-T-003 Existing Interchange Profile ────────────┬─────► T-009 Interchange Replay / Restart Conformance
-                                               │
-                                               └─────► T-011 Heterogeneous Orchestration Dogfood
-
-T-005 ADS Evolution Governance ────────────────┬─────► T-010 Learning / Evolution Conformance
-                                               │
-                                               └─────► T-013 Cross-Project Evolution Dogfood
-
-SEMANTIC / ADOPTION CONVERGENCE
-
-T-001 ─┐
-T-002 ─┤
-T-003 ─┼─────► T-006 Registry / Adoption Wiring
-T-004 ─┤
-T-005 ─┘
-
-CONFORMANCE / DOGFOOD
-
-T-007 ──────────────┐
-T-008 ──────────────┼─────► T-011 Heterogeneous Orchestration Dogfood
-T-009 ──────────────┘
-
-T-007 ──────────────┐
-T-008 ──────────────┼─────► T-012 #469 Task-Class Dogfood
-T-004 ──────────────┘
-
-T-004 ──────────────┐
-T-005 ──────────────┼─────► T-013 Cross-Project Evolution Dogfood
-T-006 ──────────────┤
-T-010 ──────────────┘
-
-PRE-CLOSURE JOIN
-
-T-006 ─┐
-T-007 ─┤
-T-008 ─┤
-T-009 ─┤
-T-010 ─┼─────► T-014 Integrated Convergence / Closure Inputs
-T-011 ─┤
-T-012 ─┤
-T-013 ─┘
-                 │
-                 ▼
-          Version Closure
-```
-
-Exact dependency summary:
-
-```text
-T-001: []
-T-002: [T-001]
-T-003: []
-T-004: [T-001, T-002]
-T-005: []
-T-006: [T-001, T-002, T-003, T-004, T-005]
-T-007: [T-001]
-T-008: [T-002]
-T-009: [T-003]
-T-010: [T-004, T-005]
-T-011: [T-007, T-008, T-009]
-T-012: [T-004, T-007, T-008]
-T-013: [T-004, T-005, T-006, T-010]
-T-014: [T-006, T-007, T-008, T-009, T-010, T-011, T-012, T-013]
-```
-
-Initial roots are **T-001, T-003 and T-005**. These are separate semantic owners/write sets and can progress safely in parallel from the same Frozen planning checkpoint.
-
-## 2. Task definitions
-
-### T-001 — Three Machine Contract Families
-
-Lane: `contract`
-
-Own exactly the three new default v4.8 machine families frozen by L2:
-
-1. Task Learning Evidence v1;
-2. Logical Agent Capability Profile v1;
-3. Agent Capability Evidence v1.
-
-Expected outputs:
-
-- schemas + focused fixtures/examples;
-- deterministic positive/negative schema tests;
-- backward-compatibility posture showing no fourth Availability/Exchange family;
-- machine/prose terminology aligned with Frozen L2.
-
-Acceptance:
-
-- Capability Profile contains logical Agent/operator/model execution claims only;
-- runner/host/device/toolchain/resource/concurrency/network facts remain references to existing infrastructure owners;
-- Capability Evidence is historical/exact-subject evidence, never current Validation/Review authority;
-- Task Learning supports `TASK_LEARNING=NONE_MATERIAL` Fast Path and excludes private chain-of-thought;
-- no provider/model scalar correctness score or authority inference.
-
-### T-002 — Execution Architecture Core: Learning, Eligibility and Composite Resource Admission
-
-Lane: `execution-core`
-
-This Task is the **single owner lane** for v4.8 changes to `EXECUTION_ARCHITECTURE_STANDARD.md` and directly related Task/Dispatch execution semantics, avoiding competing PRs against the same semantic owner.
-
-Own:
-
-- Task Learning evidence owner/lifecycle semantics;
-- logical Agent capability + environment/runner + Availability + Capability Evidence composition;
-- `ELIGIBLE | INELIGIBLE | UNKNOWN` derived projection;
-- hard filters before optional ranking;
-- optional backward-compatible Task/Execution Pack/Dispatch references;
-- scarce/exclusive/capacity-N resource admission;
-- one all-or-none linearization point for work claim + every required resource binding;
-- crash/publication reconciliation and fail-closed replacement admission.
-
-Acceptance:
-
-- existing READY/Dispatch/Claim remain canonical;
-- no scheduler state machine/database becomes authority;
-- independent per-key CAS/leases are explicitly insufficient for composite admission;
-- capacity-N active accepted bindings never exceed N; exclusive resource is N=1;
-- no accepted canonical partial state exists;
-- reviewer/validator independence, currentness, authority and security are hard predicates;
-- ranking/cost/latency cannot turn INELIGIBLE/UNKNOWN into ELIGIBLE.
-
-### T-003 — Existing Interchange v1 Profile / Adapter Mapping
-
-Lane: `interchange`
-
-Own v4.8's use of the **existing** v4.0 Interchange owner/family.
-
-Expected outputs:
-
-- compatible profile/extension guidance only where a proven v4.8 field/ref gap exists;
-- mapping to `GITHUB_AGENT_INTERACTION_PROTOCOL.md` and `ai-dev:event:v2`;
-- transport adapter rules for webhook/queue/local/orchestrator/A2A-style carriers without new lifecycle authority;
-- idempotency/replay/conflicting-payload/currentness/durable-materialization rules;
-- restart reconstruction from durable facts.
-
-Acceptance:
-
-- no `agent-exchange-envelope-v1` replacement family;
-- no new Agent Exchange normative owner;
-- existing `interchange-envelope-v1` remains canonical generic family;
-- transport ACK/progress never means Task/Review/Validation completion;
-- critical semantic effects are durable through their canonical owner;
-- historical Interchange/Event payloads remain valid.
-
-### T-004 — Task Learning Closeout / Template Wiring
-
-Lane: `learning-wiring`
-
-Depends on T-001/T-002 so exact machine and owner semantics are stable first.
-
-Own only closeout/adoption surfaces, for example applicable Task Pack, Task Issue, final-closeout, review/checklist or Execution Pack references.
-
-Acceptance:
-
-- material-learning path and `NONE_MATERIAL` path are both explicit;
-- closeout points to evidence instead of copying large bodies;
-- exact-subject behavioral claims cannot silently rebind after code drift;
-- learning does not replace ADR, Incident, Product, Architecture, Review or Validation authority;
-- no private chain-of-thought is required.
-
-### T-005 — ADS Evolution Governance / Intake
-
-Lane: `governance`
-
-Own classification and promotion governance for:
-
-```text
-PROJECT_DEFECT
-AGENT_EXECUTION_DEFECT
-ENVIRONMENT_OR_TOOL_DEFECT
-PROJECT_SPECIFIC_REQUIREMENT
-STANDARD_FRICTION_CANDIDATE
-ADS_EVOLUTION_CANDIDATE
-```
-
-Expected outputs:
-
-- applicable `DEVELOPMENT_WORKFLOW.md`/Intake/template/checklist wiring;
-- evidence requirements for promotion;
-- NO_CHANGE / MORE_EVIDENCE / normal ADS change routes;
-- privacy/publication classification and minimization guidance.
-
-Acceptance:
-
-- no telemetry/threshold/model/scheduler self-amends ADS;
-- promotion always re-enters ordinary ADS Intake → L1 → PRD → L2 → Task → Review/Validation;
-- v4.5 incident feedback and v4.6 intent/skill ownership remain intact;
-- no universal numeric promotion threshold is introduced.
-
-### T-006 — Registry / Discoverability / Adoption Wiring
-
-Lane: `registry-adoption`
-
-Convergence Task after all semantic owner Tasks stabilize.
-
-Own:
-
-- `standard-manifest.json` / v4.7 registry discoverability for new schemas/updated owners;
-- project-adoption/progressive-disclosure references;
-- migration/adoption notes;
-- central wiring that would otherwise create cross-lane write conflicts.
-
-Acceptance:
-
-- registry points to canonical owners but grants no authority;
-- Interchange reuse is represented as reuse, not a fourth new family;
-- historical consumers remain valid;
-- Fast Path adoption remains lightweight.
-
-### T-007 — Contract / Historical Compatibility Conformance
-
-Lane: `contract-conformance`
-
-Own executable machine/prose compatibility tests for T-001.
-
-Acceptance must include negative oracles rejecting:
-
-- Agent capability claim → proven capability;
-- Capability Evidence → current Validation/Review PASS;
-- provider/model identity → authority/correctness;
-- runner/host facts copied into Logical Agent Profile as canonical ownership;
-- fourth Availability/Exchange default family;
-- stale exact-subject evidence silently rebound to successor source;
-- private chain-of-thought required by Task Learning.
-
-Historical v4 fixtures/payloads must remain valid where Frozen L2 requires compatibility.
-
-### T-008 — Eligibility / Composite Resource Admission Conformance
-
-Lane: `scheduling-conformance`
-
-Own deterministic tests/reference scenarios for T-002.
-
-Required cases:
-
-- multiple simultaneously READY Tasks;
-- heterogeneous logical Agent profiles;
-- stale/fresh Availability facts;
-- reviewer/validator independence conflict;
-- hard-filter then optional ranking order;
-- capacity N with competing assignments;
-- N=1 exclusive resource;
-- work claim + multiple resource bindings under one composite admission;
-- injected partial-write/crash ambiguity;
-- fail-closed reconciliation before replacement admission;
-- no safe composite primitive → exclusive single writer or BLOCKED/UNAVAILABLE.
-
-A novel distributed multi-key CAS/lease mechanism is out of scope unless separately proven by Research Demo/Validation.
-
-### T-009 — Interchange Replay / Restart Conformance
-
-Lane: `interchange-conformance`
-
-Own deterministic conformance against the existing Interchange family/profile.
-
-Required cases:
-
-- duplicate delivery / same semantic identity + same payload;
-- same identity + conflicting payload/digest fails closed;
-- lost/replayed delivery;
-- stale exact-subject request;
-- transport ACK/progress remains non-authoritative;
-- authoritative result materialization through existing owner;
-- restart reconstructs current authority without transient queue/chat history;
-- GitHub `ai-dev:event:v2` remains GitHub admission/writer authority.
-
-### T-010 — Task Learning / Evolution Governance Conformance
-
-Lane: `governance-conformance`
-
-Own executable/fixture conformance for T-004/T-005.
-
-Required cases:
-
-- `TASK_LEARNING=NONE_MATERIAL` Fast Path;
-- material learning with identity/evidence layers;
-- stale learning remains historical;
-- project/Agent/environment/project-specific classifications do not auto-promote;
-- STANDARD_FRICTION_CANDIDATE can end in MORE_EVIDENCE/NO_CHANGE;
-- ADS_EVOLUTION_CANDIDATE still requires ordinary ADS governance;
-- privacy/minimization/project-private vs publishable evidence;
-- no hidden Validation/evaluator leakage.
-
-### T-011 — Heterogeneous Multi-Agent / Resource / Transport Dogfood
-
-Lane: `orchestration-dogfood`
-
-Own the Frozen PRD heterogeneous orchestration dogfood.
-
-Must attempt to falsify the architecture with:
-
-- multiple READY work items;
-- at least two materially different logical Agent capability profiles;
-- current/stale environment Availability;
-- shared scarce resource contention;
-- duplicate/incompatible assignment race;
-- reviewer/validator independence conflict;
-- transport duplicate/replay/loss;
-- crash/restart durable reconstruction;
-- lower-cost bounded executor success where appropriate;
-- bounded executor escalation on semantic ambiguity.
-
-Synthetic evidence stays labeled synthetic. Any real external host/device/provider claim requires exact-subject real Validation or remains NOT_RUN/BLOCKED.
-
-### T-012 — #469 Task-Class / Bounded-Agent Dogfood
-
-Lane: `469-dogfood`
-
-Consume #469 and successor measured evidence as a **dogfood input**, not pre-authorized standard truth.
-
-Own:
-
-- exact Task-class capability/eligibility evidence capture for bounded-agent runs;
-- clarification/escalation count;
-- edit/test loop count;
-- negative-oracle and contract/write-set drift findings;
-- stale pack/base rebinds;
-- Validation/Review findings and rework;
-- measured resource/time/cost fields only when actually observed;
-- comparison limits and evidence-strength classification.
-
-Acceptance:
-
-- `ECONOMIC_SAVINGS=NOT_MEASURED` remains until a comparable methodology actually measures it;
-- no blanket strong→low-cost rule;
-- provider/model identity remains provenance;
-- required Fresh Independent Review remains distinct from Builder/Validation;
-- output can support MORE_EVIDENCE, NO_CHANGE or a later evidence-backed candidate, not automatic adoption.
-
-### T-013 — Cross-Project ADS Evolution Dogfood
-
-Lane: `evolution-dogfood`
-
-Own cross-project feedback/evolution falsification using at least two materially distinct Task/project evidence streams when available.
-
-Required cases:
-
-- observation classification;
-- false-positive prevention;
-- repeated friction aggregation;
-- privacy/minimization/publication boundary;
-- project-specific requirement rejected as standard change;
-- environment/Agent defect rejected as standard change;
-- MORE_EVIDENCE / NO_CHANGE path;
-- justified ADS_EVOLUTION_CANDIDATE handoff into ordinary ADS Intake.
-
-#469 may be one evidence stream but cannot be the sole basis for broad economic/performance policy.
-
-### T-014 — Integrated Convergence / Version Closure Inputs
-
-Lane: `integration-closure`
-
-This is the only pre-Closure join.
-
-Own integrated v4.8 conformance and durable Version Closure inputs after all semantic/conformance/dogfood lanes complete.
-
-Acceptance:
-
-- exactly three new machine families remain canonical;
-- Interchange remains reused, not duplicated;
-- owner uniqueness/non-duplication holds across v4.1–v4.8;
-- hard eligibility before ranking and composite resource atomicity survive integration;
-- historical compatibility/Fast Path remain valid;
-- dogfood claims are bounded to their real evidence strength;
-- no economic savings or universal routing inference without evidence;
-- full repository verifier/regression and required integrated Validation evidence are captured;
-- produces closure inputs only, not Release Qualification verdict itself.
-
-## 3. Planning table
-
-| Task | Lane | Depends On | Parallel | Risk | Default executor/model suitability | Required Validation | Review Policy | Intended branch | Status |
-|---|---|---|---|---|---|---|---|---|---|
-| T-001 | contract | — | YES | H | high-capability contract designer; bounded builder allowed only from reviewed L3/contract | schema + compatibility tests | required | `task/v4.8.0-t01-contract-families` | TODO |
-| T-002 | execution-core | T-001 | YES | H | high-capability semantic/concurrency builder | focused semantics + concurrency/failure validation | required | `task/v4.8.0-t02-execution-core` | TODO |
-| T-003 | interchange | — | YES | H | high-capability protocol/owner-boundary builder | protocol/schema/event compatibility validation | required | `task/v4.8.0-t03-interchange-profile` | TODO |
-| T-004 | learning-wiring | T-001,T-002 | YES | H | bounded integration builder after semantic freeze | template/reference + closeout conformance | required | `task/v4.8.0-t04-learning-closeout` | TODO |
-| T-005 | governance | — | YES | H | high-capability governance builder | workflow/classification negative-oracle validation | required | `task/v4.8.0-t05-evolution-governance` | TODO |
-| T-006 | registry-adoption | T-001,T-002,T-003,T-004,T-005 | YES | M/H | bounded central-wiring builder | manifest/registry/project-adoption verifier | required | `task/v4.8.0-t06-registry-adoption` | TODO |
-| T-007 | contract-conformance | T-001 | YES | H | bounded test builder; high-capability oracle review | historical/schema compatibility suite | required | `task/v4.8.0-t07-contract-conformance` | TODO |
-| T-008 | scheduling-conformance | T-002 | YES | H | high-capability concurrency/test builder | race/capacity/crash deterministic validation | required | `task/v4.8.0-t08-scheduling-conformance` | TODO |
-| T-009 | interchange-conformance | T-003 | YES | H | bounded protocol-test builder | replay/idempotency/restart validation | required | `task/v4.8.0-t09-interchange-conformance` | TODO |
-| T-010 | governance-conformance | T-004,T-005 | YES | H | bounded fixture/test builder + strong semantic review | classification/learning/privacy negative oracles | required | `task/v4.8.0-t10-governance-conformance` | TODO |
-| T-011 | orchestration-dogfood | T-007,T-008,T-009 | YES | H | heterogeneous Agents; independent validator/reviewer | exact-subject scenario/real-host validation as applicable | required | `task/v4.8.0-t11-orchestration-dogfood` | TODO |
-| T-012 | 469-dogfood | T-004,T-007,T-008 | YES | H | bounded/low-cost executor where eligible + high-capability independent reviewer | exact-subject Builder/Validation/Review evidence | required | `task/v4.8.0-t12-469-dogfood` | TODO |
-| T-013 | evolution-dogfood | T-004,T-005,T-006,T-010 | YES | H | high-capability evidence/governance owner; project executors bounded by task | cross-project evidence + privacy/currentness validation | required | `task/v4.8.0-t13-evolution-dogfood` | TODO |
-| T-014 | integration-closure | T-006,T-007,T-008,T-009,T-010,T-011,T-012,T-013 | NO | H | independent integration validator/reviewer | full integrated regression + closure evidence | required | `task/v4.8.0-t14-integration-closure-inputs` | TODO |
-
-All implementation Task PRs target `version/v4.8.0` after canonical planning integration. Task branches are JIT from the current integration exact SHA only after native blockers satisfy; do not pre-create long-lived branches merely because this planning DAG is Frozen.
-
-## 4. Lane summary / safe parallelism
-
-| Lane | Tasks | Entry prerequisites | Shared-owner/write-set constraint | Converges at |
-|---|---|---|---|---|
-| contract | T-001,T-007 | Frozen L2; T-007 waits T-001 | T-001 owns the three new schemas; T-007 tests them, not semantic owner rewrites | T-011/T-012/T-014 |
-| execution-core | T-002,T-008 | T-001 then T-002 | **T-002 alone owns v4.8 Execution Architecture semantic edits**; T-008 is conformance/tests | T-011/T-012/T-014 |
-| interchange | T-003,T-009 | Frozen L2; T-009 waits T-003 | reuse existing Interchange/GitHub owners; no new family | T-011/T-014 |
-| learning-wiring | T-004 | T-001,T-002 | templates/checklists/adoption only; no competing Execution Architecture owner edits | T-010/T-012/T-013 |
-| governance | T-005,T-010 | Frozen L2; T-010 also waits T-004 | T-005 owns governance semantics; T-010 tests them | T-013/T-014 |
-| registry-adoption | T-006 | T-001..T-005 stable | central wiring owner prevents cross-lane manifest conflicts | T-013/T-014 |
-| orchestration-dogfood | T-011 | conformance T-007..T-009 | evidence only; no silent semantic repair | T-014 |
-| 469-dogfood | T-012 | learning + contract/scheduling conformance | evidence only; no blanket routing/economic inference | T-014 |
-| evolution-dogfood | T-013 | learning/governance/registry + conformance | evidence only; promotion through ordinary ADS governance | T-014 |
-| integration-closure | T-014 | all required lanes complete | sole pre-Closure central integration/closure-input owner | Version Closure |
-
-The DAG intentionally does **not** split `EXECUTION_ARCHITECTURE_STANDARD.md` semantics across parallel Tasks. Apparent extra concurrency there would be false parallelism because Task Learning, capability composition, eligibility and resource admission share one canonical owner and interact at Dispatch/Claim admission.
-
-## 5. Review / Validation policy
-
-All fourteen Tasks have `Review Policy=required` because each either changes public machine/owner/concurrency/governance semantics, validates high-risk compatibility, or produces evidence used by integrated Version Closure. This is a v4.8 task-level risk decision, not a global ADS rule that every Task in every project requires review.
-
-Validation remains distinct from Review. A Builder's green tests do not self-certify real-host, concurrency, cross-transport, privacy, or cross-project claims. Where the current environment cannot execute a required external claim, create an exact-subject Validation Request and preserve `NOT_RUN/BLOCKED` rather than simulating PASS.
-
-## 6. L3 / Task Pack planning
-
-Before Builder dispatch:
-
-- every Task receives a Task Pack with dependencies, allowed/forbidden write set, acceptance, Review Policy, required Validation, agent freedom, baseline/currentness handling and branch target;
-- high-risk semantic Tasks T-001/T-002/T-003/T-005 and integration T-014 SHOULD receive high-capability-authored L3/reference guidance;
-- T-012 MUST receive a risk-scaled exact Task-class/L3 + JIT Execution Pack suitable for bounded/low-cost execution and must preserve independent Validation/Review;
-- T-011/T-013 require explicit evidence matrices and real-vs-synthetic boundaries;
-- L3/reference material cannot expand Frozen Product/L2 scope.
-
-## 7. Native Issue dependency graph
-
-After this Frozen Task DAG checkpoint, Stage 2.5 materializes each T-001..T-014 as a GitHub Task Issue. GitHub Issue Dependencies are then the canonical live execution DAG; this file remains planning/history authority.
-
-The native dependency graph must equal the exact dependency summary in §1. Body-text dependency lists are descriptive only and do not replace native GitHub dependency metadata.
-
-Task Issue materialization does not itself mean Builder-ready. READY requires native blockers satisfied plus current Task Pack/L3/Execution Pack and required authority/currentness/resource checks.
-
-## 8. Integration posture
-
-Current planning artifacts remain in Draft PR #482 until the planning checkpoint is canonically integrated. After Product/L2/Task DAG and required downstream Task Packs/L3 are stable and planning integration is accepted, establish `version/v4.8.0` from the canonical integration baseline.
-
-Implementation follows one concern per PR targeting `version/v4.8.0`. Stacked PR is allowed only for a real unmerged code-baseline dependency and never substitutes for Issue Dependencies.
-
-## 9. Frozen boundaries carried into every Task
+## 1. Frozen boundaries
 
 Every Task Pack/Issue/PR MUST preserve:
 
@@ -493,4 +46,278 @@ NO_PRIVATE_CHAIN_OF_THOUGHT_REQUIRED
 FAST_PATH_REMAINS_PROPORTIONAL
 ```
 
-A Task that discovers a high-impact Architecture UNKNOWN that would change public contract/durability/failure/authority semantics must stop the affected assumption and re-enter the standard's Architecture Research Demo / amendment path; it may not silently reinterpret this Frozen DAG or L2.
+A Task discovering a high-impact Architecture UNKNOWN that would change public contract, durability, failure, or authority semantics MUST stop the affected assumption and re-enter Architecture Research Demo/amendment. It may not silently reinterpret Frozen Product/L2/DAG authority.
+
+## 2. Exact dependency graph
+
+```text
+T-001: []
+T-015: []
+T-016: []
+T-003: [T-015]
+T-005: []
+T-002: [T-001, T-015, T-016]
+T-004: [T-001, T-002]
+T-006: [T-001, T-015, T-016, T-002, T-003, T-004, T-005]
+T-007: [T-001, T-015, T-016]
+T-008: [T-002]
+T-009: [T-003]
+T-010: [T-004, T-005]
+T-011: [T-007, T-008, T-009]
+T-012: [T-004, T-007, T-008]
+T-013: [T-004, T-005, T-006, T-010]
+T-014: [T-006, T-007, T-008, T-009, T-010, T-011, T-012, T-013]
+```
+
+Initial roots are **T-001, T-015, T-016 and T-005**. T-003 becomes READY after T-015 because any compatible Interchange receiver-capability reference must bind the canonical Logical Agent Profile contract rather than inventing an ad-hoc capability shape.
+
+Safe waves are semantic, not merely numeric:
+
+```text
+Wave A: T-001, T-015, T-016, T-005
+Wave B: T-002, T-003, T-007 (when their exact blockers are satisfied)
+Wave C: T-004, T-008, T-009
+Wave D: T-006, T-010, T-011, T-012
+Wave E: T-013
+Wave F: T-014
+```
+
+Actual dispatch is determined by native GitHub Issue Dependencies plus current Task Pack/L3/Execution Pack/resource/currentness gates. A later wave Task may start as soon as its own blockers are satisfied; waves are a safe upper-bound guide, not a batch barrier.
+
+## 3. Task definitions
+
+### T-001 — Task Learning Evidence Contract
+
+Lane: `contract-learning` · Risk: high · Review Policy: required.
+
+Own only `Task Learning Evidence v1`: schema, focused fixtures/examples and deterministic positive/negative contract tests.
+
+Acceptance:
+
+- exact work/subject/evidence refs and currentness semantics are explicit;
+- material rationale is externally useful engineering summary, not private chain-of-thought;
+- `TASK_LEARNING=NONE_MATERIAL` Fast Path remains valid;
+- stale exact-subject learning cannot become successor truth;
+- learning never becomes Product/Architecture/Task/ADR/Incident/Review/Validation authority.
+
+Validation: schema + historical compatibility + negative oracles. Intended branch: `task/v4.8.0-t01-task-learning-contract`.
+
+### T-015 — Logical Agent Capability Profile Contract
+
+Lane: `contract-agent-profile` · Risk: high · Review Policy: required.
+
+Own only `Logical Agent Capability Profile v1`: schema, fixtures/examples and focused conformance.
+
+Acceptance:
+
+- logical Agent/operator/model execution claims only;
+- runner/host OS, architecture, toolchain/runtime/device inventory, CPU/memory/disk, network reachability, current capacity and provider concurrency remain references to existing infrastructure owners;
+- provider/model identity is provenance, not scalar correctness or routing authority;
+- Skill Metadata remains procedure metadata, not capability proof;
+- tool/credential possession never grants side-effect authority.
+
+Validation: schema + owner-boundary negatives + v4.6 Skill/runner non-duplication checks. Intended branch: `task/v4.8.0-t15-agent-capability-profile`.
+
+### T-016 — Agent Capability Evidence Contract
+
+Lane: `contract-capability-evidence` · Risk: high · Review Policy: required.
+
+Own only `Agent Capability Evidence v1`: schema, fixtures/examples and focused conformance.
+
+Acceptance:
+
+- evidence is historical/exact-subject and may reference logical Agent + runner/environment identities without copying their ownership;
+- positive and negative evidence are first-class;
+- historical success never becomes current Availability, Validation or Review PASS;
+- evidence strength is layered/bounded, not a global scalar Agent score;
+- economic/performance conclusions require actually comparable measured methodology.
+
+Validation: schema + stale/currentness + false-authority negative oracles. Intended branch: `task/v4.8.0-t16-agent-capability-evidence`.
+
+### T-002 — Execution Architecture Core
+
+Lane: `execution-core` · Risk: high · Review Policy: required.
+
+Depends on T-001/T-015/T-016. This Task is the **single v4.8 owner lane** for semantic edits to `EXECUTION_ARCHITECTURE_STANDARD.md` and directly related execution semantics, preventing parallel PRs from competing over the same owner.
+
+Own:
+
+- Task Learning owner/lifecycle semantics;
+- logical Agent + runner/environment + derived Availability + Capability Evidence composition;
+- `ELIGIBLE | INELIGIBLE | UNKNOWN` derived projection;
+- hard filters before optional ranking;
+- optional backward-compatible Task/Execution Pack/Dispatch requirement/reference semantics;
+- scarce/exclusive/capacity-N resource admission;
+- one all-or-none linearization point for work claim + every required resource binding;
+- crash/publication ambiguity reconciliation and fail-closed replacement admission.
+
+Acceptance:
+
+- READY/Dispatch/Claim remain canonical;
+- no second scheduler lifecycle/database becomes authority;
+- independent per-key CAS/leases are insufficient for composite admission;
+- capacity-N active accepted bindings never exceed N; exclusive resource is N=1;
+- no accepted canonical partial state exists;
+- authority/currentness/independence/security/resource predicates are hard filters;
+- ranking/cost/latency cannot turn INELIGIBLE/UNKNOWN into ELIGIBLE.
+
+Validation: focused semantic, race/capacity/failure and backward-compatibility validation. High-capability L3/reference required. Intended branch: `task/v4.8.0-t02-execution-core`.
+
+### T-003 — Existing Interchange v1 Profile / Adapter Mapping
+
+Lane: `interchange` · Risk: high · Review Policy: required.
+
+Depends on T-015. First prove whether Frozen v4.8 semantics expose any concrete field/ref gap in the existing v4.0 Interchange family. `NO_CHANGE_REQUIRED` is a valid outcome. If a real gap exists, own only compatible profile/extension/same-family versioning and adapter mapping.
+
+Acceptance:
+
+- no new Agent Exchange normative owner or replacement `agent-exchange-envelope-v1` family;
+- `AGENT_INTERCHANGE.md` + `interchange-envelope-v1` remain canonical generic owner/family;
+- `ai-dev:event:v2` remains GitHub writer/admission authority;
+- ACK/progress is non-authoritative;
+- critical semantic effects materialize through existing durable owners;
+- duplicate/replay/conflicting payload/currentness/restart reconstruction preserve historical compatibility.
+
+Validation: protocol/schema/event compatibility; exact gap evidence if mutation is proposed. High-capability protocol L3/reference required. Intended branch: `task/v4.8.0-t03-interchange-profile`.
+
+### T-004 — Task Learning Closeout / Template Wiring
+
+Lane: `learning-wiring` · Risk: high · Review Policy: required.
+
+Depends on T-001/T-002. Own closeout/adoption surfaces only: applicable Task Pack, Task Issue, final-closeout, review/checklist and Execution Pack references.
+
+Acceptance: material/NONE_MATERIAL paths explicit; refs over copied bodies; exact-subject learning does not silently rebind; no private chain-of-thought; no owner substitution. Validation: template/reference + closeout conformance. Intended branch: `task/v4.8.0-t04-learning-closeout`.
+
+### T-005 — ADS Evolution Governance / Intake
+
+Lane: `governance` · Risk: high · Review Policy: required.
+
+Root Task. Own classification/promotion governance for PROJECT_DEFECT, AGENT_EXECUTION_DEFECT, ENVIRONMENT_OR_TOOL_DEFECT, PROJECT_SPECIFIC_REQUIREMENT, STANDARD_FRICTION_CANDIDATE and ADS_EVOLUTION_CANDIDATE.
+
+Acceptance: normal ADS Intake→L1→PRD→L2→Task→Review/Validation remains the only promotion path; no telemetry/model/scheduler self-amendment; no universal numeric promotion threshold; v4.5 incident feedback and v4.6 intent/skill owners remain intact; privacy/publication classification explicit. Validation: workflow/classification negative oracles. High-capability governance L3/reference required. Intended branch: `task/v4.8.0-t05-evolution-governance`.
+
+### T-006 — Registry / Discoverability / Adoption Wiring
+
+Lane: `registry-adoption` · Risk: medium/high · Review Policy: required.
+
+Depends on T-001/T-015/T-016/T-002/T-003/T-004/T-005. This is the central shared-file wiring lane.
+
+Own manifest/v4.7 registry discoverability, project-adoption/progressive-disclosure references and migration/adoption notes.
+
+Acceptance: exactly three new machine families discoverable; Interchange represented as reused; registry grants no semantic authority; historical consumers remain valid; Fast Path lightweight; no sibling semantic owner rewrite. Validation: manifest/registry/project-adoption verifier. Intended branch: `task/v4.8.0-t06-registry-adoption`.
+
+### T-007 — Contract / Historical Compatibility Conformance
+
+Lane: `contract-conformance` · Risk: high · Review Policy: required.
+
+Depends on T-001/T-015/T-016. Own integrated compatibility tests across the three separate contract families; do not redefine their schemas.
+
+Negative oracles include capability claim→proven capability, Capability Evidence→current Validation/Review PASS, provider/model→authority, infrastructure facts becoming Logical Agent owner, fourth Availability/Exchange family, stale exact-subject evidence rebound and private chain-of-thought requirement. Historical v4 fixtures/payloads remain valid where Frozen L2 requires it.
+
+Validation: historical/schema compatibility suite. Intended branch: `task/v4.8.0-t07-contract-conformance`.
+
+### T-008 — Eligibility / Composite Resource Admission Conformance
+
+Lane: `scheduling-conformance` · Risk: high · Review Policy: required.
+
+Depends on T-002. Own deterministic tests/reference scenarios for multiple READY Tasks, heterogeneous Agent profiles, stale/fresh Availability, independence conflict, hard-filter-before-ranking, capacity-N contention, N=1 exclusivity, multi-resource composite admission, injected partial-write/crash ambiguity and fail-closed reconciliation.
+
+A novel distributed multi-key CAS/lease mechanism is out of scope unless separately proven through narrow Research Demo/Validation. Validation: race/capacity/crash deterministic validation. Intended branch: `task/v4.8.0-t08-scheduling-conformance`.
+
+### T-009 — Interchange Replay / Restart Conformance
+
+Lane: `interchange-conformance` · Risk: high · Review Policy: required.
+
+Depends on T-003. Own deterministic duplicate/replay/conflict/stale-subject/ACK non-authority/durable materialization/restart tests against existing Interchange reuse and GitHub `ai-dev:event:v2` preservation. Validation: replay/idempotency/restart suite. Intended branch: `task/v4.8.0-t09-interchange-conformance`.
+
+### T-010 — Task Learning / Evolution Governance Conformance
+
+Lane: `governance-conformance` · Risk: high · Review Policy: required.
+
+Depends on T-004/T-005. Own executable/fixture conformance for NONE_MATERIAL, material learning, stale learning, classification non-promotion, MORE_EVIDENCE/NO_CHANGE, ordinary ADS governance and privacy/hidden-evaluator boundaries. Validation: classification/learning/privacy negative oracles. Intended branch: `task/v4.8.0-t10-governance-conformance`.
+
+### T-011 — Heterogeneous Multi-Agent / Resource / Transport Dogfood
+
+Lane: `orchestration-dogfood` · Risk: high · Review Policy: required.
+
+Depends on T-007/T-008/T-009. Own the Frozen PRD heterogeneous orchestration dogfood: multiple READY work items, materially different logical Agent profiles, fresh/stale Availability, scarce shared-resource contention, duplicate/incompatible assignment race, reviewer/validator independence conflict, transport duplicate/replay/loss, crash/restart reconstruction, bounded executor success when eligible and escalation on ambiguity.
+
+Synthetic evidence remains labeled synthetic. Real host/device/provider/runtime claims require exact-subject real Validation or remain NOT_RUN/BLOCKED. Evidence matrix/L3 required before dispatch. Intended branch: `task/v4.8.0-t11-orchestration-dogfood`.
+
+### T-012 — #469 Task-Class / Bounded-Agent Dogfood
+
+Lane: `469-dogfood` · Risk: high · Review Policy: required.
+
+Depends on T-004/T-007/T-008. Consume #469 and successor measured evidence as dogfood input, never pre-authorized standard truth.
+
+Own clarification/escalation count, edit/test loops, negative-oracle and contract/write-set drift findings, stale pack/base rebinds, Validation/Review findings/rework and measured resource/time/cost only when actually observed.
+
+Acceptance: `ECONOMIC_SAVINGS=NOT_MEASURED` until comparable measurement; no blanket strong→low-cost rule; provider/model is provenance; Fresh Independent Review remains separate from Builder/Validation; output may be MORE_EVIDENCE/NO_CHANGE/later evidence-backed candidate, not automatic adoption. Risk-scaled L3 + JIT Execution Pack required before bounded/low-cost dispatch. Intended branch: `task/v4.8.0-t12-469-dogfood`.
+
+### T-013 — Cross-Project ADS Evolution Dogfood
+
+Lane: `evolution-dogfood` · Risk: high · Review Policy: required.
+
+Depends on T-004/T-005/T-006/T-010. Own cross-project feedback/evolution falsification with at least two materially distinct Task/project evidence streams when available.
+
+Acceptance covers classification, false-positive prevention, repeated-friction aggregation, privacy/publication boundaries, rejection of project-specific/environment/Agent defects as standard changes, MORE_EVIDENCE/NO_CHANGE and justified ADS_EVOLUTION_CANDIDATE handoff into ordinary ADS Intake. #469 may be one evidence stream but not sole basis for broad economic/performance policy. Evidence matrix/L3 required. Intended branch: `task/v4.8.0-t13-evolution-dogfood`.
+
+### T-014 — Integrated Convergence / Version Closure Inputs
+
+Lane: `integration-closure` · Risk: high · Review Policy: required.
+
+Depends on T-006/T-007/T-008/T-009/T-010/T-011/T-012/T-013. This is the only pre-Closure join.
+
+Acceptance: exactly three new machine families; Interchange reused; owner uniqueness across v4.1–v4.8; hard eligibility-before-ranking and composite atomicity retained; historical compatibility/Fast Path retained; dogfood claims bounded to evidence strength; no unsupported economic/universal routing inference; full repository verifier/regression + required integrated Validation captured. Produces closure inputs only, never Version Closure/Release verdict. High-capability L3/reference + independent integration validator/reviewer required. Intended branch: `task/v4.8.0-t14-integration-closure-inputs`.
+
+## 4. Planning matrix
+
+| Task | Depends On | Parallel | Risk | Executor/model suitability | Required Validation | Review | L3 / Pack posture |
+|---|---|---:|---|---|---|---|---|
+| T-001 | — | YES | H | high-cap contract designer; bounded builder only from reviewed contract/L3 | schema + compatibility | required | high-cap contract/L3 + Task Pack |
+| T-015 | — | YES | H | high-cap capability/owner-boundary designer | schema + owner-boundary | required | high-cap contract/L3 + Task Pack |
+| T-016 | — | YES | H | high-cap evidence/currentness designer | schema + stale/false-authority | required | high-cap contract/L3 + Task Pack |
+| T-005 | — | YES | H | high-cap governance builder | workflow/classification | required | high-cap governance L3 + Task Pack |
+| T-002 | T-001,T-015,T-016 | YES | H | high-cap semantic/concurrency builder | semantics + concurrency/failure | required | high-cap L3 + Task Pack |
+| T-003 | T-015 | YES | H | high-cap protocol/owner-boundary builder | protocol/schema/event compatibility | required | high-cap L3 + Task Pack |
+| T-007 | T-001,T-015,T-016 | YES | H | bounded test builder + high-cap oracle review | historical/schema compatibility | required | Task Pack; L3 as needed |
+| T-004 | T-001,T-002 | YES | H | bounded integration builder after semantic merge | template/closeout | required | Task Pack; focused L3 |
+| T-008 | T-002 | YES | H | high-cap concurrency/test builder | race/capacity/crash | required | Task Pack + failure matrix |
+| T-009 | T-003 | YES | H | bounded protocol-test builder | replay/restart | required | Task Pack + protocol matrix |
+| T-006 | T-001,T-015,T-016,T-002,T-003,T-004,T-005 | YES | M/H | bounded central-wiring builder | manifest/registry/adoption | required | Task Pack |
+| T-010 | T-004,T-005 | YES | H | bounded fixture builder + high-cap semantic review | governance/learning/privacy | required | Task Pack |
+| T-011 | T-007,T-008,T-009 | YES | H | heterogeneous Agents + independent validator/reviewer | scenario/real-host as applicable | required | Task Pack + evidence matrix/L3 |
+| T-012 | T-004,T-007,T-008 | YES | H | bounded/low-cost where eligible + high-cap independent review | exact Builder/Validation/Review | required | risk-scaled L3 + JIT Execution Pack |
+| T-013 | T-004,T-005,T-006,T-010 | YES | H | high-cap evidence/governance owner | cross-project/privacy/currentness | required | Task Pack + evidence matrix/L3 |
+| T-014 | T-006,T-007,T-008,T-009,T-010,T-011,T-012,T-013 | NO | H | independent integration validator/reviewer | full integrated regression | required | high-cap L3 + Task Pack |
+
+All implementation PRs target `version/v4.8.0` after canonical planning integration. Task branches are JIT from the then-live exact integration SHA only after native blockers and Task Pack/L3/currentness gates satisfy. Do not pre-create long-lived branches from this planning DAG.
+
+## 5. Review and Validation policy
+
+All sixteen Tasks use `Review Policy=required` as a **v4.8-specific risk decision**, not a global ADS rule. Each Task changes public machine/owner/concurrency/governance semantics, validates high-risk compatibility, or produces evidence consumed by integrated closure.
+
+Validation remains distinct from Review. Builder tests never self-certify real-host, concurrency, cross-transport, privacy or cross-project claims. If the execution environment cannot prove a required external claim, create an exact-subject Validation Request and preserve NOT_RUN/BLOCKED rather than simulating PASS.
+
+For any implementation that selects a novel distributed multi-key CAS/lease/queue mechanism beyond one designated composite single-writer path, insert a narrow Research Demo/Validation dependency before that mechanism may be trusted.
+
+## 6. Native Issue DAG and materialization
+
+Stage 2.5 materializes this R1 DAG as GitHub Task Issues. GitHub Issue Dependencies are the canonical **live execution DAG**; this file remains Frozen planning/history authority.
+
+Materialization rules:
+
+- existing #507 is rebound to corrected T-001 only;
+- existing #508–#520 preserve their T-003/T-005/T-002/T-004/T-006…T-014 identities as already assigned;
+- create exactly two new planned Tasks for T-015 and T-016;
+- update descriptive dependency lists on affected existing Issues before native dependency edges are written;
+- no current R0 Task Issue is Builder-ready merely because it exists;
+- no Task Pack/L3/Execution Pack/JIT branch may bind the historical R0 blob after this R1 commit.
+
+READY requires native blockers satisfied plus current Frozen R1 DAG, Task Pack/L3/Execution Pack, exact integration baseline, authority/currentness/resource checks and all role/independence gates.
+
+## 7. Integration posture
+
+Planning artifacts remain in Draft PR #482 until the planning checkpoint and required downstream packs are stable and accepted. Then establish `version/v4.8.0` from the canonical planning integration baseline.
+
+Implementation follows one concern per PR. Stacked PR is allowed only for a real unmerged code-baseline dependency and never substitutes for Issue Dependencies.
