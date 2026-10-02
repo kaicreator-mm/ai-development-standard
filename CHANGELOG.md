@@ -1,8 +1,8 @@
 # Changelog
 
-## v4.1.0 — candidate / unreleased（发布日期未定）
+## v4.1.0 — Release Qualification READY；已集成 `main`（无 tag/GitHub Release/publication 声明）
 
-这是 `version/v4.1.0` 上已合并 T01–T08 的**候选内容记录**，不表示 v4.1.0 已冻结、通过 Hidden Validation、取得 Release Qualification、发布 tag 或集成至 `main`。已发布 `main` 的 v4.0.0 历史条目与日期保留在下方。实际消费时必须以 `version=4.1.0` 加对应候选提交的不可变 `revision` 配对验证，不能将旧候选验证结果转移到后续元数据提交。
+v4.1.0 的资格化候选为 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）；Release Qualification #663 对该精确候选给出 `READY`，PR #672 随后将其集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。本次 final-main 元数据校正仅使仓库可见状态与该事实一致，不修改资格化候选、历史门禁证据或 v4.2+ 状态；当前不声称存在发布 tag、GitHub Release 或其它 publication。实际消费仍必须以 `version=4.1.0` 与所选不可变 `revision` 成对固定。
 
 - **T01 共享机器契约**：新增非权威 Execution Context、Dependency/Toolchain Profile、Dependency Risk Exception 三类 v1 schema，并以可选引用接入既有契约，保留历史 v4 payload 兼容性。
 - **T02 依赖与工具链**：新增 `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md`，定义项目声明的依赖/工具链要求、兼容性与认证区别及风险例外边界。
@@ -59,7 +59,7 @@
 
 - 新增 `standards/EXECUTION_ARCHITECTURE_STANDARD.md`，统一定义 durable facts、derived state、ready queues、dispatch lifecycle、staleness、bounded Merge/Candidate Freeze/Release/Repository Integration controllers；runtime automation 可选，GitHub/repository/evidence facts 仍是 durable Source of Truth。
 - 明确 workflow state、Gate state、CI/provider state、dispatch state、candidate state、release state 是互相独立的维度，不得用一个状态替代另一个状态。
-- Validation ownership 标准化为 `concern | integration | closure`：leaf Task 只承担最小严格 affected gates，Integration owner 承担跨组件 truth，Version Closure 承担 full regression/Critical Journeys/platform/packaging/Hidden/Release Qualification；`PR PASS != Release PASS` 保持不变。
+- Validation ownership标准化为 `concern | integration | closure`：leaf Task 只承担最小严格 affected gates，Integration owner 承担跨组件 truth，Version Closure 承担 full regression/Critical Journeys/platform/packaging/Hidden/Release Qualification；`PR PASS != Release PASS` 保持不变。
 - 精确区分 `HEAD drift / BASE drift / MERGE-RESULT drift / CANDIDATE drift`；旧 evidence 永远归属于实际执行的 `tested_sha`。只有显式 `VALIDATION_IMPACT_DECISION` 能在严格证明 impact=none 时复用 concern evidence，不能把 PASS 改写到未实际执行的 SHA。
 - 将 CI execution channel/provider health 与 Validation Gate 解耦；支持 `AVAILABLE / INFRA_BLOCKED / TIMED_OUT / CANCELLED`。当 authority 要求 validation profile 而非 provider-specific attestation 时，可由等价或更强的 trusted clean exact-SHA executor 替代，并记录 `CI_INFRA_EXCEPTION`；provider-specific requirement 不得静默替代。
 - Candidate Freeze 升级为 operational immutable state：冻结记录绑定 candidate SHA/tree/ref/visible evidence；冻结后禁止静默移动 candidate ref 或加入 product/docs/evidence commit。需要内容变化时必须 `THAWED/INVALIDATED → successor → affected visible validation → new freeze → required Hidden Validation → new Release Qualification`。
@@ -88,8 +88,9 @@ v3.3 是从 v3.1 的兼容 MINOR 演进；未单独发布 v3.2，其已验证 fo
 - 新增 `ROLE_CLAIMED / ROLE_RELEASED` 事件，用于记录哪个 logical operator 当前承担某个角色；role claim 只是 attribution/routing fact，不是 Gate PASS 或 distributed lock。
 - 多个 ChatGPT Web 页面使用相同 GitHub 账号时，使用不同 `operator_id/session_ref`；动态 session/operator identity 不进入 GitHub labels，避免 label churn。
 - required Independent Review 现在可以通过 operator attribution 审计 context independence：Builder 与 Reviewer 可共用同一个 GitHub transport account，但必须是可区分的逻辑 context。
-- `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`、`templates/agent-event-comment.md`、`standards/CHATGPT_WEB_ROLE.md`、Web/Local bootstrap prompts、项目 `PROJECT_OVERRIDES` 与 `AGENTS` 模板同步 Operator Attribution 语义。
+- 新增 `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`、`templates/agent-event-comment.md` 与相关 schema/模板/提示词同步 Operator Attribution 语义。
 - Local Agent / Validation event 必须能区分真正执行命令的本地 operator/run 与发起请求的 Web session，避免共享 GitHub author 造成错误归属。
+- `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`、`templates/agent-event-comment.md`、`standards/CHATGPT_WEB_ROLE.md`、Web/Local bootstrap prompts、项目 `PROJECT_OVERRIDES` 与 `AGENTS` 模板同步 Operator Attribution 语义。
 - `verify_standard.py` 新增 v3.1 semantic guards：检查 Event v2、operator attribution 五字段、`ROLE_CLAIMED/ROLE_RELEASED` 与 v1 backward compatibility。
 
 ## v3.0.0 — 2026-09-18
