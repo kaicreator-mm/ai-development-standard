@@ -1,0 +1,42 @@
+task_id: T-009
+canonical_task: T09
+issue: 353
+jit_planning_issue: 616
+integration_branch: version/v4.7.0
+base_sha: 3e9c24b671c5619b6024ec79a90b20f6eb1b9346
+base_tree: 17163c9cfb78f3d2a11b8c713cc27abf627beb07
+branch: task/353-v47-adoption-migration-wiring
+frozen_product: docs/implementation/4.7.0/PRD.md
+frozen_product_blob: 4563055a038a2c8abfadd549e8ce64df3a02e0aa
+frozen_l2: docs/implementation/4.7.0/L2_ARCHITECTURE_EVIDENCE.md
+frozen_l2_blob: 2ad45d930059681a15ecc0384e151659ce69bd70
+frozen_dag: docs/implementation/4.7.0/TASK_DAG.md
+frozen_dag_blob: c423f532d15d24be29ecebc66faa769c455b57e1
+task_pack: docs/implementation/4.7.0/task-packs/T09_adoption_migration_wiring.md
+task_pack_blob: 76d4ccdb8a24be499187e4e6ccbbd4d764abc254
+l3: docs/implementation/4.7.0/L3_REFERENCE_PACKS.md
+l3_blob: 6a2000cf9b8bf8024450eb5f0f0704960140095f
+semantic_conformance_owner: T07/#351
+review_policy: required
+validation_owner: T09
+validation_executor: independent_exact_head_current_target_validator
+review_owner: genuinely_new_fresh_independent_reviewer
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+allowed_write_set:
+  - templates/golden/STANDARD_COVERAGE.json
+  - templates/project/.dev-standard/PROJECT_OVERRIDES.md
+  - checklists/project-init.md
+  - checklists/pr-review.md
+  - checklists/version-closure.md
+  - docs/implementation/4.7.0/MIGRATION_ADOPTION.md
+  - docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md
+  - scripts/test_v47_adoption_wiring.py
+forbidden:
+  - owner_semantics_duplication_or_rewrite
+  - physical_standard_or_reference_path_migration
+  - compatibility_alias_removal
+  - mandatory_adoption_of_optional_capabilities
+  - new_convergence_gate_or_pass_state
+  - validation_or_review_self_certification
+  - version_closure_or_release_qualification_verdict
+status: JIT_READY
