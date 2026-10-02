@@ -8,6 +8,7 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] Task DAG terminal or every deferred item has explicit non-blocking authority/rationale.
 - [ ] Every mandatory release gate traces to Gate Authority.
 - [ ] No historical workflow/Agent guess silently created a blocker.
+- [ ] Applicable v4.1 execution-foundation owners are identified for material dependency/toolchain, config/secret, workspace/artifact and external-system facts; Execution Context is treated only as a non-authoritative projection.
 
 ## Candidate / Visible Closure
 
@@ -15,6 +16,9 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] Required concern/integration work is merged.
 - [ ] Full required visible regression passes on the intended candidate.
 - [ ] Required Critical Journeys/platform/production build/package/install/external boundary tuples are explicit and truthful.
+- [ ] Dependency/toolchain certification, configuration identity, artifact identity and external environment/fidelity facts match the actual closure subject where material.
+- [ ] Secret values are absent from ordinary closure evidence; durable evidence uses authorized refs/identity.
+- [ ] Build outputs/caches/runtime state are not promoted to Release artifacts by file existence alone.
 - [ ] CI/profile requirement is satisfied or its infrastructure exception/alternate-executor basis is valid.
 - [ ] Candidate Freeze occurs only after required visible freeze gates pass.
 
@@ -36,6 +40,7 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] README/docs/config/migration guidance matches shipped behavior.
 - [ ] Architecture amendments reconcile shipped implementation without rewriting historical decisions.
 - [ ] Known limitations/deferred items are explicit.
+- [ ] Execution Foundation adoption/profile documentation matches what the integrated candidate actually uses; non-applicable machine contracts were not created merely for ceremony.
 
 ## Release Qualification
 
@@ -48,6 +53,7 @@ Choose exactly one:
 
 - [ ] Verdict explains the supporting/unsatisfied facts.
 - [ ] No NOT_RUN/BLOCKED/old-SHA evidence was converted into PASS.
+- [ ] Dependency risk exceptions, external-system availability and local workspace state were not treated as Release PASS authority.
 
 ## Repository Integration
 

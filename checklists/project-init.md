@@ -7,6 +7,7 @@ Use this checklist when creating a new project or adopting the development stand
 - [ ] Repository/product responsibility is clear.
 - [ ] `.dev-standard/VERSION` contains repository + semantic version + immutable commit SHA.
 - [ ] `.dev-standard/PROJECT_OVERRIDES.md` contains real commands, validation environments, CI profile, CI execution profile, platforms/toolchains and boundaries.
+- [ ] When pinned to a v4.1-capable standard, `PROJECT_OVERRIDES.md` declares a truthful materiality-driven Execution Foundation Profile for dependency/toolchain, Git execution, configuration/secrets, workspace/artifact and external-system concerns.
 - [ ] When pinned to v4, `PROJECT_OVERRIDES.md` declares a truthful v4 adoption level (`A0_COMPATIBILITY` through `A4_FULL_ORCHESTRATION`) and compatibility mode.
 - [ ] The selected v4 adoption level changes implementation surface only; the project has checked the common non-weakening floor for authority, exact identity, Validation, Review, Candidate/Release and status truthfulness.
 - [ ] Existing historical evidence keeps its original subject identity/status during standard migration; no historical evidence is relabeled as newly produced v4 evidence.
@@ -35,6 +36,8 @@ Use this checklist when creating a new project or adopting the development stand
 - [ ] Required real execution environments are identified.
 - [ ] Required platform/runtime/toolchain tuples are explicit where applicable.
 - [ ] Exact-SHA evidence location/format is defined.
+- [ ] Applicable execution-foundation facts resolve to their normative owners rather than being invented from local runtime/workspace state.
+- [ ] Secret values are excluded from ordinary durable config/context/evidence; durable records use secret refs/identity where required.
 - [ ] If v4 reducer/controllers are disabled, every mandatory gate still has a truthful executable manual/fallback path; otherwise the project records `BLOCKED`.
 - [ ] Test data contains no production secrets or private user data.
 
@@ -59,6 +62,7 @@ Use this checklist when creating a new project or adopting the development stand
 - [ ] Fast Path is either disabled, canonical, or stricter; canonical disqualifiers are not removed and low adoption level is not treated as eligibility proof.
 - [ ] Candidate PREPARED != FROZEN, PR PASS != Release PASS, and Release READY != Repository Integration complete remain explicit project assumptions.
 - [ ] v3.4→v4 historical evidence migration preserves original identity/result and does not rewrite PASS/FAIL/CHANGES_REQUESTED.
+- [ ] v4.1 execution-foundation adoption is prospective; old executions are not retroactively relabeled as having context/toolchain/environment evidence that was never recorded.
 
 ## GitHub
 

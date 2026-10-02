@@ -17,10 +17,14 @@
       "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
       "standards/CODEX_HANDOFF_PROTOCOL.md",
       "standards/CODEX_ROLE.md",
+      "standards/CONFIGURATION_SECRETS_STANDARD.md",
+      "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
       "standards/DEVELOPMENT_WORKFLOW.md",
       "standards/DOCUMENTATION_STANDARD.md",
       "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
       "standards/EXECUTION_PACK_STANDARD.md",
+      "standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md",
+      "standards/GIT_EXECUTION_STANDARD.md",
       "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
       "standards/GITHUB_CAPABILITY_FALLBACK.md",
       "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
@@ -34,7 +38,8 @@
       "standards/REPOSITORY_STANDARD.md",
       "standards/TESTING_STANDARD.md",
       "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
-      "standards/VALIDATION_STANDARD.md"
+      "standards/VALIDATION_STANDARD.md",
+      "standards/WORKSPACE_ARTIFACT_STANDARD.md"
     ],
     "compatibility_entries": [
       "standards/GITHUB_WORKFLOW.md",
@@ -104,7 +109,10 @@
     "machine_contracts": [
       "schemas/agent-event-v2.schema.json",
       "schemas/assurance-plan-v1.schema.json",
+      "schemas/dependency-risk-exception-v1.schema.json",
+      "schemas/dependency-toolchain-profile-v1.schema.json",
       "schemas/dispatch.schema.json",
+      "schemas/execution-context-v1.schema.json",
       "schemas/execution-pack-manifest.schema.json",
       "schemas/execution-state.schema.json",
       "schemas/interchange-envelope-v1.schema.json",
@@ -119,10 +127,15 @@
     ],
     "references": [
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
+      "references/CONFIGURATION_SECRETS_REFERENCE.md",
+      "references/DEPENDENCY_TOOLCHAIN_REFERENCE.md",
+      "references/EXTERNAL_SYSTEM_EXECUTION_REFERENCE.md",
+      "references/GIT_EXECUTION_REFERENCE.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
-      "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
+      "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml",
+      "references/WORKSPACE_ARTIFACT_REFERENCE.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -145,6 +158,13 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v41_adoption_wiring.py",
+      "scripts/test_v41_configuration_secrets.py",
+      "scripts/test_v41_dependency_toolchain.py",
+      "scripts/test_v41_execution_foundation_contracts.py",
+      "scripts/test_v41_external_systems.py",
+      "scripts/test_v41_git_execution.py",
+      "scripts/test_v41_workspace_artifact.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",

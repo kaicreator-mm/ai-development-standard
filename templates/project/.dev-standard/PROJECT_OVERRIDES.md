@@ -29,6 +29,33 @@ When Issue-based execution is enabled:
 - Stacked PR MUST NOT replace Issue Dependency.
 - JIT branch rule: task branches are created after dependencies merge, from the current integration exact SHA (exceptions only for real stacked code dependency).
 
+## v4.1 Execution Foundation Profile
+
+This profile declares project-level applicability/defaults for v4.1 execution concerns. It configures discovery and expected evidence; it does **not** create a second workflow or weaken Frozen Product/Architecture/Task/Validation/Release authority.
+
+Recommended fields:
+
+- `execution_foundation.profile`: `<materiality-driven | strict | project-specific>`
+- `execution_foundation.dependency_toolchain`: `<applicable | NOT_APPLICABLE — reason>`
+- `execution_foundation.git_execution`: `<applicable | NOT_APPLICABLE — reason>`
+- `execution_foundation.configuration_secrets`: `<applicable | NOT_APPLICABLE — reason>`
+- `execution_foundation.workspace_artifact`: `<applicable | NOT_APPLICABLE — reason>`
+- `execution_foundation.external_systems`: `<applicable | NOT_APPLICABLE — reason>`
+- `execution_foundation.execution_context`: `<when-material | always | NOT_APPLICABLE — reason>`
+
+Rules:
+
+- Material concerns resolve to their pinned normative owners; these fields do not redefine semantics.
+- `Execution Context` is non-authoritative and SHOULD be instantiated only when material durable cross-Agent evidence/context exchange adds value.
+- Minimal/Fast Path changes MUST NOT be forced to generate empty/non-applicable machine records merely because the project pins v4.1.
+- Project authority MAY strengthen requirements, but MUST NOT turn a material concern into `NOT_APPLICABLE` merely to bypass evidence.
+- Dependency/toolchain local availability is not repository requirement authority.
+- Secret values MUST NOT be stored in ordinary durable context/evidence; use authorized secret refs/identity.
+- Workspace file existence does not promote build/cache/runtime state into Validation or Release artifacts.
+- External mock/sandbox/read-only evidence MUST NOT be escalated to unexecuted higher-fidelity/side-effect PASS.
+- Credential/tool availability does not grant external side-effect authority.
+- See `docs/implementation/4.1.0/MIGRATION_ADOPTION.md` in the pinned standard for adoption examples and owner mapping.
+
 ## v4 Adoption / Compatibility Profile
 
 Adoption level controls how much v4 implementation machinery this project uses. It does **not** reduce the mandatory truth/authority floor.
