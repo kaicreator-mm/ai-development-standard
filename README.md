@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前版本候选：`v4.5.0`（**未发布 version-branch candidate**）
+当前版本：`v4.5.0`（**未发布 version-branch candidate**）
 
 > `version/v4.5.0` 当前仅表示依赖完整、等待后续 metadata Fresh Review 与 Version Closure 的候选线；它不是 Candidate Freeze、Release Qualification 或 Release READY 声明。`v4.1`–`v4.4` 为并行版本线，其分支/资料存在不得推导为已发布或已集成到 `main`。
 
