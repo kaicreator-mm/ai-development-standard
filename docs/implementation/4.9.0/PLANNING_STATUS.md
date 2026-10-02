@@ -4,10 +4,11 @@
 VERSION=v4.9.0
 STATE=PRODUCT_REVIEW_PENDING
 PRODUCT_AUTHORITY=DRAFT_ONLY
-L1_STATUS=COMPLETE_RESEARCH
-PRD_STATUS=FIRST_REVIEW_CANDIDATE
+L1_STATUS=COMPLETE_RESEARCH_AUTHOR_PRE_REVIEW_REVISED
+PRD_STATUS=AUTHOR_PRE_REVIEW_REVISED_CANDIDATE
 PRODUCT_FREEZE=NO
-ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
+AUTHOR_SIDE_ADVERSARIAL_PRE_REVIEW=CHANGES_DISPOSITIONED_NON_INDEPENDENT
+INDEPENDENT_ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
 L2_AUTHORITY=NO
 TASK_DAG_AUTHORITY=NO
 IMPLEMENTATION_AUTHORITY=NO
@@ -17,12 +18,21 @@ PLANNING_BRANCH=planning/v4.9.0
 BASELINE_MAIN=9383244abb8172b5ae5135cbd559c72837799375
 ```
 
-## Product candidate
+## Author-side pre-review
 
-The first complete v4.9 PRD candidate and L1 Product Evidence are present on the planning branch. They are review inputs only and MUST NOT be treated as Frozen Product Authority.
+PR #698 comment `5961233246` recorded a deliberately non-independent adversarial pass with `P0=0 / P1=6 / P2=3`. The candidate was revised to address those findings, including:
+
+- monotonic higher-authority `ASSURANCE_FLOOR`;
+- gate-owned positive evidence-transfer permission and typed bindings;
+- multi-dimensional independence;
+- current/pinned Release authority ownership of release applicability;
+- Task-DAG runtime scope-widening prohibition;
+- explicit `DOWNSTREAM_GENERALITY=PARTIAL` plus downstream dogfood before release;
+- Candidate Freeze clarified as authority-bearing even when controller-direct;
+- P4 bounded to lightweight learning/recurrence escalation.
+
+This pre-review is quality evidence only and MUST NOT satisfy the independent Product Review gate.
 
 ## Mandatory next gate
 
-A genuinely independent adversarial Product Review must challenge Product necessity, scope, authority boundaries, proportional assurance safety, evidence reuse/currentness, phase coalescing/independence, v4.8 ownership preservation, compatibility and version-size coherence.
-
-All P0/P1 findings and any Product-authority ambiguity must be dispositioned before explicit Product Freeze. No L2 work is authorized before Freeze.
+A genuinely independent high-capability adversarial Product Review must bind to the current successor exact PR #698 HEAD/tree and challenge the revised Product candidate. No L2 work is authorized before explicit Product Freeze.
