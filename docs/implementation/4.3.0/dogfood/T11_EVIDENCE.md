@@ -60,11 +60,21 @@ Fixture: `fixtures/planner_bounded_executor.json`
 - Bounded executor/evaluator role: **synthetic bounded lower-cost executor interpretation/evaluation**.
 - Evidence kind: **SYNTHETIC**.
 - Expected oracle: `CONSUMABLE_WITHOUT_PRODUCT_OR_ARCHITECTURE_REDESIGN`.
-- Actual result encoded by the deterministic fixture/test: `PASS` for bounded interpretation.
-- Clarification/escalation: `NONE_REQUIRED` for the selected synthetic interpretation; contradictory owner facts must escalate.
-- Redesign needed: `NO`.
+- Report fields remain `actual_result=PASS` and `redesign_needed=NO`, but neither field is an oracle.
+- Clarification/escalation is `NONE_REQUIRED` only after the authority-derived interpretation exact-matches the selected durable Product/Architecture/Task/Execution facts.
 
-The evaluator is required to recover allowed write-set, forbidden scope, required actions, gates, and failure handling from durable Task/Execution Pack facts. It may not redesign Product/Architecture or mutate existing v4.3 semantic owners.
+The executable D02 oracle now reconstructs its expected bounded interpretation from durable authority rather than trusting fixture self-assertions. It derives and exact-compares:
+
+- the Execution Contract Builder write-set;
+- Task Pack forbidden scope plus the stricter Execution Contract `MUST NOT` scope;
+- Task Pack acceptance and required gates;
+- Execution Contract required semantic actions;
+- Task Pack failure handling and Execution Pack failure actions;
+- exact Product/L2/Task DAG/Task Pack/L3/Execution Pack refs, blobs, base SHA/tree, dependency completion, and T11→T10 binding.
+
+The test also executes fail-closed negative probes for an unauthorized allowed path, weakened forbidden scope, missing/wrong required action, missing required gate, weakened failure handling, and mismatched exact subject/binding. Every probe keeps the fixture's `actual_result=PASS` and `redesign_needed=NO`; the computed oracle must still return failure. This is the durable proof that self-assertions are evidence/report fields only.
+
+The evaluator may not redesign Product/Architecture, mutate existing v4.3 semantic owners, weaken a gate, or adapt an oracle to force green. Any authority mismatch fails closed and routes according to the durable failure/escalation handling.
 
 ## D03 — SYNTHETIC / REAL non-transfer
 
@@ -76,23 +86,25 @@ If a later selected subject requires unavailable real execution, the exact scope
 
 | Gate / evidence | Current builder disposition |
 |---|---|
-| Focused T11 suite | MUST run on PR exact HEAD; result is not pre-claimed here |
+| Focused T11 suite | MUST run on successor PR exact HEAD; Builder records actual execution separately |
 | Applicable T01–T10 regressions | Invoked by the focused T11 suite; exact-head result must come from execution evidence |
-| CI | `.github/workflows/verify-standard.yml` with one T11 invocation; exact run identity/result must be bound after execution |
-| Integration Validation | **PENDING successor**; required, independent, exact-head |
-| Fresh Independent Review | **PENDING successor**; required, genuinely new, exact-head |
+| CI | `.github/workflows/verify-standard.yml` with one T11 invocation; exact successor run identity/result must be bound after execution |
+| Integration Validation | **PENDING successor after this repair**; required, independent, exact-head |
+| Fresh Independent Review | **PENDING successor after successor Validation**; required, genuinely new, exact-head |
 | Version Closure | **NOT_READY / not owned by T11** |
 | Candidate Freeze | **NOT_AUTHORIZED** |
 
 ## P0–P3 disposition ledger
 
-Builder-owned fixture/oracle design introduces no known unresolved P0/P1/P2/P3 finding at authoring time. This is not a successor gate verdict. Integration Validation and Fresh Review may add findings, and any unresolved P0/P1 remains blocking for closure handoff.
+Fresh Review #619 identified one P1 on D02: the predecessor oracle trusted fixture self-assertions and did not exact-compare durable authority. This bounded repair implements an authority-derived exact oracle and negative probes, but the Builder does not close its own finding. Successor Validation and then a genuinely new Fresh Review must independently determine whether the P1 is closed.
 
-- P0: `OPEN=0` at builder authoring stage.
-- P1: `OPEN=0` at builder authoring stage.
-- P2: `OPEN=0` at builder authoring stage.
-- P3: `OPEN=0` at builder authoring stage.
+- P0: `OPEN=0`.
+- P1: `REPAIR_IMPLEMENTED=1; INDEPENDENT_CLOSURE=PENDING`.
+- P2: `OPEN=0`.
+- P3: `OPEN=0`.
+
+Any unresolved P0/P1 remains blocking for closure handoff.
 
 ## Builder stop boundary
 
-Builder completion requires an exact-head PR to `version/v4.3.0`, real focused/applicable execution evidence, exact HEAD/tree/write-set binding, then stop. Independent Integration Validation and a genuinely new Fresh Review are mandatory successors before merge.
+Builder completion requires a successor exact HEAD/tree on the SAME PR #610, actual focused/applicable execution evidence, exact repair write-set binding, then stop. Independent successor Integration Validation and a genuinely new Fresh Review are mandatory before merge.
