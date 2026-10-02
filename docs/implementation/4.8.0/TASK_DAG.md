@@ -1,6 +1,6 @@
 # v4.8.0 Task DAG — Evidence-Driven Agent Orchestration & Standard Evolution
 
-Status: **FROZEN TASK DAG R1 — 2026-10-01**
+Status: **FROZEN TASK DAG R2 — 2026-10-02**
 
 ## 0. Authority and repair history
 
@@ -12,17 +12,29 @@ Freeze inputs:
 - Frozen L2 blob: `f88c85454e80101a0fdf56050e21f11a05279841`;
 - Fresh Independent Architecture Re-Review R3: #502 comment `5927313354` = PASS, P0/P1/P2/P3=0, L2 Freeze authorization YES;
 - Task DAG Controller: #504;
+- R2 bounded-repair Controller: #647;
 - planning baseline: `main@e75fe834469c5ea9f9a384f7d84e38c3a48afa46`;
-- intended implementation integration target: `version/v4.8.0` after canonical planning integration.
+- intended implementation integration target: `version/v4.8.0`.
 
-Historical DAG R0 was commit `0a4607e857c3971b9eff6092de46f67ba0a698f5`, blob `16ff752ba9c42ee037bb6939c4beb7d235f87cd6`. Controller audit #504 comment `5927557494` found one bounded planning defect before any Task Pack/L3/JIT/Builder dispatch: R0 T-001 combined all three independent new machine-contract families into one Task/PR. R1 repairs only Task granularity and dependency topology. It does **not** change Frozen Product/L2 semantics.
+Historical DAG R0 was commit `0a4607e857c3971b9eff6092de46f67ba0a698f5`, blob `16ff752ba9c42ee037bb6939c4beb7d235f87cd6`. Controller audit #504 comment `5927557494` found one bounded planning defect before any Task Pack/L3/JIT/Builder dispatch: R0 T-001 combined all three independent new machine-contract families into one Task/PR. R1 repaired only Task granularity and dependency topology. It did **not** change Frozen Product/L2 semantics.
 
-R1 preserves T-002..T-014 stable identities, narrows T-001 to Task Learning Evidence, and adds:
+R1 preserved T-002..T-014 stable identities, narrowed T-001 to Task Learning Evidence, and added:
 
 - T-015 — Logical Agent Capability Profile Contract;
 - T-016 — Agent Capability Evidence Contract.
 
-This restores one-concern-per-PR for the three new machine families and increases safe root parallelism without creating shared-owner false parallelism.
+That restored one-concern-per-PR for the three new machine families and increased safe root parallelism without creating shared-owner false parallelism.
+
+R2 is a second bounded **DAG decomposition repair** identified by #647 after execution had already begun. Fresh reread of the exact Frozen Product/L2 confirms that auditable execution ownership/start reconstruction, non-authoritative progress/heartbeat, fail-closed restart/replacement behavior and heterogeneous duplicate-assignment dogfood are already within Frozen semantics. R2 therefore does not amend Product or Architecture.
+
+R2 preserves every R1 Task identity T-001..T-016 and every R1 edge, and adds exactly:
+
+- T-017 — Execution Ownership Visibility / Start-Timeout Conformance;
+- `T-002 -> T-017`;
+- `T-009 -> T-017`;
+- `T-017 -> T-011`.
+
+Graph accounting is `17 Tasks / 41 edges`. T-014 remains transitively blocked through T-011; no redundant T-017→T-014 edge is added. R2 does not reopen or reinterpret any completed Task, and it does not retroactively assert that earlier v4.8 executions used the richer T-017 Start Record/profile. On a repair candidate branch this text is the proposed final R2 authority; it becomes canonical only after a genuinely Fresh Independent DAG review PASS, current-target-safe integration into `version/v4.8.0`, and native Issue Dependency materialization/readback.
 
 ## 1. Frozen boundaries
 
@@ -63,13 +75,14 @@ T-007: [T-001, T-015, T-016]
 T-008: [T-002]
 T-009: [T-003]
 T-010: [T-004, T-005]
-T-011: [T-007, T-008, T-009]
+T-017: [T-002, T-009]
+T-011: [T-007, T-008, T-009, T-017]
 T-012: [T-004, T-007, T-008]
 T-013: [T-004, T-005, T-006, T-010]
 T-014: [T-006, T-007, T-008, T-009, T-010, T-011, T-012, T-013]
 ```
 
-Initial roots are **T-001, T-015, T-016 and T-005**. T-003 becomes READY after T-015 because any compatible Interchange receiver-capability reference must bind the canonical Logical Agent Profile contract rather than inventing an ad-hoc capability shape.
+Initial roots remain **T-001, T-015, T-016 and T-005**. T-003 becomes READY after T-015 because any compatible Interchange receiver-capability reference must bind the canonical Logical Agent Profile contract rather than inventing an ad-hoc capability shape.
 
 Safe waves are semantic, not merely numeric:
 
@@ -77,12 +90,12 @@ Safe waves are semantic, not merely numeric:
 Wave A: T-001, T-015, T-016, T-005
 Wave B: T-002, T-003, T-007 (when their exact blockers are satisfied)
 Wave C: T-004, T-008, T-009
-Wave D: T-006, T-010, T-011, T-012
-Wave E: T-013
+Wave D: T-006, T-010, T-012, T-017
+Wave E: T-011, T-013
 Wave F: T-014
 ```
 
-Actual dispatch is determined by native GitHub Issue Dependencies plus current Task Pack/L3/Execution Pack/resource/currentness gates. A later wave Task may start as soon as its own blockers are satisfied; waves are a safe upper-bound guide, not a batch barrier.
+T-017 may become eligible only after T-002 and T-009. T-011 remains the heterogeneous dogfood join after T-007/T-008/T-009 **and T-017**. Actual dispatch is determined by native GitHub Issue Dependencies plus current Task Pack/L3/Execution Pack/resource/currentness gates. A later wave Task may start as soon as its own blockers are satisfied; waves are a safe upper-bound guide, not a batch barrier.
 
 ## 3. Task definitions
 
@@ -230,6 +243,31 @@ Lane: `interchange-conformance` · Risk: high · Review Policy: required.
 
 Depends on T-003. Own deterministic duplicate/replay/conflict/stale-subject/ACK non-authority/durable materialization/restart tests against existing Interchange reuse and GitHub `ai-dev:event:v2` preservation. Validation: replay/idempotency/restart suite. Intended branch: `task/v4.8.0-t09-interchange-conformance`.
 
+### T-017 — Execution Ownership Visibility / Start-Timeout Conformance
+
+Lane: `execution-ownership-conformance` · Risk: high · Review Policy: required.
+
+Depends on T-002/T-009. Own a bounded conformance concern over the **existing** Dispatch/Claim lifecycle so operator-visible execution ownership and start/terminal/timeout behavior are auditable without creating a second admission authority, event family, scheduler lifecycle or mandatory runtime database.
+
+Owned semantics:
+
+- `NO_CLAIM_NO_EXECUTION`: authoritative execution/source mutation starts only after the applicable Dispatch Claim is accepted; rejected/stale/duplicate Claim means stop/recompute;
+- the current accepted `DISPATCH_CLAIMED`/Claim fact is the durable Start Record, not a new authority;
+- new-writer/start-profile guidance may expose applicable work/dispatch, role, logical operator/session provenance, accepted/occurrence time, execution profile, exact/base/requested identity, Task/Execution Pack refs and claim/admission generation provenance when supported;
+- historical `ai-dev:event:v2` records remain valid and are not retroactively rejected for lacking richer new-writer provenance;
+- Issue labels/current-state metadata are visible derived projection (`claimed`/`implementing` or role-equivalent), never the distributed lock;
+- terminal FAILED/BLOCKED/CANCELLED/TIMEOUT/STALE/SUPERSEDED/DONE handling leaves no ambiguous incompatible active ownership while preserving append-oriented history;
+- same logical operator + same dispatch resume/reclaim is idempotent and does not create a second active claim;
+- optional progress/heartbeat stays non-authoritative; missing heartbeat may trigger investigation/timeout policy but cannot itself fabricate Task/Validation failure or authorize unsafe replacement;
+- replacement after TIMEOUT/STALE reconciles durable claim/publication/resource facts and fails closed on ambiguity;
+- timing/timeout/retry/rebind evidence is descriptive only and must not create unsupported Agent-ranking/economic conclusions.
+
+Required negative oracles include duplicate logical operators racing one work/role with only one canonical accepted start; label/comment without accepted Claim cannot authorize execution; delayed/failed state projection cannot permit duplicate claim; durable operator/session/start/subject reconstruction after chat loss; takeover blocked until durable terminal/stale/timeout/release conditions; heartbeat loss is not Task/Validation FAIL; successor claims after timeout/stale are separately attributable; historical event-v2 compatibility remains intact; Fast Path remains proportional.
+
+Validation: focused Claim/start/projection/release/timeout/restart conformance plus historical compatibility. High-capability Task Pack/risk-scaled L3 required before JIT Builder dispatch. Intended JIT branch after all gates: `task/v4.8.0-t17-execution-ownership`.
+
+If implementation discovers that these requirements need a new lifecycle/event authority, incompatible event-v2 semantics, or a Product/L2 semantic change, stop and route to Architecture amendment/future-major rather than widening T-017.
+
 ### T-010 — Task Learning / Evolution Governance Conformance
 
 Lane: `governance-conformance` · Risk: high · Review Policy: required.
@@ -240,7 +278,7 @@ Depends on T-004/T-005. Own executable/fixture conformance for NONE_MATERIAL, ma
 
 Lane: `orchestration-dogfood` · Risk: high · Review Policy: required.
 
-Depends on T-007/T-008/T-009. Own the Frozen PRD heterogeneous orchestration dogfood: multiple READY work items, materially different logical Agent profiles, fresh/stale Availability, scarce shared-resource contention, duplicate/incompatible assignment race, reviewer/validator independence conflict, transport duplicate/replay/loss, crash/restart reconstruction, bounded executor success when eligible and escalation on ambiguity.
+Depends on T-007/T-008/T-009/T-017. Own the Frozen PRD heterogeneous orchestration dogfood: multiple READY work items, materially different logical Agent profiles, fresh/stale Availability, scarce shared-resource contention, duplicate/incompatible assignment race, reviewer/validator independence conflict, transport duplicate/replay/loss, crash/restart reconstruction, bounded executor success when eligible and escalation on ambiguity.
 
 Synthetic evidence remains labeled synthetic. Real host/device/provider/runtime claims require exact-subject real Validation or remain NOT_RUN/BLOCKED. Evidence matrix/L3 required before dispatch. Intended branch: `task/v4.8.0-t11-orchestration-dogfood`.
 
@@ -266,7 +304,7 @@ Acceptance covers classification, false-positive prevention, repeated-friction a
 
 Lane: `integration-closure` · Risk: high · Review Policy: required.
 
-Depends on T-006/T-007/T-008/T-009/T-010/T-011/T-012/T-013. This is the only pre-Closure join.
+Depends on T-006/T-007/T-008/T-009/T-010/T-011/T-012/T-013. This is the only pre-Closure join. T-017 remains a transitive prerequisite through T-011; no redundant direct T-017 dependency is added.
 
 Acceptance: exactly three new machine families; Interchange reused; owner uniqueness across v4.1–v4.8; hard eligibility-before-ranking and composite atomicity retained; historical compatibility/Fast Path retained; dogfood claims bounded to evidence strength; no unsupported economic/universal routing inference; full repository verifier/regression + required integrated Validation captured. Produces closure inputs only, never Version Closure/Release verdict. High-capability L3/reference + independent integration validator/reviewer required. Intended branch: `task/v4.8.0-t14-integration-closure-inputs`.
 
@@ -284,9 +322,10 @@ Acceptance: exactly three new machine families; Interchange reused; owner unique
 | T-004 | T-001,T-002 | YES | H | bounded integration builder after semantic merge | template/closeout | required | Task Pack; focused L3 |
 | T-008 | T-002 | YES | H | high-cap concurrency/test builder | race/capacity/crash | required | Task Pack + failure matrix |
 | T-009 | T-003 | YES | H | bounded protocol-test builder | replay/restart | required | Task Pack + protocol matrix |
+| T-017 | T-002,T-009 | YES | H | high-cap lifecycle/conformance builder | claim/start/projection/release/timeout/restart | required | Task Pack + risk-scaled L3 |
 | T-006 | T-001,T-015,T-016,T-002,T-003,T-004,T-005 | YES | M/H | bounded central-wiring builder | manifest/registry/adoption | required | Task Pack |
 | T-010 | T-004,T-005 | YES | H | bounded fixture builder + high-cap semantic review | governance/learning/privacy | required | Task Pack |
-| T-011 | T-007,T-008,T-009 | YES | H | heterogeneous Agents + independent validator/reviewer | scenario/real-host as applicable | required | Task Pack + evidence matrix/L3 |
+| T-011 | T-007,T-008,T-009,T-017 | YES | H | heterogeneous Agents + independent validator/reviewer | scenario/real-host as applicable | required | Task Pack + evidence matrix/L3 |
 | T-012 | T-004,T-007,T-008 | YES | H | bounded/low-cost where eligible + high-cap independent review | exact Builder/Validation/Review | required | risk-scaled L3 + JIT Execution Pack |
 | T-013 | T-004,T-005,T-006,T-010 | YES | H | high-cap evidence/governance owner | cross-project/privacy/currentness | required | Task Pack + evidence matrix/L3 |
 | T-014 | T-006,T-007,T-008,T-009,T-010,T-011,T-012,T-013 | NO | H | independent integration validator/reviewer | full integrated regression | required | high-cap L3 + Task Pack |
@@ -295,7 +334,7 @@ All implementation PRs target `version/v4.8.0` after canonical planning integrat
 
 ## 5. Review and Validation policy
 
-All sixteen Tasks use `Review Policy=required` as a **v4.8-specific risk decision**, not a global ADS rule. Each Task changes public machine/owner/concurrency/governance semantics, validates high-risk compatibility, or produces evidence consumed by integrated closure.
+All seventeen Tasks use `Review Policy=required` as a **v4.8-specific risk decision**, not a global ADS rule. Each Task changes public machine/owner/concurrency/governance semantics, validates high-risk compatibility, or produces evidence consumed by integrated closure.
 
 Validation remains distinct from Review. Builder tests never self-certify real-host, concurrency, cross-transport, privacy or cross-project claims. If the execution environment cannot prove a required external claim, create an exact-subject Validation Request and preserve NOT_RUN/BLOCKED rather than simulating PASS.
 
@@ -303,21 +342,27 @@ For any implementation that selects a novel distributed multi-key CAS/lease/queu
 
 ## 6. Native Issue DAG and materialization
 
-Stage 2.5 materializes this R1 DAG as GitHub Task Issues. GitHub Issue Dependencies are the canonical **live execution DAG**; this file remains Frozen planning/history authority.
+Stage 2.5 originally materialized R1 as 16 canonical GitHub Task Issues and 38 native edges. GitHub Issue Dependencies remain the canonical **live execution DAG**; this file remains Frozen planning/history authority.
 
-Materialization rules:
+R2 materialization is an additive bounded delta only:
 
-- existing #507 is rebound to corrected T-001 only;
-- existing #508–#520 preserve their T-003/T-005/T-002/T-004/T-006…T-014 identities as already assigned;
-- create exactly two new planned Tasks for T-015 and T-016;
-- update descriptive dependency lists on affected existing Issues before native dependency edges are written;
-- no current R0 Task Issue is Builder-ready merely because it exists;
-- no Task Pack/L3/Execution Pack/JIT branch may bind the historical R0 blob after this R1 commit.
+- canonical T-017 is existing planned Issue #646;
+- #646 MUST be blocked by T-002/#510 and T-009/#515;
+- T-011/#517 MUST retain T-007/#513 + T-008/#514 + T-009/#515 and additionally be blocked by T-017/#646;
+- no R1 edge is removed or rewritten;
+- T-014/#520 stays transitively blocked through T-011; no redundant #646→#520 edge is added;
+- readback MUST equal 17 Tasks / 41 edges with exactly the three new edges above and no missing/extra/cyclic delta;
+- #646 remains `PLANNED / NOT_BUILDER_READY` after native graph materialization until its Task Pack + risk-scaled L3 + currentness + JIT exact-base Execution Pack + canonical Builder Dispatch/Claim gates complete;
+- no existing completed Task is reopened or treated as if its historical exact-SHA evidence covered T-017.
 
-READY requires native blockers satisfied plus current Frozen R1 DAG, Task Pack/L3/Execution Pack, exact integration baseline, authority/currentness/resource checks and all role/independence gates.
+R1 historical materialization facts remain valid history: #507 is T-001; #508–#520 retain their assigned T-003/T-005/T-002/T-004/T-006…T-014 identities; #522 is T-015; #524 is T-016; duplicate #523 remains excluded.
+
+READY requires native blockers satisfied plus current Frozen R2 DAG, Task Pack/L3/Execution Pack, exact integration baseline, authority/currentness/resource checks and all role/independence gates.
 
 ## 7. Integration posture
 
-Planning artifacts remain in Draft PR #482 until the planning checkpoint and required downstream packs are stable and accepted. Then establish `version/v4.8.0` from the canonical planning integration baseline.
+R1 planning was already canonically integrated and v4.8 implementation is active on `version/v4.8.0`. This R2 repair is therefore a current-target planning repair, not a replay of the historical Draft PR #482 planning sequence.
 
-Implementation follows one concern per PR. Stacked PR is allowed only for a real unmerged code-baseline dependency and never substitutes for Issue Dependencies.
+The R2 candidate MUST receive a genuinely Fresh Independent planning/DAG review on its exact candidate SHA/tree. Only a PASS candidate may be integrated into the then-current `version/v4.8.0` using current-target-safe procedure. After integration, native Issue Dependencies must be materialized/read back before T-017 becomes canonical for execution and before T-011 may be JIT-dispatched under R2.
+
+Implementation continues one concern per PR. Stacked PR is allowed only for a real unmerged code-baseline dependency and never substitutes for Issue Dependencies.
