@@ -97,10 +97,11 @@ NOT_MEASURED economics -> savings claim
 
 ## T-008 — Eligibility/resource conformance
 
-**Tests:** competing READY tasks; heterogeneous profiles; stale Availability; independence conflict; rank ordering; capacity N; multi-resource all-or-none; crash ambiguity/recovery.
-**Contract:** executable oracle for T-002, no new scheduler semantics.
-**Implementation:** deterministic model/reference reducer; inject failures around the single linearization point.
-**Failure handling:** any accepted partial state or over-allocation is P1/P0-level blocking evidence.
+**Tests:** build one deterministic oracle over competing READY work, heterogeneous logical Agent profiles, fresh/stale/missing Availability, reviewer/validator independence conflict, hard-filter-before-ranking, capacity-N/N=1 contention, multi-resource all-or-none admission, and injected partial-publication/crash ambiguity. Include negative cases proving `UNKNOWN` fails closed, ranking never rescues an ineligible candidate, accepted active units never exceed N, and replacement admission remains blocked until durable reconciliation.
+**Contract:** this is executable conformance for merged T-002 semantics only. Canonical READY/Dispatch/Claim and existing section 11/27 admission owners remain authoritative; no scheduler/state/Availability/Exchange owner is created. The protected admission set is the work claim plus every required resource/compatibility binding and must linearize all-or-none at one admission point.
+**Implementation:** use a self-contained deterministic reference reducer/model in `scripts/test_v48_scheduling_conformance.py`; derive outcomes only from explicit test facts and inject failures immediately before/at/after the single admission publication boundary. Reuse existing `SINGLE_WRITER_ADMISSION` / `LINEARIZABLE_CONDITIONAL_WRITE` semantics as oracles; do not implement or rely on a novel distributed multi-key CAS/lease protocol.
+**Failure handling:** any accepted partial claim/resource state, capacity over-allocation, stale Availability satisfying a hard requirement, independence bypass, ranking-before-filter behavior, or replacement admission before ambiguity reconciliation is blocking evidence against T-002 semantics. If the conformance oracle exposes a genuine owner/architecture defect or needs a new distributed primitive, STOP and route to the owning authority/Research Demo rather than repairing the owner from T-008.
+**Reference:** Frozen L2 §§7–9; Frozen DAG T-008; `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §§6, 11, 27; existing `scripts/test_v48_execution_architecture.py`; T-008 Task Pack and exact-base JIT Execution Pack.
 
 ## T-009 — Interchange replay/restart conformance
 

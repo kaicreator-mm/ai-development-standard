@@ -1,0 +1,30 @@
+task: T-008
+required:
+  - id: multiple-ready-heterogeneous
+    proves: multiple READY work items and heterogeneous logical Agent profiles derive deterministic per-candidate eligibility from explicit facts
+  - id: stale-availability-fails-closed
+    proves: stale or missing material Availability becomes UNKNOWN and cannot satisfy a hard requirement
+  - id: independence-hard-filter
+    proves: reviewer/validator independence conflict makes the candidate INELIGIBLE before ranking
+  - id: hard-filter-before-ranking
+    proves: only ELIGIBLE candidates are ranked and cost/latency/priority/evidence-strength cannot rescue INELIGIBLE or UNKNOWN
+  - id: capacity-n-contention
+    proves: active accepted units for each capacity group never exceed configured N
+  - id: exclusive-n1
+    proves: N=1 resource admits at most one incompatible active binding
+  - id: composite-all-or-none
+    proves: work claim plus every required resource/compatibility binding is accepted together at one logical admission point or none is accepted
+  - id: per-key-cas-insufficient
+    proves: individually successful per-key CAS/lease/reservation steps are not treated as composite acceptance proof
+  - id: crash-publication-ambiguity
+    proves: injected ambiguous publication blocks incompatible replacement until durable facts are reconciled
+  - id: no-alternate-owner
+    proves: the oracle reuses READY/Dispatch/Claim and T-002 admission semantics without a second scheduler, durable Availability owner or Exchange family
+  - id: focused-suite
+    command: python -B scripts/test_v48_scheduling_conformance.py
+  - id: t002-semantic-regression
+    command: python -B scripts/test_v48_execution_architecture.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent exact-subject concern validation of deterministic race/capacity/composite/crash behavior
+review: genuinely fresh exact-HEAD review required after qualifying validation
