@@ -152,7 +152,7 @@ Rules:
 - `operator_id/session_ref` SHOULD distinguish concurrent ChatGPT Web pages or Local Agent runs even when `transport_actor` is identical.
 - Dynamic operator/session IDs SHOULD NOT be encoded as GitHub labels.
 - `executor:*` labels are routing hints and do not prove which concrete operator performed an event.
-- Required Independent Review must be attributable to a context independent from the implementation context; the same GitHub transport account is allowed.
+- Required Independent Review must be attributable to a context independent from the Builder context; the same GitHub transport account is allowed.
 - Identity fields MUST NOT contain tokens, cookies, signed URLs, credentials or secrets.
 
 ## Independent Review Profile
