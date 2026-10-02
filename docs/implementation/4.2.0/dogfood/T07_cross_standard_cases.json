@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "purpose": "Illustrative cross-owner negatives supplement actual T01–T06 owner suites; fixture outcomes are not release or deployment verdicts.",
+  "owner_suites": [
+    "test_v42_evolution_contracts.py",
+    "test_v42_interface_compatibility.py",
+    "test_v42_data_migration.py",
+    "test_v42_api_compatibility_conformance.py",
+    "test_v42_migration_conformance.py",
+    "test_v42_adoption_wiring.py"
+  ],
+  "runtime_dogfood_owner": "test_v42_migration_conformance.py",
+  "runtime_dogfood_engine": "sqlite",
+  "unexecuted_environment_policy": "BLOCKED_OR_NOT_RUN",
+  "claimed_verdicts": [],
+  "cases": [
+    {
+      "id": "bounded-additive-old-consumer-positive",
+      "category": "compatibility_proof",
+      "facts": {"tested_baseline": "old-v1@digest-a", "required_baseline": "old-v1@digest-a", "tested_consumer": "consumer-old@digest-c", "required_consumer": "consumer-old@digest-c", "dimensions": {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}, "required_dimensions": ["wire", "source", "behavior"]},
+      "expected_allowed": true,
+      "reason": "Only evaluated exact old-consumer/new-producer baseline dimensions are claimed, not a universal API PASS."
+    },
+    {
+      "id": "wire-safe-source-break",
+      "category": "compatibility_proof",
+      "facts": {"tested_baseline": "old-v1@digest-a", "required_baseline": "old-v1@digest-a", "tested_consumer": "consumer-old@digest-c", "required_consumer": "consumer-old@digest-c", "dimensions": {"wire": "COMPATIBLE", "source": "INCOMPATIBLE", "behavior": "COMPATIBLE"}, "required_dimensions": ["wire", "source", "behavior"]},
+      "expected_allowed": false,
+      "reason": "Wire-safe does not imply source-compatible."
+    },
+    {
+      "id": "schema-or-wire-safe-behavior-unknown",
+      "category": "compatibility_proof",
+      "facts": {"tested_baseline": "old-v1@digest-a", "required_baseline": "old-v1@digest-a", "tested_consumer": "consumer-old@digest-c", "required_consumer": "consumer-old@digest-c", "dimensions": {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "UNKNOWN"}, "required_dimensions": ["wire", "source", "behavior"]},
+      "expected_allowed": false,
+      "reason": "UNKNOWN/unexecuted required dimension is not COMPATIBLE."
+    },
+    {
+      "id": "new-new-test-is-not-old-consumer-proof",
+      "category": "compatibility_proof",
+      "facts": {"tested_baseline": "old-v1@digest-a", "required_baseline": "old-v1@digest-a", "tested_consumer": "consumer-new@digest-d", "required_consumer": "consumer-old@digest-c", "dimensions": {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}, "required_dimensions": ["wire", "source", "behavior"]},
+      "expected_allowed": false,
+      "reason": "Producer/consumer co-change cannot mask old consumer breakage."
+    },
+    {
+      "id": "baseline-head-drift",
+      "category": "compatibility_proof",
+      "facts": {"tested_baseline": "old-v1@digest-b", "required_baseline": "old-v1@digest-a", "tested_consumer": "consumer-old@digest-c", "required_consumer": "consumer-old@digest-c", "dimensions": {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}, "required_dimensions": ["wire", "source", "behavior"]},
+      "expected_allowed": false,
+      "reason": "Different tested baseline cannot inherit old exact evidence."
+    },
+    {
+      "id": "risk-acceptance-not-remediation",
+      "category": "evidence_non_inference",
+      "facts": {"claim_risk_exception_is_remediation": true},
+      "expected_allowed": false,
+      "reason": "Accepted risk remains its own disposition and is not remediation or Validation PASS."
+    },
+    {
+      "id": "compatibility-outcome-not-validation-state",
+      "category": "evidence_non_inference",
+      "facts": {"claim_compatibility_is_validation_pass": true},
+      "expected_allowed": false,
+      "reason": "Compatibility record is not the owning Validation verdict."
+    },
+    {
+      "id": "fresh-install-not-upgrade",
+      "category": "evidence_non_inference",
+      "facts": {"claim_fresh_install_proves_upgrade": true},
+      "expected_allowed": false,
+      "reason": "Fresh B bootstrap is not A-to-B transition evidence."
+    },
+    {
+      "id": "migration-not-deployment-success",
+      "category": "evidence_non_inference",
+      "facts": {"claim_migration_is_deployment_success": true},
+      "expected_allowed": false,
+      "reason": "Migration transition evidence cannot issue a v4.4 Deployment result."
+    },
+    {
+      "id": "validation-not-release-ready",
+      "category": "evidence_non_inference",
+      "facts": {"claim_validation_is_release_ready": true},
+      "expected_allowed": false,
+      "reason": "Task/integration Validation PASS cannot become Release Qualification."
+    },
+    {
+      "id": "rewritten-sha-no-inherited-evidence",
+      "category": "evidence_non_inference",
+      "facts": {"claim_new_sha_inherits_old_evidence": true},
+      "expected_allowed": false,
+      "reason": "Prior evidence is historical after material subject drift."
+    },
+    {
+      "id": "nonmaterial-fast-path",
+      "category": "fast_path",
+      "facts": {"material_evolution_concern": false, "owning_profile_satisfied": false},
+      "expected_allowed": true,
+      "reason": "No empty compatibility/migration record required for genuinely non-material changes."
+    },
+    {
+      "id": "material-fast-path-cannot-bypass",
+      "category": "fast_path",
+      "facts": {"material_evolution_concern": true, "owning_profile_satisfied": false},
+      "expected_allowed": false,
+      "reason": "Fast Path reduces ceremony, not substantive required proof."
+    },
+    {
+      "id": "owner-conflict-must-route",
+      "category": "authority_conflict",
+      "facts": {"owner_resolved": false, "applicable_current_evidence": true},
+      "expected_allowed": false,
+      "reason": "Ambiguous owner fails closed instead of ad hoc agent decision."
+    },
+    {
+      "id": "current-owner-evidence-positive",
+      "category": "authority_conflict",
+      "facts": {"owner_resolved": true, "applicable_current_evidence": true},
+      "expected_allowed": true,
+      "reason": "Current applicable evidence may be consumed within its owner-specific claim."
+    }
+  ]
+}

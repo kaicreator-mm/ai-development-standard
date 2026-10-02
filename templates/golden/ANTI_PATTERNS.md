@@ -90,3 +90,27 @@ almost-done
 A Research Issue says “study project X and decide whether it is good” but does not define research question, evidence/source identity, what can be proven, or what remains unproven.
 
 **Forbidden because:** conclusions cannot be audited or constrained to evidence strength.
+
+## compatibility-dimension-collapse
+
+A wire/schema checker passes and the change is recorded as universally compatible, without separately evaluating source, behavior or supported consumer populations that are material.
+
+**Forbidden because:** compatibility is multi-dimensional. `wire-safe` or schema acceptance does not prove source/behavior/consumer compatibility, and a new/new pair cannot erase old/external consumer risk.
+
+## migration-presence-as-execution
+
+A migration file exists or a fresh install succeeds, so an upgrade from source state A to target state B is recorded as successfully migrated.
+
+**Forbidden because:** `fresh install PASS != upgrade PASS` and `migration file exists != migration executed`. Directional transition, runtime applicability and recovery evidence remain separate subjects.
+
+## historical-evidence-retrofit
+
+After adopting v4.2, an old exact-SHA PASS is relabeled as compatibility or migration PASS for a new candidate, consumer population, source/target state or runtime.
+
+**Forbidden because:** historical evidence keeps its original subject identity and meaning. New material subjects require applicable current evidence.
+
+## evolution-evidence-as-deployment-result
+
+Compatibility or migration evidence is used to declare Deployment success, or credential/tool availability is treated as side-effect authority.
+
+**Forbidden because:** v4.2 does not own Deployment result semantics. Deployment execution/result belongs to the applicable Deployment owner; capability is not authorization.

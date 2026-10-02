@@ -36,6 +36,8 @@
     "validation_scope": {"type": "string", "enum": ["concern", "integration", "closure"]},
     "validation_impact": {"type": ["string", "null"], "enum": ["none", "affected", "unknown", null]},
     "evidence_reuse_basis": {"type": ["string", "null"]},
+    "compatibility_record_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "migration_transition_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "command": {"type": "string", "minLength": 1},
     "exit_code": {"type": ["integer", "null"]},
     "drift": {"type": ["string", "null"], "enum": ["HEAD_DRIFT", "BASE_DRIFT", "MERGE-RESULT_DRIFT", "CANDIDATE_DRIFT", null]},
