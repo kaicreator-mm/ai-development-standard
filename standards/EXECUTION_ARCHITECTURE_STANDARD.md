@@ -400,6 +400,18 @@ A dispatcher MUST re-evaluate staleness when material facts change. Typical stal
 
 Stale work is cancelled/replaced rather than executed and later reconciled by hand.
 
+### 11.2 Active ownership visibility, terminal release, and liveness
+
+Active ownership (`active_dispatch`, `active_dispatch_role`) is derived state reconstructed from durable claim/dispatch facts — the accepted `DISPATCH_CLAIMED` with actor role, `operator_kind`/`operator_id`, `session_ref` when present, accepted/occurred-time reference, execution profile, exact/requested/base subject and Task/Execution Pack refs. It is never derived from labels or transient chat/session state. A fresh session MUST be able to reconstruct the active dispatch, logical operator, start time and exact subject from durable facts after chat/session loss.
+
+Accepted start projects through `claimed → implementing` (or the canonical role-equivalent running state). The projection is visibility only: delayed or failed projection publication cannot erase the accepted Claim, cannot authorize a competing claim, and is repaired by republishing/recomputing the derived view — never by re-admitting the work.
+
+Terminal/release handling: `DONE`, `FAILED`, `BLOCKED`, `CANCELLED`, `TIMEOUT`, `STALE`/`SUPERSEDED` remove incompatible active ownership only when the durable terminal/release facts are unambiguous; history remains append-oriented and a successor claim/start is separately attributable. Another operator may take over only after durable terminal/stale/timeout/release/supersession and related publication/resource/generation facts reconcile under the existing serialized admission (§11.1); ambiguous publication/release/resource state fails closed. Idempotent same-operator/same-dispatch resume keeps exactly one active claim (§11).
+
+Progress/heartbeat remains optional, non-authoritative transport/exchange information. Missing heartbeat alone MUST NOT fabricate Task/Validation `FAIL`, mutate a Gate, or implicitly release an ambiguous active claim. A controller MAY use liveness expiry to open an investigation or an explicitly configured timeout policy; `TIMEOUT`/`STALE` replacement still requires durable reconciliation of claim/publication/resource/generation/release facts and fails closed on ambiguity. Manual/Fast-Path execution under `SINGLE_WRITER_ADMISSION` uses the same Claim/visibility semantics with no mandatory orchestration service and no high-frequency heartbeat requirement.
+
+This visibility/profile concern introduces no new state dimension, lifecycle, scheduler, claim authority, event family or mandatory runtime database.
+
 ## 12. Exact identity, drift, and evidence composition
 
 Track at least:
