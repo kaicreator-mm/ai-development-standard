@@ -40,13 +40,12 @@ def task_learning_applies_to_subject(learning: dict, current_subject_ref: str) -
 
 
 def capability_evidence_applies_to_subject(evidence: dict, current_subject_ref: str) -> bool:
-    """Frozen T-016 currentness oracle: historical evidence never silently rebinds."""
-    exact_subject_ref = evidence.get("exact_subject_ref")
-    return (
-        isinstance(exact_subject_ref, str)
-        and bool(exact_subject_ref)
-        and exact_subject_ref == current_subject_ref
-    )
+    """Frozen T-016 currentness oracle: only equal immutable Git identities can apply."""
+    refs = (evidence.get("exact_subject_ref"), current_subject_ref)
+    return all(
+        isinstance(value, str) and IMMUTABLE_GIT_SUBJECT_RE.fullmatch(value)
+        for value in refs
+    ) and refs[0] == refs[1]
 
 
 class V48ContractHistoricalCompatibilityTests(unittest.TestCase):
@@ -202,6 +201,38 @@ class V48ContractHistoricalCompatibilityTests(unittest.TestCase):
         self.assertFalse(
             capability_evidence_applies_to_subject(stale, subjects["successor"])
         )
+
+    def test_equal_mutable_and_malformed_subjects_never_establish_current_applicability(self) -> None:
+        current = self.cases["current_contracts"]
+        learning_template = current["task_learning"]
+        evidence_template = current["agent_capability_evidence"]
+        repository = "git:kaicreator-mm/ai-development-standard"
+        invalid_subjects = {
+            "main": f"{repository}@main",
+            "named_branch": f"{repository}@feature/t007",
+            "refs_heads": f"{repository}@refs/heads/main",
+            "tag_alias": f"{repository}@v4.8.0",
+            "ref_tag_alias": f"{repository}@refs/tags/v4.8.0",
+            "repository_only": repository,
+            "short_sha": f"{repository}@1111111",
+            "non_hex_40": f"{repository}@{'g' * 40}",
+            "uppercase_hex": f"{repository}@{'A' * 40}",
+            "empty": "",
+            "malformed": "not-a-git-subject",
+        }
+
+        for case, subject_ref in invalid_subjects.items():
+            with self.subTest(case=case):
+                learning = copy.deepcopy(learning_template)
+                learning["implementation_subject_ref"] = subject_ref
+                learning["currentness_ref"] = subject_ref
+                evidence = copy.deepcopy(evidence_template)
+                evidence["exact_subject_ref"] = subject_ref
+
+                self.assertFalse(task_learning_applies_to_subject(learning, subject_ref))
+                self.assertFalse(
+                    capability_evidence_applies_to_subject(evidence, subject_ref)
+                )
 
     def test_task_learning_allows_bounded_rationale_but_rejects_private_cot(self) -> None:
         learning = self.cases["current_contracts"]["task_learning"]
