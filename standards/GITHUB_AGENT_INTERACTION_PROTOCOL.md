@@ -376,6 +376,33 @@ REPOSITORY_INTEGRATION_RESULT
 
 `TASK_CLAIMED` is retained for compatibility; cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
+### 8.5 Accepted Claim as Start Record and ownership visibility
+
+The accepted `DISPATCH_CLAIMED` / current accepted Claim is the durable Start Record for authoritative role execution. A worker MUST NOT begin authoritative role execution or mutate implementation source before its dispatch Claim is accepted (`NO_CLAIM_NO_EXECUTION`). A rejected, stale or duplicate claim means STOP/recompute, not best-effort execution. No label, comment, state card, transport ACK, progress message or heartbeat substitutes for accepted Claim authority.
+
+New writers recording an accepted `DISPATCH_CLAIMED` SHOULD make the start auditable with existing event-v2 fields and, where the transport supports it, additive provenance:
+
+```text
+work item / issue + dispatch_id
+actor_role
+operator_kind + operator_id
+session_ref when available
+occurred_at / accepted-time durable reference
+execution_profile
+sha / expected_base_sha / requested_head_sha as applicable
+task_pack_ref / execution_pack_ref as applicable
+admission_mode / protected_claim_key / claim_generation as additive provenance when supported
+transport_actor when useful
+```
+
+The schema remains `ai-dev/event-v2`; no new event version or type is authorized. Optional transport-specific provenance uses the schema's existing additive-extension allowance. Historical event-v2 claims remain valid history and are not retroactively invalidated merely because a newer writer records richer optional provenance.
+
+Accepted start MUST visibly resolve through `state:claimed → state:implementing` (or the canonical role-equivalent running state) on the current-state surface. GitHub labels, comments and state cards are reconstructible visibility/routing projections (`NON_AUTHORITATIVE_DERIVED_STATE`), never the claim lock or execution authority. Dynamic operator/session identity remains in structured durable events rather than proliferating per-session labels. A state card MAY expose active dispatch/operator/since/exact subject only as reconstructible derived state.
+
+Terminal ownership release: when a dispatch/claim reaches `DONE`, `FAILED`, `BLOCKED`, `CANCELLED`, `TIMEOUT`, `STALE`/`SUPERSEDED`, no ambiguous incompatible active ownership may remain once the durable terminal/release state is unambiguous; historical claim/start facts stay append-oriented; the same logical operator resuming the same dispatch is idempotent and MUST NOT create a second active claim/Start Record.
+
+Optional progress/heartbeat remains non-authoritative transport/exchange information and MUST NOT become Task/Validation/Gate truth. Lifecycle reconciliation, terminal release and liveness/timeout semantics are owned by `EXECUTION_ARCHITECTURE_STANDARD.md` §11.
+
 ## 9. Review event invariants
 
 `REVIEW_DECISION` records Review Policy and optional execution decision without fabricating a Review PASS.
@@ -450,7 +477,7 @@ Merge control does not decide Release Qualification.
 
 A handoff becomes dispatchable only after its durable Issue contract is complete according to `LOCAL_AGENT_HANDOFF_PROTOCOL.md`, `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`, and the Local Agent Handoff schema.
 
-A dispatch references Task Pack identity and, when generated, Execution Pack identity (`EXECUTION_PACK_STANDARD.md`); workers verify pack staleness and exact identity at claim time and publish `DISPATCH_CLAIMED`. A version-scoped Validation Handoff Queue, when enabled, is a projection of Validator dispatches — pointer-only invocation into the queue never makes the queue Issue a second validation or Task authority.
+A dispatch references Task Pack identity and, when generated, Execution Pack identity (`EXECUTION_PACK_STANDARD.md`); workers verify pack staleness and exact identity at claim time and publish `DISPATCH_CLAIMED`. The accepted Claim is the Start Record per §8.5; current-state labels/cards remain derived visibility and are never the lock. A version-scoped Validation Handoff Queue, when enabled, is a projection of Validator dispatches — pointer-only invocation into the queue never makes the queue Issue a second validation or Task authority.
 
 After `HANDOFF_READY`, user-visible invocation MUST remain pointer-only. If a new task-specific requirement appears, update the Issue/Dispatch/authoritative artifact first and then invoke with the same pointer form. Stale dispatches are cancelled/replaced rather than repaired through chat-only instructions.
 
