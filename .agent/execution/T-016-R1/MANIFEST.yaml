@@ -1,0 +1,32 @@
+pack_id: v4.8.0-T-016-R1-ee75ffe7
+task_id: T-016
+repair_issue: "#599"
+parent_issue: "#524"
+source_finding: "#593 P1"
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: ee75ffe759461b1cec8e43676c2d6a0ddf54b7b4
+base_tree: 452c9d184a7545adc2e4136b02ec111a1bf1cccb
+branch: task/v4.8.0-t16-agent-capability-evidence-r1
+task_pack_ref: github:kaicreator-mm/ai-development-standard@ee75ffe759461b1cec8e43676c2d6a0ddf54b7b4:docs/implementation/4.8.0/task-packs/T16_agent_capability_evidence.md
+task_pack_blob: a77cc3d9c562a438b94386752e89a89ca4520fb2
+l3_ref: github:kaicreator-mm/ai-development-standard@ee75ffe759461b1cec8e43676c2d6a0ddf54b7b4:docs/implementation/4.8.0/L3_REFERENCE_PACKS.md#t-016--agent-capability-evidence
+l3_blob: 03c2b47111b0922641d5f87a6519b88c8231e0e7
+pinned_standard_revision: ee75ffe759461b1cec8e43676c2d6a0ddf54b7b4
+pack_state_at_generation: PACK_CURRENT
+agent_freedom: F1_BOUNDED_REPAIR
+review_policy: required
+validation_owner: independent-from-builder
+allowed_implementation_write_set:
+  - schemas/agent-capability-evidence-v1.schema.json
+  - references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md
+  - scripts/test_v48_agent_capability_evidence.py
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - IMPLEMENTATION_MAP.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - REVIEW_CHECKLIST.md
+package_excluded: true
+retention: durable

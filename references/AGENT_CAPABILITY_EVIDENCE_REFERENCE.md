@@ -4,7 +4,9 @@ Agent Capability Evidence records bounded **historical exact-subject observation
 
 ## Identity and currentness
 
-`exact_subject_ref` binds evidence to the artifact/code actually observed. `observed_at_or_currentness_scope` states the temporal/currentness scope. When the implementation subject, environment or other material input drifts, the old record remains historical; a consumer must not silently rebind it to the successor.
+`exact_subject_ref` binds evidence to the artifact/code actually observed. For code/artifact subjects in this contract it is a canonical immutable Git identity of the form `git:<owner>/<repository>@<40-lowercase-hex-commit-sha>`. Mutable branches, symbolic refs, tag/ref aliases, repository-only references, short SHAs and malformed/non-hex SHAs are not exact subjects and must fail closed rather than establish current applicability.
+
+`observed_at_or_currentness_scope` states the temporal/currentness scope. When the implementation subject, environment or other material input drifts, the old record remains historical; a consumer must not silently rebind it to the successor. In particular, textual equality of a mutable alias such as `@main` is never sufficient proof that two observations refer to the same artifact/code generation.
 
 Agent/profile, runner/environment/resource and pack identities are **references**. Their owner facts stay in their canonical owners rather than being copied into capability evidence.
 
@@ -33,7 +35,7 @@ These layers are not a scalar rank. Historical `INDEPENDENTLY_CHALLENGED` eviden
   "logical_operator_or_executor_ref": "operator:builder-a",
   "task_class_or_capability_class": "schema-contract-authoring",
   "role": "builder",
-  "exact_subject_ref": "git:repo@<exact-sha>",
+  "exact_subject_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
   "result_refs": ["result:<ref>"],
   "evidence_strength": "IDENTITY_BOUND",
   "observed_at_or_currentness_scope": "historical:exact-subject-only",
