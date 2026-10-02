@@ -1,8 +1,8 @@
 # Changelog
 
-## v4.1.0 — candidate / unreleased（发布日期未定）
+## v4.1.0 — Release Qualification READY；已集成 `main`（无 tag/GitHub Release/publication 声明）
 
-这是 `version/v4.1.0` 上已合并 T01–T08 的**候选内容记录**，不表示 v4.1.0 已冻结、通过 Hidden Validation、取得 Release Qualification、发布 tag 或集成至 `main`。已发布 `main` 的 v4.0.0 历史条目与日期保留在下方。实际消费时必须以 `version=4.1.0` 加对应候选提交的不可变 `revision` 配对验证，不能将旧候选验证结果转移到后续元数据提交。
+v4.1.0 的资格化候选为 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）；Release Qualification #663 对该精确候选给出 `READY`，PR #672 随后将其集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。本次 final-main 元数据校正仅使仓库可见状态与该事实一致，不修改资格化候选、历史门禁证据或 v4.2+ 状态；当前不声称存在发布 tag、GitHub Release 或其它 publication。实际消费仍必须以 `version=4.1.0` 与所选不可变 `revision` 成对固定。
 
 - **T01 共享机器契约**：新增非权威 Execution Context、Dependency/Toolchain Profile、Dependency Risk Exception 三类 v1 schema，并以可选引用接入既有契约，保留历史 v4 payload 兼容性。
 - **T02 依赖与工具链**：新增 `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md`，定义项目声明的依赖/工具链要求、兼容性与认证区别及风险例外边界。

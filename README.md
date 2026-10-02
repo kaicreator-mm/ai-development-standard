@@ -1,12 +1,12 @@
 # AI Development Standard
 
-当前版本：`v4.1.0`（仅 `version/v4.1.0` 分支的未发布候选）。先前精确候选 `55ca0d25bc27c887963dfb44bcb049a992ec26d2` 曾完成 Candidate Freeze 与 Hidden Validation PASS；Fresh Closeout 随后发现本 README 状态措辞过期，因此 Controller 已 THAW/INVALIDATE，该 Freeze/Hidden 仅作为历史事实、不得转移为修复后 successor 的当前权威。修复合并后的 successor 必须重新完成 visible Stage1 → Candidate Freeze → Hidden Validation → Fresh Closeout → Release Qualification，当前不宣称 successor Freeze、Hidden PASS、Release Qualification、主分支集成或发布。已发布 `main` 仍为 `v4.0.0`；其它并行 version branch 的状态也不得据此推断。采用项目必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定，不能把本候选元数据或历史门禁结果视为已发布证明。
+当前版本：`v4.1.0`。Release Qualification #663 已对精确候选 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）给出 `READY`，PR #672 随后将该候选集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。本次 final-main 元数据校正只修复仓库可见状态，不修改已资格化候选、Frozen Product/L2/DAG、实现、schema、标准、测试或 workflow；当前不声称存在发布 tag、GitHub Release 或其它 publication。采用项目仍必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定；其它并行 version branch 的状态不得据此推断。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
-## v4.1.0 候选内容 — Agent Execution Foundation（尚未发布）
+## v4.1.0 — Agent Execution Foundation（已完成 Release Qualification 并集成 `main`；未声称 tag/GitHub Release/publication）
 
-v4.1 T01–T08 的实现已合并至 `version/v4.1.0`，新增五个彼此独立的执行治理规范，并通过**非权威** Execution Context 组合，不替代既有 GitHub、Workflow、Validation、Review、CI 或 Release 权威：
+v4.1 T01–T08 的实现已在资格化候选 `d0e133ab5d6a4b328818fdee36a41d994aa41e75` 上完成，并经 PR #672 集成至 `main`。该版本新增五个彼此独立的执行治理规范，并通过**非权威** Execution Context 组合，不替代既有 GitHub、Workflow、Validation、Review、CI 或 Release 权威：
 
 - [Dependency & Toolchain Governance](standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md)：依赖、工具链、兼容性与风险例外；风险接受不等于 Validation PASS。
 - [Git Execution & Worktree Isolation](standards/GIT_EXECUTION_STANDARD.md)：独立可写工作区、exact-SHA 与危险操作/恢复边界；本地 Git 状态不取得 GitHub Task 权威。
@@ -14,7 +14,7 @@ v4.1 T01–T08 的实现已合并至 `version/v4.1.0`，新增五个彼此独立
 - [Workspace & Artifact Governance](standards/WORKSPACE_ARTIFACT_STANDARD.md)：工作区、缓存、构建输出、验证证据和发布制品的分类、归属与提升约束。
 - [External System Execution](standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md)：外部依赖的真实保真度、环境、状态和副作用授权；低保真结果不冒充高保真验证。
 
-三类新增默认机器契约位于 [`schemas/execution-context-v1.schema.json`](schemas/execution-context-v1.schema.json)、[`schemas/dependency-toolchain-profile-v1.schema.json`](schemas/dependency-toolchain-profile-v1.schema.json)、[`schemas/dependency-risk-exception-v1.schema.json`](schemas/dependency-risk-exception-v1.schema.json)；旧 v4 payload 保持兼容。跨规范索引/渐进采用见 [`docs/implementation/4.1.0/MIGRATION_ADOPTION.md`](docs/implementation/4.1.0/MIGRATION_ADOPTION.md)，T08 的已合并 conformance/dogfood 内容与**非发布性**证明边界见 [`CONFORMANCE_STATUS.md`](docs/implementation/4.1.0/CONFORMANCE_STATUS.md) 和 [`SELF_DOGFOOD_EVIDENCE.md`](docs/implementation/4.1.0/SELF_DOGFOOD_EVIDENCE.md)。候选准备不代表新 SHA 的版本级真实 Build Host Validation 或 Release PASS；其后续门禁由版本级 Controller 独立执行。
+三类新增默认机器契约位于 [`schemas/execution-context-v1.schema.json`](schemas/execution-context-v1.schema.json)、[`schemas/dependency-toolchain-profile-v1.schema.json`](schemas/dependency-toolchain-profile-v1.schema.json)、[`schemas/dependency-risk-exception-v1.schema.json`](schemas/dependency-risk-exception-v1.schema.json)；旧 v4 payload 保持兼容。跨规范索引/渐进采用见 [`docs/implementation/4.1.0/MIGRATION_ADOPTION.md`](docs/implementation/4.1.0/MIGRATION_ADOPTION.md)，T08 的 conformance/dogfood 内容与证明边界见 [`CONFORMANCE_STATUS.md`](docs/implementation/4.1.0/CONFORMANCE_STATUS.md) 和 [`SELF_DOGFOOD_EVIDENCE.md`](docs/implementation/4.1.0/SELF_DOGFOOD_EVIDENCE.md)。Release Qualification #663 绑定上述精确候选 SHA/tree，PR #672 只执行 Repository Integration；本次 final-main 元数据校正不重做或转移这些证据，也不构成 tag、GitHub Release 或 publication 声明。
 
 ## 1. v4.0 的核心变化（已发布历史）
 
