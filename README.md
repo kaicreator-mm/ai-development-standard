@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前版本：`v4.1.0`（仅 `version/v4.1.0` 分支的未发布候选）。本版本分支尚未 Candidate Freeze、Hidden Validation、Release Qualification 或主分支集成；已发布 `main` 仍为 `v4.0.0`。采用项目必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定，不能把本候选元数据视为已发布证明。
+当前版本：`v4.1.0`（仅 `version/v4.1.0` 分支的未发布候选）。先前精确候选 `55ca0d25bc27c887963dfb44bcb049a992ec26d2` 曾完成 Candidate Freeze 与 Hidden Validation PASS；Fresh Closeout 随后发现本 README 状态措辞过期，因此 Controller 已 THAW/INVALIDATE，该 Freeze/Hidden 仅作为历史事实、不得转移为修复后 successor 的当前权威。修复合并后的 successor 必须重新完成 visible Stage1 → Candidate Freeze → Hidden Validation → Fresh Closeout → Release Qualification，当前不宣称 successor Freeze、Hidden PASS、Release Qualification、主分支集成或发布。已发布 `main` 仍为 `v4.0.0`；其它并行 version branch 的状态也不得据此推断。采用项目必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定，不能把本候选元数据或历史门禁结果视为已发布证明。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
