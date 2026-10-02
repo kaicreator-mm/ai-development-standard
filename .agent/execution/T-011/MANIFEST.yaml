@@ -7,7 +7,7 @@ base_tree: bb7f25f1e05ff2423fc79029465bcf7be458a82c
 task_pack_ref: docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md
 task_pack_blob: e1c412c44f67df736d1b1598a590a0eac31a4b22
 l3_ref: docs/implementation/4.8.0/L3_T11_ORCHESTRATION_DOGFOOD.md
-l3_blob: 9d40ed242b146a54b9ccbf39fe0a85fc2efcfac6
+l3_blob: fe7e1c46bcaef45cb7c8ce57615dcf0f1e0feb1a
 branch: task/v4.8.0-t11-orchestration-dogfood
 parent_issue: "#517"
 agent_freedom: F2_ENGINEERING_DISCRETION
@@ -29,7 +29,7 @@ material_paths:
   - docs/implementation/4.8.0/PRD.md
   - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
   - docs/implementation/4.8.0/TASK_DAG.md
-  - scripts/test_v48_contract_conformance.py
+  - scripts/test_v48_contract_compatibility.py
   - scripts/test_v48_scheduling_conformance.py
   - scripts/test_v48_interchange_replay_restart.py
   - scripts/test_v48_execution_ownership.py
