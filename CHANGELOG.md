@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.2.0 — Release Preparation Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
+
+v4.2.0 当前处于发布准备阶段。按 #475 Concern A 的顺序谱系（sequential lineage），已证明的 v4.2 规范增量（源区间 `7bef72d4..75c1ff3`）被语义重放到已资格化的 v4.1 `main` 基线（`9383244`）之上，形成 `version/v4.2.0-sequential` 候选分支；本次发布身份校正只修改 `VERSION`/`README.md`/`CHANGELOG.md` 三个身份面，使仓库可见元数据与该 v4.2.0 候选一致，不修改规范、schema、实现、测试或任何既有门禁证据。当前不声称 Release Qualification、`main` 集成、发布 tag、GitHub Release 或其它 publication；在本候选通过后续独立 Version Validation 与 Fresh Review 之前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定，且在本候选获得精确 SHA/tree 绑定的验证结论前，任何 version/revision 组合的有效性不得据此推断。
+
+- **接口与兼容性治理**：新增 `standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md`，定义契约 baseline/candidate 身份、change operations、兼容性维度、consumer/window 证据与 deprecation/removal 义务；schema/checker PASS 不提升为行为/源/消费方兼容事实。
+- **数据与迁移治理**：新增 `standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md`，定义 directional source→target 持久状态迁移身份、fresh-install 与 upgrade/recovery 的区分、环境适用性与恢复证据；迁移文件存在不等于迁移已执行。
+- **新增机器契约**：`schemas/compatibility-record-v1.schema.json` 与 `schemas/migration-transition-v1.schema.json`，以可选引用接入既有契约；旧 v4.1/v4.0 payload 保持兼容。
+- **参考实现**：新增 `references/INTERFACE_COMPATIBILITY_REFERENCE.md` 与 `references/DATA_MIGRATION_REFERENCE.md`，含 SQLite 迁移 dogfood 脚本 `scripts/v42_sqlite_migration_dogfood.py`。
+- **采用接线与跨规范 Conformance**：T06 采用接线（manifest/PROJECT_OVERRIDES/golden coverage）、T07 跨规范 conformance 与 dogfood 用例、v4.2 evolution contracts 测试；`docs/implementation/4.2.0/` 下 `CLOSURE_INPUTS.md`、`CROSS_STANDARD_CONFORMANCE_STATUS.md`、`MIGRATION_ADOPTION.md` 记录范围与证据边界，均不替代独立版本级验证或发布门禁。
+- **谱系与历史保全**：v4.2 增量组合于已资格化 v4.1 `main` 之上，属顺序谱系而非并行重品牌；v4.1.0/v4.0.0 全部历史条目与既述事实保持不变，历史并行 `version/v4.2.0` 候选（`75c1ff3`）仅作为增量来源被引用；并行 version branch 的状态不得据此推断。
+
 ## v4.1.0 — Release Qualification READY；已集成 `main`（无 tag/GitHub Release/publication 声明）
 
 v4.1.0 的资格化候选为 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）；Release Qualification #663 对该精确候选给出 `READY`，PR #672 随后将其集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。本次 final-main 元数据校正仅使仓库可见状态与该事实一致，不修改资格化候选、历史门禁证据或 v4.2+ 状态；当前不声称存在发布 tag、GitHub Release 或其它 publication。实际消费仍必须以 `version=4.1.0` 与所选不可变 `revision` 成对固定。
