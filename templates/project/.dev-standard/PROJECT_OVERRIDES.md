@@ -83,6 +83,24 @@ Migration guidance:
 - `ai-dev:event:v2` remains valid; v4 adoption does not require event-v3.
 - See pinned `standards/PROJECT_ADOPTION.md` and `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md` for the compatibility matrix and examples.
 
+### v4.7 Convergence Discovery (non-authoritative wiring)
+
+For projects pinned to v4.7+, these are discovery/read surfaces only:
+
+- Canonical owner discovery: `standard-manifest.json#semantic_authorities`
+- Qualified state/non-inference discovery when applicable: `registries/state-dimensions-v1.json`
+- Derived read routing helper when useful: `scripts/resolve_standard_read_set.py`
+- Migration/adoption delta: `docs/implementation/4.7.0/MIGRATION_ADOPTION.md`
+- Incompatible future-major planning input: `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md`
+
+Rules:
+
+- These are discovery/read surfaces only and MUST NOT grant mutation, Validation, Review, Closure, or Release authority.
+- Resolve/read the canonical owner before acting; compatibility aliases remain compatibility routes, not owners.
+- Load optional v4.7 registries/profiles only when they are applicable to the concern; their presence is not a project adoption requirement.
+- Fast Path proportionality remains intact: do not force unrelated optional registries/profiles/packs/automation merely because v4.7 contains them.
+- An incompatible path/schema/authority change goes to `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` unless separate current authority explicitly allows it.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.
@@ -134,7 +152,7 @@ Rules:
 - `operator_id/session_ref` SHOULD distinguish concurrent ChatGPT Web pages or Local Agent runs even when `transport_actor` is identical.
 - Dynamic operator/session IDs SHOULD NOT be encoded as GitHub labels.
 - `executor:*` labels are routing hints and do not prove which concrete operator performed an event.
-- Required Independent Review must be attributable to a context independent from the Builder context; the same GitHub transport account is allowed.
+- Required Independent Review must be attributable to a context independent from the implementation context; the same GitHub transport account is allowed.
 - Identity fields MUST NOT contain tokens, cookies, signed URLs, credentials or secrets.
 
 ## Independent Review Profile
