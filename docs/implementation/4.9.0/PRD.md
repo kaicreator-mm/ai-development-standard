@@ -1,6 +1,6 @@
 # ai-development-standard v4.9.0 PRD — Adaptive Proportional Development Orchestration
 
-Status: **FIRST REVIEW CANDIDATE — NOT FROZEN; ADVERSARIAL PRODUCT REVIEW REQUIRED**
+Status: **AUTHOR PRE-REVIEW REVISED CANDIDATE — NOT FROZEN; INDEPENDENT ADVERSARIAL PRODUCT REVIEW REQUIRED**
 
 Planning baseline: `main@9383244abb8172b5ae5135cbd559c72837799375`
 
@@ -10,229 +10,260 @@ Primary planning/dogfood input: `#680`
 
 L1 evidence: `docs/implementation/4.9.0/L1_PRODUCT_EVIDENCE.md`
 
-This PRD is a Product candidate only. It does not authorize L2, Task DAG materialization, implementation, schema migration, scheduler deployment, or any waiver of existing Frozen Product/L2/Review/Validation/Release authority.
+Author-side adversarial pre-review: PR #698 comment `5961233246` (non-independent; not Product Review authority).
+
+This PRD is a Product candidate only. It does not authorize Product Freeze, L2, Task DAG materialization, implementation, scheduler deployment, schema migration, gate omission, evidence transfer, or any weakening of current/pinned Product, Architecture, Task, Review, Validation, Execution or Release authority.
 
 ## 1. Product intent
 
-v4.9.0 makes ADS execution proportional, adaptive and role-consistent without weakening fail-closed truth.
+v4.9.0 makes ADS execution more proportional, adaptive and role-consistent while preserving fail-closed authority.
 
 The Product goal is:
 
-> Given live durable project facts, ADS can determine the **minimal sufficient legal workflow**, identify the roles actually required, select an eligible Agent/environment for each role, standardize how that role claims/executes/hands off/terminates work, reuse prior evidence only when equivalence is defensible, and convert repeated execution friction into governed improvement candidates — while deterministic authority constraints prevent optimistic downgrade, stale-evidence reuse and independence collapse.
+> Given live durable project facts and an already-authorized assurance floor, ADS can select the **minimal sufficient legal workflow above that floor**, identify the roles actually required, select an eligible Agent/environment for each role, standardize how that role claims/executes/hands off/terminates work, reuse prior evidence only when the owning Gate Authority positively permits transfer and every required binding dimension remains equivalent, and turn repeated execution friction into governed improvement candidates.
 
-v4.9 builds on existing ADS Product/Architecture/Task/Execution/Dispatch-Claim/Validation/Review/Release semantics. It does not replace them with a new universal Agent runtime.
+v4.9 builds on existing ADS Product/Architecture/Task/Execution/Dispatch-Claim/Review/Validation/Release semantics. It does not replace them with a second lifecycle or a universal autonomous Agent runtime.
 
-## 2. Product problems
+## 2. Product problem and evidence boundary
 
-### 2.1 Assurance depth is not sufficiently proportional to material risk
+### 2.1 Orchestration amplification is real
 
-Real v4.x dogfood has shown small/medium changes expanding into long chains of Builder, Validation, Fresh Review, merge, Stage1, Freeze, Hidden, Closeout, Release Qualification, Repository Integration and successor rebind.
+v4.x dogfood shows that small and medium concerns can expand into long chains of Builder, Validation, Fresh Review, merge, Stage1, Candidate Freeze, Hidden, Closeout, Release Qualification, Repository Integration and successor currentness/rebind work.
 
-Those gates are valuable when they discover or protect against material risk. They are waste when applied mechanically to concerns whose risk/authority/release significance does not justify the same depth.
+Those gates are valuable when they protect a material authority/risk boundary. They are waste when execution objects or repeated gates add no new decision value.
 
-ADS needs a standard distinction between:
+### 2.2 Current proportional mechanisms are not enough operationally
 
-```text
-concern-level assurance
-vs
-version/release-level assurance
-```
+ADS already has Fast Path, risk-based Review Policy, on-demand architecture demos, JIT Task admission and derived READY queues. The remaining problem is not absence of proportional concepts; it is lack of a sufficiently explicit runtime contract for selecting the smallest legal workflow from live facts without allowing optimistic downgrade.
 
-and must make gate omission/reuse/not-applicable decisions explicit rather than silent.
+### 2.3 Runtime decisions cannot all be pre-expanded at planning time
 
-### 2.2 Runtime orchestration decisions cannot all be frozen at planning time
+Readiness, currentness, evidence transferability, environment availability, bounded repair, sequence waits and recurrence signals are live facts. Pre-materializing every possible Builder/Validator/Reviewer/Controller node creates stale work and guaranteed-BLOCKED dispatches.
 
-Whether work is actually ready, whether target movement is materially relevant, whether evidence is reusable, which Agent/environment is available, whether a repair is bounded, and whether a recurring defect is systemic are live-state decisions.
+### 2.4 Role behavior is distributed across standards
 
-A fully pre-expanded execution graph creates avoidable Issues, stale work, guaranteed-BLOCKED dispatches and repeated rebind/review cycles.
+Builder, Reviewer, Validator, Controller, Release Qualifier and other roles exist, but their common operating contract is distributed across workflow/interaction/execution/review/validation/release standards.
 
-### 2.3 Agent role behavior is not yet expressed as one standard operating model
+### 2.5 Evidence generality is PARTIAL
 
-ADS already has Builder/Reviewer/Validator/Controller/Release roles and Dispatch/Claim ownership, but their common execution contract is spread across multiple standards.
+The strongest direct evidence is ADS self-dogfood in #680. External interoperability/scheduling standards support the architectural shape, but do not by themselves prove ADS gate-reduction correctness for downstream projects.
 
-The system needs one provider-neutral model for:
+Therefore:
 
 ```text
-Role
-→ Eligibility
-→ Dispatch
-→ Claim
-→ Start
-→ Execution
-→ Evidence/Handoff
-→ Terminal
-→ Ownership Release
+GENERALITY_EVIDENCE=PARTIAL
+STANDARD_SELF_EXCEPTION_ALLOWED=NO
+DOWNSTREAM_DOGFOOD_REQUIRED_BEFORE_RELEASE=YES
 ```
 
-with role-specific authority deltas.
+Product Freeze may define the model, but release qualification of v4.9 must include downstream/manual GitHub-native dogfood proving the model can reduce ceremony without weakening required authority.
 
-### 2.4 Independence is too easily conflated with Issue count
+## 3. Four integrated Product pillars
 
-Current dogfood demonstrates that distinct independent phases can share one durable Issue while preserving different actor/session claims and terminal verdicts.
+v4.9 freezes, if independent Product Review authorizes it, four integrated pillars:
 
-ADS needs to define independence as an authority/actor/session property rather than requiring a new GitHub object for every gate.
+1. **P1 — Proportional Assurance**
+2. **P2 — Adaptive Orchestration**
+3. **P3 — Agent Operating Model**
+4. **P4 — Execution Learning & Recurrence Escalation**
 
-### 2.5 Exact-subject truth lacks a bounded equivalence/reuse path
+They compose as:
 
-A changed candidate or material composition change must invalidate affected evidence. But unrelated branch movement or topology-only target movement may produce no new semantic decision value.
-
-ADS needs an explicit path to prove evidence remains applicable without treating every base movement as either automatically safe or automatically invalidating.
-
-### 2.6 Repeated failures can cause more ceremony instead of earlier prevention
-
-When the same failure family recurs, repeatedly adding repair/Validation/Review cycles treats symptoms instead of improving the earliest reliable detection point.
-
-ADS needs a lightweight recurrence/root-cause escalation loop that can propose checker/template/schema/orchestrator-policy improvements through normal governance.
-
-## 3. Product shape
-
-v4.9 freezes, if Product Review authorizes it, four integrated Product pillars:
-
-1. **Proportional Assurance**
-2. **Adaptive Orchestration**
-3. **Agent Operating Model**
-4. **Execution Learning & Recurrence Escalation**
+```text
+current/pinned authority defines assurance floor + selectable policy
+        ↓
+P1 resolves the minimum legal assurance/role set at or above that floor
+        ↓
+P2 selects legal JIT work and an eligible executor/environment
+        ↓
+P3 defines how each role claims, executes, evidences, hands off and terminates
+        ↓
+P4 records only material learning/recurrence and feeds ordinary ADS governance
+```
 
 Cross-cutting invariants:
 
-5. **Deterministic Guardrails / Fail-Closed Authority**
-6. **Evidence Currentness / Equivalence**
-7. **Provider- and Transport-Neutral Role Semantics**
+- fail-closed authority;
+- no self-minted independent PASS;
+- typed evidence currentness/transfer rules;
+- multi-dimensional independence;
+- existing Dispatch/Claim ownership preserved;
+- manual/GitHub-native execution remains possible.
 
-## 4. Pillar P1 — Proportional Assurance
+## 4. Authority precedence and monotonic assurance floor
 
-### 4.1 Product requirement
+### 4.1 Assurance Floor
 
-ADS MUST derive the minimum required assurance depth from materiality, authority impact, current evidence and release significance rather than defaulting every concern to the maximum workflow.
-
-A Product/L2 implementation may use risk/materiality classes or profiles. Candidate research defaults include:
+Before proportional workflow selection, the system MUST resolve an `ASSURANCE_FLOOR` from current/pinned higher authority, including as applicable:
 
 ```text
-A — semantic-neutral maintenance
-B — bounded normative semantic change
-C — machine contract / lifecycle / authority / gate change
-D — release-significant compatibility / migration change
+Frozen Product / Scope
+Frozen Architecture / Contract
+Task / Task Pack / Execution Pack
+PROJECT_OVERRIDES that are allowed by higher authority
+Review Policy
+Validation authority/profile
+Release authority/applicability
+security / ownership / independence constraints
 ```
 
-These labels are not themselves sufficient authority. File count, model name, “docs-only” labeling or self-declared low risk MUST NOT automatically down-classify a material semantic/authority change.
+The Orchestrator may always **escalate** above the floor when new risk/evidence requires it.
 
-### 4.2 Required assurance outputs
+The Orchestrator MUST NOT reduce below the floor merely because a model judges the work low-risk, documentation-only, cheap, disjoint or easy.
+
+A lower workflow is legal only when the **owning higher authority positively defines selectable proportional profiles/conditions** and the current durable facts prove the required predicates.
+
+```text
+NO_POSITIVE_AUTHORITY_FOR_REDUCTION => NO_REDUCTION
+UNKNOWN_OR_AMBIGUOUS_CLASSIFICATION => ESCALATE_OR_BLOCK
+```
+
+Absence of an explicit prohibition is not permission to omit a gate.
+
+### 4.2 Authority vs orchestration
+
+```text
+Authority defines what is required/permitted and who owns the decision.
+Orchestration selects the next legal action from current facts inside that authority.
+```
+
+A high-capability model can reason about ambiguity; it cannot create new authority by reasoning quality.
+
+## 5. P1 — Proportional Assurance
+
+### 5.1 Product requirement
+
+ADS MUST support proportional assurance profiles or equivalent policy so a concern is not automatically expanded to maximum ceremony when current authority permits a smaller legal path.
+
+Candidate materiality dimensions include:
+
+```text
+semantic impact
+machine-contract/schema impact
+lifecycle/state impact
+authority/gate ownership impact
+security/data integrity impact
+migration/compatibility impact
+runtime composition impact
+release applicability
+current evidence/currentness
+```
+
+Class A/B/C/D-like labels may be useful defaults, but no single label, file count, model identity or `docs-only` tag is sufficient authority.
+
+### 5.2 Required resolution
 
 Before authoritative dispatch/merge/release transitions, the system must be able to resolve, as applicable:
 
 ```text
+ASSURANCE_FLOOR
 materiality / risk basis
 required role set
 required Validation scope
 Review Policy
-independence requirements
-release-significant applicability
-required Closure/Freeze/Hidden/RQ applicability
-evidence reuse/currentness disposition
-explicit NOT_APPLICABLE / NOT_RUN / BLOCKED states
+required independence dimensions
+release applicability owner + result
+Closure/Freeze/Hidden/Closeout/RQ applicability
+currentness/evidence disposition
+NOT_APPLICABLE / NOT_RUN / BLOCKED truth
 ```
 
-### 4.3 Concern assurance vs release assurance
+### 5.3 Concern assurance vs release assurance
 
-A normal Task/PR may require focused Validation and/or Review without automatically becoming a version release candidate.
+A Task/PR may require focused Validation and/or Review without itself becoming a complete version-release workflow.
 
-Full Version Closure / Candidate Freeze / Hidden / Fresh Closeout / Release Qualification SHOULD default only when current Product/Release authority makes the change/version release-significant or when newly surfaced risk requires escalation.
+However, **Release Standard/current pinned release authority remains the owner of release applicability**. v4.9 does not itself grant the Orchestrator authority to classify a version out of currently mandatory release gates.
 
-### 4.4 Fast Path strengthening
+If current authority requires Version Closure, Candidate Freeze, Hidden, Fresh Closeout or Release Qualification, those gates remain required until an authorized standard/project policy explicitly changes that requirement.
 
-Fast Path must be a real proportional execution profile, not merely a smaller branch structure around the same full set of gates.
+Unknown release applicability MUST fail closed or choose the stronger currently authorized path.
 
-It must still preserve:
+Historical projects pinned to older ADS semantics retain those semantics; v4.9 cannot retroactively shorten their release path.
 
-- current authority discovery;
-- required Review Policy resolution;
-- required Validation truth;
-- accepted Claim/start ownership when authoritative Agent execution occurs;
-- exact-subject evidence where applicable;
-- explicit escalation when risk grows.
+### 5.4 Fast Path strengthening
 
-## 5. Pillar P2 — Adaptive Orchestration
+Fast Path should become a genuinely smaller workflow only where the assurance floor and current authority permit it. It must still preserve current authority discovery, required Review/Validation truth, Claim/start ownership where applicable, exact-subject evidence and escalation when risk grows.
 
-### 5.1 Product requirement
+## 6. P2 — Adaptive Orchestration
 
-ADS SHOULD support a high-capability orchestration control plane that reads live durable facts and selects the next legal work JIT rather than requiring the entire execution script to be materialized in advance.
+### 6.1 Product requirement
 
-Candidate responsibility includes:
+ADS SHOULD support a high-capability orchestration control plane that reads live durable facts and selects the next legal work JIT instead of requiring every execution phase to be pre-materialized.
+
+Candidate responsibilities:
 
 ```text
-read live Task DAG / Issues / PRs / refs / Claims / terminals / evidence
+read live DAG / Issues / PRs / refs / Claims / terminals / evidence
 compute actually-ready work
-classify materiality/risk/authority impact
-resolve required assurance/roles
+resolve ASSURANCE_FLOOR and selectable profiles
+classify live materiality only inside authorized policy
+resolve required roles/gates
 choose eligible Agent/model/environment
-control concurrency/JIT admission
+control JIT admission/concurrency
 avoid duplicate or knowingly blocked dispatch
 consume terminals
-choose bounded repair vs escalation
-resolve evidence reuse vs successor validation/review
-record lightweight execution decision/learning evidence
+choose authorized bounded repair vs escalation
+request evidence-reuse proof where gate authority permits it
+record compact execution decision/learning evidence
 ```
 
-### 5.2 Deterministic guardrail principle
+### 6.2 Deterministic guardrails
 
-The high-capability model is a reasoning/control-plane resource, not a supreme authority.
-
-The architecture MUST preserve a separation equivalent to:
+Architecture MUST preserve a separation equivalent to:
 
 ```text
 High-capability reasoning
-  → ambiguous decomposition/materiality/recovery/trade-offs
+  → ambiguity, decomposition, prioritization, recovery trade-offs
 
-Deterministic policy/contract checks
-  → mandatory gates, illegal transitions, authority constraints,
-    independence constraints, exact-subject/currentness invariants
+Deterministic policy/contract enforcement
+  → assurance floor, mandatory gates, illegal transitions,
+    independence policy, authority ownership, evidence bindings
 
 Durable fact plane
   → GitHub/repository/evidence/current operation facts
 ```
 
-### 5.3 Orchestrator hard boundaries
+### 6.3 Orchestrator hard boundaries
 
 The Orchestrator MUST NOT:
 
-- mint a required independent Review/Validation/Hidden/RQ PASS;
+- mint required independent Review/Validation/Hidden/RQ PASS;
+- reduce below `ASSURANCE_FLOOR` without positive higher-authority permission;
 - silently waive Frozen Product/L2/Task/Release requirements;
-- treat private chat memory as canonical current project state;
-- hide uncertainty by inventing completion;
-- bypass Dispatch/Claim admission;
+- invent a new evidence-transfer rule not owned by the applicable Gate Authority;
+- treat private chat memory as canonical current state;
+- hide `BLOCKED`, `NOT_RUN`, `NOT_APPLICABLE`, stale or unknown truth;
+- bypass existing Dispatch/Claim admission;
 - make cost/latency/availability override hard eligibility;
-- mutate the standard automatically from local learning.
+- mutate ADS automatically from project learning.
 
-### 5.4 Task DAG reinterpretation
+### 6.4 Task DAG boundary
 
-v4.9 SHOULD research/authorize the Task DAG primarily as:
+The Frozen Task DAG/current Task authority remains the semantic work envelope.
 
-```text
-allowed work
-+ dependency constraints
-+ ownership boundaries
-+ required evidence/assurance constraints
-```
+Adaptive orchestration MAY JIT materialize authorized execution phases, role handoffs, gates and durable containers **inside** that envelope.
 
-rather than a requirement to pre-materialize every Builder/Validator/Reviewer/Controller execution object.
+It MUST NOT invent a material new implementation concern, change dependency/ownership semantics, or widen Frozen scope merely because live reasoning considers it useful. Such change requires the existing Task/Architecture/Product amendment path as applicable.
 
-JIT execution objects/phases may be materialized when live facts prove they are required.
+### 6.5 Non-dispatch wait states
 
-### 5.5 Wait states
+When work is deterministically not ready, orchestration SHOULD preserve a durable wait state such as `WAITING_LINEAGE` or equivalent rather than dispatch a task whose only legal result is a known sequence block.
 
-When work is deterministically not ready, orchestration SHOULD preserve a durable non-dispatch wait state such as `WAITING_LINEAGE`/equivalent rather than create a guaranteed-BLOCKED Agent task solely for bookkeeping.
+### 6.6 Controller transitions are still authority-bearing
 
-## 6. Pillar P3 — Agent Operating Model
+Controller-direct execution can avoid unnecessary Issues, but not every controller action is mere bookkeeping.
 
-### 6.1 Product requirement
+Merge, Candidate Freeze, thaw/invalidate, release integration and similar transitions may be deterministic only **after** their owning authority and exact prerequisites are satisfied. Coalescing the container does not remove the authority boundary.
 
-ADS MUST define one common provider-neutral **Agent Execution Base Contract** and role-specific **Role Profiles**.
+## 7. P3 — Agent Operating Model
 
-The normative abstraction is the role, not the model/vendor/application.
+### 7.1 Role, not vendor/model, is normative
 
-A concrete ChatGPT/Claude/Codex/local/runtime Agent is an executor of a role subject to eligibility, capability, environment and independence rules.
+ADS MUST define a provider-neutral **Agent Execution Base Contract** plus role-specific **Role Profiles**.
 
-### 6.2 Base lifecycle
+ChatGPT, Claude, Codex, local agents and future runtimes are executors of roles; provider/model identity is provenance/capability evidence, not authority by itself.
+
+### 7.2 Base lifecycle
 
 Authoritative Agent work must be representable as:
 
@@ -247,64 +278,56 @@ ELIGIBILITY
 → OWNERSHIP RELEASE
 ```
 
-Existing Dispatch/Claim authority remains canonical. v4.9 MUST NOT create a second task lock/lease authority.
+Existing v4.8 Dispatch/Claim authority remains canonical. v4.9 MUST NOT create a second lease/lock/task lifecycle.
 
-### 6.3 Common pre-Claim requirements
+### 7.3 Common pre-Claim requirements
 
-Before an Agent begins authoritative execution, the execution contract must be able to establish, as applicable:
+Before authoritative execution, the applicable contract must establish as needed:
 
 ```text
-work item/operation remains READY/current
+work remains READY/current
 dependencies satisfied
 role matches dispatch
-required capability/environment available
-independence constraints satisfied
+required capability/tools/environment available
+required independence policy satisfied
 no incompatible accepted active Claim
-current Product/L2/Task/Execution authority refs read
+current authority refs read
 exact subject/base/target resolved
 allowed scope/write set resolved
 forbidden scope/actions resolved
-required evidence/terminal authority resolved
+required evidence + terminal authority resolved
 ```
 
-Only accepted Claim/start facts authorize authoritative execution where Claim is required by existing ADS semantics.
+No accepted Claim where Claim is required => no authoritative execution.
 
-### 6.4 Common execution requirements
+### 7.4 Common execution requirements
 
-During execution, an Agent must:
+An Agent must remain inside owned authority, re-check live facts on material drift, surface blockers/deviations, preserve exact-subject truth, avoid silently widening scope, and record only material evidence/learning required by policy.
 
-- remain within owned concern and allowed authority;
-- re-check live facts when a material assumption may have changed;
-- not silently widen Frozen Product/L2/Task scope;
-- surface material deviation/blocker/authority insufficiency;
-- preserve exact-subject/currentness semantics;
-- avoid exposing private chain-of-thought;
-- record only material structured learning required by current policy.
+Private chain-of-thought is never required.
 
-### 6.5 Common terminal requirements
+### 7.5 Common terminal requirements
 
-A terminal result must be durably attributable to the role/work/dispatch/claim/exact subject and expose enough structured evidence for the next controller/role to act without guessing.
-
-Candidate semantic dimensions:
+A terminal must be durably attributable to at least the applicable:
 
 ```text
 role
 work item / dispatch / claim
-operator/session provenance
-exact subject/base/target where applicable
-terminal state / verdict
+operator/principal/session provenance
+exact subject/base/target
+terminal state/verdict
 outputs/artifacts/PR/commit refs
 checks/tests/evidence refs
 deviations/limitations/remaining risk
-handoff/next required role or gate
+handoff/next gate
 ownership release
 ```
 
-Exact event/schema shape is L2.
+Exact schema/event representation is L2.
 
-### 6.6 Role Profile model
+### 7.6 Role Profile contract
 
-Each standardized role profile SHOULD define only:
+Every standardized authority-bearing role must be expressible with:
 
 ```text
 Eligibility
@@ -313,163 +336,151 @@ Allowed Actions
 Forbidden Actions
 Required Evidence
 Terminal Authority
+Independence Policy
+Environment / mutation class
 ```
 
-Projects/domains may add stricter specialized roles/profiles without weakening higher ADS authority.
+Projects/domains may define stricter specialized profiles but cannot weaken higher ADS authority.
 
-## 7. Standard Role Profile — Builder
+## 8. Required role semantics
 
-### 7.1 Responsibility
+### 8.1 Builder
 
-Produce the authorized mutable implementation/work product for the owned concern.
+Builder owns authorized mutable implementation/work-product production. It cannot start required authoritative mutation before accepted Claim/start and cannot self-approve an independent gate required by current authority.
 
-### 7.2 Required Product behavior
+Builder must consume current authority, stay within the concern/write set, produce required implementation/tests/docs/checks, record material deviations/blockers, stop on insufficient authority and emit an exact output/handoff terminal.
 
-Builder MUST NOT begin authoritative mutation before required accepted Claim/start.
+### 8.2 Reviewer
 
-Builder MUST:
+Reviewer owns an evaluative verdict against the exact review subject and current authority.
 
-- consume Frozen/current authority and exact execution subject;
-- respect owned concern/write set and sibling boundaries;
-- implement required source/tests/fixtures/docs/checks within scope;
-- validate its own bounded implementation assumptions where possible;
-- record material deviations, blockers and newly discovered authority gaps;
-- stop/escalate when Product/L2/Task authority is insufficient;
-- produce a structured implementation terminal with exact output identity and downstream gate requirements.
+For a required independent Review, the Review phase MUST be read-only with respect to its subject. A repair requires a separately authorized mutable phase/role and then successor Review as current authority requires.
 
-Builder MUST NOT self-approve a Review/Validation/Release verdict that current authority requires to be independent.
+Reviewer must inspect actual subject/evidence, verify scope/currentness/forbidden behavior, emit severity findings and preserve the required independence dimensions.
 
-## 8. Standard Role Profile — Reviewer
+### 8.3 Validator
 
-### 8.1 Responsibility
+Validator owns executed truth for specified tests/build/runtime/host/environment/scenario oracles. It must distinguish executed from inferred/not-run evidence and preserve required exact-subject/environment/profile bindings.
 
-Produce an independent evaluative verdict on the exact review subject against current authority and evidence requirements.
+Reviewer and Validator are different semantic roles even when their phases share one durable Issue container.
 
-### 8.2 Required Product behavior
+### 8.4 Controller / Orchestrator
 
-Reviewer SHOULD be read-only by default.
+Controller/Orchestrator owns authorized workflow coordination: READY recomputation, JIT dispatch/materialization, eligible executor selection, terminal consumption, authorized deterministic state transitions, wait states and escalation.
 
-Where Review is required, Reviewer MUST:
+It cannot substitute for an independent verdict or invent evidence.
 
-- bind to exact subject/current authority;
-- independently inspect actual diff/artifacts/evidence;
-- verify scope/currentness/authority/negative or forbidden behavior as applicable;
-- produce severity findings and terminal verdict;
-- preserve required actor/session independence.
+### 8.5 Planner / Product Researcher, Architect / Architecture Researcher, Integration Agent, Hidden Validator, Release Qualifier and specialized roles
 
-Reviewer MUST NOT silently repair the candidate and then approve its own mutation. Repair requires a separately authorized mutable role/phase followed by successor review as applicable.
+v4.9 requires these roles, when standardized/used, to be expressible through the same Base Contract and to declare their terminal authority, mutation/read-only class, required environment and independence policy.
 
-## 9. Standard Role Profile — Validator
+Product does not require identical lifecycle depth for all roles. Detailed role-specific schemas/commands belong to L2/Task implementation.
 
-### 9.1 Responsibility
+## 9. Independence semantics
 
-Execute required tests/build/runtime/host/environment/scenario oracles against the exact validation subject and report observed truth.
+### 9.1 Independence is multi-dimensional
 
-### 9.2 Required Product behavior
+A different Issue or session is not sufficient proof of independence.
 
-Validator MUST distinguish executed evidence from inferred/not-run evidence and report `PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE` or the current authoritative equivalent without fabrication.
-
-Where independent Validation is required, its actor/session must satisfy the declared independence requirement.
-
-Validator and Reviewer are semantically different roles even when one durable Issue container carries both phases.
-
-## 10. Standard Role Profile — Controller / Orchestrator
-
-### 10.1 Responsibility
-
-Observe durable state, determine legal next work, perform deterministic controller transitions, dispatch required roles, consume terminals and maintain workflow currentness.
-
-### 10.2 Allowed Product behavior
-
-The Controller/Orchestrator may, under authority:
-
-- recompute READY sets;
-- make JIT dispatch/materialization decisions;
-- select among eligible Agent/environment choices;
-- perform deterministic merge/freeze/state bookkeeping transitions owned by Controller authority;
-- coalesce compatible durable work phases without collapsing role independence;
-- keep deterministically blocked work in wait states;
-- request bounded repair/escalation from new evidence;
-- emit execution-decision/learning records.
-
-### 10.3 Forbidden Product behavior
-
-The Controller/Orchestrator cannot substitute its own judgment for a required independent terminal or invent evidence on behalf of an Agent/environment.
-
-## 11. Other standardized roles
-
-v4.9 MUST support the same Base Contract/Profile model for at least the following where applicable:
-
-- Planner / Product Researcher;
-- Architect / Architecture Researcher;
-- Integration Agent;
-- Hidden Validator;
-- Release Qualifier;
-- domain/project specialized execution roles.
-
-The Product does not require every role to have identical lifecycle depth. A role profile may be read-only, evidence-only, mutable, environment-bound, or independent-gate authority.
-
-## 12. Independence semantics
-
-### 12.1 Independence is not container count
-
-Where authority requires independence, it MUST be attributable through role/operator/session/dispatch/execution facts.
-
-A separate Issue MAY be used when useful, but a new Issue object is not by itself proof of independence and is not always required.
-
-### 12.2 Phase-separated durable work item
-
-One durable work item MAY carry multiple sequential phases if:
-
-- the authority permits it;
-- each phase has an unambiguous role/dispatch/claim/current subject;
-- required independent actors/sessions remain distinct;
-- previous terminal evidence remains immutable/history-preserving;
-- phase transition is explicit;
-- no mutable role is allowed to self-approve a required independent phase.
-
-## 13. Evidence currentness / equivalence
-
-### 13.1 Hard rule
-
-A materially changed candidate/contract/authority/runtime composition cannot inherit stale PASS by convenience.
-
-### 13.2 Explicit equivalence path
-
-v4.9 SHOULD support a bounded durable proof that prior exact-subject evidence remains applicable across target/base movement when all required equivalence predicates are established.
-
-Candidate factors for L2 research:
+The applicable higher authority may require one or more independent dimensions such as:
 
 ```text
-candidate source/head/tree unchanged
-changed paths disjoint or semantically irrelevant
-owned contract/schema/authority unchanged
-runtime composition impact absent or proven bounded
-required current-target rule does not explicitly forbid reuse
-merge/rebase transformation does not alter validated subject
+principal / logical executor independence
+session/context independence
+model/provider/configuration diversity
+Builder-vs-Reviewer author conflict separation
+Validator environment/host independence
+evidence-source independence
+Hidden-holder/private-evaluator separation
+Release/Controller role separation
 ```
 
-If equivalence cannot be proved, affected evidence becomes historical-only and successor Validation/Review is required according to current authority.
+v4.9 MUST preserve the existing ADS distinction among independence dimensions rather than collapse them into `session_ref`.
 
-## 14. Gate coalescing and evidence reuse
+### 9.2 Phase-separated durable work item
 
-Compatible bookkeeping/execution containers MAY be coalesced; authority MUST NOT be coalesced merely to reduce count.
+One durable work item MAY carry multiple sequential phases only when:
 
-Every coalesced/reused/not-applicable decision must be explainable from durable facts such as:
+- current authority permits phase coalescing;
+- each phase has an unambiguous role/dispatch/claim/current subject;
+- **every applicable independence dimension**, not merely session identity, is satisfied;
+- previous terminal evidence remains immutable/history-preserving;
+- phase transition is explicit;
+- a mutable actor cannot self-approve a required independent phase.
 
-- role/session independence;
-- exact-subject identity/equivalence;
-- disjointness;
-- current authority;
-- explicit materiality/release applicability.
+A separate Issue may still be required when environment, confidentiality, write isolation or authority requires a distinct durable container.
 
-## 15. Pillar P4 — Execution Learning & Recurrence Escalation
+## 10. Typed evidence currentness and transfer
 
-### 15.1 Product requirement
+### 10.1 Evidence is bound to a declared tuple
 
-ADS should preserve only material execution learning needed to improve future execution/standard quality without creating a mandatory retrospective for every Task.
+Different evidence families bind to different dimensions. Examples include:
 
-Candidate lightweight categories:
+```text
+concern Validation      → subject + validation profile + environment/toolchain + authority refs
+integration Validation  → source subject + target/base + merge/composed result + profile/environment
+Review                  → review subject/diff + current authority + required independence policy
+Hidden                  → exact candidate + private pack/revision + holder/independence policy
+Closeout/RQ             → frozen candidate + required predecessor gate bindings + release authority
+```
+
+Exact binding sets are owned by the applicable Gate Authority and frozen in L2/implementation.
+
+### 10.2 Positive transfer permission
+
+Prior evidence may be reused as current only if **all** are true:
+
+1. the owning Gate Authority positively declares that evidence family transferable/rebindable under stated predicates;
+2. every binding dimension required by that authority is equal or proven equivalent;
+3. no explicitly non-transferable dimension changed;
+4. no current-target/current-authority rule requires fresh execution;
+5. the equivalence proof itself is durable/current.
+
+```text
+NO_TRANSFER_RULE => HISTORICAL_ONLY
+UNKNOWN_BINDING => HISTORICAL_ONLY_OR_BLOCKED
+MATERIAL_BINDING_CHANGE => SUCCESSOR_ASSURANCE_REQUIRED
+```
+
+Path disjointness, unchanged source HEAD/tree or ancestor topology MAY be inputs to a gate-specific proof, but are never universal evidence-transfer authority.
+
+### 10.3 Non-transferable evidence
+
+A Gate Authority may declare evidence fresh-only/non-transferable even when some structural identities appear equivalent. v4.9 cannot override that by generic equivalence reasoning.
+
+## 11. Gate/container coalescing
+
+Execution containers and bookkeeping MAY be coalesced where current authority permits it; authority itself cannot be coalesced to reduce count.
+
+A coalesced work item must keep role, principal/session, exact subject, terminal, independence and phase history machine-distinguishable.
+
+## 12. Scheduling / Agent selection
+
+v4.9 reuses v4.8 capability, availability, eligibility, resource-selection and Dispatch/Claim ownership.
+
+Conceptually:
+
+```text
+legal workflow at/above ASSURANCE_FLOOR
+→ required role
+→ hard executor eligibility
+   capability + tools/environment + authority/freedom
+   + independence + security/access + current availability/resource
+→ feasible executor set
+→ optional project optimization
+→ Dispatch
+→ existing Claim admission
+```
+
+Provider/model name alone does not grant eligibility or authority. If no eligible executor exists, the work is BLOCKED/waits/escalates; the scheduler cannot fall back to an ineligible executor.
+
+## 13. P4 — Execution Learning & Recurrence Escalation
+
+### 13.1 Bounded Product requirement
+
+v4.9 requires lightweight material learning/recurrence evidence and escalation hooks, **not** a universal autonomous analytics/root-cause platform.
+
+Candidate categories:
 
 ```text
 standard_gap
@@ -481,246 +492,205 @@ repeated_failure_mode
 proposed_ads_improvement
 ```
 
-### 15.2 Recurring Failure Audit
+Simple/Fast-Path work may record `NONE_MATERIAL` or equivalent.
 
-When evidence suggests materially the same or related failure pattern is recurring, the Orchestrator/Controller SHOULD be able to request a recurrence audit that distinguishes:
+### 13.2 Recurrence signal
+
+When evidence suggests the same or related failure family recurs, the Controller/Orchestrator may request a bounded recurrence audit distinguishing:
 
 ```text
 same root cause
 related root cause
 unknown relation
-different cause / superficial similarity
+different/superficially-similar cause
 ```
 
-The goal is to identify the earliest reliable prevention/detection point, such as:
+The audit should seek the earliest reliable prevention/detection point: Task Pack/L3/template, schema/contract, checker, policy rule, orchestration rule, or Product/Architecture gap.
+
+### 13.3 Governance boundary
+
+Learning is evidence, not authority mutation:
 
 ```text
-Task Pack/L3/template
-schema/contract
-pre-merge checker
-release-identity checker
-policy rule
-orchestration rule
-Product/Architecture gap
-```
-
-### 15.3 Governance boundary
-
-Execution learning is evidence, not self-amending authority.
-
-The flow is:
-
-```text
-project execution observations
-→ evidence aggregation / recurrence signal
+execution observations
+→ bounded recurrence/learning evidence
 → ADS improvement candidate
 → normal L1/Product/Architecture governance
-→ future standard version
+→ future standard change
 ```
 
-## 16. Scheduling / Agent selection product semantics
+Automated cross-project mining, universal fingerprinting and a dedicated learning database are non-goals for v4.9 unless separately authorized later.
 
-v4.9 reuses v4.8 eligibility semantics and extends them with role/workflow requirements.
+## 14. Durable execution decision
 
-Selection should conceptually resolve:
+v4.9 requires enough auditability to explain workflow/Agent/gate choices without storing chain-of-thought.
 
-```text
-legal/required workflow
-→ required role
-→ hard executor eligibility
-   - capability
-   - tools/environment
-   - authority/freedom
-   - independence
-   - security/access
-   - availability/resource
-→ feasible executor set
-→ optional project-defined optimization
-   - priority/critical path
-   - queue age
-   - cost/latency class
-   - scarce environment/device
-   - parallel capacity
-   - retry history
-→ Dispatch
-→ existing Claim admission
-```
-
-Provider/model name alone MUST NOT grant authority or eligibility.
-
-## 17. Required durable execution decision
-
-v4.9 requires sufficient auditability to explain why a workflow/Agent/gate choice was made, but it does not require verbose reasoning logs or chain-of-thought.
-
-A compact decision record should be able to reference, as applicable:
+A compact record should be able to reference as applicable:
 
 ```text
 subject/current durable state
-selected assurance profile/required roles
-materiality/risk/authority basis
-selected Agent/environment and eligibility refs
-gates required/coalesced/reused/not applicable
-evidence reused/currentness basis
-concurrency/dependency/wait decision
-unexpected blocker/rework/escalation
+ASSURANCE_FLOOR + owning authority
+selected authorized profile/roles
+materiality/risk predicates
+selected Agent/environment + eligibility evidence
+gates required/coalesced/reused/not-applicable
+transfer/currentness proof refs
+wait/dependency/concurrency decision
+unexpected blocker/escalation
 outcome
 ```
 
-The exact storage/schema is L2.
+The exact schema/storage is L2.
 
-## 18. Required product acceptance scenarios
+## 15. Required Product acceptance scenarios
 
-v4.9 implementation must eventually prove, at Product level, at least these scenario families.
+Implementation/release evidence must eventually prove at least:
 
-### A. Semantic-neutral bounded maintenance
+### A. Low-risk semantic-neutral maintenance
+An authorized low-assurance profile completes with bounded gates and does not silently bypass a higher assurance floor.
 
-A low-risk non-semantic change can complete with bounded checks/review policy without automatically entering full release ceremony, while current authority remains explicit.
-
-### B. Bounded normative change
-
-A semantic rule change selects focused independent Review/Validation as required by risk without automatically creating unrelated release gates.
+### B. Bounded normative semantic change
+Focused Review/Validation is selected according to current authority without unrelated release ceremony.
 
 ### C. Machine-contract/high-risk change
+Schema/lifecycle/authority changes cannot be down-classified by file count, labels or model judgment.
 
-Schema/lifecycle/authority changes receive stronger exact-subject Validation + independent Review and cannot be down-classified by a low file count or “docs” label.
+### D. Release-significant/currently release-governed change
+The full required Closure/Freeze/Hidden/Closeout/RQ path remains required when current Release authority says so.
 
-### D. Release-significant change
+### E. Same durable container, multiple independent phases
+Distinct phases share one Issue only while all applicable independence dimensions and terminals remain distinguishable.
 
-Compatibility/migration/release-significant work still enters the full required Closure/Freeze/Hidden/RQ path.
-
-### E. One durable Issue, multiple independent phases
-
-Builder/Validator/Reviewer or Closeout/RQ phases may share a durable work item while independent actor/session terminals remain machine-distinguishable.
-
-### F. Duplicate claim race
-
-Two eligible Agents race the same incompatible role/work item; only accepted Claim may start authoritative execution.
+### F. Duplicate Claim race
+Only the accepted Claim starts authoritative incompatible work.
 
 ### G. Wrong-role / independence rejection
+An otherwise capable Agent is ineligible when required independence policy conflicts.
 
-An otherwise capable Agent cannot claim a required independent role when it conflicts with current independence policy.
+### H. Gate-specific evidence transfer
+Unrelated target movement reuses evidence only under a positive gate-owned transfer rule and complete binding equivalence.
 
-### H. Branch movement only
+### I. Material/unknown binding drift
+Changed or unknown contract/authority/composition/environment binding makes affected evidence historical-only or blocks until successor assurance.
 
-A reviewed/validated unchanged concern survives unrelated target movement only after explicit equivalence/currentness proof; unsafe ambiguity fails closed.
-
-### I. Material drift
-
-A changed contract/schema/runtime composition invalidates affected old evidence and requires successor assurance.
-
-### J. Hidden high-risk finding
-
-A real Hidden/release P1 cannot be optimized away; thaw/repair/requalification is triggered according to current authority.
+### J. Hidden/release high-risk finding
+A real release finding triggers required thaw/repair/requalification rather than proportional optimization.
 
 ### K. Known sequence block
+Work stays in a non-dispatch wait state instead of creating a guaranteed-BLOCKED task.
 
-Work that cannot legally start remains a wait-state and does not generate pointless Agent execution.
+### L. Task-DAG scope protection
+Adaptive orchestration cannot invent new semantic implementation work/dependencies outside frozen Task authority.
 
-### L. Recurring failure
+### M. Downstream manual/GitHub-native dogfood
+At least one downstream project applies the proportional profile + Role Operating Model without a mandatory scheduler daemon and demonstrates reduced orchestration objects/steps while preserving all required authority/gates.
 
-Repeated materially-related defects can trigger systemic root-cause/prevention analysis without automatically adding another human gate.
+### N. Recurring failure
+A repeated materially-related defect can produce a bounded prevention/escalation candidate without automatically adding a new human gate or mutating ADS.
 
-## 19. Product metrics / telemetry
+## 16. Metrics / telemetry
 
-v4.9 SHOULD make it possible to describe, without inventing unsupported economic claims:
+v4.9 SHOULD support descriptive measurement of:
 
 ```text
 execution work items/issues created
 controller-direct transitions
 independent sessions/gates
 known-blocked dispatches avoided
-revalidation/rebind events
-branch-movement-only vs material revalidation causes
-evidence reuse/coalescing decisions
+revalidation/rebind events and causes
+evidence transfer/coalescing decisions
 implementation work vs orchestration steps
-recurring-failure detections/systemic prevention actions
+recurrence signals and prevention actions
 ```
 
-Metrics are descriptive evidence. No universal cost-savings claim or Agent ranking is authorized without measured evidence.
+No universal savings claim, Agent quality score or economic conclusion is authorized without measured evidence.
 
-## 20. Compatibility and migration
+## 17. Compatibility and migration
 
-v4.9 must be additive over existing durable v4.x history where possible.
-
-- Existing Task/Review/Validation/Release records remain historical truth.
+- Existing v4.x durable records remain historical truth.
 - Existing Dispatch/Claim semantics remain the execution admission foundation.
-- v4.9 must not retroactively declare previously legal full-chain execution invalid simply because a future proportional path would be shorter.
-- New role/profile/decision metadata should prefer backward-compatible writer/profile extensions over invalidating historical events.
-- Downstream projects may adopt proportional/adaptive behavior incrementally; absence of an optional optimizer/runtime service must not make manual GitHub-native execution impossible.
+- v4.9 does not retroactively invalidate full-chain execution because a future proportional path would be shorter.
+- Existing/pinned release policies remain binding until explicitly migrated.
+- New metadata should prefer backward-compatible writer/profile extensions.
+- Manual GitHub-native execution remains supported; no scheduler daemon is mandatory.
+- A2A/queues/local transports may map to ADS semantics but external Task completion never automatically becomes ADS Review/Validation/Release truth.
 
-## 21. Security, privacy and authority constraints
+## 18. Security and privacy
 
-v4.9 MUST NOT require storing:
+v4.9 MUST NOT require secrets, credentials, private chain-of-thought, private Hidden fixture/oracle contents, or unnecessary personal identity.
 
-- secrets/credentials;
-- private chain-of-thought;
-- hidden evaluator/private Hidden dataset contents;
-- unnecessary personal identity beyond authorized operator/session provenance.
+Only authorized operator/principal/session provenance needed for accountability/independence should be retained.
 
-Transport/tool availability does not grant mutation authority. Agent capability does not grant Review/Validation/Release authority.
+Tool/transport availability does not grant mutation authority. Capability does not grant Review/Validation/Release authority.
 
-## 22. Non-goals
+## 19. Non-goals
 
 v4.9 does not require:
 
-- a universal autonomous scheduler daemon;
-- replacement of GitHub as the current ADS reference durable fact plane;
+- a universal scheduler daemon;
+- replacement of GitHub as the reference durable fact plane;
 - a second Dispatch/Claim/task lifecycle;
-- always-on high-frequency heartbeat;
-- a universal scalar Agent quality score;
-- provider/model-specific normative procedures;
-- blanket low-cost Agent routing;
-- blanket removal of independent Review/Validation;
-- automatic evidence reuse after any base movement;
+- autonomous risk downgrade below higher authority;
+- generic evidence reuse from path disjointness or unchanged HEAD alone;
+- one-session-equals-independent semantics;
 - automatic ADS mutation from project learning;
-- special treatment that only makes `ai-development-standard` easier;
+- an autonomous cross-project root-cause analytics platform;
+- a universal Agent quality score;
+- provider/model-specific normative procedures;
+- blanket low-cost routing;
+- blanket removal of independent Review/Validation;
+- full release ceremony for concerns to which current Release authority does not apply;
 - disclosure of private chain-of-thought;
-- full release ceremony for every non-release-significant concern.
+- a special easier rule only for `ai-development-standard`.
 
-## 23. Product Freeze blockers
+## 20. Product Freeze blockers
 
-The PRD MUST NOT freeze until adversarial Product review has dispositioned at least:
+The PRD MUST NOT freeze until an independent adversarial Product Review has verified/dispositioned at least:
 
-1. whether adaptive materiality can be gamed/down-classified;
-2. whether the Orchestrator gains implicit authority beyond scheduling;
-3. whether evidence-equivalence rules can launder stale PASS;
-4. whether phase coalescing can hide independence failure;
-5. whether Role Profiles are sufficiently machine-checkable without becoming rigid vendor scripts;
-6. whether the proposal duplicates v4.8 scheduler/Dispatch/Claim ownership;
-7. whether telemetry/learning reintroduces process explosion;
-8. whether full release/Hidden paths remain unambiguously required when release-significant;
-9. whether the Product scope is too large for one minor version and, if so, what coherent narrowing preserves the core loop;
-10. whether backward compatibility with current v4.x durable facts is credible.
+1. monotonic `ASSURANCE_FLOOR` and optimistic downgrade prevention;
+2. Release authority ownership and historical-pinned compatibility;
+3. gate-specific positive evidence-transfer authority and binding completeness;
+4. multi-dimensional independence under same-Issue phase coalescing;
+5. Task-DAG semantic scope protection;
+6. v4.8 capability/scheduling/Dispatch/Claim ownership preservation;
+7. Role Profile machine-checkability without vendor hard-coding;
+8. bounded P4 learning/recurrence scope;
+9. downstream-generalization acceptance requirement;
+10. full Hidden/Closeout/RQ preservation where current authority requires it;
+11. compatibility with historical durable facts;
+12. whether the four-pillar scope remains coherent for one minor version.
 
-## 24. Product acceptance criteria
+## 21. Product acceptance criteria for Freeze
 
-Product Freeze requires evidence that the reviewed PRD establishes all of the following without architecture overreach:
+Product Freeze requires a current independent review showing the candidate establishes, without architecture overreach:
 
 ```text
-P1 proportional assurance semantics are clear
-P2 adaptive orchestration authority boundaries are clear
-P3 Agent Operating Model role/base-contract semantics are clear
-P4 execution learning/recurrence governance is clear
+ASSURANCE_FLOOR is non-weakening and monotonic
+adaptive reasoning cannot mint reduction authority
+release applicability remains owned by current/pinned Release authority
+P1/P2/P3/P4 remain one coherent execution loop
 v4.8 capability/Dispatch/Claim ownership is preserved
-independence != Issue count is explicit
-evidence reuse is fail-closed and equivalence-based
-concern assurance != release assurance is explicit
-release-significant full path is preserved
-provider/model identity does not become authority
+Task DAG semantic scope cannot be widened by runtime orchestration
+independence is multi-dimensional, not Issue/session count
+Evidence transfer is gate-owned, typed and fail-closed
+Reviewer/Validator/Builder/Controller authority separation is explicit
+other authority-bearing roles fit one Base Contract/Profile model
 manual/GitHub-native execution remains possible
+downstream dogfood is required before v4.9 release
+P4 remains lightweight evidence/escalation, not a new analytics platform
 L2 implementation choices remain open where appropriate
 ```
 
-## 25. Current gate
+## 22. Current gate
 
 ```text
 VERSION=v4.9.0
-PRD_STATUS=FIRST_REVIEW_CANDIDATE
+PRD_STATUS=AUTHOR_PRE_REVIEW_REVISED_CANDIDATE
 PRODUCT_FREEZE=NO
-ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
+INDEPENDENT_ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
 L2_AUTHORITY=NO
 TASK_DAG_AUTHORITY=NO
 IMPLEMENTATION_AUTHORITY=NO
 ```
 
-The next step is adversarial Product review. Review findings must be durably recorded and resolved before any explicit Product Freeze.
+The next authoritative step is a genuinely independent adversarial Product Review bound to the successor exact PR HEAD/tree. This author-side pre-review is quality evidence only and must not satisfy the independent gate.
