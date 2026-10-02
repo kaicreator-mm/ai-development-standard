@@ -26,6 +26,8 @@ When review is performed:
 - [ ] Change matches frozen PRD/Architecture/Task or has an approved scope update.
 - [ ] Public contract changes are explicit.
 - [ ] No new mandatory gate was inferred from a historical workflow/script without authority.
+- [ ] For v4.7 adoption/migration wiring, the concern's canonical owner is resolved through `standard-manifest.json#semantic_authorities`; central wiring/checklist/profile text does not duplicate or take over owner semantics.
+- [ ] A v4.7-incompatible convergence need is routed to `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` as planning input rather than implemented by path/schema/authority expansion inside an unrelated Task.
 
 ## Task / Dependency Semantics
 

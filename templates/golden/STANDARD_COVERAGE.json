@@ -1,6 +1,17 @@
 {
   "schema_version": 1,
-  "description": "Every active normative standard must have positive, forbidden, and rationale coverage. Concrete artifact templates are additionally indexed in templates/GOLDEN_INDEX.md.",
+  "description": "Every active normative standard must have positive, forbidden, and rationale coverage. Concrete artifact templates are additionally indexed in templates/GOLDEN_INDEX.md. v4.7 semantic discovery metadata below is non-authoritative wiring only and points to canonical owners/read surfaces.",
+  "semantic_discovery": {
+    "status": "NON_AUTHORITATIVE_WIRING_ONLY",
+    "canonical_owner_registry_ref": "standard-manifest.json#semantic_authorities",
+    "state_dimension_registry_ref": "registries/state-dimensions-v1.json",
+    "read_routing_helper_ref": "scripts/resolve_standard_read_set.py",
+    "project_specialization_ref": "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+    "migration_adoption_ref": "docs/implementation/4.7.0/MIGRATION_ADOPTION.md",
+    "future_major_register_ref": "docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md",
+    "mutation_authority": false,
+    "gate_authority": false
+  },
   "coverage": [
     {"standard":"standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md","golden_ref":"templates/research-demo-issue.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard"},
     {"standard":"standards/CHATGPT_WEB_ROLE.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role"},

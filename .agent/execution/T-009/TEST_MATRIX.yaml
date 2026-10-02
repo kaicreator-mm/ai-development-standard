@@ -1,0 +1,27 @@
+task_id: T-009
+positive:
+  - bootstrap_discovers_v47_registry_and_routing_without_loading_all_optional_capabilities
+  - golden_coverage_reflects_normative_surface_but_grants_no_authority
+  - project_overrides_and_checklists_point_to_canonical_owners_without_semantic_duplication
+  - future_major_register_is_discoverable_planning_input_only
+  - historical_v4_meaning_and_stable_alias_paths_remain_supported
+  - fast_path_optional_and_non_applicable_proportionality_is_preserved
+  - merged_t07_semantic_conformance_remains_source_bound_and_passing
+negative:
+  - technical_necessity_cannot_expand_task_pack_write_set
+  - central_wiring_cannot_redefine_or_take_over_owner_semantics
+  - registry_manifest_profile_override_or_alias_cannot_grant_mutation_authority
+  - project_overrides_cannot_weaken_frozen_or_core_authority
+  - optional_capability_cannot_become_mandatory_global_gate
+  - historical_evidence_or_alias_cannot_be_reinterpreted_as_successor_authority
+  - test_or_ci_success_cannot_be_promoted_to_validation_review_closure_or_release
+  - no_new_convergence_pass_or_gate_state
+  - no_physical_path_migration_or_compatibility_alias_removal
+commands:
+  - python -B scripts/test_v47_adoption_wiring.py
+  - python -B scripts/test_v47_semantic_conformance.py
+  - python -B scripts/verify_standard.py
+post_builder_gates:
+  independent_exact_head_current_target_integration_validation: required
+  genuinely_new_fresh_independent_review: required
+  version_closure_or_release_qualification: forbidden_for_t09

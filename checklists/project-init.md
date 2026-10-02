@@ -59,6 +59,8 @@ Use this checklist when creating a new project or adopting the development stand
 - [ ] Fast Path is either disabled, canonical, or stricter; canonical disqualifiers are not removed and low adoption level is not treated as eligibility proof.
 - [ ] Candidate PREPARED != FROZEN, PR PASS != Release PASS, and Release READY != Repository Integration complete remain explicit project assumptions.
 - [ ] v3.4→v4 historical evidence migration preserves original identity/result and does not rewrite PASS/FAIL/CHANGES_REQUESTED.
+- [ ] For v4.7+, canonical concern ownership is discovered through `standard-manifest.json#semantic_authorities`; `docs/implementation/4.7.0/MIGRATION_ADOPTION.md` is used only as non-authoritative adoption wiring, not as a second owner.
+- [ ] Optional v4.7 registries/profiles are loaded only when applicable; an incompatible convergence need is routed to `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` instead of forcing a physical path/contract migration.
 
 ## GitHub
 
