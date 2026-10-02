@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "task_id": "T11",
+  "subject": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "integration_target": "version/v4.3.0",
+    "generation_base_sha": "ea5b39bb27ae36886748420d282350dd1a16476e",
+    "generation_base_tree": "1a88c724e4971ff2c35b88315cc8114b329adcad",
+    "execution_pack_head_sha": "d9ac745f0897903e95c09eb33b6c54aa49c84cb5",
+    "execution_pack_tree": "116eb8a901bef1ec142c69f2c4e6941e3545ad22",
+    "task_pack_ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
+    "execution_contract_ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md"
+  },
+  "planner_identity_or_role": "high-capability ADS planner/controller that produced the durable T11 Task Pack and Execution Pack",
+  "bounded_executor_or_evaluator_identity_or_role": "synthetic bounded lower-cost executor interpretation/evaluation",
+  "evidence_kind": "SYNTHETIC",
+  "expected_oracle": "CONSUMABLE_WITHOUT_PRODUCT_OR_ARCHITECTURE_REDESIGN",
+  "actual_result": "PASS",
+  "clarification_or_escalation": "NONE_REQUIRED for the selected synthetic interpretation; contradictory owner facts would require escalation",
+  "redesign_needed": "NO",
+  "durable_fact_checks": [
+    {
+      "ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
+      "tokens": [
+        "allowed_write_set:",
+        "forbidden_scope:",
+        "acceptance:",
+        "required_gates:",
+        "failure_handling:"
+      ]
+    },
+    {
+      "ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md",
+      "tokens": [
+        "## Builder implementation write set",
+        "The Builder MUST NOT modify this Execution Pack",
+        "## Required semantic kernel",
+        "## Currentness / stop rule",
+        "Independent Integration Validation and a genuinely new Fresh Review are mandatory successors."
+      ]
+    },
+    {
+      "ref": ".agent/execution/T-011/IMPLEMENTATION_MAP.md",
+      "tokens": [
+        "scripts/test_v43_conformance_dogfood.py",
+        "docs/implementation/4.3.0/dogfood/T11_EVIDENCE.md",
+        "docs/implementation/4.3.0/dogfood/fixtures/**",
+        "If satisfying an oracle requires changing an existing semantic owner, stop and raise an owner finding"
+      ]
+    }
+  ],
+  "bounded_executor_interpretation": {
+    "allowed_write_set": [
+      "scripts/test_v43_conformance_dogfood.py",
+      "docs/implementation/4.3.0/dogfood/T11_EVIDENCE.md",
+      "docs/implementation/4.3.0/dogfood/fixtures/**",
+      ".github/workflows/verify-standard.yml only for one narrowly scoped T11 invocation if required"
+    ],
+    "forbidden_scope": [
+      "Execution Pack mutation",
+      "Frozen Product/L2/DAG/L3/Task Pack mutation",
+      "v4.3 semantic owner/profile redesign",
+      "Version Closure, Candidate Freeze, Hidden Validation or Release Qualification verdict"
+    ],
+    "required_actions": [
+      "execute N01-N10 shortcut-negative fixtures against existing owners",
+      "compose T01-T10 profile/DAG regressions",
+      "record synthetic planner-to-bounded-executor evidence without transferring it into real-host proof"
+    ],
+    "clarification_or_escalation": "NONE_REQUIRED",
+    "redesign_action": "FORBIDDEN"
+  },
+  "real_execution": {
+    "required_for_selected_subject": false,
+    "status": "NOT_RUN",
+    "reason": "The selected dogfood is a deterministic synthetic interpretation/evaluation; the Task Pack explicitly permits simulation/evaluation unless the selected subject materially requires real execution."
+  }
+}
