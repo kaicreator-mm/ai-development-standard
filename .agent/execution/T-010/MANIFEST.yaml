@@ -1,0 +1,24 @@
+task_id: T-010
+canonical_task: T10
+issue: 354
+integration_branch: version/v4.7.0
+base_sha: b2a4cd3f984dd704f864e20b0e8624536ca0c396
+base_tree: 8b4072b6afdcbe903888abd9f6e96a4252ddee64
+branch: task/354-v47-cross-standard-closure-inputs
+task_pack: docs/implementation/4.7.0/task-packs/T10_cross_standard_closure_inputs.md
+task_pack_blob: 78bfbef66557a9d60b391efff371793808972ca6
+l3: docs/implementation/4.7.0/L3_REFERENCE_PACKS.md
+l3_blob: 6a2000cf9b8bf8024450eb5f0f0704960140095f
+review_policy: required
+validation_owner: T10
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+allowed_write_set:
+  - docs/implementation/4.7.0/CLOSURE_INPUTS.md
+  - references/V47_CLOSURE_CONFORMANCE_REFERENCE.md
+  - scripts/test_v47_cross_standard_closure.py
+forbidden:
+  - version_closure_verdict
+  - release_qualification_verdict
+  - task_owner_semantic_repair
+  - hidden_validation_fixture_disclosure
+status: JIT_READY

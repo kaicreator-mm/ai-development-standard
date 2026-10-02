@@ -1,0 +1,23 @@
+task_id: T-010
+positive:
+  - integrated_v41_v47_forbidden_inference_regressions_execute
+  - historical_alias_payload_and_adoption_compatibility_preserved
+  - fast_path_and_non_applicability_remain_proportional
+  - fresh_agent_reconstruction_evidence_is_durable_and_fidelity_bound
+  - closure_inputs_are_exact_subject_bound_and_non_verdict
+negative:
+  - merged_pr_cannot_imply_release_ready
+  - concern_validation_or_review_pass_cannot_imply_version_closure_pass
+  - unavailable_or_waived_environment_cannot_become_pass
+  - old_alias_or_payload_cannot_be_removed_for_convergence_convenience
+  - stale_or_predecessor_exact_sha_evidence_cannot_transfer
+  - upstream_owner_semantics_cannot_be_redefined_in_t10
+commands:
+  - python -B scripts/test_v47_cross_standard_closure.py
+  - python -B scripts/test_v47_semantic_conformance.py
+  - python -B scripts/test_v47_fresh_agent_dogfood.py
+  - python -B scripts/test_v47_adoption_wiring.py
+  - python -B scripts/verify_standard.py
+post_builder_gates:
+  independent_exact_head_current_target_integration_validation: required
+  genuinely_new_fresh_independent_review: required
