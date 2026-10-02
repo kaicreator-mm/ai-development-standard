@@ -33,7 +33,7 @@ Required regression commands on the eventual Builder candidate:
 
 ```text
 python -B scripts/test_v48_orchestration_dogfood.py
-python -B scripts/test_v48_contract_conformance.py
+python -B scripts/test_v48_contract_compatibility.py
 python -B scripts/test_v48_scheduling_conformance.py
 python -B scripts/test_v48_interchange_replay_restart.py
 python -B scripts/test_v48_execution_ownership.py
