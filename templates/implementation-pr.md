@@ -64,6 +64,15 @@ Use only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
 
 For matrix validation, identify exact tuples. A PASS for one SHA/platform/toolchain/profile does not imply another tuple PASS.
 
+## Task Learning Closeout
+
+- Outcome: `<TASK_LEARNING=NONE_MATERIAL | MATERIAL_REFS>`
+- Durable evidence refs/digests: `<refs | NOT_APPLICABLE>`
+- Exact-subject/currentness disposition: `<CURRENT | HISTORICAL_ONLY | NOT_APPLICABLE>`
+- Evidence contract: `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`
+
+For material learning, prefer durable refs/digests over copied evidence bodies. Missing, ambiguous, mutable, malformed or stale exact-subject/currentness evidence is historical only and must not be silently rebound as current behavioral proof. Task Learning does not replace Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority and must not contain or require private chain-of-thought, hidden evaluator material, credentials, secrets or verbose scratch reasoning.
+
 ## Independent Review
 
 - Review Policy: `required / recommended / not-required`
