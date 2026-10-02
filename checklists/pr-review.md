@@ -58,6 +58,15 @@ When review is performed:
 - [ ] Mock/sandbox/cross-build evidence is not misreported as real platform/external validation.
 - [ ] When a reviewer cannot establish a runtime/platform fact statically, a VALIDATION_REQUEST is created rather than guessing.
 
+## Task Learning Closeout
+
+- [ ] The PR declares exactly one closeout path: literal `TASK_LEARNING=NONE_MATERIAL` or durable material-learning evidence ref(s)/digest(s).
+- [ ] Material learning is reference-first and delegates schema/currentness semantics to `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`; evidence bodies are not copied into the PR merely for ceremony.
+- [ ] Missing, ambiguous, mutable, malformed or stale exact-subject/currentness evidence is treated as historical only and is not silently rebound as current behavioral proof.
+- [ ] Task Learning is not used as Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority and is not presented as exact-HEAD Review/Validation PASS.
+- [ ] No private chain-of-thought, hidden evaluator material, credentials, secrets or verbose scratch reasoning is requested or exposed.
+- [ ] The `TASK_LEARNING=NONE_MATERIAL` Fast Path remains proportional and does not require an empty Task Learning object.
+
 ## Independent Review Result
 
 When review is performed:
