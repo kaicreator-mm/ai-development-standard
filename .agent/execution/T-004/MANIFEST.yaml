@@ -1,0 +1,69 @@
+pack_id: v4.8.0-T-004-jit-54a55086a12d
+task_id: T-004
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 54a55086a12d406df07eb80706ba14f861101256
+base_tree: 781dec96941ac53ce912e27e6196079c2e895819
+task_pack_ref: blob:00bf08ea3ad64f75d77d7cc36655ce7711310086
+task_pack_path: docs/implementation/4.8.0/task-packs/T04_task_learning_closeout.md
+task_pack_blob: 00bf08ea3ad64f75d77d7cc36655ce7711310086
+l3_ref: blob:9ac550118055fb1d22f013c9d9a1a161b0f9c1f9
+l3_path: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+l3_blob: 9ac550118055fb1d22f013c9d9a1a161b0f9c1f9
+frozen_prd_blob: f26439580e00de6ed8b2e27d732a3095eb566219
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
+branch: task/511-v48-task-learning-closeout
+integration_target: version/v4.8.0
+parent_issue: "#511"
+planning_issue: "#636"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 54a55086a12d406df07eb80706ba14f861101256
+generated_by: chatgpt-web:issue-636-jit-planner
+generated_at: "2026-10-02T09:20:00Z"
+dependency_completion:
+  - T-001@7039275269368363c9edff70e8db84f66896a21f
+  - T-002@54a55086a12d406df07eb80706ba14f861101256
+material_paths:
+  - templates/task-pack.md
+  - templates/task-issue.md
+  - templates/implementation-pr.md
+  - templates/final-closeout.md
+  - checklists/pr-review.md
+  - templates/execution-pack/EXECUTION_CONTRACT.md
+  - templates/execution-pack/REVIEW_CHECKLIST.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+optional_artifacts: []
+review_policy: required
+validation_scope: concern
+validation_owner: independent-from-builder
+jit_currentness:
+  target_sha_at_generation: 54a55086a12d406df07eb80706ba14f861101256
+  target_tree_at_generation: 781dec96941ac53ce912e27e6196079c2e895819
+  task_branch_sha_before_planning: 54a55086a12d406df07eb80706ba14f861101256
+  target_must_remain_exact_through_planning_commit: true
+allowed_write_set:
+  - templates/task-pack.md
+  - templates/task-issue.md
+  - templates/implementation-pr.md
+  - templates/final-closeout.md
+  - checklists/pr-review.md
+  - templates/execution-pack/EXECUTION_CONTRACT.md
+  - templates/execution-pack/REVIEW_CHECKLIST.md
+forbidden:
+  - Task Learning schema or evidence-reference semantic redefinition
+  - Execution Architecture semantic change
+  - scripts/tests/runtime implementation change
+  - ADR/Incident/Product/Architecture/Review/Validation authority redefinition
+  - scheduler/admission/resource/Availability/Interchange semantic change
+  - self-review or independent Validation claim by Builder
+  - merge or Version Closure
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
