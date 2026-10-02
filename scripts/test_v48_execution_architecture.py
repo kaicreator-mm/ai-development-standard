@@ -57,10 +57,24 @@ class AdmissionState:
     claims: frozenset[str] = frozenset()
     # (resource_group, work_key) -> units; tuple form keeps the state immutable/deterministic.
     bindings: tuple[tuple[str, str, int], ...] = ()
-    ambiguous: frozenset[str] = frozenset()
+    # (work_key, ((resource_group, units), ...)); ambiguity remains scoped to the affected set.
+    ambiguous: tuple[tuple[str, tuple[tuple[str, int], ...]], ...] = ()
 
     def used(self, resource_group: str) -> int:
         return sum(units for group, _work, units in self.bindings if group == resource_group)
+
+    def ambiguous_resources_for(self, work_key: str) -> tuple[tuple[str, int], ...] | None:
+        for ambiguous_work, resources in self.ambiguous:
+            if ambiguous_work == work_key:
+                return resources
+        return None
+
+    def has_ambiguous_overlap(self, required: dict[str, int]) -> bool:
+        requested_groups = set(required)
+        return any(
+            not requested_groups.isdisjoint(group for group, _units in resources)
+            for _work_key, resources in self.ambiguous
+        )
 
 
 def admit(
@@ -74,7 +88,7 @@ def admit(
     inject_publication_ambiguity: bool = False,
 ) -> tuple[str, AdmissionState]:
     """Reference reducer for one all-or-none claim+resource admission decision."""
-    if work_key in state.ambiguous:
+    if state.ambiguous_resources_for(work_key) is not None or state.has_ambiguous_overlap(required):
         return "BLOCKED_RECONCILE_REQUIRED", state
     if expected_generation != state.generation:
         return "STALE", state
@@ -87,11 +101,12 @@ def admit(
     if any(state.used(group) + units > capacities[group] for group, units in required.items()):
         return "CAPACITY_EXCEEDED", state
 
-    # Ambiguity publishes no accepted partial claim/binding. Replacement must reconcile first.
+    # Ambiguity publishes no accepted partial claim/binding. Track the affected resource set so
+    # distinct work cannot consume overlapping capacity until durable reconciliation resolves A.
     if inject_publication_ambiguity:
         return "AMBIGUOUS_RECONCILE_REQUIRED", replace(
             state,
-            ambiguous=state.ambiguous | {work_key},
+            ambiguous=state.ambiguous + ((work_key, tuple(sorted(required.items()))),),
         )
 
     new_bindings = state.bindings + tuple(
@@ -109,7 +124,38 @@ def reconcile_no_accept(state: AdmissionState, *, work_key: str) -> AdmissionSta
     """Durable reconciliation proves that no accepted claim/binding exists for work_key."""
     if work_key in state.claims or any(work == work_key for _group, work, _units in state.bindings):
         raise AssertionError("cannot clear ambiguity while durable accepted binding exists")
-    return replace(state, ambiguous=state.ambiguous - {work_key})
+    return replace(
+        state,
+        ambiguous=tuple(entry for entry in state.ambiguous if entry[0] != work_key),
+    )
+
+
+def reconcile_accept(
+    state: AdmissionState,
+    *,
+    work_key: str,
+    capacities: dict[str, int],
+) -> AdmissionState:
+    """Reconstruct an already-durable accepted claim/binding from its ambiguous affected set."""
+    required = state.ambiguous_resources_for(work_key)
+    if required is None:
+        raise AssertionError("cannot reconstruct accepted admission without ambiguity record")
+    if work_key in state.claims or any(work == work_key for _group, work, _units in state.bindings):
+        raise AssertionError("accepted admission already reconstructed")
+    if any(group not in capacities or units <= 0 for group, units in required):
+        raise AssertionError("durable accepted reconciliation requires known resource facts")
+    if any(state.used(group) + units > capacities[group] for group, units in required):
+        raise AssertionError("durable accepted reconciliation would violate capacity")
+
+    new_bindings = state.bindings + tuple(
+        (group, work_key, units) for group, units in required
+    )
+    return AdmissionState(
+        generation=state.generation + 1,
+        claims=state.claims | {work_key},
+        bindings=new_bindings,
+        ambiguous=tuple(entry for entry in state.ambiguous if entry[0] != work_key),
+    )
 
 
 class V48ExecutionArchitecture(unittest.TestCase):
@@ -237,30 +283,80 @@ class V48ExecutionArchitecture(unittest.TestCase):
             inject_publication_ambiguity=True,
         )
         self.assertEqual("AMBIGUOUS_RECONCILE_REQUIRED", result)
+        self.assertEqual((("pool", 1),), ambiguous.ambiguous_resources_for("A"))
         self.assertNotIn("A", ambiguous.claims)
         self.assertEqual(0, ambiguous.used("pool"))
 
-        blocked, unchanged = admit(
+        blocked_same, unchanged = admit(
             ambiguous,
             work_key="A",
             expected_generation=0,
             required={"pool": 1},
             capacities={"pool": 1},
         )
-        self.assertEqual("BLOCKED_RECONCILE_REQUIRED", blocked)
+        self.assertEqual("BLOCKED_RECONCILE_REQUIRED", blocked_same)
         self.assertEqual(ambiguous, unchanged)
 
-        reconciled = reconcile_no_accept(ambiguous, work_key="A")
-        accepted, final = admit(
-            reconciled,
-            work_key="A",
+        blocked_overlap, unchanged = admit(
+            ambiguous,
+            work_key="B",
             expected_generation=0,
             required={"pool": 1},
             capacities={"pool": 1},
         )
-        self.assertEqual("ACCEPTED", accepted)
-        self.assertIn("A", final.claims)
+        self.assertEqual("BLOCKED_RECONCILE_REQUIRED", blocked_overlap)
+        self.assertEqual(ambiguous, unchanged)
+        self.assertNotIn("B", unchanged.claims)
+
+        non_overlap, non_overlap_state = admit(
+            ambiguous,
+            work_key="C",
+            expected_generation=0,
+            required={"other": 1},
+            capacities={"pool": 1, "other": 1},
+        )
+        self.assertEqual("ACCEPTED", non_overlap)
+        self.assertEqual(0, non_overlap_state.used("pool"))
+        self.assertEqual(1, non_overlap_state.used("other"))
+
+        unknown_resource, unchanged = admit(
+            ambiguous,
+            work_key="D",
+            expected_generation=0,
+            required={"unknown": 1},
+            capacities={"pool": 1},
+        )
+        self.assertEqual("BLOCKED_RESOURCE_FACT_UNKNOWN", unknown_resource)
+        self.assertEqual(ambiguous, unchanged)
+
+        reconciled = reconcile_no_accept(ambiguous, work_key="A")
+        accepted_b, final = admit(
+            reconciled,
+            work_key="B",
+            expected_generation=0,
+            required={"pool": 1},
+            capacities={"pool": 1},
+        )
+        self.assertEqual("ACCEPTED", accepted_b)
+        self.assertIn("B", final.claims)
         self.assertEqual(1, final.used("pool"))
+
+        durable_accepted = reconcile_accept(
+            ambiguous,
+            work_key="A",
+            capacities={"pool": 1},
+        )
+        self.assertIn("A", durable_accepted.claims)
+        self.assertEqual(1, durable_accepted.used("pool"))
+        blocked_capacity, unchanged = admit(
+            durable_accepted,
+            work_key="B",
+            expected_generation=1,
+            required={"pool": 1},
+            capacities={"pool": 1},
+        )
+        self.assertEqual("CAPACITY_EXCEEDED", blocked_capacity)
+        self.assertEqual(durable_accepted, unchanged)
 
 
 if __name__ == "__main__":
