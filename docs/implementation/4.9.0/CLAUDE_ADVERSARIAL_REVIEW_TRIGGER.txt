@@ -1,0 +1,1 @@
+NOT_READY — this trigger will be finalized after the first complete Draft PRD is written.
