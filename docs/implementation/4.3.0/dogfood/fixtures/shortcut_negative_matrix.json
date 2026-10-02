@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "task_id": "T11",
+  "cases": [
+    {
+      "id": "N01",
+      "shortcut": "popular architecture pattern => justified architecture decision",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "authority_tokens": [
+        "`popular pattern -> correct architecture` is forbidden.",
+        "Patterns are options whose applicability must follow Product drivers, constraints and evidence."
+      ]
+    },
+    {
+      "id": "N02",
+      "shortcut": "unresolved high-impact UNKNOWN => implementation freedom",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "authority_tokens": [
+        "A high-impact `UNKNOWN` MUST NOT silently become implementation freedom.",
+        "An implementation Agent may not select its preferred architecture pattern merely because the UNKNOWN was left unresolved."
+      ]
+    },
+    {
+      "id": "N03",
+      "shortcut": "file count => coherent Task boundary",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "authority_tokens": [
+        "File count, line count or estimated token count alone MUST NOT define Task boundaries"
+      ]
+    },
+    {
+      "id": "N04",
+      "shortcut": "atomic shared invariant => safe parallelism",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "authority_tokens": [
+        "Do not fake parallelism",
+        "shared state invariant that only holds after both branches merge"
+      ]
+    },
+    {
+      "id": "N05",
+      "shortcut": "dependency removal => READY",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "authority_tokens": [
+        "Do not remove a dependency merely to make a Task appear READY"
+      ]
+    },
+    {
+      "id": "N06",
+      "shortcut": "PR stack/cherry-pick => canonical live DAG",
+      "expected_disposition": "REJECT",
+      "authority_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+      "authority_tokens": [
+        "Stacked PRs",
+        "do not replace Task DAG dependencies",
+        "cherry-pick order"
+      ]
+    },
+    {
+      "id": "N07",
+      "shortcut": "DAG mutation without durable reason/authority/impact => valid mutation",
+      "expected_disposition": "REJECT",
+      "authority_ref": "schemas/dag-mutation-record-v1.schema.json",
+      "schema_required_fields": [
+        "requested_by",
+        "approved_by",
+        "reason",
+        "affected_task_refs",
+        "old_topology_ref",
+        "new_topology_ref",
+        "scope_impact",
+        "release_impact",
+        "task_pack_impact_refs",
+        "review_impact",
+        "validation_impact_ref"
+      ]
+    },
+    {
+      "id": "N08",
+      "shortcut": "Agent-local tool version => repository profile authority",
+      "expected_disposition": "REJECT",
+      "authority_ref": "profiles/README.md",
+      "authority_tokens": [
+        "Agent-local tooling is execution capability/evidence, never profile authority.",
+        "`tool installed -> project selected that tool` is forbidden."
+      ]
+    },
+    {
+      "id": "N09",
+      "shortcut": "profile mapping => universal style/tool mandate",
+      "expected_disposition": "REJECT",
+      "authority_ref": "profiles/README.md",
+      "authority_tokens": [
+        "A profile MUST NOT claim that its examples are universally required by every repository in that language/archetype.",
+        "Profiles cannot manufacture a new global requirement merely by labeling a tool/convention required."
+      ]
+    },
+    {
+      "id": "N10",
+      "shortcut": "PROJECT_OVERRIDES => weakening Frozen/Core authority",
+      "expected_disposition": "REJECT",
+      "authority_ref": "profiles/README.md",
+      "authority_tokens": [
+        "`PROJECT_OVERRIDES` may select, specialize or strengthen applicable mappings, but MUST NOT silently weaken Frozen/Core authority.",
+        "Frozen/Core normative authority always remains authoritative."
+      ]
+    }
+  ]
+}
