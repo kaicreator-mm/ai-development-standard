@@ -36,6 +36,8 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] README/docs/config/migration guidance matches shipped behavior.
 - [ ] Architecture amendments reconcile shipped implementation without rewriting historical decisions.
 - [ ] Known limitations/deferred items are explicit.
+- [ ] For v4.7+, `docs/implementation/4.7.0/MIGRATION_ADOPTION.md` and `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` are reconciled as adoption/planning inputs only; neither is treated as Version Closure or Release authority.
+- [ ] Stable compatibility aliases/paths remain supported unless a separately authorized migration with its own compatibility evidence has replaced them.
 
 ## Release Qualification
 
