@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.5.0 — Unreleased candidate
+
+v4.5.0 的 T01–T09 已合并到 `version/v4.5.0`，形成 **Operations, Incident & Maintenance** 的未发布候选范围。此处仅记录当前 version-branch candidate 的已集成内容；不表示 Candidate Freeze、Version Closure、Hidden Validation、Release Qualification、Release READY、生产部署或 `main` 集成已经完成。
+
+- **T01 — Shared Operations Machine Contracts**：新增 `runtime-observation-context-v1`、`incident-event-v1`、`maintenance-policy-v1` 三类 machine contracts，并保持 runtime/incident/maintenance 事实与 Validation/Release 状态分离。
+- **T02 — Observability & Runtime Evidence**：新增 runtime observation 标准、reference 与 focused tests，约束 artifact/deployment/environment/time identity、signal dimensionality、privacy/secret 边界；明确 `Deployment SUCCESS != Runtime Healthy`，不创建 universal runtime-health Gate。
+- **T03 — Incident, Recovery & Engineering Feedback**：新增 append-oriented incident semantics，区分 detection、mitigation、recovery、verification 与 follow-up，并将 escaped incident 通过正常工程 authority 路由到 reproduction/regression/scenario/task/product/architecture/standard follow-up；不改写既有 Deployment/Release 事实。
+- **T04 — Maintenance, EOL & Hotfix**：新增 support-line / EOL / allowed-change authority 与 maintenance/hotfix provenance；branch/tag/package existence 不等于 support status，source-branch Review/Validation PASS 不自动转移到 backport/cherry-pick 后的 exact result SHA。
+- **T05 — Runtime Observation Conformance**：新增 runtime subject/window、signal separation、silence/availability negative inference 与 privacy-safe evidence refs 的 conformance fixtures/tests。
+- **T06 — Incident / Feedback Conformance & Dogfood**：新增 controlled incident dogfood，覆盖 detection → mitigation/recovery → verification → regression/follow-up，并保留 missing verification、open follow-up、wrong recovery owner、secret leakage 等 fail-closed cases。
+- **T07 — Maintenance / Hotfix Conformance & Dogfood**：新增 maintenance/backport fixture 与 provenance evidence，证明 support-policy applicability、result-SHA 独立 evidence 以及 source PASS non-transfer；不将 fixture proof 外推为生产 hotfix/deployment proof。
+- **T08 — Adoption & Cross-standard Wiring**：新增 `docs/implementation/4.5.0/MIGRATION_ADOPTION.md`，并更新 project adoption、project overrides、manifest/Golden wiring，使 runtime/incident/maintenance applicability 可渐进采用且不削弱 v4.1/v4.2/v4.4 与既有 Testing/Validation/Release owners。
+- **T09 — Cross-standard Conformance / Closure Inputs**：新增 integrated forbidden-inference regressions、historical compatibility、Fast Path proportionality 与 durable `closure-inputs/T09_INPUTS.json`；该输入仅服务后续 Version Closure，不能自身产生 Freeze、Release Qualification 或 Release verdict。
+- 当前候选只总结实际落库的 standards、schemas、references、fixtures/tests 与 adoption/wiring；没有记录或推导生产 incident、真实 runtime health、production deployment 或 release readiness 证据。
+- `v4.1`–`v4.4` 继续作为独立的 parallel version lines；它们的 branch/document/commit 存在不得由本 v4.5 candidate 推导为已经发布、已经 `main` 集成或已经完成各自 Release Qualification。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
@@ -182,7 +198,7 @@ FastDev Pilot 直接验证了：Critical Journey 能发现真实产品缺陷、�
 将 AI Development Standard 从流程规范扩展为跨项目工程基线，并参考成熟 GitHub 项目/模板制定可复用标准。
 
 - 新增 `PROJECT_STRUCTURE.md`：定义单项目/monorepo 选择、apps/services/packages 职责、依赖方向、测试/生成内容/lockfile/root hygiene。
-- 新增 `REPOSITORY_STANDARD.md`：定义 README/AGENTS/.dev-standard、GitHub metadata、branch protection、secret、dependency、artifact、script/tool 基线。
+- 新增 `REPOSITORY_STANDARD.md`：定义 README/AGENTS/.dev-standard、GitHub metadata、branch protection、secret、dependency、artifact/script/tool 基线。
 - 新增 `DOCUMENTATION_STANDARD.md`：定义 README/AGENTS/docs 职责、Single Source of Truth、PRD→Architecture→Task 关系、ADR、状态和历史文档治理。
 - 新增 `TESTING_STANDARD.md`：定义 Unit/Contract/Integration/E2E/Critical Journey/Hidden Validation/Packaging 分层，以及 fixture、flaky、coverage、snapshot、external boundary 规则。
 - 新增 `reference-architectures/MONOREPO.md`，将 monorepo 作为多子模块同一产品/平台的优先参考，而非强制所有项目采用。

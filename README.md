@@ -1,10 +1,25 @@
 # AI Development Standard
 
-当前版本：`v4.0.0`
+当前版本：`v4.5.0`（**未发布 version-branch candidate**）
+
+> `version/v4.5.0` 当前仅表示依赖完整、等待后续 metadata Fresh Review 与 Version Closure 的候选线；它不是 Candidate Freeze、Release Qualification 或 Release READY 声明。`v4.1`–`v4.4` 为并行版本线，其分支/资料存在不得推导为已发布或已集成到 `main`。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
-## 1. v4.0 的核心变化
+## 1. v4.5 candidate 的已集成范围
+
+v4.5 在既有 Validation/Release authority 与 v4.4 Deployment、v4.2 Migration 边界上增加 **Operations, Incident & Maintenance** 能力。当前 version branch 已集成 T01–T09，但这些 Task 的完成不等于版本级 Release PASS。
+
+- **Operations/runtime observation**：`schemas/runtime-observation-context-v1.schema.json`、`standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md` 与对应 reference/conformance，保持 Deployment result、runtime signal、business journey 等维度分离。
+- **Incident/recovery/feedback**：append-oriented incident facts、mitigation/recovery/verification/follow-up 区分，以及 incident → engineering feedback 路由；不改写既有 Deployment/Release evidence。
+- **Maintenance/EOL/hotfix**：显式 support-line authority、maintenance policy 与 backport/hotfix exact-subject provenance；branch/tag/package existence 不等于 support authority，source PASS 不自动转移到 backport result。
+- **Conformance/dogfood**：runtime observation、incident/feedback、maintenance/hotfix 的正反例与 controlled fixtures，覆盖关键 forbidden inference。
+- **Adoption/wiring**：`docs/implementation/4.5.0/MIGRATION_ADOPTION.md`、`standards/PROJECT_ADOPTION.md`、project overrides、manifest/Golden wiring，使非 runtime 项目仍可按适用性轻量采用。
+- **Cross-standard closure inputs**：T09 增加 integrated conformance、historical compatibility、Fast Path proportionality 与 `docs/implementation/4.5.0/closure-inputs/T09_INPUTS.json`；该输入明确不是 Version Closure、Candidate Freeze 或 Release Qualification verdict。
+
+v4.5 的冻结产品/架构/任务 authority 位于 `docs/implementation/4.5.0/PRD.md`、`L2_ARCHITECTURE_EVIDENCE.md`、`TASK_DAG.md`、`L3_REFERENCE_PACKS.md`。后续发布判定仍以 `standards/RELEASE_STANDARD.md` 与 `checklists/version-closure.md` 为准。
+
+## 2. v4.0 的核心变化（历史已发布基线）
 
 v4.0 在 v3.4 GitHub-native pull 执行模型之上统一引入 **AI Development Operation Protocol + Multi-Agent Assurance**，但不建立第二套生命周期或新的 truth authority：
 
@@ -33,7 +48,7 @@ exact-subject evidence + orthogonal Gate / Candidate / Release truth
 
 v3.4 的 Task Pack / Execution Pack、统一 Dispatch、exact-SHA validation、Local-first、Issue Dependency live DAG 与 Fast Path 基线全部保留并兼容。
 
-## 2. 最短阅读路径
+## 3. 最短阅读路径
 
 大多数项目不需要读完所有文件。
 
@@ -67,7 +82,7 @@ v3.4 的 Task Pack / Execution Pack、统一 Dispatch、exact-SHA validation、L
 
 `standard-manifest.json` 是当前 active asset inventory；`schemas/` 是 machine contract。
 
-## 3. 不变的核心原则
+## 4. 不变的核心原则
 
 ### GitHub 是 durable execution fact source
 
@@ -109,7 +124,7 @@ required | recommended | not-required
 
 Version Branch Mode 本身不自动让每个 PR 都 mandatory Review。
 
-## 4. 状态分离
+## 5. 状态分离
 
 不要把以下状态混成一个字段：
 
@@ -126,7 +141,7 @@ release state
 
 详细定义见 `EXECUTION_ARCHITECTURE_STANDARD.md`。
 
-## 5. Candidate Freeze
+## 6. Candidate Freeze
 
 Candidate Freeze 在 v3.3 起是 operational immutable state：required visible freeze gates 在一个 exact SHA/tree 上通过后冻结；冻结后不得静默向 candidate ref 写 commit。
 
@@ -138,7 +153,7 @@ FROZEN → THAWED/INVALIDATED → successor → affected validation → new free
 
 Hidden Validation、Release Qualification、Repository Integration 都重新检查 freeze SHA + tree。
 
-## 6. CI 与真实 Validation
+## 7. CI 与真实 Validation
 
 CI provider 是执行渠道，不是 Validation/Release Authority。
 
@@ -146,7 +161,7 @@ CI provider 是执行渠道，不是 Validation/Release Authority。
 
 Provider-specific requirement 则不能静默替代。
 
-## 7. Handoff / 调度
+## 8. Handoff / 调度
 
 完成的 Local Agent Handoff Issue 应先成为 `HANDOFF_READY`，之后调用只需要：
 
@@ -161,7 +176,7 @@ Dispatch: <id>
 
 新 structured Agent event 统一写 `ai-dev:event:v2`。历史 v1 只读兼容，不再用于新写入。
 
-## 8. Progressive adoption
+## 9. Progressive adoption
 
 v4 的 adoption level 只描述项目实际启用多少协议/自动化能力，不降低任何 mandatory truth/gate：
 
@@ -177,7 +192,7 @@ A4_FULL_ORCHESTRATION  项目需要的完整 Operation / Assurance / Interchange
 
 详细迁移/override 规则见 `standards/PROJECT_ADOPTION.md` 与 `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md`。
 
-## 9. Project adoption
+## 10. Project adoption
 
 项目至少 pin immutable standard identity，并维护：
 
@@ -213,13 +228,13 @@ python scripts/test_execution_architecture.py
 python scripts/verify_runner_capability_reference.py
 ```
 
-## 10. Compatibility cleanup
+## 11. Compatibility cleanup
 
 `GITHUB_WORKFLOW.md` 与 `VERSION_INTEGRATION_WORKFLOW.md` 保留稳定路径，但从 v3.3 起只作为导航/兼容入口，不再复制整套规范。这样避免同一规则在三份文档中漂移。
 
 Legacy Codex-specific handoff 仍可兼容；新任务优先使用 generic Local Agent Handoff。
 
-## 11. Source of Truth
+## 12. Source of Truth
 
 - repository `main` + immutable pinned revision = standard content authority；
 - `standard-manifest.json` = active asset inventory；
