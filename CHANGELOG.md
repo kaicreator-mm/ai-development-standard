@@ -2,7 +2,7 @@
 
 ## v4.4.0 — unreleased candidate
 
-`v4.4.0` 当前是 `version/v4.4.0` 上的未发布候选，不代表 Candidate Freeze、Version Closure、Hidden Validation、Release Qualification、tag 或正式发布已经完成。
+`v4.4.0` 仍是 `version/v4.4.0` 上的未发布候选。前任 exact candidate `756bf4ce956d38adf7abd8e816f2f4312cb6abc2` 曾在其 exact SHA/tree 上完成 visible Stage 1、Candidate Freeze 与 Hidden Validation PASS；随后 Fresh Closeout #655 发现 release-document currentness P1，Controller 将该前任候选 THAWED/INVALIDATED。旧 Freeze/Hidden 仅是前任 SHA/tree 的历史事实，**不转移**到修复后的 successor；successor 当前不声明 Candidate Freeze、Hidden PASS、Release Qualification、tag 或正式发布。发布前必须重新完成 **visible Stage 1 → Candidate Freeze → Hidden Validation → Fresh Closeout → Release Qualification**。
 
 - 新增 shared delivery machine contracts：build manifest、artifact promotion、deployment plan/result schemas 及 focused backward-compatibility/negative contract coverage。
 - 新增 Build & Artifact Governance：绑定 source/profile/toolchain/output identity，区分 build output 与 promoted immutable artifact，并约束 content-policy evidence、rebuild qualification 不可继承。
