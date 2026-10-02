@@ -2,7 +2,7 @@
 
 当前版本：`v4.4.0`
 
-> **未发布 version-branch candidate**：`v4.4.0` 当前仅是 `version/v4.4.0` 上的候选身份，尚未完成 Version Closure、Candidate Freeze、Hidden Validation、Release Qualification 或正式发布。v4.4 的现有 authority/adoption material 见 [PRD](docs/implementation/4.4.0/PRD.md)、[L2 Architecture Evidence](docs/implementation/4.4.0/L2_ARCHITECTURE_EVIDENCE.md)、[Task DAG](docs/implementation/4.4.0/TASK_DAG.md)、[L3 Reference Packs](docs/implementation/4.4.0/L3_REFERENCE_PACKS.md) 与 [Migration/Adoption](docs/implementation/4.4.0/MIGRATION_ADOPTION.md)。下文 v4.0 内容保留为历史版本说明；本标记不把 v4.4 视为已发布版本。
+> **未发布 version-branch candidate**：`v4.4.0` 仍未发布。前任 exact candidate `756bf4ce956d38adf7abd8e816f2f4312cb6abc2` 曾在其 exact SHA/tree 上完成 visible Stage 1、Candidate Freeze 与 Hidden Validation PASS；随后 Fresh Closeout #655 发现 release-document currentness P1，Controller 将该前任候选 THAWED/INVALIDATED。上述 Freeze/Hidden 仅是前任 SHA/tree 的历史事实，**不转移**到修复后的 successor；当前 successor 不应被视为已冻结、Hidden PASS、Release Qualified、已打 tag 或已发布。successor 必须重新完成 **visible Stage 1 → Candidate Freeze → Hidden Validation → Fresh Closeout → Release Qualification**，之后才可发布。v4.4 的现有 authority/adoption material 见 [PRD](docs/implementation/4.4.0/PRD.md)、[L2 Architecture Evidence](docs/implementation/4.4.0/L2_ARCHITECTURE_EVIDENCE.md)、[Task DAG](docs/implementation/4.4.0/TASK_DAG.md)、[L3 Reference Packs](docs/implementation/4.4.0/L3_REFERENCE_PACKS.md) 与 [Migration/Adoption](docs/implementation/4.4.0/MIGRATION_ADOPTION.md)。下文 v4.0 内容保留为历史版本说明；本标记不把 v4.4 视为已发布版本。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
