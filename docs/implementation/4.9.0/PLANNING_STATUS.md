@@ -2,13 +2,16 @@
 
 ```text
 VERSION=v4.9.0
-STATE=PRODUCT_REVIEW_PENDING
+STATE=PRODUCT_FINDINGS_RESOLVED_PENDING_BOUNDED_REVIEW
 PRODUCT_AUTHORITY=DRAFT_ONLY
 L1_STATUS=COMPLETE_RESEARCH_AUTHOR_PRE_REVIEW_REVISED
-PRD_STATUS=AUTHOR_PRE_REVIEW_REVISED_CANDIDATE
+CURRENT_PRD_REVISION=v0.3
+PRD_STATUS=POST_INDEPENDENT_REVIEW_REVISED_CANDIDATE
+PREDECESSOR_REVIEW=#699@5961556275 PASS
+PREDECESSOR_REVIEW_COUNTS=P0:0,P1:0,P2:2,P3:1
+FINDING_DISPOSITION=COMPLETE
 PRODUCT_FREEZE=NO
-AUTHOR_SIDE_ADVERSARIAL_PRE_REVIEW=CHANGES_DISPOSITIONED_NON_INDEPENDENT
-INDEPENDENT_ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
+BOUNDED_SUCCESSOR_REVIEW=REQUIRED
 L2_AUTHORITY=NO
 TASK_DAG_AUTHORITY=NO
 IMPLEMENTATION_AUTHORITY=NO
@@ -18,21 +21,17 @@ PLANNING_BRANCH=planning/v4.9.0
 BASELINE_MAIN=9383244abb8172b5ae5135cbd559c72837799375
 ```
 
-## Author-side pre-review
+## Current candidate
 
-PR #698 comment `5961233246` recorded a deliberately non-independent adversarial pass with `P0=0 / P1=6 / P2=3`. The candidate was revised to address those findings, including:
+`PRD.md` is PRD v0.3. Historical revisions are indexed in `PRD_REVISION_HISTORY.md` and preserved under `prd-history/`.
 
-- monotonic higher-authority `ASSURANCE_FLOOR`;
-- gate-owned positive evidence-transfer permission and typed bindings;
-- multi-dimensional independence;
-- current/pinned Release authority ownership of release applicability;
-- Task-DAG runtime scope-widening prohibition;
-- explicit `DOWNSTREAM_GENERALITY=PARTIAL` plus downstream dogfood before release;
-- Candidate Freeze clarified as authority-bearing even when controller-direct;
-- P4 bounded to lightweight learning/recurrence escalation.
+## Next gate
 
-This pre-review is quality evidence only and MUST NOT satisfy the independent Product Review gate.
+A bounded fresh READ-ONLY review of PRD v0.3 must verify:
 
-## Mandatory next gate
+1. #699 P2 downstream-dogfood correction is complete and auditable;
+2. #699 P2 multi-owner assurance-floor correction is monotonic and owner-scoped;
+3. #699 P3 freeze-status wording is reconciled;
+4. no semantic regression or unreviewed scope expansion was introduced.
 
-A genuinely independent high-capability adversarial Product Review must bind to the current successor exact PR #698 HEAD/tree and challenge the revised Product candidate. No L2 work is authorized before explicit Product Freeze.
+Only PASS on the unchanged v0.3 exact candidate may unlock explicit Product Freeze. No L2 work is authorized before Freeze.
