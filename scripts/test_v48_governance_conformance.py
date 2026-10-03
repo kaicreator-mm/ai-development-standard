@@ -110,6 +110,25 @@ SENSITIVE_PAYLOAD_MARKERS = (
     "hidden_validation:",
 )
 
+# One fixture sample per sensitive category above; every publication text field
+# must reject exactly these categories, so body and summary oracles share them.
+SENSITIVE_PAYLOAD_SAMPLES = (
+    "secret: SA-DO-NOT-LEAK",
+    "credential: admin/hunter2",
+    "password: hunter2",
+    "api_key: sk-do-not-leak",
+    "token: ghp_do_not_leak",
+    "private_reasoning: my internal scratch reasoning",
+    "chain_of_thought: step 1, then step 2",
+    "hidden_evaluator: rubric scoring notes",
+    "hidden_validation: hidden validation payload",
+)
+
+# Free-text fields the publication oracle evaluates; the public payload emits
+# the summary verbatim (bounded), so a sensitive category in any of them fails
+# closed, not only in the body.
+PUBLICATION_TEXT_FIELDS = ("body", "summary")
+
 
 def is_immutable_git_subject(value: object) -> bool:
     return isinstance(value, str) and IMMUTABLE_GIT_SUBJECT_RE.fullmatch(value) is not None
@@ -241,17 +260,21 @@ def is_sensitive_material(payload: str) -> bool:
 
 def can_publish_evidence(item: dict) -> bool:
     """Publication requires explicit PUBLISHABLE authority AND non-sensitive
-    material; sensitive material is never publication material even when the
-    surrounding observation is otherwise publishable."""
+    material in every publication text field; sensitive material is never
+    publication material even when the surrounding observation is otherwise
+    publishable."""
     if effective_publication_class(item.get("publication_class")) != PUBLISHABLE:
         return False
-    return not is_sensitive_material(str(item.get("body", "")))
+    return not any(
+        is_sensitive_material(str(item.get(field, "")))
+        for field in PUBLICATION_TEXT_FIELDS
+    )
 
 
 def minimize_for_publication(item: dict) -> dict:
     """Reference-first minimization: emit source ref, body digest and a bounded
     non-sensitive summary. Refuses anything not explicitly publishable and any
-    sensitive payload category."""
+    sensitive payload category in any publication text field."""
     if not can_publish_evidence(item):
         raise ValueError("evidence is not publishable (fail-closed or sensitive material)")
     body = str(item.get("body", ""))
@@ -514,22 +537,21 @@ class PublicationPrivacyTests(unittest.TestCase):
         self.assertFalse(implies_validation_pass(item["confidence_layers"]))
 
     def test_sensitive_material_never_publishable(self) -> None:
-        sensitive_bodies = (
-            "secret: SA-DO-NOT-LEAK",
-            "credential: admin/hunter2",
-            "password: hunter2",
-            "api_key: sk-do-not-leak",
-            "token: ghp_do_not_leak",
-            "private_reasoning: my internal scratch reasoning",
-            "chain_of_thought: step 1, then step 2",
-            "hidden_evaluator: rubric scoring notes",
-            "hidden_validation: hidden validation payload",
-        )
-        for body in sensitive_bodies:
+        for body in SENSITIVE_PAYLOAD_SAMPLES:
             with self.subTest(body=body):
                 item = self.publishable_item()
                 item["body"] = body
                 self.assertTrue(is_sensitive_material(body))
+                self.assertFalse(can_publish_evidence(item))
+                with self.assertRaises(ValueError):
+                    minimize_for_publication(item)
+
+    def test_sensitive_material_in_summary_never_publishable(self) -> None:
+        for summary in SENSITIVE_PAYLOAD_SAMPLES:
+            with self.subTest(summary=summary):
+                item = self.publishable_item()
+                item["summary"] = summary
+                self.assertTrue(is_sensitive_material(summary))
                 self.assertFalse(can_publish_evidence(item))
                 with self.assertRaises(ValueError):
                     minimize_for_publication(item)
@@ -539,6 +561,7 @@ class PublicationPrivacyTests(unittest.TestCase):
         minimized = minimize_for_publication(item)
         self.assertEqual(set(minimized), {"source_ref", "body_digest", "summary"})
         self.assertNotIn(item["body"], json.dumps(minimized))
+        self.assertFalse(is_sensitive_material(minimized["summary"]))
         self.assertEqual(
             minimized["body_digest"], hashlib.sha256(item["body"].encode("utf-8")).hexdigest()
         )
