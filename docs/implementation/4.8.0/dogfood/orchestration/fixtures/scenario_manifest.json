@@ -1,12 +1,17 @@
 {
   "schema": "ai-dev/v48-t011-orchestration-dogfood-corpus:1",
   "corpus_id": "t011-orchestration-dogfood",
-  "corpus_version": "2",
+  "corpus_version": "3",
   "purpose": "Deterministic scenario corpus for the T-011 heterogeneous orchestration dogfood. Composes already-merged v4.8 T-007/T-008/T-009/T-017 semantics only; introduces no scheduler, lifecycle, availability authority, exchange family or runtime database.",
   "repair_provenance": {
-    "phase": "PHASE_5_BOUNDED_P1_REPAIR",
-    "dispatch": "kaicreator-mm/ai-development-standard#517@5966292564",
-    "change": "Corpus version 2: removed the fixture-only scheduling_oracle_capabilities shadow capability authority; hard-eligibility inputs (required role, actually claimed capabilities, required max agent freedom) now derive only from canonical agent-capability-profile-v1 documents; added the ODF-19 wrong-role and ODF-20 unclaimed-capability negatives."
+    "phase": "PHASE_8_SECOND_BOUNDED_P1_REPAIR",
+    "dispatch": "kaicreator-mm/ai-development-standard#517@5967289078",
+    "change": "Corpus version 3: hard-eligibility token composition made collision-proof by deterministic domain separation — capability claims/requirements, role claims/requirements and freedom ceilings are encoded into disjoint percent-escaped token domains (cap:/role:/freedom_le:) before entering the merged T-008 opaque subset predicate, so schema-valid capability claims shaped like 'role:…' or 'freedom_le:…' strings cannot spoof role or freedom predicates; added the ODF-21 role-token-spoof and ODF-22 freedom-token-spoof negatives. Profile documents and work items are unchanged from corpus version 2.",
+    "supersedes": {
+      "phase": "PHASE_5_BOUNDED_P1_REPAIR",
+      "dispatch": "kaicreator-mm/ai-development-standard#517@5966292564",
+      "change": "Corpus version 2: removed the fixture-only scheduling_oracle_capabilities shadow capability authority; hard-eligibility inputs (required role, actually claimed capabilities, required max agent freedom) now derive only from canonical agent-capability-profile-v1 documents; added the ODF-19 wrong-role and ODF-20 unclaimed-capability negatives."
+    }
   },
   "exact_base_sha": "94955c6f93fd7316406ea96bce8f7c32a62509ef",
   "exact_base_tree": "bb7f25f1e05ff2423fc79029465bcf7be458a82c",

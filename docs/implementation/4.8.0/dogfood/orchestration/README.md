@@ -4,9 +4,9 @@ Bounded dogfood of the already-merged v4.8 orchestration semantics (T-007 contra
 
 ## Contents
 
-- `EVIDENCE_MATRIX.md` — ODF-01..ODF-20 scenario/evidence matrix (inputs, oracles, observed results, evidence classes, limitations)
-- `RESULT_REPORT.md` — run/report, Phase-5 bounded P1 repair record, evidence-class accounting, falsification observations, explicit NOT_RUN/BLOCKED external dimensions
-- `fixtures/scenario_manifest.json` — deterministic corpus, version 2 (profiles as canonical `agent-capability-profile-v1` documents — no shadow capability field —, work items with required role/capabilities/freedom, availability, resources, subject identities, T-011 ownership facts)
+- `EVIDENCE_MATRIX.md` — ODF-01..ODF-22 scenario/evidence matrix (inputs, oracles, observed results, evidence classes, limitations)
+- `RESULT_REPORT.md` — run/report, Phase-5 + Phase-8 bounded P1 repair records, evidence-class accounting, falsification observations, explicit NOT_RUN/BLOCKED external dimensions
+- `fixtures/scenario_manifest.json` — deterministic corpus, version 3 (profiles as canonical `agent-capability-profile-v1` documents — no shadow capability field —, work items with required role/capabilities/freedom, availability, resources, subject identities, T-011 ownership facts)
 - `fixtures/t011_builder_claim_event.json` — verbatim durable copy of the accepted Builder Claim event (durable original: Issue #517 comment)
 
 ## Run
@@ -15,9 +15,9 @@ Bounded dogfood of the already-merged v4.8 orchestration semantics (T-007 contra
 python -B scripts/test_v48_orchestration_dogfood.py
 ```
 
-The harness imports the merged upstream conformance oracle modules (no normative semantics are redefined), executes the ODF-01..ODF-20 corpus, and emits a machine-readable evidence registry (including the exact candidate SHA/tree it executed against) between the `T011_ORCHESTRATION_DOGFOOD_EVIDENCE_JSON_BEGIN` / `_END` markers.
+The harness imports the merged upstream conformance oracle modules (no normative semantics are redefined), executes the ODF-01..ODF-22 corpus, and emits a machine-readable evidence registry (including the exact candidate SHA/tree it executed against) between the `T011_ORCHESTRATION_DOGFOOD_EVIDENCE_JSON_BEGIN` / `_END` markers.
 
-Hard-eligibility inputs are derived only from the canonical capability profile documents — eligible-role claims, actually claimed capabilities and the freedom-ceiling constraint are composed into the merged T-008 oracle's opaque capability-token subsets (corpus version 2; Phase-5 bounded P1 repair, dispatch `#517@5966292564`). ODF-19/ODF-20 prove wrong-role and unclaimed-capability candidates cannot reach ranking/admission.
+Hard-eligibility inputs are derived only from the canonical capability profile documents — eligible-role claims, actually claimed capabilities and the freedom-ceiling constraint — and are composed into the merged T-008 oracle's opaque capability-token subsets with **deterministic domain separation** (corpus version 3; Phase-8 bounded P1 repair, dispatch `#517@5967289078`): capability, role and freedom values are percent-escaped into disjoint `cap:` / `role:` / `freedom_le:` token domains before the subset predicate, so a schema-valid capability claim shaped like `role:reviewer` or `freedom_le:F2_ENGINEERING_DISCRETION` cannot spoof a role or freedom predicate (supersedes corpus version 2, Phase-5 repair, dispatch `#517@5966292564`). ODF-19/ODF-20 prove wrong-role and unclaimed-capability candidates cannot reach ranking/admission; ODF-21/ODF-22 prove the role-token and freedom-token spoof paths are neutralized.
 
 ## Evidence boundary
 

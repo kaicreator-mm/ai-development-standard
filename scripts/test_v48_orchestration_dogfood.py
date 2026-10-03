@@ -4,14 +4,20 @@ Deterministic self-contained orchestration dogfood over explicit durable facts. 
 the already-merged T-007 (contract compatibility), T-008 (scheduling/resource), T-009
 (interchange replay/restart) and T-017 (execution ownership) semantics through their public
 conformance modules and proves the ODF-01..ODF-20 scenario/evidence matrix frozen by the
-T-011 Task Pack and L3 (ODF-01..ODF-18) plus the Phase-5 bounded P1 repair negatives
-(ODF-19/ODF-20, dispatch #517@5966292564), without introducing a new scheduler, admission
-lifecycle, event family, schema authority or runtime database.
+T-011 Task Pack and L3 (ODF-01..ODF-18) plus the bounded P1 repair negatives of the
+Phase-5 dispatch #517@5966292564 (ODF-19/ODF-20) and the Phase-8 dispatch #517@5967289078
+(ODF-21/ODF-22), without introducing a new scheduler, admission lifecycle, event family,
+schema authority or runtime database.
 
 Hard-eligibility inputs are derived only from canonical logical-Agent capability profile
 documents (real agent-capability-profile-v1): eligible-role claims, actually claimed
 capabilities and the freedom-ceiling constraint are composed into the merged upstream
 oracle's opaque capability-token sets. No fixture-only shadow capability authority exists.
+Composition is collision-proof (Phase-8 bounded P1 repair): capability, role and freedom
+values are deterministically domain-separated (percent-escaped under disjoint cap:/role:/
+freedom_le: domains) before they enter the opaque subset predicate, so a schema-valid
+capability claim shaped like "role:reviewer" or "freedom_le:F2_ENGINEERING_DISCRETION"
+cannot spoof a role or freedom predicate.
 
 Evidence discipline (T-011 Task Pack; every recorded row carries an explicit class):
 
@@ -36,6 +42,7 @@ import sys
 import unittest
 from dataclasses import replace
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = Path(__file__).resolve().parent
@@ -69,7 +76,7 @@ EVIDENCE_CLASSES = {
     "BLOCKED",
 }
 
-SCENARIO_ORDER = [f"ODF-{index:02d}" for index in range(1, 21)]
+SCENARIO_ORDER = [f"ODF-{index:02d}" for index in range(1, 23)]
 
 # Canonical Logical Agent freedom ladder (Frozen semantics; agent-capability-profile-v1
 # max_agent_freedom_claim enum, ordered lowest first).
@@ -194,22 +201,55 @@ def parse_manifest_durable_facts() -> dict:
     return facts
 
 
+# Deterministic domain separation (Phase-8 bounded P1 repair, dispatch
+# #517@5967289078): every canonical scheduling dimension is encoded into its own
+# token domain before it reaches the merged T-008 opaque subset predicate. The
+# encoder is injective and percent-escapes ':' and '%', so tokens of different
+# domains can never collide and a schema-valid free-form capability claim shaped
+# like "role:reviewer" or "freedom_le:F2_ENGINEERING_DISCRETION" can never equal
+# another domain's predicate token. Honest values (alphanumerics, '-', '_', '.',
+# '~') pass through readable and unchanged.
+
+def _domain_token(domain: str, value: str) -> str:
+    return f"{domain}:{quote(value, safe='')}"
+
+
+def capability_token(claim: str) -> str:
+    """Token domain for canonical capability claims/requirements."""
+    return _domain_token("cap", claim)
+
+
+def role_token(role: str) -> str:
+    """Token domain for canonical eligible-role claims/requirements."""
+    return _domain_token("role", role)
+
+
+def freedom_le_token(level: str) -> str:
+    """Token domain for canonical freedom-ceiling constraints."""
+    return _domain_token("freedom_le", level)
+
+
 def canonical_profile_scheduling_inputs(document: dict) -> dict:
     """Derive hard-eligibility inputs from the canonical capability profile document only.
 
     The merged upstream oracle composes eligibility through its opaque capability-token
     subset predicate (WorkRequirement.required_capabilities ⊆ AgentProfile.capabilities).
     This derivation binds that predicate to real agent-capability-profile-v1 fields:
-    actually claimed capabilities, eligible-role claims (role:* tokens) and the freedom
-    constraint (freedom_le:* tokens covering every ceiling at or above the claimed
-    freedom, so a profile only satisfies ceilings its own claim does not exceed).
-    No non-canonical capability source may participate.
+    actually claimed capabilities, eligible-role claims (role-domain tokens) and the
+    freedom constraint (freedom_le-domain tokens covering every ceiling at or above the
+    claimed freedom, so a profile only satisfies ceilings its own claim does not exceed).
+    Each dimension is domain-separated (see _domain_token) before composition, so the
+    free-form capability namespace cannot spoof the role or freedom predicates. No
+    non-canonical capability source may participate.
     """
-    claims = frozenset(document.get("reasoning_or_semantic_capability_claims", ()))
-    roles = frozenset(f"role:{role}" for role in document["eligible_role_claims"])
+    claims = frozenset(
+        capability_token(claim)
+        for claim in document.get("reasoning_or_semantic_capability_claims", ())
+    )
+    roles = frozenset(role_token(role) for role in document["eligible_role_claims"])
     freedom_index = FREEDOM_ORDER.index(document["max_agent_freedom_claim"])
     freedom_tokens = frozenset(
-        f"freedom_le:{level}" for level in FREEDOM_ORDER[freedom_index:]
+        freedom_le_token(level) for level in FREEDOM_ORDER[freedom_index:]
     )
     return {
         "claimed_capabilities": claims,
@@ -231,9 +271,11 @@ def work_requirement_from_corpus(item: dict) -> scheduling.WorkRequirement:
         work_key=item["work_key"],
         ready=item["ready"],
         required_capabilities=(
-            frozenset(item["required_capabilities"])
-            | {f"role:{item['required_role_claim']}"}
-            | {f"freedom_le:{item['required_max_agent_freedom']}"}
+            frozenset(
+                capability_token(required) for required in item["required_capabilities"]
+            )
+            | {role_token(item["required_role_claim"])}
+            | {freedom_le_token(item["required_max_agent_freedom"])}
         ),
     )
 
@@ -392,8 +434,8 @@ class V48OrchestrationDogfood(unittest.TestCase):
             scenario_id="ODF-01",
             name="multi-ready-heterogeneous-eligibility",
             l3_tests="L3 #1 multi-ready-heterogeneous-eligibility",
-            oracle="only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role/freedom semantics",
-            observed="5 profile/work pairs resolved ELIGIBLE(3)/INELIGIBLE(2) with eligibility inputs derived only from canonical agent-capability-profile-v1 documents (eligible role + claimed capabilities + freedom ceiling); ranking probe observed exactly the 3 eligible items; corpus profiles validate against agent-capability-profile-v1",
+            oracle="only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role/freedom semantics composed with collision-proof domain separation",
+            observed="5 profile/work pairs resolved ELIGIBLE(3)/INELIGIBLE(2) with eligibility inputs derived only from canonical agent-capability-profile-v1 documents (eligible role + claimed capabilities + freedom ceiling, domain-separated before the opaque subset predicate); ranking probe observed exactly the 3 eligible items; corpus profiles validate against agent-capability-profile-v1",
             evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
             environment="local build host, exact candidate checkout, python -B scripts/test_v48_orchestration_dogfood.py",
         )
@@ -1582,8 +1624,9 @@ class V48OrchestrationDogfood(unittest.TestCase):
         impostor_document["eligible_role_claims"] = ["builder"]
         self.assertEqual([], validate_subset(impostor_document, PROFILE_SCHEMA))
         self.assertIn(
-            "fresh-independent-review",
+            capability_token("fresh-independent-review"),
             canonical_profile_scheduling_inputs(impostor_document)["claimed_capabilities"],
+            "the impostor's canonical capability claims must participate in eligibility",
         )
         impostor = profile_from_corpus({
             "profile_key": "wrong_role_builder",
@@ -1674,7 +1717,7 @@ class V48OrchestrationDogfood(unittest.TestCase):
         # fail hard eligibility despite the matching builder role and freedom ceiling.
         strong = profile_from_corpus(corpus["agent_profiles"][0])
         self.assertNotIn(
-            "deterministic-harness-authoring",
+            capability_token("deterministic-harness-authoring"),
             canonical_profile_scheduling_inputs(
                 corpus["agent_profiles"][0]["capability_profile_document"]
             )["claimed_capabilities"],
@@ -1714,6 +1757,207 @@ class V48OrchestrationDogfood(unittest.TestCase):
             observed="corpus carries no scheduling_oracle_capabilities shadow field; strong semantic builder's canonical claims exclude deterministic-harness-authoring, so it stayed INELIGIBLE for the bounded-harness work (role and freedom both allow) with adversarial best rank; ranking probe never fired; canonically-claiming bounded builder control resolved ELIGIBLE",
             evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
             environment="local build host; merged T-008 hard-filter oracle over the real committed corpus documents",
+        )
+
+    # ------------------------------------------------------------------
+    # ODF-21 — capability claim shaped like a role token cannot grant the role
+    # (Phase-8 bounded P1 repair negative; dispatch #517@5967289078)
+    # ------------------------------------------------------------------
+    def test_odf21_role_token_spoof_via_capability_claim_is_neutralized(self) -> None:
+        review_work = work_requirement_from_corpus(self.corpus["work_items"][2])
+        fresh = availability_from_corpus(self.corpus["availability_facts"]["fresh_available"])
+
+        # Schema-valid spoof attempt (the exact Phase-7 Fresh Review P1): a builder-role
+        # variant of the real reviewer corpus document whose free-form semantic
+        # capability claims include the raw string "role:reviewer". The canonical
+        # profile schema does not reserve the role namespace, so this is a legitimate
+        # document — the composition itself must stay collision-proof.
+        spoof_document = json.loads(json.dumps(
+            self.corpus["agent_profiles"][2]["capability_profile_document"]
+        ))
+        spoof_document["profile_id"] = "profile:v48-t011-negative-role-spoof-claim"
+        spoof_document["eligible_role_claims"] = ["builder"]
+        spoof_document["reasoning_or_semantic_capability_claims"] = list(
+            spoof_document["reasoning_or_semantic_capability_claims"]
+        ) + ["role:reviewer"]
+        self.assertEqual([], validate_subset(spoof_document, PROFILE_SCHEMA))
+
+        # Domain separation: the raw claim enters composition only under the capability
+        # domain with deterministic escaping, so it can never equal the role-domain
+        # token the reviewer work actually requires.
+        self.assertEqual("cap:role%3Areviewer", capability_token("role:reviewer"))
+        self.assertEqual("role:reviewer", role_token("reviewer"))
+        self.assertNotEqual(
+            role_token("reviewer"), capability_token("role:reviewer"))
+        inputs = canonical_profile_scheduling_inputs(spoof_document)
+        self.assertIn(capability_token("role:reviewer"), inputs["claimed_capabilities"])
+        self.assertNotIn(
+            role_token("reviewer"),
+            inputs["claimed_capabilities"] | inputs["role_tokens"] | inputs["freedom_tokens"],
+            "a capability claim shaped like a role token must not produce the role token",
+        )
+
+        spoof = profile_from_corpus({
+            "profile_key": "role_spoof_builder",
+            "capability_profile_document": spoof_document,
+        })
+        spoof_candidate = scheduling.Candidate(
+            review_work, spoof, fresh, rank=(-9999, -9999, -9999, -9999),
+        )
+        self.assertEqual(
+            scheduling.INELIGIBLE,
+            scheduling.resolve_eligibility(spoof_candidate),
+            "a capability claim shaped like 'role:reviewer' must not satisfy the reviewer-role predicate",
+        )
+        probed: list[str] = []
+
+        def probe(candidate: scheduling.Candidate) -> tuple[int, int, int, int]:
+            probed.append(candidate.work.work_key)
+            return candidate.rank
+
+        self.assertEqual([], scheduling.rank_eligible([spoof_candidate], ranking_probe=probe))
+        self.assertEqual([], probed, "role-spoofing candidate must not reach ranking")
+
+        # Control: the same document — spoof capability string still present — with the
+        # canonical reviewer role claim resolves ELIGIBLE, proving the rejection above
+        # came from the unclaimed canonical role field, not from the odd string itself.
+        conforming_document = dict(spoof_document, eligible_role_claims=["reviewer"])
+        conforming = profile_from_corpus({
+            "profile_key": "role_spoof_control_reviewer",
+            "capability_profile_document": conforming_document,
+        })
+        control_candidate = scheduling.Candidate(
+            review_work, conforming, fresh, rank=(1, 0, 0, 0),
+        )
+        self.assertEqual(
+            scheduling.ELIGIBLE,
+            scheduling.resolve_eligibility(control_candidate),
+            "the canonical role claim — not the spoof string — decides eligibility",
+        )
+
+        # Composed pool: only the control is ranked and admitted; the review-quota
+        # resource is consumed exactly once by the control.
+        ranked = scheduling.rank_eligible(
+            [spoof_candidate, control_candidate], ranking_probe=probe,
+        )
+        self.assertEqual([control_candidate], ranked)
+        self.assertEqual([review_work.work_key], probed)
+        state = scheduling.AdmissionState()
+        for choice in ranked:
+            result, state = scheduling.admit(
+                state,
+                work_key=choice.work.work_key,
+                expected_generation=state.generation,
+                required=dict(self.corpus["work_items"][2]["required_resources"]),
+                capacities=dict(self.corpus["resource_capacities"]),
+            )
+            self.assertEqual("ACCEPTED", result)
+        self.assertEqual(
+            1, state.used("review-quota"),
+            "the role-spoofing candidate must contribute no admission",
+        )
+        record_scenario(
+            scenario_id="ODF-21",
+            name="role-token-spoof-via-capability-claim-is-neutralized",
+            l3_tests="Phase-8 P1 repair contract #517@5967289078 (role-token collision negative)",
+            oracle="a schema-valid capability claim shaped like a role token cannot satisfy the role predicate; only the canonical eligible-role claim decides role eligibility",
+            observed="builder-role variant of the real reviewer profile carrying the raw capability string 'role:reviewer' stayed INELIGIBLE for the reviewer work with adversarial best rank; ranking probe never fired; encoded 'cap:role%3Areviewer' provably differs from the role token 'role:reviewer'; the same document with the canonical reviewer role claim (spoof string still present) resolved ELIGIBLE and consumed review-quota exactly once",
+            evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
+            environment="local build host; merged T-008 hard-filter oracle over a schema-valid variant of the real corpus profile document (real agent-capability-profile-v1 validation)",
+        )
+
+    # ------------------------------------------------------------------
+    # ODF-22 — capability claim shaped like a freedom token cannot satisfy a ceiling
+    # (Phase-8 bounded P1 repair negative; dispatch #517@5967289078)
+    # ------------------------------------------------------------------
+    def test_odf22_freedom_token_spoof_via_capability_claim_is_neutralized(self) -> None:
+        corpus = self.corpus
+        bounded_work = work_requirement_from_corpus(corpus["work_items"][1])
+        fresh = availability_from_corpus(corpus["availability_facts"]["fresh_available"])
+
+        # Schema-valid spoof attempt: an F3-over-claim variant of the real bounded
+        # builder profile whose free-form semantic capability claims include the raw
+        # string "freedom_le:F2_ENGINEERING_DISCRETION" — exactly the collision the
+        # Phase-7 Fresh Review identified for the freedom predicate.
+        spoof_document = json.loads(json.dumps(
+            corpus["agent_profiles"][1]["capability_profile_document"]
+        ))
+        spoof_document["profile_id"] = "profile:v48-t011-negative-freedom-spoof-claim"
+        spoof_document["max_agent_freedom_claim"] = "F3_ARCHITECTURE_REQUIRED"
+        spoof_document["reasoning_or_semantic_capability_claims"] = list(
+            spoof_document["reasoning_or_semantic_capability_claims"]
+        ) + ["freedom_le:F2_ENGINEERING_DISCRETION"]
+        self.assertEqual([], validate_subset(spoof_document, PROFILE_SCHEMA))
+
+        # Domain separation: the raw claim stays inside the capability domain, and the
+        # freedom domain token required by the work item remains unreachable through it.
+        self.assertEqual(
+            "cap:freedom_le%3AF2_ENGINEERING_DISCRETION",
+            capability_token("freedom_le:F2_ENGINEERING_DISCRETION"),
+        )
+        self.assertEqual(
+            "freedom_le:F2_ENGINEERING_DISCRETION",
+            freedom_le_token("F2_ENGINEERING_DISCRETION"),
+        )
+        inputs = canonical_profile_scheduling_inputs(spoof_document)
+        self.assertIn(
+            capability_token("freedom_le:F2_ENGINEERING_DISCRETION"),
+            inputs["claimed_capabilities"],
+        )
+        self.assertNotIn(
+            freedom_le_token("F2_ENGINEERING_DISCRETION"),
+            inputs["claimed_capabilities"] | inputs["role_tokens"] | inputs["freedom_tokens"],
+            "an F3 over-claim must not hold the F2 ceiling token through a capability claim",
+        )
+
+        spoof = profile_from_corpus({
+            "profile_key": "freedom_spoof_f3_builder",
+            "capability_profile_document": spoof_document,
+        })
+        spoof_candidate = scheduling.Candidate(
+            bounded_work, spoof, fresh, rank=(-9999, -9999, -9999, -9999),
+        )
+        self.assertEqual(
+            scheduling.INELIGIBLE,
+            scheduling.resolve_eligibility(spoof_candidate),
+            "a capability claim shaped like 'freedom_le:F2…' must not satisfy the F2 ceiling predicate",
+        )
+        probed: list[str] = []
+
+        def probe(candidate: scheduling.Candidate) -> tuple[int, int, int, int]:
+            probed.append(candidate.work.work_key)
+            return candidate.rank
+
+        self.assertEqual([], scheduling.rank_eligible([spoof_candidate], ranking_probe=probe))
+        self.assertEqual([], probed, "freedom-spoofing candidate must not reach ranking")
+
+        # Control: the real bounded profile (canonical F1 claim) carrying the same odd
+        # capability string stays ELIGIBLE — the freedom predicate reads only its own
+        # domain, and the honest F1 claim covers the F2 ceiling.
+        control_document = json.loads(json.dumps(
+            corpus["agent_profiles"][1]["capability_profile_document"]
+        ))
+        control_document["reasoning_or_semantic_capability_claims"] = list(
+            control_document["reasoning_or_semantic_capability_claims"]
+        ) + ["freedom_le:F2_ENGINEERING_DISCRETION"]
+        self.assertEqual([], validate_subset(control_document, PROFILE_SCHEMA))
+        control = profile_from_corpus({
+            "profile_key": "freedom_spoof_control_f1_builder",
+            "capability_profile_document": control_document,
+        })
+        self.assertEqual(
+            scheduling.ELIGIBLE,
+            scheduling.resolve_eligibility(scheduling.Candidate(bounded_work, control, fresh)),
+            "the canonical freedom claim — not the spoof string — decides ceiling eligibility",
+        )
+        record_scenario(
+            scenario_id="ODF-22",
+            name="freedom-token-spoof-via-capability-claim-is-neutralized",
+            l3_tests="Phase-8 P1 repair contract #517@5967289078 (freedom-token collision negative)",
+            oracle="a schema-valid capability claim shaped like a freedom-ceiling token cannot satisfy the freedom predicate; an over-claim above the required ceiling stays hard-INELIGIBLE whatever capability strings it carries",
+            observed="F3-over-claim variant of the real bounded builder profile carrying the raw capability string 'freedom_le:F2_ENGINEERING_DISCRETION' stayed INELIGIBLE for the F2-ceiling work with adversarial best rank; ranking probe never fired; encoded 'cap:freedom_le%3AF2_ENGINEERING_DISCRETION' provably differs from the freedom token; the honest F1 profile with the same spoof string present resolved ELIGIBLE",
+            evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
+            environment="local build host; merged T-008 hard-filter oracle over a schema-valid variant of the real corpus profile document (real agent-capability-profile-v1 validation)",
         )
 
 
