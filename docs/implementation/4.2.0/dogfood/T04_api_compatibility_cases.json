@@ -1,0 +1,66 @@
+{
+  "fixture_version": 1,
+  "required_dimensions": ["wire", "schema", "source", "behavior"],
+  "cases": [
+    {
+      "id": "additive-positive",
+      "expected_compatible": true,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:old-v1",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}
+    },
+    {
+      "id": "wire-safe-source-break",
+      "expected_compatible": false,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:old-v1",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "INCOMPATIBLE", "behavior": "COMPATIBLE"}
+    },
+    {
+      "id": "schema-safe-behavior-break",
+      "expected_compatible": false,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:old-v1",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "INCOMPATIBLE"}
+    },
+    {
+      "id": "new-new-does-not-prove-old-new",
+      "expected_compatible": false,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:new-v2",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}
+    },
+    {
+      "id": "baseline-drift",
+      "expected_compatible": false,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1.1-drifted",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:old-v1",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"}
+    },
+    {
+      "id": "unknown-unexecuted-dimension",
+      "expected_compatible": false,
+      "expected_baseline": "api:v1",
+      "tested_baseline": "api:v1",
+      "expected_consumer": "consumer:old-v1",
+      "tested_consumer": "consumer:old-v1",
+      "producer": "producer:new-v2",
+      "dimensions": {"wire": "COMPATIBLE", "schema": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "UNKNOWN"}
+    }
+  ]
+}

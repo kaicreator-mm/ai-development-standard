@@ -1,8 +1,19 @@
 # AI Development Standard
 
-当前版本：`v4.1.0`。Release Qualification #663 已对精确候选 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）给出 `READY`，PR #672 随后将该候选集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。本次 final-main 元数据校正只修复仓库可见状态，不修改已资格化候选、Frozen Product/L2/DAG、实现、schema、标准、测试或 workflow；当前不声称存在发布 tag、GitHub Release 或其它 publication。采用项目仍必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定；其它并行 version branch 的状态不得据此推断。
+当前版本：`v4.2.0`。v4.2.0 处于**发布准备阶段**：按 #475 Concern A 的顺序谱系，已证明的 v4.2 规范增量已语义组合到已资格化的 v4.1 `main` 基线之上，形成 `version/v4.2.0-sequential` 候选分支；本次发布身份校正只修改 `VERSION`/`README.md`/`CHANGELOG.md` 三个身份面，使仓库可见元数据与该 v4.2.0 候选一致，不修改规范、schema、实现、测试或任何既有证据。当前不声称 Release Qualification、`main` 集成、发布 tag、GitHub Release 或其它 publication；在后续独立 Version Validation 与 Fresh Review 通过前，本候选不得视为已发布标准。采用项目仍必须将 `version` 与实际选用的不可变 `revision`（40 位提交 SHA）成对固定；其它并行 version branch 的状态不得据此推断。
+
+v4.1.0 为已完成 Release Qualification 并集成 `main` 的历史事实：Release Qualification #663 已对精确候选 `d0e133ab5d6a4b328818fdee36a41d994aa41e75`（tree `5ae3f7864f07aadb53c3df260e7d1d543a49d8a1`）给出 `READY`，PR #672 随后将该候选集成至 `main`，形成 merge commit `0882a9fd13506991da255136f1e026f8a8f79e6f`。该次 final-main 元数据校正只修复当时的仓库可见状态，未修改已资格化候选、Frozen Product/L2/DAG、实现、schema、标准、测试或 workflow；v4.1 自身不声称存在发布 tag、GitHub Release 或其它 publication。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
+
+## v4.2.0 — Evolution Governance（发布准备中；未声称 Release Qualification/tag/GitHub Release/publication）
+
+v4.2 以 Evolution Governance 为主题，在已资格化的 v4.1 基线之上新增两个彼此独立的演进治理规范，并通过可选引用接入既有契约，不替代既有 GitHub、Workflow、Validation、Review、CI 或 Release 权威；v4.2 是 v4 之内的前瞻性增量，历史 payload 与证据保持原有 subject identity，不得因 v4.2 存在而被追溯改标：
+
+- [Interface & Compatibility Governance](standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md)：契约 baseline/candidate 身份、change operations、兼容性维度、consumer/window 证据与 deprecation/removal 义务；schema/checker PASS 不等于行为/源/消费方兼容。
+- [Data & Migration Governance](standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md)：directional source→target 持久状态迁移身份、fresh-install 与 upgrade/recovery 的区分、环境适用性与恢复证据；迁移文件存在不等于迁移已执行。
+
+两类新增机器契约位于 [`schemas/compatibility-record-v1.schema.json`](schemas/compatibility-record-v1.schema.json) 与 [`schemas/migration-transition-v1.schema.json`](schemas/migration-transition-v1.schema.json)，旧 v4 payload 保持兼容；参考实现见 [`references/INTERFACE_COMPATIBILITY_REFERENCE.md`](references/INTERFACE_COMPATIBILITY_REFERENCE.md) 与 [`references/DATA_MIGRATION_REFERENCE.md`](references/DATA_MIGRATION_REFERENCE.md)。采用/演进边界见 [`docs/implementation/4.2.0/MIGRATION_ADOPTION.md`](docs/implementation/4.2.0/MIGRATION_ADOPTION.md)，跨规范 conformance 与 closure 输入见 [`CROSS_STANDARD_CONFORMANCE_STATUS.md`](docs/implementation/4.2.0/CROSS_STANDARD_CONFORMANCE_STATUS.md) 与 [`CLOSURE_INPUTS.md`](docs/implementation/4.2.0/CLOSURE_INPUTS.md)。上述内容均不能替代独立版本级 Version Validation、Fresh Review 或发布门禁。
 
 ## v4.1.0 — Agent Execution Foundation（已完成 Release Qualification 并集成 `main`；未声称 tag/GitHub Release/publication）
 
