@@ -1,0 +1,62 @@
+pack_id: v4.8.0-T-012-257e9553
+task_id: T-012
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 257e95531551960cb163a3e20ab2b3d13f415d3c
+base_tree: 1171de2c8afb08d6f793a258ffd0b586007e9dbf
+task_pack_ref: docs/implementation/4.8.0/task-packs/T12_469_bounded_agent_dogfood.md
+task_pack_blob: 10168f6ea2a1cb3b0ffff9c1a493b0904d82942f
+l3_ref: docs/implementation/4.8.0/L3_T12_469_BOUNDED_AGENT_DOGFOOD.md
+l3_blob: 82f0ac808f423d861c030413046c2b2e689bfc1d
+branch: task/v4.8.0-t12-469-dogfood
+parent_issue: "#518"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+task_pack_agent_freedom_ceiling: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 257e95531551960cb163a3e20ab2b3d13f415d3c
+frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
+generated_by: chatgpt-web:v48-t012-phase1-planning-builder
+dependency_completion:
+  - T-004/#511:DONE
+  - T-007/#513:DONE
+  - T-008/#514:DONE
+  - native-issue-#518:blocked_by=0,total_blocked_by=3
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T12_469_bounded_agent_dogfood.md
+  - docs/implementation/4.8.0/L3_T12_469_BOUNDED_AGENT_DOGFOOD.md
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - standards/EXECUTION_PACK_STANDARD.md
+  - standards/MODEL_USAGE_POLICY.md
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - standards/VALIDATION_STANDARD.md
+builder_write_set:
+  - docs/implementation/4.8.0/dogfood/469/**
+forbidden_builder_paths:
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - docs/implementation/4.8.0/task-packs/**
+  - docs/implementation/4.8.0/L3_*.md
+  - standards/**
+  - schemas/**
+  - scripts/**
+  - .agent/**
+  - .github/workflows/**
+review_policy: required
+validation_owner: independent-from-builder
+validation_scope: exact-subject-evidence-integrity
+external_source_anchor: ai-development-standard#469@5925124956
+source_currentness_check: required-at-builder-claim
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
