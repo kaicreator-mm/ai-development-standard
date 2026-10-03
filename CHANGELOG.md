@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.3.0 — Unreleased Sequential Successor Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
+
+v4.3.0 当前处于未发布顺序谱系候选阶段。按 #705 的顺序谱系（sequential lineage），历史已冻结候选 `version/v4.3.0`（`124943821848260b135a008dfaca6bc05a31fbac` / tree `bad3acb42a6e68e31f8e2f9178ecdeb5b2e8d2f1`）中经资格验证的 v4.3 语义增量（源区间 `65c978d7..124943821`，T01–T11）被语义重放到已资格化的 v4.2 `main`（`73098dfb576dbcc1252634e14bb3d39b70b94342`，经 PR #703 集成）之上，形成 `version/v4.3.0-sequential` 顺序候选分支；本次发布身份校正只修改 `VERSION`、`README.md`、`CHANGELOG.md` 三个身份面，不修改规范、schema、实现、测试或任何既有门禁证据。历史 #690 对旧候选的 Stage1/Freeze/Hidden/Closeout/Release Qualification 结论属 HISTORICAL_ONLY / NON_TRANSFERABLE，不转移到新 SHA/tree；在本候选获得精确 SHA/tree 绑定的独立 Validation/Fresh Review 与相应版本级闭合结论前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定。
+
+- **工程设计与规划治理**：新增 DAG mutation machine contract（[`schemas/dag-mutation-record-v1.schema.json`](schemas/dag-mutation-record-v1.schema.json)），并建立 Architecture Design、Task Decomposition、Task DAG Governance 的明确工程设计/规划治理边界；GitHub Issue Dependencies 继续作为 canonical live execution DAG，不创建第二套执行 truth。
+- **实现质量与 profile framework**：新增语言中立 `IMPLEMENTATION_QUALITY_STANDARD` 与 profile framework，定义 deterministic applicability/composition、冲突 fail-closed 与 profile/default layering；不在 v4.3 引入 repository-wide resolver。
+- **Language implementation profiles**：新增 TypeScript、Python、Go、Java、Rust implementation profiles；项目通过 explicit pinned profile refs 与 `PROJECT_OVERRIDES` 选择、specialize 或 strengthen，不得削弱 Frozen/Core authority。
+- **Archetype profiles**：新增 `library / service / cli` archetype profiles 与 profile catalog / progressive adoption 规则；历史证据保持原 subject/authority，不要求 retroactive profile records。
+- **Task Pack / Execution Pack 接入**：governance/profile pointers（`authority_refs`、`implementation_profile_refs`、`project_overrides_ref`）只消费已解析的 authority/profile selection，不复制 Task object，也不自行重新解析更高 authority。
+- **采用接线与 Conformance Dogfood**：T10 把 normative owners、DAG mutation schema、profile catalog、adoption references 与 v4.3 verification surface 接入 `standard-manifest.json` 并同步 adoption guidance；T11 conformance dogfood 套件、fixtures 与证据见 `scripts/test_v43_conformance_dogfood.py` 与 `docs/implementation/4.3.0/dogfood/`。
+- **谱系与历史保全**：v4.2.0/v4.1.0/v4.0.0 全部历史条目与既述事实保持不变；历史并行 `version/v4.3.0` 候选仅作为语义增量来源被引用，其 #690 门禁结论不转移到本候选。
+
 ## v4.2.0 — Release Preparation Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
 
 v4.2.0 当前处于发布准备阶段。按 #475 Concern A 的顺序谱系（sequential lineage），已证明的 v4.2 规范增量（源区间 `7bef72d4..75c1ff3`）被语义重放到已资格化的 v4.1 `main` 基线（`9383244`）之上，形成 `version/v4.2.0-sequential` 候选分支；本次发布身份校正只修改 `VERSION`/`README.md`/`CHANGELOG.md` 三个身份面，使仓库可见元数据与该 v4.2.0 候选一致，不修改规范、schema、实现、测试或任何既有门禁证据。当前不声称 Release Qualification、`main` 集成、发布 tag、GitHub Release 或其它 publication；在本候选通过后续独立 Version Validation 与 Fresh Review 之前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定，且在本候选获得精确 SHA/tree 绑定的验证结论前，任何 version/revision 组合的有效性不得据此推断。

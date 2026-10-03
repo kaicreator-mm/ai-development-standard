@@ -1,0 +1,25 @@
+task_id: T11
+failures:
+  - condition: live_target_or_task_pack_or_l3_or_dependency_or_pack_drift
+    action: STOP_CONTROLLER_REBIND_REQUIRED
+  - condition: required_negative_family_not_executable_or_not_fail_closed
+    severity: P1
+    action: BLOCK_VALIDATION
+  - condition: dogfood_requires_product_or_architecture_redesign
+    severity: P1
+    action: FAIL_AND_ROUTE_TO_OWNER
+  - condition: bounded_executor_cannot_act_without_hidden_semantic_redesign
+    severity: P1
+    action: FAIL_DOGFOOD
+  - condition: required_real_agent_toolchain_or_environment_unavailable
+    action: CREATE_EXACT_SCOPE_VALIDATION_HANDOFF_AND_KEEP_NOT_RUN_OR_BLOCKED
+  - condition: synthetic_or_fixture_evidence_promoted_to_real_host_provider_claim
+    severity: P1
+    action: FAIL_CLOSED
+  - condition: project_override_or_profile_or_local_tool_fact_weakens_frozen_core_authority
+    severity: P1
+    action: FAIL_CLOSED
+  - condition: unresolved_P0_or_P1
+    action: BLOCK_CLOSURE_HANDOFF
+  - condition: builder_attempts_version_closure_candidate_freeze_hidden_or_release_verdict
+    action: STOP_SCOPE_VIOLATION
