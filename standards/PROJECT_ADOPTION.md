@@ -124,6 +124,25 @@ Fast Path 可以在 A0–A4 任一级使用：
 - adoption level 本身不是风险证明，A0/A1 不自动等于 Fast Path eligible；
 - A3/A4 controller 可以派生 eligibility，但派生状态不替代 owning facts。
 
+### 2.5 v4.8 Convergence Discovery（非权威接线）
+
+v4.8 保留 v4.7 的 authority registry / read routing 发现机制，并把三个新 machine family 注册进同一发现层。对 pin 到 v4.8+ 的项目，以下仅为发现/读取面：
+
+- Canonical owner discovery：`standard-manifest.json#semantic_authorities`（entry 指向既有 canonical owner，例如 `standards/EXECUTION_ARCHITECTURE_STANDARD.md`、`standards/CI_RUNNER_CAPABILITY_STANDARD.md`）；
+- Qualified state / non-inference discovery（按需）：`registries/state-dimensions-v1.json`；
+- Derived read routing helper（可选）：`scripts/resolve_standard_read_set.py`；
+- v4.8 注册/采用映射（非权威）：`references/V48_REGISTRY_ADOPTION_REFERENCE.md`；
+- 迁移/采用增量：`docs/implementation/4.8.0/MIGRATION_ADOPTION.md`。
+
+规则：
+
+- 发现/路由元数据不授予任何 authority：`authority_effect=NONE`、`gate_effect=NONE`、`mutation_authorized=false`；registry / read routing 不拥有 mutation、Validation、Review、Candidate、Closure 或 Release truth。
+- 先解析并读取 canonical owner 再行动；compatibility alias 仍只是兼容路由，不是 owner。
+- 三个 v4.8 machine family（Task Learning Evidence、logical Agent Capability Profile、Agent Capability Evidence）由既有 semantic owner 拥有；registry 只是让它们可被发现，不产生第四个语义 owner。
+- Current Availability 是派生状态，不是 durable family；provider/model identity 与 capability evidence 描述能力或出处，不是 correctness/authorization/routing admission 的证明，也不是当前 Validation/Review truth。
+- Fast Path 保持轻量：`TASK_LEARNING=NONE_MATERIAL` 是合法完整结果；可选 registry/profile/family 只按 materiality 加载，其存在不构成项目采用义务，也不得因 v4.8 包含它们而强制加载无关可选内容。
+- 兼容性为纯增量：历史 inventory 与 Fast Path disqualifiers 保持不变；不兼容的 path/schema/authority 变更是 next-major planning input，不得被静默吸收。
+
 ## 3. PROJECT_OVERRIDES
 
 `PROJECT_OVERRIDES.md` 只记录项目特有信息：
