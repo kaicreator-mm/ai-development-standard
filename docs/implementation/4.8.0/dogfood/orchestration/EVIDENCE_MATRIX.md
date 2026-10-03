@@ -1,4 +1,4 @@
-# T-011 Orchestration Dogfood — Scenario / Evidence Matrix (ODF-01..ODF-18)
+# T-011 Orchestration Dogfood — Scenario / Evidence Matrix (ODF-01..ODF-20)
 
 Task: T-011 / Issue #517 · lane `orchestration-dogfood` · target `version/v4.8.0`
 
@@ -7,8 +7,8 @@ Task: T-011 / Issue #517 · lane `orchestration-dogfood` · target `version/v4.8
 - Exact base SHA: `94955c6f93fd7316406ea96bce8f7c32a62509ef` (tree `bb7f25f1e05ff2423fc79029465bcf7be458a82c`)
 - JIT Execution Pack HEAD: `26fdae3dd2b4a686820637665ee6f30811543b1f` (tree `dc2fafc5c1433db23423a49c22c0250a0adc88b6`)
 - Task Pack blob: `e1c412c44f67df736d1b1598a590a0eac31a4b22` · L3 blob: `fe7e1c46bcaef45cb7c8ce57615dcf0f1e0feb1a`
-- Candidate SHA/tree: bound at execution time by `scripts/test_v48_orchestration_dogfood.py` (it re-reads `git rev-parse HEAD` / `HEAD^{tree}` on the exact checkout) and bound durably in the Builder terminal and PR head. A self-referential commit SHA cannot be embedded in a file inside that same commit.
-- Corpus fixture: `fixtures/scenario_manifest.json` · Claim fixture: `fixtures/t011_builder_claim_event.json`
+- Candidate SHA/tree: bound at execution time by `scripts/test_v48_orchestration_dogfood.py` (it re-reads `git rev-parse HEAD` / `HEAD^{tree}` on the exact checkout) and bound durably in the repair terminal and PR head. A self-referential commit SHA cannot be embedded in a file inside that same commit.
+- Corpus fixture: `fixtures/scenario_manifest.json` (corpus version **2**: Phase-5 bounded P1 repair — shadow capability authority removed, canonical-profile eligibility derivation; ODF-01..ODF-18 remain the Task Pack/L3 corpus, ODF-19/ODF-20 are the repair-contract negatives) · Claim fixture: `fixtures/t011_builder_claim_event.json`
 - Harness: `python -B scripts/test_v48_orchestration_dogfood.py` (emits the per-run evidence JSON between `T011_ORCHESTRATION_DOGFOOD_EVIDENCE_JSON_BEGIN/END` markers)
 
 ## Evidence-class boundary
@@ -24,9 +24,9 @@ Task: T-011 / Issue #517 · lane `orchestration-dogfood` · target `version/v4.8
 
 - L3 tests: #1 · Evidence class: `SYNTHETIC_DETERMINISTIC` + `REPOSITORY_REAL_EXECUTION`
 - Inputs: `fixtures/scenario_manifest.json` (3 READY work items, 3 heterogeneous profiles, fresh availability)
-- Agent profiles: `strong_semantic_builder`, `bounded_test_builder`, `independent_reviewer_or_validator` (validated against real `agent-capability-profile-v1`)
-- Expected oracle: only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role semantics
-- Observed: ELIGIBLE ×3 / INELIGIBLE ×2 across 5 profile/work pairs; ranking probe observed exactly the 3 eligible items; corpus profile documents validate against the real schema; oracle module is the merged upstream file
+- Agent profiles: `strong_semantic_builder`, `bounded_test_builder`, `independent_reviewer_or_validator` (validated against real `agent-capability-profile-v1`); scheduling-side eligibility inputs derive only from the canonical documents (eligible-role claims, actually claimed capabilities, freedom ceiling) — no fixture-only shadow capability field exists (removed in corpus version 2)
+- Expected oracle: only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role/freedom semantics
+- Observed: ELIGIBLE ×3 / INELIGIBLE ×2 across 5 profile/work pairs (the reviewer-work × builder-role pair is blocked by role and capability; all inputs canonical); ranking probe observed exactly the 3 eligible items; corpus profile documents validate against the real schema; oracle module is the merged upstream file
 - Environment: local build host, exact candidate checkout · Validation: PENDING independent exact-subject Validation · Review: PENDING
 - Limitations: proves the merged deterministic eligibility/ranking oracle only; no live dispatch-through-GitHub execution in this row
 
@@ -115,9 +115,9 @@ Task: T-011 / Issue #517 · lane `orchestration-dogfood` · target `version/v4.8
 ### ODF-11 — bounded-executor-eligible-success
 
 - L3 tests: #14 · Evidence class: `REPOSITORY_REAL_EXECUTION`
-- Inputs: real `.agent/execution/T-011/MANIFEST.yaml` write set; real `git diff/status` of the candidate worktree vs JIT pack head `26fdae3dd2b4a686820637665ee6f30811543b1f`; corpus `bounded_test_builder` (F1) profile
+- Inputs: real `.agent/execution/T-011/MANIFEST.yaml` write set; real `git diff/status` of the candidate worktree vs JIT pack head `26fdae3dd2b4a686820637665ee6f30811543b1f`; corpus `bounded_test_builder` (F1) profile; corpus work-item freedom ceiling bound to the real manifest pack ceiling
 - Expected oracle: bounded path may complete only within exact pack/write-set/authority constraints
-- Observed: F1 executor hard-ELIGIBLE; real write-set verification over the candidate paths; every path inside `scripts/test_v48_orchestration_dogfood.py` + `docs/implementation/4.8.0/dogfood/orchestration/**`, none forbidden; 0 escalations
+- Observed: F1 executor hard-ELIGIBLE with eligibility derived from its canonical profile (role + claimed capability + freedom ceiling `freedom_le:F2` equal to the real manifest `task_pack_agent_freedom_ceiling`); an otherwise-identical F3-over-claim variant of the same document failed hard eligibility; real write-set verification over the candidate paths; every path inside `scripts/test_v48_orchestration_dogfood.py` + `docs/implementation/4.8.0/dogfood/orchestration/**`, none forbidden; 0 escalations
 - Environment: local build host · Validation: PENDING · Review: PENDING
 - Limitations: bounded action = write-set conformance verification; no provider-backed generation step was executed (provider claim remains NOT_RUN)
 
@@ -183,6 +183,24 @@ Task: T-011 / Issue #517 · lane `orchestration-dogfood` · target `version/v4.8
 - Observed: successor admission failed closed on both surfaces; claim-surface reconciliation alone kept the resource surface blocked; full durable reconciliation unlocked the successor
 - Environment: local build host · Validation: PENDING · Review: PENDING
 - Limitations: timeouts modeled via explicit liveness/ambiguity facts; no wall-clock timeout service was exercised
+
+### ODF-19 — wrong-role-cannot-reach-ranking-or-admission
+
+- L3 tests: Phase-5 P1 repair contract `#517@5966292564` (wrong-role negative) · Evidence class: `SYNTHETIC_DETERMINISTIC` + `REPOSITORY_REAL_EXECUTION`
+- Inputs: in-memory schema-valid variant of the real `independent_reviewer_or_validator` capability profile document (identical canonical capability claims, `eligible_role_claims` narrowed to `builder`); corpus reviewer work item (`required_role_claim: reviewer`); merged T-008 hard-filter oracle
+- Expected oracle: a candidate whose canonical profile does not claim the work's required role is hard-INELIGIBLE before ranking/admission, whatever its rank or capabilities
+- Observed: builder-role-only impostor stayed INELIGIBLE for the reviewer work with adversarial best rank `(-9999,…)` although it canonically claimed `fresh-independent-review`; in a composed pool with a role-conforming control, only the control was ranked and admitted (`review-quota` consumed exactly once, impostor contributed nothing); the role-conforming control with identical capability claims resolved ELIGIBLE
+- Environment: local build host · Validation: PENDING (successor exact-subject) · Review: PENDING (successor fresh review)
+- Limitations: reference-model composition over a mutated copy of the real corpus document; no live dispatch was performed
+
+### ODF-20 — unclaimed-capability-cannot-reach-ranking-or-admission
+
+- L3 tests: Phase-5 P1 repair contract `#517@5966292564` (unclaimed-capability negative) · Evidence class: `SYNTHETIC_DETERMINISTIC` + `REPOSITORY_REAL_EXECUTION`
+- Inputs: real committed corpus documents; the strong semantic builder's canonical profile (which does **not** claim `deterministic-harness-authoring`); corpus bounded-harness work item; merged T-008 hard-filter oracle
+- Expected oracle: a capability not claimed in the canonical capability profile document cannot participate in hard eligibility; no non-canonical capability source exists
+- Observed: the corpus carries no `scheduling_oracle_capabilities` shadow field (removed in corpus version 2); the strong semantic builder's canonical claims exclude `deterministic-harness-authoring`, so it stayed INELIGIBLE for the bounded-harness work (role and freedom both allow) with adversarial best rank; ranking probe never fired; the canonically-claiming bounded builder control resolved ELIGIBLE for the same work
+- Environment: local build host · Validation: PENDING (successor exact-subject) · Review: PENDING (successor fresh review)
+- Limitations: falsifies the exact shadow drift identified by the Phase-4 Fresh Review P1 over the committed corpus; proves no residual shadow authority participates in eligibility
 
 ## External dimensions — explicit posture
 

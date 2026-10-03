@@ -3,9 +3,15 @@
 Deterministic self-contained orchestration dogfood over explicit durable facts. It composes
 the already-merged T-007 (contract compatibility), T-008 (scheduling/resource), T-009
 (interchange replay/restart) and T-017 (execution ownership) semantics through their public
-conformance modules and proves the ODF-01..ODF-18 scenario/evidence matrix frozen by the
-T-011 Task Pack and L3, without introducing a new scheduler, admission lifecycle, event
-family, schema authority or runtime database.
+conformance modules and proves the ODF-01..ODF-20 scenario/evidence matrix frozen by the
+T-011 Task Pack and L3 (ODF-01..ODF-18) plus the Phase-5 bounded P1 repair negatives
+(ODF-19/ODF-20, dispatch #517@5966292564), without introducing a new scheduler, admission
+lifecycle, event family, schema authority or runtime database.
+
+Hard-eligibility inputs are derived only from canonical logical-Agent capability profile
+documents (real agent-capability-profile-v1): eligible-role claims, actually claimed
+capabilities and the freedom-ceiling constraint are composed into the merged upstream
+oracle's opaque capability-token sets. No fixture-only shadow capability authority exists.
 
 Evidence discipline (T-011 Task Pack; every recorded row carries an explicit class):
 
@@ -63,7 +69,16 @@ EVIDENCE_CLASSES = {
     "BLOCKED",
 }
 
-SCENARIO_ORDER = [f"ODF-{index:02d}" for index in range(1, 19)]
+SCENARIO_ORDER = [f"ODF-{index:02d}" for index in range(1, 21)]
+
+# Canonical Logical Agent freedom ladder (Frozen semantics; agent-capability-profile-v1
+# max_agent_freedom_claim enum, ordered lowest first).
+FREEDOM_ORDER = [
+    "F0_MECHANICAL",
+    "F1_BOUNDED_IMPLEMENTATION",
+    "F2_ENGINEERING_DISCRETION",
+    "F3_ARCHITECTURE_REQUIRED",
+]
 
 # Registry of scenario outcomes; validated for completeness by the runner.
 SCENARIO_REGISTRY: list[dict] = []
@@ -179,18 +194,47 @@ def parse_manifest_durable_facts() -> dict:
     return facts
 
 
+def canonical_profile_scheduling_inputs(document: dict) -> dict:
+    """Derive hard-eligibility inputs from the canonical capability profile document only.
+
+    The merged upstream oracle composes eligibility through its opaque capability-token
+    subset predicate (WorkRequirement.required_capabilities ⊆ AgentProfile.capabilities).
+    This derivation binds that predicate to real agent-capability-profile-v1 fields:
+    actually claimed capabilities, eligible-role claims (role:* tokens) and the freedom
+    constraint (freedom_le:* tokens covering every ceiling at or above the claimed
+    freedom, so a profile only satisfies ceilings its own claim does not exceed).
+    No non-canonical capability source may participate.
+    """
+    claims = frozenset(document.get("reasoning_or_semantic_capability_claims", ()))
+    roles = frozenset(f"role:{role}" for role in document["eligible_role_claims"])
+    freedom_index = FREEDOM_ORDER.index(document["max_agent_freedom_claim"])
+    freedom_tokens = frozenset(
+        f"freedom_le:{level}" for level in FREEDOM_ORDER[freedom_index:]
+    )
+    return {
+        "claimed_capabilities": claims,
+        "role_tokens": roles,
+        "freedom_tokens": freedom_tokens,
+    }
+
+
+def profile_from_corpus(profile: dict) -> scheduling.AgentProfile:
+    inputs = canonical_profile_scheduling_inputs(profile["capability_profile_document"])
+    return scheduling.AgentProfile(
+        profile["profile_key"],
+        inputs["claimed_capabilities"] | inputs["role_tokens"] | inputs["freedom_tokens"],
+    )
+
+
 def work_requirement_from_corpus(item: dict) -> scheduling.WorkRequirement:
     return scheduling.WorkRequirement(
         work_key=item["work_key"],
         ready=item["ready"],
-        required_capabilities=frozenset(item["required_capabilities"]),
-    )
-
-
-def profile_from_corpus(profile: dict) -> scheduling.AgentProfile:
-    return scheduling.AgentProfile(
-        profile["profile_key"],
-        frozenset(profile["scheduling_oracle_capabilities"]),
+        required_capabilities=(
+            frozenset(item["required_capabilities"])
+            | {f"role:{item['required_role_claim']}"}
+            | {f"freedom_le:{item['required_max_agent_freedom']}"}
+        ),
     )
 
 
@@ -348,8 +392,8 @@ class V48OrchestrationDogfood(unittest.TestCase):
             scenario_id="ODF-01",
             name="multi-ready-heterogeneous-eligibility",
             l3_tests="L3 #1 multi-ready-heterogeneous-eligibility",
-            oracle="only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role semantics",
-            observed="5 profile/work pairs resolved ELIGIBLE(3)/INELIGIBLE(2); ranking probe observed exactly the 3 eligible items; corpus profiles validate against agent-capability-profile-v1",
+            oracle="only hard-eligible candidates reach ranking/admission; profile differences resolve through canonical capability/role/freedom semantics",
+            observed="5 profile/work pairs resolved ELIGIBLE(3)/INELIGIBLE(2) with eligibility inputs derived only from canonical agent-capability-profile-v1 documents (eligible role + claimed capabilities + freedom ceiling); ranking probe observed exactly the 3 eligible items; corpus profiles validate against agent-capability-profile-v1",
             evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
             environment="local build host, exact candidate checkout, python -B scripts/test_v48_orchestration_dogfood.py",
         )
@@ -900,6 +944,27 @@ class V48OrchestrationDogfood(unittest.TestCase):
         )
         self.assertEqual("F2_ENGINEERING_DISCRETION", manifest["agent_freedom"])
         self.assertEqual("F2_ENGINEERING_DISCRETION", manifest["task_pack_agent_freedom_ceiling"])
+        # The freedom ceiling is a real durable fact: the corpus work-item ceiling must
+        # equal the real manifest pack ceiling, and it participates as a hard-eligibility
+        # token — an otherwise-identical profile claiming freedom above the ceiling
+        # cannot become eligible for the bounded action.
+        ceiling = corpus["work_items"][1]["required_max_agent_freedom"]
+        self.assertEqual(manifest["task_pack_agent_freedom_ceiling"], ceiling)
+        overfree_document = json.loads(json.dumps(
+            corpus["agent_profiles"][1]["capability_profile_document"]
+        ))
+        overfree_document["profile_id"] = "profile:v48-t011-negative-f3-over-claim"
+        overfree_document["max_agent_freedom_claim"] = "F3_ARCHITECTURE_REQUIRED"
+        self.assertEqual([], validate_subset(overfree_document, PROFILE_SCHEMA))
+        overfree = profile_from_corpus({
+            "profile_key": "overfree_bounded_builder",
+            "capability_profile_document": overfree_document,
+        })
+        self.assertEqual(
+            scheduling.INELIGIBLE,
+            scheduling.resolve_eligibility(scheduling.Candidate(bounded_work, overfree, fresh)),
+            "a freedom claim above the durable pack ceiling must fail hard eligibility",
+        )
 
         # The bounded action: verify the real candidate diff stays inside the authorized
         # Builder write set and outside every forbidden path.
@@ -929,7 +994,7 @@ class V48OrchestrationDogfood(unittest.TestCase):
             name="bounded-executor-eligible-success",
             l3_tests="L3 #14 bounded-executor-eligible-success",
             oracle="bounded path may complete only within exact pack/write-set/authority constraints",
-            observed=f"bounded F1 executor hard-ELIGIBLE; performed real write-set verification over {len(decisions)} candidate path(s) diffed from JIT pack head {pack_head[:12]}; every path inside the authorized write set, none forbidden; 0 escalations",
+            observed=f"bounded F1 executor hard-ELIGIBLE with eligibility derived from its canonical profile (role + claimed capability + freedom ceiling bound to the real manifest pack ceiling); an otherwise-identical F3-over-claim variant failed hard eligibility; performed real write-set verification over {len(decisions)} candidate path(s) diffed from JIT pack head {pack_head[:12]}; every path inside the authorized write set, none forbidden; 0 escalations",
             evidence_class=["REPOSITORY_REAL_EXECUTION"],
             environment="local build host; real git diff/status of the candidate worktree + real MANIFEST write-set facts + merged T-008 eligibility oracle",
         )
@@ -1496,6 +1561,159 @@ class V48OrchestrationDogfood(unittest.TestCase):
             observed="with liveness expiry + ambiguous TIMEOUT release + ambiguous resource publication, successor admission failed closed on both surfaces; claim-surface reconciliation alone kept the resource surface blocked; full durable reconciliation unlocked the successor",
             evidence_class=["REPOSITORY_REAL_EXECUTION"],
             environment="local build host; merged T-017 + T-008 fail-closed oracles over the real claim fixture and corpus resources",
+        )
+
+    # ------------------------------------------------------------------
+    # ODF-19 — wrong-role candidate cannot reach ranking/admission
+    # (Phase-5 bounded P1 repair negative; dispatch #517@5966292564)
+    # ------------------------------------------------------------------
+    def test_odf19_wrong_role_cannot_reach_ranking_or_admission(self) -> None:
+        review_work = work_requirement_from_corpus(self.corpus["work_items"][2])
+        fresh = availability_from_corpus(self.corpus["availability_facts"]["fresh_available"])
+
+        # An in-memory, schema-valid variant of the real reviewer corpus document with
+        # identical canonical capability claims but the eligible-role claim narrowed to
+        # builder only. Capability-wise the impostor is fully qualified, so only the
+        # canonical role allowance can block it.
+        impostor_document = json.loads(json.dumps(
+            self.corpus["agent_profiles"][2]["capability_profile_document"]
+        ))
+        impostor_document["profile_id"] = "profile:v48-t011-negative-builder-only-role"
+        impostor_document["eligible_role_claims"] = ["builder"]
+        self.assertEqual([], validate_subset(impostor_document, PROFILE_SCHEMA))
+        self.assertIn(
+            "fresh-independent-review",
+            canonical_profile_scheduling_inputs(impostor_document)["claimed_capabilities"],
+        )
+        impostor = profile_from_corpus({
+            "profile_key": "wrong_role_builder",
+            "capability_profile_document": impostor_document,
+        })
+
+        # The required role composes into hard eligibility before ranking: with an
+        # adversarial best rank the wrong-role candidate is still INELIGIBLE and the
+        # ranking probe never fires.
+        impostor_candidate = scheduling.Candidate(
+            review_work, impostor, fresh, rank=(-9999, -9999, -9999, -9999),
+        )
+        self.assertEqual(
+            scheduling.INELIGIBLE,
+            scheduling.resolve_eligibility(impostor_candidate),
+            "a candidate whose canonical profile does not claim the required role must be hard-ineligible",
+        )
+
+        # Control: the same canonical capability claims with the reviewer role claim pass
+        # hard eligibility, proving the rejection came from the canonical role field.
+        conforming_document = dict(impostor_document, eligible_role_claims=["reviewer"])
+        conforming = profile_from_corpus({
+            "profile_key": "role_conforming_reviewer",
+            "capability_profile_document": conforming_document,
+        })
+        self.assertEqual(
+            scheduling.ELIGIBLE,
+            scheduling.resolve_eligibility(scheduling.Candidate(review_work, conforming, fresh)),
+        )
+
+        # Composed pipeline: admission is reachable only through hard eligibility plus
+        # ranking. In one pool with the role-conforming control, the impostor is filtered
+        # before the ranking probe and cannot contribute any admission; exactly the
+        # control's single admission is committed.
+        probed: list[str] = []
+
+        def probe(candidate: scheduling.Candidate) -> tuple[int, int, int, int]:
+            probed.append(candidate.work.work_key)
+            return candidate.rank
+
+        control_candidate = scheduling.Candidate(review_work, conforming, fresh, rank=(1, 0, 0, 0))
+        ranked = scheduling.rank_eligible(
+            [impostor_candidate, control_candidate], ranking_probe=probe,
+        )
+        self.assertEqual([control_candidate], ranked)
+        self.assertEqual([review_work.work_key], probed, "only the eligible control may be ranked")
+
+        state = scheduling.AdmissionState()
+        for choice in ranked:
+            result, state = scheduling.admit(
+                state,
+                work_key=choice.work.work_key,
+                expected_generation=state.generation,
+                required=dict(self.corpus["work_items"][2]["required_resources"]),
+                capacities=dict(self.corpus["resource_capacities"]),
+            )
+            self.assertEqual("ACCEPTED", result)
+        self.assertEqual(
+            1, state.used("review-quota"),
+            "the wrong-role candidate must contribute no admission",
+        )
+        record_scenario(
+            scenario_id="ODF-19",
+            name="wrong-role-cannot-reach-ranking-or-admission",
+            l3_tests="Phase-5 P1 repair contract #517@5966292564 (wrong-role negative)",
+            oracle="a candidate whose canonical profile does not claim the work's required role is hard-INELIGIBLE before ranking/admission, whatever its rank or capabilities",
+            observed="builder-role-only variant of the reviewer profile with identical canonical capability claims stayed INELIGIBLE for the reviewer work with adversarial best rank; ranking probe never fired; role-conforming control with the same capability claims resolved ELIGIBLE",
+            evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
+            environment="local build host; merged T-008 hard-filter oracle over a schema-valid variant of the real corpus profile document (real agent-capability-profile-v1 validation)",
+        )
+
+    # ------------------------------------------------------------------
+    # ODF-20 — unclaimed capability cannot reach ranking/admission
+    # (Phase-5 bounded P1 repair negative; dispatch #517@5966292564)
+    # ------------------------------------------------------------------
+    def test_odf20_unclaimed_capability_cannot_reach_ranking_or_admission(self) -> None:
+        corpus = self.corpus
+
+        # No shadow capability authority exists anywhere in the corpus: scheduling-side
+        # capability inputs derive only from canonical capability profile documents.
+        for profile in corpus["agent_profiles"]:
+            self.assertNotIn("scheduling_oracle_capabilities", profile)
+
+        # The exact drift falsified by Fresh Review (P1): the strong semantic builder
+        # once carried deterministic-harness-authoring in a fixture-only shadow field
+        # while its canonical document never claimed it. Under canonical derivation the
+        # capability is simply absent, so pairing it with the bounded-harness work must
+        # fail hard eligibility despite the matching builder role and freedom ceiling.
+        strong = profile_from_corpus(corpus["agent_profiles"][0])
+        self.assertNotIn(
+            "deterministic-harness-authoring",
+            canonical_profile_scheduling_inputs(
+                corpus["agent_profiles"][0]["capability_profile_document"]
+            )["claimed_capabilities"],
+        )
+        bounded_work = work_requirement_from_corpus(corpus["work_items"][1])
+        fresh = availability_from_corpus(corpus["availability_facts"]["fresh_available"])
+        shadow_candidate = scheduling.Candidate(
+            bounded_work, strong, fresh, rank=(-9999, -9999, -9999, -9999),
+        )
+        self.assertEqual(
+            scheduling.INELIGIBLE,
+            scheduling.resolve_eligibility(shadow_candidate),
+            "an unclaimed capability must not become an eligibility input",
+        )
+        probed: list[str] = []
+
+        def probe(candidate: scheduling.Candidate) -> tuple[int, int, int, int]:
+            probed.append(candidate.work.work_key)
+            return candidate.rank
+
+        self.assertEqual(
+            [], scheduling.rank_eligible([shadow_candidate], ranking_probe=probe))
+        self.assertEqual([], probed, "unclaimed-capability candidate must not reach ranking")
+
+        # Control: the canonically-claiming bounded builder remains eligible for the same
+        # work, proving the rejection came from the unclaimed capability alone.
+        bounded = profile_from_corpus(corpus["agent_profiles"][1])
+        self.assertEqual(
+            scheduling.ELIGIBLE,
+            scheduling.resolve_eligibility(scheduling.Candidate(bounded_work, bounded, fresh)),
+        )
+        record_scenario(
+            scenario_id="ODF-20",
+            name="unclaimed-capability-cannot-reach-ranking-or-admission",
+            l3_tests="Phase-5 P1 repair contract #517@5966292564 (unclaimed-capability negative)",
+            oracle="a capability not claimed in the canonical capability profile document cannot participate in hard eligibility; no non-canonical capability source exists",
+            observed="corpus carries no scheduling_oracle_capabilities shadow field; strong semantic builder's canonical claims exclude deterministic-harness-authoring, so it stayed INELIGIBLE for the bounded-harness work (role and freedom both allow) with adversarial best rank; ranking probe never fired; canonically-claiming bounded builder control resolved ELIGIBLE",
+            evidence_class=["SYNTHETIC_DETERMINISTIC", "REPOSITORY_REAL_EXECUTION"],
+            environment="local build host; merged T-008 hard-filter oracle over the real committed corpus documents",
         )
 
 

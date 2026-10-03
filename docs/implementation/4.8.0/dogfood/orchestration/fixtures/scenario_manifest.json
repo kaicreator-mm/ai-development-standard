@@ -1,8 +1,13 @@
 {
   "schema": "ai-dev/v48-t011-orchestration-dogfood-corpus:1",
   "corpus_id": "t011-orchestration-dogfood",
-  "corpus_version": "1",
+  "corpus_version": "2",
   "purpose": "Deterministic scenario corpus for the T-011 heterogeneous orchestration dogfood. Composes already-merged v4.8 T-007/T-008/T-009/T-017 semantics only; introduces no scheduler, lifecycle, availability authority, exchange family or runtime database.",
+  "repair_provenance": {
+    "phase": "PHASE_5_BOUNDED_P1_REPAIR",
+    "dispatch": "kaicreator-mm/ai-development-standard#517@5966292564",
+    "change": "Corpus version 2: removed the fixture-only scheduling_oracle_capabilities shadow capability authority; hard-eligibility inputs (required role, actually claimed capabilities, required max agent freedom) now derive only from canonical agent-capability-profile-v1 documents; added the ODF-19 wrong-role and ODF-20 unclaimed-capability negatives."
+  },
   "exact_base_sha": "94955c6f93fd7316406ea96bce8f7c32a62509ef",
   "exact_base_tree": "bb7f25f1e05ff2423fc79029465bcf7be458a82c",
   "jit_pack_head": "26fdae3dd2b4a686820637665ee6f30811543b1f",
@@ -32,7 +37,6 @@
         "security_or_side_effect_class_claims": ["repository-local-write"],
         "environment_or_runner_requirement_refs": ["env:local-build-host"]
       },
-      "scheduling_oracle_capabilities": ["semantic-repair-planning", "cross-cutting-refactor", "deterministic-harness-authoring"],
       "provenance_only": true
     },
     {
@@ -52,7 +56,6 @@
         "security_or_side_effect_class_claims": ["repository-local-write-within-write-set"],
         "environment_or_runner_requirement_refs": ["env:local-build-host"]
       },
-      "scheduling_oracle_capabilities": ["deterministic-harness-authoring"],
       "provenance_only": true
     },
     {
@@ -72,7 +75,6 @@
         "security_or_side_effect_class_claims": ["read-only-plus-report"],
         "environment_or_runner_requirement_refs": ["env:local-build-host"]
       },
-      "scheduling_oracle_capabilities": ["fresh-independent-review", "exact-subject-validation"],
       "provenance_only": true
     }
   ],
@@ -82,6 +84,7 @@
       "ready": true,
       "required_role_claim": "builder",
       "required_capabilities": ["semantic-repair-planning"],
+      "required_max_agent_freedom": "F2_ENGINEERING_DISCRETION",
       "required_resources": {"build-host-pool": 2},
       "required_compatibility_keys": ["same-host"],
       "rank": [10, 0, 0, 0]
@@ -91,6 +94,7 @@
       "ready": true,
       "required_role_claim": "builder",
       "required_capabilities": ["deterministic-harness-authoring"],
+      "required_max_agent_freedom": "F2_ENGINEERING_DISCRETION",
       "required_resources": {"build-host-pool": 1},
       "required_compatibility_keys": [],
       "rank": [20, 0, 0, 0]
@@ -100,6 +104,7 @@
       "ready": true,
       "required_role_claim": "reviewer",
       "required_capabilities": ["fresh-independent-review"],
+      "required_max_agent_freedom": "F2_ENGINEERING_DISCRETION",
       "required_resources": {"review-quota": 1},
       "required_compatibility_keys": [],
       "rank": [30, 0, 0, 0]
