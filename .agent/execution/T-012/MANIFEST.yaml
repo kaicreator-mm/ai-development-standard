@@ -17,7 +17,8 @@ frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
 frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
 frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
 generated_by: chatgpt-web:v48-t012-phase1-planning-builder
-dependency_completion:
+generated_at: "2026-10-03T11:35:57Z"
+dependency_evidence:
   - T-004/#511:DONE
   - T-007/#513:DONE
   - T-008/#514:DONE
