@@ -2,7 +2,7 @@
 
 ```text
 VERSION=v4.9.0
-STATE=TASK_DAG_FROZEN_MATERIALIZATION_AUTHORIZED
+STATE=TASKS_MATERIALIZED_DEPENDENCY_HYDRATION_PENDING
 PRODUCT_AUTHORITY=FROZEN
 CURRENT_PRD_REVISION=v0.4
 FROZEN_PRD_BLOB=a8ec7030a14337a4c2dca853dc474e965679d610
@@ -12,18 +12,19 @@ L2_REVISION=v0.2
 FROZEN_L2_BLOB=bd41ea0175b459a6a490fd37ad579e429a58a1c3
 L2_REVIEW=#713@5967608074 PASS
 L2_FREEZE=#714 PASS
-L2_FREEZE_CHECKPOINT=8694a2616e9eb61da9df15fd4a00b0034e368773
 TASK_DAG_AUTHORITY=FROZEN
 TASK_DAG_REVISION=v0.2
 FROZEN_TASK_DAG_BLOB=b9fe0cc7089f64929b4bcf45f7230d950e864db2
 TASK_DAG_REVIEW=#718@5968672000 PASS
-TASK_DAG_REVIEW_COUNTS=P0:0,P1:0,P2:0,P3:0
-TASK_DAG_FREEZE=#719
+TASK_DAG_FREEZE=#719@5968749511 PASS
+TASK_DAG_FREEZE_CHECKPOINT=81d683d7632b1100169dc6e5f18092f77684ef5c
 TASK_COUNT=15
-TASK_PACK_MATERIALIZATION=AUTHORIZED_AFTER_FREEZE_CHECKPOINT_VERIFY
-IMPLEMENTATION_ISSUE_MATERIALIZATION=AUTHORIZED_AFTER_FREEZE_CHECKPOINT_VERIFY
-IMPLEMENTATION_BRANCH_AUTHORITY=READY_ONLY
-BUILDER_DISPATCH_AUTHORITY=READY_ONLY
+TASK_ISSUES=#720-#734
+TASK_PACK_MATERIALIZATION=COMPLETE
+IMPLEMENTATION_ISSUE_MATERIALIZATION=COMPLETE
+NATIVE_DEPENDENCY_HYDRATION=PENDING_LOCAL_AGENT
+IMPLEMENTATION_BRANCH_AUTHORITY=NO_UNTIL_READY_ADMISSION
+BUILDER_DISPATCH_AUTHORITY=NO_UNTIL_READY_ADMISSION
 IMPLEMENTATION_AUTHORITY=TASK_SCOPED_AND_ADMISSION_BOUND
 PLANNING_PARENT=#697
 PRIMARY_PLANNING_INPUT=#680
@@ -33,8 +34,8 @@ PLANNING_PR=#698
 
 ## Current stage
 
-Product v0.4, L2 v0.2 and Task DAG v0.2 are Frozen authorities. #718 complete-delta review passed the exact DAG v0.2 candidate with zero findings. #719 records the administrative DAG Freeze.
+Product, L2 and Task DAG are Frozen. Task Issues #720–#734 and matching Task Packs are durably materialized.
 
-The next stage is Task Pack and Task Issue materialization. Materialization MUST preserve the exact Frozen dependency graph and per-Task `LINEAGE_CURRENTNESS_REFS[]`. Native Issue Dependencies represent only semantic Task dependencies; predecessor lineage is a separate currentness/admission predicate.
+The GitHub connector used by this Controller cannot mutate GitHub Native Issue Dependencies, so the Frozen `deps[]` graph has not yet been claimed as hydrated. Prose dependency references are explicitly non-authoritative for READY. A local GitHub-capable agent must hydrate exactly the Frozen edges and verify them.
 
-A materialized Task Issue is not automatically implementation-ready. Branch/Execution Pack/Builder dispatch occurs only after the Task's dependency, lineage, Assurance Plan, authority, independence and resource predicates are current and satisfied. Known lineage-waiting work remains non-dispatchable.
+No implementation branch or Builder dispatch is authorized yet. After native-edge hydration, the Controller must re-evaluate each Task's exact integration baseline, `LINEAGE_CURRENTNESS_REFS[]`, Task Pack/L3, current Assurance Plan, authority/independence/resource predicates and Claim requirements. Only Tasks that pass that admission may transition from `state:planned` to executable READY.
