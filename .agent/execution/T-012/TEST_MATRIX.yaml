@@ -1,0 +1,72 @@
+task_id: T-012
+claim_preflight:
+  - live-version-v4.8.0-sha-equals-257e95531551960cb163a3e20ab2b3d13f415d3c
+  - task-pack-blob-equals-10168f6ea2a1cb3b0ffff9c1a493b0904d82942f
+  - l3-blob-equals-82f0ac808f423d861c030413046c2b2e689bfc1d
+  - native-issue-518-blocked-by-zero
+  - reread-issue-469-and-require-no-material-successor-after-comment-5925124956-or-stop-for-rebind
+repository_checks:
+  - git diff --check <PACK_HEAD>...HEAD
+  - git diff --name-only <PACK_HEAD>...HEAD
+  - python -B scripts/verify_standard.py
+scenarios:
+  - id: BDF-01
+    name: source-identity-currentness
+    oracle: material-source-claims-bind-exact-refs-and-historical-checkpoints-are-not-current
+    evidence: [SOURCE_PINNED_FACT]
+  - id: BDF-02
+    name: actual-bounded-execution-status
+    oracle: source-task-status-is-preserved-without-upgrading-pending-or-limited-gates
+    evidence: [SOURCE_PINNED_FACT, SOURCE_REPORTED_VALIDATED_REVIEWED]
+  - id: BDF-03
+    name: builder-profile-provenance
+    oracle: provider-model-is-provenance-only-and-freedom-comes-from-pack-authority
+    evidence: [SOURCE_PINNED_FACT, T012_BUILDER_OBSERVED]
+  - id: BDF-04
+    name: clarification-escalation-accounting
+    oracle: exact-observed-values-or-NOT_REPORTED-NOT_MEASURED-never-silence-to-zero
+    evidence: [SOURCE_PINNED_FACT, T012_BUILDER_OBSERVED]
+  - id: BDF-05
+    name: edit-test-loop-accounting
+    oracle: loops-retain-work-attribution-and-do-not-become-cross-task-causal-proof
+    evidence: [SOURCE_PINNED_FACT, T012_BUILDER_OBSERVED]
+  - id: BDF-06
+    name: negative-oracle-contract-write-set-drift
+    oracle: caught-uncaught-builder-validation-and-review-findings-remain-distinct
+    evidence: [SOURCE_PINNED_FACT]
+  - id: BDF-07
+    name: stale-pack-base-source-rebind
+    oracle: stale-identities-never-silently-inherit-current-truth
+    evidence: [SOURCE_PINNED_FACT, T012_BUILDER_OBSERVED]
+  - id: BDF-08
+    name: validation-review-independence
+    oracle: builder-validator-fresh-reviewer-remain-distinct-exact-subject-gates
+    evidence: [SOURCE_REPORTED_VALIDATED_REVIEWED]
+  - id: BDF-09
+    name: review-findings-rework
+    oracle: later-review-findings-remain-visible-even-after-green-builder-validation
+    evidence: [SOURCE_PINNED_FACT]
+  - id: BDF-10
+    name: time-resource-token-cost-comparability
+    oracle: only-observed-comparable-fields-are-reported-and-missing-fields-stay-NOT_MEASURED
+    evidence: [SOURCE_PINNED_FACT, T012_BUILDER_OBSERVED, NOT_MEASURED]
+  - id: BDF-11
+    name: t012-bounded-builder-self-dogfood
+    oracle: own-F1-write-set-currentness-metrics-and-escalation-behavior-are-recorded-separately
+    evidence: [T012_BUILDER_OBSERVED]
+  - id: BDF-12
+    name: evidence-governance-disposition
+    oracle: result-is-MORE_EVIDENCE-NO_CHANGE-or-ADS_EVOLUTION_CANDIDATE-without-automatic-standard-mutation
+    evidence: [T012_BUILDER_OBSERVED]
+economic_boundary:
+  required_default: ECONOMIC_SAVINGS=NOT_MEASURED
+  override_requires: comparable-population-scope-gates-measured-resource-time-token-cost-method-limitations
+routing_boundary:
+  blanket_strong_to_low_cost_rule: PROHIBITED
+  provider_model_as_authority: PROHIBITED
+validation:
+  owner: independent-from-builder
+  scope: exact-subject-evidence-integrity
+fresh_review:
+  required: true
+  owner: genuinely-independent-from-builder-and-validator
