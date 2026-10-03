@@ -1,0 +1,41 @@
+task_id: T-006
+failure_modes:
+  - condition: live version/v4.8.0 SHA or tree differs from pinned base before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: request execution-pack rebind; do not transplant stale implementation
+  - condition: pinned v4.7 source SHA/tree is unavailable or differs from recorded source
+    disposition: BLOCKED_SOURCE_CURRENTNESS
+    action: stop; do not guess/copy from another ref
+  - condition: Task Pack or L3 blob differs from MANIFEST.yaml
+    disposition: PACK_STALE_MATERIAL
+    action: stop and rebind pack
+  - condition: a COPY_EXACT path cannot be carried byte-for-byte without semantic conflict
+    disposition: TASK_PACK_DEFECT_OR_ARCHITECTURE_AMENDMENT_REQUIRED
+    action: report exact path/conflict; do not silently adapt
+  - condition: implementation needs a path outside the 22-path Builder write set
+    disposition: TASK_PACK_DEFECT
+    action: stop; request bounded planning amendment
+  - condition: Frozen Product/L2 must change to make the design coherent
+    disposition: ARCHITECTURE_AMENDMENT_REQUIRED
+    action: stop with exact contradiction evidence
+  - condition: fourth machine family, second Interchange owner/version, or Availability durable family is required
+    disposition: ARCHITECTURE_AMENDMENT_REQUIRED
+    action: stop; do not implement
+  - condition: provider/model/capability metadata would grant authority/current truth
+    disposition: SEMANTIC_DEFECT
+    action: fail candidate; repair within owner/task authority only
+  - condition: semantic concern has competing owners, broken owner/alias, alias chain/cycle, or unknown materiality
+    disposition: FAIL_CLOSED
+    action: no ordering/fallback winner; report defect
+  - condition: P3 contradiction-aware mutation probe passes unexpectedly
+    disposition: VERIFIER_DEFECT
+    action: repair focused verifier before candidate handoff
+  - condition: historical v4.7 PASS/evidence is rebound to v4.8 exact subject
+    disposition: EVIDENCE_IDENTITY_DEFECT
+    action: reject candidate
+  - condition: required Builder gate fails due to sibling owner defect
+    disposition: OWNER_HANDOFF_BLOCKED
+    action: do not repair sibling owner under T006
+  - condition: implementation attempts to reuse/merge/retarget PR #741
+    disposition: PROHIBITED_STALE_CANDIDATE_REUSE
+    action: create new successor branch/PR from current exact base
