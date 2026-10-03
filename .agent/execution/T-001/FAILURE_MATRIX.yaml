@@ -1,0 +1,16 @@
+task: T-001
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: implementation_changes_assurance_owner_identity_or_finding_aggregation
+    action: FAIL_SCOPE_AND_ROUTE_UPWARD
+  - condition: implementation_requires_schema_or_unlisted_normative_surface
+    action: STOP_TASK_PACK_DEFECT
+  - condition: review_validation_or_release_truth_is_minted_by_assurance_owner
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: historical_assurance_plan_v1_is_invalidated
+    action: FAIL_COMPATIBILITY
+  - condition: required_validation_environment_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: final_candidate_changes_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE

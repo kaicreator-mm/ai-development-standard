@@ -1,0 +1,38 @@
+pack_id: v4.9.0-T-001-67ad362a
+task_id: T-001
+repository: kaicreator-mm/ai-development-standard
+version: 4.9.0
+base_sha: 67ad362a47d665c38dbb25f1667b064e6379923d
+base_tree: 9d334c6290e6cf924dd58c909684c5d6451103fe
+task_pack_blob: 3b88469f36f70c778b87567235bb580d31330cba
+task_pack_ref: docs/implementation/4.9.0/task-packs/T01_assurance_plan_owner.md
+l3_blob: f4633ca5afa4050c94a286270738dc32d561a62e
+branch: task/v4.9.0-t01-assurance-owner
+parent_issue: "#720"
+execution_parent: "#745"
+admission_ref: "#746"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+lineage_currentness_refs: []
+lineage_last_check_ref: NOT_APPLICABLE_NO_LINEAGE:#742
+native_blockers: 0
+review_policy: required
+validation_owner: normative-static-owner-conformance
+source_write_set:
+  - standards/ASSURANCE_PLAN_STANDARD.md
+  - references/ASSURANCE_PLAN_REFERENCE.md
+  - scripts/test_v49_assurance_owner.py
+read_only_authority_inputs:
+  - docs/implementation/4.0.0/ASSURANCE_PLAN.md
+  - docs/implementation/4.9.0/TASK_DAG.md
+  - docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
