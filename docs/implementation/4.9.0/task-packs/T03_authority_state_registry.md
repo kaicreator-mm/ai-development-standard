@@ -10,6 +10,7 @@ issue: 722
 dependencies: [T-002/#721]
 lineage_currentness_refs: [LG47_REGISTRY]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: registry-and-forbidden-inference

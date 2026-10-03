@@ -10,6 +10,7 @@ issue: 734
 dependencies: [T-011/#730, T-012/#731, T-013/#732, T-014/#733]
 lineage_currentness_refs: [LG_SEQ_FULL]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: integrated-dogfood-and-closure-handoff

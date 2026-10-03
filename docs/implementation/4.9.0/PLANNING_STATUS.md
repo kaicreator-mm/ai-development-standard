@@ -2,7 +2,7 @@
 
 ```text
 VERSION=v4.9.0
-STATE=TASK_PACK_L3_CANDIDATE_PENDING_FRESH_REVIEW
+STATE=TASK_PACK_L3_SUCCESSOR_PENDING_FRESH_REVIEW
 PRODUCT_AUTHORITY=FROZEN
 CURRENT_PRD_REVISION=v0.4
 FROZEN_PRD_BLOB=a8ec7030a14337a4c2dca853dc474e965679d610
@@ -23,10 +23,12 @@ TASK_ISSUES=#720-#734
 TASK_PACK_MATERIALIZATION=COMPLETE
 IMPLEMENTATION_ISSUE_MATERIALIZATION=COMPLETE
 NATIVE_DEPENDENCY_HYDRATION=#735@5968918499 PASS_38_OF_38
-TASK_PACK_L3_AUTHORING=#736
-TASK_PACK_CHECKPOINT_BLOB=4e182e67c0727236d385591714991cbf304b7e4c
+TASK_PACK_L3_AUTHORING=#736 COMPLETE
+PREDECESSOR_TASK_PACK_L3_REVIEW=#737@5969060462 FAIL_P1_1
+TASK_PACK_L3_REPAIR=#742
+TASK_PACK_CHECKPOINT_BLOB=193f5798497ed01bd11e128074959643944103b9
 L3_REFERENCE_BLOB=f4633ca5afa4050c94a286270738dc32d561a62e
-TASK_PACK_L3_FRESH_REVIEW=#737 REQUIRED
+SUCCESSOR_TASK_PACK_L3_REVIEW=#743 REQUIRED
 PLANNING_INTEGRATION=NO
 VERSION_BASELINE=NO
 TASK_READY_MUTATION=NO
@@ -41,8 +43,10 @@ PLANNING_PR=#698
 
 ## Current stage
 
-Product, L2 and Task DAG are Frozen. Task Issues #720–#734, all 15 Task Packs, and GitHub Native Issue Dependencies are materialized. #735 independently read back the native DAG as an exact 38/38 match with no lineage predicate converted to an edge and no Task state/branch/Dispatch mutation.
+Product, L2 and Task DAG are Frozen. Task Issues #720–#734, all 15 Task Packs, and GitHub Native Issue Dependencies are materialized. #735 read back an exact 38/38 native dependency graph with no lineage predicate converted to an edge.
 
-#736 authored the candidate shared L3 implementation reference and exact Task Pack checkpoint. The checkpoint remains planning evidence only; every Task is still `PLANNED / NOT_BUILDER_READY` (with lineage-waiting projections where applicable).
+#737 Fresh Pack/L3 Review failed only on P1 `INCOMPLETE_LINEAGE_LAST_CHECK_MATERIALIZATION`: the Frozen DAG requires every Task Pack and Task Issue to carry `LINEAGE_LAST_CHECK_REF`.
 
-The next gate is a genuinely Fresh independent Task Pack/L3 Review bound to the exact planning HEAD/tree, L3 blob, checkpoint blob and all 15 Task Pack blobs. Review PASS does not itself make any Task READY. After PASS, the Controller must integrate the planning PR by expected head, establish the exact `version/v4.9.0` baseline, and then recompute root Task admission from native blockers + lineage currentness + Pack/L3 + Assurance/authority/independence/resource/Claim predicates.
+#742 performs only that bounded materialization repair. T-001/T-005 use `NOT_APPLICABLE_NO_LINEAGE:#742`; all lineage-bearing Tasks use `NOT_CHECKED_PRE_ADMISSION:#742`, which remains fail-closed and is not currentness proof. All Tasks remain `PLANNED / NOT_BUILDER_READY`, with no implementation branch, Execution Pack, Dispatch or Claim.
+
+The next gate is #743 Fresh successor Task Pack/L3 Review on the exact repaired Pack set and unchanged L3 blob. PASS does not make any Task READY. Only after successor review PASS may the Controller perform expected-head planning integration, establish exact `version/v4.9.0` baseline, and recompute root admission.

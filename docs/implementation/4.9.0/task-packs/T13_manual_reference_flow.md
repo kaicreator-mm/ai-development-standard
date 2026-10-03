@@ -10,6 +10,7 @@ issue: 732
 dependencies: [T-008/#727, T-010/#729, T-011/#730]
 lineage_currentness_refs: [LG_SEQ_FULL]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: recommended
 validation_owner: reference-and-example-checks

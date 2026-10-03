@@ -10,6 +10,7 @@ issue: 730
 dependencies: [T-003/#722, T-004/#723, T-005/#724, T-006/#725, T-008/#727, T-009/#728, T-010/#729]
 lineage_currentness_refs: [LG42_COMPAT, LG43_DAG, LG47_REGISTRY, LG48_EXEC, LG48_LEARNING]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: manifest-registry-adoption

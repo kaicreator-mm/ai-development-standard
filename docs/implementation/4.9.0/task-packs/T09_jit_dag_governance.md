@@ -10,6 +10,7 @@ issue: 728
 dependencies: [T-007/#726]
 lineage_currentness_refs: [LG43_DAG, LG48_EXEC]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: dag-mutation-classification

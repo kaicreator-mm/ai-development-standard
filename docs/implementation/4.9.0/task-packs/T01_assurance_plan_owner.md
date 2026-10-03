@@ -10,6 +10,7 @@ issue: 720
 dependencies: []
 lineage_currentness_refs: []
 lineage_currentness_posture: CURRENT
+lineage_last_check_ref: NOT_APPLICABLE_NO_LINEAGE:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: normative-static-owner-conformance

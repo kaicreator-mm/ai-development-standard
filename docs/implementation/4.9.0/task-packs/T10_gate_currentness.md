@@ -10,6 +10,7 @@ issue: 729
 dependencies: [T-002/#721, T-005/#724, T-007/#726]
 lineage_currentness_refs: [LG42_COMPAT, LG48_EXEC]
 lineage_currentness_posture: UNKNOWN
+lineage_last_check_ref: NOT_CHECKED_PRE_ADMISSION:#742
 integration_target: version/v4.9.0-after-planning-integration
 review_policy: required
 validation_owner: evidence-currentness-and-transfer
