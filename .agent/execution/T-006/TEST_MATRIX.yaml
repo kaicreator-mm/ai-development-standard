@@ -1,0 +1,94 @@
+schema: t006-registry-adoption-test-matrix-v1
+task_id: T-006
+subject_issue: "#512"
+evidence_class: repository-real-deterministic
+external_real_claims_required: false
+
+focused:
+  - id: RA-01
+    name: exactly-three-v48-machine-families
+    oracle: "the three named v4.8 schema paths are present exactly once in manifest machine_contracts"
+    blocking: true
+  - id: RA-02
+    name: interchange-v1-reuse
+    oracle: "schemas/interchange-envelope-v1.schema.json is present exactly once and no T-006 Interchange family is introduced"
+    blocking: true
+  - id: RA-03
+    name: owner-reference-discovery
+    oracle: "three owner references plus V48 Interchange compatibility are discoverable exactly once"
+    blocking: true
+  - id: RA-04
+    name: project-adoption-discovery
+    oracle: "PROJECT_ADOPTION points to bounded v4.8 discovery without mandatory optional adoption"
+    blocking: true
+  - id: RA-05
+    name: fast-path-preserved
+    oracle: "Fast Path remains lightweight and TASK_LEARNING=NONE_MATERIAL remains valid"
+    blocking: true
+  - id: RA-06
+    name: historical-compatibility
+    oracle: "legacy manifest inventory is not removed and migration is additive"
+    blocking: true
+  - id: RA-07
+    name: metadata-only
+    oracle: "T-006 reference states authority_effect=NONE, gate_effect=NONE, mutation_authorized=false"
+    blocking: true
+  - id: RA-08
+    name: v47-lineage-honesty
+    oracle: "branch-only v4.7 registry/routing artifacts are not represented as current v4.8 owners"
+    blocking: true
+  - id: RA-09
+    name: registered-path-integrity
+    oracle: "every T-006 newly registered current-branch path exists"
+    blocking: true
+  - id: RA-10
+    name: no-sibling-owner-rewrite
+    oracle: "candidate diff is contained in the exact five-path Builder write set"
+    blocking: true
+
+negative:
+  - id: RA-N01
+    case: fourth-v48-machine-family
+    expected: FAIL
+  - id: RA-N02
+    case: duplicate-or-new-interchange-owner
+    expected: FAIL
+  - id: RA-N03
+    case: registry-grants-mutation-merge-pass-release-authority
+    expected: FAIL
+  - id: RA-N04
+    case: provider-model-identity-promoted-to-authority
+    expected: FAIL
+  - id: RA-N05
+    case: capability-evidence-promoted-to-current-validation-review-truth
+    expected: FAIL
+  - id: RA-N06
+    case: optional-family-made-unconditionally-mandatory
+    expected: FAIL
+  - id: RA-N07
+    case: historical-manifest-entry-removed
+    expected: FAIL
+  - id: RA-N08
+    case: v47-branch-only-owner-copied-or-claimed-current
+    expected: FAIL
+  - id: RA-N09
+    case: sibling-owner-path-mutated
+    expected: FAIL
+  - id: RA-N10
+    case: stale-base-or-pack
+    expected: REBIND
+
+commands:
+  - python -B scripts/test_v48_registry_adoption.py
+  - python -B scripts/test_v48_task_learning.py
+  - python -B scripts/test_v48_agent_capability_profile.py
+  - python -B scripts/test_v48_agent_capability_evidence.py
+  - python -B scripts/test_v48_interchange_profile.py
+  - python -B scripts/test_v48_contract_compatibility.py
+  - python -B scripts/test_work_item_contract_and_golden_templates.py
+  - python -B scripts/verify_standard.py
+
+phase_semantics:
+  builder_test_result: implementation_evidence_only
+  independent_validation_required: true
+  fresh_review_after_validation_pass_only: true

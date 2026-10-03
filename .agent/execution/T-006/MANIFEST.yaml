@@ -1,0 +1,79 @@
+pack_id: v4.8.0-T-006-jit-1
+task_id: T-006
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+parent_issue: "#512"
+branch: task/v4.8.0-t06-registry-adoption
+base_sha: 257e95531551960cb163a3e20ab2b3d13f415d3c
+base_tree: 1171de2c8afb08d6f793a258ffd0b586007e9dbf
+task_pack_ref: docs/implementation/4.8.0/task-packs/T06_registry_adoption.md
+task_pack_blob: 6d6ea5b8ad69e1536495ee59228b0037818ac9a7
+l3_ref: docs/implementation/4.8.0/L3_T06_REGISTRY_ADOPTION.md
+l3_blob: a4b7087c2fa53abc655ce22a417eb3e04a7bc8bb
+frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
+generated_by: chatgpt-web:v48-t006-phase1-planning
+generation_phase: T006_TASK_PACK_L3_JIT_PLANNING
+agent_freedom: F2_ENGINEERING_DISCRETION
+execution_ceiling: bounded_registry_adoption_integration
+pinned_standard_revision: version/v4.8.0@257e95531551960cb163a3e20ab2b3d13f415d3c
+dependency_completion:
+  native_blocked_by: 0
+  native_total_blocked_by: 7
+  required:
+    - T-001/#507
+    - T-015/#522
+    - T-016/#524
+    - T-002/#510
+    - T-003/#508
+    - T-004/#511
+    - T-005/#509
+material_paths:
+  read_only:
+    - schemas/task-learning-v1.schema.json
+    - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+    - schemas/agent-capability-profile-v1.schema.json
+    - references/AGENT_CAPABILITY_PROFILE_REFERENCE.md
+    - schemas/agent-capability-evidence-v1.schema.json
+    - references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md
+    - schemas/interchange-envelope-v1.schema.json
+    - references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md
+    - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+builder_write_set:
+  - standard-manifest.json
+  - standards/PROJECT_ADOPTION.md
+  - references/V48_REGISTRY_ADOPTION_REFERENCE.md
+  - docs/implementation/4.8.0/MIGRATION_ADOPTION.md
+  - scripts/test_v48_registry_adoption.py
+forbidden_builder_paths:
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/L2_FREEZE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - schemas/task-learning-v1.schema.json
+  - schemas/agent-capability-profile-v1.schema.json
+  - schemas/agent-capability-evidence-v1.schema.json
+  - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+  - references/AGENT_CAPABILITY_PROFILE_REFERENCE.md
+  - references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md
+  - schemas/interchange-envelope-v1.schema.json
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - .github/workflows/**
+review_policy: required
+validation_owner: independent-from-builder
+validation_scope: exact-subject-integration
+external_real_claims_required: false
+core_artifacts:
+  - .agent/execution/T-006/MANIFEST.yaml
+  - .agent/execution/T-006/EXECUTION_CONTRACT.md
+  - .agent/execution/T-006/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-006/TEST_MATRIX.yaml
+  - .agent/execution/T-006/FAILURE_MATRIX.yaml
+  - .agent/execution/T-006/REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED

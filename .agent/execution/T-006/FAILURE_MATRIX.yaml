@@ -1,0 +1,45 @@
+schema: t006-registry-adoption-failure-matrix-v1
+task_id: T-006
+
+failures:
+  - id: F-BASE-DRIFT
+    trigger: "live version/v4.8.0 no longer matches the pack's exact execution base without explicit Controller rebind"
+    action: STOP_REBIND
+  - id: F-DEPENDENCY-DRIFT
+    trigger: "#512 native blocked_by becomes nonzero or dependency identity changes"
+    action: STOP_REBIND
+  - id: F-WRITESET
+    trigger: "implementation needs or changes any path outside the exact five-path Builder write set"
+    action: STOP_TASK_PACK_AMENDMENT
+  - id: F-SIBLING-OWNER
+    trigger: "acceptance requires changing an upstream schema/reference/semantic owner"
+    action: STOP_ROUTE_TO_OWNER
+  - id: F-FOURTH-FAMILY
+    trigger: "a fourth new v4.8 machine-contract family appears necessary"
+    action: STOP_ARCHITECTURE_AMENDMENT
+  - id: F-INTERCHANGE
+    trigger: "a new/duplicate Interchange owner or version is introduced"
+    action: STOP_ARCHITECTURE_AMENDMENT
+  - id: F-V47-PORT
+    trigger: "implementation requires copying or treating v4.7 branch-only registry resolver/schema/reference machinery as current v4.8 authority"
+    action: STOP_ARCHITECTURE_AMENDMENT
+  - id: F-AUTHORITY-INFLATION
+    trigger: "registry/adoption/provider/capability metadata grants mutation, merge, PASS, release, eligibility, or correctness authority"
+    action: STOP_REPAIR_WITHIN_WRITESET_OR_ESCALATE
+  - id: F-HISTORICAL-BREAK
+    trigger: "existing manifest inventory or historical v4 contracts must be destructively rewritten"
+    action: STOP_COMPATIBILITY_FINDING
+  - id: F-TEST
+    trigger: "focused or required regression command fails"
+    action: STOP_REPORT_EXACT_FAILURE
+  - id: F-EXTERNAL-CLAIM
+    trigger: "a claim requires unavailable external host/provider/runtime evidence"
+    action: RECORD_NOT_RUN_AND_HANDOFF
+  - id: F-PHASE-COLLAPSE
+    trigger: "Builder evidence is used as independent Validation/Review or merge authorization"
+    action: STOP_GATE_VIOLATION
+  - id: F-T013-T014
+    trigger: "T-013 or T-014 work is pulled into T-006"
+    action: STOP_SCOPE_VIOLATION
+
+default_rule: "fail closed; never widen scope silently"
