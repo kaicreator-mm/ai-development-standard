@@ -173,3 +173,93 @@ tag/release name when created
 ## 10. Version Closure checklist
 
 Use `checklists/version-closure.md`. Closure must preserve truthful unresolved states; it may not rename FAIL/BLOCKED/NOT_RUN to manufacture READY.
+
+## 11. Release applicability by gate × subject
+
+Release applicability is owned by this Release authority. It is evaluated **per Release-owned gate × exact subject**, not as one concern-level switch and not by an Orchestrator, Builder, Reviewer, Validator, CI system, risk label, or model judgment.
+
+Canonical applicability values are:
+
+```text
+REQUIRED_NOW
+DEFERRED_TO_VERSION_CLOSURE
+NOT_APPLICABLE
+UNKNOWN
+```
+
+### 11.1 Meaning
+
+`REQUIRED_NOW` means the Release-owned gate is required for the bound subject at the current release stage.
+
+`DEFERRED_TO_VERSION_CLOSURE` means the concern-level execution may proceed without executing that gate now, but the requirement is **not removed**. The composed version candidate MUST receive a fresh Release-owned applicability evaluation at Version Closure before Candidate Freeze/Release Qualification can rely on the deferral.
+
+`NOT_APPLICABLE` means the Release authority has positively established, from current owner-accepted facts or deterministic proof, that the specific gate does not apply to the specific subject. Low risk, documentation labels, small write sets, task/PR PASS, or local concern success are never sufficient by themselves.
+
+`UNKNOWN` is fail-closed. It MUST select the stronger existing legal release path or produce `BLOCKED`; it MUST NOT be interpreted as `NOT_APPLICABLE` or as implicit deferral.
+
+### 11.2 Decision identity
+
+A durable applicability decision SHOULD bind at least:
+
+```text
+gate_id
+subject_ref
+subject_identity
+applicability
+release_authority_ref
+decision_ref
+basis_or_proof_refs
+candidate_or_currentness_identity
+decided_at
+actor_or_operator
+```
+
+When the owning Release rule requires stronger identity, that stronger binding controls. Missing or stale required binding makes the decision non-current.
+
+### 11.3 No concern-to-version aggregation
+
+Concern-level applicability decisions do not aggregate into a version-level release verdict or version-level gate omission.
+
+```text
+CONCERN_NOT_APPLICABLE
+!= VERSION_NOT_APPLICABLE
+
+CONCERN_DEFERRED
+!= VERSION_GATE_SATISFIED
+```
+
+Version Closure evaluates the composed candidate using the then-current Release authority and exact version candidate identity. A version may therefore require a gate even when one or more constituent concerns were previously deferred or individually not applicable.
+
+### 11.4 Currentness and re-evaluation
+
+Applicability MUST be re-evaluated when a binding dimension required by Release authority materially changes, including as applicable:
+
+- subject/candidate identity;
+- release authority or applicability rule;
+- proof/basis evidence;
+- unresolved release-significant findings;
+- migration/adoption state;
+- composed version scope or dependency closure.
+
+Old applicability evidence remains historical for its old binding; it is not successor permission.
+
+### 11.5 Prospective migration only
+
+A newly adopted applicability rule or profile is prospective. It MUST NOT retroactively shorten gates already required for an in-flight Frozen, qualified, or otherwise authority-bound candidate.
+
+Projects pinned to an older applicable ADS revision remain governed by that pinned Release authority until an owning migration/adoption authority validly moves them. In the absence of an applicable positive decision, the pre-existing mandatory release path remains in force.
+
+### 11.6 Existing release lifecycle remains authoritative
+
+This applicability contract does not create a parallel release lifecycle and does not weaken §§3–10.
+
+In particular:
+
+- thaw/invalidation rules remain unchanged;
+- Hidden Validation remains independent evidence when required;
+- Final Closeout and Release Qualification remain distinct authority-bearing gates when required;
+- `READY|CONDITIONAL|BLOCKED|FAIL` meanings are unchanged;
+- Task/PR PASS still does not imply Release PASS;
+- `NOT_RUN`/`BLOCKED` still cannot be converted to PASS.
+
+If owner, granularity, proof, or currentness is ambiguous, use the stronger existing release path or `BLOCKED` rather than infer reduced ceremony.
