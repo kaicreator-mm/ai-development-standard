@@ -1,0 +1,38 @@
+pack_id: v4.9.0-T-005-67ad362a
+task_id: T-005
+repository: kaicreator-mm/ai-development-standard
+version: 4.9.0
+base_sha: 67ad362a47d665c38dbb25f1667b064e6379923d
+base_tree: 9d334c6290e6cf924dd58c909684c5d6451103fe
+task_pack_blob: ecfc57282bc9f8cd6ba84913d180976cc2868f6c
+task_pack_ref: docs/implementation/4.9.0/task-packs/T05_release_applicability.md
+l3_blob: f4633ca5afa4050c94a286270738dc32d561a62e
+branch: task/v4.9.0-t05-release-applicability
+parent_issue: "#724"
+execution_parent: "#745"
+admission_ref: "#746"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+lineage_currentness_refs: []
+lineage_last_check_ref: NOT_APPLICABLE_NO_LINEAGE:#742
+native_blockers: 0
+review_policy: required
+validation_owner: release-semantic-and-historical-compatibility
+source_write_set:
+  - standards/RELEASE_STANDARD.md
+  - references/RELEASE_APPLICABILITY_REFERENCE.md
+  - scripts/test_v49_release_applicability.py
+read_only_authority_inputs:
+  - docs/implementation/4.9.0/PRD.md
+  - docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.9.0/TASK_DAG.md
+  - docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

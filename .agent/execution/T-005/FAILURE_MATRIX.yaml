@@ -1,0 +1,18 @@
+task: T-005
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: implementation_creates_parallel_release_lifecycle_or_owner
+    action: FAIL_SCOPE_AND_ROUTE_UPWARD
+  - condition: implementation_requires_new_schema_or_unlisted_normative_surface
+    action: STOP_TASK_PACK_DEFECT
+  - condition: unknown_applicability_is_downgraded_or_silently_skipped
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: concern_level_decision_is_aggregated_to_version_release_result
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: migration_retroactively_shortens_inflight_required_gates
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: required_validation_environment_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: final_candidate_changes_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE

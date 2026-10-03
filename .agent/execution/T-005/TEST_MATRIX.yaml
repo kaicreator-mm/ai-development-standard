@@ -1,0 +1,18 @@
+task: T-005
+required:
+  - id: vocabulary-and-granularity
+    proves: applicability is Release-owned per gate x subject with explicit required/deferred/not-applicable/unknown posture
+  - id: unknown-fail-closed
+    proves: UNKNOWN cannot silently become NOT_APPLICABLE or DEFERRED
+  - id: no-concern-to-version-aggregation
+    proves: concern decisions cannot manufacture a version release verdict
+  - id: existing-release-authority-preserved
+    proves: thaw/invalidate/Hidden/Closeout/RQ semantics remain owned by existing Release authority
+  - id: prospective-only-migration
+    proves: in-flight authority-bound candidates cannot have gates shortened retroactively
+  - id: focused-suite
+    command: python -B scripts/test_v49_release_applicability.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent Release semantic/historical compatibility validation on final exact PR HEAD
+review: fresh exact-HEAD review required after validation
