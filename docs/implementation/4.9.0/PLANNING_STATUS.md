@@ -2,7 +2,7 @@
 
 ```text
 VERSION=v4.9.0
-STATE=TASK_DAG_CANDIDATE_PENDING_REVIEW
+STATE=TASK_DAG_V02_SUCCESSOR_PENDING_FRESH_REVIEW
 PRODUCT_AUTHORITY=FROZEN
 CURRENT_PRD_REVISION=v0.4
 FROZEN_PRD_BLOB=a8ec7030a14337a4c2dca853dc474e965679d610
@@ -13,27 +13,31 @@ FROZEN_L2_BLOB=bd41ea0175b459a6a490fd37ad579e429a58a1c3
 L2_REVIEW=#713@5967608074 PASS
 L2_FREEZE=#714 PASS
 L2_FREEZE_CHECKPOINT=8694a2616e9eb61da9df15fd4a00b0034e368773
-L2_RESEARCH_DEMO_REQUIRED=NO
 TASK_DAG_AUTHORITY=YES_FOR_PLANNING_ONLY
-TASK_DAG_STATUS=CANDIDATE_NOT_FROZEN
-TASK_DAG_PATH=docs/implementation/4.9.0/TASK_DAG.md
-TASK_DAG_PLANNER=#715
+TASK_DAG_REVISION=v0.2
+TASK_DAG_STATUS=SUCCESSOR_CANDIDATE_NOT_FROZEN
+TASK_DAG_BLOB=b9fe0cc7089f64929b4bcf45f7230d950e864db2
+TASK_DAG_PREDECESSOR_REVIEW=#716@5968275856 FAIL
+TASK_DAG_PREDECESSOR_COUNTS=P0:0,P1:1,P2:0,P3:0
+TASK_DAG_FINDING_DISPOSITION=#717
 TASK_COUNT=15
-TASK_DAG_FRESH_REVIEW=REQUIRED
+TASK_DEPENDENCY_EDGES=UNCHANGED_FROM_V01
+TASK_DAG_FRESH_COMPLETE_DELTA_REVIEW=REQUIRED
+TASK_PACK_MATERIALIZATION=NO
+IMPLEMENTATION_ISSUE_MATERIALIZATION=NO
 IMPLEMENTATION_AUTHORITY=NO
 PLANNING_PARENT=#697
 PRIMARY_PLANNING_INPUT=#680
 PLANNING_BRANCH=planning/v4.9.0
 PLANNING_PR=#698
-PLANNING_BRANCH_BASE=9383244abb8172b5ae5135cbd559c72837799375
-V48_FROZEN_PRD_BLOB=f26439580e00de6ed8b2e27d732a3095eb566219
-V48_FROZEN_L2_BLOB=f88c85454e80101a0fdf56050e21f11a05279841
 ```
 
 ## Current stage
 
-Product and L2 Architecture are Frozen. The current stage is Task DAG planning/review.
+Product v0.4 and L2 v0.2 are Frozen. Task DAG v0.1 was independently reviewed by #716 and failed only on one P1: direct consumers of sequential predecessor owners lacked explicit task-specific lineage-currentness predicates.
 
-The first Task DAG candidate contains 15 semantic Tasks. It separates Assurance Plan owner/successor work, Role Execution Profile, Release applicability, Task Learning successor, Execution Architecture core, contract/DAG/evidence wiring, central registry/adoption, conformance, manual reference flow, dogfood/auditor contract, and final integrated dogfood/release-evidence handoff.
+#717 accepts that finding. DAG v0.2 keeps all 15 Task identities, semantic dependency edges, owner lanes, Review Policies, validation ownership and L3 posture unchanged, while adding explicit `LG42_COMPAT`, `LG43_DAG`, `LG47_REGISTRY`, `LG48_EXEC`, `LG48_LEARNING` and `LG_SEQ_FULL` admission predicates.
 
-External predecessor lineage requirements are represented as lineage gates rather than fake Task dependency edges. Implementation remains unauthorized until the DAG is independently reviewed, explicitly frozen, Task Packs are materialized, and executable Issues are admitted.
+Every later Task Pack/Issue must carry reconstructible `LINEAGE_CURRENTNESS_REFS`; upstream Task completion cannot substitute for the dependent Task's own dispatch-time currentness. Missing/stale/unknown lineage is `WAITING_LINEAGE` and non-dispatch.
+
+The next gate is Fresh complete-delta Task-DAG Review of v0.2. No DAG Freeze, Task Pack/implementation-Issue materialization, implementation branch or Builder dispatch is authorized yet.
