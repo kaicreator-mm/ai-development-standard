@@ -1,0 +1,18 @@
+task: T-002
+failures:
+  - condition: owner permission missing, false, unknown, ambiguous, or stale
+    outcome: STRONGER_LEGAL_PATH_OR_BLOCKED
+  - condition: proof predicate missing, false, unknown, ambiguous, or not current
+    outcome: STRONGER_LEGAL_PATH_OR_BLOCKED
+  - condition: cross-owner requirement conflict
+    outcome: CONJUNCTIVE_STRONGER_FLOOR_OR_BLOCKED
+  - condition: currentness binding component missing or digest mismatch
+    outcome: HISTORICAL_ONLY_OR_BLOCKED
+  - condition: unresolved valid adverse finding omitted from binding
+    outcome: BLOCKED
+  - condition: v2 requires reinterpretation or invalidation of historical v1 records
+    outcome: TASK_PACK_DEFECT_OR_ARCHITECTURE_AMENDMENT
+  - condition: compatibility dimension unknown or not evaluated
+    outcome: UNKNOWN_NOT_COMPATIBLE
+  - condition: implementation requires manifest/registry/execution/release/review/validation owner mutation
+    outcome: STOP_AND_ROUTE_TO_OWNING_TASK
