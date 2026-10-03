@@ -45,7 +45,7 @@ class AssuranceOwnerCanonicalizationTests(unittest.TestCase):
         self.assertIn("a PASS from one reviewer cannot delete another reviewer's valid blocker", self.adversarial)
         self.assertIn("unresolved valid blocking findings cannot be canceled by unrelated PASS results", self.legacy)
         self.assertEqual(
-            self.aggregation["properties"]["policy"]["const"],
+            self.aggregation["properties"]["aggregation_policy"]["const"],
             "finding-union-blocker-dominance",
         )
 
