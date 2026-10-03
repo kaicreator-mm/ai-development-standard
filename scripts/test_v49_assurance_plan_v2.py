@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
+import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,8 +17,18 @@ EXPECTED_V1_BLOB = "bd9489097da87024349623cf3f7c1d83e74f6624"
 
 
 def git_blob_sha(path: Path) -> str:
-    data = path.read_bytes()
-    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
+    # Identity must come from the committed Git object, not working-tree bytes:
+    # checkout EOL/filter transforms (e.g. core.autocrlf=true) change disk bytes
+    # and would break blob-identity assertions spuriously.
+    spec = f"HEAD:{path.relative_to(ROOT).as_posix()}"
+    result = subprocess.run(
+        ["git", "rev-parse", spec],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
 
 
 class AssurancePlanV2Tests(unittest.TestCase):
@@ -134,7 +144,8 @@ class AssurancePlanV2Tests(unittest.TestCase):
         self.assertEqual(outcomes["aggregation-authority"], "COMPATIBLE")
         self.assertEqual(outcomes["v1-parser-accepts-v2-instance"], "INCOMPATIBLE")
         self.assertEqual(outcomes["version-aware-adoption"], "CONDITIONALLY_COMPATIBLE")
-        self.assertIn("a v1-only parser is not assumed to accept a v2 instance", self.standard)
+        needle = "a v1-only parser is not assumed to accept a v2 instance"
+        self.assertIn(needle, self.standard.casefold())
 
     def test_owner_boundaries_do_not_preimplement_sibling_tasks(self) -> None:
         for phrase in (
