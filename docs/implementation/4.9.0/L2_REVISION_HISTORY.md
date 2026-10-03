@@ -1,36 +1,35 @@
 # v4.9.0 L2 Revision History
 
-L2 snapshots are immutable architecture evidence. `L2_ARCHITECTURE_EVIDENCE.md` is the current L2 candidate only.
+L2 snapshots are immutable architecture evidence. `L2_ARCHITECTURE_EVIDENCE.md` remains the byte-identical Frozen v0.2 Architecture artifact; Freeze bookkeeping is recorded separately.
 
-| Revision | Status | Review / reason | L2 blob | First materialization / reviewed identity |
+| Revision | Status | Review / reason | L2 blob | Identity |
 |---|---|---|---|---|
-| v0.1 | superseded / rejected for Freeze | first candidate authored under #710; #711 Fresh Architecture Review FAIL `P0=0/P1=4/P2=5/P3=3` | `840b65555b9d98fb5158e2af8571eede78cc811a` | reviewed HEAD `540941d06972128865a669e67cec884c6eb41087`, tree `5ecdbd13d7bc01a7e4db5637ed2cf743948ae466` |
-| v0.2 | current successor / not frozen | #711 F1–F12 disposition under #712; complete-delta successor review required | `bd41ea0175b459a6a490fd37ad579e429a58a1c3` | first materialized HEAD `46074420bd956129cce128eac4722919f0c40117`, tree `a20d3a624c03f658a4cfba835437b419980fe526` |
+| v0.1 | superseded / rejected for Freeze | #711 Fresh Architecture Review FAIL `P0=0/P1=4/P2=5/P3=3` | `840b65555b9d98fb5158e2af8571eede78cc811a` | reviewed HEAD `540941d06972128865a669e67cec884c6eb41087`, tree `5ecdbd13d7bc01a7e4db5637ed2cf743948ae466` |
+| v0.2 | **FROZEN ARCHITECTURE AUTHORITY** | #712 repair; #713 fresh complete-delta Review PASS `P0=P1=P2=P3=0`; #714 Freeze | `bd41ea0175b459a6a490fd37ad579e429a58a1c3` | reviewed HEAD `63f8c07d30f81082d2148d883acbb84f53093b78`, tree `4e0482bbf72394054af420b35f30235a8f8c51de` |
 
 ## Review lineage
 
 ### v0.1
 
 - Product authority: Frozen PRD v0.4 / #709;
-- L2 builder: #710;
+- L2 authoring: #710;
 - Fresh Architecture Review: #711@5967289394;
 - verdict: FAIL;
 - findings: F1–F12, `P0=0/P1=4/P2=5/P3=3`.
 
 ### v0.2
 
-- disposition authority: #712;
-- preserves Frozen Product semantics;
-- removes duplicate assurance owner/family;
-- incorporates existing Assurance Plan, Adversarial Review, Gate Authority precedence, v4.2 compatibility, v4.3 DAG governance, v4.7 registry, and v4.8 frozen ownership;
-- first materialized as exact blob `bd41ea0175b459a6a490fd37ad579e429a58a1c3` at HEAD/tree `46074420bd956129cce128eac4722919f0c40117` / `a20d3a624c03f658a4cfba835437b419980fe526`;
-- later metadata-only history/status commits do not create a new L2 revision when this L2 blob is byte-identical;
-- requires fresh independent review bound to the final live HEAD/tree and this same L2 blob, covering the complete v0.1→v0.2 semantic delta.
+- finding disposition: #712;
+- first materialized blob `bd41ea0175b459a6a490fd37ad579e429a58a1c3` at HEAD/tree `46074420bd956129cce128eac4722919f0c40117` / `a20d3a624c03f658a4cfba835437b419980fe526`;
+- metadata-only successor commit `63f8c07d30f81082d2148d883acbb84f53093b78` preserved the same L2 blob;
+- #713@5967608074 independently reviewed the exact final candidate HEAD/tree/blob with complete v0.1→v0.2 delta accounting and returned PASS, `P0=P1=P2=P3=0`, `FINDINGS=NONE`;
+- #714 records the administrative L2 Freeze without editing `L2_ARCHITECTURE_EVIDENCE.md`.
 
-## Invariants
+## Frozen invariants
 
-1. Never rewrite a historical L2 snapshot to make prior Review appear current.
-2. Architecture Review terminals bind to exact L2 blob/HEAD/tree.
-3. A material successor L2 requires successor Architecture Review.
-4. Product Freeze remains valid unless Architecture evidence demonstrates a Product contradiction; #711 found none.
-5. Task DAG remains unauthorized until explicit L2 Freeze.
+1. Historical L2 snapshots remain immutable.
+2. Architecture Review terminals stay bound to exact L2 blob/HEAD/tree.
+3. Freeze bookkeeping does not rewrite reviewed Architecture content.
+4. Material post-Freeze Architecture change requires amendment/thaw/currentness handling and successor independent review.
+5. Frozen Product authority remains PRD v0.4.
+6. Task DAG authoring is authorized only after v0.2 Freeze; implementation remains unauthorized until Task DAG/Task Pack authority is established.
