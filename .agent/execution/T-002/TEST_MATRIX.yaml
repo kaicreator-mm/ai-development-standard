@@ -1,0 +1,25 @@
+task: T-002
+tests:
+  - id: v2-schema-family-continuity
+    proves: v2 is same-family assurance-plan successor and v1 remains untouched/readable
+  - id: gate-authority-precedence
+    proves: concern-local owner authority is resolved before cross-owner composition
+  - id: positive-permission-proof
+    proves: reduction requires owner permission plus TRUE proof; FALSE/UNKNOWN cannot reduce
+  - id: monotonic-cross-owner-floor
+    proves: one owner cannot cancel another owner's requirement
+  - id: floor-vs-selected-path
+    proves: floor and selected execution path are distinct machine fields
+  - id: currentness-binding
+    proves: subject/owner/proof/task-pack/release-decision/unresolved-finding bindings are explicit
+  - id: stale-proof-fail-closed
+    proves: stale/ambiguous/missing bindings do not become current or lower assurance
+  - id: adverse-finding-carry-forward
+    proves: unresolved blocker refs cannot disappear because another result passes
+  - id: weak-signal-negatives
+    proves: docs-only/risk-low/Fast-Path/recommended-skip/file-count/model judgment alone cannot reduce assurance
+  - id: v42-compatibility-record
+    proves: baseline/candidate/change-operations/dimensions are explicit and no dimension is inferred from another
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+focused_command: python -B scripts/test_v49_assurance_plan_v2.py
