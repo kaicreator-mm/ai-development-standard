@@ -1,390 +1,269 @@
 # v4.9.0 L1 Product Evidence — Adaptive Proportional Development Orchestration
 
-Status: **COMPLETE RESEARCH / AUTHOR PRE-REVIEW REVISED / PRE-FREEZE — INDEPENDENT ADVERSARIAL PRODUCT REVIEW REQUIRED**
-
-Research date: 2026-10-03
-
-Planning baseline: `main@9383244abb8172b5ae5135cbd559c72837799375`
+Status: **COMPLETE RESEARCH / RECONCILED FOR PRD v0.4 / PRE-FREEZE**
 
 Planning parent: `#697`
-
 Primary dogfood input: `#680`
+Claude adversarial input: `#702@5966353271`
+Current Product candidate: `PRD v0.4`
 
-Author-side adversarial pre-review: PR #698 comment `5961233246`.
+## 1. Research question
 
-This document is Product evidence only. It does not authorize Product Freeze, L2, Task DAG materialization, implementation, scheduler deployment, gate omission, evidence transfer, or weakening of existing/pinned authority.
+Can ADS make execution materially more proportional and adaptive without weakening authority, currentness, independence, evidence truth or release safety?
 
-## 1. L1 verdict
+## 2. Existing authority substrate
 
-**PROCEED WITH A UNIFIED v4.9 PRODUCT CANDIDATE, WITH EXPLICIT SAFETY CORRECTIONS.**
+v4.9 is not a greenfield workflow system. It builds on current ADS workflow/review/validation/release semantics and on frozen v4.8 authority.
 
-The evidence supports one integrated Product loop:
+The v4.8 predecessor authority explicitly reused by v4.9 is:
 
 ```text
-higher authority / assurance floor
-        ↓
-proportional legal workflow selection
-        ↓
-adaptive JIT orchestration
-        ↓
-standardized role execution
-        ↓
-material learning / recurrence escalation
+V48_FROZEN_PRD_BLOB=f26439580e00de6ed8b2e27d732a3095eb566219
+V48_FROZEN_L2_BLOB=f88c85454e80101a0fdf56050e21f11a05279841
 ```
 
-The initial Draft correctly identified the problem but author-side adversarial review found six Product-level safety gaps that must be corrected before independent review:
+v4.8 already owns:
 
-1. dynamic reasoning needs a monotonic higher-authority `ASSURANCE_FLOOR`;
-2. evidence transfer must be gate-owned and typed, not generic equivalence;
-3. independence must remain multi-dimensional, not session-count based;
-4. Release applicability must remain owned by current/pinned Release authority;
-5. Task DAG reinterpretation must not permit runtime scope/dependency mutation;
-6. ADS-self dogfood does not by itself prove downstream generality.
+- Agent capability/eligibility/resource evidence;
+- Dispatch/Claim execution ownership;
+- Task Learning Evidence v1 including `NONE_MATERIAL`;
+- `ADS_EVOLUTION_CANDIDATE` and the existing ADS Evolution Intake path.
 
-The revised PRD now treats those as Product invariants rather than L2 implementation details.
+Therefore v4.9 Product must extend/reuse these owners rather than create parallel capability, claim, learning or evolution lifecycles.
 
-## 2. Internal substrate already exists
+## 3. Direct ADS dogfood evidence
 
-### 2.1 Development Workflow already contains proportional concepts
+#680 demonstrates recurring orchestration amplification across v4.x: small/medium work can expand into Builder, Validation, Fresh Review, merge, Stage1, Candidate Freeze, Hidden, Closeout, Release Qualification, integration and currentness/rebind operations.
 
-Current `standards/DEVELOPMENT_WORKFLOW.md` already includes:
+#680 also records examples where:
 
-- Version Branch vs Trunk/Fast Path;
-- risk-based Review Policy;
-- on-demand Architecture Research Demo;
-- stage checkpoints without one Issue/branch per artifact;
-- JIT Task branch / Execution Pack creation;
-- GitHub Issue Dependencies as canonical live execution DAG;
-- fail-closed required Validation/Review/Release truth.
+- durable Issues were safely reused across role-separated phases;
+- branch/target movement sometimes added no new decision value;
+- deterministic controller transitions did not always justify separate task containers;
+- real Hidden/Release findings still required the complete thaw/repair/review/requalification path.
 
-**Finding:** v4.9 should operationalize proportionality; it should not invent another lifecycle merely to say “Fast Path”.
+This supports the Product problem: ADS needs proportional execution **inside existing authority**, not blanket gate removal.
 
-### 2.2 v4.8 already owns capability, eligibility and constraint-first assignment
+## 4. Quantification boundary
 
-Frozen v4.8 Product already separates:
+The current L1 corpus does not yet provide a complete representative quantified baseline showing:
 
 ```text
-Capability Claim
-Availability / Resource Fact
-Capability Evidence
+which execution objects/gates added new decision value
+vs
+which duplicated orchestration without changing the decision
 ```
 
-and uses:
+The evidence is therefore sufficient to support the Product problem and design direction but insufficient for a numeric savings/economic claim.
 
 ```text
-READY set
-+ requirements/risk/freedom/environment/independence
-+ capability/availability/evidence
-→ hard eligibility
-→ feasible executors
-→ optional optimization
-→ existing Dispatch / Claim
+ORCHESTRATION_AMPLIFICATION=SUPPORTED_QUALITATIVELY
+AMPLIFICATION_QUANTIFICATION=PARTIAL
+ECONOMIC_BENEFIT=NOT_MEASURED
 ```
 
-**Finding:** v4.9 must extend from eligible assignment to legal workflow composition and role operating semantics; v4.8 remains owner of capability/eligibility/resource-selection foundations.
+PRD v0.4 closes this evidence gap prospectively: the downstream dogfood baseline must record containers/issues, dispatches/claims, independent gates/sessions, rebind/revalidation events and decision-value accounting. No retrospective numbers may be invented.
 
-### 2.3 v4.8 T-017/#646 already owns execution-start/Claim semantics
+## 5. Claude #702 adversarial falsification of PRD v0.3
 
-#646 establishes:
-
-- `NO_CLAIM_NO_EXECUTION`;
-- accepted Claim as durable start fact;
-- operator/session/exact-subject provenance;
-- visible running-state projection without using labels as locks;
-- terminal ownership release;
-- idempotent resume and safe timeout/stale handling;
-- non-authoritative progress/heartbeat.
-
-**Finding:** v4.9 should standardize pre-Claim, execution, evidence/handoff and terminal behavior for roles while reusing accepted Claim; it must not create another lease/lock authority.
-
-### 2.4 Existing v4 authority already treats independence as more than session identity
-
-v4 work has explicitly separated independence dimensions such as model/context/executor/evidence independence in high-risk review/dogfood flows. Current practice also distinguishes Builder, Validator, Reviewer, Hidden holder, Release Qualifier and Controller roles.
-
-**Finding:** same-Issue phase coalescing may reduce containers, but a fresh session alone cannot prove every required independence dimension.
-
-## 3. #680 dogfood evidence — orchestration amplification is real
-
-#680 records long chains such as:
+Claude's second independent adversarial review of exact PRD v0.3 returned:
 
 ```text
-Builder
-→ exact-subject Validation
-→ Fresh Review
-→ merge
-→ Stage1
-→ Candidate Freeze
-→ Hidden
-→ Closeout
-→ Release Qualification
-→ Repository Integration
-→ successor currentness/rebind
+VERDICT=FAIL
+P0=0
+P1=3
+P2=6
+P3=3
+CURRENTNESS=PASS
 ```
 
-Observed costs include Issue/dispatch noise, repeated currentness work, known-sequence BLOCKED dispatches and bookkeeping sessions whose orchestration effort can dominate the actual concern.
+The material findings were:
 
-The Product hypothesis is **not** “remove gates”. It is:
+1. single-owner reduction predicates no longer required durable/deterministic proof and ambiguous classification no longer explicitly failed closed;
+2. downstream dogfood could pass vacuously without any proportional decision or independent audit;
+3. P4 overlapped v4.8 Task Learning/Evolution ownership and lost explicit scope fences;
+4. exact-candidate independent Product Review precondition was weakened;
+5. specialized-role scope was broadened unintentionally;
+6. adverse Review FAIL could be bypassed through redispatch/reviewer shopping;
+7. migration could retroactively shorten an in-flight release path;
+8. release-applicability ownership was under-specified;
+9. reused v4.8 authority was not bound to exact predecessor Product/L2 identities;
+10. broken cross-references and undispositioned v0.2 safety deletions remained;
+11. #680 entry-criteria quantification remained partial.
 
-> preserve the assurance floor and every authority-bearing boundary, while avoiding execution objects/repeated work that add no new decision value.
+PRD v0.4 treats these as Product evidence, not editorial suggestions.
 
-## 4. PRACTICE-01 observations
+## 6. Monotonic assurance finding
 
-### 4.1 Phase-separated durable work items
+The v0.3 multi-owner conjunction direction was correct but incomplete. A monotonic conjunction is only safe if each reduced owner requirement is itself derived from proven predicates.
 
-Fresh Closeout→RQ and Builder→independent Validation were carried as separate phases in one durable Issue while retaining distinct claims/roles/terminals.
-
-Observed:
+Required Product invariant:
 
 ```text
-fewer Issue containers
-mandatory gate skipped = 0
-independent terminal preserved = yes
-exact subject preserved = yes
+OWNER_PERMISSION
++ CURRENT_DURABLE_OR_DETERMINISTIC_PREDICATE_PROOF
+=> REDUCTION_MAY_BE_SELECTED
+
+UNKNOWN_OR_AMBIGUOUS_PREDICATE
+=> STRONGER_PATH_OR_BLOCKED
+
+MODEL_JUDGMENT_ONLY
+=> NOT_SUFFICIENT_FOR_REDUCTION
 ```
 
-**Finding:** Issue count is not the definition of independence.
+This applies both to cross-owner composition and a single uncontested owner.
 
-### 4.2 Controller-direct transitions
+## 7. Release applicability evidence
 
-Valid terminals were consumed into expected-head merge, state reconciliation and other controller actions without creating dedicated Issues solely for deterministic coordination.
+#680's proportionality goal includes concern-level work that should not automatically trigger unrelated full release ceremony. Existing Release authority, however, owns release applicability.
 
-**Finding:** orchestration objects should exist for new mutable work, independent decision value, environment isolation or a separately attributable terminal—not just because a transition exists.
+Therefore v4.9 Product direction is:
 
-### 4.3 Known sequence waits
+- Release applicability remains `RELEASE_STANDARD`-owned;
+- v4.9 may define **prospective** Release-owned proportional applicability predicates;
+- no Orchestrator/model may independently classify out of mandatory release gates;
+- unknown predicates fail closed;
+- migration cannot retroactively shorten gates already bound to an in-flight Frozen/qualified candidate.
 
-Known lineage blocks were kept as wait states instead of dispatching guaranteed `BLOCKED_SEQUENCE` work.
+This keeps the Product goal achievable without allowing L2 or an Agent to invent release authority.
 
-**Finding:** derived live readiness should control JIT dispatch.
+## 8. Evidence transfer
 
-### 4.4 Branch movement/currentness
+Evidence reuse remains a gate-owned positive-permission problem, not a generic topology heuristic.
 
-#680 contains cases where candidate content remained unchanged while only target topology/branch state moved; repeat Review/Validation would have produced no observed new decision value.
+Different evidence families bind different tuples. Reuse requires:
 
-**Finding:** a future gate-owned currentness/transfer mechanism is worth researching.
+- a positive transfer rule from the owning Gate Authority;
+- equality/proven equivalence across every required binding dimension;
+- no changed non-transferable dimension;
+- no fresh-only rule;
+- durable/current proof.
 
-**Safety correction:** this evidence does **not** prove that disjoint paths or unchanged HEAD universally preserve Review/Validation/Hidden/Release evidence. Different evidence kinds bind to different tuples; transfer must be owned by the applicable Gate Authority.
+Path disjointness or unchanged HEAD/tree may be proof inputs but are never universal transfer authority.
 
-### 4.5 Real Hidden finding still escalated
+## 9. Independence
 
-v4.6 Hidden found a release-significant P1. PRACTICE-01 did not optimize it away: thaw/invalidate, bounded repair and affected successor gates remained required.
+Independence is multi-dimensional. Relevant dimensions can include principal/logical executor, session/context, model/provider/configuration, Builder/Reviewer author separation, host/environment, evidence source, Hidden holder and Release/Controller separation.
 
-**Finding:** adaptive orchestration must deepen assurance when new risk appears.
+PRD v0.4 also recognizes selector conflict: a Controller/selector that authored or materially controlled a subject may be ineligible to select its required independent evaluator when current authority says that conflict matters.
 
-## 5. Product evidence for the Agent Operating Model
+A different Issue/session alone never proves independence.
 
-Current ADS already has role-specific behavior, but it is distributed. A common provider-neutral lifecycle is supported:
+## 10. Adverse terminal truth
 
-```text
-Role
-→ Eligibility
-→ Dispatch
-→ Claim
-→ Start
-→ Execution
-→ Evidence / Handoff
-→ Terminal
-→ Ownership Release
-```
+Adaptive orchestration must consume adverse terminals, not merely preserve them as history.
 
-The role—not ChatGPT/Claude/Codex/vendor name—should be normative.
+The existing finding-union/blocker-dominance model implies:
 
-A common Base Contract should resolve current authority, exact subject, readiness, eligibility, independence policy, Claim/start, allowed/forbidden actions, required evidence, terminal authority and handoff.
+- FAIL/findings cannot be silently superseded;
+- repeated dispatch cannot be used to search for a PASS;
+- re-review after FAIL requires successor subject or owning-authority disposition.
 
-Role Profiles should express deltas such as:
+This is necessary because JIT executor selection otherwise creates a new path for de facto authority laundering.
 
-```text
-Eligibility
-Required Inputs
-Allowed Actions
-Forbidden Actions
-Required Evidence
-Terminal Authority
-Independence Policy
-Environment / mutation class
-```
+## 11. Task DAG boundary
 
-## 6. Role distinctions supported by current practice
+The Frozen Task DAG/current Task authority is the semantic work envelope.
 
-### Builder
-Mutable work producer. It may verify its own bounded implementation assumptions but cannot mint an independent gate verdict required by higher authority.
+JIT orchestration may materialize role phases/containers inside that envelope, but material new concern, dependency, ownership or scope requires ordinary amendment/governance.
 
-### Reviewer
-Evaluative authority against an exact subject/current authority. For required independent Review, the phase should be read-only; repairs require a separately authorized mutable phase followed by successor review as applicable.
+Whether a proposed live change is materially inside/outside the envelope is itself subject to the fail-closed predicate-proof rule.
 
-### Validator
-Executes specified test/build/runtime/environment oracles and reports executed truth; it is not the same semantic role as Reviewer.
+## 12. v4.8 learning/evolution ownership
 
-### Controller / Orchestrator
-Coordinates legal next work and authorized deterministic transitions; it does not inherit independent Review/Validation/Release authority.
+v4.8 already owns Task Learning Evidence and ADS Evolution Intake. v4.9 P4 therefore has only a bounded delta:
 
-### Other authority-bearing roles
-Planner/Product Researcher, Architect/Architecture Researcher, Integration Agent, Hidden Validator, Release Qualifier and project/domain roles should use the same Base Contract/Profile pattern while declaring their own terminal authority/environment/independence rules.
+- map execution-friction categories into/back onto v4.8 Task Learning evidence;
+- add a bounded recurrence-audit escalation hook;
+- feed eligible results into existing `ADS_EVOLUTION_CANDIDATE` governance.
 
-## 7. Safety correction — monotonic assurance floor
+v4.9 does not authorize parallel learning/evolution records, a new intake lifecycle, automated cross-project mining, universal fingerprinting or a dedicated learning database.
 
-The strongest author-side pre-review finding is that “minimal sufficient workflow” is unsafe unless bounded by positive higher authority.
+## 13. Generality evidence
 
-Recommended Product rule:
+External interoperability/scheduling systems support the structural idea of separating reasoning, deterministic enforcement and durable task facts. They do **not** prove ADS gate-reduction correctness.
+
+Therefore:
 
 ```text
-current/pinned authority
-→ resolve ASSURANCE_FLOOR
-→ dynamic reasoning may escalate
-→ reduction allowed only through a positively authorized proportional profile
-→ unknown/ambiguous predicates => stronger path or BLOCKED
-```
-
-This prevents an LLM from turning its own risk judgment into omission authority.
-
-## 8. Safety correction — typed evidence bindings and positive transfer permission
-
-Different evidence families can bind to different dimensions:
-
-```text
-concern Validation
-integration/merge-result Validation
-Review
-Hidden
-Closeout
-Release Qualification
-```
-
-Potential binding dimensions include subject SHA/tree, base/target/merge-result identity, authority revisions, environment/toolchain/profile, independence policy, private pack revision and predecessor-gate lineage.
-
-Recommended Product rule:
-
-```text
-Gate Authority owns binding set + transfer policy.
-No positive transfer rule => historical-only.
-Any unknown/changed required binding => historical-only/BLOCKED/successor assurance.
-```
-
-Path disjointness or unchanged source may be proof inputs but cannot be universal authority.
-
-## 9. Safety correction — multi-dimensional independence
-
-A distinct `session_ref` can prove session separation but not necessarily principal/executor, model, author/reviewer, host/environment, evidence-source or Hidden-holder independence.
-
-Recommended Product rule: same-Issue phase coalescing is valid only when **all independence dimensions required by the owning authority** remain satisfied and attributable.
-
-## 10. Safety correction — Release applicability ownership
-
-The initial wording risked implying that the Orchestrator could decide that work is “not release-significant” and skip the current Release Standard.
-
-Recommended Product rule: current/pinned Release authority owns release applicability. The Orchestrator may evaluate predicates defined by that authority, but cannot invent a lower release path. Unknown applicability is stronger-path/BLOCKED, and older pinned projects keep their older release requirements.
-
-## 11. Safety correction — Task DAG scope boundary
-
-JIT execution phases are supported, but Frozen Task DAG/current Task authority remains the semantic work envelope.
-
-The Orchestrator may materialize authorized role phases/gates/containers JIT. Material new concerns, dependency changes, ownership changes or scope expansion require normal amendment/governance.
-
-## 12. External evidence — interoperability and scheduling shape
-
-### 12.1 A2A v1.0
-
-A2A v1.0 defines Agent Cards with capabilities/skills/interfaces/security requirements plus stateful Tasks, Messages and Artifacts for collaboration across independent Agent systems.
-
-Sources:
-
-- https://a2a-protocol.org/v1.0.0/
-- https://a2a-protocol.org/latest/topics/key-concepts/
-- https://a2a-protocol.org/dev/specification/
-
-**Finding:** provider-neutral capability/task interchange is a real interoperability concern. A2A Task completion must not automatically become ADS Review/Validation/Release truth.
-
-### 12.2 Kubernetes scheduler framework
-
-Kubernetes separates infeasible-node filtering, scoring feasible nodes, reservation/permit/pre-bind/bind stages.
-
-Sources:
-
-- https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/
-- https://kubernetes.io/docs/reference/scheduling/config/
-
-**Finding:** this supports v4.8/v4.9 separation of legality/eligibility, optional optimization and binding. It does not prove ADS assurance reduction.
-
-## 13. Generality evidence boundary
-
-Direct proportional-assurance evidence is currently strongest in `ai-development-standard` self-dogfood.
-
-Therefore L1 records:
-
-```text
-PRODUCT_PROBLEM=SUPPORTED_IN_ADS_DOGFOOD
-DOWNSTREAM_GENERALITY=PARTIAL
+PRODUCT_PROBLEM=SUPPORTED
+ADS_DOGFOOD=SUPPORTED
 EXTERNAL_ARCHITECTURAL_ANALOGY=SUPPORTED
+DOWNSTREAM_GENERALITY=PARTIAL
 CROSS_PROJECT_GATE_REDUCTION_PROOF=NOT_YET_PROVEN
 ```
 
-The correct Product response is not to block all research, nor to claim universal proof. It is to require downstream/manual GitHub-native dogfood as a v4.9 release acceptance scenario.
+## 14. Downstream dogfood acceptance evidence needed before Release
 
-## 14. Bounded Execution Learning / Recurrence evidence
+A qualifying downstream project must be a distinct real product/repository with its own pinned authority artifacts, not ADS itself or an ADS-governance mirror.
 
-Repeated defect/workflow patterns can indicate a missing earlier checker/template/contract/policy rather than a need for another human gate.
+Before v4.9 Release can claim generality, dogfood must:
 
-v4.9 should standardize only lightweight material learning + recurrence escalation hooks:
+- bind to an exact v4.9 candidate/revision;
+- bind a legal baseline authority/gate contract;
+- record the selected proportional execution;
+- mark each claimed mechanism `EXERCISED|NOT_EXERCISED`;
+- exercise at least one unknown/ambiguous reduction predicate and show stronger path/BLOCKED;
+- show at least one nonzero authorized baseline-vs-selected delta;
+- independently audit safety negatives against durable evidence;
+- prove manual/GitHub-native viability;
+- limit generality claims to mechanisms actually exercised.
+
+Required safety negatives include:
 
 ```text
-observation
-→ possible recurrence
-→ same / related / unknown / different root-cause relation
-→ earliest prevention/detection candidate
-→ ADS improvement candidate
-→ normal governance
+UNAUTHORIZED_GATE_OMISSION=0
+STALE_PASS_TRANSFER=0
+INDEPENDENCE_LOSS=0
+CROSS_OWNER_REQUIREMENT_CANCELLATION=0
+ADVERSE_TERMINAL_SUPPRESSION=0
 ```
 
-A universal history-mining service, autonomous root-cause engine or learning database is not justified by current evidence and should remain non-goal/future work.
+## 15. Product direction
 
-## 15. Product risks still requiring independent adversarial review
-
-Independent Review must still try to falsify at least:
-
-1. whether `ASSURANCE_FLOOR` is sufficiently non-weakening;
-2. whether positive gate-owned evidence transfer is implementable without stale-PASS laundering;
-3. whether multi-dimensional independence remains machine-checkable under phase coalescing;
-4. whether Release applicability remains unambiguously outside Orchestrator authority;
-5. whether Task DAG scope protection is sufficient;
-6. whether the four pillars are too large for one minor version;
-7. whether Agent Operating Model duplicates v4.8 ownership;
-8. whether P4 can remain lightweight;
-9. whether downstream dogfood requirement is enough to avoid an ADS-self-only design;
-10. whether backward compatibility with v4.x durable facts is credible.
-
-## 16. L2 questions intentionally deferred
-
-Architecture, not Product, should decide:
-
-- exact schema/event shape for execution decisions;
-- representation/storage of role profiles;
-- policy engine technology;
-- exact materiality/profile predicates;
-- exact gate binding-set/transfer algorithms;
-- scheduler/service topology;
-- GitHub/A2A/queue/local transport mappings;
-- recurrence fingerprint implementation;
-- telemetry aggregation.
-
-L2 may not weaken the Product invariants above.
-
-## 17. L1 disposition
+The evidence supports one integrated v4.9 Product direction:
 
 ```text
-L1_STATUS=COMPLETE_RESEARCH_AUTHOR_PRE_REVIEW_REVISED
+P1 Proportional Assurance
++ P2 Adaptive Orchestration
++ P3 Agent Operating Model
++ P4 bounded v4.8-compatible Execution Learning/Recurrence extension
+```
+
+with these non-negotiable boundaries:
+
+- monotonic multi-owner assurance floor;
+- durable/deterministic proof for every reduction predicate;
+- fail-closed ambiguity;
+- existing Release authority ownership;
+- prospective-only migration;
+- gate-owned evidence transfer;
+- multi-dimensional independence;
+- adverse-terminal dominance;
+- Task-DAG scope protection;
+- exact v4.8 predecessor bindings;
+- no second Dispatch/Claim or Learning/Evolution lifecycle;
+- non-vacuous downstream release dogfood.
+
+## 16. L1 disposition
+
+```text
+L1_STATUS=COMPLETE_RESEARCH_RECONCILED_FOR_V04
 PRODUCT_DIRECTION=PROCEED
 PRODUCT_PROBLEM=SUPPORTED
+AMPLIFICATION_QUANTIFICATION=PARTIAL
+ECONOMIC_BENEFIT=NOT_MEASURED
 DOWNSTREAM_GENERALITY=PARTIAL
-ASSURANCE_FLOOR_REQUIRED=YES
+V48_PREDECESSOR_BINDING=REQUIRED
+ASSURANCE_FLOOR=MONOTONIC_MULTI_OWNER_WITH_PROVEN_OWNER_PREDICATES
 EVIDENCE_TRANSFER=GATE_OWNED_POSITIVE_PERMISSION_ONLY
 INDEPENDENCE=MULTI_DIMENSIONAL
-RELEASE_APPLICABILITY_OWNER=CURRENT_PINNED_RELEASE_AUTHORITY
-TASK_DAG_RUNTIME_SCOPE_WIDENING=FORBIDDEN
-P4_SCOPE=LIGHTWEIGHT_LEARNING_AND_ESCALATION
+ADVERSE_TERMINAL_DOMINANCE=REQUIRED
+RELEASE_APPLICABILITY_OWNER=RELEASE_STANDARD_PROSPECTIVE_POLICY
+P4_OWNER=V48_TASK_LEARNING_AND_EVOLUTION_INTAKE
 PRODUCT_FREEZE=NO
-INDEPENDENT_ADVERSARIAL_PRODUCT_REVIEW=REQUIRED
+FRESH_V04_PRODUCT_REVIEW=REQUIRED
 L2_AUTHORITY=NO
 TASK_DAG_AUTHORITY=NO
 IMPLEMENTATION_AUTHORITY=NO
 ```
-
-The next authoritative step is a genuinely independent adversarial Product Review on the successor exact PR candidate. Author-side pre-review is not independent Product Review evidence.
