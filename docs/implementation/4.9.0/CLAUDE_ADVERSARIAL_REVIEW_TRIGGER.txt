@@ -1,0 +1,1 @@
+执行 kaicreator-mm/ai-development-standard v4.9.0 独立对抗 Product Review：读取 #697、#680、v4.9 Draft PRD/L1、PRODUCT_REVIEW_HANDOFF.md，以及 dedicated Product Review Issue 中绑定的 exact PR HEAD/tree；作为全新高能力 READ-ONLY Reviewer 按固定 terminal 完成审核并只回写 Review Issue。禁止修改 PRD/L1/PR、禁止 Product Freeze、禁止进入 L2/Task DAG/实现。
