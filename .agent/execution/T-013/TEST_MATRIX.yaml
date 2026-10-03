@@ -1,0 +1,27 @@
+task_id: T-013
+tests:
+  - id: E01
+    oracle: evidence matrix contains at least two materially distinct REAL streams with exact durable source identities
+  - id: E02
+    oracle: each row records evidence_kind, subject identity, source project/task, environment/runtime where material, expected oracle, actual result, classification, privacy/publication, external_claim_eligible and currentness limitation
+  - id: E03
+    oracle: project/environment/Agent/evidence-gap failures are challenged before STANDARD_FRICTION classification
+  - id: E04
+    oracle: T012 does not imply measured economics or blanket strong-to-low-cost routing
+  - id: E05
+    oracle: public repository visibility is not treated as PUBLISHABLE without explicit classification
+  - id: E06
+    oracle: synthetic evidence cannot satisfy a real external/runtime/provider/project claim
+  - id: E07
+    oracle: unavailable required real evidence yields NOT_RUN|BLOCKED plus validation handoff
+  - id: E08
+    oracle: historical verdicts do not transfer to successor SHA/current subject
+  - id: E09
+    oracle: NO_CHANGE and MORE_EVIDENCE are valid complete dispositions
+  - id: E10
+    oracle: any ADS_EVOLUTION_CANDIDATE routes to ordinary ADS Intake/Governance and does not mutate Frozen authority
+  - id: E11
+    oracle: no secrets, private chain-of-thought, Hidden payload or private project evidence is published
+required_builder_checks:
+  - python -B scripts/verify_standard.py
+validation_must_rebind_sources: true
