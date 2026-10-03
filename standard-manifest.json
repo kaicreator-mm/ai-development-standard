@@ -36,6 +36,9 @@
       "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
       "standards/VALIDATION_STANDARD.md"
     ],
+    "discovery_standards": [
+      "standards/REFERENCE_CONVENTION_STANDARD.md"
+    ],
     "compatibility_entries": [
       "standards/GITHUB_WORKFLOW.md",
       "standards/VERSION_INTEGRATION_WORKFLOW.md"
@@ -102,8 +105,11 @@
       "prompts/web-reviewer-bootstrap.md"
     ],
     "machine_contracts": [
+      "schemas/agent-capability-evidence-v1.schema.json",
+      "schemas/agent-capability-profile-v1.schema.json",
       "schemas/agent-event-v2.schema.json",
       "schemas/assurance-plan-v1.schema.json",
+      "schemas/authority-applicability-entry-v1.schema.json",
       "schemas/dispatch.schema.json",
       "schemas/execution-pack-manifest.schema.json",
       "schemas/execution-state.schema.json",
@@ -114,18 +120,30 @@
       "schemas/repository-integration-v4-precondition.schema.json",
       "schemas/review-aggregation-v1.schema.json",
       "schemas/review-finding-v1.schema.json",
+      "schemas/state-dimension-registry-v1.schema.json",
       "schemas/task-contract.schema.json",
+      "schemas/task-learning-v1.schema.json",
       "schemas/validation-report.schema.json"
     ],
+    "registries": [
+      "registries/state-dimensions-v1.json"
+    ],
     "references": [
+      "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md",
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
+      "references/COMPATIBILITY_ALIAS_CONFORMANCE.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
+      "references/REFERENCE_CONVENTION_REFERENCE.md",
+      "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
+      "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
+      "scripts/resolve_standard_read_set.py",
       "scripts/test_execution_architecture.py",
       "scripts/test_pointer_only_trigger_contract.py",
       "scripts/test_project_execution_profile.py",
@@ -145,6 +163,13 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v47_authority_registry.py",
+      "scripts/test_v47_compatibility_aliases.py",
+      "scripts/test_v47_convergence_metadata_contracts.py",
+      "scripts/test_v47_progressive_disclosure.py",
+      "scripts/test_v47_reference_conventions.py",
+      "scripts/test_v47_state_dimension_registry.py",
+      "scripts/test_v48_registry_adoption.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
@@ -160,6 +185,94 @@
       "scripts/verify_project_standard.py",
       "scripts/verify_runner_capability_reference.py",
       "scripts/verify_standard.py"
+    ]
+  },
+  "semantic_authorities": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "schema_version": 1,
+        "entry_id": "development-lifecycle",
+        "semantic_concern": "development.lifecycle_and_task_stage",
+        "canonical_owner_ref": "standards/DEVELOPMENT_WORKFLOW.md",
+        "applicability_posture": "ALWAYS",
+        "compatibility_alias_refs": [
+          "standards/VERSION_INTEGRATION_WORKFLOW.md"
+        ]
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "github-agent-coordination",
+        "semantic_concern": "github.issue_pr_event_coordination",
+        "canonical_owner_ref": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "applicability_posture": "MATERIALITY_DRIVEN",
+        "compatibility_alias_refs": [
+          "standards/GITHUB_WORKFLOW.md"
+        ]
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "execution-state",
+        "semantic_concern": "execution.controller_and_dispatch_state",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "work-item-contract",
+        "semantic_concern": "github.work_item_contract",
+        "canonical_owner_ref": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "validation-evidence",
+        "semantic_concern": "validation.concern_evidence_and_exact_subject",
+        "canonical_owner_ref": "standards/VALIDATION_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "release-qualification",
+        "semantic_concern": "release.qualification_and_candidate_gate",
+        "canonical_owner_ref": "standards/RELEASE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "runner-capability",
+        "semantic_concern": "ci.runner_capability_adoption",
+        "canonical_owner_ref": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+        "applicability_posture": "PROJECT_DEFINED"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "research-demo",
+        "semantic_concern": "architecture.research_demo",
+        "canonical_owner_ref": "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+        "applicability_posture": "OPTIONAL"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "task-learning-evidence",
+        "semantic_concern": "execution.task_learning_evidence",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "logical-agent-capability-profile",
+        "semantic_concern": "execution.logical_agent_capability_claim",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "agent-capability-evidence",
+        "semantic_concern": "execution.agent_capability_evidence",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      }
     ]
   }
 }
