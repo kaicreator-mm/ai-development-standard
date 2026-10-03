@@ -124,6 +124,28 @@ Fast Path 可以在 A0–A4 任一级使用：
 - adoption level 本身不是风险证明，A0/A1 不自动等于 Fast Path eligible；
 - A3/A4 controller 可以派生 eligibility，但派生状态不替代 owning facts。
 
+### 2.5 v4.8 Registry Discovery 与 Progressive Disclosure（可选，metadata-only）
+
+`standard-manifest.json` 是 v4.8 资产的 discoverability inventory（发现清单），不是 permission engine：manifest 成员资格、registry/reference 出现、provider/model 身份或 focused verifier 成功，都不授予 mutation、merge、Validation PASS、Review PASS 或 Release READY，registry `authority_effect=NONE`。
+
+v4.8 新增三个可选 machine-contract family（每个都路由到已合并的 schema/reference owner，本节不复制其语义）：
+
+```text
+schemas/task-learning-v1.schema.json            → references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+schemas/agent-capability-profile-v1.schema.json → references/AGENT_CAPABILITY_PROFILE_REFERENCE.md
+schemas/agent-capability-evidence-v1.schema.json→ references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md
+```
+
+Interchange 继续复用既有 `schemas/interchange-envelope-v1.schema.json`（仅此一个 entry，无 v2、无第二 owner）。
+
+读取规则（progressive disclosure）：
+
+1. 发现走 immutable pin → 当前 revision 的 `standard-manifest.json`；
+2. 三个新 family 是 **optional / materiality-driven** discovery entry：只有当前 Task/project authority 认定为适用时才加载对应 schema/reference；
+3. registry 里存在 ≠ 全局强制采用；项目不使用的 family 直接不加载，这不是 defect；
+4. 完整发现映射与 v4.7 lineage 边界见 `references/V48_REGISTRY_ADOPTION_REFERENCE.md`；
+5. Fast Path 保持轻量：一个直接 eligible executor + 普通 Dispatch/Claim；无 material learning 时 `TASK_LEARNING=NONE_MATERIAL` 仍是合法完整结果，Fast Path 不因 registry 增长而扩大必读面。
+
 ## 3. PROJECT_OVERRIDES
 
 `PROJECT_OVERRIDES.md` 只记录项目特有信息：

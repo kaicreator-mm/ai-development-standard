@@ -102,6 +102,8 @@
       "prompts/web-reviewer-bootstrap.md"
     ],
     "machine_contracts": [
+      "schemas/agent-capability-evidence-v1.schema.json",
+      "schemas/agent-capability-profile-v1.schema.json",
       "schemas/agent-event-v2.schema.json",
       "schemas/assurance-plan-v1.schema.json",
       "schemas/dispatch.schema.json",
@@ -115,12 +117,18 @@
       "schemas/review-aggregation-v1.schema.json",
       "schemas/review-finding-v1.schema.json",
       "schemas/task-contract.schema.json",
+      "schemas/task-learning-v1.schema.json",
       "schemas/validation-report.schema.json"
     ],
     "references": [
+      "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md",
+      "references/AGENT_CAPABILITY_PROFILE_REFERENCE.md",
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
+      "references/TASK_LEARNING_EVIDENCE_REFERENCE.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
+      "references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md",
+      "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml"
     ],
@@ -145,6 +153,11 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v48_agent_capability_evidence.py",
+      "scripts/test_v48_agent_capability_profile.py",
+      "scripts/test_v48_interchange_profile.py",
+      "scripts/test_v48_registry_adoption.py",
+      "scripts/test_v48_task_learning.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
