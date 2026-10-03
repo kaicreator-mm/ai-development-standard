@@ -1,0 +1,38 @@
+task_id: T-002
+issue: 721
+parent_execution: 745
+frozen_task_dag: "#719 / b9fe0cc7089f64929b4bcf45f7230d950e864db2"
+base_branch: version/v4.9.0
+base_sha: 722bb229e9136c21116e1c03a0af65342c187e0a
+base_tree: 255559428529afea29d728620d2f3e0919e620bd
+task_pack_ref: docs/implementation/4.9.0/task-packs/T02_assurance_plan_v2.md
+task_pack_blob: 7f3444bc4b003d7479d33ef424f5abb48ecceb43
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md#t-002--assurance-plan-v2-proof--composition--currentness-contract-721
+l3_blob: f4633ca5afa4050c94a286270738dc32d561a62e
+lineage_currentness_refs:
+  LG42_COMPAT:
+    owner_ref: standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md
+    owner_blob: 266aefe32e0990c24fc8c1d6d731c4a3456fc3fc
+    machine_ref: schemas/compatibility-record-v1.schema.json
+    machine_blob: 1e68ad8c103b4c151c21a955866cf295168c482d
+lineage_last_check_ref: "T002_ADMISSION@version/v4.9.0:722bb229e9136c21116e1c03a0af65342c187e0a"
+dependency_refs:
+  - "T-001/#720:DONE@722bb229e9136c21116e1c03a0af65342c187e0a"
+review_policy: required
+validation_owner: schema-and-deterministic-semantics
+l3_requirement: high-capability-required
+source_write_set:
+  - standards/ASSURANCE_PLAN_STANDARD.md
+  - schemas/assurance-plan-v2.schema.json
+  - references/ASSURANCE_PLAN_V2_REFERENCE.md
+  - references/ASSURANCE_PLAN_V2_COMPATIBILITY.json
+  - scripts/test_v49_assurance_plan_v2.py
+forbidden_write_set:
+  - standards/RELEASE_STANDARD.md
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - schemas/assurance-plan-v1.schema.json
+  - schemas/review-aggregation-v1.schema.json
+  - manifests/**
+  - docs/implementation/4.9.0/TASK_DAG.md
+implementation_admission: READY
+claim_required: true

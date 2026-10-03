@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/assurance-plan-v2.schema.json",
+  "title": "AI Development Assurance Plan v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "owner_family",
+    "predecessor_protocol_version",
+    "assurance_plan_id",
+    "operation_id",
+    "subject_ref",
+    "subject_identity_ref",
+    "identity_binding",
+    "finding_disposition_policy",
+    "finding_carry_forward_policy",
+    "activities",
+    "assurance_floor",
+    "concern_resolutions",
+    "cross_owner_composition",
+    "selected_path",
+    "currentness_binding",
+    "aggregation",
+    "completion_predicate"
+  ],
+  "properties": {
+    "protocol_version": {"const": "ai-dev-assurance/v2"},
+    "owner_family": {"const": "assurance-plan"},
+    "predecessor_protocol_version": {"const": "ai-dev-assurance/v1"},
+    "assurance_plan_id": {"type": "string", "minLength": 1},
+    "operation_id": {"type": "string", "minLength": 1},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "identity_binding": {
+      "type": "string",
+      "enum": ["exact-sha", "validation-tuple", "candidate", "project-defined"]
+    },
+    "finding_disposition_policy": {
+      "type": "string",
+      "enum": ["p2-explicit-p3-optional", "p2-and-p3-explicit"]
+    },
+    "finding_carry_forward_policy": {
+      "const": "unresolved-valid-findings-carry-forward"
+    },
+    "activities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assurance_id",
+          "kind",
+          "policy",
+          "mode",
+          "coverage",
+          "independence",
+          "depends_on",
+          "collaboration_selected"
+        ],
+        "properties": {
+          "assurance_id": {"type": "string", "minLength": 1},
+          "kind": {
+            "type": "string",
+            "enum": ["review", "validation", "hidden-validation", "coherence-review", "authority-review"]
+          },
+          "policy": {"type": "string", "enum": ["required", "recommended", "not-required"]},
+          "mode": {
+            "type": "string",
+            "enum": [
+              "single-independent",
+              "cross-peer",
+              "specialist",
+              "model-diverse-adversarial",
+              "executable-validation",
+              "hidden-validation",
+              "coherence-review",
+              "human-authority-review"
+            ]
+          },
+          "coverage": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "independence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["context", "model", "executor", "evidence"],
+            "properties": {
+              "context": {"type": "string", "enum": ["none", "required"]},
+              "model": {"type": "string", "enum": ["none", "required"]},
+              "executor": {"type": "string", "enum": ["none", "required"]},
+              "evidence": {"type": "string", "enum": ["none", "required"]}
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          },
+          "blind_first_pass_ref": {"type": "string", "minLength": 1},
+          "model_diversity_basis": {
+            "type": "string",
+            "enum": [
+              "provider-diverse",
+              "model-family-diverse",
+              "architecture-system-diverse",
+              "project-approved-different-configuration"
+            ]
+          },
+          "independence_basis_ref": {"type": "string", "minLength": 1},
+          "collaboration_selected": {"type": "boolean"}
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"mode": {"const": "model-diverse-adversarial"}},
+              "required": ["mode"]
+            },
+            "then": {
+              "required": ["blind_first_pass_ref", "model_diversity_basis", "independence_basis_ref"]
+            }
+          }
+        ]
+      }
+    },
+    "assurance_floor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["composition", "requirements"],
+      "properties": {
+        "composition": {"const": "owner-scoped-conjunctive-floor"},
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["requirement_id", "owner_ref", "gate_ref", "policy", "strength_ref"],
+            "properties": {
+              "requirement_id": {"type": "string", "minLength": 1},
+              "owner_ref": {"type": "string", "minLength": 1},
+              "gate_ref": {"type": "string", "minLength": 1},
+              "policy": {"type": "string", "enum": ["required", "recommended", "not-required"]},
+              "strength_ref": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "concern_resolutions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "concern_id",
+          "owner_ref",
+          "gate_ref",
+          "baseline_requirement_ref",
+          "owner_permission",
+          "predicate_proofs",
+          "resolution",
+          "selected_requirement_ref",
+          "currentness_ref"
+        ],
+        "properties": {
+          "concern_id": {"type": "string", "minLength": 1},
+          "owner_ref": {"type": "string", "minLength": 1},
+          "gate_ref": {"type": "string", "minLength": 1},
+          "baseline_requirement_ref": {"type": "string", "minLength": 1},
+          "owner_permission": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["decision", "authority_ref", "currentness_ref"],
+            "properties": {
+              "decision": {
+                "type": "string",
+                "enum": ["ALLOW_REDUCTION", "DENY_REDUCTION", "NOT_APPLICABLE", "UNKNOWN"]
+              },
+              "authority_ref": {"type": "string", "minLength": 1},
+              "currentness_ref": {"type": "string", "minLength": 1}
+            }
+          },
+          "predicate_proofs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["predicate_ref", "state", "basis", "evidence_refs", "currentness_ref"],
+              "properties": {
+                "predicate_ref": {"type": "string", "minLength": 1},
+                "state": {"type": "string", "enum": ["TRUE", "FALSE", "UNKNOWN"]},
+                "basis": {
+                  "type": "string",
+                  "enum": ["durable-fact", "deterministic-check", "owner-record"]
+                },
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"type": "string", "minLength": 1}
+                },
+                "currentness_ref": {"type": "string", "minLength": 1}
+              }
+            }
+          },
+          "resolution": {
+            "type": "string",
+            "enum": ["BASELINE", "REDUCED", "STRONGER", "BLOCKED"]
+          },
+          "selected_requirement_ref": {"type": "string", "minLength": 1},
+          "currentness_ref": {"type": "string", "minLength": 1}
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"resolution": {"const": "REDUCED"}},
+              "required": ["resolution"]
+            },
+            "then": {
+              "properties": {
+                "owner_permission": {
+                  "properties": {"decision": {"const": "ALLOW_REDUCTION"}},
+                  "required": ["decision"]
+                },
+                "predicate_proofs": {
+                  "minItems": 1,
+                  "items": {
+                    "properties": {"state": {"const": "TRUE"}},
+                    "required": ["state"]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "cross_owner_composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "concern_resolution_refs", "cancellation_allowed"],
+      "properties": {
+        "policy": {"const": "conjunctive-no-cancellation"},
+        "concern_resolution_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "cancellation_allowed": {"const": false}
+      }
+    },
+    "selected_path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "selected_requirement_refs", "relation_to_floor"],
+      "properties": {
+        "rule": {"const": "floor-or-stronger-after-valid-owner-reductions"},
+        "selected_requirement_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "relation_to_floor": {
+          "type": "string",
+          "enum": ["SATISFIES_FLOOR", "STRONGER_THAN_FLOOR", "BLOCKED"]
+        }
+      }
+    },
+    "currentness_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule",
+        "subject_identity_ref",
+        "owner_authority_refs",
+        "owner_authority_digest",
+        "proof_input_refs",
+        "proof_input_digest",
+        "task_pack_ref",
+        "task_pack_digest",
+        "release_decision_refs",
+        "release_decision_digest",
+        "unresolved_finding_refs",
+        "unresolved_finding_digest",
+        "binding_digest",
+        "state"
+      ],
+      "properties": {
+        "rule": {"const": "all-components-exact-current"},
+        "subject_identity_ref": {"type": "string", "minLength": 1},
+        "owner_authority_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "owner_authority_digest": {"type": "string", "minLength": 1},
+        "proof_input_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "proof_input_digest": {"type": "string", "minLength": 1},
+        "task_pack_ref": {"type": "string", "minLength": 1},
+        "task_pack_digest": {"type": "string", "minLength": 1},
+        "release_decision_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "release_decision_digest": {"type": "string", "minLength": 1},
+        "unresolved_finding_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "unresolved_finding_digest": {"type": "string", "minLength": 1},
+        "binding_digest": {"type": "string", "minLength": 1},
+        "state": {"type": "string", "enum": ["CURRENT", "STALE", "UNKNOWN"]}
+      }
+    },
+    "aggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy", "blocker_resolution", "majority_vote_for_correctness", "conflict_route"],
+      "properties": {
+        "policy": {"const": "finding-union-blocker-dominance"},
+        "blocker_resolution": {"const": "unresolved-valid-blocker-dominates"},
+        "majority_vote_for_correctness": {"const": false},
+        "conflict_route": {"type": "string", "minLength": 1}
+      }
+    },
+    "completion_predicate": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"identity_binding": {"const": "exact-sha"}},
+        "required": ["identity_binding"]
+      },
+      "then": {
+        "properties": {
+          "subject_identity_ref": {"pattern": "^sha:[0-9a-fA-F]{40}$"},
+          "currentness_binding": {
+            "properties": {
+              "subject_identity_ref": {"pattern": "^sha:[0-9a-fA-F]{40}$"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

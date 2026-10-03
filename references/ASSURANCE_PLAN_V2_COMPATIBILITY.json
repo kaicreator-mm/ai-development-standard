@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "record_id": "v49-t002-assurance-plan-v2",
+  "contract": {
+    "kind": "json-schema",
+    "identity": "assurance-plan"
+  },
+  "baseline": {
+    "version_ref": "ai-dev-assurance/v1",
+    "sha_or_digest": "git-blob:bd9489097da87024349623cf3f7c1d83e74f6624"
+  },
+  "candidate": {
+    "version_ref": "ai-dev-assurance/v2",
+    "sha_or_digest": "git-blob:92d9c61bc80a3c863aee04f28eebb7ed6291b94a"
+  },
+  "change_operations": [
+    "add-versioned-successor-contract",
+    "add-owner-positive-reduction-proof",
+    "add-owner-scoped-conjunctive-floor",
+    "add-exact-currentness-binding"
+  ],
+  "dimensions": [
+    {
+      "name": "owner-family-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md",
+        "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+      ]
+    },
+    {
+      "name": "historical-v1-record-validity",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/assurance-plan-v1.schema.json",
+        "standards/ASSURANCE_PLAN_STANDARD.md#4-family-and-versioning-rule"
+      ]
+    },
+    {
+      "name": "aggregation-authority",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/assurance-plan-v1.schema.json#/properties/aggregation",
+        "schemas/assurance-plan-v2.schema.json#/properties/aggregation",
+        "docs/implementation/4.0.0/ADVERSARIAL_REVIEW.md"
+      ]
+    },
+    {
+      "name": "v1-parser-accepts-v2-instance",
+      "outcome": "INCOMPATIBLE",
+      "evidence_refs": [
+        "schemas/assurance-plan-v1.schema.json#/properties/protocol_version",
+        "schemas/assurance-plan-v2.schema.json#/properties/protocol_version",
+        "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+      ],
+      "notes_ref": "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+    },
+    {
+      "name": "version-aware-adoption",
+      "outcome": "CONDITIONALLY_COMPATIBLE",
+      "evidence_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#4-family-and-versioning-rule",
+        "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+      ],
+      "notes_ref": "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+    }
+  ],
+  "producer_refs": [
+    "schemas/assurance-plan-v2.schema.json"
+  ],
+  "consumer_refs": [
+    "v1-only-assurance-consumers",
+    "version-aware-assurance-consumers"
+  ],
+  "compatibility_window_ref": "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility",
+  "notes_ref": "references/ASSURANCE_PLAN_V2_REFERENCE.md#8-v1v2-compatibility"
+}
