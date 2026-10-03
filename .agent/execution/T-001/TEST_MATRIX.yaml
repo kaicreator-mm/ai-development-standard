@@ -1,0 +1,18 @@
+task: T-001
+required:
+  - id: owner-continuity
+    proves: stable normative surface preserves v4.0 Assurance Plan owner identity
+  - id: historical-v1
+    proves: historical assurance-plan-v1 remains valid/readable
+  - id: no-parallel-owner
+    proves: no second proportional-assurance owner/lifecycle is introduced
+  - id: aggregation-preserved
+    proves: existing finding union/blocker dominance semantics remain unchanged
+  - id: authority-negative
+    proves: Assurance owner surface cannot mint Review/Validation/Release truth
+  - id: focused-suite
+    command: python -B scripts/test_v49_assurance_owner.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent concern validation on final exact PR HEAD
+review: fresh exact-HEAD review required after validation
