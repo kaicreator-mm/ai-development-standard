@@ -2,7 +2,7 @@
 
 ```text
 VERSION=v4.9.0
-STATE=TASK_DAG_V02_SUCCESSOR_PENDING_FRESH_REVIEW
+STATE=TASK_DAG_FROZEN_MATERIALIZATION_AUTHORIZED
 PRODUCT_AUTHORITY=FROZEN
 CURRENT_PRD_REVISION=v0.4
 FROZEN_PRD_BLOB=a8ec7030a14337a4c2dca853dc474e965679d610
@@ -13,21 +13,18 @@ FROZEN_L2_BLOB=bd41ea0175b459a6a490fd37ad579e429a58a1c3
 L2_REVIEW=#713@5967608074 PASS
 L2_FREEZE=#714 PASS
 L2_FREEZE_CHECKPOINT=8694a2616e9eb61da9df15fd4a00b0034e368773
-TASK_DAG_AUTHORITY=YES_FOR_PLANNING_ONLY
+TASK_DAG_AUTHORITY=FROZEN
 TASK_DAG_REVISION=v0.2
-TASK_DAG_STATUS=SUCCESSOR_CANDIDATE_NOT_FROZEN
-TASK_DAG_BLOB=b9fe0cc7089f64929b4bcf45f7230d950e864db2
-TASK_DAG_FIRST_MATERIALIZATION_HEAD=1aac857f48b6731d219beaadd5c3074288a7fdff
-TASK_DAG_FIRST_MATERIALIZATION_TREE=cc1581add5d6349d415c1785030570411c2e1a90
-TASK_DAG_PREDECESSOR_REVIEW=#716@5968275856 FAIL
-TASK_DAG_PREDECESSOR_COUNTS=P0:0,P1:1,P2:0,P3:0
-TASK_DAG_FINDING_DISPOSITION=#717
+FROZEN_TASK_DAG_BLOB=b9fe0cc7089f64929b4bcf45f7230d950e864db2
+TASK_DAG_REVIEW=#718@5968672000 PASS
+TASK_DAG_REVIEW_COUNTS=P0:0,P1:0,P2:0,P3:0
+TASK_DAG_FREEZE=#719
 TASK_COUNT=15
-TASK_DEPENDENCY_EDGES=UNCHANGED_FROM_V01
-TASK_DAG_FRESH_COMPLETE_DELTA_REVIEW=REQUIRED
-TASK_PACK_MATERIALIZATION=NO
-IMPLEMENTATION_ISSUE_MATERIALIZATION=NO
-IMPLEMENTATION_AUTHORITY=NO
+TASK_PACK_MATERIALIZATION=AUTHORIZED_AFTER_FREEZE_CHECKPOINT_VERIFY
+IMPLEMENTATION_ISSUE_MATERIALIZATION=AUTHORIZED_AFTER_FREEZE_CHECKPOINT_VERIFY
+IMPLEMENTATION_BRANCH_AUTHORITY=READY_ONLY
+BUILDER_DISPATCH_AUTHORITY=READY_ONLY
+IMPLEMENTATION_AUTHORITY=TASK_SCOPED_AND_ADMISSION_BOUND
 PLANNING_PARENT=#697
 PRIMARY_PLANNING_INPUT=#680
 PLANNING_BRANCH=planning/v4.9.0
@@ -36,12 +33,8 @@ PLANNING_PR=#698
 
 ## Current stage
 
-Product v0.4 and L2 v0.2 are Frozen. Task DAG v0.1 was independently reviewed by #716 and failed only on one P1: direct consumers of sequential predecessor owners lacked explicit task-specific lineage-currentness predicates.
+Product v0.4, L2 v0.2 and Task DAG v0.2 are Frozen authorities. #718 complete-delta review passed the exact DAG v0.2 candidate with zero findings. #719 records the administrative DAG Freeze.
 
-#717 accepts that finding. DAG v0.2 keeps all 15 Task identities, semantic dependency edges, owner lanes, Review Policies, validation ownership and L3 posture unchanged, while adding explicit `LG42_COMPAT`, `LG43_DAG`, `LG47_REGISTRY`, `LG48_EXEC`, `LG48_LEARNING` and `LG_SEQ_FULL` admission predicates.
+The next stage is Task Pack and Task Issue materialization. Materialization MUST preserve the exact Frozen dependency graph and per-Task `LINEAGE_CURRENTNESS_REFS[]`. Native Issue Dependencies represent only semantic Task dependencies; predecessor lineage is a separate currentness/admission predicate.
 
-Every later Task Pack/Issue must carry reconstructible `LINEAGE_CURRENTNESS_REFS`; upstream Task completion cannot substitute for the dependent Task's own dispatch-time currentness. Missing/stale/unknown lineage is `WAITING_LINEAGE` and non-dispatch.
-
-DAG v0.2 first materialized at HEAD/tree `1aac857f48b6731d219beaadd5c3074288a7fdff` / `cc1581add5d6349d415c1785030570411c2e1a90`; metadata-only successors do not create a new DAG revision while blob `b9fe0cc7089f64929b4bcf45f7230d950e864db2` is byte-identical.
-
-The next gate is Fresh complete-delta Task-DAG Review of v0.2. No DAG Freeze, Task Pack/implementation-Issue materialization, implementation branch or Builder dispatch is authorized yet.
+A materialized Task Issue is not automatically implementation-ready. Branch/Execution Pack/Builder dispatch occurs only after the Task's dependency, lineage, Assurance Plan, authority, independence and resource predicates are current and satisfied. Known lineage-waiting work remains non-dispatchable.
