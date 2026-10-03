@@ -5,7 +5,7 @@ Task DAG snapshots are immutable planning evidence. `TASK_DAG.md` is the current
 | Revision | Status | Review / reason | DAG blob | Identity |
 |---|---|---|---|---|
 | v0.1 | superseded / rejected for Freeze | #715 first candidate; #716 Fresh Review FAIL `P0=0/P1=1/P2=0/P3=0` due incomplete predecessor-lineage gating | `4f358ba2b32e01ae17ddcdf970151cf28e44bb3f` | reviewed HEAD `6e469aed534052906434dc62bc05b4daa2337eb4`, tree `0be285a5283502eb627ce1ef1a41b5615b7ec2fe` |
-| v0.2 | current successor / not frozen | #717 repairs only #716 F1 by making per-Task predecessor currentness explicit and reconstructible | `b9fe0cc7089f64929b4bcf45f7230d950e864db2` | first materialization identity recorded by successor commit; Fresh Review must bind final live HEAD/tree + this blob |
+| v0.2 | current successor / not frozen | #717 repairs only #716 F1 by making per-Task predecessor currentness explicit and reconstructible | `b9fe0cc7089f64929b4bcf45f7230d950e864db2` | first materialized HEAD `1aac857f48b6731d219beaadd5c3074288a7fdff`, tree `cc1581add5d6349d415c1785030570411c2e1a90`; final Fresh Review must bind live HEAD/tree + same blob |
 
 ## v0.1
 
@@ -18,13 +18,15 @@ Task DAG snapshots are immutable planning evidence. `TASK_DAG.md` is the current
 - Task count/identities/dependency edges unchanged.
 - Adds named lineage currentness predicates and an exact per-Task lineage matrix.
 - Adds Task Pack/Issue `LINEAGE_CURRENTNESS_REFS` materialization/admission requirements.
-- Upstream completion cannot substitute for the dependent Task's own dispatch-time predecessor currentness.
+- Upstream Task completion cannot substitute for the dependent Task's own dispatch-time predecessor currentness.
 - `WAITING_LINEAGE` remains derived/non-dispatch and never becomes a fake Task dependency edge or canonical workflow state.
+- First materialized at HEAD/tree `1aac857f48b6731d219beaadd5c3074288a7fdff` / `cc1581add5d6349d415c1785030570411c2e1a90` with DAG blob `b9fe0cc7089f64929b4bcf45f7230d950e864db2`.
+- Later metadata-only commits do not create a new DAG revision while that DAG blob remains byte-identical.
 
 ## Invariants
 
 1. Historical DAG snapshots are never rewritten to make old Review evidence current.
 2. Review terminals bind exact DAG blob/HEAD/tree.
-3. Material successor DAG requires successor Review.
+3. A material successor DAG requires successor Review.
 4. Frozen Product/L2 remain unchanged.
 5. Implementation remains unauthorized until explicit DAG Freeze + Task Pack/Issue materialization.
