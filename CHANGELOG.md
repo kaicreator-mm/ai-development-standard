@@ -1,5 +1,28 @@
 # Changelog
 
+## v4.8.0 — Unreleased sequential integration candidate
+
+v4.8.0 的顺序集成候选：按 #787@5981213563 的组合授权与 #705 Phase-1 先例，将 #787@5981189207 已完成 Release Qualification（`READY`，仅绑定该 exact SHA/tree）的 `version/v4.8.0` 冻结候选 `0ac1a3d43163271469811c2867ff684f680f7443`（tree `779fde0846ef775c31e8372f969534573aac72f5`）的语义增量忠实重放到 `main`（`f62930bd3512a463358b8b642b1bbc5993566940` / tree `6426f3e691bfc93ce3161c14b89031011fbfffb0`）之上，形成顺序集成 successor（merge-base `94cad2b0487e8a552c66d6bcd1cba36b7779383d`）。本条目只记录实际发生的组合事实，不产生任何 release/integration 断言。
+
+- **14 个重叠冲突面的真实组合**：6 个 `added-in-both` 的 `.agent/execution/T-011/*` 记录属两个不同程序（v4.3-sequential 程序与 v4.8 程序）在同一路径集上的历史执行证据碰撞；组合方案为 v4.8 侧记录保留 canonical 路径 `.agent/execution/T-011/`，v4.3 侧六件记录按字节原样（blob SHA 不变）迁移至程序级历史路径 `.agent/execution/_legacy/v4.3-sequential/T-011/`，并把仅有的两个 v4.3 侧引用方（`scripts/test_v43_conformance_dogfood.py` 与 `docs/implementation/4.3.0/dogfood/fixtures/planner_bounded_executor.json`）的路径引用机械重绑定到迁移后路径（oracle 语义、被验证内容与 blob hash 完全不变）；`VERSION`/`README.md`/`CHANGELOG.md`/`standard-manifest.json`/`checklists/pr-review.md` 与 3 个模板文件按双方变更并集组合。
+- **前驱内容保全**：v4.1/v4.2/v4.3-sequential 的 owners、contracts、schemas、tests、adoption 事实与 v4.9.0 planning lane（`docs/implementation/4.9.0/**`）全部保留；无任何既有门禁证据被回滚或改写（T-011 路径迁移除外，且为字节原样迁移 + 引用重绑定）。
+- **身份面真实组合**：`VERSION=4.8.0`；README 现行版本行改为 v4.8.0（未发布 version-branch sequential integration candidate）并新增顺序集成谱系声明；`standard-manifest.json` 为双侧注册的并集（v4.3-sequential 与 v4.8 条目，无重复 owner concern/path）。
+- **无断言姿态**：#787 对 v4.8 候选的 RQ/Stage/Freeze/Hidden 结论 HISTORICAL_ONLY / NON_TRANSFERABLE，不转移到本组合 SHA/tree；本组合自身不声称 Freeze/Hidden/RQ/tag/Release/`main` 集成，在其独立 composition Validation、Fresh Review 与完整 verification battery 通过前不得视为已发布标准。
+
+## v4.8.0 — Unreleased candidate
+
+v4.8.0 的任务已合并到 `version/v4.8.0`，形成 **Evidence-Driven Agent Orchestration** 的未发布候选范围。本条目只总结实际落库的 scope，不产生任何 release/integration 断言。
+
+- **Exactly three new default machine-contract families（per Frozen L2）**：新增 `schemas/task-learning-v1.schema.json`（Task Learning Evidence v1）、`schemas/agent-capability-profile-v1.schema.json`（Logical Agent Capability Profile v1）与 `schemas/agent-capability-evidence-v1.schema.json`（Agent Capability Evidence v1）三类 machine contracts，配套 `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`、`references/AGENT_CAPABILITY_PROFILE_REFERENCE.md`、`references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md` 与聚焦测试；canonical owner 保持 `standards/EXECUTION_ARCHITECTURE_STANDARD.md`，不新增第四个 semantic owner，不引入 Availability family。
+- **Interchange v1 reuse**：transport-neutral correlation owner 仍为 v4.0 的 `docs/implementation/4.0.0/AGENT_INTERCHANGE.md` + `schemas/interchange-envelope-v1.schema.json`（`CORRELATION_ONLY_NON_AUTHORITATIVE`），在 `standard-manifest.json` 中恰注册一次；T-003 disposition 记录 `INTERCHANGE_SCHEMA_CHANGE=NO_CHANGE_REQUIRED`、无新 exchange family、`ai-dev:event:v3` 不要求（`references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md`）。
+- **ADS evolution governance / intake**：新增 ADS 演进治理/intake 路径与配套 conformance 测试（`scripts/test_v48_ads_evolution_governance.py`）；ADS 演进反馈走普通 governance promotion，不创建新 machine family、不授予新 mutation authority。
+- **Task learning**：T-001 Task Learning Evidence contract 与 T-004 closeout/template wiring 落库，覆盖 task learning evidence 的 capture/closeout 语义与模板接线。
+- **Registry / adoption**：新增 `references/V48_REGISTRY_ADOPTION_REFERENCE.md`（registry discovery、`MACHINE_FAMILY_TARGET=EXACTLY_3`、`INTERCHANGE_POLICY=REUSE_EXISTING_V1_EXACTLY_ONCE`）与 `scripts/test_v48_registry_adoption.py`；registry/discoverability/adoption wiring 保持 `authority_effect=NONE`，只做发现元数据，不复制 owner 语义。
+- **Conformance oracles**：新增 contract/historical compatibility（`test_v48_contract_compatibility.py`）、eligibility/composite resource admission（`test_v48_scheduling_conformance.py`）、interchange replay/restart（`test_v48_interchange_replay_restart.py`）、task learning/evolution governance（`test_v48_governance_conformance.py`）、execution ownership start-record（`test_v48_execution_ownership.py`）与集成 closure oracle（`test_v48_integration_closure.py`）等确定性回归。
+- **Orchestration dogfooding evidence**：T-011 heterogeneous multi-agent / resource / transport dogfood（`scripts/test_v48_orchestration_dogfood.py` + ODF evidence corpus）、T-012 #469 bounded-agent dogfood 与 T-013 cross-project ADS evolution dogfood 落库为可复现 evidence；dogfood evidence 不推导经济/路由结论，也不构成 release readiness 证据。
+- **Integrated convergence / closure inputs**：T-014 产出 `docs/implementation/4.8.0/closure/CLOSURE_INPUTS.md` 与 `closure/INTEGRATED_REGRESSION_EVIDENCE.json`，仅为后续 Version Closure 提供 inputs；自身不发出 Version Closure、Release Qualification、Hidden Validation、tag/release 或 main-integration verdict。
+- 当前候选只总结实际落库的 standards、schemas、references、tests、dogfood 与 adoption/wiring；没有记录或推导生产 Agent 运行、真实 fresh-session 执行、production deployment 或 release readiness 证据。
+- `v4.1`–`v4.7` 继续作为独立的 parallel version lines；它们的 branch/document/commit 存在不得由本 v4.8 candidate 推导为已经发布、已经 `main` 集成或已经完成各自 Release Qualification。
 ## v4.3.0 — Unreleased Sequential Successor Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
 
 v4.3.0 当前处于未发布顺序谱系候选阶段。按 #705 的顺序谱系（sequential lineage），历史已冻结候选 `version/v4.3.0`（`124943821848260b135a008dfaca6bc05a31fbac` / tree `bad3acb42a6e68e31f8e2f9178ecdeb5b2e8d2f1`）中经资格验证的 v4.3 语义增量（源区间 `65c978d7..124943821`，T01–T11）被语义重放到已资格化的 v4.2 `main`（`73098dfb576dbcc1252634e14bb3d39b70b94342`，经 PR #703 集成）之上，形成 `version/v4.3.0-sequential` 顺序候选分支；本次发布身份校正只修改 `VERSION`、`README.md`、`CHANGELOG.md` 三个身份面，不修改规范、schema、实现、测试或任何既有门禁证据。历史 #690 对旧候选的 Stage1/Freeze/Hidden/Closeout/Release Qualification 结论属 HISTORICAL_ONLY / NON_TRANSFERABLE，不转移到新 SHA/tree；在本候选获得精确 SHA/tree 绑定的独立 Validation/Fresh Review 与相应版本级闭合结论前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定。

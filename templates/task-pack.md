@@ -24,6 +24,7 @@ l3_requirement:                # L3 Reference Pack pointer or not-required — <
 agent_freedom:                 # F0_MECHANICAL | F1_BOUNDED_IMPLEMENTATION | F2_ENGINEERING_DISCRETION | F3_ARCHITECTURE_REQUIRED
 jit_branch: true               # task branch created only after dependencies merge
 execution_pack:                # "JIT" | "not-required — <reason>"
+task_learning_closeout:        # TASK_LEARNING=NONE_MATERIAL | durable evidence ref(s)/digest(s); semantics/currentness per references/TASK_LEARNING_EVIDENCE_REFERENCE.md
 ```
 
 ## v4.3 authority / profile consumption
@@ -45,6 +46,15 @@ This template extends the existing Task Pack; it MUST NOT create a duplicate Tas
 ## Acceptance detail
 
 <expand each acceptance criterion into a verifiable statement>
+
+## Task Learning Closeout
+
+Record exactly one proportional closeout path for the task:
+
+- `TASK_LEARNING=NONE_MATERIAL`; or
+- one or more durable Task Learning evidence refs/digests interpreted under `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`.
+
+Prefer references/digests over copied evidence bodies. Missing, ambiguous, mutable or stale exact-subject/currentness evidence remains historical only and must not be silently rebound as current behavioral proof. Task Learning is evidence, not Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority, and no private chain-of-thought, hidden evaluator material, credentials, secrets or verbose scratch reasoning is required.
 
 ## Out of scope
 

@@ -1,0 +1,22 @@
+task: T-003
+required:
+  - id: concrete-gap-first
+    proves: existing Interchange v1 and GitHub event profile are inspected before any mutation; NO_CHANGE_REQUIRED is valid
+  - id: existing-family-reuse
+    proves: protocol_version remains ai-dev/interchange-v1 and no fourth Exchange family/owner is introduced
+  - id: capability-owner-reference
+    proves: receiver/executor capability semantics resolve through durable Task/Dispatch/T-015-owned facts rather than ad-hoc envelope fields
+  - id: correlation-non-authority
+    proves: authority_effect remains CORRELATION_ONLY_NON_AUTHORITATIVE and ACK/delivery/progress cannot become gate truth
+  - id: replay-conflict-currentness
+    proves: exact subject identity, causation, payload refs and existing replay/conflict semantics remain compatible
+  - id: historical-compatibility
+    proves: no required-field or event-family breaking change is introduced
+  - id: focused-suite
+    command: python -B scripts/test_v48_interchange_profile.py
+  - id: protocol-regression
+    command: python -B scripts/test_protocol_schemas.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent protocol/schema compatibility validation on exact candidate
+review: fresh exact-HEAD review required after validation

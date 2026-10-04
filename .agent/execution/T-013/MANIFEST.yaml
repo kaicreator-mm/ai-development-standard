@@ -1,0 +1,36 @@
+pack_id: v4.8.0-T-013-jit
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+task_id: T-013
+parent_issue: "#519"
+branch: task/v4.8.0-t13-cross-project-evolution-dogfood
+base_sha: 4c49487423e4aabc7bb1e296da74eee2a6f55da8
+base_tree: 4cb78609ef805559e3fcd023dc4215a7e596d149
+task_pack_ref: docs/implementation/4.8.0/task-packs/T13_cross_project_evolution_dogfood.md
+task_pack_blob: 9b96b567e8b0fec23cab08502f5dd9a907c4ef59
+l3_ref: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+l3_blob: 8af06fd5bd7237b260fe478c23cb410c0e15898f
+preflight_ref: "#519@5972662840"
+native_blockers: 0
+review_policy: required
+validation_owner: independent-from-builder
+validation_scope: cross-project-currentness-privacy-evidence-strength
+builder_write_set:
+  - docs/implementation/4.8.0/dogfood/evolution/EVIDENCE_MATRIX.json
+  - docs/implementation/4.8.0/dogfood/evolution/EVOLUTION_DOGFOOD_REPORT.md
+  - docs/implementation/4.8.0/dogfood/evolution/VALIDATION_HANDOFFS.md
+read_only_sources:
+  - kaicreator-mm/ai-development-standard#469
+  - kaicreator-mm/domain-ux#162
+  - kaicreator-mm/runx#143
+core_artifacts:
+  - .agent/execution/T-013/MANIFEST.yaml
+  - .agent/execution/T-013/EXECUTION_CONTRACT.md
+  - .agent/execution/T-013/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-013/TEST_MATRIX.yaml
+  - .agent/execution/T-013/FAILURE_MATRIX.yaml
+  - .agent/execution/T-013/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
+package_excluded: true

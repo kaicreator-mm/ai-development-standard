@@ -1,0 +1,140 @@
+{
+  "subjects": {
+    "observed": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
+    "successor": "git:kaicreator-mm/ai-development-standard@2222222222222222222222222222222222222222",
+    "stale": "git:kaicreator-mm/ai-development-standard@3333333333333333333333333333333333333333"
+  },
+  "current_contracts": {
+    "task_learning": {
+      "schema_version": "ai-dev/task-learning-v1",
+      "learning_id": "learning:T-007:compat",
+      "repository_ref": "github:kaicreator-mm/ai-development-standard",
+      "work_item_ref": "github:kaicreator-mm/ai-development-standard#513",
+      "implementation_subject_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
+      "authority_refs": [
+        "task-pack:v4.8.0/T-007",
+        "l2:f88c85454e80101a0fdf56050e21f11a05279841"
+      ],
+      "summary": "Integrated compatibility evidence remains bound to its exact implementation subject.",
+      "rationale_summary": "Only externally useful bounded rationale is retained; private chain-of-thought is neither required nor accepted.",
+      "reusable_invariant_refs": [
+        "L2#compatibility-progressive-adoption",
+        "L2#conformance-negative-oracles"
+      ],
+      "source_test_validation_review_refs": [
+        "test:scripts/test_v48_contract_compatibility.py"
+      ],
+      "confidence_layers": [
+        "IDENTITY_BOUND"
+      ],
+      "currentness_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
+      "disposition": "RETAIN_LOCAL"
+    },
+    "agent_capability_profile": {
+      "schema_version": "ai-dev/agent-capability-profile-v1",
+      "profile_id": "logical-agent:v48-contract-builder",
+      "profile_version": "1",
+      "logical_agent_or_runtime_class_ref": "agent-class:chatgpt-web",
+      "provider_model_provenance": "provider-model:example/strong-model",
+      "eligible_role_claims": [
+        "builder"
+      ],
+      "reasoning_or_semantic_capability_claims": [
+        "schema-contract-authoring",
+        "compatibility-conformance"
+      ],
+      "logical_tool_use_class_claims": [
+        "github-repository-write"
+      ],
+      "max_agent_freedom_claim": "F1_BOUNDED_IMPLEMENTATION",
+      "environment_or_runner_requirement_refs": [
+        "runner-class:python3"
+      ],
+      "compatibility_refs": [
+        "ads:v4"
+      ]
+    },
+    "agent_capability_evidence": {
+      "schema_version": "ai-dev/agent-capability-evidence-v1",
+      "evidence_id": "cap-evidence:T-007:compat",
+      "agent_profile_ref": "profile:logical-agent:v48-contract-builder",
+      "logical_operator_or_executor_ref": "operator:t007-builder",
+      "provider_model_provenance": "provider-model:example/strong-model",
+      "task_class_or_capability_class": "compatibility-conformance",
+      "role": "builder",
+      "exact_subject_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
+      "environment_ref": "environment:python3",
+      "runner_or_resource_capability_ref": "runner-capability:python3-current-observation",
+      "task_pack_execution_pack_refs": [
+        "task-pack:v4.8.0/T-007",
+        "execution-pack:T-007@22e8e1701661689fb39a5c363eed424cf827c403"
+      ],
+      "result_refs": [
+        "result:focused-contract-compatibility"
+      ],
+      "validation_refs": [
+        "validation:historical-exact-subject-ref"
+      ],
+      "review_refs": [
+        "review:historical-exact-subject-ref"
+      ],
+      "evidence_strength": "IDENTITY_BOUND",
+      "observed_at_or_currentness_scope": "historical:exact-subject-only",
+      "observation_kind": "POSITIVE",
+      "economic_measurement_status": "NOT_MEASURED"
+    }
+  },
+  "negative_fields": {
+    "claim_to_proof": [
+      "proven_capability",
+      "capability_proof"
+    ],
+    "evidence_to_current_pass": [
+      "validation_pass",
+      "review_pass",
+      "current_availability"
+    ],
+    "provider_model_to_authority": [
+      "authorization",
+      "routing_decision",
+      "correctness_score"
+    ],
+    "infrastructure_owner_capture": [
+      "host_os",
+      "runtime_inventory",
+      "toolchain_inventory",
+      "cpu_count",
+      "memory_bytes",
+      "provider_concurrency",
+      "network_reachability",
+      "availability"
+    ],
+    "private_cot": [
+      "chain_of_thought",
+      "private_chain_of_thought"
+    ]
+  },
+  "historical_v4": {
+    "interchange_handoff": {
+      "protocol_version": "ai-dev/interchange-v1",
+      "exchange_id": "exchange:v4:historical:001",
+      "exchange_type": "HANDOFF",
+      "operation_id": "v4:historical-operation",
+      "work_item_ref": "github:kaicreator-mm/ai-development-standard#118",
+      "subject_ref": "PR:#118",
+      "subject_identity_ref": "sha:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "identity_binding": "exact-sha",
+      "authority_effect": "CORRELATION_ONLY_NON_AUTHORITATIVE",
+      "actor": {
+        "actor_role": "builder",
+        "operator_kind": "chatgpt-web",
+        "operator_id": "historical-v4-builder"
+      },
+      "causation": {
+        "caused_by": "issue:#118",
+        "correlation_refs": []
+      },
+      "occurred_at": "2026-09-01T00:00:00Z"
+    }
+  }
+}

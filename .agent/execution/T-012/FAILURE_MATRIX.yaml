@@ -1,0 +1,56 @@
+task_id: T-012
+failures:
+  - id: F01
+    condition: live-integration-base-differs-from-bound-base-before-builder-start
+    disposition: STOP_REBIND_EXECUTION_PACK
+  - id: F02
+    condition: task-pack-or-l3-blob-does-not-match-bound-identity
+    disposition: PACK_INVALID_STOP_REBIND
+  - id: F03
+    condition: native-issue-518-has-active-blocker
+    disposition: BLOCKED_DEPENDENCY
+  - id: F04
+    condition: issue-469-has-material-successor-after-planning-anchor-5925124956
+    disposition: BLOCKED_SOURCE_CURRENTNESS_REBIND_REQUIRED
+  - id: F05
+    condition: required-source-evidence-cannot-be-read-or-exactly-bound
+    disposition: BLOCKED_SOURCE_CURRENTNESS_OR_NOT_REPORTED
+  - id: F06
+    condition: missing-measurement-normalized-to-zero-or-invented
+    disposition: BLOCKING_MEASUREMENT_INTEGRITY_FAILURE
+  - id: F07
+    condition: provider-model-identity-used-as-correctness-authority-or-universal-eligibility
+    disposition: BLOCKING_EVIDENCE_INTEGRITY_FAILURE
+  - id: F08
+    condition: bounded-task-success-converted-to-blanket-strong-to-low-cost-rule
+    disposition: BLOCKING_SCOPE_FAILURE
+  - id: F09
+    condition: incomparable-or-partial-measurements-converted-to-economic-savings-claim
+    disposition: BLOCKING_MEASUREMENT_INTEGRITY_FAILURE
+  - id: F10
+    condition: builder-needs-write-outside-docs-implementation-4.8.0-dogfood-469
+    disposition: STOP_TASK_OR_EXECUTION_PACK_OWNER_DECISION
+  - id: F11
+    condition: normative-standard-schema-product-l2-dag-or-model-policy-change-required
+    disposition: ARCHITECTURE_OR_GOVERNANCE_REENTRY_REQUIRED
+  - id: F12
+    condition: builder-self-claims-independent-validation-or-fresh-review
+    disposition: BLOCKING_INDEPENDENCE_FAILURE
+  - id: F13
+    condition: historical-pending-source-state-upgraded-without-successor-evidence
+    disposition: BLOCKING_CURRENTNESS_FAILURE
+  - id: F14
+    condition: later-validation-or-review-findings-omitted-or-attributed-to-builder-without-source-support
+    disposition: BLOCKING_EVIDENCE_INTEGRITY_FAILURE
+  - id: F15
+    condition: source-observations-and-t012-own-execution-measurements-merged-without-attribution
+    disposition: BLOCKING_PROVENANCE_FAILURE
+  - id: F16
+    condition: exact-candidate-drifts-after-qualifying-validation-or-review
+    disposition: STALE_EVIDENCE_REQUALIFY
+  - id: F17
+    condition: ads-evolution-candidate-treated-as-automatic-standard-adoption
+    disposition: BLOCKING_GOVERNANCE_FAILURE
+  - id: F18
+    condition: semantic-authority-currentness-comparability-or-source-meaning-is-materially-ambiguous-to-f1-builder
+    disposition: STOP_ESCALATE_HIGH_CAPABILITY_OWNER

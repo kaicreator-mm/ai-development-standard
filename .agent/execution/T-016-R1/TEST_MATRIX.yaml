@@ -1,0 +1,40 @@
+task: T-016-R1
+source_finding: "#593 P1"
+positive:
+  - id: immutable-exact-subject
+    oracle: canonical git owner/repository plus 40-lowercase-hex commit subject validates and remains exact-subject evidence only
+  - id: predecessor-evidence-semantics
+    oracle: POSITIVE/NEGATIVE/MIXED, owner refs, bounded evidence strength and economic non-inference remain supported
+negative:
+  - id: mutable-main
+    input: git:owner/repo@main
+    oracle: reject_or_fail_closed
+  - id: mutable-named-branch
+    input: git:owner/repo@feature/x
+    oracle: reject_or_fail_closed
+  - id: tag-or-ref-alias
+    input: git:owner/repo@v4.8.0
+    oracle: reject_or_fail_closed
+  - id: repository-only
+    input: git:owner/repo
+    oracle: reject_or_fail_closed
+  - id: short-sha
+    input: git:owner/repo@abcdef0
+    oracle: reject_or_fail_closed
+  - id: malformed-or-nonhex
+    input: git:owner/repo@zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+    oracle: reject_or_fail_closed
+  - id: equal-mutable-alias-drift
+    oracle: textual equality of a mutable alias across two different underlying commits must not imply current applicability
+  - id: stale-immutable-subject
+    oracle: old immutable commit identity remains historical-only after evaluated subject changes
+regression:
+  - exact_subject_historical
+  - positive_negative_evidence
+  - owner_facts_reference_only
+  - no_current_pass_authority
+  - bounded_evidence_strength
+  - provenance_not_score
+  - economic_non_inference
+  - protocol_schema_regression
+  - repository_verifier

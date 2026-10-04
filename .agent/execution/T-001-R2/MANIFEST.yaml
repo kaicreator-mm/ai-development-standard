@@ -1,0 +1,33 @@
+pack_id: v4.8.0-T-001-R2-33dfb8f0
+task_id: T-001
+repair_issue: "#560"
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
+task_pack_ref: github:kaicreator-mm/ai-development-standard@33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830:docs/implementation/4.8.0/task-packs/T01_task_learning_evidence.md
+branch: task/v4.8.0-t01-task-learning-evidence-r2
+parent_issue: "#507"
+prior_review: "#550 CHANGES_REQUESTED P1=1"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
+generated_by: chatgpt-web:v48-controller-r2
+generated_at: 2026-10-01T12:48:00Z
+dependency_completion: []
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T01_task_learning_evidence.md
+  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - schemas/task-learning-v1.schema.json
+  - scripts/test_v48_task_learning.py
+  - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT_R2

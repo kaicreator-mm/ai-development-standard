@@ -9,7 +9,7 @@
     "execution_pack_head_sha": "d9ac745f0897903e95c09eb33b6c54aa49c84cb5",
     "execution_pack_tree": "116eb8a901bef1ec142c69f2c4e6941e3545ad22",
     "task_pack_ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
-    "execution_contract_ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md"
+    "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md"
   },
   "planner_identity_or_role": "high-capability ADS planner/controller that produced the durable T11 Task Pack and Execution Pack",
   "bounded_executor_or_evaluator_identity_or_role": "synthetic bounded lower-cost executor interpretation/evaluation",
@@ -51,7 +51,7 @@
       ]
     },
     {
-      "ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md",
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
       "tokens": [
         "## Builder implementation write set",
         "The Builder MUST NOT modify this Execution Pack",
@@ -61,7 +61,7 @@
       ]
     },
     {
-      "ref": ".agent/execution/T-011/IMPLEMENTATION_MAP.md",
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md",
       "tokens": [
         "scripts/test_v43_conformance_dogfood.py",
         "docs/implementation/4.3.0/dogfood/T11_EVIDENCE.md",
@@ -70,7 +70,7 @@
       ]
     },
     {
-      "ref": ".agent/execution/T-011/FAILURE_MATRIX.yaml",
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml",
       "tokens": [
         "FAIL_AND_ROUTE_TO_OWNER",
         "CREATE_EXACT_SCOPE_VALIDATION_HANDOFF_AND_KEEP_NOT_RUN_OR_BLOCKED",
@@ -153,21 +153,21 @@
       "task_pack_blob": "f0851868a19c9e321dcbfb70eb46e8f31cb7efd3",
       "l3_ref": "docs/implementation/4.3.0/L3_REFERENCE_PACKS.md#t11--conformance--dogfood",
       "l3_blob": "03ac6c46c6091bad6df5e02d94a07f7c58fb7ef9",
-      "execution_manifest_ref": ".agent/execution/T-011/MANIFEST.yaml",
+      "execution_manifest_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/MANIFEST.yaml",
       "execution_manifest_blob": "e93fbfadf6e8f9af7521b3284888872be25a745d",
-      "execution_contract_ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md",
+      "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
       "execution_contract_blob": "3e3a15ccaaf9ae4922b737896fb8528bf6637906",
-      "implementation_map_ref": ".agent/execution/T-011/IMPLEMENTATION_MAP.md",
+      "implementation_map_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md",
       "implementation_map_blob": "b7e36416d93fbe9f078853b807791f2fb87b6649",
-      "failure_matrix_ref": ".agent/execution/T-011/FAILURE_MATRIX.yaml",
+      "failure_matrix_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml",
       "failure_matrix_blob": "c42b2a47b7c047aced5fb4031609ce5a6b2ab2d6",
       "execution_core_artifact_blobs": {
-        ".agent/execution/T-011/MANIFEST.yaml": "e93fbfadf6e8f9af7521b3284888872be25a745d",
-        ".agent/execution/T-011/EXECUTION_CONTRACT.md": "3e3a15ccaaf9ae4922b737896fb8528bf6637906",
-        ".agent/execution/T-011/IMPLEMENTATION_MAP.md": "b7e36416d93fbe9f078853b807791f2fb87b6649",
-        ".agent/execution/T-011/TEST_MATRIX.yaml": "a4d0291dab22132c28861abca79e88567690bd7d",
-        ".agent/execution/T-011/FAILURE_MATRIX.yaml": "c42b2a47b7c047aced5fb4031609ce5a6b2ab2d6",
-        ".agent/execution/T-011/REVIEW_CHECKLIST.md": "f6b2175869bacffe59e097bfc2f189d35468dcd5"
+        ".agent/execution/_legacy/v4.3-sequential/T-011/MANIFEST.yaml": "e93fbfadf6e8f9af7521b3284888872be25a745d",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md": "3e3a15ccaaf9ae4922b737896fb8528bf6637906",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md": "b7e36416d93fbe9f078853b807791f2fb87b6649",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/TEST_MATRIX.yaml": "a4d0291dab22132c28861abca79e88567690bd7d",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml": "c42b2a47b7c047aced5fb4031609ce5a6b2ab2d6",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/REVIEW_CHECKLIST.md": "f6b2175869bacffe59e097bfc2f189d35468dcd5"
       },
       "dependency_completion": [
         "T10/#256: done"

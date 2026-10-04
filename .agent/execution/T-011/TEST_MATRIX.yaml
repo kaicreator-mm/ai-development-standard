@@ -1,53 +1,68 @@
-task_id: T11
-tests:
-  - id: N01
-    oracle: popularity_must_not_imply_architecture_decision
-  - id: N02
-    oracle: high_impact_unknown_must_not_become_implementation_freedom
-  - id: N03
-    oracle: file_count_must_not_define_coherent_task_boundary
-  - id: N04
-    oracle: shared_atomic_invariant_must_not_imply_safe_parallelism
-  - id: N05
-    oracle: dependency_removal_must_not_fabricate_ready
-  - id: N06
-    oracle: branch_or_pr_stack_must_not_replace_native_issue_dependency_truth
-  - id: N07
-    oracle: dag_mutation_without_reason_authority_impact_must_fail
-  - id: N08
-    oracle: local_tool_version_must_not_be_repository_profile_authority
-  - id: N09
-    oracle: profile_mapping_must_not_be_universal_style_or_tool_mandate
-  - id: N10
-    oracle: project_overrides_must_not_weaken_frozen_or_core_authority
-  - id: D01
-    oracle: profile_resolution_and_dag_mutation_regressions_compose_with_existing_T01_T10
-  - id: D02
-    oracle: high_capability_planner_output_is_consumable_by_bounded_executor_without_product_or_architecture_redesign
-    evidence_required:
-      - exact_subject
-      - planner_identity_or_role
-      - bounded_executor_or_evaluator_identity_or_role
-      - durable_task_pack_or_equivalent_refs
-      - expected_oracle
-      - actual_result
-      - clarification_or_escalation
-      - redesign_needed
-      - evidence_kind_SYNTHETIC_or_REAL
-  - id: D03
-    oracle: stale_or_unavailable_real_agent_toolchain_claim_stays_NOT_RUN_or_BLOCKED
-regression:
-  - scripts/test_v43_dag_mutation_contract.py
-  - scripts/test_v43_profile_framework.py
-  - scripts/test_v43_task_decomposition.py
-  - scripts/test_v43_task_dag_governance.py
-  - scripts/test_v43_implementation_quality.py
-  - scripts/test_v43_ts_python_profiles.py
-  - scripts/test_v43_go_java_rust_profiles.py
-  - scripts/test_v43_archetype_profiles.py
-  - scripts/test_v43_adoption_wiring.py
-  - scripts/test_protocol_schemas.py
-  - scripts/verify_standard.py
-successor_gates:
-  - independent_integration_validation
-  - fresh_independent_review
+task_id: T-011
+focused_command: python -B scripts/test_v48_orchestration_dogfood.py
+regression_commands:
+  - python -B scripts/test_v48_contract_compatibility.py
+  - python -B scripts/test_v48_scheduling_conformance.py
+  - python -B scripts/test_v48_interchange_replay_restart.py
+  - python -B scripts/test_v48_execution_ownership.py
+  - python -B scripts/verify_standard.py
+scenarios:
+  - id: ODF-01
+    name: multi-ready-heterogeneous-eligibility
+    oracle: hard-eligible candidates only reach ranking/admission
+    evidence: [SYNTHETIC_DETERMINISTIC, REPOSITORY_REAL_EXECUTION]
+  - id: ODF-02
+    name: fresh-stale-availability
+    oracle: stale-or-missing-hard-fact-becomes-UNKNOWN-and-fails-closed
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-03
+    name: capacity-n-contention
+    oracle: accepted-active-units-never-exceed-N
+    evidence: [SYNTHETIC_DETERMINISTIC, REPOSITORY_REAL_EXECUTION]
+  - id: ODF-04
+    name: exclusive-resource-duplicate-assignment-race
+    oracle: at-most-one-incompatible-accepted-admission
+    evidence: [SYNTHETIC_DETERMINISTIC, REPOSITORY_REAL_EXECUTION]
+  - id: ODF-05
+    name: independence-hard-filter
+    oracle: conflicted-reviewer-or-validator-candidate-rejected-before-ranking
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-06
+    name: replay-same-identity-same-payload
+    oracle: idempotent-without-duplicate-authority
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-07
+    name: replay-same-identity-conflicting-payload
+    oracle: fail-closed
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-08
+    name: transport-loss-ack-progress
+    oracle: delivery-facts-never-become-workflow-authority
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-09
+    name: crash-restart-durable-reconstruction
+    oracle: reconstruct-without-transient-queue-or-chat-history
+    evidence: [REPOSITORY_REAL_EXECUTION]
+  - id: ODF-10
+    name: accepted-claim-start-projection-loss-timeout-replacement
+    oracle: claim-is-start-projection-is-derived-and-ambiguous-replacement-blocks
+    evidence: [REPOSITORY_REAL_EXECUTION]
+  - id: ODF-11
+    name: bounded-executor-eligible-success
+    oracle: bounded-action-only-with-current-authority-write-set-and-eligibility
+    evidence: [REPOSITORY_REAL_EXECUTION]
+  - id: ODF-12
+    name: bounded-executor-semantic-ambiguity
+    oracle: stop-and-escalate-without-self-elevation
+    evidence: [REPOSITORY_REAL_EXECUTION]
+  - id: ODF-13
+    name: task-pack-execution-pack-base-drift
+    oracle: stale-subject-cannot-continue-as-current
+    evidence: [SYNTHETIC_DETERMINISTIC]
+  - id: ODF-14
+    name: evidence-classification-and-economic-boundary
+    oracle: synthetic-is-not-real-and-measurement-is-not-universal-ranking-or-savings-proof
+    evidence: [SYNTHETIC_DETERMINISTIC, REPOSITORY_REAL_EXECUTION]
+external_dimensions:
+  default: NOT_RUN
+  rule: external-host-device-provider-runtime claims require independent exact-subject environment Validation

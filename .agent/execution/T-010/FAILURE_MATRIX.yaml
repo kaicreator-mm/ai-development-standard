@@ -1,0 +1,46 @@
+task: T-010
+failures:
+  - condition: base_sha_or_native_dependencies_or_task_pack_or_l3_identity_changed
+    action: STOP_PACK_STALE_MATERIAL_CONTROLLER_REBIND_REQUIRED
+  - condition: implementation_write_outside_scripts_test_v48_governance_conformance_py
+    action: STOP_EXECUTION_PACK_INVALID_OR_REBIND
+  - condition: separate_fixture_or_reference_file_is_needed
+    action: STOP_CONTROLLER_REBIND_REQUIRED
+  - condition: none_material_requires_empty_task_learning_object
+    action: FAIL_FAST_PATH_REGRESSION
+  - condition: stale_missing_mutable_malformed_or_ambiguous_subject_is_treated_as_current_behavioral_proof
+    action: FAIL_LEARNING_CURRENTNESS
+  - condition: confidence_layer_is_treated_as_current_review_or_validation_pass_or_global_score
+    action: FAIL_EVIDENCE_AUTHORITY_BOUNDARY
+  - condition: task_learning_classification_or_disposition_mutates_ads_or_bypasses_governance
+    action: FAIL_LEARNING_GOVERNANCE_AUTHORITY
+  - condition: project_agent_environment_or_project_specific_observation_opens_ads_standard_change
+    action: FAIL_CLASSIFICATION_NON_PROMOTION
+  - condition: standard_friction_candidate_auto_promotes_from_count_score_rate_cost_latency_provider_model_scheduler_or_heuristic
+    action: FAIL_AUTOMATIC_PROMOTION
+  - condition: ambiguous_cause_is_promoted_instead_of_more_evidence
+    action: FAIL_AMBIGUITY_ROUTING
+  - condition: ads_evolution_candidate_directly_approves_or_mutates_normative_ads_or_skips_ordinary_governance
+    action: FAIL_PROMOTION_BOUNDARY
+  - condition: missing_publication_classification_is_treated_as_publishable
+    action: FAIL_PUBLICATION_FAIL_OPEN
+  - condition: project_private_or_restricted_evidence_is_copied_into_public_standard_evidence
+    action: FAIL_PUBLICATION_BOUNDARY
+  - condition: publication_class_changes_evidence_strength_owner_authority_or_promotion_status
+    action: FAIL_PUBLICATION_AUTHORITY_CONFUSION
+  - condition: secret_credential_private_chain_of_thought_or_hidden_evaluator_payload_is_published
+    action: FAIL_SENSITIVE_EVIDENCE_LEAKAGE
+  - condition: copied_sensitive_body_is_required_where_reference_digest_or_minimized_summary_is_sufficient
+    action: FAIL_EVIDENCE_MINIMIZATION
+  - condition: task_learning_or_governance_evidence_substitutes_for_product_architecture_task_adr_incident_intent_skill_review_validation_merge_or_release_authority
+    action: FAIL_OWNER_SUBSTITUTION
+  - condition: second_evolution_lifecycle_schema_database_controller_or_self_amending_promotion_engine_is_required
+    action: STOP_ARCHITECTURE_AMENDMENT_REQUIRED
+  - condition: upstream_task_learning_schema_reference_development_workflow_or_t004_template_semantics_must_change
+    action: STOP_ARCHITECTURE_AMENDMENT_REQUIRED_OR_UPSTREAM_REPAIR
+  - condition: product_l2_or_dag_semantic_expansion_is_required
+    action: STOP_ARCHITECTURE_AMENDMENT_REQUIRED
+  - condition: required_independent_exact_subject_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_candidate_change_after_qualifying_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE

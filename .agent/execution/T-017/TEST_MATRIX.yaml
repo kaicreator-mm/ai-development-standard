@@ -1,0 +1,43 @@
+task: T-017
+required:
+  - id: no-claim-no-execution
+    proves: rejected stale or duplicate Claim cannot enter authoritative execution or mutate implementation source
+  - id: claim-race-single-start
+    proves: two logical operators racing one work-item role yield exactly one canonical accepted Claim and Start Record
+  - id: projection-not-authority
+    proves: implementing label comment or state-card projection without accepted Claim cannot authorize execution
+  - id: projection-publication-loss
+    proves: accepted Claim remains canonical when projection publication is delayed or fails and duplicate admission remains blocked
+  - id: restart-reconstruction
+    proves: dispatch role operator session when present accepted/start time execution profile subject identity and pack refs reconstruct from durable facts after chat/session loss
+  - id: idempotent-resume
+    proves: same logical operator reclaiming the same dispatch resumes one active Claim without a second start
+  - id: terminal-release-matrix
+    proves: DONE FAILED BLOCKED CANCELLED TIMEOUT STALE or SUPERSEDED leaves no incompatible active ownership once durable release is unambiguous
+  - id: takeover-before-release-rejected
+    proves: another operator cannot take over while prior ownership is active or release/publication state remains ambiguous
+  - id: heartbeat-non-authority
+    proves: missing progress or heartbeat is not Task FAIL Validation FAIL Gate mutation or implicit release
+  - id: timeout-fail-closed
+    proves: liveness timeout cannot authorize a successor Claim until durable claim publication resource generation and release facts reconcile
+  - id: append-only-successor
+    proves: timeout or stale history remains attributable and a successor accepted Claim is a distinct start
+  - id: historical-event-v2-compatible
+    proves: valid historical DISPATCH_CLAIMED payloads remain accepted when richer optional T-017 provenance is absent
+  - id: enriched-new-writer-profile
+    proves: a representative new Claim uses existing event-v2 fields and additive provenance without schema or event-family mutation
+  - id: identity-not-labels
+    proves: dynamic operator and session identity is structured durable event data rather than unbounded labels
+  - id: fast-path-proportional
+    proves: manual single-writer Fast Path uses the same Claim/visibility semantics without mandatory orchestration service or frequent heartbeat
+commands:
+  - id: focused-suite
+    command: python -B scripts/test_v48_execution_ownership.py
+  - id: t002-claim-regression
+    command: python -B scripts/test_v48_execution_architecture.py
+  - id: t009-replay-restart-regression
+    command: python -B scripts/test_v48_interchange_replay_restart.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent exact-subject concern validation of claim race start reconstruction projection failure terminal release heartbeat-timeout replacement and historical compatibility
+review: genuinely fresh exact-HEAD independent review required after qualifying validation

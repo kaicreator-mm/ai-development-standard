@@ -1,5 +1,7 @@
 # v4.8.0 Planning Status
 
+> 历史规划快照 — 本文件记录 v4.8.0 规划期状态；实现已于 version/v4.8.0 完成，当前状态见 docs/implementation/4.8.0/closure/CLOSURE_INPUTS.md。
+
 Status: **PRODUCT FROZEN — L2 FROZEN — TASK DAG R1 FROZEN — TASK ISSUES 16/16 MATERIALIZED / NATIVE DAG + TASK PACKS PENDING — IMPLEMENTATION NOT READY**
 
 ## Currentness semantics

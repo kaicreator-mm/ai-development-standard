@@ -20,7 +20,7 @@ TASK_DAG = ROOT / "docs" / "implementation" / "4.3.0" / "TASK_DAG.md"
 PRODUCT = ROOT / "docs" / "implementation" / "4.3.0" / "PRD.md"
 ARCHITECTURE = ROOT / "docs" / "implementation" / "4.3.0" / "L2_ARCHITECTURE_EVIDENCE.md"
 L3 = ROOT / "docs" / "implementation" / "4.3.0" / "L3_REFERENCE_PACKS.md"
-EXECUTION_DIR = ROOT / ".agent" / "execution" / "T-011"
+EXECUTION_DIR = ROOT / ".agent" / "execution" / "_legacy" / "v4.3-sequential" / "T-011"
 MANIFEST = EXECUTION_DIR / "MANIFEST.yaml"
 EXECUTION_CONTRACT = EXECUTION_DIR / "EXECUTION_CONTRACT.md"
 IMPLEMENTATION_MAP = EXECUTION_DIR / "IMPLEMENTATION_MAP.md"
@@ -229,7 +229,7 @@ def derive_d02_authority() -> dict[str, object]:
     if not isinstance(core_artifacts, list) or not core_artifacts:
         raise AssertionError("Execution Manifest core_artifacts is missing")
     execution_core_artifact_blobs = {
-        f".agent/execution/T-011/{name}": git_blob_sha(EXECUTION_DIR / str(name))
+        f".agent/execution/_legacy/v4.3-sequential/T-011/{name}": git_blob_sha(EXECUTION_DIR / str(name))
         for name in core_artifacts
     }
 
@@ -253,13 +253,13 @@ def derive_d02_authority() -> dict[str, object]:
         "task_pack_blob": actual_task_pack_blob,
         "l3_ref": manifest["l3_ref"],
         "l3_blob": actual_l3_blob,
-        "execution_manifest_ref": ".agent/execution/T-011/MANIFEST.yaml",
+        "execution_manifest_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/MANIFEST.yaml",
         "execution_manifest_blob": git_blob_sha(MANIFEST),
-        "execution_contract_ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md",
+        "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
         "execution_contract_blob": git_blob_sha(EXECUTION_CONTRACT),
-        "implementation_map_ref": ".agent/execution/T-011/IMPLEMENTATION_MAP.md",
+        "implementation_map_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md",
         "implementation_map_blob": git_blob_sha(IMPLEMENTATION_MAP),
-        "failure_matrix_ref": ".agent/execution/T-011/FAILURE_MATRIX.yaml",
+        "failure_matrix_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml",
         "failure_matrix_blob": git_blob_sha(FAILURE_MATRIX),
         "execution_core_artifact_blobs": execution_core_artifact_blobs,
         "dependency_completion": dependency_completion,
@@ -271,7 +271,7 @@ def derive_d02_authority() -> dict[str, object]:
         "generation_base_sha": manifest["base_sha"],
         "generation_base_tree": manifest["base_tree"],
         "task_pack_ref": manifest["task_pack_ref"],
-        "execution_contract_ref": ".agent/execution/T-011/EXECUTION_CONTRACT.md",
+        "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
     }
 
     return {
