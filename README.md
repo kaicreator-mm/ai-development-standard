@@ -1,6 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.0.0`
+当前版本：`v4.8.0`（**未发布 version-branch candidate**）
+
+> `version/v4.8.0` 当前仅表示依赖完整、等待后续 Fresh Independent Review、visible Stage 1 与 Version Closure 的候选线。前任 exact candidate `33d409d0a7ec92d4f51079dca2c7e32a229eeec9`（tree `302c00bd8534164649ea6d9ee216390027b1cdcf`）曾在其 exact SHA/tree 上完成 visible Stage 1 R2（#772@5977349861 PASS）、Candidate Freeze（#772@5977362955）与 Private Hidden Validation（#773@5977836575 PASS）；随后针对同一冻结候选的 Fresh Version Closeout（#774@5978216909）给出 `CHANGES_REQUESTED`，发现 release-identity P1（本仓库 VERSION/README/CHANGELOG 仍停留在 v4.0.0 旧身份，与 `standards/PROJECT_ADOPTION.md` 的 immutable 采用解析契约冲突），Controller 将该前任候选显式 THAWED/INVALIDATED（#774@5978234079）。前任的 Stage 1/Freeze/Hidden/Closeout 均只是前任 exact SHA/tree 的历史事实，**不转移**到修复后的 successor；当前 successor 不声明 Candidate Freeze、Hidden PASS、Release Qualification、tag、GitHub Release 或正式发布。发布前必须重新完成 **Fresh Independent Review → expected-head merge → exact merged SHA 上的 visible Stage 1 → 新的 Candidate Freeze → required Hidden Validation → Fresh Version Closeout → Release Qualification**。v4.8 的 authority/adoption material 见 [PRD](docs/implementation/4.8.0/PRD.md)、[L2 Architecture Evidence](docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md)、[Task DAG](docs/implementation/4.8.0/TASK_DAG.md)、[L3 Reference Packs](docs/implementation/4.8.0/L3_REFERENCE_PACKS.md) 与 [Migration/Adoption](docs/implementation/4.8.0/MIGRATION_ADOPTION.md)。`v4.1`–`v4.7` 为并行版本线，其分支/资料存在不得推导为已发布或已集成到 `main`。
 
 `ai-development-standard` 是 AI-assisted / multi-agent 软件开发的工程事实、验证、交接与发布标准。目标不是制造更多流程，而是让人、ChatGPT Web、Local Agent、CI、Build Host 和 GitHub 在多会话/多环境下仍共享同一套可恢复事实。
 
