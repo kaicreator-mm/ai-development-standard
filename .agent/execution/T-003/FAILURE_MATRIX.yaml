@@ -1,18 +1,23 @@
-task: T-003
-failures:
-  - condition: base_sha_or_t015_completion_or_task_pack_identity_changed
-    action: STOP_PACK_STALE_MATERIAL
-  - condition: mutation_attempted_without_concrete_existing_contract_gap
-    action: FAIL_SCOPE_EXPANSION
-  - condition: new_exchange_owner_family_or_event_v3_required_without_architecture_authority
-    action: STOP_ARCHITECTURE_CONTRADICTION
-  - condition: capability_or_eligibility_semantics_embedded_as_ad_hoc_interchange_owner
-    action: FAIL_OWNER_BOUNDARY
-  - condition: ack_delivery_progress_becomes_workflow_gate_truth
-    action: FAIL_AUTHORITY_BOUNDARY
-  - condition: historical_interchange_or_event_payloads_require_breaking_rewrite
-    action: FAIL_BACKWARD_COMPATIBILITY
-  - condition: required_validation_unavailable
-    action: BLOCKED_WITH_VALIDATION_HANDOFF
-  - condition: material_commit_after_validation_or_required_review
-    action: REQUALIFY_AFFECTED_EVIDENCE
+task_id: T-003
+failure_modes:
+  - condition: version/v4.9.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: a v1 registry schema cannot represent a Frozen v4.9 requirement
+    disposition: SCHEMA_INSUFFICIENT
+    action: stop and route for architecture/rebind — do NOT widen T003 scope or mutate read-only schema inputs
+  - condition: duplicate/ambiguous canonical owner entry would be required by v4.9 semantics
+    disposition: REGISTRY_AMBIGUITY
+    action: block admission and route to registry owner — never last-writer-wins
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set (including read-only schema inputs)
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: registry changes would imply automatic mutation of semantic owners, workflow state, or ADS authority
+    disposition: GOVERNANCE_VIOLATION
+    action: stop; registry metadata is descriptive and authority-free
+  - condition: inherited registry surfaces or F01–F10 negatives would be weakened or removed
+    disposition: REGRESSION
+    action: stop; inherited surfaces are immutable baseline
+  - condition: required evidence unavailable
+    disposition: NOT_RUN_BLOCKED
+    action: record with the exact missing capability; never synthetic PASS

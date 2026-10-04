@@ -1,34 +1,42 @@
-pack_id: v4.8.0-T-003-33dfb8f0
-task_id: T-003
+pack_id: v4.9.0-T-003-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-base_sha: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
-task_pack_ref: github:kaicreator-mm/ai-development-standard@33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830:docs/implementation/4.8.0/task-packs/T03_interchange_profile.md
-branch: task/v4.8.0-t03-interchange-profile
-parent_issue: "#508"
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-pinned_standard_revision: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
-generated_by: chatgpt-web:v48-wave2-jit-controller
-generated_at: 2026-10-01T12:49:00Z
-dependency_completion:
-  - T-015/#522 merged as 5f38ceb0d73183ec064d036028e98416ddf3ed0e
-material_paths:
-  - docs/implementation/4.8.0/task-packs/T03_interchange_profile.md
-  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - docs/implementation/4.0.0/AGENT_INTERCHANGE.md
-  - schemas/interchange-envelope-v1.schema.json
-  - schemas/agent-capability-profile-v1.schema.json
-  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
-  - references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md
-  - scripts/test_v48_interchange_profile.py
+version: 4.9.0
+task_id: T-003
+parent_issue: "#722"
+branch: task/v4.9.0-t03-authority-state-registry
+base_sha: df94641e6082dc7a2988e73eafdffd3bf42668b9
+base_tree: a8c86675d003d397636304f3441a14385660f9c5
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T03_authority_state_registry.md
+task_pack_blob: 14c65526f531ecebf981ad9925293ea7be918e12
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG47_REGISTRY]
+lineage_last_check_ref: "#745 lineage recompute #745@5983506269 + lineage composition PR #792 merged (df94641e); LG surfaces verified at base"
+lineage_evidence: registries/state-dimensions-v1.json + schemas/authority-applicability-entry-v1.schema.json + schemas/state-dimension-registry-v1.schema.json + standard-manifest.json semantic_authorities present at base df94641e
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-003/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-003/ per the #792/#788 canonical-path scheme; no executable code reads that path
+native_blockers: 0
+review_policy: required
+validation_owner: registry-and-forbidden-inference
+validation_scope: registry-schema-and-forbidden-inference
+builder_write_set:
+  - standard-manifest.json
+  - registries/state-dimensions-v1.json
+  - references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md
+  - references/STATE_DIMENSION_REGISTRY_REFERENCE.md
+  - scripts/test_v49_authority_state_registry.py
+read_only_schema_inputs:
+  - schemas/authority-applicability-entry-v1.schema.json
+  - schemas/state-dimension-registry-v1.schema.json
 core_artifacts:
-  - MANIFEST.yaml
-  - EXECUTION_CONTRACT.md
-  - TEST_MATRIX.yaml
-  - FAILURE_MATRIX.yaml
-  - IMPLEMENTATION_MAP.md
-  - REVIEW_CHECKLIST.md
-retention: durable
+  - .agent/execution/T-003/MANIFEST.yaml
+  - .agent/execution/T-003/EXECUTION_CONTRACT.md
+  - .agent/execution/T-003/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-003/TEST_MATRIX.yaml
+  - .agent/execution/T-003/FAILURE_MATRIX.yaml
+  - .agent/execution/T-003/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
 package_excluded: true
-pack_state_at_generation: PACK_CURRENT
