@@ -1,23 +1,17 @@
 task_id: T-004
-fail_closed:
-  - condition: task branch or integration target currentness no longer satisfies the JIT pack
-    action: STOP; publish CONTROLLER_REBIND_REQUIRED; do not silently rewrite base_sha
-  - condition: acceptance requires any path outside the seven-file write set
-    action: STOP; publish TASK_PACK_DEFECT or request Controller rebind
-  - condition: implementation would redefine Task Learning schema/evidence semantics
-    action: STOP; route to T-001/upstream semantic owner
-  - condition: implementation would redefine Execution Architecture/currentness/scheduler/resource semantics
-    action: STOP; route to T-002/upstream semantic owner
-  - condition: material-learning reference is missing, malformed, ambiguous, mutable, stale, or cannot support claimed current behavior
-    action: preserve as historical evidence only; do not claim current behavioral support
-  - condition: no reusable material learning exists
-    action: record literal TASK_LEARNING=NONE_MATERIAL; do not manufacture an empty learning object
-  - condition: template/checklist requests private chain-of-thought, hidden evaluator material, credential/secret, or unnecessary copied log body
-    action: FAIL acceptance; replace with concise externally useful summary/ref only
-  - condition: Task Learning is used as Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority
-    action: FAIL acceptance; restore authority separation
-  - condition: Builder attempts to self-certify independent Validation or Fresh Review, merge, or close the version
-    action: STOP; hand off to the owning independent gate/controller
-non_blocking:
-  - condition: learning is useful historically but no longer current for successor code
-    action: retain reference as historical evidence with no current-behavior claim
+failure_modes:
+  - condition: version/v4.9.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: v4.8 owner surface (capability/eligibility/Claim) is missing or its ref cannot resolve at the candidate
+    disposition: BLOCKED_LINEAGE
+    action: stop and report; never fabricate or inline-copy owner inventories
+  - condition: schema would need to encode authority-granting semantics (role actions, terminal authority, capability proof)
+    disposition: OWNER_BOUNDARY_VIOLATION
+    action: stop; those semantics belong to external owners
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set (incl. read-only owner refs)
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: required evidence unavailable
+    disposition: NOT_RUN_BLOCKED
+    action: record with the exact missing capability; never synthetic PASS

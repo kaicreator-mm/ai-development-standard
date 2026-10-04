@@ -1,69 +1,42 @@
-pack_id: v4.8.0-T-004-jit-54a55086a12d
-task_id: T-004
+pack_id: v4.9.0-T-004-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-base_sha: 54a55086a12d406df07eb80706ba14f861101256
-base_tree: 781dec96941ac53ce912e27e6196079c2e895819
-task_pack_ref: blob:00bf08ea3ad64f75d77d7cc36655ce7711310086
-task_pack_path: docs/implementation/4.8.0/task-packs/T04_task_learning_closeout.md
-task_pack_blob: 00bf08ea3ad64f75d77d7cc36655ce7711310086
-l3_ref: blob:9ac550118055fb1d22f013c9d9a1a161b0f9c1f9
-l3_path: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-l3_blob: 9ac550118055fb1d22f013c9d9a1a161b0f9c1f9
-frozen_prd_blob: f26439580e00de6ed8b2e27d732a3095eb566219
-frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
-frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
-branch: task/511-v48-task-learning-closeout
-integration_target: version/v4.8.0
-parent_issue: "#511"
-planning_issue: "#636"
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-pinned_standard_revision: 54a55086a12d406df07eb80706ba14f861101256
-generated_by: chatgpt-web:issue-636-jit-planner
-generated_at: "2026-10-02T09:20:00Z"
-dependency_completion:
-  - T-001@7039275269368363c9edff70e8db84f66896a21f
-  - T-002@54a55086a12d406df07eb80706ba14f861101256
-material_paths:
-  - templates/task-pack.md
-  - templates/task-issue.md
-  - templates/implementation-pr.md
-  - templates/final-closeout.md
-  - checklists/pr-review.md
-  - templates/execution-pack/EXECUTION_CONTRACT.md
-  - templates/execution-pack/REVIEW_CHECKLIST.md
-core_artifacts:
-  - MANIFEST.yaml
-  - EXECUTION_CONTRACT.md
-  - TEST_MATRIX.yaml
-  - FAILURE_MATRIX.yaml
-  - IMPLEMENTATION_MAP.md
-  - REVIEW_CHECKLIST.md
-optional_artifacts: []
+version: 4.9.0
+task_id: T-004
+parent_issue: "#723"
+branch: task/v4.9.0-t04-role-execution-profile
+base_sha: df94641e6082dc7a2988e73eafdffd3bf42668b9
+base_tree: a8c86675d003d397636304f3441a14385660f9c5
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T04_role_execution_profile.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG42_COMPAT, LG48_EXEC]
+lineage_last_check_ref: "#745 lineage recompute + lineage composition PR #792 merged (df94641e); v4.8 execution/capability owner surfaces + v4.2 compatibility governance present at base"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-004/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-004/ per the #792/#788 canonical-path scheme; no executable code reads that path
+native_blockers: 0
 review_policy: required
-validation_scope: concern
-validation_owner: independent-from-builder
-jit_currentness:
-  target_sha_at_generation: 54a55086a12d406df07eb80706ba14f861101256
-  target_tree_at_generation: 781dec96941ac53ce912e27e6196079c2e895819
-  task_branch_sha_before_planning: 54a55086a12d406df07eb80706ba14f861101256
-  target_must_remain_exact_through_planning_commit: true
-allowed_write_set:
-  - templates/task-pack.md
-  - templates/task-issue.md
-  - templates/implementation-pr.md
-  - templates/final-closeout.md
-  - checklists/pr-review.md
-  - templates/execution-pack/EXECUTION_CONTRACT.md
-  - templates/execution-pack/REVIEW_CHECKLIST.md
-forbidden:
-  - Task Learning schema or evidence-reference semantic redefinition
-  - Execution Architecture semantic change
-  - scripts/tests/runtime implementation change
-  - ADR/Incident/Product/Architecture/Review/Validation authority redefinition
-  - scheduler/admission/resource/Availability/Interchange semantic change
-  - self-review or independent Validation claim by Builder
-  - merge or Version Closure
-retention: durable
+validation_owner: schema-and-owner-boundary
+validation_scope: schema-compatibility-owner-boundary-negative-oracle
+builder_write_set:
+  - schemas/role-execution-profile-v1.schema.json
+  - references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md
+  - fixtures/role-execution-profile-v1/**
+  - scripts/test_v49_role_execution_profile.py
+read_only_owner_refs:
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - schemas/agent-capability-profile-v1.schema.json
+  - schemas/agent-capability-evidence-v1.schema.json
+  - schemas/dispatch.schema.json
+  - standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md
+core_artifacts:
+  - .agent/execution/T-004/MANIFEST.yaml
+  - .agent/execution/T-004/EXECUTION_CONTRACT.md
+  - .agent/execution/T-004/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-004/TEST_MATRIX.yaml
+  - .agent/execution/T-004/FAILURE_MATRIX.yaml
+  - .agent/execution/T-004/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
 package_excluded: true
-pack_state_at_generation: PACK_CURRENT

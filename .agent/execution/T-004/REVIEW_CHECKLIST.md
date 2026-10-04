@@ -1,42 +1,16 @@
-# Review Checklist — T-004 Task Learning Closeout / Template Wiring
+# T-004 Review Checklist
 
-Fresh independent Review occurs only after independent concern Validation PASS and is bound to the exact current PR HEAD.
+## Exact subject / write set
+- [ ] Candidate PR HEAD/TREE/base exact and current (base `version/v4.9.0@df94641e...`).
+- [ ] Diff limited to the four Builder write-set paths plus immutable 
+`.agent/execution/T-004/**` planning files.
+- [ ] Frozen Product/L2/DAG blobs, Task Pack, L3, and read-only v4.8 owner refs resolve unchanged at candidate.
 
-## Exact identity
+## Contract acceptance
+- [ ] Role Execution Profile v1 is the only new machine family introduced; schema provider-neutral.
+- [ ] P01-P08 negative/positive oracles executable and passing; conflict => BLOCKED (no last-writer-wins); stale/missing refs fail closed.
+- [ ] claim_policy_ref/eligibility refs resolve into existing v4.8 owners; no copied inventories; no authority stolen.
 
-- [ ] PR targets `version/v4.8.0` and the reviewed HEAD is recorded exactly.
-- [ ] Candidate ancestry/currentness is compatible with planning commit produced by Issue #636; no stale JIT pack was silently rebound.
-- [ ] Diff is exactly the seven implementation paths in `00bf08ea3ad64f75d77d7cc36655ce7711310086` Task Pack / `MANIFEST.yaml`; no planning-pack file is counted as Builder implementation.
-
-## Scope and ownership
-
-- [ ] T-004 changes adoption/closeout templates/checklists only.
-- [ ] `schemas/task-learning-v1.schema.json` and `references/TASK_LEARNING_EVIDENCE_REFERENCE.md` semantics were not changed.
-- [ ] `standards/EXECUTION_ARCHITECTURE_STANDARD.md`, scheduler/admission/resource/Availability/Interchange semantics, and tests/runtime implementation were not changed.
-- [ ] No Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority was transferred to Task Learning.
-
-## Closeout contract
-
-- [ ] Literal `TASK_LEARNING=NONE_MATERIAL` remains an explicit proportional Fast Path.
-- [ ] Material learning is expressed via durable refs/digests rather than copied evidence bodies.
-- [ ] Stale, ambiguous, or non-current learning cannot be presented as current behavioral proof or silently rebound.
-- [ ] The generic templates point to the T-001 evidence contract rather than reimplementing its schema/currentness semantics.
-- [ ] Execution Pack template additions are requirement/reference wiring only; T-002 retains Execution Architecture ownership.
-
-## Privacy and evidence
-
-- [ ] No private chain-of-thought, hidden evaluator material, credentials, secrets, or verbose scratch reasoning is required.
-- [ ] Builder evidence records exact candidate SHA/tree, exact changed paths, regression results, and its own learning closeout outcome.
-- [ ] Independent Validation evidence is actually independent and exact-candidate; Builder evidence was not relabeled as Validation PASS.
-- [ ] Review is genuinely fresh and exact-HEAD; any HEAD change invalidates this review result.
-
-## Required regressions
-
-- [ ] `python -B scripts/test_work_item_contract_and_golden_templates.py`
-- [ ] `python -B scripts/test_v48_task_learning.py`
-- [ ] `python -B scripts/test_pointer_only_trigger_contract.py`
-- [ ] `python -B scripts/verify_standard.py`
-
-## Result
-
-Use the repository's current Review protocol. Any P0/P1 scope, ownership, authority, currentness, privacy, or Fast Path violation is blocking. A PASS authorizes only the next controller/merge decision for this task; it is not Version Closure or Release PASS.
+## Gates
+- [ ] Repository verifier PASS; Builder checks not treated as independent Validation.
+- [ ] Independent schema/owner-boundary Validation PASS before Fresh Review; Fresh Review on same unchanged exact HEAD.
