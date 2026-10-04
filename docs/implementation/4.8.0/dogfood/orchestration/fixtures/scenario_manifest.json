@@ -17,6 +17,9 @@
   "exact_base_tree": "bb7f25f1e05ff2423fc79029465bcf7be458a82c",
   "jit_pack_head": "26fdae3dd2b4a686820637665ee6f30811543b1f",
   "jit_pack_tree": "dc2fafc5c1433db23423a49c22c0250a0adc88b6",
+  "t011_candidate_head": "fdd6b30d6736586e15f2396ab9fafeb0a690c08f",
+  "t011_candidate_tree": "34efb82b0dc8f667014940290119eadb90b59f83",
+  "t011_lane_tip_provenance": "T-011 Builder candidate fdd6b30d6736586e15f2396ab9fafeb0a690c08f is the direct child of JIT pack head 26fdae3dd2b4a686820637665ee6f30811543b1f; its committed diff is exactly the six T-011 write-set paths (scripts/test_v48_orchestration_dogfood.py plus the five docs/implementation/4.8.0/dogfood/orchestration/** corpus artifacts). Recorded by Controller-authorized bounded harness repair (kaicreator-mm/ai-development-standard#768@5976408490) after the Stage 1 ODF-11 integrated-HEAD scoping FAIL.",
   "evidence_classes": [
     "SYNTHETIC_DETERMINISTIC",
     "REPOSITORY_REAL_EXECUTION",
