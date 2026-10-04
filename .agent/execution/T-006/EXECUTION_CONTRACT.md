@@ -1,44 +1,24 @@
-# T-006 Successor Execution Contract
+# T-006 JIT Execution Contract
 
-## Authority tuple
-
-```text
-ISSUE=#512
-BASE=e433c18bef84fea15abbc8d308fd9c9b4384c520
-BASE_TREE=b26a75484c60fb797633580e82dad7f5953dc311
-V47_SOURCE=d8f613127d0167453297a5a5e983de048607aa07
-V47_SOURCE_TREE=721dd393b7693d2ce82ebe0533a7fa51726d0a78
-TASK_PACK_BLOB=b9e6eb77a3828cfa8dcdc6f6d54e92cbcdb8e308
-L3_BLOB=d566d37abe4df6e0f39732da412b0f7cd00724a4
-SUPERSEDED_PR=#741@9b6bd9b38a3ff854269422b3248044933aac8ffe
-```
-
-The successor Builder must claim execution before mutation and re-read Issue #512 plus all pinned identities. Any material drift stops execution and requires rebind.
+## Exact authority
+- Issue: #725 / T-006 Task Learning Same-Family Successor.
+- Base: `version/v4.9.0@df94641e6082dc7a2988e73eafdffd3bf42668b9`, tree `a8c86675d003d397636304f3441a14385660f9c5` (post lineage-composition PR #792).
+- Frozen Product (`a8ec7030...`), Frozen L2 (`bd41ea01...`), Frozen Task DAG v0.2 (`b9fe0cc7...`), current Task Pack and L3 remain authoritative.
+- Immutable DAG v0.1 `### T-006` (blob `4f358ba2...`) is the normative concern definition, composed with Frozen DAG v0.2 admission rules.
+- Native blockers zero; LG42_COMPAT + LG48_LEARNING current at base (v4.8 Task Learning v1 owner surface present).
 
 ## Required result
+Add v4.9 recurrence/friction fields ONLY through a versioned same-family successor of the existing Task Learning v1 family, and only as far as needed:
+- successor schema `task-learning-v2` with same-family compatibility to v1 (v1 instances remain valid historical evidence; no silent re-interpretation);
+- optional `execution_friction_class`, recurrence refs, optional root-cause relation, prevention refs and recurrence-audit refs;
+- explicit orthogonality to the existing `friction_classification` (no redefinition, no overlap claim);
+- truthful machine-checkable compatibility evidence (v1 blob identities, INCOMPATIBLE dimensions fail-closed) following the established compatibility-record pattern;
+- routing/authority negatives: learning evidence cannot become authority, cannot create automatic ADS mutation, cannot replace evidence gates.
 
-Compose the pinned v4.7 T01–T06 portable authority-discovery/read-routing/state/reference/alias stack into the current v4.8 base, then register exactly three v4.8 machine families into that discovery layer without creating a new semantic owner.
-
-Implementation must preserve:
-
-- existing normative owner boundaries;
-- registry/read routing as non-authoritative (`authority_effect=NONE`, `gate_effect=NONE`, `mutation_authorized=false`);
-- exactly three new v4.8 machine families;
-- existing Interchange v1 only;
-- Availability as derived, not a durable fourth family;
-- provider/model/capability metadata as non-authority;
-- exact-subject evidence non-transfer;
-- additive historical compatibility;
-- Fast Path proportionality and `TASK_LEARNING=NONE_MATERIAL`.
+## Hard boundaries
+- No learning DB, no new intake lifecycle, no automatic ADS mutation; no workflow state.
+- Read-only owner refs (v1 schema, owner standard) unmutated; frozen blobs resolve unchanged at candidate.
+- Missing/unavailable evidence => `NOT_RUN|BLOCKED`, never synthetic PASS.
 
 ## Mutation authority
-
-Only the 22 Builder paths in `MANIFEST.yaml` / Task Pack are writable. COPY_EXACT paths must retain pinned v4.7 bytes. COMPOSE paths must start from the current v4.8 versions. New v4.8 reference/migration/verifier paths are bounded by the L3.
-
-No Frozen Product/L2/DAG edits, sibling semantic-owner edits, workflow/release/closure work, T013/T014, reuse/merge of PR #741, or write-set expansion.
-
-## Candidate rule
-
-Create a new successor implementation branch from the exact current target. Do not implement on this planning branch and do not reuse PR #741. Open a new PR only after required Builder gates pass.
-
-Builder PASS is implementation evidence only. Independent exact-subject Validation and a genuinely Fresh Independent Review remain required before merge.
+Only the four Builder write-set paths in MANIFEST plus the six immutable `.agent/execution/T-006/**` planning files. Everything else read-only.
