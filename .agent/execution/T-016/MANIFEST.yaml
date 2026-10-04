@@ -1,0 +1,31 @@
+pack_id: v4.8.0-T-016-94cad2b0
+task_id: T-016
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 94cad2b0487e8a552c66d6bcd1cba36b7779383d
+task_pack_ref: github:kaicreator-mm/ai-development-standard@94cad2b0487e8a552c66d6bcd1cba36b7779383d:docs/implementation/4.8.0/task-packs/T16_agent_capability_evidence.md
+branch: task/v4.8.0-t16-agent-capability-evidence
+parent_issue: "#524"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 94cad2b0487e8a552c66d6bcd1cba36b7779383d
+generated_by: chatgpt-web:v48-root-jit-controller
+generated_at: 2026-10-01T09:35:00Z
+dependency_completion: []
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T16_agent_capability_evidence.md
+  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/L1_PRODUCT_EVIDENCE.md
+  - schemas/agent-capability-evidence-v1.schema.json
+  - scripts/test_v48_agent_capability_evidence.py
+  - references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

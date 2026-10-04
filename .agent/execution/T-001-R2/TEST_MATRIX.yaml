@@ -1,0 +1,26 @@
+task: T-001-R2
+required:
+  - id: immutable-subject-positive
+    proves: canonical git:<owner>/<repo>@<40-lowercase-hex-sha> subject/currentness refs validate and can apply only on exact equality
+  - id: mutable-branch-negative
+    proves: branch refs such as @main and refs/heads aliases cannot satisfy schema/current applicability
+  - id: mutable-tag-negative
+    proves: tag/ref aliases cannot satisfy schema/current applicability
+  - id: repository-only-negative
+    proves: repository-only identity cannot act as current behavioral subject
+  - id: malformed-sha-negative
+    proves: short, uppercase-nonhex or malformed commit identities fail closed
+  - id: stale-drift-negative
+    proves: distinct immutable subjects remain historical and cannot silently rebind successor code
+  - id: none-material-fast-path
+    proves: TASK_LEARNING=NONE_MATERIAL remains no-object fast path
+  - id: authority-negative
+    proves: Task Learning cannot become Product/Architecture/Task/ADR/Incident/Review/Validation authority
+  - id: focused-suite
+    command: python -B scripts/test_v48_task_learning.py
+  - id: protocol-regression
+    command: python -B scripts/test_protocol_schemas.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent clean exact-HEAD validation on final R2 PR candidate
+review: genuinely fresh exact-HEAD review required after validation

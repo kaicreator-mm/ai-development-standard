@@ -1,0 +1,21 @@
+# T-017 Review Checklist
+
+- Exact JIT base is `d2f18854043c59712c1c9d2518f45843b0ad129c` / tree `22d5c97942df51a1b22faedd2c267b3f9d6039e0`; native blockers T-002/#510 and T-009/#515 are DONE and #686 readback is PASS.
+- Candidate implementation diff is exactly `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `standards/EXECUTION_ARCHITECTURE_STANDARD.md`, and `scripts/test_v48_execution_ownership.py`; Task Pack/L3/JIT pack artifacts are not rewritten by the Builder.
+- No authoritative execution or implementation-source mutation can occur before accepted Claim.
+- Accepted `DISPATCH_CLAIMED` is the durable Start Record; label/comment/state-card projection without accepted Claim never authorizes execution.
+- New-writer guidance makes work/dispatch, role, logical operator, optional session, accepted/start time, execution profile, exact/requested/base identity and pack refs reconstructible with existing event-v2 semantics; admission mode/key/generation provenance is optional where supported.
+- Historical valid event-v2 Claims remain compatible when richer optional T-017 provenance is absent.
+- Accepted start visibly resolves through `state:claimed → state:implementing` or role-equivalent running state, while the projection remains non-authoritative.
+- Failed/delayed projection publication does not erase durable Claim authority or permit a duplicate incompatible Claim.
+- Dynamic operator/session identities remain structured event data, not per-session labels.
+- Same logical operator + same dispatch resume is idempotent and does not create a second active Claim/Start Record.
+- DONE/FAILED/BLOCKED/CANCELLED/TIMEOUT/STALE/SUPERSEDED handling leaves no ambiguous incompatible active ownership once durable release state is unambiguous; history remains append-oriented.
+- Different-operator takeover is rejected until durable terminal/stale/timeout/release/supersession plus publication/resource/generation facts reconcile under the existing serialized admission authority.
+- Progress/heartbeat remains optional and non-authoritative; missing heartbeat is not Task FAIL, Validation FAIL, Gate mutation or implicit release.
+- Timeout/stale successor admission fails closed on ambiguity and successor Claim/start remains separately attributable.
+- Fast Path/manual single-writer execution remains proportional and requires neither mandatory orchestration service nor high-frequency heartbeat.
+- No schema/event-family/new lifecycle/new scheduler authority/mandatory runtime database or Product/L2 expansion is introduced.
+- `python -B scripts/test_v48_execution_ownership.py`, `python -B scripts/test_v48_execution_architecture.py`, `python -B scripts/test_v48_interchange_replay_restart.py`, and `python -B scripts/verify_standard.py` pass on the exact candidate.
+- Independent exact-subject concern Validation precedes a genuinely Fresh exact-HEAD required Review. Builder, Validator and Reviewer remain distinct.
+- T-017 PASS does not itself execute T-011 dogfood, Version Closure or Release Qualification.

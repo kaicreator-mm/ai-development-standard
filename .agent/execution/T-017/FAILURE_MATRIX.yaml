@@ -1,0 +1,36 @@
+task: T-017
+failures:
+  - condition: base_sha_or_native_dependencies_or_task_pack_or_l3_identity_changed
+    action: STOP_PACK_STALE_MATERIAL_CONTROLLER_REBIND_REQUIRED
+  - condition: implementation_write_outside_exact_three_authorized_paths
+    action: STOP_EXECUTION_PACK_INVALID_OR_REBIND
+  - condition: authoritative_execution_or_source_mutation_begins_before_accepted_claim
+    action: FAIL_NO_CLAIM_NO_EXECUTION
+  - condition: label_comment_or_state_card_authorizes_execution_without_accepted_claim
+    action: FAIL_PROJECTION_AUTHORITY
+  - condition: two_incompatible_active_claims_are_canonically_accepted_for_one_work_item_role
+    action: FAIL_CLAIM_SERIALIZATION
+  - condition: projection_publication_failure_permits_duplicate_claim
+    action: FAIL_DURABLE_CLAIM_PRECEDENCE
+  - condition: dynamic_operator_or_session_identity_is_encoded_as_unbounded_labels
+    action: FAIL_IDENTITY_MINIMIZATION
+  - condition: same_operator_same_dispatch_resume_creates_second_active_claim_or_start
+    action: FAIL_IDEMPOTENCE
+  - condition: durable_terminal_or_release_state_leaves_ambiguous_incompatible_active_ownership
+    action: FAIL_RELEASE_RECONCILIATION
+  - condition: another_operator_takes_over_before_durable_release_or_supersession_is_unambiguous
+    action: FAIL_TAKEOVER_BOUNDARY
+  - condition: missing_heartbeat_or_progress_fabricates_task_fail_validation_fail_gate_mutation_or_release
+    action: FAIL_HEARTBEAT_AUTHORITY
+  - condition: timeout_or_stale_successor_claim_is_accepted_before_durable_ambiguity_reconciliation
+    action: FAIL_TIMEOUT_REPLACEMENT
+  - condition: historical_valid_event_v2_claim_is_rejected_only_for_missing_new_optional_provenance
+    action: FAIL_BACKWARD_COMPATIBILITY
+  - condition: schema_change_new_event_family_second_lifecycle_or_mandatory_runtime_database_is_required
+    action: STOP_ARCHITECTURE_AMENDMENT_REQUIRED
+  - condition: product_or_l2_semantic_expansion_is_required
+    action: STOP_ARCHITECTURE_AMENDMENT_REQUIRED
+  - condition: required_independent_exact_subject_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_candidate_change_after_qualifying_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE

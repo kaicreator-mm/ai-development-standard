@@ -1,0 +1,25 @@
+task: T-016-R1
+fail_closed:
+  - condition: live version/v4.8.0 or material Frozen authority drifts from the pack base before implementation
+    action: CONTROLLER_REBIND_REQUIRED
+  - condition: repair requires a path outside the three authorized owner paths
+    action: STOP_AND_REQUEST_SCOPE_REBIND
+  - condition: mutable or non-exact subject can validate as exact-subject/current applicability
+    action: REPAIR_INCOMPLETE
+  - condition: text equality alone can overcome invalid or mutable subject identity
+    action: REPAIR_INCOMPLETE
+  - condition: stale immutable evidence becomes current Availability, routing, Review, Validation or authorization truth
+    action: REPAIR_INCOMPLETE
+  - condition: schema repair breaks historical valid T-016 records beyond the Frozen/additive compatibility authority
+    action: BLOCKED_ARCHITECTURE_OR_COMPATIBILITY
+  - condition: repair introduces infrastructure ownership, global score, economic inference, private chain-of-thought requirement, new Availability/Exchange family, or T-007/T-002 semantics
+    action: OUT_OF_SCOPE_FAIL
+  - condition: focused test or repository-required regression fails
+    action: BUILDER_RESULT_FAIL
+  - condition: successor HEAD changes after independent Validation or Review
+    action: OLD_EVIDENCE_DOES_NOT_TRANSFER
+post_builder:
+  - independent_exact_head_current_target_validation
+  - genuinely_new_fresh_review
+  - expected_head_merge_only_after_currentness_recheck
+  - t007_successor_rebind_only_after_owner_repair_merge

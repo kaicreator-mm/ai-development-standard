@@ -1,0 +1,34 @@
+pack_id: v4.8.0-T-003-33dfb8f0
+task_id: T-003
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
+task_pack_ref: github:kaicreator-mm/ai-development-standard@33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830:docs/implementation/4.8.0/task-packs/T03_interchange_profile.md
+branch: task/v4.8.0-t03-interchange-profile
+parent_issue: "#508"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 33dfb8f05bca1ba8fd4ea8d9a2c63eaa8f9aa830
+generated_by: chatgpt-web:v48-wave2-jit-controller
+generated_at: 2026-10-01T12:49:00Z
+dependency_completion:
+  - T-015/#522 merged as 5f38ceb0d73183ec064d036028e98416ddf3ed0e
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T03_interchange_profile.md
+  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.0.0/AGENT_INTERCHANGE.md
+  - schemas/interchange-envelope-v1.schema.json
+  - schemas/agent-capability-profile-v1.schema.json
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md
+  - scripts/test_v48_interchange_profile.py
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

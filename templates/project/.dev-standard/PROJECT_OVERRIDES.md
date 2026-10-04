@@ -128,6 +128,24 @@ Rules:
 - Testing, Validation and Release remain their existing authorities. v4.4 Deployment remains the rollout/result owner when Deployment is applicable; compatibility/migration evidence does not imply Deployment success.
 - Machine-contract availability, manifest/Golden discovery and technical necessity do not grant Task Pack mutation authority.
 
+### v4.8 Convergence Discovery (non-authoritative wiring)
+
+For projects pinned to v4.8+, these are discovery/read surfaces only:
+
+- Canonical owner discovery: `standard-manifest.json#semantic_authorities`
+- Qualified state/non-inference discovery when applicable: `registries/state-dimensions-v1.json`
+- Derived read routing helper when useful: `scripts/resolve_standard_read_set.py`
+- v4.8 registration/adoption map (non-authoritative): `references/V48_REGISTRY_ADOPTION_REFERENCE.md`
+- Migration/adoption delta: `docs/implementation/4.8.0/MIGRATION_ADOPTION.md`
+
+Rules:
+
+- These are discovery/read surfaces only and MUST NOT grant mutation, Validation, Review, Closure, or Release authority; `authority_effect=NONE`, `gate_effect=NONE`, `mutation_authorized=false`.
+- Resolve/read the canonical owner before acting; compatibility aliases remain compatibility routes, not owners.
+- Load optional v4.8 registries/profiles only when they are applicable to the concern; their presence is not a project adoption requirement.
+- Fast Path proportionality remains intact: `TASK_LEARNING=NONE_MATERIAL` is a valid complete outcome; do not force unrelated optional registries/profiles/packs/automation merely because v4.8 contains them.
+- An incompatible path/schema/authority change is next-major planning input and MUST NOT be silently absorbed into the v4.8 pin unless separate current authority explicitly allows it.
+
 ## Execution Pack / Pull Worker Profile (v3.4, optional)
 
 Opt-in; Fast Path projects MAY keep everything disabled.

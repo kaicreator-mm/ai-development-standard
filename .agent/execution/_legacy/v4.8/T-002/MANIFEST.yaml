@@ -1,0 +1,16 @@
+task_id: T-002
+issue: 510
+integration_branch: version/v4.8.0
+base_sha: 22e8e1701661689fb39a5c363eed424cf827c403
+branch: task/v4.8.0-t02-execution-architecture-core
+frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+task_pack: docs/implementation/4.8.0/task-packs/T02_execution_architecture_core.md
+l3: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+review_policy: required
+validation_owner: independent-from-builder
+allowed_write_set:
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - scripts/test_v48_execution_architecture.py
+forbidden: [second_scheduler_lifecycle, durable_availability_owner, new_exchange_family, independent_per_key_cas_as_composite_proof]
+status: JIT_READY

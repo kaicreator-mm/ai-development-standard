@@ -1,0 +1,153 @@
+{
+  "schema": "v4.8-t013-evolution-evidence-matrix-v1",
+  "task_id": "T-013",
+  "issue": "#519",
+  "candidate_binding": {
+    "integration_target_at_admission": "version/v4.8.0@4c49487423e4aabc7bb1e296da74eee2a6f55da8",
+    "integration_target_tree": "4cb78609ef805559e3fcd023dc4215a7e596d149",
+    "execution_pack_head": "188465e660bd0e418d91a2167367b3af3bdd919b",
+    "execution_pack_tree": "7856fe48cce5436393ccb0d02b0979d2c3932fdd",
+    "builder_branch": "task/v4.8.0-t13-cross-project-evolution-dogfood",
+    "source_rebind_performed": true,
+    "builder_evidence_is_independent_validation": false
+  },
+  "claim_boundaries": {
+    "economic_savings": "NOT_MEASURED",
+    "blanket_strong_to_low_cost_rule": "NOT_SUPPORTED",
+    "standard_auto_amendment": "PROHIBITED",
+    "public_or_github_visibility_implies_publishable": false,
+    "external_generalized_claims_authorized": false
+  },
+  "streams": [
+    {
+      "stream_id": "S1",
+      "evidence_kind": "REAL",
+      "exact_subject": {
+        "repository": "kaicreator-mm/ai-development-standard",
+        "issue": "#469",
+        "durable_anchor": "#469@5925124956",
+        "live_issue_state_at_rebind": "OPEN"
+      },
+      "source_project_task": "ux-harness v0.4 bounded-agent dogfood recorded by ADS #469",
+      "environment_runtime_identity": "Source-reported bounded Builder executions with independent real-host/browser Validation and fresh high-capability Review on multiple exact subjects; no uniform comparable cost/token baseline.",
+      "expected_oracle": "Bounded lower-cost execution may support task-class evidence only when exact packs and independent gates hold; it must not imply economic savings, universal model capability, or blanket routing.",
+      "actual_result": "At the exact anchor, several bounded implementation paths had reached merge after independent Validation and fresh Review, while review continued to surface material nonblocking findings and downstream obligations. Comparable economic measurements were absent.",
+      "classification": [
+        "BOUNDED_AGENT_DOGFOOD",
+        "EVIDENCE_GAP_FOR_ECONOMICS_AND_UNIVERSAL_ROUTING"
+      ],
+      "false_positive_challenge": "Positive execution on bounded UX Harness tasks is not STANDARD_FRICTION evidence and does not generalize to unrelated tasks, providers, platforms, or production side effects.",
+      "privacy_publication_class": "GITHUB_VISIBLE_NOT_EXPLICITLY_PUBLISHABLE",
+      "external_claim_eligible": false,
+      "supporting_refs": [
+        "kaicreator-mm/ai-development-standard#469@5925124956"
+      ],
+      "currentness_limitation": "The durable anchor is historical evidence. The live source Issue remains open; statements about linked project subjects are not transferred to successor SHAs or later dispositions without a fresh rebind.",
+      "disposition": "MORE_EVIDENCE"
+    },
+    {
+      "stream_id": "S2",
+      "evidence_kind": "REAL",
+      "exact_subject": {
+        "repository": "kaicreator-mm/domain-ux",
+        "predecessor_review": "#162@5970478893",
+        "predecessor_head": "a2ddaf592b5bc7a699209b24cc0b991521436cf6",
+        "predecessor_tree": "c38c1b5fcc57d776376a0234d57f9dcdc5a21e27",
+        "successor_review": "#168@5973293956",
+        "successor_head": "bb1f5dc651b48d8626908483a26b70d2af484ae2",
+        "successor_tree": "f778ac3933025dd1c31caa7b3210c1dc5f5e603a",
+        "pull_request": "#161",
+        "live_pr_state_at_rebind": "MERGED",
+        "merge_commit": "ff57c34d46e8808643cdb8a5d995dfe0017665b5"
+      },
+      "source_project_task": "domain-ux v0.0.7 V007-003 realization SPI",
+      "environment_runtime_identity": "Private TypeScript project; exact-head Builder evidence plus genuinely fresh independent READ-ONLY reviews. Environment detail is not needed for the T-013 generalized claim.",
+      "expected_oracle": "Project defects and durable-evidence gaps must be repaired and re-reviewed on a current exact subject; predecessor verdicts must not transfer across repair/currentness rebind.",
+      "actual_result": "The predecessor review found two bounded P1 project defects and one P2 durable-evidence gap. A bounded repair closed them; an intervening review subject was correctly superseded after base drift; a genuinely fresh review on the rebound exact head passed with P0=P1=P2=P3=0 and the PR was subsequently merged.",
+      "classification": [
+        "PROJECT_DEFECT",
+        "EVIDENCE_GAP",
+        "CURRENTNESS_REBIND_SUCCESS"
+      ],
+      "false_positive_challenge": "The observed failures were bounded implementation/evidence defects that were repaired under existing gates. Their existence does not establish a cross-project ADS standard defect.",
+      "privacy_publication_class": "PRIVATE_PROJECT_INTERNAL_REFERENCE_ONLY",
+      "external_claim_eligible": false,
+      "supporting_refs": [
+        "kaicreator-mm/domain-ux#162@5970478893",
+        "kaicreator-mm/domain-ux#162@5972592234",
+        "kaicreator-mm/domain-ux#168@5973293956",
+        "kaicreator-mm/domain-ux#161"
+      ],
+      "currentness_limitation": "The #162 CHANGES_REQUESTED verdict is historical only. Current use is limited to the repair/currentness lineage and the exact successor PASS/merge identities; no capability claim transfers beyond those exact subjects.",
+      "disposition": "NO_CHANGE"
+    },
+    {
+      "stream_id": "S3",
+      "evidence_kind": "REAL",
+      "exact_subject": {
+        "repository": "kaicreator-mm/runx",
+        "predecessor_review": "#143@5953993544",
+        "predecessor_head": "2caf4f0d3f779aad124520d3c3c1047ac0cc1b0d",
+        "predecessor_tree": "a00f363d61589b409c0f336ccc488289cc27651a",
+        "successor_review": "#143@5958381492",
+        "successor_head": "1362a74413a2b77c18872dfb2c2d69dce4552f3d",
+        "successor_tree": "be2092be48eefe71e3f064200d1522076fdc697f",
+        "pull_request": "#143",
+        "live_pr_state_at_rebind": "MERGED",
+        "merge_commit": "2189c48459ec954fcc11a1aea701fa0d8b20445d"
+      },
+      "source_project_task": "runx v0.4 RT002 Dockerfile Build Adapter",
+      "environment_runtime_identity": "Private TypeScript/security-relevant project with Windows gates, supplementary WSL symlink-capable execution, recorded real WSL BuildKit/loopback-registry tuple, and fresh independent review.",
+      "expected_oracle": "Security-contract, environment/evidence-coverage, and documentation-currentness defects must remain local unless repeated evidence shows an ADS-owned standard failure; unavailable host-specific evidence is not synthetic PASS.",
+      "actual_result": "The initial review found bounded security-contract defects plus an evidence-coverage gap. Supplementary Linux evidence closed the host-specific symlink gap; successor repairs addressed security semantics and stale L3 wording. The final exact-head R5 review passed with P0=P1=P2=P3=0, and the PR was subsequently merged.",
+      "classification": [
+        "PROJECT_DEFECT",
+        "ENVIRONMENT_OR_EVIDENCE_COVERAGE",
+        "DOCUMENTATION_CURRENTNESS"
+      ],
+      "false_positive_challenge": "Multiple repair rounds show that serious project-local defects can coexist with effective ADS gates. The sequence does not by itself identify an ADS standard owner defect or repeated cross-project standard friction.",
+      "privacy_publication_class": "PRIVATE_PROJECT_INTERNAL_REFERENCE_ONLY",
+      "external_claim_eligible": false,
+      "supporting_refs": [
+        "kaicreator-mm/runx#143@5953859464",
+        "kaicreator-mm/runx#143@5953993544",
+        "kaicreator-mm/runx#143@5958381492",
+        "kaicreator-mm/runx#143"
+      ],
+      "currentness_limitation": "The R1 verdict applies only to its old exact head. Final use is limited to the documented repair lineage, exact R5 PASS subject, and merged PR identity; no broader runtime/provider claim is inferred.",
+      "disposition": "NO_CHANGE"
+    }
+  ],
+  "cross_project_analysis": {
+    "materially_distinct_real_stream_count": 3,
+    "synthetic_stream_count": 0,
+    "repeated_cross_project_standard_friction_established": false,
+    "observed_common_mechanism": "Exact-subject currentness, independent Validation/Review, and bounded repair prevented stale verdict transfer and false promotion; this is evidence that existing gates were operationally useful, not proof of a new standard defect.",
+    "rejected_promotions": [
+      "bounded low-cost execution -> universal model/provider capability",
+      "unmeasured bounded execution -> economic savings",
+      "project security or implementation defects -> ADS standard defect",
+      "environment/evidence coverage gap -> ADS standard defect",
+      "historical review verdict -> successor SHA verdict",
+      "GitHub visibility -> PUBLISHABLE authorization"
+    ],
+    "routes_exercised": {
+      "NO_CHANGE": [
+        "S2",
+        "S3"
+      ],
+      "MORE_EVIDENCE": [
+        "S1"
+      ],
+      "ADS_EVOLUTION_CANDIDATE": []
+    },
+    "task_disposition": "NO_CHANGE",
+    "more_evidence_required_for": [
+      "any economic, latency, token, rework, or blanket routing policy",
+      "any cross-project repeated-friction claim attributed to an ADS-owned standard mechanism",
+      "any public or external generalized claim"
+    ],
+    "ads_evolution_candidate": "NONE",
+    "reason": "No repeated standard-owned failure survives the false-positive challenge across the three rebound REAL streams. The strongest supported result is NO_CHANGE for ADS authority, while preserving MORE_EVIDENCE for broader performance/routing hypotheses."
+  }
+}

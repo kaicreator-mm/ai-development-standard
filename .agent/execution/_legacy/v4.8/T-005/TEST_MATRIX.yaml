@@ -1,0 +1,24 @@
+task: T-005
+required:
+  - id: six-classification-cases
+    proves: all six observation classes are distinct and route deterministically
+  - id: project-defect-no-promotion
+    proves: project defects do not become standard changes
+  - id: agent-environment-no-promotion
+    proves: Agent execution and environment/tool defects do not become standard changes
+  - id: project-specific-no-promotion
+    proves: project-specific requirements remain project-scoped
+  - id: friction-more-evidence
+    proves: STANDARD_FRICTION_CANDIDATE supports MORE_EVIDENCE and NO_CHANGE
+  - id: evolution-normal-governance
+    proves: ADS_EVOLUTION_CANDIDATE enters ordinary Intake/L1/PRD/L2/Task governance rather than self-amending
+  - id: numeric-threshold-negative
+    proves: no universal numeric threshold auto-promotes a standard change
+  - id: privacy-publication-negative
+    proves: private/project-sensitive evidence is not publishable by default
+  - id: focused-suite
+    command: python -B scripts/test_v48_ads_evolution_governance.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent workflow/classification/privacy validation on final exact PR HEAD
+review: fresh exact-HEAD review required after validation
