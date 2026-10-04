@@ -1,0 +1,53 @@
+task_id: T11
+tests:
+  - id: N01
+    oracle: popularity_must_not_imply_architecture_decision
+  - id: N02
+    oracle: high_impact_unknown_must_not_become_implementation_freedom
+  - id: N03
+    oracle: file_count_must_not_define_coherent_task_boundary
+  - id: N04
+    oracle: shared_atomic_invariant_must_not_imply_safe_parallelism
+  - id: N05
+    oracle: dependency_removal_must_not_fabricate_ready
+  - id: N06
+    oracle: branch_or_pr_stack_must_not_replace_native_issue_dependency_truth
+  - id: N07
+    oracle: dag_mutation_without_reason_authority_impact_must_fail
+  - id: N08
+    oracle: local_tool_version_must_not_be_repository_profile_authority
+  - id: N09
+    oracle: profile_mapping_must_not_be_universal_style_or_tool_mandate
+  - id: N10
+    oracle: project_overrides_must_not_weaken_frozen_or_core_authority
+  - id: D01
+    oracle: profile_resolution_and_dag_mutation_regressions_compose_with_existing_T01_T10
+  - id: D02
+    oracle: high_capability_planner_output_is_consumable_by_bounded_executor_without_product_or_architecture_redesign
+    evidence_required:
+      - exact_subject
+      - planner_identity_or_role
+      - bounded_executor_or_evaluator_identity_or_role
+      - durable_task_pack_or_equivalent_refs
+      - expected_oracle
+      - actual_result
+      - clarification_or_escalation
+      - redesign_needed
+      - evidence_kind_SYNTHETIC_or_REAL
+  - id: D03
+    oracle: stale_or_unavailable_real_agent_toolchain_claim_stays_NOT_RUN_or_BLOCKED
+regression:
+  - scripts/test_v43_dag_mutation_contract.py
+  - scripts/test_v43_profile_framework.py
+  - scripts/test_v43_task_decomposition.py
+  - scripts/test_v43_task_dag_governance.py
+  - scripts/test_v43_implementation_quality.py
+  - scripts/test_v43_ts_python_profiles.py
+  - scripts/test_v43_go_java_rust_profiles.py
+  - scripts/test_v43_archetype_profiles.py
+  - scripts/test_v43_adoption_wiring.py
+  - scripts/test_protocol_schemas.py
+  - scripts/verify_standard.py
+successor_gates:
+  - independent_integration_validation
+  - fresh_independent_review

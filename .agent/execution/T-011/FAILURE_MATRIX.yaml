@@ -1,25 +1,53 @@
-task_id: T11
+task_id: T-011
 failures:
-  - condition: live_target_or_task_pack_or_l3_or_dependency_or_pack_drift
-    action: STOP_CONTROLLER_REBIND_REQUIRED
-  - condition: required_negative_family_not_executable_or_not_fail_closed
-    severity: P1
-    action: BLOCK_VALIDATION
-  - condition: dogfood_requires_product_or_architecture_redesign
-    severity: P1
-    action: FAIL_AND_ROUTE_TO_OWNER
-  - condition: bounded_executor_cannot_act_without_hidden_semantic_redesign
-    severity: P1
-    action: FAIL_DOGFOOD
-  - condition: required_real_agent_toolchain_or_environment_unavailable
-    action: CREATE_EXACT_SCOPE_VALIDATION_HANDOFF_AND_KEEP_NOT_RUN_OR_BLOCKED
-  - condition: synthetic_or_fixture_evidence_promoted_to_real_host_provider_claim
-    severity: P1
-    action: FAIL_CLOSED
-  - condition: project_override_or_profile_or_local_tool_fact_weakens_frozen_core_authority
-    severity: P1
-    action: FAIL_CLOSED
-  - condition: unresolved_P0_or_P1
-    action: BLOCK_CLOSURE_HANDOFF
-  - condition: builder_attempts_version_closure_candidate_freeze_hidden_or_release_verdict
-    action: STOP_SCOPE_VIOLATION
+  - id: F01
+    condition: hard-ineligible-or-UNKNOWN-candidate-ranked-or-admitted
+    disposition: BLOCKING_DOGFOOD_FAILURE
+  - id: F02
+    condition: capacity-N-exceeded-or-exclusive-N1-double-admitted
+    disposition: BLOCKING_DOGFOOD_FAILURE
+  - id: F03
+    condition: canonical-partial-work-resource-admission-observed
+    disposition: BLOCKING_DOGFOOD_FAILURE
+  - id: F04
+    condition: reviewer-or-validator-independence-conflict-optimized-around
+    disposition: BLOCKING_AUTHORITY_FAILURE
+  - id: F05
+    condition: same-idempotency-identity-conflicting-payload-accepted
+    disposition: BLOCKING_REPLAY_FAILURE
+  - id: F06
+    condition: transport-ack-progress-heartbeat-treated-as-semantic-authority
+    disposition: BLOCKING_AUTHORITY_FAILURE
+  - id: F07
+    condition: authoritative-execution-before-accepted-Claim-or-duplicate-active-Start-Records
+    disposition: BLOCKING_T017_COMPOSITION_FAILURE
+  - id: F08
+    condition: restart-reconstruction-requires-private-chat-or-transient-queue-history
+    disposition: BLOCKING_DURABILITY_FAILURE
+  - id: F09
+    condition: ambiguous-timeout-stale-state-allows-incompatible-replacement
+    disposition: BLOCKING_FAIL_CLOSED_FAILURE
+  - id: F10
+    condition: bounded-executor-guesses-across-missing-authority-currentness-or-semantic-ambiguity
+    disposition: BLOCKING_ESCALATION_FAILURE
+  - id: F11
+    condition: synthetic-or-repository-evidence-presented-as-external-real-host-provider-runtime-evidence
+    disposition: BLOCKING_EVIDENCE_INTEGRITY_FAILURE
+  - id: F12
+    condition: external-real-claim-required-but-independent-environment-validation-unavailable
+    disposition: NOT_RUN_OR_BLOCKED_WITH_VALIDATION_HANDOFF
+  - id: F13
+    condition: dogfood-needs-normative-standard-schema-or-frozen-authority-change
+    disposition: ARCHITECTURE_AMENDMENT_REQUIRED_OR_SEPARATE_AUTHORIZED_REPAIR
+  - id: F14
+    condition: new-scheduler-claim-lifecycle-exchange-family-availability-authority-or-mandatory-runtime-db-needed
+    disposition: ARCHITECTURE_AMENDMENT_REQUIRED
+  - id: F15
+    condition: exact-base-or-pack-currentness-drift-before-builder-start
+    disposition: STOP_REBIND_EXECUTION_PACK
+  - id: F16
+    condition: candidate-drifts-after-qualifying-validation-or-review
+    disposition: STALE_EVIDENCE_REQUALIFY
+  - id: F17
+    condition: unsupported-universal-agent-ranking-blanket-routing-or-economic-savings-inference
+    disposition: BLOCKING_EVIDENCE_CLAIM_FAILURE

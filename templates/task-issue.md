@@ -74,6 +74,13 @@ Any task-specific instruction required by an executor MUST be durable in this Is
 
 - <what becomes FAIL/BLOCKED and where evidence/handoff is recorded>
 
+## Task Learning Closeout
+
+- Result: `<TASK_LEARNING=NONE_MATERIAL | durable Task Learning evidence ref(s)/digest(s)>`
+- Material evidence semantics/currentness authority: `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`
+
+Use durable refs/digests instead of copied evidence bodies. If an exact-subject/currentness claim is missing, ambiguous, mutable, malformed or stale, keep the learning as historical evidence only; do not silently rebind it to current behavior. Task Learning does not replace Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority and must not require private chain-of-thought, hidden evaluator material, credentials, secrets or verbose scratch reasoning.
+
 ## Completion
 
 Implementation is done only when the declared concern gates, Review condition, dependency/target constraints, and merge result are satisfied. PR PASS is not Release PASS.

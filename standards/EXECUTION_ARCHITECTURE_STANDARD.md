@@ -400,6 +400,18 @@ A dispatcher MUST re-evaluate staleness when material facts change. Typical stal
 
 Stale work is cancelled/replaced rather than executed and later reconciled by hand.
 
+### 11.2 Active ownership visibility, terminal release, and liveness
+
+Active ownership (`active_dispatch`, `active_dispatch_role`) is derived state reconstructed from durable claim/dispatch facts — the accepted `DISPATCH_CLAIMED` with actor role, `operator_kind`/`operator_id`, `session_ref` when present, accepted/occurred-time reference, execution profile, exact/requested/base subject and Task/Execution Pack refs. It is never derived from labels or transient chat/session state. A fresh session MUST be able to reconstruct the active dispatch, logical operator, start time and exact subject from durable facts after chat/session loss.
+
+Accepted start projects through `claimed → implementing` (or the canonical role-equivalent running state). The projection is visibility only: delayed or failed projection publication cannot erase the accepted Claim, cannot authorize a competing claim, and is repaired by republishing/recomputing the derived view — never by re-admitting the work.
+
+Terminal/release handling: `DONE`, `FAILED`, `BLOCKED`, `CANCELLED`, `TIMEOUT`, `STALE`/`SUPERSEDED` remove incompatible active ownership only when the durable terminal/release facts are unambiguous; history remains append-oriented and a successor claim/start is separately attributable. Another operator may take over only after durable terminal/stale/timeout/release/supersession and related publication/resource/generation facts reconcile under the existing serialized admission (§11.1); ambiguous publication/release/resource state fails closed. Idempotent same-operator/same-dispatch resume keeps exactly one active claim (§11).
+
+Progress/heartbeat remains optional, non-authoritative transport/exchange information. Missing heartbeat alone MUST NOT fabricate Task/Validation `FAIL`, mutate a Gate, or implicitly release an ambiguous active claim. A controller MAY use liveness expiry to open an investigation or an explicitly configured timeout policy; `TIMEOUT`/`STALE` replacement still requires durable reconciliation of claim/publication/resource/generation/release facts and fails closed on ambiguity. Manual/Fast-Path execution under `SINGLE_WRITER_ADMISSION` uses the same Claim/visibility semantics with no mandatory orchestration service and no high-frequency heartbeat requirement.
+
+This visibility/profile concern introduces no new state dimension, lifecycle, scheduler, claim authority, event family or mandatory runtime database.
+
 ## 12. Exact identity, drift, and evidence composition
 
 Track at least:
@@ -663,3 +675,102 @@ Merge causes DAG ready-set recomputation without human prompt relay between role
 ## 26. Non-goals
 
 This standard does not make every project use Version Branch Mode, every PR use Independent Review, every gate use CI, every agent use an automated dispatcher, every task carry an Execution Pack, or every version expose a validation queue. It does not expose Hidden fixtures, replace GitHub, relax exact-SHA/platform/toolchain truth, allow Validators to opportunistically repair product source, or allow Builders to self-assert Independent Review PASS.
+
+## 27. v4.8 eligibility and composite resource admission
+
+This section tightens the existing READY/Dispatch/Claim execution architecture for heterogeneous Agents and bounded resources. It is additive: **READY, Dispatch, and Claim remain canonical** workflow/admission concepts, and no v4.8 projection or resource mechanism creates a second scheduler lifecycle or state database.
+
+### 27.1 Owner composition and derived Availability
+
+Eligibility composes distinct facts without moving their ownership:
+
+```text
+current READY work + Task/Execution requirements
++ Logical Agent Capability Profile claims
++ existing runner/host/device/provider capability-owner facts
++ current derived Availability
++ relevant Capability Evidence
++ authority/currentness/independence/security/write-set predicates
+        ↓
+derived eligibility
+```
+
+Logical Agent Profile claims do not own mutable infrastructure inventory. Runner/host/device/provider facts remain with their existing owners. Availability is `NON_AUTHORITATIVE_DERIVED_STATE`; v4.8 MUST NOT create a durable Availability owner. Capability Evidence is bounded historical evidence and MUST NOT be treated as current Review/Validation PASS or as authorization.
+
+Task Pack remains the owner of Task execution requirements; an exact-base Execution Pack may only narrow them. Optional backward-compatible requirement/ref fields may name logical capability classes, existing environment/resource capability refs, independence/security constraints, capacity groups, or an explicit capability-evidence policy. Missing optional v4.8 fields do not invalidate historical dispatches or create implicit new requirements.
+
+### 27.2 Hard filters before ranking
+
+For each canonical READY `(work item, role, candidate executor/environment)` choice, the resolver MUST derive exactly one of:
+
+```text
+ELIGIBLE
+INELIGIBLE
+UNKNOWN
+```
+
+Eligibility is a projection, not durable authority. A known failed hard predicate is `INELIGIBLE`. A missing, stale, ambiguous, or non-current material fact is `UNKNOWN`; `UNKNOWN` fails closed for every hard requirement.
+
+Hard predicates include, when applicable:
+
+```text
+work item is still READY/claimable
+Task Pack / Execution Pack and exact subject/base are current
+role and agent-freedom constraints permit the candidate
+logical Agent capability claims satisfy the Task need
+required runner/host/device/provider capability facts satisfy the Task need
+required resource Availability is current and AVAILABLE
+security/side-effect authority is present from its canonical owner
+reviewer/validator independence is satisfied
+write-set/concurrency compatibility is satisfied
+required capability-evidence policy is satisfied
+full composite work+resource admission can be performed safely
+```
+
+**All hard predicates are evaluated before ranking.** Only `ELIGIBLE` choices may enter optional ranking. Priority, critical-path position, queue age, cost, latency, utilization, scarcity, retry history, or evidence strength MUST NOT promote `INELIGIBLE` or `UNKNOWN` to `ELIGIBLE`.
+
+### 27.3 One all-or-none linearization point for claim plus required resources
+
+When a READY dispatch requires scarce, exclusive, or capacity-bounded resources, accepting its work claim MUST use one protected admission set:
+
+```text
+A = {
+  work_claim_key(repository, work_item, role),
+  every required resource_group + required_units,
+  every required compatibility/concurrency binding
+}
+```
+
+The accepted work claim and **all required resource bindings MUST linearize all-or-none at one admission point**. A prior canonical Dispatch reservation may exist, but the Claim MUST NOT become accepted unless the same admission decision commits every required resource binding. Failure of any member of `A` rejects the whole admission without publishing a partial canonical claim or partial resource ownership.
+
+A conforming implementation uses one of the existing section 11.1 modes:
+
+- `SINGLE_WRITER_ADMISSION`: the designated admission writer serializes the full set `A`, checks current claimability and every required capacity/resource predicate, and publishes the accepted claim plus resource-binding facts as one logical decision;
+- `LINEARIZABLE_CONDITIONAL_WRITE`: the storage/adapter provides a genuine conditional transaction over the full set `A` with one serialization point and expected generation/revision (or equivalent).
+
+Independent per-key CAS operations, per-resource leases, or a sequence of individually successful reservations are **not** composite proof. If the full set cannot be linearized, route admission through the existing single writer or fail closed as `BLOCKED/UNAVAILABLE`; do not expose the same scarce capacity concurrently to independent claimers.
+
+For every capacity group `G` with capacity `N`:
+
+```text
+sum(active accepted units bound to G) <= N
+```
+
+MUST hold at every canonical transition. Exclusive capacity is `N=1`. A request for `k` units is rejected if accepting it would make the active accepted total exceed `N`. Capacity/accounting is reconstructed from durable accepted work/resource-binding facts; a transient counter, lock, lease, scheduler cache, or queue is not a new authority.
+
+The following accepted canonical states are forbidden:
+
+```text
+work claim accepted + any required resource missing
+resource bound + corresponding work claim not accepted
+only a subset of required resources accepted
+capacity-N active accepted bindings exceeding N
+```
+
+### 27.4 Crash/publication ambiguity and replacement admission
+
+If a crash, timeout, transport loss, or publication failure makes the outcome of the composite admission ambiguous, the controller MUST fail closed. It MUST re-read and reconcile durable work-claim, Dispatch, resource-binding, generation/revision, release, and supersession facts before any replacement or incompatible admission is accepted.
+
+Until reconciliation determines the durable outcome, replacement admission for the affected claim/resource set is blocked. Recovery MUST either reconstruct the already-accepted all-or-none binding, prove that no accepted binding exists, or surface `BLOCKED/UNAVAILABLE`; it MUST NOT guess from transient locks, process memory, queue state, ACK/progress, or individually observed per-key writes.
+
+These rules reuse the existing GitHub/repository fact plane, section 11 Claim lifecycle, existing runner/resource owners, and existing Interchange family. They create no second scheduler/state database, durable Availability owner, or new Exchange family.

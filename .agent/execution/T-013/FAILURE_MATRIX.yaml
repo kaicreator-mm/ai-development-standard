@@ -1,0 +1,29 @@
+task_id: T-013
+failure_modes:
+  - condition: version/v4.8.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: fewer than two materially distinct real evidence streams remain reconstructible
+    disposition: MORE_EVIDENCE
+    action: do not manufacture cross-project friction; record gap
+  - condition: source verdict is reused as current after successor SHA/disposition drift
+    disposition: STALE_EVIDENCE
+    action: preserve historical identity only and re-read live source
+  - condition: project/environment/Agent defect is promoted to standard change without cross-project support
+    disposition: FALSE_POSITIVE
+    action: classify locally and route NO_CHANGE or MORE_EVIDENCE
+  - condition: public GitHub visibility is treated as explicit publication authorization
+    disposition: PRIVACY_PUBLICATION_DEFECT
+    action: external_claim_eligible=NO until explicit eligible evidence exists
+  - condition: synthetic evidence is used to satisfy a real external/runtime/provider/project claim
+    disposition: EVIDENCE_STRENGTH_DEFECT
+    action: mark NOT_RUN|BLOCKED and create validation handoff
+  - condition: economic savings or blanket routing policy is inferred from T012/#469
+    disposition: OVERCLAIM
+    action: preserve ECONOMIC_SAVINGS=NOT_MEASURED and MORE_EVIDENCE posture
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: evidence implies automatic mutation of ADS Product/L2/DAG/normative owners
+    disposition: GOVERNANCE_VIOLATION
+    action: route through ordinary ADS evolution intake only

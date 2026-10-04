@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/state-dimension-registry-v1.schema.json",
+  "title": "AI Development State-Dimension / Forbidden-Inference Registry v1",
+  "description": "Qualified metadata describing state dimensions, their canonical owners and forbidden cross-dimension inferences. This is not a live state store or lifecycle authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_id", "dimensions", "forbidden_inferences"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "registry_id": {"type": "string", "minLength": 1},
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension_id", "canonical_owner_ref", "vocabulary_posture"],
+        "properties": {
+          "dimension_id": {"type": "string", "minLength": 1},
+          "canonical_owner_ref": {"type": "string", "minLength": 1},
+          "vocabulary_posture": {"type": "string", "enum": ["CLOSED", "OPEN", "OWNER_DEFINED"]},
+          "vocabulary_ref": {"type": "string", "minLength": 1},
+          "applicability_ref": {"type": "string", "minLength": 1},
+          "notes_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "forbidden_inferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rule_id", "source_dimension_ref", "source_fact_ref", "target_dimension_ref", "prohibited_conclusion_ref"],
+        "properties": {
+          "rule_id": {"type": "string", "minLength": 1},
+          "source_dimension_ref": {"type": "string", "minLength": 1},
+          "source_fact_ref": {"type": "string", "minLength": 1},
+          "target_dimension_ref": {"type": "string", "minLength": 1},
+          "prohibited_conclusion_ref": {"type": "string", "minLength": 1},
+          "rationale_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

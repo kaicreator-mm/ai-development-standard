@@ -1,0 +1,57 @@
+task: T-010
+required:
+  - id: none-material-fast-path
+    proves: TASK_LEARNING=NONE_MATERIAL is valid without an empty task-learning object
+  - id: material-learning-current
+    proves: material learning with durable refs canonical immutable subject/currentness and bounded layers is current only for the exact subject
+  - id: stale-learning-historical-only
+    proves: subject drift leaves prior material learning historical-only and cannot silently rebind successor code
+  - id: missing-or-mutable-subject-historical-only
+    proves: missing branch tag repository-only short-SHA malformed or ambiguous identities cannot establish current behavioral truth
+  - id: confidence-not-current-pass
+    proves: Task Learning confidence layers never imply current Review PASS Validation PASS merge authorization or a global scalar score
+  - id: learning-routing-not-authority
+    proves: Task Learning friction classification or disposition cannot mutate ADS or bypass evolution governance
+  - id: project-defect-no-promotion
+    proves: PROJECT_DEFECT routes to project ownership and cannot open an ADS standard change
+  - id: agent-execution-defect-no-promotion
+    proves: AGENT_EXECUTION_DEFECT routes to execution repair and cannot open an ADS standard change
+  - id: environment-tool-defect-no-promotion
+    proves: ENVIRONMENT_OR_TOOL_DEFECT routes to environment/tool ownership and cannot open an ADS standard change
+  - id: project-specific-no-promotion
+    proves: PROJECT_SPECIFIC_REQUIREMENT remains project-local and cannot open an ADS standard change
+  - id: friction-no-change
+    proves: STANDARD_FRICTION_CANDIDATE may terminate as NO_CHANGE with no standard mutation
+  - id: friction-more-evidence
+    proves: STANDARD_FRICTION_CANDIDATE and ambiguous cause may route to MORE_EVIDENCE without upward promotion
+  - id: numeric-or-provider-auto-promotion-rejected
+    proves: score count success/failure rate cost latency provider/model scheduler or heuristic cannot auto-promote or authorize standard change
+  - id: ads-evolution-intake-only
+    proves: ADS_EVOLUTION_CANDIDATE can only OPEN_ADS_INTAKE then enter ordinary ADS governance and is not approval
+  - id: ordinary-governance-no-shortcut
+    proves: telemetry model scheduler Task Learning CI and dogfood evidence cannot skip Intake L1 PRD L2 Task Review/Validation authority
+  - id: publication-fail-closed
+    proves: absent explicit PUBLISHABLE authority evidence remains project-private or restricted and cannot be copied publicly
+  - id: publication-independent-of-strength
+    proves: publication class does not change evidence strength owner authority or promotion status
+  - id: sensitive-material-never-publishable
+    proves: secrets credentials private chain-of-thought and hidden-evaluator/Hidden Validation payloads never become publication material
+  - id: reference-first-minimization
+    proves: refs digests or minimized non-sensitive summaries are used instead of copied sensitive bodies
+  - id: owner-preservation
+    proves: learning/governance evidence cannot substitute for Product Architecture Task ADR Incident Intent Skill Review Validation merge or release owners
+  - id: no-new-evolution-lifecycle
+    proves: no second evolution schema database controller lifecycle promotion engine or self-amending ADS path is introduced
+commands:
+  - id: focused-suite
+    command: python -B scripts/test_v48_governance_conformance.py
+  - id: task-learning-regression
+    command: python -B scripts/test_v48_task_learning.py
+  - id: ads-evolution-regression
+    command: python -B scripts/test_v48_ads_evolution_governance.py
+  - id: t004-template-closeout-regression
+    command: python -B scripts/test_work_item_contract_and_golden_templates.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent exact-subject concern validation of learning currentness classification non-promotion ordinary governance privacy publication minimization hidden-evaluator non-leakage and owner preservation
+review: genuinely fresh exact-HEAD independent review required after qualifying validation

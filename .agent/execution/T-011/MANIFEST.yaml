@@ -1,29 +1,61 @@
-pack_id: v4.3.0-T11-ea5b39bb
+pack_id: v4.8.0-T-011-94955c6f
+task_id: T-011
 repository: kaicreator-mm/ai-development-standard
-version: 4.3.0
-task_id: T11
-issue: "#257"
-base_sha: ea5b39bb27ae36886748420d282350dd1a16476e
-base_tree: 1a88c724e4971ff2c35b88315cc8114b329adcad
-branch: task/257-v43-conformance-dogfood
-integration_target: version/v4.3.0
-task_pack_ref: docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md
-task_pack_blob: f0851868a19c9e321dcbfb70eb46e8f31cb7efd3
-l3_ref: docs/implementation/4.3.0/L3_REFERENCE_PACKS.md#t11--conformance--dogfood
-l3_blob: 03ac6c46c6091bad6df5e02d94a07f7c58fb7ef9
-pinned_standard_revision: ea5b39bb27ae36886748420d282350dd1a16476e
+version: 4.8.0
+base_sha: 94955c6f93fd7316406ea96bce8f7c32a62509ef
+base_tree: bb7f25f1e05ff2423fc79029465bcf7be458a82c
+task_pack_ref: docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md
+task_pack_blob: e1c412c44f67df736d1b1598a590a0eac31a4b22
+l3_ref: docs/implementation/4.8.0/L3_T11_ORCHESTRATION_DOGFOOD.md
+l3_blob: fe7e1c46bcaef45cb7c8ce57615dcf0f1e0feb1a
+branch: task/v4.8.0-t11-orchestration-dogfood
+parent_issue: "#517"
+agent_freedom: F2_ENGINEERING_DISCRETION
+task_pack_agent_freedom_ceiling: F2_ENGINEERING_DISCRETION
+pinned_standard_revision: 94955c6f93fd7316406ea96bce8f7c32a62509ef
+frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
+generated_by: chatgpt-web:v48-t011-phase1-planning-builder
 dependency_completion:
-  - T10/#256: done
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-risk: high
+  - T-007/#513:DONE
+  - T-008/#514:DONE
+  - T-009/#515:DONE
+  - T-017/#646:DONE
+  - native-issue-#517:blocked_by=0,total_blocked_by=4
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md
+  - docs/implementation/4.8.0/L3_T11_ORCHESTRATION_DOGFOOD.md
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - scripts/test_v48_contract_compatibility.py
+  - scripts/test_v48_scheduling_conformance.py
+  - scripts/test_v48_interchange_replay_restart.py
+  - scripts/test_v48_execution_ownership.py
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+builder_write_set:
+  - scripts/test_v48_orchestration_dogfood.py
+  - docs/implementation/4.8.0/dogfood/orchestration/**
+forbidden_builder_paths:
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - standards/**
+  - schemas/**
+  - .github/workflows/**
 review_policy: required
-validation_owner: T11
-pack_state_at_generation: PACK_CURRENT
+validation_owner: independent-from-builder
+validation_scope: exact-subject-scenario-integration
+external_real_validation: required-only-for-external-claims
 core_artifacts:
   - MANIFEST.yaml
   - EXECUTION_CONTRACT.md
-  - IMPLEMENTATION_MAP.md
   - TEST_MATRIX.yaml
   - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
   - REVIEW_CHECKLIST.md
+retention: durable
 package_excluded: true
+pack_state_at_generation: PACK_CURRENT

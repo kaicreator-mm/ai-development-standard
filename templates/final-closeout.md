@@ -30,6 +30,16 @@ Use only `PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE`.
 
 For platform/runtime matrices, list each required Validation Tuple explicitly. One tuple PASS never implies another tuple PASS.
 
+## Task Learning Evidence Index
+
+Record the closeout disposition for completed work items without copying Task Learning evidence bodies.
+
+| Work Item | Result | Durable Evidence Ref(s) / Digest(s) | Currentness |
+|---|---|---|---|
+| `<#id>` | `<TASK_LEARNING=NONE_MATERIAL | MATERIAL_REFS>` | `<refs | NOT_APPLICABLE>` | `<CURRENT | HISTORICAL_ONLY | NOT_APPLICABLE>` |
+
+Material refs are interpreted under `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`. Missing, ambiguous, mutable, malformed or stale exact-subject/currentness evidence remains historical only and must not be silently rebound as current behavioral proof. This index is evidence/reference material only; it does not replace Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority or establish Release Qualification.
+
 ## Gate Authority
 
 For every release-blocking gate, record authority:

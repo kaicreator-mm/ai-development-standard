@@ -1,0 +1,17 @@
+task_id: T-007
+positive:
+  - historical_v4_payloads_required_by_frozen_l2_remain_valid
+  - three_v48_contract_families_validate_independently
+negative:
+  - capability_claim_not_proof
+  - capability_evidence_not_current_review_or_validation_pass
+  - provider_model_not_authority
+  - infrastructure_fact_not_logical_agent_owner
+  - no_fourth_availability_or_exchange_family
+  - stale_exact_subject_cannot_rebind
+  - no_private_cot_requirement
+  - no_owner_reassignment
+commands:
+  - python -B scripts/test_v48_contract_compatibility.py
+  - python -B scripts/test_protocol_schemas.py
+  - python -B scripts/verify_standard.py

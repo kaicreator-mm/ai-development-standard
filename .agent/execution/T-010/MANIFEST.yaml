@@ -1,0 +1,72 @@
+pack_id: v4.8.0-T-010-257e9553
+task_id: T-010
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0
+base_sha: 257e95531551960cb163a3e20ab2b3d13f415d3c
+base_tree: 1171de2c8afb08d6f793a258ffd0b586007e9dbf
+task_pack_ref: docs/implementation/4.8.0/task-packs/T10_governance_conformance.md
+task_pack_blob: b9cd43f60f75f697a85a0be8e137f13c33c5368f
+l3_ref: docs/implementation/4.8.0/L3_T10_GOVERNANCE_CONFORMANCE.md
+l3_blob: ff624e6f955e7198f570bf76110f65b34acf433a
+branch: task/v4.8.0-t10-governance-conformance
+parent_issue: "#516"
+agent_freedom: F2_ENGINEERING_DISCRETION
+task_pack_agent_freedom_ceiling: F2_ENGINEERING_DISCRETION
+pinned_standard_revision: 257e95531551960cb163a3e20ab2b3d13f415d3c
+frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
+frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
+frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
+generated_by: chatgpt-web:v48-t010-jit-planning-builder
+dependency_completion:
+  - T-004/#511:DONE
+  - T-005/#509:DONE
+  - issue-516-native-blocked-by:0/2
+material_paths:
+  - docs/implementation/4.8.0/task-packs/T10_governance_conformance.md
+  - docs/implementation/4.8.0/L3_T10_GOVERNANCE_CONFORMANCE.md
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+  - schemas/task-learning-v1.schema.json
+  - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - templates/task-pack.md
+  - templates/task-issue.md
+  - templates/implementation-pr.md
+  - templates/final-closeout.md
+  - checklists/pr-review.md
+  - templates/execution-pack/EXECUTION_CONTRACT.md
+  - templates/execution-pack/REVIEW_CHECKLIST.md
+  - scripts/test_v48_task_learning.py
+  - scripts/test_v48_ads_evolution_governance.py
+  - scripts/test_work_item_contract_and_golden_templates.py
+  - scripts/test_v48_governance_conformance.py
+builder_write_set:
+  - scripts/test_v48_governance_conformance.py
+forbidden_builder_paths:
+  - schemas/task-learning-v1.schema.json
+  - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - templates/task-pack.md
+  - templates/task-issue.md
+  - templates/implementation-pr.md
+  - templates/final-closeout.md
+  - checklists/pr-review.md
+  - templates/execution-pack/EXECUTION_CONTRACT.md
+  - templates/execution-pack/REVIEW_CHECKLIST.md
+  - docs/implementation/4.8.0/PRD.md
+  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.8.0/TASK_DAG.md
+review_policy: required
+validation_owner: independent-from-builder
+validation_scope: concern
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
