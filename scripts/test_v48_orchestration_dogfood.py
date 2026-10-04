@@ -148,11 +148,12 @@ def _git(*args: str) -> str:
     return result.stdout
 
 
-def candidate_paths(base: str) -> list[str]:
-    """Real repository read: implementation-diff paths from the JIT pack head to the
-    candidate, plus uncommitted working-tree paths (the candidate under test)."""
+def candidate_paths_between(base: str, head: str) -> list[str]:
+    """Real repository read: committed implementation-diff paths between two exact
+    commits (`base`..`head`), plus uncommitted working-tree paths (the candidate
+    under test)."""
     paths: set[str] = set()
-    committed = _git("diff", "--name-only", f"{base}..HEAD")
+    committed = _git("diff", "--name-only", f"{base}..{head}")
     paths.update(line.strip() for line in committed.splitlines() if line.strip())
     for line in _git("status", "--porcelain", "--untracked-files=all").splitlines():
         if len(line) < 4:
@@ -163,6 +164,12 @@ def candidate_paths(base: str) -> list[str]:
         if path:
             paths.add(path)
     return sorted(paths)
+
+
+def candidate_paths(base: str) -> list[str]:
+    """Real repository read: implementation-diff paths from the JIT pack head to the
+    candidate HEAD, plus uncommitted working-tree paths (the candidate under test)."""
+    return candidate_paths_between(base, "HEAD")
 
 
 def parse_manifest_durable_facts() -> dict:
@@ -964,6 +971,7 @@ class V48OrchestrationDogfood(unittest.TestCase):
         corpus = self.corpus
         base = manifest["base_sha"]
         pack_head = corpus["jit_pack_head"]
+        lane_head = corpus["t011_candidate_head"]
 
         # Eligibility is evaluated through the merged hard-filter oracle with real
         # currentness facts: the live candidate descends from the exact pack base.
@@ -1008,8 +1016,21 @@ class V48OrchestrationDogfood(unittest.TestCase):
             "a freedom claim above the durable pack ceiling must fail hard eligibility",
         )
 
-        # The bounded action: verify the real candidate diff stays inside the authorized
-        # Builder write set and outside every forbidden path.
+        # The bounded action: verify the real T-011 lane diff stays inside the
+        # authorized Builder write set and outside every forbidden path. The probe
+        # scope is the durable lane diff pack_head..lane_head — not the unbounded
+        # ..HEAD, which at an integrated closure candidate necessarily contains every
+        # later task's paths — guarded by an ancestry check that fails loudly if the
+        # recorded lane-tip fact rots. The uncommitted worktree probe is kept: at the
+        # candidate under test it is still meaningful.
+        try:
+            _git("merge-base", "--is-ancestor", pack_head, lane_head)
+        except subprocess.CalledProcessError as error:
+            self.fail(
+                "durable corpus lane-tip fact rotted: recorded T-011 lane tip "
+                f"{lane_head} does not descend from JIT pack head {pack_head} "
+                f"({error})"
+            )
         authorized_exact = {"scripts/test_v48_orchestration_dogfood.py"}
         authorized_prefix = "docs/implementation/4.8.0/dogfood/orchestration/"
         forbidden_prefixes = ("standards/", "schemas/", ".github/workflows/")
@@ -1018,7 +1039,7 @@ class V48OrchestrationDogfood(unittest.TestCase):
             "docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md",
             "docs/implementation/4.8.0/TASK_DAG.md",
         }
-        paths = candidate_paths(pack_head)
+        paths = candidate_paths_between(pack_head, lane_head)
         self.assertTrue(paths, "candidate write-set probe observed no candidate paths")
         decisions = []
         for path in paths:
@@ -1036,7 +1057,7 @@ class V48OrchestrationDogfood(unittest.TestCase):
             name="bounded-executor-eligible-success",
             l3_tests="L3 #14 bounded-executor-eligible-success",
             oracle="bounded path may complete only within exact pack/write-set/authority constraints",
-            observed=f"bounded F1 executor hard-ELIGIBLE with eligibility derived from its canonical profile (role + claimed capability + freedom ceiling bound to the real manifest pack ceiling); an otherwise-identical F3-over-claim variant failed hard eligibility; performed real write-set verification over {len(decisions)} candidate path(s) diffed from JIT pack head {pack_head[:12]}; every path inside the authorized write set, none forbidden; 0 escalations",
+            observed=f"bounded F1 executor hard-ELIGIBLE with eligibility derived from its canonical profile (role + claimed capability + freedom ceiling bound to the real manifest pack ceiling); an otherwise-identical F3-over-claim variant failed hard eligibility; performed real write-set verification over {len(decisions)} lane path(s) diffed from JIT pack head {pack_head[:12]} to the durable T-011 lane tip {lane_head[:12]} (ancestry guard passed); every path inside the authorized write set, none forbidden; 0 escalations",
             evidence_class=["REPOSITORY_REAL_EXECUTION"],
             environment="local build host; real git diff/status of the candidate worktree + real MANIFEST write-set facts + merged T-008 eligibility oracle",
         )
