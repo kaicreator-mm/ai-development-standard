@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.4.0 — Unreleased Sequential Successor Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
+
+v4.4.0 当前处于未发布顺序谱系候选阶段。按 #778 的顺序谱系（sequential lineage），历史已冻结候选 `version/v4.4.0`（`aed9433cecbd55ce50afcc449a7bdd7cbf590347` / tree `28b8dbfd5a3066c58f5f7fb3294af3da7eea284e`）中经资格验证的 v4.4 语义增量（源区间 `4e6b3004..aed9433`，T01–T08 及身份/R1 文档 currentness 修复）被语义重放到已资格化的 v4.3 `main`（`f62930bd3512a463358b8b642b1bbc5993566940`，经 PR #708 集成）之上，形成 `version/v4.4.0-sequential` 顺序候选分支；本次组合只修改 #778 声明的组合面，不修改规范、schema、实现、测试或任何既有门禁证据。历史 #667 / hidden-validation#38 / #687 对旧候选 `aed9433…` 的 Stage1/Freeze/Hidden/Closeout/Release Qualification 结论属 HISTORICAL_ONLY / NON_TRANSFERABLE，不转移到新 SHA/tree；在本候选获得精确 SHA/tree 绑定的独立 Validation/Fresh Review 与相应版本级闭合结论前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定。
+
+- 新增 shared delivery machine contracts：build manifest、artifact promotion、deployment plan/result schemas 及 focused backward-compatibility/negative contract coverage。
+- 新增 Build & Artifact Governance：绑定 source/profile/toolchain/output identity，区分 build output 与 promoted immutable artifact，并约束 content-policy evidence、rebuild qualification 不可继承。
+- 新增 optional Distribution Governance：区分 immutable digest/bytes 与可变 alias/tag/channel，publication/distribution success 不得被提升为 Deployment truth。
+- 新增 Deployment Governance：分离 plan/result，绑定 exact artifact/environment/authority，保留 staging/production、rollback、migration 与 side-effect authority 边界，`Release READY != Deployment SUCCESS`。
+- 完成 package/install dogfood 与 Build/Artifact conformance，包含 non-container package/install path、content-policy negatives、promotion identity 和 rebuild non-transfer 等实际证据。
+- 完成 Distribution/Deployment conformance dogfood，覆盖 immutable digest vs alias、publication vs deployment、plan/result binding、environment/authority/rollback 等负向推断边界。
+- 完成 adoption & cross-standard wiring：manifest、PROJECT_OVERRIDES/project-adoption guidance、Validation/Release/checklist references 与 v4.4 migration/adoption notes 的 additive wiring。
+- 完成 cross-standard conformance 与 durable closure inputs，覆盖 integrated negative inference、historical compatibility、Fast Path proportionality 及 v4.1/v4.2 composition；这些 closure inputs 仍须由后续独立 Version Closure 绑定和裁定，本条目不声明 Release/Closure PASS。
 ## v4.3.0 — Unreleased Sequential Successor Candidate（未声称 Release Qualification / `main` 集成 / tag / GitHub Release / publication）
 
 v4.3.0 当前处于未发布顺序谱系候选阶段。按 #705 的顺序谱系（sequential lineage），历史已冻结候选 `version/v4.3.0`（`124943821848260b135a008dfaca6bc05a31fbac` / tree `bad3acb42a6e68e31f8e2f9178ecdeb5b2e8d2f1`）中经资格验证的 v4.3 语义增量（源区间 `65c978d7..124943821`，T01–T11）被语义重放到已资格化的 v4.2 `main`（`73098dfb576dbcc1252634e14bb3d39b70b94342`，经 PR #703 集成）之上，形成 `version/v4.3.0-sequential` 顺序候选分支；本次发布身份校正只修改 `VERSION`、`README.md`、`CHANGELOG.md` 三个身份面，不修改规范、schema、实现、测试或任何既有门禁证据。历史 #690 对旧候选的 Stage1/Freeze/Hidden/Closeout/Release Qualification 结论属 HISTORICAL_ONLY / NON_TRANSFERABLE，不转移到新 SHA/tree；在本候选获得精确 SHA/tree 绑定的独立 Validation/Fresh Review 与相应版本级闭合结论前，不得视为已发布标准。实际消费仍必须以 `version` 与所选不可变 `revision`（40 位提交 SHA）成对固定。

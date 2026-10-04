@@ -34,6 +34,14 @@ jobs:
       - run: python scripts/test_v40_t010_canonical_surface.py
       - run: python scripts/test_v40_t012_pre_release_hardening.py
       - run: python scripts/test_v40_reference_flows.py
+      - run: python scripts/test_v44_delivery_contracts.py
+      - run: python scripts/test_v44_build_artifact.py
+      - run: python scripts/test_v44_build_package_conformance.py
+      - run: python scripts/test_v44_distribution.py
+      - run: python scripts/test_v44_deployment.py
+      - run: python scripts/test_v44_distribution_deployment_conformance.py
+      - run: python scripts/test_v44_adoption_wiring.py
+      - run: python scripts/test_v44_cross_standard_conformance.py
       - run: python scripts/test_pointer_only_trigger_contract.py
       - run: python scripts/test_work_item_contract_and_golden_templates.py
       - run: python scripts/test_task_dag_lane_parallelism.py
