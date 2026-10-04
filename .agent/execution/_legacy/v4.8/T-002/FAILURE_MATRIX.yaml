@@ -1,0 +1,14 @@
+task_id: T-002
+fail_closed:
+  stale_or_missing_authority: INELIGIBLE_OR_UNKNOWN
+  stale_availability: INELIGIBLE_OR_UNKNOWN
+  independence_conflict: INELIGIBLE
+  missing_required_resource_fact: UNKNOWN_OR_BLOCKED
+  unsafe_composite_admission: BLOCKED_OR_SINGLE_WRITER
+  partial_work_resource_acceptance: FAIL
+  capacity_overallocation: FAIL
+  ambiguous_crash_publication: RECONCILE_BEFORE_RETRY
+  ranking_attempts_to_promote_ineligible: FAIL
+scope_drift:
+  extra_write_path: CONTROLLER_REBIND_REQUIRED
+  sibling_semantics: STOP

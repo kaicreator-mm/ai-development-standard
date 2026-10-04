@@ -1,0 +1,184 @@
+{
+  "schema_version": 2,
+  "task_id": "T11",
+  "subject": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "integration_target": "version/v4.3.0",
+    "generation_base_sha": "ea5b39bb27ae36886748420d282350dd1a16476e",
+    "generation_base_tree": "1a88c724e4971ff2c35b88315cc8114b329adcad",
+    "execution_pack_head_sha": "d9ac745f0897903e95c09eb33b6c54aa49c84cb5",
+    "execution_pack_tree": "116eb8a901bef1ec142c69f2c4e6941e3545ad22",
+    "task_pack_ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
+    "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md"
+  },
+  "planner_identity_or_role": "high-capability ADS planner/controller that produced the durable T11 Task Pack and Execution Pack",
+  "bounded_executor_or_evaluator_identity_or_role": "synthetic bounded lower-cost executor interpretation/evaluation",
+  "evidence_kind": "SYNTHETIC",
+  "expected_oracle": "CONSUMABLE_WITHOUT_PRODUCT_OR_ARCHITECTURE_REDESIGN",
+  "actual_result": "PASS",
+  "clarification_or_escalation": "NONE_REQUIRED only when the authority-derived interpretation exact-matches all selected Product/Architecture/Task/Execution facts; any mismatch fails closed and routes according to durable failure handling",
+  "redesign_needed": "NO",
+  "durable_fact_checks": [
+    {
+      "ref": "docs/implementation/4.3.0/PRD.md",
+      "tokens": [
+        "Status: **FROZEN PRODUCT AUTHORITY**"
+      ]
+    },
+    {
+      "ref": "docs/implementation/4.3.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "tokens": [
+        "Status: **FROZEN L2 ARCHITECTURE AUTHORITY",
+        "Frozen Product Authority: `68ce6fd157a0b932651c42f67627e9dc0b8880c3`"
+      ]
+    },
+    {
+      "ref": "docs/implementation/4.3.0/TASK_DAG.md",
+      "tokens": [
+        "Frozen Product Authority: `68ce6fd157a0b932651c42f67627e9dc0b8880c3`",
+        "Frozen L2 Architecture: `b90f9b698edcc426051a93569634fcef7a74e644`",
+        "T11 requires T10."
+      ]
+    },
+    {
+      "ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
+      "tokens": [
+        "allowed_write_set:",
+        "forbidden_scope:",
+        "acceptance:",
+        "required_gates:",
+        "failure_handling:"
+      ]
+    },
+    {
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
+      "tokens": [
+        "## Builder implementation write set",
+        "The Builder MUST NOT modify this Execution Pack",
+        "## Required semantic kernel",
+        "## Currentness / stop rule",
+        "Independent Integration Validation and a genuinely new Fresh Review are mandatory successors."
+      ]
+    },
+    {
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md",
+      "tokens": [
+        "scripts/test_v43_conformance_dogfood.py",
+        "docs/implementation/4.3.0/dogfood/T11_EVIDENCE.md",
+        "docs/implementation/4.3.0/dogfood/fixtures/**",
+        "If satisfying an oracle requires changing an existing semantic owner, stop and raise an owner finding"
+      ]
+    },
+    {
+      "ref": ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml",
+      "tokens": [
+        "FAIL_AND_ROUTE_TO_OWNER",
+        "CREATE_EXACT_SCOPE_VALIDATION_HANDOFF_AND_KEEP_NOT_RUN_OR_BLOCKED",
+        "BLOCK_CLOSURE_HANDOFF"
+      ]
+    }
+  ],
+  "bounded_executor_interpretation": {
+    "allowed_write_set": [
+      "scripts/test_v43_conformance_dogfood.py",
+      "docs/implementation/4.3.0/dogfood/T11_EVIDENCE.md",
+      "docs/implementation/4.3.0/dogfood/fixtures/**",
+      ".github/workflows/verify-standard.yml only if one narrowly-scoped T11 invocation is materially required to integrate the focused suite."
+    ],
+    "forbidden_scope": [
+      "Version Closure or Release Qualification verdict",
+      "Product/Architecture redesign",
+      "silent profile/DAG authority mutation"
+    ],
+    "execution_forbidden_scope": [
+      "this Execution Pack",
+      "Frozen Product/L2/DAG/L3/Task Packs",
+      "v4.3 semantic owners/profiles",
+      "VERSION/README/CHANGELOG",
+      "release/closure authority",
+      "sibling Task evidence"
+    ],
+    "acceptance": [
+      "required planning/profile shortcut negative families are executable",
+      "profile-resolution and DAG-mutation regressions are integrated",
+      "high-capability planning dogfood produces bounded Tasks usable by lower-cost executors without redesign",
+      "exact subject/test/CI/Review/Validation identities and P0-P3 dispositions are durable"
+    ],
+    "required_actions": [
+      "Make all ten Frozen T11 shortcut-negative families executable.",
+      "Integrate profile-resolution and DAG-mutation regressions without creating alternate owners.",
+      "Produce durable planner→bounded-executor dogfood showing a high-capability planner's Product/Architecture-bound Task/Pack can be consumed by a bounded/lower-cost executor interpretation or evaluation without Product/Architecture redesign.",
+      "Dogfood may be simulation/evaluation unless the selected subject materially requires real execution. Synthetic evidence must be labeled as such and cannot become real host/provider proof.",
+      "Bind subject, planner role, bounded executor/evaluator role, expected oracle, actual result, clarification/escalation behavior and redesign-needed YES/NO.",
+      "Preserve exact subject/test/CI/Validation/Review identities and P0–P3 dispositions."
+    ],
+    "required_gates": [
+      "integration conformance tests",
+      "integration Validation",
+      "Fresh Independent Review"
+    ],
+    "failure_handling": [
+      "unavailable real toolchain/agent needed by selected dogfood => exact-scope Validation handoff",
+      "dogfood needing Product/Architecture redesign => fail/route upward rather than adapt oracle",
+      "any P0/P1 remains blocking for closure handoff"
+    ],
+    "failure_actions": [
+      "STOP_CONTROLLER_REBIND_REQUIRED",
+      "BLOCK_VALIDATION",
+      "FAIL_AND_ROUTE_TO_OWNER",
+      "FAIL_DOGFOOD",
+      "CREATE_EXACT_SCOPE_VALIDATION_HANDOFF_AND_KEEP_NOT_RUN_OR_BLOCKED",
+      "FAIL_CLOSED",
+      "FAIL_CLOSED",
+      "BLOCK_CLOSURE_HANDOFF",
+      "STOP_SCOPE_VIOLATION"
+    ],
+    "selected_exact_bindings": {
+      "repository": "kaicreator-mm/ai-development-standard",
+      "task_id": "T11",
+      "issue": "#257",
+      "integration_target": "version/v4.3.0",
+      "generation_base_sha": "ea5b39bb27ae36886748420d282350dd1a16476e",
+      "generation_base_tree": "1a88c724e4971ff2c35b88315cc8114b329adcad",
+      "frozen_product_sha": "68ce6fd157a0b932651c42f67627e9dc0b8880c3",
+      "frozen_l2_sha": "b90f9b698edcc426051a93569634fcef7a74e644",
+      "product_ref": "docs/implementation/4.3.0/PRD.md",
+      "product_blob": "14fd66a3b0d0a7e1bb385626dd0d5da8f36db363",
+      "architecture_ref": "docs/implementation/4.3.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "architecture_blob": "8f2471ac6d989ecb8ff434bb9a1c14350c81eb03",
+      "task_dag_ref": "docs/implementation/4.3.0/TASK_DAG.md",
+      "task_dag_blob": "c71630818a59d4d0903ff951e0076c5b2f5fb776",
+      "task_dag_dependency": "T10",
+      "task_pack_ref": "docs/implementation/4.3.0/task-packs/T11_conformance_dogfood.md",
+      "task_pack_blob": "f0851868a19c9e321dcbfb70eb46e8f31cb7efd3",
+      "l3_ref": "docs/implementation/4.3.0/L3_REFERENCE_PACKS.md#t11--conformance--dogfood",
+      "l3_blob": "03ac6c46c6091bad6df5e02d94a07f7c58fb7ef9",
+      "execution_manifest_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/MANIFEST.yaml",
+      "execution_manifest_blob": "e93fbfadf6e8f9af7521b3284888872be25a745d",
+      "execution_contract_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md",
+      "execution_contract_blob": "3e3a15ccaaf9ae4922b737896fb8528bf6637906",
+      "implementation_map_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md",
+      "implementation_map_blob": "b7e36416d93fbe9f078853b807791f2fb87b6649",
+      "failure_matrix_ref": ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml",
+      "failure_matrix_blob": "c42b2a47b7c047aced5fb4031609ce5a6b2ab2d6",
+      "execution_core_artifact_blobs": {
+        ".agent/execution/_legacy/v4.3-sequential/T-011/MANIFEST.yaml": "e93fbfadf6e8f9af7521b3284888872be25a745d",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/EXECUTION_CONTRACT.md": "3e3a15ccaaf9ae4922b737896fb8528bf6637906",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/IMPLEMENTATION_MAP.md": "b7e36416d93fbe9f078853b807791f2fb87b6649",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/TEST_MATRIX.yaml": "a4d0291dab22132c28861abca79e88567690bd7d",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/FAILURE_MATRIX.yaml": "c42b2a47b7c047aced5fb4031609ce5a6b2ab2d6",
+        ".agent/execution/_legacy/v4.3-sequential/T-011/REVIEW_CHECKLIST.md": "f6b2175869bacffe59e097bfc2f189d35468dcd5"
+      },
+      "dependency_completion": [
+        "T10/#256: done"
+      ]
+    },
+    "clarification_or_escalation": "NONE_REQUIRED",
+    "redesign_action": "FORBIDDEN"
+  },
+  "real_execution": {
+    "required_for_selected_subject": false,
+    "status": "NOT_RUN",
+    "reason": "The selected dogfood is a deterministic synthetic interpretation/evaluation; the Task Pack explicitly permits simulation/evaluation unless the selected subject materially requires real execution."
+  }
+}

@@ -1,0 +1,16 @@
+task: T-015
+failures:
+  - condition: base_sha_or_task_pack_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: profile_duplicates_runner_host_device_resource_owner_facts
+    action: FAIL_OWNER_BOUNDARY
+  - condition: provider_model_or_skill_metadata_becomes_capability_proof
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: capability_claim_grants_mutation_side_effect_or_review_validation_authority
+    action: FAIL_NEGATIVE_ORACLE
+  - condition: design_requires_availability_exchange_or_global_score_family
+    action: STOP_ARCHITECTURE_CONTRADICTION
+  - condition: required_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_commit_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE

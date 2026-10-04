@@ -1,0 +1,28 @@
+{
+  "durable_fact_source": "github:kaicreator-mm/ai-development-standard#517 comment issuecomment-5960912010 (accepted Builder Claim, durable copy)",
+  "copy_disposition": "verbatim payload copy of the accepted ai-dev/event-v2 DISPATCH_CLAIMED fact; the durable original remains the Issue comment",
+  "event": {
+    "schema": "ai-dev/event-v2",
+    "event": "DISPATCH_CLAIMED",
+    "actor_role": "builder",
+    "operator_kind": "claude-code",
+    "operator_id": "claude-code:v48-t011-phase2-builder",
+    "session_ref": "zcode-20261003-t011-phase2",
+    "transport_actor": "kaicreator-mm",
+    "issue": "#517",
+    "dispatch_id": "d-v4.8.0-T-011-phase2-builder-94955c6f",
+    "dispatch_state": "CLAIMED",
+    "sha": "94955c6f93fd7316406ea96bce8f7c32a62509ef",
+    "expected_base_sha": "94955c6f93fd7316406ea96bce8f7c32a62509ef",
+    "execution_profile": "LOCAL_BUILDER",
+    "standard_revision": "94955c6f93fd7316406ea96bce8f7c32a62509ef",
+    "task_pack_ref": "docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md@e1c412c44f67df736d1b1598a590a0eac31a4b22",
+    "execution_pack_ref": ".agent/execution/T-011/**@26fdae3dd2b4a686820637665ee6f30811543b1f",
+    "agent_freedom": "F2_ENGINEERING_DISCRETION",
+    "pack_state": "PACK_CURRENT",
+    "occurred_at": "2026-10-02T20:30:00Z",
+    "admission_mode": "SINGLE_WRITER_ADMISSION",
+    "protected_claim_key": "kaicreator-mm/ai-development-standard#517:builder",
+    "claim_generation": 1
+  }
+}

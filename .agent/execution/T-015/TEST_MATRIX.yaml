@@ -1,0 +1,22 @@
+task: T-015
+required:
+  - id: logical-claims-positive
+    proves: logical executor/operator/model capability claims are representable provider-neutrally
+  - id: infrastructure-owner-negative
+    proves: OS/toolchain/device/resource/network/concurrency inventories cannot migrate into this profile owner
+  - id: provider-provenance-negative
+    proves: provider/model labels do not imply correctness, authority or universal routing rank
+  - id: skill-proof-negative
+    proves: Skill Metadata/procedure metadata is not capability proof
+  - id: credential-authority-negative
+    proves: tool or credential possession grants no side-effect authority
+  - id: no-fourth-family-negative
+    proves: Availability/Exchange is not materialized as a new family here
+  - id: focused-suite
+    command: python -B scripts/test_v48_agent_capability_profile.py
+  - id: protocol-regression
+    command: python -B scripts/test_protocol_schemas.py
+  - id: repository-verifier
+    command: python -B scripts/verify_standard.py
+validation: independent schema and owner-boundary validation on final exact PR HEAD
+review: fresh exact-HEAD review required after validation

@@ -69,10 +69,17 @@ NOT_MEASURED economics -> savings claim
 
 ## T-004 — Task Learning closeout wiring
 
-**Tests:** material vs NONE_MATERIAL; exact ref preservation; stale-source closeout; no copied hidden evidence.
-**Contract:** templates expose refs/checks only; semantic meaning remains T-001/T-002 owned.
-**Implementation:** minimal optional fields/checklist steps; preserve Fast Path.
-**Failure handling:** missing required currentness/evidence ref => closeout cannot claim supported behavioral learning.
+**Tests:** exercise both closeout representations (`TASK_LEARNING=NONE_MATERIAL` and material-learning reference); verify reference-first output; verify stale/non-current evidence remains historical; verify no template promotes Task Learning into Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority; verify no private chain-of-thought, hidden evaluator, secret, or verbose scratch requirement. Required regression commands are `python -B scripts/test_work_item_contract_and_golden_templates.py`, `python -B scripts/test_v48_task_learning.py`, `python -B scripts/test_pointer_only_trigger_contract.py`, and `python -B scripts/verify_standard.py`.
+
+**Contract:** T-004 owns closeout/adoption wiring only. The seven implementation paths may expose a literal `TASK_LEARNING=NONE_MATERIAL` Fast Path or durable material-learning reference(s), plus review/currentness checks. Task Learning evidence semantics remain T-001-owned; Execution Pack admission/currentness/scheduling/resource semantics remain T-002-owned. Templates must prefer refs/digests over copied evidence bodies and must not create a new Gate or authority owner.
+
+**Implementation:** restrict edits to `templates/task-pack.md`, `templates/task-issue.md`, `templates/implementation-pr.md`, `templates/final-closeout.md`, `checklists/pr-review.md`, `templates/execution-pack/EXECUTION_CONTRACT.md`, and `templates/execution-pack/REVIEW_CHECKLIST.md`. Add the smallest compatible fields/sections/checklist items needed to make the closeout result visible from planning through PR/review/final closeout and from a JIT Execution Pack contract through its review checklist. Reuse `references/TASK_LEARNING_EVIDENCE_REFERENCE.md` for material/currentness semantics rather than copying them. Preserve existing templates' Fast Path and existing Review/Validation state vocabulary.
+
+**Failure handling:** any need to modify `schemas/task-learning-v1.schema.json`, redefine `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`, change `standards/EXECUTION_ARCHITECTURE_STANDARD.md`, alter scripts/tests/runtime behavior, or add authority/scheduler/resource semantics is out of T-004 scope and must stop as `TASK_PACK_DEFECT`, upstream repair, or Controller rebind. Missing, malformed, ambiguous, or stale evidence/currentness refs cannot support a current behavioral-learning claim; preserve them as historical evidence only. Absence of reusable material learning must take the literal `TASK_LEARNING=NONE_MATERIAL` path rather than manufacture an empty object.
+
+**Evidence expectations:** Builder evidence must identify the exact candidate SHA/tree, show the diff is exactly the seven authorized paths, report the four required regression commands without upgrading Builder evidence into independent Validation, and record the task's own closeout outcome as `TASK_LEARNING=NONE_MATERIAL` or durable learning reference(s). Independent concern Validation must re-run/inspect the acceptance on the exact candidate. Only after Validation PASS may a genuinely fresh independent Reviewer assess the exact current PR HEAD.
+
+**Reference:** Frozen Product blob `f26439580e00de6ed8b2e27d732a3095eb566219`; Frozen L2 blob `f88c85454e80101a0fdf56050e21f11a05279841`; Frozen DAG blob `72dfeee93c092296004c7083b71fdd877d7f1b34`; T-004 Task Pack; `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`; `standards/EXECUTION_ARCHITECTURE_STANDARD.md` as an upstream boundary only.
 
 ## T-005 — ADS Evolution Governance
 
@@ -97,10 +104,11 @@ NOT_MEASURED economics -> savings claim
 
 ## T-008 — Eligibility/resource conformance
 
-**Tests:** competing READY tasks; heterogeneous profiles; stale Availability; independence conflict; rank ordering; capacity N; multi-resource all-or-none; crash ambiguity/recovery.
-**Contract:** executable oracle for T-002, no new scheduler semantics.
-**Implementation:** deterministic model/reference reducer; inject failures around the single linearization point.
-**Failure handling:** any accepted partial state or over-allocation is P1/P0-level blocking evidence.
+**Tests:** build one deterministic oracle over competing READY work, heterogeneous logical Agent profiles, fresh/stale/missing Availability, reviewer/validator independence conflict, hard-filter-before-ranking, capacity-N/N=1 contention, multi-resource all-or-none admission, and injected partial-publication/crash ambiguity. Include negative cases proving `UNKNOWN` fails closed, ranking never rescues an ineligible candidate, accepted active units never exceed N, and replacement admission remains blocked until durable reconciliation.
+**Contract:** this is executable conformance for merged T-002 semantics only. Canonical READY/Dispatch/Claim and existing section 11/27 admission owners remain authoritative; no scheduler/state/Availability/Exchange owner is created. The protected admission set is the work claim plus every required resource/compatibility binding and must linearize all-or-none at one admission point.
+**Implementation:** use a self-contained deterministic reference reducer/model in `scripts/test_v48_scheduling_conformance.py`; derive outcomes only from explicit test facts and inject failures immediately before/at/after the single admission publication boundary. Reuse existing `SINGLE_WRITER_ADMISSION` / `LINEARIZABLE_CONDITIONAL_WRITE` semantics as oracles; do not implement or rely on a novel distributed multi-key CAS/lease protocol.
+**Failure handling:** any accepted partial claim/resource state, capacity over-allocation, stale Availability satisfying a hard requirement, independence bypass, ranking-before-filter behavior, or replacement admission before ambiguity reconciliation is blocking evidence against T-002 semantics. If the conformance oracle exposes a genuine owner/architecture defect or needs a new distributed primitive, STOP and route to the owning authority/Research Demo rather than repairing the owner from T-008.
+**Reference:** Frozen L2 §§7–9; Frozen DAG T-008; `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §§6, 11, 27; existing `scripts/test_v48_execution_architecture.py`; T-008 Task Pack and exact-base JIT Execution Pack.
 
 ## T-009 — Interchange replay/restart conformance
 

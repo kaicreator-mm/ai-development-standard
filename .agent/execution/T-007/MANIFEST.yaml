@@ -1,0 +1,15 @@
+task_id: T-007
+issue: 513
+integration_branch: version/v4.8.0
+base_sha: 22e8e1701661689fb39a5c363eed424cf827c403
+branch: task/v4.8.0-t07-contract-conformance
+frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
+task_pack: docs/implementation/4.8.0/task-packs/T07_contract_conformance.md
+l3: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+review_policy: required
+validation_owner: independent-from-builder
+allowed_write_set:
+  - scripts/test_v48_contract_compatibility.py
+  - fixtures/v48_contract_compatibility/**
+forbidden: [contract_semantic_change, execution_architecture_semantics, owner_reassignment, schema_mutation]
+status: JIT_READY

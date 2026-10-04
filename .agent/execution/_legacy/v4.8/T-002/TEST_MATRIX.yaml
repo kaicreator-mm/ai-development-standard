@@ -1,0 +1,20 @@
+task_id: T-002
+required:
+  - ready_currentness_preserved
+  - hard_filters_before_ranking
+  - independence_conflict_ineligible
+  - stale_availability_unknown_or_ineligible
+  - capacity_1_no_overallocation
+  - capacity_n_no_overallocation
+  - multi_resource_all_or_none
+  - crash_between_evaluation_and_publication_fails_closed
+  - reconciliation_before_replacement_admission
+  - no_safe_composite_primitive_routes_single_writer_or_blocked
+regression:
+  - READY_Dispatch_Claim_canonical
+  - no_second_scheduler
+  - no_new_availability_owner
+  - no_new_exchange_family
+commands:
+  - python -B scripts/test_v48_execution_architecture.py
+  - python -B scripts/verify_standard.py
