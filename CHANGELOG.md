@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.8.0 — Unreleased candidate
+
+v4.8.0 的任务已合并到 `version/v4.8.0`，形成 **Evidence-Driven Agent Orchestration** 的未发布候选范围。本条目只总结实际落库的 scope，不产生任何 release/integration 断言。
+
+- **Exactly three new default machine-contract families（per Frozen L2）**：新增 `schemas/task-learning-v1.schema.json`（Task Learning Evidence v1）、`schemas/agent-capability-profile-v1.schema.json`（Logical Agent Capability Profile v1）与 `schemas/agent-capability-evidence-v1.schema.json`（Agent Capability Evidence v1）三类 machine contracts，配套 `references/TASK_LEARNING_EVIDENCE_REFERENCE.md`、`references/AGENT_CAPABILITY_PROFILE_REFERENCE.md`、`references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md` 与聚焦测试；canonical owner 保持 `standards/EXECUTION_ARCHITECTURE_STANDARD.md`，不新增第四个 semantic owner，不引入 Availability family。
+- **Interchange v1 reuse**：transport-neutral correlation owner 仍为 v4.0 的 `docs/implementation/4.0.0/AGENT_INTERCHANGE.md` + `schemas/interchange-envelope-v1.schema.json`（`CORRELATION_ONLY_NON_AUTHORITATIVE`），在 `standard-manifest.json` 中恰注册一次；T-003 disposition 记录 `INTERCHANGE_SCHEMA_CHANGE=NO_CHANGE_REQUIRED`、无新 exchange family、`ai-dev:event:v3` 不要求（`references/V48_INTERCHANGE_PROFILE_COMPATIBILITY.md`）。
+- **ADS evolution governance / intake**：新增 ADS 演进治理/intake 路径与配套 conformance 测试（`scripts/test_v48_ads_evolution_governance.py`）；ADS 演进反馈走普通 governance promotion，不创建新 machine family、不授予新 mutation authority。
+- **Task learning**：T-001 Task Learning Evidence contract 与 T-004 closeout/template wiring 落库，覆盖 task learning evidence 的 capture/closeout 语义与模板接线。
+- **Registry / adoption**：新增 `references/V48_REGISTRY_ADOPTION_REFERENCE.md`（registry discovery、`MACHINE_FAMILY_TARGET=EXACTLY_3`、`INTERCHANGE_POLICY=REUSE_EXISTING_V1_EXACTLY_ONCE`）与 `scripts/test_v48_registry_adoption.py`；registry/discoverability/adoption wiring 保持 `authority_effect=NONE`，只做发现元数据，不复制 owner 语义。
+- **Conformance oracles**：新增 contract/historical compatibility（`test_v48_contract_compatibility.py`）、eligibility/composite resource admission（`test_v48_scheduling_conformance.py`）、interchange replay/restart（`test_v48_interchange_replay_restart.py`）、task learning/evolution governance（`test_v48_governance_conformance.py`）、execution ownership start-record（`test_v48_execution_ownership.py`）与集成 closure oracle（`test_v48_integration_closure.py`）等确定性回归。
+- **Orchestration dogfooding evidence**：T-011 heterogeneous multi-agent / resource / transport dogfood（`scripts/test_v48_orchestration_dogfood.py` + ODF evidence corpus）、T-012 #469 bounded-agent dogfood 与 T-013 cross-project ADS evolution dogfood 落库为可复现 evidence；dogfood evidence 不推导经济/路由结论，也不构成 release readiness 证据。
+- **Integrated convergence / closure inputs**：T-014 产出 `docs/implementation/4.8.0/closure/CLOSURE_INPUTS.md` 与 `closure/INTEGRATED_REGRESSION_EVIDENCE.json`，仅为后续 Version Closure 提供 inputs；自身不发出 Version Closure、Release Qualification、Hidden Validation、tag/release 或 main-integration verdict。
+- 当前候选只总结实际落库的 standards、schemas、references、tests、dogfood 与 adoption/wiring；没有记录或推导生产 Agent 运行、真实 fresh-session 执行、production deployment 或 release readiness 证据。
+- `v4.1`–`v4.7` 继续作为独立的 parallel version lines；它们的 branch/document/commit 存在不得由本 v4.8 candidate 推导为已经发布、已经 `main` 集成或已经完成各自 Release Qualification。
+
 ## v4.0.0 — 2026-09-24
 
 将 v3.4 的 GitHub-native pull 执行基线升级为统一的 **AI Development Operation Protocol + Multi-Agent Assurance**。v4.0 引入统一 Operation/Assurance/Interchange 组合协议与机器可验证 hardening，但不创建第二套 lifecycle、Validation truth 或 Release Authority；v3.4 的 Task/Execution Pack、Issue Dependency live DAG、exact-SHA Validation、risk-based Review、Candidate Freeze 与 Local-first 执行语义保持兼容。
