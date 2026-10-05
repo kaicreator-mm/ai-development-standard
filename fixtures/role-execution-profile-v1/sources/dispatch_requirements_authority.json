@@ -1,0 +1,11 @@
+{
+  "source_id": "authority:dispatch-requirements",
+  "status": "CURRENT",
+  "owner": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11",
+  "provider_model_provenance": "provider-model:example/dispatch-authority-host",
+  "normalized_requirements": {
+    "max_agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+    "mutation_class": "MUTABLE",
+    "claim_policy": "CLAIM_REQUIRED"
+  }
+}

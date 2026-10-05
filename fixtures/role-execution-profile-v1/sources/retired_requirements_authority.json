@@ -1,0 +1,11 @@
+{
+  "source_id": "authority:retired-requirements",
+  "status": "RETIRED",
+  "owner": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11",
+  "superseded_note": "retired source-authority snapshot; stale lineage must fail closed (WAITING_LINEAGE), never default permissive",
+  "normalized_requirements": {
+    "max_agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+    "mutation_class": "MUTABLE",
+    "claim_policy": "CLAIM_REQUIRED"
+  }
+}

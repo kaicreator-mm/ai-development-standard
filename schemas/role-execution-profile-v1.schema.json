@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/role-execution-profile-v1.schema.json",
+  "title": "AI Development Role Execution Profile v1",
+  "description": "Provider-neutral normalized projection of role requirements and source-authority facts. Every normative field is a reference INTO an existing owner (v4.8 hard eligibility, Claim rules, Assurance Plan/Task/Gate independence owners, terminal/evidence owners). This profile never grants role actions, terminal authority, executor capability, or a claim-policy switch; conflicting, stale or missing source authorities fail closed (BLOCKED, never last-writer-wins).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "role_profile_id",
+    "role",
+    "profile_version",
+    "source_authority_refs",
+    "source_authority_projection",
+    "allowed_actions",
+    "forbidden_actions",
+    "required_evidence_refs",
+    "terminal_authority_ref",
+    "eligibility_predicate_refs",
+    "independence_requirement_refs",
+    "mutation_class",
+    "claim_policy_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": "ai-dev/role-execution-profile-v1"},
+    "role_profile_id": {"type": "string", "minLength": 1},
+    "role": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "profile_version": {"type": "string", "minLength": 1},
+    "source_authority_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "source_authority_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projection_state", "resolution_policy"],
+      "properties": {
+        "projection_state": {
+          "enum": ["PROJECTED", "BLOCKED_SOURCE_AUTHORITY_CONFLICT", "BLOCKED_SOURCE_REF_UNRESOLVED"]
+        },
+        "resolution_policy": {"const": "source-authorities-prevail-never-last-writer-wins"},
+        "conflict_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+          }
+        },
+        "unresolved_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"projection_state": {"const": "PROJECTED"}}, "required": ["projection_state"]},
+          "then": {
+            "properties": {
+              "conflict_refs": {"enum": [[]]},
+              "unresolved_refs": {"enum": [[]]}
+            }
+          }
+        }
+      ]
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "required_evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "terminal_authority_ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+    },
+    "eligibility_predicate_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "independence_requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "selector_conflict_policy_ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+    },
+    "environment_requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "mutation_class": {"enum": ["READ_ONLY", "MUTABLE", "AUTHORITY_TRANSITION"]},
+    "claim_policy_ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+    },
+    "required_input_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    },
+    "handoff_requirement_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9_./-]+#[A-Za-z0-9._-]+$"
+      }
+    }
+  }
+}

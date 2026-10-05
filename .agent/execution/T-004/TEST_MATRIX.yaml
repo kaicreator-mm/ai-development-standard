@@ -1,36 +1,22 @@
 task_id: T-004
-scope: concern
-validation_owner: independent-from-builder
-required:
-  - id: material_closeout_reference_path
-    oracle: applicable templates can record durable material Task Learning reference(s) without copying evidence bodies
-  - id: none_material_fast_path
-    oracle: literal TASK_LEARNING=NONE_MATERIAL is explicit and does not require an empty task-learning object
-  - id: stale_learning_fails_closed
-    oracle: stale/ambiguous/non-current learning remains historical and is not silently rebound as current behavioral proof
-  - id: authority_separation
-    oracle: Task Learning does not replace Product/Architecture/Task/ADR/Incident/Review/Validation/merge/release authority
-  - id: privacy_boundary
-    oracle: no private chain-of-thought, hidden evaluator content, credentials, secrets, or verbose scratch reasoning is requested
-  - id: execution_architecture_boundary
-    oracle: Execution Pack template wiring adds closeout refs/checks only and does not redefine T-002 currentness/admission/scheduling/resource semantics
-  - id: exact_write_set
-    oracle: implementation candidate delta is exactly the seven paths declared in MANIFEST.yaml
-regression:
-  - existing Task/Issue/PR/final-closeout template Gate vocabularies remain compatible
-  - Task Learning v1 focused contract remains green without schema/reference edits
-  - pointer-only dispatch/currentness contract remains green
-commands:
-  - python -B scripts/test_work_item_contract_and_golden_templates.py
-  - python -B scripts/test_v48_task_learning.py
-  - python -B scripts/test_pointer_only_trigger_contract.py
+tests:
+  - id: P01
+    oracle: valid profile instances validate; schema-invalid instances reject; schema is the only new default machine family contract surface
+  - id: P02
+    oracle: source-authority conflict (two disagreeing authoritative sources) produces BLOCKED posture, never last-writer-wins
+  - id: P03
+    oracle: role actions/terminal authority cannot be derived from Role Profile or Agent Capability documents (injected authority fields reject or are authority-inert)
+  - id: P04
+    oracle: provider/model identity fields cannot become normative role authority (provider swap does not change authority semantics)
+  - id: P05
+    oracle: claim_policy_ref must resolve into existing v4.8 Claim rules (unresolvable/wrong-family ref rejects); eligibility refs point into v4.8 hard-eligibility owner
+  - id: P06
+    oracle: stale/missing source refs fail closed (BLOCKED/WAITING_LINEAGE posture), never permissive defaults
+  - id: P07
+    oracle: Role Profile presence cannot prove executor capability; capability evidence remains external
+  - id: P08
+    oracle: no second lifecycle/workflow state introduced; read-only v4.8 owner surfaces unmutated
+required_builder_checks:
   - python -B scripts/verify_standard.py
-builder_evidence:
-  - exact candidate SHA and tree
-  - exact seven-file changed-path list
-  - command results bound to candidate where executed
-  - own closeout outcome: TASK_LEARNING=NONE_MATERIAL or durable Task Learning ref(s)
-independent_validation:
-  - rerun applicable commands on exact candidate
-  - inspect all required static oracles on exact candidate
-  - publish PASS/FAIL/BLOCKED without reusing Builder self-evidence as independent truth
+  - python -B scripts/test_v49_role_execution_profile.py
+validation_must_rebind_sources: true
