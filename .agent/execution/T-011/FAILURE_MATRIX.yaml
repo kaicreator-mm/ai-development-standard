@@ -1,53 +1,20 @@
 task_id: T-011
-failures:
-  - id: F01
-    condition: hard-ineligible-or-UNKNOWN-candidate-ranked-or-admitted
-    disposition: BLOCKING_DOGFOOD_FAILURE
-  - id: F02
-    condition: capacity-N-exceeded-or-exclusive-N1-double-admitted
-    disposition: BLOCKING_DOGFOOD_FAILURE
-  - id: F03
-    condition: canonical-partial-work-resource-admission-observed
-    disposition: BLOCKING_DOGFOOD_FAILURE
-  - id: F04
-    condition: reviewer-or-validator-independence-conflict-optimized-around
-    disposition: BLOCKING_AUTHORITY_FAILURE
-  - id: F05
-    condition: same-idempotency-identity-conflicting-payload-accepted
-    disposition: BLOCKING_REPLAY_FAILURE
-  - id: F06
-    condition: transport-ack-progress-heartbeat-treated-as-semantic-authority
-    disposition: BLOCKING_AUTHORITY_FAILURE
-  - id: F07
-    condition: authoritative-execution-before-accepted-Claim-or-duplicate-active-Start-Records
-    disposition: BLOCKING_T017_COMPOSITION_FAILURE
-  - id: F08
-    condition: restart-reconstruction-requires-private-chat-or-transient-queue-history
-    disposition: BLOCKING_DURABILITY_FAILURE
-  - id: F09
-    condition: ambiguous-timeout-stale-state-allows-incompatible-replacement
-    disposition: BLOCKING_FAIL_CLOSED_FAILURE
-  - id: F10
-    condition: bounded-executor-guesses-across-missing-authority-currentness-or-semantic-ambiguity
-    disposition: BLOCKING_ESCALATION_FAILURE
-  - id: F11
-    condition: synthetic-or-repository-evidence-presented-as-external-real-host-provider-runtime-evidence
-    disposition: BLOCKING_EVIDENCE_INTEGRITY_FAILURE
-  - id: F12
-    condition: external-real-claim-required-but-independent-environment-validation-unavailable
-    disposition: NOT_RUN_OR_BLOCKED_WITH_VALIDATION_HANDOFF
-  - id: F13
-    condition: dogfood-needs-normative-standard-schema-or-frozen-authority-change
-    disposition: ARCHITECTURE_AMENDMENT_REQUIRED_OR_SEPARATE_AUTHORIZED_REPAIR
-  - id: F14
-    condition: new-scheduler-claim-lifecycle-exchange-family-availability-authority-or-mandatory-runtime-db-needed
-    disposition: ARCHITECTURE_AMENDMENT_REQUIRED
-  - id: F15
-    condition: exact-base-or-pack-currentness-drift-before-builder-start
-    disposition: STOP_REBIND_EXECUTION_PACK
-  - id: F16
-    condition: candidate-drifts-after-qualifying-validation-or-review
-    disposition: STALE_EVIDENCE_REQUALIFY
-  - id: F17
-    condition: unsupported-universal-agent-ranking-blanket-routing-or-economic-savings-inference
-    disposition: BLOCKING_EVIDENCE_CLAIM_FAILURE
+failure_modes:
+  - condition: version/v4.9.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: wiring would rewrite sibling semantic owner semantics (beyond stale pin re-binds)
+    disposition: OWNER_REWRITE
+    action: stop; central lane consumes, never rewrites owners
+  - condition: exactly-one-new-default-family accounting cannot be satisfied by the actual outputs
+    disposition: FAMILY_ACCOUNTING_CONFLICT
+    action: stop and route to Controller/architecture — never force the accounting
+  - condition: a re-bind would weaken an assertion (exact-set loosened, identity pin removed)
+    disposition: ORACLE_WEAKENING
+    action: stop; re-binds change pinned constants only, with provenance
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set (incl. the JIT-committed harness re-bind)
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: required evidence unavailable
+    disposition: NOT_RUN_BLOCKED
+    action: record with the exact missing capability; never synthetic PASS

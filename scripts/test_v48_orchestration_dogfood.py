@@ -173,12 +173,15 @@ def candidate_paths(base: str) -> list[str]:
 
 
 def parse_manifest_durable_facts() -> dict:
-    """Read-only parse of the real .agent/execution/T-011/MANIFEST.yaml durable facts.
+    """Read-only parse of the real .agent/execution/_legacy/v4.8/T-011/MANIFEST.yaml durable facts
+    (relocated byte-identical by the v4.9 T-011 JIT pack commit per #722/#788/#792 canonical-path
+    scheme — provenance: v4.9 central-wiring lane #730; path re-bind only, zero oracle change).
 
     Minimal flat parser for the pinned key/value and two-level list shape of that file;
     the manifest remains read-only authority and is never rewritten here.
     """
-    text = (ROOT / ".agent" / "execution" / "T-011" / "MANIFEST.yaml").read_text(
+    # v4.9 T-011 JIT provenance: records relocated to _legacy/v4.8/T-011 (byte-identical); path re-bind only.
+    text = (ROOT / ".agent" / "execution" / "_legacy" / "v4.8" / "T-011" / "MANIFEST.yaml").read_text(
         encoding="utf-8"
     )
     facts: dict = {"builder_write_set": [], "forbidden_builder_paths": []}

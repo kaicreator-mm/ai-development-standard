@@ -1,61 +1,49 @@
-pack_id: v4.8.0-T-011-94955c6f
-task_id: T-011
+pack_id: v4.9.0-T-011-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-base_sha: 94955c6f93fd7316406ea96bce8f7c32a62509ef
-base_tree: bb7f25f1e05ff2423fc79029465bcf7be458a82c
-task_pack_ref: docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md
-task_pack_blob: e1c412c44f67df736d1b1598a590a0eac31a4b22
-l3_ref: docs/implementation/4.8.0/L3_T11_ORCHESTRATION_DOGFOOD.md
-l3_blob: fe7e1c46bcaef45cb7c8ce57615dcf0f1e0feb1a
-branch: task/v4.8.0-t11-orchestration-dogfood
-parent_issue: "#517"
-agent_freedom: F2_ENGINEERING_DISCRETION
-task_pack_agent_freedom_ceiling: F2_ENGINEERING_DISCRETION
-pinned_standard_revision: 94955c6f93fd7316406ea96bce8f7c32a62509ef
-frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
-frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
-frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
-generated_by: chatgpt-web:v48-t011-phase1-planning-builder
-dependency_completion:
-  - T-007/#513:DONE
-  - T-008/#514:DONE
-  - T-009/#515:DONE
-  - T-017/#646:DONE
-  - native-issue-#517:blocked_by=0,total_blocked_by=4
-material_paths:
-  - docs/implementation/4.8.0/task-packs/T11_orchestration_dogfood.md
-  - docs/implementation/4.8.0/L3_T11_ORCHESTRATION_DOGFOOD.md
-  - docs/implementation/4.8.0/PRD.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - docs/implementation/4.8.0/TASK_DAG.md
-  - scripts/test_v48_contract_compatibility.py
-  - scripts/test_v48_scheduling_conformance.py
-  - scripts/test_v48_interchange_replay_restart.py
-  - scripts/test_v48_execution_ownership.py
-  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
-  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
-builder_write_set:
-  - scripts/test_v48_orchestration_dogfood.py
-  - docs/implementation/4.8.0/dogfood/orchestration/**
-forbidden_builder_paths:
-  - docs/implementation/4.8.0/PRD.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - docs/implementation/4.8.0/TASK_DAG.md
-  - standards/**
-  - schemas/**
-  - .github/workflows/**
+version: 4.9.0
+task_id: T-011
+parent_issue: "#730"
+branch: task/v4.9.0-t11-registry-adoption
+base_sha: a351a6ef9d2c9733d01df46e9dbd4888e392cc97
+base_tree: 8b67895641d1db9b21aa974d7ba34516a822c923
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T11_registry_adoption.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG42_COMPAT, LG43_DAG, LG47_REGISTRY, LG48_EXEC, LG48_LEARNING]
+lineage_last_check_ref: "#745 lineage recompute + composition PR #792 + T003/T004/T006/T007/T008/T009/T010 merges (a351a6ef); all five lineage surface sets present at base"
+jit_note: >
+  prior-program (v4.8) execution records at .agent/execution/T-011/ relocated byte-identical to
+  .agent/execution/_legacy/v4.8/T-011/ per the #792/#788 canonical-path scheme. UNLIKE T-003..T-010,
+  the v4.8 harness scripts/test_v48_orchestration_dogfood.py READS .agent/execution/T-011/MANIFEST.yaml
+  (line ~181); the JIT pack commit re-binds that single path constant (plus docstring) to the _legacy
+  location with a provenance comment — path relocation only, zero oracle change (CF-V49-02 family).
+native_blockers: 0
 review_policy: required
-validation_owner: independent-from-builder
-validation_scope: exact-subject-scenario-integration
-external_real_validation: required-only-for-external-claims
+validation_owner: manifest-registry-adoption
+validation_scope: manifest-registry-adoption-verifiers
+builder_write_set:
+  - standard-manifest.json
+  - .github/workflows/verify-standard.yml
+  - scripts/test_v48_registry_adoption.py
+  - scripts/test_v49_execution_core.py
+  - scripts/test_v49_role_execution_profile.py
+  - references/REGISTRY_ADOPTION_V49_REFERENCE.md
+  - docs/implementation/4.9.0/MIGRATION_ADOPTION.md
+carry_forward_inputs:
+  - "#745@5992918366 (CF-V49-02 cross-lane read-only pin debt)"
+  - "#722@5985991276 (CF-V49-01 test_v48_registry_adoption supersession)"
+  - "#831@5994177360 (6 stale pins classified: K08; role-profile x2; registry-adoption x3)"
+  - "#841@5995114854 (T-010 kernel CI registration note)"
 core_artifacts:
-  - MANIFEST.yaml
-  - EXECUTION_CONTRACT.md
-  - TEST_MATRIX.yaml
-  - FAILURE_MATRIX.yaml
-  - IMPLEMENTATION_MAP.md
-  - REVIEW_CHECKLIST.md
-retention: durable
+  - .agent/execution/T-011/MANIFEST.yaml
+  - .agent/execution/T-011/EXECUTION_CONTRACT.md
+  - .agent/execution/T-011/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-011/TEST_MATRIX.yaml
+  - .agent/execution/T-011/FAILURE_MATRIX.yaml
+  - .agent/execution/T-011/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
 package_excluded: true
-pack_state_at_generation: PACK_CURRENT
