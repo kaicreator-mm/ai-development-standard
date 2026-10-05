@@ -774,3 +774,72 @@ If a crash, timeout, transport loss, or publication failure makes the outcome of
 Until reconciliation determines the durable outcome, replacement admission for the affected claim/resource set is blocked. Recovery MUST either reconstruct the already-accepted all-or-none binding, prove that no accepted binding exists, or surface `BLOCKED/UNAVAILABLE`; it MUST NOT guess from transient locks, process memory, queue state, ACK/progress, or individually observed per-key writes.
 
 These rules reuse the existing GitHub/repository fact plane, section 11 Claim lifecycle, existing runner/resource owners, and existing Interchange family. They create no second scheduler/state database, durable Availability owner, or new Exchange family.
+
+## 28. Responsibility and control semantics for delegated execution
+
+This section settles responsibility, authority and human-control semantics when work is executed across operators (human or agent, in chains or in parallel). It is additive and composes with the existing `Work Item → Dispatch → Claim → result/evidence` architecture (section 11), the Human Decision Queue (section 19), closed-loop orchestration (section 25) and composite admission (section 27). It creates no nested authority, no second Claim lifecycle, no second Human approval workflow, no new workflow/dispatch/candidate/release state, no scheduler, and no event family. Delegation and handoff are durable attribution over existing Claim/Dispatch facts, not a parallel lifecycle.
+
+### 28.1 Delegated subwork and responsibility handoff
+
+Two responsibility relations cover cross-operator execution:
+
+```text
+DELEGATED_SUBWORK
+  delegator retains active responsibility;
+  child performs bounded work and returns result/evidence
+
+RESPONSIBILITY_HANDOFF
+  active responsibility/control transfers explicitly
+  within bounded delegatable authority
+```
+
+- `DELEGATED_SUBWORK` is the default for decomposition (subtasks, child dispatches, nested Execution Packs). The delegator remains the responsibility owner toward the project; the child owes a bounded result and faithful evidence to the delegating operator. A returned result/evidence reference closes the child's obligation; it does not move responsibility.
+- `RESPONSIBILITY_HANDOFF` exists only as an explicit durable handoff fact naming the transferring operator, the receiving operator, the transferred scope and the exact work identity. A handoff is valid only within the transferring operator's legally delegatable authority (section 28.3). Silence, chat transport, capability use, dispatch delivery or a child beginning work never transfers responsibility by itself.
+
+For a given work identity, exactly one operator owns active responsibility at any material point. Parallel `DELEGATED_SUBWORK` to several children is legal and keeps one owner (the delegator); a second `RESPONSIBILITY_HANDOFF` of the same work while one is active is a duplicate and MUST be rejected like any incompatible second claim.
+
+### 28.2 Reconstructible responsibility and causation
+
+For material authority-bearing work, durable facts MUST be sufficient to reconstruct:
+
+```text
+requester/delegator
+responsibility owner at each material point
+executor/operator
+parent/causal work or dispatch reference
+subject/authority scope
+result/evidence return reference
+handoff/delegation mode
+```
+
+These are semantic facts, not a requirement that each listed name become a new schema field. Existing Dispatch/Claim/Event/Issue references are reused first; additive machine fields are justified only where deterministic reconstruction is otherwise impossible, and such projection MUST consume the semantics settled here rather than redefine them (route to the GitHub/event/schema projection concern). Attribution composes with section 11.2 active-ownership visibility. Where a required fact is ambiguous or missing, responsibility/causation reconstruction fails closed to the owning authority instead of being guessed.
+
+### 28.3 Authority attenuation
+
+Effective authority of a child operator is bounded by the intersection:
+
+```text
+EFFECTIVE_CHILD_AUTHORITY
+<= legally delegatable authority of the transferring/delegating operator
+∩ current Task/Work authority (frozen scope, allowed write set, acceptance)
+∩ role authority
+∩ project/external authorization
+```
+
+- A child operator MUST NOT exercise authority beyond this intersection, regardless of capability.
+- Capability, credentials, tool access, environment access, model capability or dispatch delivery NEVER create or expand authority; they are execution means, not authorization.
+- Delegation chains cannot launder authority: no composition of delegations or handoffs confers authority that no participant holds from its canonical owner.
+- Security or external-authorization ambiguity fails closed to the owning authority.
+
+### 28.4 Human control points
+
+Human controllability uses the existing Human Decision Queue (section 19), the dispatch terminal/`CANCELLED`/`TIMEOUT`/`STALE` transitions (section 11) and the normal higher-authority decision chain. No second control workflow is created.
+
+Required behavior:
+
+- humans are not woken merely to relay prompts, poll CI, or compute deterministic ready sets; routine deterministic relay/polling work runs without human intervention by default;
+- authority-sensitive Product/Architecture/security/public-contract/gate/limitation/destructive decisions route to the appropriate human/Product authority unless explicitly delegated;
+- an authorized human can inspect current authority/evidence/claim state and, where policy permits, pause/stop/cancel/redirect future automated transitions;
+- causation for authority-bearing decisions is durably reconstructible (section 28.2).
+
+Human controllability is a hard product behavior. Human line-by-line code reading is not.
