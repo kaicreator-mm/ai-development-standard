@@ -1,0 +1,43 @@
+{
+  "fixture_id": "execution-core-v49/owner_refs",
+  "description": "Exact consumed-contract refs bound by the kernel. Every ref must resolve in-repository at the candidate; unknown/missing refs fail the kernel.",
+  "standard_sections": {
+    "currentness_consumption": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+    "jit_predicate": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+    "waiting_lineage": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+    "role_profile_wiring": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility",
+    "carry_forward": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+    "recompute_race": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+    "acceptance_bindings": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+    "hard_eligibility_owner": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
+    "claim_owner": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#11-dispatch-lifecycle-atomic-claim-and-staleness"
+  },
+  "consumed_contracts": {
+    "assurance_currentness": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+    "assurance_carry_forward": "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+    "plan_binding_schema_field": "schemas/assurance-plan-v2.schema.json#currentness_binding",
+    "carry_forward_policy_field": "schemas/assurance-plan-v2.schema.json#finding_carry_forward_policy",
+    "role_profile_schema": "schemas/role-execution-profile-v1.schema.json#eligibility_predicate_refs",
+    "release_applicability_owner": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+    "waiting_lineage_dimension": "registries/state-dimensions-v1.json#waiting_lineage"
+  },
+  "forbidden_inference_ids": ["F11_TASK_DONE_NOT_LINEAGE_CURRENT", "F17_WAITING_LINEAGE_NOT_WORKFLOW_BLOCKED", "F18_WAITING_LINEAGE_NOT_GATE_PASS", "F19_WAITING_LINEAGE_NOT_GATE_FAIL", "F13_ASSURANCE_CURRENT_NOT_VALIDATION_PASS", "F14_ASSURANCE_CURRENT_NOT_REVIEW_PASS", "F15_ASSURANCE_CURRENT_NOT_RELEASE_READY", "F16_ASSURANCE_CURRENT_NOT_TASK_READY"],
+  "prd_acceptance_anchors": {
+    "E": "### E. Same durable container, multiple independent phases",
+    "F": "### F. Duplicate Claim race",
+    "G": "### G. Wrong-role / independence rejection",
+    "K": "### K. Known sequence block",
+    "L": "### L. Task-DAG scope protection",
+    "M": "### M. Single-owner ambiguous reduction predicate",
+    "N": "### N. Adverse Review cannot be shopped around"
+  },
+  "l2_negative_rows": [
+    "Assurance Plan stale on new finding/proof/authority -> Claim/merge continues",
+    "stale PASS -> successor PASS",
+    "R1 FAIL -> R2 PASS erases R1 blocker",
+    "same-subject reviewer redispatch -> PASS-shopping",
+    "JIT phase not in Assurance Plan/Task Pack -> treated as in-envelope",
+    "WAITING_LINEAGE -> canonical Issue state invented",
+    "predecessor not integrated -> generic compatibility rebind starts dependent execution"
+  ]
+}

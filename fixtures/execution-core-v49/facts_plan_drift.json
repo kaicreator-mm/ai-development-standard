@@ -1,0 +1,53 @@
+{
+  "fixture_id": "execution-core-v49/facts_plan_drift",
+  "description": "Dispatch materialized from plan P-900, then a new adverse finding F-101 arrives before Claim: unresolved_finding_digest drifted, binding STALE; Claim and merge must fail/recompute.",
+  "work_item": {
+    "work_item_id": "issue:900",
+    "workflow_state": "ready",
+    "dependencies": [
+      {"dependency_ref": "issue:701", "state": "DONE"},
+      {"dependency_ref": "issue:702", "state": "DONE"}
+    ]
+  },
+  "lineage_refs": [
+    {"surface_ref": "surface:LG42_COMPAT", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@df94641e"},
+    {"surface_ref": "surface:LG47_REGISTRY", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@1fa88bc1"},
+    {"surface_ref": "surface:LG48_EXEC", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@0a261a62"}
+  ],
+  "plan_binding": {
+    "plan_id": "plan:P-900",
+    "owner": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+    "binding_state": "CURRENT",
+    "bound_components": {
+      "subject_identity_ref": "issue:900",
+      "owner_authority_digest": "oa-d1",
+      "proof_input_digest": "pi-d1",
+      "task_pack_digest": "tp-d1",
+      "release_decision_digest": "empty-set",
+      "unresolved_finding_digest": "findings-empty"
+    },
+    "binding_digest": "bind-current-d1"
+  },
+  "current_dimensions": {
+    "subject_identity_ref": "issue:900",
+    "owner_authority_digest": "oa-d1",
+    "proof_input_digest": "pi-d1",
+    "task_pack_digest": "tp-d1",
+      "release_decision_digest": "empty-set",
+      "unresolved_finding_digest": "findings:F-101"
+  },
+  "unresolved_findings": [
+    {
+      "finding_id": "F-101",
+      "subject_ref": "issue:900",
+      "severity": "blocker",
+      "state": "UNRESOLVED",
+      "source_terminal": "review:R1@S1",
+      "disposition": null
+    }
+  ],
+  "verdict_chronology": [
+    {"reviewer": "R1", "subject_ref": "issue:900", "verdict": "FAIL", "evidence_ref": "review-evidence:R1-S1"}
+  ],
+  "composite_admission": {"mode": "SINGLE_WRITER_ADMISSION", "state": "AVAILABLE"}
+}

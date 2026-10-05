@@ -1,0 +1,97 @@
+{
+  "fixture_id": "execution-core-v49/candidates",
+  "description": "Section 27.2 + 28.4 eligibility candidates. Hard filters (including Role Profile hard predicates) evaluate BEFORE ranking; profile-blocked or UNKNOWN candidates can never rank into dispatch.",
+  "candidates": [
+    {
+      "candidate_id": "c-eligible-low-rank",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": true, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/v4.9-default",
+        "projection_state": "PROJECTED",
+        "eligibility_predicates_pass": true,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 90
+    },
+    {
+      "candidate_id": "c-profile-conflict-high-rank",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": true, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/conflicted",
+        "projection_state": "BLOCKED_SOURCE_AUTHORITY_CONFLICT",
+        "eligibility_predicates_pass": null,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:other/strongest-available"
+      },
+      "rank": 1
+    },
+    {
+      "candidate_id": "c-independence-fail-high-rank",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": false, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/v4.9-default",
+        "projection_state": "PROJECTED",
+        "eligibility_predicates_pass": true,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 2
+    },
+    {
+      "candidate_id": "c-ambiguous-predicate",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": null, "independence_ok": true, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/v4.9-default",
+        "projection_state": "PROJECTED",
+        "eligibility_predicates_pass": true,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 3
+    },
+    {
+      "candidate_id": "c-profile-stale-source",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": true, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/stale-sources",
+        "projection_state": "BLOCKED_SOURCE_REF_UNRESOLVED",
+        "eligibility_predicates_pass": null,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 4
+    },
+    {
+      "candidate_id": "c-free-claim-switch",
+      "role": "builder",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": true, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:builder/over-claim",
+        "projection_state": "PROJECTED",
+        "eligibility_predicates_pass": true,
+        "claim_policy_ref_resolves": false,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 5
+    },
+    {
+      "candidate_id": "c-reviewer-selector-conflict",
+      "role": "reviewer",
+      "hard_predicates": {"ready": true, "authority_current": true, "security_authorized": true, "independence_ok": false, "write_set_compatible": true, "evidence_policy_satisfied": true, "composite_admission_available": true},
+      "profile": {
+        "profile_id": "role-profile:reviewer/selector-conflicted",
+        "projection_state": "PROJECTED",
+        "eligibility_predicates_pass": true,
+        "claim_policy_ref_resolves": true,
+        "provider_model_provenance": "provider:glm/flash"
+      },
+      "rank": 1
+    }
+  ]
+}

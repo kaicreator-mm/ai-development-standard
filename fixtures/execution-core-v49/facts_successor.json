@@ -1,0 +1,78 @@
+{
+  "fixture_id": "execution-core-v49/facts_successor",
+  "description": "Authorized repair produced successor subject S2; predecessor findings carried forward; successor review dispositions per finding. One RESOLVED closes; STILL_PRESENT stays (Product N / L2 carry-forward).",
+  "work_item": {
+    "work_item_id": "issue:900",
+    "workflow_state": "ready",
+    "dependencies": [
+      {"dependency_ref": "issue:701", "state": "DONE"},
+      {"dependency_ref": "issue:702", "state": "DONE"}
+    ]
+  },
+  "lineage_refs": [
+    {"surface_ref": "surface:LG42_COMPAT", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@df94641e"},
+    {"surface_ref": "surface:LG47_REGISTRY", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@1fa88bc1"},
+    {"surface_ref": "surface:LG48_EXEC", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@0a261a62"}
+  ],
+  "repair_authorization": {
+    "successor_subject_ref": "issue:900@S2",
+    "predecessor_subject_ref": "issue:900@S1",
+    "authorized_by": "task-pack:TP-900-repair-dispatch",
+    "path": "authorized_mutable_repair"
+  },
+  "plan_binding": {
+    "plan_id": "plan:P-900-S2",
+    "owner": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+    "binding_state": "CURRENT",
+    "bound_components": {
+      "subject_identity_ref": "issue:900@S2",
+      "owner_authority_digest": "oa-d1",
+      "proof_input_digest": "pi-d2",
+      "task_pack_digest": "tp-d2",
+      "release_decision_digest": "empty-set",
+      "unresolved_finding_digest": "findings:F-102"
+    },
+    "binding_digest": "bind-current-d2"
+  },
+  "current_dimensions": {
+    "subject_identity_ref": "issue:900@S2",
+    "owner_authority_digest": "oa-d1",
+    "proof_input_digest": "pi-d2",
+    "task_pack_digest": "tp-d2",
+    "release_decision_digest": "empty-set",
+    "unresolved_finding_digest": "findings:F-102"
+  },
+  "unresolved_findings": [
+    {
+      "finding_id": "F-101",
+      "subject_ref": "issue:900@S1",
+      "severity": "blocker",
+      "state": "RESOLVED",
+      "source_terminal": "review:R1@S1",
+      "disposition": {
+        "kind": "RESOLVED",
+        "successor_subject_ref": "issue:900@S2",
+        "evidence_refs": ["review-evidence:R2-S2#finding-F-101"],
+        "owning_rule_basis": "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward"
+      }
+    },
+    {
+      "finding_id": "F-102",
+      "subject_ref": "issue:900@S1",
+      "severity": "blocker",
+      "state": "UNRESOLVED",
+      "source_terminal": "review:R1@S1",
+      "disposition": {
+        "kind": "STILL_PRESENT",
+        "successor_subject_ref": "issue:900@S2",
+        "evidence_refs": ["review-evidence:R2-S2#finding-F-102"],
+        "owning_rule_basis": "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward"
+      }
+    }
+  ],
+  "verdict_chronology": [
+    {"reviewer": "R1", "subject_ref": "issue:900@S1", "verdict": "FAIL", "evidence_ref": "review-evidence:R1-S1"},
+    {"reviewer": "R2", "subject_ref": "issue:900@S2", "verdict": "PASS", "evidence_ref": "review-evidence:R2-S2"}
+  ],
+  "composite_admission": {"mode": "SINGLE_WRITER_ADMISSION", "state": "AVAILABLE"}
+}
