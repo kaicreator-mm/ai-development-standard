@@ -1,8 +1,8 @@
 # ai-development-standard v4.10.0 PRD — Whole-Project Convergence for Human + Multi-Agent Development
 
-Status: **PRODUCT SUCCESSOR CANDIDATE v0.3 — PRODUCT THAWED — FRESH EXTERNAL RE-REVIEW REQUIRED**
+Status: **PRODUCT SUCCESSOR CANDIDATE v0.4 — PRODUCT THAWED — FRESH EXTERNAL RE-REVIEW REQUIRED**
 
-PRD revision: `v0.3`
+PRD revision: `v0.4`
 
 Planning baseline: `main@92e4f764a2630a131d3f156b39f0f09064c9849e` / tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`
 
@@ -18,11 +18,16 @@ PRODUCT_THAW_R1=#821 + docs/implementation/4.10.0/PRODUCT_THAW_R1.md
 PRD_v0.2_BLOB=bacf667bbc6eeba337a5f75ff63dc090b2173155
 FRESH_EXTERNAL_PRODUCT_REVIEW_R2=#822@5988605274 CHANGES_REQUESTED
 R2_FINDINGS=P0:0;P1:0;P2:3;P3:0
+PRD_v0.3_BLOB=a2ffb5ff177a55dac400a6a05569b4bb15162581
+FRESH_EXTERNAL_PRODUCT_REREVIEW_R3=#824@5991776745 PASS
+CLAUDE_FINAL_PRODUCT_ADVERSARIAL_REVIEW_R4=#827@5993255736 CHANGES_REQUESTED
+R4_FINDINGS=P0:0;P1:0;P2:3;P3:2
+PRODUCT_AMENDMENT_R2=#832
 ```
 
-Historical evidence remains attributable only to the exact subject it reviewed. No v0.1/v0.2 verdict transfers automatically to v0.3.
+Historical evidence remains attributable only to the exact subject it reviewed. No earlier verdict transfers automatically to v0.4.
 
-Material evidence inputs: `#808`, `#782`, `#696`, `#775`, `#803`, `#190`, `#186`, `#807`, `#810`, `#811`, Product Amendment `#821`, and external Product review `#822`.
+Material evidence inputs: `#808`, `#782`, `#696`, `#775`, `#803`, `#190`, `#186`, `#807`, `#810`, `#811`, Product Amendments `#821/#832`, and external Product reviews `#822/#824/#827`.
 
 Planning independence: per `#779@5987705061`, v4.10 Product/L2/Task-DAG planning may proceed independently of execution/release currentness of other versions. Other-version facts are evidence inputs only.
 
@@ -40,13 +45,29 @@ The Product goal is:
 
 v4.10 is primarily a **convergence and stabilization** release. It MUST prefer strengthening/composing existing owners over inventing parallel subsystems or Product features.
 
-The target outcome is eligibility for a later:
+The target outcome is an explicit later decision:
 
 ```text
 ADS_CORE_FEATURE_FREEZE_ELIGIBLE=YES|NO
 ```
 
-A `YES` means future ADS evolution defaults to bounded evidence-driven maintenance unless new major-version evidence justifies breaking architecture.
+### 1.1 Core-feature-freeze eligibility semantics
+
+For this decision, `core` means the active v4.10 Product requirements and the canonical owner/lifecycle/projection system needed to make those requirements truthful and operational. It does **not** mean that ADS can never add future optional features.
+
+A `YES` means future ADS evolution should default to bounded evidence-driven maintenance unless new major-version evidence justifies breaking or materially expanding the core architecture.
+
+A `NO` is also a legitimate, evidence-backed result. `NO` means v4.10 may have been delivered successfully while the Product authority still sees justified core work before declaring the core feature set frozen. `NO` MUST identify the blocking evidence or remaining justified core concern; it is not itself a v4.10 delivery failure unless it also demonstrates that an active v4.10 Product requirement was not met.
+
+The eligibility decision requires at minimum:
+
+1. all required Product acceptance evidence in §19 is satisfied on the applicable release subject;
+2. R2 owner/lifecycle convergence shows no unresolved material duplicate or contradictory authority;
+3. R11 shows no unresolved material prose↔machine-contract/template/verifier/CI contradiction;
+4. reachable legacy/backlog ambiguity that can affect current users/Agents has a disposition under §10.4;
+5. exact-subject/currentness/compatibility evidence required by R12 remains truthful.
+
+`ADS_CORE_FEATURE_FREEZE_ELIGIBLE` is an explicit **Product-authority decision**. It may be made by the human Product authority owner or by an explicitly delegated actor within bounded authority, with the decision and evidence durably recorded. Version Closure, CI, a Controller, a Reviewer or a model vote MUST NOT manufacture `YES` automatically.
 
 ---
 
@@ -121,9 +142,11 @@ Humans SHOULD intervene when intent, semantic authority, approval, external auth
 
 ## 4. Canonical planning and development journey
 
-v4.10 MUST make the front-of-funnel Product process explicit rather than collapsing L1 and PRD into one step.
+v4.10 MUST make the front-of-funnel Product semantics explicit without forcing every semantic step into a separate document or ceremony.
 
 ### 4.1 Product discovery / definition
+
+Conceptually:
 
 ```text
 USER_IDEA / INTENT
@@ -132,17 +155,29 @@ USER_IDEA / INTENT
 -> PRODUCT RESEARCH as needed
 -> evidence synthesis + Product unknown disposition
 -> DRAFT PRD / SCOPE
--> Fresh Independent Product / Adversarial Review
--> PRODUCT FREEZE
+-> Product Review when required by risk/policy
+-> PRODUCT FREEZE by Product authority
 ```
+
+L1 is a semantic framing/evidence step, not necessarily a standalone artifact. For already-scoped, trivial or sufficiently evidenced work, L1 may be compact, inline with Intake/PRD, or satisfied through the existing Fast Path where that path is legal. What MUST remain explicit is the Product problem/scope/evidence disposition; the workflow MUST NOT invent separate-document ceremony merely to preserve labels.
 
 `PRODUCT_RESEARCH` is evidence used to decide **what should be built / standardized and why**. Depending on the Product, it may include user/domain/current-system/source/competitive/market/dogfood/incident/adoption research.
 
 Product Research is proportional:
 
-- evidence already sufficient -> research may remain inline or minimal;
+- evidence already sufficient -> research may remain inline or be omitted with the sufficiency basis visible;
 - material Product unknown -> bounded research work may be created;
 - trivial/known maintenance -> do not invent research ceremony.
+
+Product Review is also proportional:
+
+- **required** for new or materially changed normative, semantic, compatibility-sensitive or authority-sensitive Product scope, or whenever an applicable policy/risk rule requires independent/adversarial review;
+- **selectable/omittable** for low-risk, already-scoped Product work when sufficient evidence exists and no applicable rule requires independent review;
+- a required review MUST NOT be silently downgraded because of cost, model confidence, file count, speed or a desire to use Fast Path;
+- Product Review output is **evidence/judgment**, not Product authority;
+- Product Freeze is an explicit durable decision of the Product authority owner (or an explicitly delegated actor within bounded authority), after the required evidence/gates are satisfied.
+
+The v4.10 ADS self-development chain is normative/authority-sensitive and therefore continues to require a genuinely Fresh external Product/Adversarial Review before successor Product Freeze.
 
 ### 4.2 Architecture / implementation planning
 
@@ -197,7 +232,7 @@ This journey may be lightweight or highly automated, but truth/authority/current
 
 ADS v4.10 MUST make these jobs coherent end-to-end:
 
-1. Turn a user idea/intent into evidence-backed Product scope through explicit L1 and proportional Product Research before PRD Freeze.
+1. Turn a user idea/intent into evidence-backed Product scope through explicit Product framing, proportional L1/Product Research and Product Freeze without unnecessary ceremony.
 2. Turn Frozen Product intent into Architecture Evidence and bounded executable work without silent semantic drift.
 3. Coordinate humans and multiple Agents without losing responsibility, causation, delegation/handoff or authorization boundaries.
 4. Keep humans in effective control while minimizing routine human intervention.
@@ -226,7 +261,7 @@ Required outcome: a fresh observer can determine current intent, evidence, autho
 
 Covers Product Research materialization, Architecture Research, Task Decomposition, Task DAG, Task Pack, Work Item, Execution Pack, implementation seams and shared-boundary decisions.
 
-Required outcome: planning stages are not collapsed; executable work is bounded by real semantic dependencies.
+Required outcome: planning stages are not collapsed semantically; executable work is bounded by real semantic dependencies.
 
 ### 6.3 COLLABORATION_AND_EXECUTION
 
@@ -341,6 +376,8 @@ AUTHORITY_DECISION_REQUIRED
 AUTHORIZATION_REQUIRED
 ```
 
+These labels are a Product-level semantic distinction only. L2 MUST map them onto existing owners and SHOULD reuse equivalent existing vocabulary where it preserves the same semantics rather than minting a competing taxonomy family.
+
 Human participation is not a generic failure fallback, but neither is it a mandatory step for routine autonomous work.
 
 ### 8.4 Responsibility / causation lineage
@@ -353,19 +390,24 @@ A fresh observer should be able to reconstruct requester/delegator, responsibili
 
 ### 9.1 Minimum ADS
 
-A project MUST be able to obtain core ADS guarantees without deploying a heavy orchestration runtime.
+A project MUST be able to obtain core ADS guarantees without deploying a heavy orchestration runtime or mandatory Product-review ceremony for low-risk already-scoped work.
 
 Minimum adoption may include, as applicable:
 
 - immutable ADS pin;
 - explicit Idea/Scope/Product/Architecture/Task authority appropriate to the work;
+- compact/inline L1 framing when evidence is already sufficient;
+- no separate Product Research artifact when no material Product unknown remains;
+- Product Review only when the §4.1 risk/policy rule selects it;
 - bounded Issue/PR execution;
 - required tests/Validation/Review truth;
 - exact-subject/currentness evidence;
 - explicit human control/authority points;
 - compatibility truth.
 
-It MUST NOT require a reducer/controller service, learning database, component registry or full automation.
+A low-risk already-scoped change may use the existing Fast Path when legal. Fast Path may compress artifact ceremony but MUST NOT erase authority, scope, acceptance, evidence or any review/gate that is actually required.
+
+Minimum ADS MUST NOT require a reducer/controller service, learning database, component registry, full automation or unconditional independent Product review.
 
 ### 9.2 Advanced Multi-Agent ADS
 
@@ -387,17 +429,17 @@ Detect/disposition duplicate owners, ambiguous precedence, stale historical refe
 
 ### 10.2 Lifecycle coherence
 
-At minimum these stages must compose without contradiction:
+At minimum these semantic stages must compose without contradiction; proportional/low-risk paths may compress their artifact materialization where authority/evidence remains reconstructible:
 
 ```text
 Idea / Intake
 L1 Product Evidence
-Product Research
+Product Research where needed
 PRD / Product Freeze
-L2 / Architecture Research
-Task / DAG / Pack
+L2 / Architecture Research where needed
+Task / DAG / Pack as applicable
 Dispatch / Claim / Execution
-Tests / CI / Validation / Review
+Tests / CI / Validation / Review as required
 Integration
 Closure / Hidden / RQ where applicable
 Evolution / Learning where applicable
@@ -550,8 +592,9 @@ These are Product invariants; exact recovery mechanics are outside this planning
 A fresh user/Agent should be able to determine without private chat history:
 
 - where to start from an Idea/Intake;
-- where L1 Product Evidence and Product Research live;
+- where L1 Product Evidence and Product Research live or are compactly materialized;
 - when a Draft PRD exists and what freezes it;
+- whether Product Review is required for the current Product scope and why;
 - which owner governs a semantic concern;
 - what is normative vs reference/example/history;
 - where machine contracts live;
@@ -565,10 +608,10 @@ Templates/prompts/checklists/examples must project current owners and lifecycle 
 
 ## 18. Converged Product requirements
 
-External Product review #822 pressure-tested the v0.2 R1–R12 list. The Product-level set is now intentionally limited to **eight** active requirements. Historical candidate IDs are preserved for traceability.
+External Product review #822 pressure-tested the v0.2 R1–R12 list. The Product-level set remains intentionally limited to **eight** active requirements. Historical candidate IDs are preserved for traceability.
 
 ### R1 — Product discovery lifecycle coherence
-`User Idea/Intent -> L1 Product Evidence -> Product Research as needed -> Draft PRD -> Fresh Product Review -> Product Freeze` is explicit, proportional and distinct from Architecture Research.
+`User Idea/Intent -> L1 Product Evidence -> Product Research as needed -> Draft PRD -> Product Review when risk/policy requires it -> Product Freeze by Product authority` is explicit, proportional and distinct from Architecture Research. Semantic stages may be compact/inline on legal low-risk paths; required authority/evidence may not be skipped.
 
 ### R2 — Whole-project owner/lifecycle convergence
 Material current/reachable concerns have one canonical owner or explicit composition rule; the full planning/execution/release lifecycle has no contradictory parallel authority.
@@ -611,23 +654,56 @@ These dispositions are part of Product scope: they prevent v4.10 from re-expandi
 
 ---
 
-## 19. Product acceptance / dogfood scenarios
+## 19. Required Product acceptance, gates and release blockers
 
-Representative Product falsification should include:
+v4.10 implementation/release evidence **MUST eventually prove at least** the following on the applicable exact subjects. These are required Product acceptance obligations, not illustrative examples.
 
-1. a raw user idea converted to L1 evidence, bounded Product Research, Draft PRD and Product Freeze without skipping/collapsing stages;
-2. a trivial/known maintenance case that correctly avoids unnecessary Product Research ceremony;
-3. an Architecture unknown discovered after Product Freeze that uses Architecture Research without silently reopening Product scope;
-4. a multi-Agent task completed without routine human intervention, with tests/Validation/independent Review carrying quality assurance;
-5. an authority-sensitive decision that correctly pauses for an explicit human decision;
-6. a human who can inspect current authority/evidence/claim state and stop or redirect an authorized automated flow without reading every line of generated code;
-7. a semantic whole-file rewrite caught by deterministic/review evidence despite green unit tests;
-8. a Task/Dispatch split that improves context/evidence/parallelism without fake concurrency;
-9. minimum-adoption project that does not deploy orchestration infrastructure;
-10. advanced project using JIT/Dispatch-Claim/controller automation while preserving the same authority semantics;
-11. fresh adopter navigating Idea -> L1 -> Research -> PRD -> L2 -> DAG from repository entrypoints alone.
+### 19.1 Requirement-linked falsification set
 
-Shared-code, Task Learning and cost telemetry may receive L2/existing-owner dogfood, but they are not independent Product Freeze acceptance requirements.
+1. **R1 — discovery/proportionality:** a material new Product idea follows explicit problem framing/L1, Product Research only where evidence is insufficient, Draft PRD/Scope, any risk/policy-required Product Review, and Product Freeze by Product authority; a sufficient-evidence/low-risk case uses compact/inline L1, avoids unnecessary research/review ceremony, and may use Fast Path where legal without losing authority/evidence.
+2. **R2 — owner/lifecycle convergence:** a deliberately duplicated, stale or contradictory owner/transition is detected and receives an explicit disposition; closure evidence shows no unresolved material contradictory authority remains in the current owner/lifecycle graph.
+3. **R3 — collaboration:** delegated subwork and responsibility handoff can be distinguished; authority attenuation is preserved; a fresh observer can reconstruct requester/delegator, responsibility owner, executor, subject, evidence/result and transition cause without creating a second Task/Dispatch lifecycle.
+4. **R4 — human control + automation-first quality:** at least one routine multi-Agent change completes without mandatory human line-by-line code review while tests/checks/Validation/independent Review provide quality evidence; a separate authority-sensitive case requires the appropriate human control/decision and records the resulting causation; an authorized human can stop/cancel/redirect future automation within policy.
+5. **R6 — proportional assurance + repair convergence:** an attempted gate reduction justified only by cost, file count/label, model confidence or speed is rejected fail-closed when the gate is required; a non-converging repair loop is adjudicated through bounded root-class repair/currentness rules rather than running indefinitely or manufacturing PASS.
+6. **R7 — Agent-oriented granularity:** a semantically coherent but operationally broad work item is either split across real independently evidential seams or explicitly kept atomic with bounded context/evidence; no hidden DAG mutation, fake parallelism or overlapping shared-authority write set is treated as legal concurrency.
+7. **R11 — projection/conformance:** a stale passing verifier/template/schema projection that contradicts current normative authority is detected and cannot override the owner; prose that claims machine enforcement that materially does not exist is likewise detected and dispositioned.
+8. **R12 — discoverability/compatibility/lineage:** a fresh adopter can navigate current entrypoints/owners/adoption posture without private chat history; a reconstructed/recomposed successor does **not** inherit historical qualification evidence automatically; current version identity does not move backward merely to recover old semantics; applicable compatibility/currentness truth remains explicit.
+
+Cross-cutting acceptance additionally requires a Minimum-ADS path that avoids heavy orchestration and an Advanced-ADS path whose automation preserves the same authority/currentness semantics.
+
+### 19.2 Required high-level gates
+
+The v4.10 release path must satisfy the applicable existing owners for at least:
+
+```text
+Frozen Product authority on exact PRD subject
+Frozen L2 Architecture authority
+Frozen/materialized Task DAG as applicable
+required Task/PR Validation
+required Review according to selected policy/risk
+integration/currentness evidence
+Version Closure / Hidden / Release Qualification when required by Release authority
+exact release subject / compatibility / lineage truth
+```
+
+This section does not create replacement gate owners; it states which existing gate families are release-significant for this Product. A gate marked not-applicable must be legally not-applicable under its owning standard, not omitted by convenience.
+
+### 19.3 v4.10 release blockers
+
+The following block v4.10 Release PASS unless an owning standard explicitly defines a legal non-blocking disposition:
+
+- any active Product requirement `R1,R2,R3,R4,R6,R7,R11,R12` lacks passing falsification/acceptance evidence;
+- any unresolved material duplicate or contradictory semantic authority/lifecycle transition remains reachable;
+- a material prose↔machine-contract/template/verifier/CI contradiction remains unresolved;
+- a required Validation/Review/Closure/Hidden/RQ gate is incomplete, stale, failed or unlawfully skipped;
+- exact-subject/currentness/compatibility/lineage evidence is contradictory or attributed to the wrong subject;
+- a Product/Architecture contradiction remains unresolved.
+
+### 19.4 Product completion statement
+
+v4.10 Product delivery is complete only when the eight active Product requirements have passing acceptance evidence, all applicable required gates are satisfied, and no Product release blocker above remains.
+
+`ADS_CORE_FEATURE_FREEZE_ELIGIBLE=YES|NO` is then a separate explicit Product-authority decision using §1.1. A successful v4.10 delivery may therefore conclude `NO` with evidence; Version Closure alone never implies `YES`.
 
 ---
 
@@ -635,9 +711,11 @@ Shared-code, Task Learning and cost telemetry may receive L2/existing-owner dogf
 
 v4.10 MUST NOT:
 
-- collapse Product discovery directly from idea to PRD when material L1/research evidence is required;
+- turn L1/Product Research/Product Review labels into mandatory separate artifacts when evidence/risk does not justify them;
 - force Product Research when evidence is already sufficient;
 - confuse Product Research with Architecture Research Demo;
+- require independent Product Review for every low-risk adopter Product Freeze when no policy/risk rule requires it;
+- allow required Product Review to be silently downgraded;
 - create a second Task/DAG/Dispatch/Claim/Review/Validation/Release lifecycle;
 - require a centralized runtime/database;
 - make humans mandatory line-by-line readers/reviewers of Agent-generated code;
@@ -656,15 +734,16 @@ v4.10 MUST NOT:
 - remove required gates because they are expensive;
 - make provider/model identity normative authority;
 - silently break compatibility or rewrite historical evidence;
+- let Version Closure, Controller state, CI success or Reviewer/model votes automatically assert `ADS_CORE_FEATURE_FREEZE_ELIGIBLE=YES`;
 - use v4.10 as a generic Agent-platform rewrite.
 
 Breaking redesign belongs to a future major version.
 
 ---
 
-## 21. Resolved Product-scope decisions from external R2 review
+## 21. Resolved Product-scope decisions
 
-The v0.2 open questions are closed in v0.3 exactly as recommended by #822:
+The v0.2 open questions remain closed exactly as recommended by #822, and Claude R4 #827 adds the bounded acceptance/freeze semantics repaired in v0.4:
 
 ```text
 OQ1_SHARED_CODE
@@ -679,30 +758,40 @@ OQ3_R1_R12_PRESSURE_TEST
 = L2_DETAIL: R9
 
 OQ4_MISSING_PRODUCT_CONCERNS
-= NONE
+= NONE after #832 bounded R4 repair
+
+R4_F1_PRODUCT_ACCEPTANCE
+= REQUIRED_REQUIREMENT_LINKED_FALSIFICATION + RELEASE_BLOCKERS
+
+R4_F2_CORE_FEATURE_FREEZE_OUTCOME
+= EXPLICIT_PRODUCT_AUTHORITY_DECISION; YES|NO; NO_IS_LEGITIMATE
+
+R4_F3_PRODUCT_REVIEW
+= PROPORTIONAL_RISK_POLICY_SELECTED; REVIEW_IS_EVIDENCE; FREEZE_IS_PRODUCT_AUTHORITY
 ```
 
-No unresolved Product-scope choice remains in this candidate.
+No unresolved Product-scope choice is intentionally left in this candidate.
 
 ---
 
-## 22. Product Freeze criteria v0.3
+## 22. Product Freeze criteria v0.4
 
-The successor PRD may be Frozen only after a genuinely Fresh external Product re-review confirms that:
+Because v4.10 changes normative/authority-sensitive ADS Product semantics, this successor PRD may be Frozen only after a genuinely Fresh external Product/Adversarial re-review confirms on the exact v0.4 subject that:
 
-1. Idea -> L1 -> Product Research -> Draft PRD -> Product Review/Freeze is correct, proportional and clearly distinct from Architecture Research;
-2. Human Controllability/Auditability is hard Product behavior while routine Human intervention remains minimized;
-3. quality assurance correctly relies on applicable tests/checks/CI evidence/Validation/independent or multi-LLM Review/architecture/engineering practices rather than mandatory human line review;
-4. #822 R5 disposition is fully resolved as existing-owner-only without a new Product component-governance family;
-5. #822 R8 disposition is fully resolved as optional/proportional existing Task Learning without a mandatory terminal gate;
-6. #822 R9 is L2 detail and R10 is existing-owner coherence under R1 rather than duplicate Product requirements;
-7. the active Product requirement set is exactly R1/R2/R3/R4/R6/R7/R11/R12 unless the Fresh re-review finds a concrete Product defect;
-8. no duplicate lifecycle/owner family is introduced;
-9. minimum adoption remains lightweight;
-10. compatibility/lineage/currentness remain non-weakening;
-11. no unresolved P0/P1/P2 Product-scope finding remains.
+1. Idea -> L1 framing -> Product Research as needed -> Draft PRD -> risk/policy-selected Product Review -> Product Freeze is semantically coherent and proportional, including legal compact/Fast paths;
+2. Product Review remains evidence/judgment and Product Freeze remains an explicit Product-authority act;
+3. Human Controllability/Auditability is hard Product behavior while routine Human intervention remains minimized;
+4. quality assurance correctly relies on applicable tests/checks/CI evidence/Validation/independent or multi-LLM Review/architecture/engineering practices rather than mandatory human line review;
+5. #822 R5/R8/R9/R10 dispositions remain non-weakening and do not re-expand Product scope;
+6. the active Product requirement set remains exactly R1/R2/R3/R4/R6/R7/R11/R12 unless the Fresh re-review finds a concrete Product defect;
+7. §19 provides falsifiable acceptance for every active requirement plus explicit release blockers/required gate families without creating duplicate owners;
+8. §1.1 gives `ADS_CORE_FEATURE_FREEZE_ELIGIBLE` a bounded meaning, minimum evidence inputs and explicit Product-authority decision semantics, and allows evidence-backed `NO`;
+9. no duplicate lifecycle/owner family is introduced;
+10. minimum adoption remains lightweight;
+11. compatibility/lineage/currentness remain non-weakening;
+12. no unresolved P0/P1/P2 Product-boundary finding remains.
 
-Only after successor Product Freeze may L2 be rebuilt/rebound. The old L2 blob `390dca32cab3d8647b15149a1ac3c04560c41ddb` is historical/stale because its Product input was thawed.
+Only after successor Product Freeze may L2 be rebuilt/rebound. The old L2 blob `390dca32cab3d8647b15149a1ac3c04560c41ddb` remains historical/stale because its Product input was thawed.
 
 ---
 
@@ -711,7 +800,7 @@ Only after successor Product Freeze may L2 be rebuilt/rebound. The old L2 blob `
 Current legal sequence:
 
 ```text
-PRD v0.3 successor candidate
+PRD v0.4 successor candidate
 -> Fresh external Product re-review
 -> bounded repair if needed
 -> successor Product Freeze
