@@ -56,6 +56,19 @@
       "canonical_owner_ref": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
       "vocabulary_posture": "OWNER_DEFINED",
       "notes_ref": "references/STATE_DIMENSION_REGISTRY_REFERENCE.md#ownership-boundaries"
+    },
+    {
+      "dimension_id": "assurance_proof_currentness",
+      "canonical_owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+      "vocabulary_posture": "CLOSED",
+      "vocabulary_ref": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+      "notes_ref": "schemas/assurance-plan-v2.schema.json"
+    },
+    {
+      "dimension_id": "waiting_lineage",
+      "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "vocabulary_posture": "OWNER_DEFINED",
+      "notes_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#83-waiting_lineage"
     }
   ],
   "forbidden_inferences": [
@@ -129,6 +142,78 @@
       "source_fact_ref": "PACK_CURRENT",
       "target_dimension_ref": "validation_gate",
       "prohibited_conclusion_ref": "PASS"
+    },
+    {
+      "rule_id": "F11_TASK_DONE_NOT_LINEAGE_CURRENT",
+      "source_dimension_ref": "work_item_workflow",
+      "source_fact_ref": "state:done",
+      "target_dimension_ref": "waiting_lineage",
+      "prohibited_conclusion_ref": "LINEAGE_CURRENT",
+      "rationale_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#83-waiting_lineage"
+    },
+    {
+      "rule_id": "F12_CONCERN_RELEASE_APPLICABILITY_NOT_VERSION_APPLICABLE",
+      "source_dimension_ref": "release_qualification",
+      "source_fact_ref": "RELEASE-APPLICABLE@concern-gate-x-subject",
+      "target_dimension_ref": "release_qualification",
+      "prohibited_conclusion_ref": "RELEASE-APPLICABLE@version-candidate",
+      "rationale_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix"
+    },
+    {
+      "rule_id": "F13_ASSURANCE_CURRENT_NOT_VALIDATION_PASS",
+      "source_dimension_ref": "assurance_proof_currentness",
+      "source_fact_ref": "CURRENT",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS",
+      "rationale_ref": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
+    },
+    {
+      "rule_id": "F14_ASSURANCE_CURRENT_NOT_REVIEW_PASS",
+      "source_dimension_ref": "assurance_proof_currentness",
+      "source_fact_ref": "CURRENT",
+      "target_dimension_ref": "review_judgment",
+      "prohibited_conclusion_ref": "PASS",
+      "rationale_ref": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
+    },
+    {
+      "rule_id": "F15_ASSURANCE_CURRENT_NOT_RELEASE_READY",
+      "source_dimension_ref": "assurance_proof_currentness",
+      "source_fact_ref": "CURRENT",
+      "target_dimension_ref": "release_qualification",
+      "prohibited_conclusion_ref": "READY",
+      "rationale_ref": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
+    },
+    {
+      "rule_id": "F16_ASSURANCE_CURRENT_NOT_TASK_READY",
+      "source_dimension_ref": "assurance_proof_currentness",
+      "source_fact_ref": "CURRENT",
+      "target_dimension_ref": "work_item_workflow",
+      "prohibited_conclusion_ref": "state:ready",
+      "rationale_ref": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
+    },
+    {
+      "rule_id": "F17_WAITING_LINEAGE_NOT_WORKFLOW_BLOCKED",
+      "source_dimension_ref": "waiting_lineage",
+      "source_fact_ref": "derived-wait-posture",
+      "target_dimension_ref": "work_item_workflow",
+      "prohibited_conclusion_ref": "state:blocked",
+      "rationale_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#83-waiting_lineage"
+    },
+    {
+      "rule_id": "F18_WAITING_LINEAGE_NOT_GATE_PASS",
+      "source_dimension_ref": "waiting_lineage",
+      "source_fact_ref": "derived-wait-posture",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "PASS",
+      "rationale_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#83-waiting_lineage"
+    },
+    {
+      "rule_id": "F19_WAITING_LINEAGE_NOT_GATE_FAIL",
+      "source_dimension_ref": "waiting_lineage",
+      "source_fact_ref": "derived-wait-posture",
+      "target_dimension_ref": "validation_gate",
+      "prohibited_conclusion_ref": "FAIL",
+      "rationale_ref": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#83-waiting_lineage"
     }
   ]
 }
