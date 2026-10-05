@@ -2,7 +2,10 @@
 
 Currentness binding:
 - integration baseline `c1a40700336309e2dbb4771fcd893a257d260aa8`;
-- `standards/DEVELOPMENT_WORKFLOW.md` blob `ee4f70dd1ad820cef454ce5fb9951ac364862c6a`;
+- `standards/DEVELOPMENT_WORKFLOW.md` blob `ac956e7eaf6b2c0f930432e3b31e7eb61d051d94`
+  (rebound from the admission value `ee4f70dd1ad820cef454ce5fb9951ac364862c6a`, which
+  does not exist in any ref locally or on GitHub; same path, same integration baseline
+  `c1a4070`; durable evidence: Issue #850 claim comment);
 - native Issue DAG #866 = PASS/read-back 17/17;
 - task has no predecessors.
 

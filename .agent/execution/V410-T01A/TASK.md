@@ -11,6 +11,6 @@ Authority: Frozen Product #837, Frozen L2 #842, refined DAG Freeze #848, `TASK_P
 
 Primary concern: converge the Stage-1 lifecycle owner so Idea/Intent → Intake/Baseline → semantic L1 → Product Research as needed → Draft PRD/Scope → selected Product Review → Product Freeze is explicit, proportional, and authority-safe.
 
-Primary write owner: `standards/DEVELOPMENT_WORKFLOW.md` at baseline blob `ee4f70dd1ad820cef454ce5fb9951ac364862c6a` plus directly-owned focused lifecycle tests/references only.
+Primary write owner: `standards/DEVELOPMENT_WORKFLOW.md` at baseline blob `ac956e7eaf6b2c0f930432e3b31e7eb61d051d94` (rebound from admission value `ee4f70dd1ad820cef454ce5fb9951ac364862c6a`, which does not exist in any ref; see Issue #850 claim comment) plus directly-owned focused lifecycle tests/references only.
 
 Do not edit central manifest/shared machine projection surfaces. Do not create a second Product lifecycle or universal Product Review gate. No source mutation before an accepted Builder claim.
