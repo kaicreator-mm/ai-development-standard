@@ -1,0 +1,128 @@
+{
+  "fixture_id": "v4.9.0-T-012-C07-gate-owned-transfer-currentness",
+  "owner_refs": [
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix",
+    "docs/implementation/4.9.0/PRD.md#h-gate-specific-evidence-transfer",
+    "docs/implementation/4.9.0/PRD.md#i-materialunknown-binding-drift",
+    "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+    "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "scripts/test_v49_gate_currentness.py"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "C07_S1_target_transfer_reuses_only_exact_binding_equivalence",
+      "exact_refs": [
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "docs/implementation/4.9.0/PRD.md#h-gate-specific-evidence-transfer"
+      ],
+      "frozen_scenario": "H",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py route_evidence / gate_satisfied",
+      "row_id": "M02",
+      "record": {
+        "record_id": "validation:concern-x@1",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:dddd4444444444444444444444444444444444"
+      },
+      "current_subject": {"subject_identity": "sha:dddd4444444444444444444444444444444444"},
+      "expect": {"disposition": "BOUND_CURRENT", "gate_satisfied": true, "verdict_source": "owner_issued_consulted_not_minted"}
+    },
+    {
+      "scenario_id": "C07_S2_drifted_subject_makes_pass_historical_only",
+      "exact_refs": [
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix"
+      ],
+      "frozen_scenario": "I",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py route_evidence / gate_satisfied",
+      "row_id": "M02",
+      "record": {
+        "record_id": "validation:concern-x@1",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:dddd4444444444444444444444444444444444"
+      },
+      "current_subject": {"subject_identity": "sha:eeee5555555555555555555555555555555555"},
+      "expect": {"disposition": "HISTORICAL_ONLY", "gate_satisfied": false, "note": "no owner transfer rule => historical; stale PASS never becomes successor PASS"}
+    },
+    {
+      "scenario_id": "C07_S3_unknown_binding_fails_closed_not_transferred",
+      "exact_refs": ["references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md"],
+      "frozen_scenario": "I",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py route_evidence",
+      "row_id": "M08",
+      "record": {
+        "record_id": "ci:run-77",
+        "owner_ref": "standards/CI_EVIDENCE_STANDARD.md#3-identity-model",
+        "verdict": "PASS",
+        "subject_identity": "sha:ffffffffffffffffffffffffffffffffffffffff"
+      },
+      "current_subject": {"subject_identity": "sha:eeee5555555555555555555555555555555555"},
+      "expect": {"disposition": "HISTORICAL_ONLY", "note": "UNKNOWN_BINDING => historical-only or blocked (fail-closed); never a transfer"}
+    },
+    {
+      "scenario_id": "C07_S4_fresh_only_row_requires_fresh_execution_on_candidate_drift",
+      "exact_refs": [
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "standards/RELEASE_STANDARD.md#4-operational-immutability"
+      ],
+      "frozen_scenario": "I",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py frozen_candidate_disposition",
+      "row_id": "M05",
+      "record": {
+        "record_id": "hidden:pack@1",
+        "owner_ref": "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "verdict": "PASS",
+        "subject_identity": "candidate:freeze@1",
+        "binding": {"frozen_candidate_identity": "candidate:freeze@1"}
+      },
+      "freeze_record": {"state": "FROZEN"},
+      "current_candidate": {"state": "FROZEN", "candidate_identity": "candidate:freeze@2"},
+      "expect": {"disposition": "FRESH_EXECUTION_REQUIRED", "note": "silent post-freeze mutation invalidates; thaw chain required"}
+    },
+    {
+      "scenario_id": "C07_S5_material_binding_change_requires_successor_assurance",
+      "exact_refs": ["references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md"],
+      "frozen_scenario": "I",
+      "generic_rule": "MATERIAL_BINDING_CHANGE => SUCCESSOR_ASSURANCE_REQUIRED",
+      "expect": {
+        "binding_change": "contract/authority/composition/environment binding changed",
+        "outcome": "SUCCESSOR_ASSURANCE_REQUIRED",
+        "note": "changed or unknown binding makes affected evidence historical-only or blocks until successor assurance"
+      }
+    },
+    {
+      "scenario_id": "C07_S6_currentness_never_infers_gate_satisfaction",
+      "exact_refs": [
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "registries/state-dimensions-v1.json"
+      ],
+      "frozen_scenario": "H",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py POSITIVE_VERDICTS / gate_satisfied",
+      "expect": {
+        "non_verdict_rows": ["M01", "M07", "M09", "M10"],
+        "routing_vocabulary_contains_no_verdict": true,
+        "note": "BOUND_CURRENT/CURRENT alone never satisfies a gate; only an owner-issued positive verdict on the current subject is consultable"
+      }
+    },
+    {
+      "scenario_id": "C07_S7_family_mismatch_pass_is_not_consultable",
+      "exact_refs": ["references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md"],
+      "frozen_scenario": "H",
+      "kernel_binding": "scripts/test_v49_gate_currentness.py route_evidence",
+      "row_id": "M02",
+      "record": {
+        "record_id": "review:x@1",
+        "row_id": "M04",
+        "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection",
+        "verdict": "PASS",
+        "subject_identity": "sha:dddd4444444444444444444444444444444444"
+      },
+      "current_subject": {"subject_identity": "sha:dddd4444444444444444444444444444444444"},
+      "expect": {"disposition": "FAMILY_MISMATCH", "gate_satisfied": false, "note": "a PASS from one evidence family never satisfies another family's gate"}
+    }
+  ]
+}

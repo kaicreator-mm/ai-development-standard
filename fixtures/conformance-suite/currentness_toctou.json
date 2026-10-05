@@ -1,0 +1,150 @@
+{
+  "fixture_id": "v4.9.0-T-012-C03-assurance-currentness-toctou",
+  "owner_refs": [
+    "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+    "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+    "docs/implementation/4.9.0/PRD.md#f-duplicate-claim-race",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_gate_currentness.py"
+  ],
+  "bound_component_keys": [
+    "subject_identity_ref",
+    "owner_authority_digest",
+    "proof_input_digest",
+    "task_pack_digest",
+    "release_decision_digest",
+    "unresolved_finding_digest"
+  ],
+  "transition_checkpoints": [
+    "dispatch_reservation",
+    "claim_admission",
+    "merge_ready",
+    "candidate_freeze",
+    "release_qualification"
+  ],
+  "component_current_dimensions": {
+    "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+    "owner_authority_digest": "owner:aps@v49",
+    "proof_input_digest": "proof:inputs@1",
+    "task_pack_digest": "pack:T012@1",
+    "release_decision_digest": "release:none",
+    "unresolved_finding_digest": "findings:"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "C03_S1_consume_current_then_adverse_finding_before_claim_fails_claim",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+      ],
+      "frozen_scenario": "F",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+        "owner_authority_digest": "owner:aps@v49",
+        "proof_input_digest": "proof:inputs@1",
+        "task_pack_digest": "pack:T012@1",
+        "release_decision_digest": "release:none",
+        "unresolved_finding_digest": "findings:"
+      },
+      "timeline": [
+        {"step": 1, "event": "dispatch_reservation", "unresolved_findings": [], "expect_binding_state": "CURRENT", "expect_admitted": true},
+        {"step": 2, "event": "new_adverse_finding", "finding_id": "F-ADV-9", "unresolved_findings": ["F-ADV-9"]},
+        {"step": 3, "event": "claim_admission", "unresolved_findings": ["F-ADV-9"], "expect_binding_state": "STALE", "expect_admitted": false}
+      ],
+      "expect": {"canonical_claim_published": false, "note": "consume/recheck race: a binding CURRENT at consumption turns STALE before the next authority-bearing transition; the recompute rejects, never ratifies retroactively"}
+    },
+    {
+      "scenario_id": "C03_S2_competing_claim_linearizes_against_still_current_predicates",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "docs/implementation/4.9.0/PRD.md#f-duplicate-claim-race"
+      ],
+      "frozen_scenario": "F",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+        "owner_authority_digest": "owner:aps@v49",
+        "proof_input_digest": "proof:inputs@1",
+        "task_pack_digest": "pack:T012@1",
+        "release_decision_digest": "release:none",
+        "unresolved_finding_digest": "findings:"
+      },
+      "interleavings": [
+        {"interleaving_id": "A-then-B", "events": ["A:recompute@CURRENT", "A:claim", "B:recompute@CURRENT", "B:claim"]},
+        {"interleaving_id": "B-then-A", "events": ["B:recompute@CURRENT", "B:claim", "A:recompute@CURRENT", "A:claim"]},
+        {"interleaving_id": "drift-between", "events": ["A:recompute@CURRENT", "A:claim", "drift:new_adverse_finding", "B:recompute@STALE", "B:claim"]}
+      ],
+      "first_claimant": "A",
+      "expect": {
+        "A-then-B": {"accepted": ["A"], "rejected": ["B"], "accepted_claim_silently_lost": false},
+        "B-then-A": {"accepted": ["B"], "rejected": ["A"], "accepted_claim_silently_lost": false},
+        "drift-between": {"accepted": ["A"], "rejected": ["B"], "accepted_claim_silently_lost": false},
+        "note": "at most one canonical claim linearizes (the first against still-current predicates); same interleaving always yields the same outcome; never both accepted"
+      }
+    },
+    {
+      "scenario_id": "C03_S3_stale_plan_at_later_checkpoints_recomputes_never_ratifies",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+      ],
+      "frozen_scenario": "F",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+        "owner_authority_digest": "owner:aps@v49",
+        "proof_input_digest": "proof:inputs@DRIFTED",
+        "task_pack_digest": "pack:T012@1",
+        "release_decision_digest": "release:none",
+        "unresolved_finding_digest": "findings:"
+      },
+      "unresolved_findings": [],
+      "transition_under_check": "merge_ready",
+      "expect": {"binding_state": "STALE", "admitted": [], "note": "merge/Freeze/RQ recheck the binding immediately before acting; STALE routes to recompute, never ratification"}
+    },
+    {
+      "scenario_id": "C03_S4_missing_component_is_unknown_fail_closed",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"],
+      "frozen_scenario": "F",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+        "owner_authority_digest": "owner:aps@v49",
+        "proof_input_digest": "proof:inputs@1"
+      },
+      "unresolved_findings": [],
+      "transition_under_check": "claim_admission",
+      "expect": {"binding_state": "UNKNOWN", "admitted": [], "note": "omission is not an empty set; missing component is UNKNOWN and never authorizes"}
+    },
+    {
+      "scenario_id": "C03_S5_empty_finding_set_still_digest_bound",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"],
+      "frozen_scenario": "F",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+        "owner_authority_digest": "owner:aps@v49",
+        "proof_input_digest": "proof:inputs@1",
+        "task_pack_digest": "pack:T012@1",
+        "release_decision_digest": "release:none",
+        "unresolved_finding_digest": "findings:"
+      },
+      "unresolved_findings": [],
+      "transition_under_check": "release_qualification",
+      "expect": {"binding_state": "CURRENT", "admitted": ["release_qualification"], "note": "an empty set is still bound by its digest"}
+    },
+    {
+      "scenario_id": "C03_S6_currentness_never_mints_pass",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "registries/state-dimensions-v1.json"
+      ],
+      "frozen_scenario": "F",
+      "forbidden_inference_rule_ids": [
+        "F13_ASSURANCE_CURRENT_NOT_VALIDATION_PASS",
+        "F14_ASSURANCE_CURRENT_NOT_REVIEW_PASS",
+        "F15_ASSURANCE_CURRENT_NOT_RELEASE_READY",
+        "F16_ASSURANCE_CURRENT_NOT_TASK_READY"
+      ],
+      "expect": {"note": "CURRENT admits transitions only; CURRENT -> PASS/READY/state:ready stays forbidden"}
+    }
+  ]
+}

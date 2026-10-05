@@ -1,0 +1,133 @@
+{
+  "fixture_id": "v4.9.0-T-012-C02-reduction-fail-closed",
+  "owner_refs": [
+    "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+    "standards/ASSURANCE_PLAN_STANDARD.md#11-assurance-floor-versus-selected-path",
+    "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "C02_S1_all_conjuncts_true_reduces",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "ALLOW_REDUCTION",
+        "permission_current": true,
+        "predicate_proofs": [
+          {"predicate_id": "p1", "state": true, "proof_basis": "deterministic-check"},
+          {"predicate_id": "p2", "state": true, "proof_basis": "owner-record"}
+        ]
+      },
+      "expect": {"reduction_allowed": true, "resolution_outcome": "REDUCED"}
+    },
+    {
+      "scenario_id": "C02_S2_deny_reduction_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "DENY_REDUCTION",
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": true, "proof_basis": "deterministic-check"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S3_unknown_permission_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "UNKNOWN",
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": true, "proof_basis": "deterministic-check"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S4_missing_permission_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": null,
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": true, "proof_basis": "deterministic-check"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S5_false_predicate_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "ALLOW_REDUCTION",
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": false, "proof_basis": "deterministic-check"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S6_unknown_predicate_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "ALLOW_REDUCTION",
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": null, "proof_basis": "deterministic-check"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S7_model_judgment_proof_basis_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "ALLOW_REDUCTION",
+        "permission_current": true,
+        "predicate_proofs": [{"predicate_id": "p1", "state": true, "proof_basis": "model-judgment"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S8_stale_proof_blocks",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "input": {
+        "owner_permission": "ALLOW_REDUCTION",
+        "permission_current": false,
+        "predicate_proofs": [{"predicate_id": "p1", "state": true, "proof_basis": "durable-fact"}]
+      },
+      "expect": {"reduction_allowed": false, "resolution_outcome": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C02_S9_ambiguous_predicate_model_reasoning_cannot_authorize",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+        "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate"
+      ],
+      "frozen_scenario": "M",
+      "kernel_binding": "scripts/test_v49_execution_core.py reduction_decision",
+      "proof_states": [
+        {"proof_state": "PROVEN_TRUE", "model_judgment": "believes-true", "expect_route": "REDUCED_PER_OWNER_RULE"},
+        {"proof_state": "AMBIGUOUS", "model_judgment": "believes-true", "expect_route": "STRONGER_EXISTING_PATH_OR_BLOCKED"},
+        {"proof_state": "PROVEN_FALSE", "model_judgment": "believes-true", "expect_route": "STRONGER_EXISTING_PATH_OR_BLOCKED"},
+        {"proof_state": "UNPROVEN", "model_judgment": "strong-model", "expect_route": "STRONGER_EXISTING_PATH_OR_BLOCKED"}
+      ],
+      "expect": {
+        "note": "one known owner positively permits reduction only when P holds; when P is ambiguous/unproven, model reasoning cannot authorize reduction"
+      }
+    },
+    {
+      "scenario_id": "C02_S10_labels_and_skips_never_prove_reduction",
+      "exact_refs": ["standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition"],
+      "frozen_scenario": "M",
+      "non_proof_facts": ["docs-only", "risk:low", "Fast Path", "recommended + skip", "small file count", "model/provider strength", "model confidence or prose judgment", "an unrelated gate PASS"],
+      "expect": {
+        "note": "none of these facts independently prove reduction eligibility; without the owner conjunction the route stays the stronger legal path or BLOCKED",
+        "reduction_allowed": false,
+        "resolution_outcome": "BLOCKED"
+      }
+    }
+  ]
+}

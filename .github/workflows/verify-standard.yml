@@ -51,3 +51,4 @@ jobs:
       - run: python scripts/test_v49_assurance_plan_v2.py
       - run: python scripts/test_v49_assurance_owner.py
       - run: python scripts/test_v49_release_applicability.py
+      - run: python scripts/test_v49_conformance_suite.py

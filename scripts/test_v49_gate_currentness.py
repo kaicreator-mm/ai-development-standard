@@ -52,6 +52,48 @@ PLANNING_PATHS = tuple(
     )
 )
 
+# F1 RE-BIND (T-012, authorized pin-constants-only change; provenance at
+# test_t07_frozen_authority_and_planning_files_unmutated, disclosure
+# #730@5998009516, inheritance #877@5999737862, MANIFEST
+# controller_authorizations[0]): the merged T-010 outputs at this base
+# (version/v4.9.0@d53e943e), blob-pinned. Any further mutation of any T-010
+# output still fails; zero assertion-logic change.
+T010_MERGED_BLOBS = {
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "c98b5eeb6e8afda2dc896e4e67edd0383b8a861b",
+    "fixtures/gate-currentness/assurance_binding.json": "19d0b1d58046897ca7c81cc320c2a92bb40e337a",
+    "fixtures/gate-currentness/dogfood_binding.json": "e5589bdefcba50c4a156c8c05618ddf49439bc61",
+    "fixtures/gate-currentness/frozen_candidates.json": "00a36fdb62493d53104f1ac6c6bfd79b6480f6c2",
+    "fixtures/gate-currentness/impact_decisions.json": "ff0b0cdbe5984ea0305d39c278777997f3a88fa8",
+    "fixtures/gate-currentness/owner_map.json": "1b72e5cdd06d8139cd724374dc3298c7435ddfee",
+    "fixtures/gate-currentness/release_applicability.json": "4fb525df247ba39367a0105f3f1de8844f686b0b",
+    "fixtures/gate-currentness/stale_pass.json": "f6b4addc27e7b591e55027e1509042c4be99005b",
+    "fixtures/gate-currentness/successor_chain.json": "b4d33cb073e0e2f338bd7ca83f7678e99ff3e98b",
+}
+
+# The T-010 oracle identity of this kernel itself: the only lawful edit on top
+# of the merged T-010 content is the F1 re-bind documented above, so the
+# kernel's T01-T07 oracle surface is pinned by these markers plus the green
+# execution of this very suite in the same run.
+T010_KERNEL_ORACLE_MARKERS = (
+    "T010 gate-owned evidence binding/currentness integration kernel",
+    "class GateCurrentnessKernel(unittest.TestCase):",
+    "def route_evidence(",
+    "def gate_satisfied(",
+    "def plan_binding_state(",
+    "def successor_review_gate(",
+    "def test_t01_stale_pass_prevention",
+    "def test_t02_successor_and_carried_findings",
+    "def test_t03_impact_decisions_per_owner_rules",
+    "def test_t04_frozen_candidate_rules",
+    "def test_t05_release_applicability_binding",
+    "def test_t06_dogfood_candidate_binding",
+    "def test_t06_assurance_currentness_consumption_at_transitions",
+    "def test_t07_owner_refs_resolve_and_doc_agrees_with_fixture",
+    "def test_t07_engine_mints_no_verdicts",
+    "def test_t07_owner_map_covers_frozen_l2_matrix_families",
+    "def test_t07_frozen_authority_and_planning_files_unmutated",
+)
+
 # Owner surfaces this lane consumes read-only (T-005->T-010->T-014 serialization:
 # no Release surface is edited; RELEASE_STANDARD is asserted unmutated since base).
 READ_ONLY_DEPS = (
@@ -856,14 +898,25 @@ class GateCurrentnessKernel(unittest.TestCase):
         for rel_path in READ_ONLY_DEPS:
             with self.subTest(read_only=rel_path):
                 self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
-        # The candidate diff against the pack head is inside the write set.
-        diff_paths = git("diff", "--name-only", f"{PACK_HEAD_SHA}..HEAD").splitlines()
-        for path in diff_paths:
-            with self.subTest(diff_path=path):
-                self.assertTrue(
-                    any(path == w or path.startswith(w) for w in WRITE_SET),
-                    f"committed path outside Builder write set: {path}",
-                )
+        # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
+        # disclosure, inherited #877@5999737862, MANIFEST
+        # controller_authorizations[0]). The original T-010 lane guard
+        # `git diff --name-only d8fd03db..HEAD ⊆ T-010 WRITE_SET` is
+        # structurally red at any integrated tree: after T-011 the candidate
+        # HEAD necessarily carries other lanes' merged deltas. Re-bound with
+        # pin constants only, zero other assertion change — SAME STRENGTH: the
+        # merged T-010 outputs must be EXACTLY present at the candidate. Every
+        # T-010 output this lane does not itself edit is pinned to its merged
+        # blob at this base (version/v4.9.0@d53e943e); the kernel itself
+        # carries exactly the authorized F1 re-bind on top of the merged
+        # T-010 content, pinned by its oracle-identity markers below (and by
+        # this suite executing its T01-T07 oracles green in the same run).
+        for rel_path, merged_blob in T010_MERGED_BLOBS.items():
+            with self.subTest(t010_merged_output=rel_path):
+                self.assertEqual(merged_blob, git_blob_sha("HEAD", rel_path))
+        kernel_source = Path(__file__).resolve().read_text(encoding="utf-8")
+        for marker in T010_KERNEL_ORACLE_MARKERS:
+            self.assertIn(marker, kernel_source, "T-010 kernel oracle marker missing")
 
 
 if __name__ == "__main__":

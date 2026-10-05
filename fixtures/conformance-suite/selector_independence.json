@@ -1,0 +1,107 @@
+{
+  "fixture_id": "v4.9.0-T-012-C05-selector-independence-conflicts",
+  "owner_refs": [
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
+    "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+    "docs/implementation/4.9.0/PRD.md#g-wrong-role--independence-rejection",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
+    "scripts/test_v48_integration_closure.py",
+    "scripts/test_v49_role_execution_profile.py"
+  ],
+  "eligibility_predicate_keys": ["ready", "current", "capability", "resources", "security", "independence", "write_set", "composite"],
+  "scenarios": [
+    {
+      "scenario_id": "C05_S1_independence_conflict_ineligible_despite_best_rank",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
+        "docs/implementation/4.9.0/PRD.md#g-wrong-role--independence-rejection"
+      ],
+      "frozen_scenario": "G",
+      "kernel_binding": "scripts/test_v48_integration_closure.py resolve_eligibility / rank_eligible_only",
+      "candidates": [
+        {"candidate_id": "agent-fast", "rank": 0, "predicates": {"ready": true, "current": true, "capability": true, "resources": true, "security": true, "independence": false, "write_set": true, "composite": true}},
+        {"candidate_id": "agent-strong-model", "rank": 1, "predicates": {"ready": true, "current": true, "capability": null, "resources": true, "security": true, "independence": true, "write_set": true, "composite": true}},
+        {"candidate_id": "agent-compliant", "rank": 9, "predicates": {"ready": true, "current": true, "capability": true, "resources": true, "security": true, "independence": true, "write_set": true, "composite": true}}
+      ],
+      "expect": {
+        "agent-fast": "INELIGIBLE",
+        "agent-strong-model": "UNKNOWN",
+        "agent-compliant": "ELIGIBLE",
+        "ranked_candidate_ids": ["agent-compliant"],
+        "note": "an otherwise capable agent is ineligible on independence/selector conflict regardless of rank; ranking sees ELIGIBLE only"
+      }
+    },
+    {
+      "scenario_id": "C05_S2_profile_block_cannot_be_promoted_by_ranking_inputs",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility"
+      ],
+      "frozen_scenario": "G",
+      "candidates": [
+        {"candidate_id": "agent-cheap", "priority": 1, "cost": 1, "latency_ms": 10, "profile_projection": "BLOCKED_SOURCE_AUTHORITY_CONFLICT", "predicates_all_true": true},
+        {"candidate_id": "agent-compliant", "priority": 99, "cost": 99, "latency_ms": 9999, "profile_projection": "PROJECTED", "predicates_all_true": true}
+      ],
+      "expect": {
+        "eligible_candidate_ids": ["agent-compliant"],
+        "note": "priority, cost, latency, availability or model/provider strength MUST NOT promote a profile-blocked candidate into dispatch"
+      }
+    },
+    {
+      "scenario_id": "C05_S3_conflicting_source_authorities_block_order_independently",
+      "exact_refs": [
+        "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md"
+      ],
+      "frozen_scenario": "G",
+      "kernel_binding": "scripts/test_v49_role_execution_profile.py evaluate_requirements",
+      "requirement_sets": {
+        "authority-a": {"required_review_policy": "review:required"},
+        "authority-b": {"required_review_policy": "review:recommended"}
+      },
+      "orders": [["authority-a", "authority-b"], ["authority-b", "authority-a"]],
+      "expect": {
+        "posture": "BLOCKED_SOURCE_AUTHORITY_CONFLICT",
+        "conflict_keys": ["required_review_policy"],
+        "order_independent": true,
+        "note": "source-authorities-prevail-never-last-writer-wins; the projection outcome is independent of reference order"
+      }
+    },
+    {
+      "scenario_id": "C05_S4_agreeing_sources_project_regardless_of_order",
+      "exact_refs": ["references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md"],
+      "frozen_scenario": "G",
+      "kernel_binding": "scripts/test_v49_role_execution_profile.py evaluate_requirements",
+      "requirement_sets": {
+        "authority-a": {"required_review_policy": "review:required"},
+        "authority-b": {"write_isolation": "worktree"}
+      },
+      "orders": [["authority-a", "authority-b"], ["authority-b", "authority-a"]],
+      "expect": {
+        "posture": "PROJECTED",
+        "projected_requirements": {"required_review_policy": "review:required", "write_isolation": "worktree"},
+        "order_independent": true
+      }
+    },
+    {
+      "scenario_id": "C05_S5_provider_model_identity_is_authority_inert",
+      "exact_refs": [
+        "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "G",
+      "candidate": {
+        "candidate_id": "agent-frontier",
+        "provider": "frontier-provider",
+        "model": "frontier-max",
+        "predicates": {"ready": true, "current": true, "capability": false, "resources": true, "security": true, "independence": false, "write_set": true, "composite": true}
+      },
+      "expect": {
+        "eligibility": "INELIGIBLE",
+        "provider_model_cannot_change_eligibility": true,
+        "note": "provider/model identity is provenance and authority-inert; it never promotes an independence-blocked candidate"
+      }
+    }
+  ]
+}
