@@ -10,6 +10,8 @@ PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 
 `PASS` requires actual execution. `FAIL` means an executed required check did not meet acceptance. `BLOCKED` means a prerequisite/environment/tool prevents execution. `NOT_RUN` means it has not executed. `NOT_APPLICABLE` means the gate genuinely does not apply.
 
+`NOT_APPLICABLE` is an authority-derived determination about applicability, not an executor convenience. It MUST NOT be produced from cost, effort/turnaround, change size/file count, a docs-only or mechanical appearance, Agent/model confidence, historical habit, or the absence of an objection. When applicability is `UNKNOWN` or contradictory, a required gate does not become `NOT_APPLICABLE`: it remains not satisfied (`NOT_RUN`/`BLOCKED`) and routes to the owning authority under the gate authority rules of `DEVELOPMENT_WORKFLOW.md`.
+
 Workflow state, CI/provider health, dispatch state, candidate state, and release verdict are separate dimensions defined by `EXECUTION_ARCHITECTURE_STANDARD.md`.
 
 ## 2. Gate Authority
@@ -229,6 +231,9 @@ External CI evidence remains governed by immutable evidence identity/completion 
 - using CI PASS as unexecuted platform/CJ/Hidden/packaging PASS;
 - deleting/weaking required tests to clear a gate;
 - changing a required gate to optional to obtain READY;
+- recording a required gate as `NOT_APPLICABLE` from cost, effort/turnaround, change size/file count, docs-only or mechanical appearance, Agent/model confidence, historical habit or silence instead of authority;
+- re-running an unchanged subject without new evidence (changed environment/toolchain/inputs or a demonstrated non-deterministic cause) in order to obtain a different verdict for a deterministic `FAIL`; a later incidental `PASS` does not erase the recorded `FAIL`;
+- treating an arbitrary retry/timeout bound as a gate verdict, or as a substitute for escalating a non-converging repair to its owning authority;
 - unlimited retries/timeouts that mask deterministic defects;
 - treating `latest.json`, evidence publication completion, artifact presence, or runner capability inventory as Validation PASS;
 - treating infrastructure unavailability as product FAIL or PASS;
