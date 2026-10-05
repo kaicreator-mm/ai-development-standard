@@ -1,44 +1,36 @@
-pack_id: v4.8.0-T-008-54a55086
-task_id: T-008
+pack_id: v4.9.0-T-008-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-base_sha: 54a55086a12d406df07eb80706ba14f861101256
-task_pack_ref: docs/implementation/4.8.0/task-packs/T08_scheduling_conformance.md
-task_pack_blob: 43f0d735d9fbd0ee2bfbb6610c1aa2dc96e52da9
-l3_ref: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md#t-008--eligibilityresource-conformance
-l3_blob: 518bd10b1914ab635c20590104cd8590d8fbf183
-branch: task/514-v48-scheduling-conformance
-parent_issue: "#514"
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-task_pack_agent_freedom_ceiling: F2_ENGINEERING_DISCRETION
-pinned_standard_revision: 54a55086a12d406df07eb80706ba14f861101256
-frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
-frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
-generated_by: chatgpt-web:v48-t008-jit-planning-builder
-generated_at: 2026-10-02T09:25:00Z
-dependency_completion:
-  - T-002@54a55086a12d406df07eb80706ba14f861101256
-material_paths:
-  - docs/implementation/4.8.0/task-packs/T08_scheduling_conformance.md
-  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
-  - schemas/agent-capability-profile-v1.schema.json
-  - schemas/agent-capability-evidence-v1.schema.json
-  - scripts/test_v48_execution_architecture.py
-  - scripts/test_v48_scheduling_conformance.py
-builder_write_set:
-  - scripts/test_v48_scheduling_conformance.py
+version: 4.9.0
+task_id: T-008
+parent_issue: "#727"
+branch: task/v4.9.0-t08-execution-contract-refs
+base_sha: f4fe88542de9d3f5376498e62778e2353391bc57
+base_tree: 82ff224731e854079bdbd40a12eeffe00186b62c
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T08_execution_contract_refs.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG42_COMPAT, LG48_EXEC]
+lineage_last_check_ref: "#745 lineage recompute + composition PR #792 + T003/T004/T006/T007 merges (f4fe8854); all surfaces present at base"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-008/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-008/ per the #792/#788 canonical-path scheme
+native_blockers: 0
 review_policy: required
-validation_owner: independent-from-builder
-validation_scope: concern
+validation_owner: schema-historical-compatibility-and-claim-binding
+validation_scope: schema-compat-and-claim-binding
+builder_write_set:
+  - schemas/dispatch.schema.json
+  - references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json
+  - references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md
+  - scripts/test_v49_execution_contract_refs.py
 core_artifacts:
-  - MANIFEST.yaml
-  - EXECUTION_CONTRACT.md
-  - TEST_MATRIX.yaml
-  - FAILURE_MATRIX.yaml
-  - IMPLEMENTATION_MAP.md
-  - REVIEW_CHECKLIST.md
-retention: durable
+  - .agent/execution/T-008/MANIFEST.yaml
+  - .agent/execution/T-008/EXECUTION_CONTRACT.md
+  - .agent/execution/T-008/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-008/TEST_MATRIX.yaml
+  - .agent/execution/T-008/FAILURE_MATRIX.yaml
+  - .agent/execution/T-008/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
 package_excluded: true
-pack_state_at_generation: PACK_CURRENT

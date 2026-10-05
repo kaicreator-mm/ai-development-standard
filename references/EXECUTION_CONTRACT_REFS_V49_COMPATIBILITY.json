@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "record_id": "v49-t008-execution-contract-refs",
+  "contract": {
+    "kind": "json-schema",
+    "identity": "dispatch"
+  },
+  "baseline": {
+    "version_ref": "ai-dev/dispatch-v1",
+    "sha_or_digest": "git-blob:4607f6cb4b690bf68137294a9acf5d6ccc49e6bd"
+  },
+  "candidate": {
+    "version_ref": "ai-dev/dispatch-v1",
+    "sha_or_digest": "git-blob:7259cb357d71c90db683af2533c3dee4733a8e17"
+  },
+  "change_operations": [
+    "add-optional-assurance-currentness-ref",
+    "add-optional-role-profile-ref",
+    "add-optional-jit-phase-ref"
+  ],
+  "dimensions": [
+    {
+      "name": "v1-instance-validity-at-candidate",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/required",
+        "scripts/test_v49_execution_contract_refs.py",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#backward-compatibility"
+      ]
+    },
+    {
+      "name": "candidate-parser-accepts-v1-instance",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#backward-compatibility"
+      ]
+    },
+    {
+      "name": "v1-parser-accepts-candidate-instance",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/additionalProperties",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#backward-compatibility"
+      ]
+    },
+    {
+      "name": "required-field-and-vocabulary-stability",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/required",
+        "schemas/dispatch.schema.json#/properties/dispatch_state",
+        "schemas/dispatch.schema.json#/properties/result",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#authority-and-gate-boundaries"
+      ]
+    },
+    {
+      "name": "assurance-currentness-reference-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/properties/assurance_currentness_ref",
+        "standards/ASSURANCE_PLAN_STANDARD.md",
+        "schemas/assurance-plan-v2.schema.json",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#claim-time-and-currentness-consistency"
+      ]
+    },
+    {
+      "name": "role-profile-reference-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/properties/role_profile_ref",
+        "schemas/role-execution-profile-v1.schema.json",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#authority-and-gate-boundaries"
+      ]
+    },
+    {
+      "name": "jit-phase-reference-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/properties/jit_phase_ref",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#authority-and-gate-boundaries"
+      ]
+    },
+    {
+      "name": "authority-and-gate-boundaries",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/dispatch.schema.json#/properties",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#authority-and-gate-boundaries",
+        "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md"
+      ]
+    },
+    {
+      "name": "material-change-declaration",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#material-change-declaration",
+        "scripts/test_v49_execution_contract_refs.py"
+      ]
+    }
+  ],
+  "producer_refs": [
+    "schemas/dispatch.schema.json"
+  ],
+  "consumer_refs": [
+    "v1-only-dispatch-consumers",
+    "version-aware-dispatch-consumers"
+  ],
+  "compatibility_window_ref": "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#backward-compatibility",
+  "notes_ref": "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md#material-change-declaration"
+}

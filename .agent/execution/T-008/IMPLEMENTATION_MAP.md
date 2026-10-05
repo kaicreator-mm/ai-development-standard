@@ -1,19 +1,9 @@
 # T-008 Implementation Map
 
-Read first, in order:
+Builder writes only:
+1. `schemas/dispatch.schema.json` — additive optional reference fields only (established schema style; no `$ref`/`definitions` — the repo's supported JSON-Schema subset forbids them).
+2. `references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json` — compatibility record (pattern: `references/TASK_LEARNING_V2_COMPATIBILITY.json` at base).
+3. `references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md` — semantics + consistency rules.
+4. `scripts/test_v49_execution_contract_refs.py` — tests per TEST_MATRIX. Style references (read-only): `scripts/test_v49_task_learning_v2.py`, `test_v48_orchestration_dogfood.py` (dispatch fixtures).
 
-1. `docs/implementation/4.8.0/task-packs/T08_scheduling_conformance.md`
-2. `docs/implementation/4.8.0/L3_REFERENCE_PACKS.md#t-008--eligibilityresource-conformance`
-3. Frozen L2 §§7–9
-4. `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §§6, 11, 27
-5. existing `scripts/test_v48_execution_architecture.py`
-
-Implement exactly one new focused conformance module: `scripts/test_v48_scheduling_conformance.py`.
-
-Keep the oracle deterministic and self-contained. Represent READY work, candidate logical Agent/profile facts, Availability/currentness, independence constraints, capacity groups, required units and durable accepted binding facts as explicit in-memory test inputs. Exercise selection as two phases: hard-filter derivation first, optional ranking second.
-
-For admission scenarios, model the full protected set `{work claim + every required resource/capacity/compatibility binding}` and expose a single commit boundary. Inject failures immediately before, during/at, and after publication so tests can distinguish rejected/no-state, accepted all-or-none state, and ambiguous state requiring durable reconciliation.
-
-Do not modify `EXECUTION_ARCHITECTURE_STANDARD.md` to make a test pass. A mismatch between the merged owner semantics and the deterministic oracle is a finding against T-002/current architecture and must be escalated rather than repaired inside T-008.
-
-Do not implement a distributed locking protocol. The model may assert that unsupported composite concurrency routes to existing single-writer admission or `BLOCKED/UNAVAILABLE`.
+Read-only inputs: `schemas/dispatch.schema.json` at base (existing fields/instances), Frozen PRD/L2, DAG v0.1 `### T-008`, L3 T-008 section, §28.1/§28.2 of EXECUTION_ARCHITECTURE_STANDARD.md (what the refs must carry).

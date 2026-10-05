@@ -1,0 +1,28 @@
+task: T-008
+failures:
+  - condition: base_sha_or_t002_completion_or_task_pack_or_l3_identity_changed
+    action: STOP_PACK_STALE_MATERIAL
+  - condition: implementation_write_outside_scripts_test_v48_scheduling_conformance_py
+    action: STOP_EXECUTION_PACK_INVALID_OR_REBIND
+  - condition: hard_predicate_is_evaluated_after_ranking_or_ranking_promotes_ineligible_unknown
+    action: FAIL_ELIGIBILITY_ORDERING
+  - condition: stale_or_missing_material_availability_satisfies_hard_requirement
+    action: FAIL_CURRENTNESS_BOUNDARY
+  - condition: reviewer_or_validator_independence_conflict_is_ignored
+    action: FAIL_INDEPENDENCE_BOUNDARY
+  - condition: capacity_n_active_accepted_units_exceed_n
+    action: FAIL_CAPACITY_INVARIANT
+  - condition: accepted_claim_exists_without_all_required_bindings_or_resource_binding_exists_without_claim
+    action: FAIL_PARTIAL_CANONICAL_STATE
+  - condition: independent_per_key_cas_lease_or_sequential_reservations_are_treated_as_composite_proof
+    action: FAIL_COMPOSITE_ATOMICITY
+  - condition: ambiguous_crash_or_publication_outcome_allows_incompatible_replacement_before_durable_reconciliation
+    action: FAIL_CLOSED_RECONCILIATION
+  - condition: test_requires_semantic_owner_change_or_new_scheduler_availability_exchange_family
+    action: STOP_ARCHITECTURE_CONTRADICTION
+  - condition: novel_distributed_multi_key_cas_or_lease_algorithm_is_required
+    action: STOP_RESEARCH_DEMO_VALIDATION_REQUIRED
+  - condition: required_independent_validation_unavailable
+    action: BLOCKED_WITH_VALIDATION_HANDOFF
+  - condition: material_commit_after_validation_or_required_review
+    action: REQUALIFY_AFFECTED_EVIDENCE
