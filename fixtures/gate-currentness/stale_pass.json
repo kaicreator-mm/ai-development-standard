@@ -1,0 +1,105 @@
+{
+  "fixture_id": "gate-currentness/stale_pass",
+  "description": "TEST_MATRIX T01 — stale-PASS prevention. A PASS bound to an old SHA/candidate cannot satisfy a current-subject gate (per owner-map row). Positive control: same-subject owner PASS binds.",
+  "subjects": {
+    "alpha": { "subject_identity": "sha:1111111111111111111111111111111111111111", "kind": "concern" },
+    "beta": { "subject_identity": "sha:2222222222222222222222222222222222222222", "kind": "concern" },
+    "candidate_one": { "subject_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "kind": "candidate" },
+    "candidate_two": { "subject_identity": "candidate:R2@tree:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "kind": "candidate" }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "T01_SP1_head_drift_review_pass_is_historical",
+      "row_id": "M04",
+      "current_subject": "beta",
+      "record": {
+        "record_id": "rev:100",
+        "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection",
+        "verdict": "PASS",
+        "subject_identity": "sha:1111111111111111111111111111111111111111"
+      },
+      "expect": {
+        "disposition": "HISTORICAL_ONLY",
+        "gate_satisfied": false
+      }
+    },
+    {
+      "scenario_id": "T01_SP2_candidate_drift_validation_pass_is_historical",
+      "row_id": "M02",
+      "current_subject": "candidate_two",
+      "record": {
+        "record_id": "val:200",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "binding": { "tested_sha": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+      },
+      "expect": {
+        "disposition": "HISTORICAL_ONLY",
+        "gate_satisfied": false
+      }
+    },
+    {
+      "scenario_id": "T01_SP3_hidden_pass_on_drifted_frozen_candidate",
+      "row_id": "M05",
+      "current_subject": "candidate_two",
+      "record": {
+        "record_id": "hidden:300",
+        "owner_ref": "standards/RELEASE_STANDARD.md#5-hidden-validation-and-escaped-defects",
+        "verdict": "PASS",
+        "subject_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "binding": { "frozen_candidate_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+      },
+      "expect": {
+        "disposition": "FRESH_EXECUTION_REQUIRED",
+        "gate_satisfied": false
+      }
+    },
+    {
+      "scenario_id": "T01_SP4_task_learning_never_gate_pass",
+      "row_id": "M09",
+      "current_subject": "beta",
+      "record": {
+        "record_id": "learn:400",
+        "owner_ref": "schemas/task-learning-v2.schema.json",
+        "verdict": "PASS",
+        "subject_identity": "sha:2222222222222222222222222222222222222222"
+      },
+      "expect": {
+        "disposition": "HISTORICAL_ONLY",
+        "gate_satisfied": false
+      }
+    },
+    {
+      "scenario_id": "T01_SP5_same_subject_pass_binds_positive_control",
+      "row_id": "M02",
+      "current_subject": "candidate_one",
+      "record": {
+        "record_id": "val:500",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "binding": { "tested_sha": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+      },
+      "expect": {
+        "disposition": "BOUND_CURRENT",
+        "gate_satisfied": true
+      }
+    },
+    {
+      "scenario_id": "T01_SP6_wrong_owner_family_pass_cannot_satisfy_other_gate",
+      "row_id": "M02",
+      "current_subject": "candidate_one",
+      "record": {
+        "record_id": "rev:600",
+        "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection",
+        "verdict": "PASS",
+        "subject_identity": "candidate:R1@tree:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expect": {
+        "disposition": "FAMILY_MISMATCH",
+        "gate_satisfied": false
+      }
+    }
+  ]
+}

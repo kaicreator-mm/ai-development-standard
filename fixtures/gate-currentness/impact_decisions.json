@@ -1,0 +1,95 @@
+{
+  "fixture_id": "gate-currentness/impact_decisions",
+  "description": "TEST_MATRIX T03 — existing VALIDATION_IMPACT_DECISION use per standards/VALIDATION_STANDARD.md §6 (owner): BASE/merge-result drift reuse only when validation_impact=none is proven against the owner's exclusion classes; affected/unknown rerun; HEAD drift is never repaired by an impact decision; reuse binds the existing owner tuple and never mints a new PASS.",
+  "impact_exclusion_classes": [
+    "source_runtime_behavior",
+    "tests_fixtures",
+    "dependency_lockfile_toolchain_build",
+    "public_contract_architecture_semantics",
+    "shared_integration_wiring",
+    "artifact_identity",
+    "overlapping_write_sets"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "T03_V1_none_proven_reuse_binds_current_merge_subject",
+      "validated_head_sha": "sha:4444444444444444444444444444444444444444",
+      "base_sha_at_validation": "sha:5555555555555555555555555555555555555555",
+      "current_target_sha": "sha:5555555555555555555555555555555555555555",
+      "base_delta_write_set_comparison": { "changed_paths": ["docs/notes.md"], "exclusion_classes_touched": [] },
+      "decision": {
+        "validation_impact": "none",
+        "evidence_reuse_basis": "docs-only target delta, no exclusion class touched",
+        "reviewer_controller_attribution": "controller-745"
+      },
+      "record": {
+        "record_id": "val:600",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:4444444444444444444444444444444444444444"
+      },
+      "expect": { "reuse_allowed": true, "disposition": "BOUND_CURRENT", "new_pass_minted": false }
+    },
+    {
+      "scenario_id": "T03_V2_affected_requires_rerun",
+      "validated_head_sha": "sha:4444444444444444444444444444444444444444",
+      "base_sha_at_validation": "sha:5555555555555555555555555555555555555555",
+      "current_target_sha": "sha:6666666666666666666666666666666666666666",
+      "base_delta_write_set_comparison": { "changed_paths": ["standards/VALIDATION_STANDARD.md"], "exclusion_classes_touched": ["public_contract_architecture_semantics"] },
+      "decision": { "validation_impact": "affected", "evidence_reuse_basis": null },
+      "record": {
+        "record_id": "val:610",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:4444444444444444444444444444444444444444"
+      },
+      "expect": { "reuse_allowed": false, "disposition": "FRESH_EXECUTION_REQUIRED", "rerun_gates": ["affected"] }
+    },
+    {
+      "scenario_id": "T03_V3_none_asserted_without_delta_proof_is_unknown_fail_closed",
+      "validated_head_sha": "sha:4444444444444444444444444444444444444444",
+      "base_sha_at_validation": "sha:5555555555555555555555555555555555555555",
+      "current_target_sha": "sha:6666666666666666666666666666666666666666",
+      "base_delta_write_set_comparison": null,
+      "decision": { "validation_impact": "none", "evidence_reuse_basis": "asserted, no comparison" },
+      "record": {
+        "record_id": "val:620",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:4444444444444444444444444444444444444444"
+      },
+      "expect": { "reuse_allowed": false, "disposition": "BLOCKED", "reason": "UNKNOWN_FAIL_CLOSED" }
+    },
+    {
+      "scenario_id": "T03_V4_head_drift_not_repaired_by_impact_decision",
+      "validated_head_sha": "sha:4444444444444444444444444444444444444444",
+      "base_sha_at_validation": "sha:5555555555555555555555555555555555555555",
+      "current_target_sha": "sha:7777777777777777777777777777777777777777",
+      "requested_head_sha_matches_current_pr_head": false,
+      "base_delta_write_set_comparison": { "changed_paths": [], "exclusion_classes_touched": [] },
+      "decision": { "validation_impact": "none", "evidence_reuse_basis": "empty target delta" },
+      "record": {
+        "record_id": "val:630",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:4444444444444444444444444444444444444444"
+      },
+      "expect": { "reuse_allowed": false, "disposition": "HISTORICAL_ONLY", "reason": "HEAD_DRIFT_NEW_DISPATCH_IDENTITY" }
+    },
+    {
+      "scenario_id": "T03_V5_ci_config_only_not_automatically_evidence_preserving",
+      "validated_head_sha": "sha:4444444444444444444444444444444444444444",
+      "base_sha_at_validation": "sha:5555555555555555555555555555555555555555",
+      "current_target_sha": "sha:8888888888888888888888888888888888888888",
+      "base_delta_write_set_comparison": { "changed_paths": [".github/workflows/verify-standard.yml"], "exclusion_classes_touched": [], "note": "CI/workflow/config-only changes are not automatically evidence-preserving (owner rule)" },
+      "decision": { "validation_impact": "none", "evidence_reuse_basis": "ci-config-only" },
+      "record": {
+        "record_id": "val:640",
+        "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "verdict": "PASS",
+        "subject_identity": "sha:4444444444444444444444444444444444444444"
+      },
+      "expect": { "reuse_allowed": false, "disposition": "FRESH_EXECUTION_REQUIRED", "reason": "OWNER_REQUIRES_EXPLICIT_PROOF_CI_CONFIG_CAN_ALTER_EXECUTION" }
+    }
+  ]
+}

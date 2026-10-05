@@ -1,0 +1,104 @@
+{
+  "fixture_id": "gate-currentness/assurance_binding",
+  "description": "M01 consumption wiring — authority-bearing transition admissions consume the T-002 Assurance Plan currentness contract (standards/ASSURANCE_PLAN_STANDARD.md §12/§13; schemas/assurance-plan-v2.schema.json currentness_binding) per standards/EXECUTION_ARCHITECTURE_STANDARD.md §28.1/§28.6: transitions proceed only on CURRENT; STALE routes to recompute; UNKNOWN fails closed; a new adverse finding between Dispatch and Claim fails Claim admission. Currentness never mints PASS (registry F13-F16).",
+  "transition_checkpoints": [
+    "dispatch_materialization",
+    "claim_admission",
+    "merge_merge_ready",
+    "candidate_freeze",
+    "release_qualification"
+  ],
+  "component_current_dimensions": {
+    "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+    "owner_authority_digest": "digest:oa1",
+    "proof_input_digest": "digest:pi1",
+    "task_pack_digest": "digest:tp1",
+    "release_decision_digest": "digest:rd1",
+    "unresolved_finding_digest": "findings:F-ADV-2"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "T06_AB1_current_plan_admits_all_transitions",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd1",
+        "unresolved_finding_digest": "findings:F-ADV-2",
+        "binding_digest": "digest:b1",
+        "state": "CURRENT"
+      },
+      "unresolved_findings": ["F-ADV-2"],
+      "expect": { "binding_state": "CURRENT", "transitions_admitted": ["dispatch_materialization", "claim_admission", "merge_merge_ready", "candidate_freeze", "release_qualification"], "mints_pass": false }
+    },
+    {
+      "scenario_id": "T06_AB2_release_decision_drift_makes_plan_stale_recompute",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd0",
+        "unresolved_finding_digest": "findings:F-ADV-2",
+        "binding_digest": "digest:b0",
+        "state": "CURRENT"
+      },
+      "unresolved_findings": ["F-ADV-2"],
+      "expect": { "recomputed_state": "STALE", "transitions_admitted": [], "routing": "RECOMPUTE_REQUIRED" }
+    },
+    {
+      "scenario_id": "T06_AB3_new_adverse_finding_between_dispatch_and_claim_fails_claim",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd1",
+        "unresolved_finding_digest": "findings:F-ADV-2",
+        "binding_digest": "digest:b1",
+        "state": "CURRENT"
+      },
+      "unresolved_findings": ["F-ADV-2", "F-ADV-9"],
+      "transition_under_check": "claim_admission",
+      "expect": { "recomputed_state": "STALE", "transitions_admitted": [], "routing": "RECOMPUTE_REQUIRED", "reason": "unresolved-finding digest drifted after Dispatch; Claim admission must fail/recompute (§28.1)" }
+    },
+    {
+      "scenario_id": "T06_AB4_missing_component_is_unknown_fail_closed",
+      "plan_binding": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd1",
+        "binding_digest": "digest:b1",
+        "state": "CURRENT"
+      },
+      "unresolved_findings": ["F-ADV-2"],
+      "expect": { "recomputed_state": "UNKNOWN", "transitions_admitted": [], "routing": "BLOCKED", "reason": "omission is not an empty set; missing/ambiguous currentness is UNKNOWN (§12)" }
+    },
+    {
+      "scenario_id": "T06_AB5_empty_finding_set_still_digest_bound",
+      "component_current_dimensions": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd1",
+        "unresolved_finding_digest": "findings:"
+      },
+      "plan_binding": {
+        "subject_identity_ref": "sha:1212121212121212121212121212121212121212",
+        "owner_authority_digest": "digest:oa1",
+        "proof_input_digest": "digest:pi1",
+        "task_pack_digest": "digest:tp1",
+        "release_decision_digest": "digest:rd1",
+        "unresolved_finding_digest": "findings:",
+        "binding_digest": "digest:b2",
+        "state": "CURRENT"
+      },
+      "unresolved_findings": [],
+      "expect": { "binding_state": "CURRENT", "transitions_admitted": ["dispatch_materialization", "claim_admission", "merge_merge_ready", "candidate_freeze", "release_qualification"], "reason": "an empty Release-decision or unresolved-finding set is still bound by its digest; omission is not equivalent to an empty set" }
+    }
+  ]
+}

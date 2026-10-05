@@ -1,0 +1,71 @@
+{
+  "fixture_id": "gate-currentness/dogfood_binding",
+  "description": "TEST_MATRIX T06 — downstream dogfood candidate binding per owners: docs/implementation/4.9.0/PRD.md §16.3 exact-candidate binding + Frozen L2 §14. ADS candidate thaw/drift makes the report historical-only until the Release owner re-evaluates; the report is Release evidence only and cannot authorize execution or Release Qualification; zero baseline-vs-selected delta is compatibility evidence only.",
+  "scenarios": [
+    {
+      "scenario_id": "T06_D1_exact_ads_candidate_match_binds_as_release_evidence",
+      "current_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:800",
+        "downstream_repository": "example/downstream-a",
+        "bound_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": [
+          "docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding",
+          "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture"
+        ],
+        "mechanism_matrix": [
+          { "mechanism": "jit-branch", "state": "EXERCISED", "proof_refs": ["run:9001"] },
+          { "mechanism": "claim-race", "state": "EXERCISED", "proof_refs": ["run:9002"] }
+        ],
+        "baseline_vs_selected_delta_nonzero": true,
+        "auditor_identity": "auditor:independent-1",
+        "stale_pass_transfer": 0,
+        "unauthorized_gate_omission": 0,
+        "independence_loss": 0
+      },
+      "expect": { "disposition": "BOUND_CURRENT", "authorizes_execution": false, "authorizes_release_qualification": false }
+    },
+    {
+      "scenario_id": "T06_D2_ads_candidate_drift_makes_report_historical_only",
+      "current_ads_candidate": "candidate:ADS2@sha:aaaa222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:810",
+        "downstream_repository": "example/downstream-a",
+        "bound_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "mechanism_matrix": [{ "mechanism": "jit-branch", "state": "EXERCISED", "proof_refs": ["run:9011"] }],
+        "baseline_vs_selected_delta_nonzero": true,
+        "auditor_identity": "auditor:independent-1"
+      },
+      "expect": { "disposition": "HISTORICAL_ONLY", "release_owner_reevaluation_required": true }
+    },
+    {
+      "scenario_id": "T06_D3_zero_delta_is_compatibility_evidence_only",
+      "current_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:820",
+        "downstream_repository": "example/downstream-b",
+        "bound_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "mechanism_matrix": [{ "mechanism": "proportional-routing", "state": "NOT_EXERCISED", "proof_refs": [] }],
+        "baseline_vs_selected_delta_nonzero": false,
+        "auditor_identity": "auditor:independent-2"
+      },
+      "expect": { "disposition": "BOUND_CURRENT", "downstream_generality_satisfied": false, "reason": "Baseline=selected with zero proportional delta is compatibility evidence only (Frozen L2 §14)" }
+    },
+    {
+      "scenario_id": "T06_D4_unexercised_mechanism_claim_boundary_required",
+      "current_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:830",
+        "downstream_repository": "example/downstream-c",
+        "bound_ads_candidate": "candidate:ADS1@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "mechanism_matrix": [{ "mechanism": "manual-github-native", "state": "NOT_EXERCISED", "proof_refs": [], "claim_boundary": "no viability claim made" }],
+        "baseline_vs_selected_delta_nonzero": true,
+        "auditor_identity": "auditor:independent-3"
+      },
+      "expect": { "disposition": "BOUND_CURRENT", "mechanism_viability_claim_allowed": false, "reason": "claim boundary for unexercised mechanisms must be explicit (Frozen L2 §14)" }
+    }
+  ]
+}
