@@ -1,12 +1,14 @@
 # T-009 Review Checklist
 
-- Exact base/candidate currentness verified.
-- Only replay/restart focused test/fixture paths plus Execution Pack changed.
-- No Interchange schema/protocol/standard mutation.
-- Same identity+payload is idempotent; conflicting payload/digest fails closed.
-- Lost/replayed/stale cases are deterministic and authority-safe.
-- ACK/progress remain correlation-only and non-authoritative.
-- Restart reconstructs from durable facts without transient queue/chat history.
-- `ai-dev:event:v2` remains writer/admission authority.
-- No new Exchange lifecycle/family or delivery chronology authority.
-- Independent Validation and genuinely Fresh Review required before merge.
+## Exact subject / write set
+- [ ] Candidate PR HEAD/TREE/base exact and current (base `version/v4.9.0@f4fe8854...`).
+- [ ] Diff limited to the three Builder write-set paths plus immutable `.agent/execution/T-009/**`.
+- [ ] Frozen Product/L2/DAG blobs, Task Pack, L3 resolve unchanged at candidate.
+
+## Classification acceptance
+- [ ] G01-G06 oracles executable and passing; bookkeeping never silently mutates topology.
+- [ ] v4.3 governance owner cited by exact refs, not copied; native Issue Dependency requirement enforced.
+
+## Gates
+- [ ] Repository verifier PASS; Builder checks not treated as independent Validation.
+- [ ] Independent mutation-classification Validation PASS before Fresh Review; Fresh Review on same unchanged exact HEAD.

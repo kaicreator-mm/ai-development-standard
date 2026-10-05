@@ -1,15 +1,35 @@
+pack_id: v4.9.0-T-009-jit
+repository: kaicreator-mm/ai-development-standard
+version: 4.9.0
 task_id: T-009
-issue: 515
-integration_branch: version/v4.8.0
-base_sha: 22e8e1701661689fb39a5c363eed424cf827c403
-branch: task/v4.8.0-t09-interchange-conformance
-frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
-task_pack: docs/implementation/4.8.0/task-packs/T09_interchange_conformance.md
-l3: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
+parent_issue: "#728"
+branch: task/v4.9.0-t09-jit-dag-governance
+base_sha: f4fe88542de9d3f5376498e62778e2353391bc57
+base_tree: 82ff224731e854079bdbd40a12eeffe00186b62c
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG43_DAG, LG48_EXEC]
+lineage_last_check_ref: "#745 lineage recompute + composition PR #792 + T003/T004/T006/T007 merges (f4fe8854); v4.3 DAG governance + v4.8 execution surfaces present at base"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-009/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-009/ per the #792/#788 canonical-path scheme
+native_blockers: 0
 review_policy: required
-validation_owner: independent-from-builder
-allowed_write_set:
-  - scripts/test_v48_interchange_replay_restart.py
-  - fixtures/v48_interchange_replay/**
-forbidden: [new_exchange_lifecycle, new_exchange_family, delivery_chronology_as_authority, event_v2_replacement, schema_mutation]
-status: JIT_READY
+validation_owner: dag-mutation-classification
+validation_scope: deterministic-mutation-classification
+builder_write_set:
+  - references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md
+  - scripts/test_v49_jit_dag_governance.py
+  - fixtures/jit-dag-governance/**
+core_artifacts:
+  - .agent/execution/T-009/MANIFEST.yaml
+  - .agent/execution/T-009/EXECUTION_CONTRACT.md
+  - .agent/execution/T-009/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-009/TEST_MATRIX.yaml
+  - .agent/execution/T-009/FAILURE_MATRIX.yaml
+  - .agent/execution/T-009/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
+package_excluded: true

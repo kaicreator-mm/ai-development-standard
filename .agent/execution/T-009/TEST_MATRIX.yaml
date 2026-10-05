@@ -1,15 +1,18 @@
 task_id: T-009
-required:
-  - duplicate_same_identity_same_payload_idempotent
-  - same_identity_conflicting_payload_or_digest_fails_closed
-  - lost_delivery_recoverable_from_durable_facts
-  - replayed_delivery_no_duplicate_authoritative_effect
-  - stale_exact_subject_request_rejected
-  - ack_progress_non_authoritative
-  - canonical_effect_materializes_through_existing_owner
-  - restart_reconstructs_without_queue_or_chat_history
-  - event_v2_writer_admission_preserved
-commands:
-  - python -B scripts/test_v48_interchange_replay_restart.py
-  - python -B scripts/test_protocol_schemas.py
+tests:
+  - id: G01
+    oracle: phase/container bookkeeping is classified as NOT semantic mutation and never silently changes semantic topology
+  - id: G02
+    oracle: ADD / ADD_DEPENDENCY / REMOVE_DEPENDENCY / split / merge / supersede / defer each route exactly per the classification reference
+  - id: G03
+    oracle: runtime-originated semantic proposals require mutation record + native Issue Dependency hydration; textual dependency lists cannot substitute for native graph facts
+  - id: G04
+    oracle: mutation-currentness enforced — stale proposals fail closed
+  - id: G05
+    oracle: Product L + L2 JIT/DAG negatives executable with exact refs
+  - id: G06
+    oracle: no second governance lifecycle; v4.3 owner cited not copied
+required_builder_checks:
   - python -B scripts/verify_standard.py
+  - python -B scripts/test_v49_jit_dag_governance.py
+validation_must_rebind_sources: true
