@@ -1,17 +1,26 @@
 task_id: T-007
-positive:
-  - historical_v4_payloads_required_by_frozen_l2_remain_valid
-  - three_v48_contract_families_validate_independently
-negative:
-  - capability_claim_not_proof
-  - capability_evidence_not_current_review_or_validation_pass
-  - provider_model_not_authority
-  - infrastructure_fact_not_logical_agent_owner
-  - no_fourth_availability_or_exchange_family
-  - stale_exact_subject_cannot_rebind
-  - no_private_cot_requirement
-  - no_owner_reassignment
-commands:
-  - python -B scripts/test_v48_contract_compatibility.py
-  - python -B scripts/test_protocol_schemas.py
+tests:
+  - id: K01
+    oracle: assurance currentness is consumed/rechecked at Dispatch, Claim and merge transitions; a stale currentness latch cannot survive a recompute point (drift => deterministic recompute)
+  - id: K02
+    oracle: legal JIT phase predicate — READY requires dependencies DONE AND lineage predicates current AND pack/admission checks; any missing/stale/unknown input yields WAITING_LINEAGE or BLOCKED, never READY
+  - id: K03
+    oracle: WAITING_LINEAGE is a derived non-dispatch projection — it never becomes a dispatchable/claimable/workflow state (registry F11-F19 semantics preserved)
+  - id: K04
+    oracle: Role Profile hard predicates wire into v4.8 eligibility — hard filters evaluate BEFORE ranking; an ineligible profile cannot be ranked into dispatch by any ordering
+  - id: K05
+    oracle: unresolved adverse findings carry forward through the reducer; completed successor chains close them only via explicit resolution; aggregation ownership stays with Adversarial Review (no review shopping route exists)
+  - id: K06
+    oracle: deterministic recompute on currentness drift — same inputs always produce the same reducer state; drift replay converges; no hidden mutable latch
+  - id: K07
+    oracle: race/drift cases — concurrent claim vs currentness drift resolves fail-closed (BLOCKED, never both-claim or lost-claim); deterministic simulation
+  - id: K08
+    oracle: no second scheduler/claim lifecycle or runtime authority store is introduced; standard sections compose additively with v4.0–v4.8 invariants (§27 hard eligibility etc. untouched)
+  - id: K09
+    oracle: Frozen Product E/F/G/K/L/M/N acceptance items each bind to an executable oracle with an exact ref
+  - id: K10
+    oracle: L2 currentness/JIT/adverse negatives each bind to an executable oracle with an exact ref
+required_builder_checks:
   - python -B scripts/verify_standard.py
+  - python -B scripts/test_v49_execution_core.py
+validation_must_rebind_sources: true

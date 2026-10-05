@@ -1,10 +1,23 @@
 task_id: T-007
-semantic_defect_in_owner_contract: REPORT_OWNER_FINDING_DO_NOT_PATCH_HERE
-stale_evidence_rebind: FAIL
-claim_promoted_to_proof: FAIL
-provider_promoted_to_authority: FAIL
-infrastructure_owner_capture: FAIL
-fourth_family_detected: FAIL
-private_cot_requirement_detected: FAIL
-historical_required_payload_regression: FAIL
-extra_write_path: CONTROLLER_REBIND_REQUIRED
+failure_modes:
+  - condition: version/v4.9.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: a consumed owner contract (assurance/role-profile/registry/release) disagrees with the wiring the standard section needs
+    disposition: SOURCE_AUTHORITY_CONFLICT
+    action: stop BLOCKED — route to Controller; never last-writer-wins or silent re-interpretation
+  - condition: a consumed ref is missing/stale at the candidate
+    disposition: BLOCKED_LINEAGE
+    action: stop and report; never fabricate or inline-copy owner content
+  - condition: the standard edit would weaken or rewrite a v4.0–v4.8 inherited invariant (e.g. §27 hard eligibility, §11 Claim)
+    disposition: REGRESSION
+    action: stop; v4.9 sections compose additively only
+  - condition: a second scheduler/claim lifecycle or runtime authority store would be introduced
+    disposition: GOVERNANCE_VIOLATION
+    action: stop; the v4.8 Dispatch-Claim lifecycle is the only one
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set (incl. read-only dependency refs)
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: required evidence unavailable
+    disposition: NOT_RUN_BLOCKED
+    action: record with the exact missing capability; never synthetic PASS
