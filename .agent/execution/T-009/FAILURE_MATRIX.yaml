@@ -1,10 +1,14 @@
 task_id: T-009
-duplicate_same_payload_creates_second_effect: FAIL
-conflicting_payload_or_digest_last_writer_wins: FAIL
-stale_subject_accepted: FAIL
-ack_or_progress_promoted_to_authority: FAIL
-restart_requires_transient_queue_or_chat_history: FAIL
-event_v2_replaced: FAIL
-new_exchange_family_or_lifecycle: FAIL
-semantic_owner_mutation_needed: REPORT_OWNER_FINDING_DO_NOT_PATCH_HERE
-extra_write_path: CONTROLLER_REBIND_REQUIRED
+failure_modes:
+  - condition: version/v4.9.0 target or Frozen/Task Pack/L3 authority drifts before Builder mutation
+    disposition: BLOCKED_CURRENTNESS
+    action: stop and request Controller JIT rebind
+  - condition: classification would require editing the v4.3 governance owner standard
+    disposition: OWNER_BOUNDARY_VIOLATION
+    action: stop; cite the owner, never copy or edit it
+  - condition: Builder needs to edit any path outside MANIFEST builder_write_set
+    disposition: TASK_PACK_DEFECT
+    action: stop and request Controller rebind/amendment
+  - condition: required evidence unavailable
+    disposition: NOT_RUN_BLOCKED
+    action: record with the exact missing capability; never synthetic PASS

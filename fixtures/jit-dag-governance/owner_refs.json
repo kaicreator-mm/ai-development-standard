@@ -1,0 +1,34 @@
+{
+  "governance_owner_standard": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+  "governance_owner_sections": {
+    "planning_vs_live_dag": "2",
+    "material_mutation_classes": "3",
+    "required_mutation_evidence": "4",
+    "identity_preservation": "5",
+    "dependency_removal_readiness": "6",
+    "native_mutation_execution": "7",
+    "pr_stacks_code_ancestry": "8",
+    "mutation_currentness": "9",
+    "failure_handling": "10",
+    "non_goals": "11"
+  },
+  "mutation_record_schema": "schemas/dag-mutation-record-v1.schema.json",
+  "governance_owner_reference": "references/TASK_DAG_GOVERNANCE_REFERENCE.md",
+  "governance_owner_tests": [
+    "scripts/test_v43_task_dag_governance.py",
+    "scripts/test_v43_dag_mutation_contract.py"
+  ],
+  "jit_predicate_owner": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+  "jit_predicate_sections": {
+    "legal_jit_phase_predicate": "28.2",
+    "waiting_lineage_projection": "28.3",
+    "acceptance_bindings": "28.7"
+  },
+  "wiring_reference": "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+  "frozen_product_item_L": "docs/implementation/4.9.0/PRD.md",
+  "frozen_l2_evidence": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
+  "frozen_task_dag_v02_blob": "b9fe0cc7089f64929b4bcf45f7230d950e864db2",
+  "concern_authority_dag_v01_t009_blob": "4f358ba2b32e01ae17ddcdf970151cf28e44bb3f",
+  "late_evidence_binding": "#728 V49_LATE_EVIDENCE_BINDING — #775 -> T009",
+  "governance_owner": "v4.3 Task DAG Governance (cited, not copied)"
+}

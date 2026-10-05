@@ -1,0 +1,25 @@
+{
+  "comment": "Current durable fact planes for mutation-currentness evaluation (owner TASK_DAG_GOVERNANCE_STANDARD.md §9). A mutation record binds the exact subject it reviewed via topology digest + Task Pack refs; drift between binding and live facts fails closed.",
+  "planes": {
+    "current": {
+      "live_topology_digest": "dag-digest-t008-merged-5f21",
+      "task_pack_refs_current": {
+        "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md": "CURRENT"
+      },
+      "review_impact_current": true,
+      "validation_impact_current": true
+    },
+    "drifted": {
+      "live_topology_digest": "dag-digest-t010-dispatched-9c04",
+      "task_pack_refs_current": {
+        "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md": "STALE"
+      },
+      "review_impact_current": false,
+      "validation_impact_current": true
+    }
+  },
+  "failure_handling": {
+    "stale_or_unknown": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG",
+    "forward_path": "fresh re-evaluated mutation record bound to current facts only"
+  }
+}
