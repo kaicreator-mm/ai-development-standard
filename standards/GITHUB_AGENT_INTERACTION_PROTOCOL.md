@@ -376,6 +376,22 @@ REPOSITORY_INTEGRATION_RESULT
 
 `TASK_CLAIMED` is retained for compatibility; cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
+### 8.4.1 Additive responsibility projection fields
+
+`DISPATCH_REQUEST` / `DISPATCH_CLAIMED` events and the dispatch objects they reference MAY carry the additive same-family responsibility projection when work is executed across operators:
+
+```text
+parent_dispatch_ref: <dispatch_id of the causal parent/transferor dispatch>
+responsibility_mode: DELEGATED_SUBWORK | RESPONSIBILITY_HANDOFF
+```
+
+These fields project the responsibility/control semantics settled by `EXECUTION_ARCHITECTURE_STANDARD.md` section 28 onto the existing dispatch/event family; they consume those semantics and never redefine or replace them.
+
+- `DELEGATED_SUBWORK` names the delegating parent dispatch, so requester/delegator, causal parent, executor/operator and bounded scope reconstruct deterministically from durable facts.
+- `RESPONSIBILITY_HANDOFF` is valid only when the transferring operator (`created_by` on the dispatch; the parent dispatch owner on the event), the receiving operator (`claimed_by` on the dispatch; `operator_id` on the claim event), the scope and the exact work identity are all durably named. A handoff must then be distinguishable from an ordinary supersession.
+- The fields are optional and additive: historical dispatches/events without them remain valid, exactly as for the claim-provenance precedent (`admission_mode` / `protected_claim_key` / `claim_generation`).
+- They create no authority, no new event type, no workflow/dispatch state, no second lifecycle and no responsibility registry/ledger. A required responsibility fact that is missing, duplicate or unresolvable fails closed: responsibility/causation reconstruction reports UNKNOWN instead of guessing, and a second active `RESPONSIBILITY_HANDOFF` of the same work identity is rejected like any incompatible second claim.
+
 ### 8.5 Accepted Claim as Start Record and ownership visibility
 
 The accepted `DISPATCH_CLAIMED` / current accepted Claim is the durable Start Record for authoritative role execution. A worker MUST NOT begin authoritative role execution or mutate implementation source before its dispatch Claim is accepted (`NO_CLAIM_NO_EXECUTION`). A rejected, stale or duplicate claim means STOP/recompute, not best-effort execution. No label, comment, state card, transport ACK, progress message or heartbeat substitutes for accepted Claim authority.
@@ -392,6 +408,7 @@ execution_profile
 sha / expected_base_sha / requested_head_sha as applicable
 task_pack_ref / execution_pack_ref as applicable
 admission_mode / protected_claim_key / claim_generation as additive provenance when supported
+parent_dispatch_ref / responsibility_mode as the additive responsibility projection when the dispatch carries delegated subwork or a responsibility handoff (EXECUTION_ARCHITECTURE_STANDARD.md section 28)
 transport_actor when useful
 ```
 

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/dispatch.schema.json",
   "title": "AI Development Canonical Dispatch",
-  "description": "Executable handoff for builder/validator/reviewer pull workers. One dispatch architecture; role and execution_profile configure authority. Pull vocabulary READY/CLAIMED/RUNNING/COMPLETED/BLOCKED/SUPERSEDED aliases the v3.3 lifecycle vocabulary (QUEUED/ACKNOWLEDGED/DONE/STALE).",
+  "description": "Executable handoff for builder/validator/reviewer pull workers. One dispatch architecture; role and execution_profile configure authority. Pull vocabulary READY/CLAIMED/RUNNING/COMPLETED/BLOCKED/SUPERSEDED aliases the v3.3 lifecycle vocabulary (QUEUED/ACKNOWLEDGED/DONE/STALE). Optional parent_dispatch_ref and responsibility_mode are the additive same-family responsibility projection of EXECUTION_ARCHITECTURE_STANDARD.md section 28 (delegated subwork / responsibility handoff): they create no authority, name no second lifecycle, and reconstruct ambiguity fails closed.",
   "type": "object",
   "additionalProperties": true,
   "required": ["dispatch_id", "repository", "version", "task", "role", "execution_profile", "branch", "expected_base_sha", "pinned_standard_revision", "agent_freedom", "dispatch_state"],
@@ -31,7 +31,9 @@
     "queue_ref": {"type": ["string", "null"], "minLength": 1},
     "created_by": {"type": "string", "minLength": 1},
     "created_at": {"type": "string", "minLength": 1},
-    "claimed_by": {"type": ["string", "null"], "minLength": 1}
+    "claimed_by": {"type": ["string", "null"], "minLength": 1},
+    "parent_dispatch_ref": {"type": ["string", "null"], "minLength": 1},
+    "responsibility_mode": {"type": "string", "enum": ["DELEGATED_SUBWORK", "RESPONSIBILITY_HANDOFF"]}
   },
   "allOf": [
     {
@@ -69,6 +71,14 @@
     {
       "if": {"properties": {"execution_profile": {"const": "WEB_REVIEWER"}}, "required": ["execution_profile"]},
       "then": {"properties": {"role": {"const": "reviewer"}}}
+    },
+    {
+      "if": {"properties": {"responsibility_mode": {"const": "DELEGATED_SUBWORK"}}, "required": ["responsibility_mode"]},
+      "then": {"required": ["created_by", "parent_dispatch_ref"]}
+    },
+    {
+      "if": {"properties": {"responsibility_mode": {"const": "RESPONSIBILITY_HANDOFF"}}, "required": ["responsibility_mode"]},
+      "then": {"required": ["created_by"]}
     }
   ]
 }
