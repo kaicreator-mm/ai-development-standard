@@ -1,0 +1,20 @@
+task_id: V410-T04B
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: manifest/core inventory/base/task-pack/branch binding is malformed or stale
+    action: stop; publish durable failure; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: integration base or owner blob changed before accepted claim
+    action: stop; classify nonmaterial/material drift; rebind if authorized
+  - id: OWNER_CONFLICT
+    when: implementation would redefine T04A repair routing or T02B causality/responsibility authority
+    action: stop; route to owning authority/L3 replan
+  - id: REVIEW_AMBIGUITY
+    when: current-subject finding identity, severity, root-defect class or verdict facts conflict or are not deterministically reconstructible
+    action: fail closed; no PASS transfer or majority vote
+  - id: ARCHITECTURE_CONTRADICTION
+    when: a new Review lifecycle/event/state/registry or new semantic owner appears necessary
+    action: stop; escalate to Frozen Architecture authority
+  - id: OUT_OF_WRITE_SET
+    when: required repair lies outside V410-T04B allowed write set
+    action: stop; route to canonical owner; do not widen Task
