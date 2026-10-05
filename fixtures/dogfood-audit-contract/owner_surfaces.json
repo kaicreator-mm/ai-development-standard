@@ -1,0 +1,77 @@
+{
+  "fixture_id": "dogfood-audit-contract/owner_surfaces",
+  "description": "TEST_MATRIX D08 — owner surfaces consumed read-only by the T-014 contract. Every ref resolves in-repository at the candidate and is cited line-verbatim in references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md; owner surfaces are cited, not copied, and must remain unmutated since the lane base (T-005->T-010->T-014 serialization; NO Release surface edits).",
+  "contract_doc": "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md",
+  "consumed_authority_refs": [
+    "docs/implementation/4.9.0/PRD.md#16-downstream-dogfood-and-measurement-contract",
+    "docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding",
+    "docs/implementation/4.9.0/PRD.md#164-baseline-and-selected-execution",
+    "docs/implementation/4.9.0/PRD.md#165-mechanism-exercise-matrix",
+    "docs/implementation/4.9.0/PRD.md#166-non-vacuity--positive-proportional-outcome",
+    "docs/implementation/4.9.0/PRD.md#167-independent-safety-audit",
+    "docs/implementation/4.9.0/PRD.md#168-manualgithub-native-viability",
+    "docs/implementation/4.9.0/PRD.md#169-claim-boundary",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+    "docs/implementation/4.9.0/TASK_DAG.md",
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md#m10--proportional-dogfood-report-downstream-dogfood-candidate-binding",
+    "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+    "references/RELEASE_APPLICABILITY_REFERENCE.md",
+    "scripts/test_v49_release_applicability.py",
+    "standards/VALIDATION_STANDARD.md#5-validation-layers",
+    "standards/VALIDATION_STANDARD.md#8-ci-execution-channel-vs-validation-gate",
+    "standards/VALIDATION_STANDARD.md#12-evidence-minimum",
+    "standards/CI_EVIDENCE_STANDARD.md",
+    "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md#4-owner-reference-table-all-refs-point-into-existing-owners",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#identity-and-currentness",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#evidence-strength",
+    "scripts/test_v49_gate_currentness.py",
+    "registries/state-dimensions-v1.json"
+  ],
+  "auditor_eligibility_owner_refs": [
+    "docs/implementation/4.9.0/PRD.md#167-independent-safety-audit",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+    "standards/VALIDATION_STANDARD.md#5-validation-layers",
+    "standards/VALIDATION_STANDARD.md#8-ci-execution-channel-vs-validation-gate",
+    "standards/VALIDATION_STANDARD.md#12-evidence-minimum",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#identity-and-currentness",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#evidence-strength"
+  ],
+  "unmutated_since_base": [
+    "standards/RELEASE_STANDARD.md",
+    "standards/VALIDATION_STANDARD.md",
+    "standards/CI_EVIDENCE_STANDARD.md",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+    "standards/ASSURANCE_PLAN_STANDARD.md",
+    "standards/DEVELOPMENT_WORKFLOW.md",
+    "references/RELEASE_APPLICABILITY_REFERENCE.md",
+    "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md",
+    "references/AGENT_CAPABILITY_PROFILE_REFERENCE.md",
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+    "scripts/test_v49_release_applicability.py",
+    "scripts/test_v49_gate_currentness.py",
+    "scripts/test_v49_execution_core.py",
+    "registries/state-dimensions-v1.json",
+    "docs/implementation/4.9.0/PRD.md",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
+    "docs/implementation/4.9.0/TASK_DAG.md",
+    "docs/implementation/4.9.0/task-packs/T14_dogfood_audit_contract.md",
+    "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md"
+  ],
+  "owner_sentences_must_not_be_copied": [
+    "The independent auditor cannot be the orchestrator/Builder principal for the tested decisions.",
+    "The baseline is the legal workflow under the project's bound authority without the tested v4.9 proportional decision, not an invented maximum ceremony strawman.",
+    "No minimum percentage or economic threshold is Frozen at Product level."
+  ],
+  "forbidden_mint_strings": [
+    "RELEASE_QUALIFICATION=PASS",
+    "authorizes_execution=true",
+    "authorizes_release_qualification=true",
+    "gate_pass=PASS"
+  ],
+  "expect": {
+    "owner_surfaces_cited_not_copied": true,
+    "release_surface_edits": 0,
+    "product_l2_dag_mutation": 0
+  }
+}

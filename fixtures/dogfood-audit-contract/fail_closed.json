@@ -1,0 +1,261 @@
+{
+  "fixture_id": "dogfood-audit-contract/fail_closed",
+  "description": "TEST_MATRIX D05 — ambiguous predicate fail-closed exercises per docs/implementation/4.9.0/PRD.md §16.5 and Frozen L2 §16 U3 (model output never proves reduction). Unknown enums, model-resolved ambiguous predicates, missing/zeroed safety accounts and contradictory states reject; honest NOT_RUN/BLOCKED stays consumable but can never satisfy downstream generality.",
+  "scenarios": [
+    {
+      "scenario_id": "D05_NEG_ambiguous_predicate_resolved_by_model_judgment_rejects",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-modelres",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "OWNER_PERMITTED_REDUCTION", "state": "EXERCISED", "proof_refs": ["run:9201"] }
+        ],
+        "claimed_mechanisms": ["OWNER_PERMITTED_REDUCTION"],
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9202", "outcome": "MODEL_JUDGMENT" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9201", "mechanism": "OWNER_PERMITTED_REDUCTION", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "safety_negatives": {
+          "UNAUTHORIZED_GATE_OMISSION": 0, "STALE_PASS_TRANSFER": 0, "INDEPENDENCE_LOSS": 0,
+          "CROSS_OWNER_REQUIREMENT_CANCELLATION": 0, "ADVERSE_TERMINAL_SUPPRESSION": 0
+        },
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "EXERCISED", "proof_refs": ["run:9203"] },
+        "claim_boundary": "n/a"
+      },
+      "expect": {
+        "accepted_as_release_evidence": false,
+        "disposition": "REJECTED",
+        "downstream_generality": "NOT_EVALUATED",
+        "reason": "AMBIGUOUS_PREDICATE_MODEL_RESOLVED"
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_unknown_outcome_enum_fails_closed",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-unknownenum",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "OWNER_PERMITTED_REDUCTION", "state": "EXERCISED", "proof_refs": ["run:9211"] }
+        ],
+        "claimed_mechanisms": ["OWNER_PERMITTED_REDUCTION"],
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9212", "outcome": "PROBABLY_FINE" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9211", "mechanism": "OWNER_PERMITTED_REDUCTION", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "safety_negatives": {
+          "UNAUTHORIZED_GATE_OMISSION": 0, "STALE_PASS_TRANSFER": 0, "INDEPENDENCE_LOSS": 0,
+          "CROSS_OWNER_REQUIREMENT_CANCELLATION": 0, "ADVERSE_TERMINAL_SUPPRESSION": 0
+        },
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "EXERCISED", "proof_refs": ["run:9213"] },
+        "claim_boundary": "n/a"
+      },
+      "expect": {
+        "accepted_as_release_evidence": false,
+        "disposition": "REJECTED",
+        "downstream_generality": "NOT_EVALUATED",
+        "reason": "AMBIGUOUS_PREDICATE_FAIL_CLOSED"
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_unknown_mechanism_enum_fails_closed",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-badmech",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "SOME_NEW_SHORTCUT", "state": "EXERCISED", "proof_refs": ["run:9221"] }
+        ],
+        "claimed_mechanisms": ["SOME_NEW_SHORTCUT"],
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9222", "outcome": "BLOCKED" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9221", "mechanism": "SOME_NEW_SHORTCUT", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "safety_negatives": {
+          "UNAUTHORIZED_GATE_OMISSION": 0, "STALE_PASS_TRANSFER": 0, "INDEPENDENCE_LOSS": 0,
+          "CROSS_OWNER_REQUIREMENT_CANCELLATION": 0, "ADVERSE_TERMINAL_SUPPRESSION": 0
+        },
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "EXERCISED", "proof_refs": ["run:9223"] },
+        "claim_boundary": "n/a"
+      },
+      "expect": {
+        "accepted_as_release_evidence": false,
+        "disposition": "REJECTED",
+        "downstream_generality": "NOT_EVALUATED",
+        "reason": "AMBIGUOUS_PREDICATE_FAIL_CLOSED"
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_missing_safety_negative_account_rejects",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-nosafety",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "OWNER_PERMITTED_REDUCTION", "state": "EXERCISED", "proof_refs": ["run:9231"] }
+        ],
+        "claimed_mechanisms": ["OWNER_PERMITTED_REDUCTION"],
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9232", "outcome": "BLOCKED" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9231", "mechanism": "OWNER_PERMITTED_REDUCTION", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "EXERCISED", "proof_refs": ["run:9233"] },
+        "claim_boundary": "n/a"
+      },
+      "expect": {
+        "accepted_as_release_evidence": false,
+        "disposition": "REJECTED",
+        "downstream_generality": "NOT_EVALUATED",
+        "reason": "MISSING_SAFETY_NEGATIVE_ACCOUNT"
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_safety_negative_violation_is_honest_failure_generality_not_satisfied",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-violation",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "OWNER_PERMITTED_REDUCTION", "state": "EXERCISED", "proof_refs": ["run:9241"] }
+        ],
+        "claimed_mechanisms": ["OWNER_PERMITTED_REDUCTION"],
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9242", "outcome": "BLOCKED" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9241", "mechanism": "OWNER_PERMITTED_REDUCTION", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "safety_negatives": {
+          "UNAUTHORIZED_GATE_OMISSION": 0, "STALE_PASS_TRANSFER": 1, "INDEPENDENCE_LOSS": 0,
+          "CROSS_OWNER_REQUIREMENT_CANCELLATION": 0, "ADVERSE_TERMINAL_SUPPRESSION": 0
+        },
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "EXERCISED", "proof_refs": ["run:9243"] },
+        "claim_boundary": "n/a"
+      },
+      "expect": {
+        "accepted_as_release_evidence": true,
+        "disposition": "BOUND_CURRENT",
+        "downstream_generality": "NOT_SATISFIED",
+        "reason": "SAFETY_NEGATIVE_VIOLATION:STALE_PASS_TRANSFER",
+        "authorizes_execution": false,
+        "authorizes_release_qualification": false
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_required_field_missing_entirely_fails_closed",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-thin",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000"
+      },
+      "expect": {
+        "accepted_as_release_evidence": false,
+        "disposition": "REJECTED",
+        "downstream_generality": "NOT_EVALUATED",
+        "reason": "MISSING_REQUIRED_FIELD"
+      }
+    },
+    {
+      "scenario_id": "D05_NEG_manual_viability_not_run_blocks_generality_only",
+      "oracle": "D05",
+      "current_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+      "report": {
+        "record_id": "dogfood:t14-nomanual",
+        "downstream_repository": "example/downstream-ledger",
+        "bound_ads_candidate": "candidate:ADS-v49@sha:1111222233334444555566667777888899990000",
+        "pinned_authority_refs": ["docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding"],
+        "legal_baseline_workflow": { "workflow_id": "wf:b", "legal_under_bound_authority": true, "invented_maximum_ceremony": false },
+        "selected_proportional_workflow": { "workflow_id": "wf:s" },
+        "mechanism_matrix": [
+          { "mechanism": "OWNER_PERMITTED_REDUCTION", "state": "EXERCISED", "proof_refs": ["run:9251"] }
+        ],
+        "claimed_mechanisms": ["OWNER_PERMITTED_REDUCTION"],
+        "claims_downstream_generality": true,
+        "ambiguous_predicate_exercise": { "state": "EXERCISED", "case_ref": "run:9252", "outcome": "BLOCKED" },
+        "baseline_vs_selected_delta_nonzero": true,
+        "delta_account": [
+          { "step_ref": "run:9251", "mechanism": "OWNER_PERMITTED_REDUCTION", "class": "REDUCTION", "decision_value_account": "accounted" }
+        ],
+        "safety_negatives": {
+          "UNAUTHORIZED_GATE_OMISSION": 0, "STALE_PASS_TRANSFER": 0, "INDEPENDENCE_LOSS": 0,
+          "CROSS_OWNER_REQUIREMENT_CANCELLATION": 0, "ADVERSE_TERMINAL_SUPPRESSION": 0
+        },
+        "auditor": {
+          "auditor_id": "auditor:independent-1",
+          "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+          "is_orchestrator_principal": false,
+          "tested_decision_principal_ids": ["principal:builder-7"]
+        },
+        "manual_github_native_viability": { "state": "BLOCKED", "reason_ref": "blocked:proprietary-transport-only" },
+        "claim_boundary": "manual viability blocked"
+      },
+      "expect": {
+        "accepted_as_release_evidence": true,
+        "disposition": "BOUND_CURRENT",
+        "downstream_generality": "NOT_SATISFIED",
+        "reason": "MANUAL_VIABILITY_NOT_SATISFIED"
+      }
+    }
+  ]
+}

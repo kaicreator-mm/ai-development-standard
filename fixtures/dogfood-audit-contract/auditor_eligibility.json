@@ -1,0 +1,99 @@
+{
+  "fixture_id": "dogfood-audit-contract/auditor_eligibility",
+  "description": "TEST_MATRIX D06 — independent safety-auditor eligibility/profile per docs/implementation/4.9.0/PRD.md §16.7 + Frozen L2 §14. The auditor must satisfy the applicable independent evidence-source policy by owner-surface profile refs and must not be the orchestrating/Builder principal of the tested decisions; auditor identity alone can never grant authority.",
+  "eligible_profile_owner_refs": [
+    "docs/implementation/4.9.0/PRD.md#167-independent-safety-audit",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+    "standards/VALIDATION_STANDARD.md#5-validation-layers",
+    "standards/VALIDATION_STANDARD.md#8-ci-execution-channel-vs-validation-gate",
+    "standards/VALIDATION_STANDARD.md#12-evidence-minimum",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#identity-and-currentness",
+    "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#evidence-strength"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "D06_POS_eligible_independent_auditor_accepted",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "auditor:independent-9",
+        "eligibility_profile_refs": [
+          "standards/VALIDATION_STANDARD.md#5-validation-layers",
+          "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md#identity-and-currentness"
+        ],
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7", "principal:orchestrator-2"]
+      },
+      "expect": { "eligible": true, "reason": null }
+    },
+    {
+      "scenario_id": "D06_NEG_no_eligibility_profile_rejects",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "auditor:independent-9",
+        "eligibility_profile_refs": [],
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7"]
+      },
+      "expect": { "eligible": false, "reason": "INELIGIBLE_AUDITOR" }
+    },
+    {
+      "scenario_id": "D06_NEG_missing_profile_field_fails_closed",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "auditor:independent-9",
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7"]
+      },
+      "expect": { "eligible": false, "reason": "INELIGIBLE_AUDITOR" }
+    },
+    {
+      "scenario_id": "D06_NEG_profile_ref_not_an_owner_surface_rejects",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "auditor:independent-9",
+        "eligibility_profile_refs": ["self-attestation:iam-independent"],
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7"]
+      },
+      "expect": { "eligible": false, "reason": "AUDITOR_PROFILE_REF_NOT_OWNER_SURFACE" }
+    },
+    {
+      "scenario_id": "D06_NEG_auditor_is_orchestrator_principal_rejects",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "principal:orchestrator-2",
+        "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+        "is_orchestrator_principal": true,
+        "tested_decision_principal_ids": ["principal:builder-7", "principal:orchestrator-2"]
+      },
+      "expect": { "eligible": false, "reason": "AUDITOR_IS_TESTED_PRINCIPAL" }
+    },
+    {
+      "scenario_id": "D06_NEG_auditor_is_builder_principal_of_tested_decision_rejects",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "principal:builder-7",
+        "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7"]
+      },
+      "expect": { "eligible": false, "reason": "AUDITOR_IS_TESTED_PRINCIPAL" }
+    },
+    {
+      "scenario_id": "D06_NEG_auditor_identity_cannot_grant_authority",
+      "oracle": "D06",
+      "auditor": {
+        "auditor_id": "release-authority",
+        "eligibility_profile_refs": ["standards/VALIDATION_STANDARD.md#5-validation-layers"],
+        "is_orchestrator_principal": false,
+        "tested_decision_principal_ids": ["principal:builder-7"]
+      },
+      "expect": {
+        "eligible": true,
+        "reason": null,
+        "grants_authority": false,
+        "note": "eligibility makes the safety-negative CHECK valid only; the auditor identity never mints a verdict, never authorizes execution, never issues Release Qualification"
+      }
+    }
+  ]
+}
