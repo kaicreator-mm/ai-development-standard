@@ -1,0 +1,609 @@
+"""V410-T04B focused regression — Review finding / aggregation / currentness convergence.
+
+Positive/negative contract for exact-subject Review currentness (§9.1),
+machine-readable material finding records with the T04A root-defect-class
+binding (§9.2) and deterministic multi-review aggregation (§9.3) of
+`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md`, per L3 Wave D
+(`docs/implementation/4.10.0/L3_WAVE_D_R1.md` § V410-T04B) and Task Pack R1.
+
+Consumes the integrated T04A root-defect-class authority
+(`standards/DEVELOPMENT_WORKFLOW.md` §4) and the existing Review
+finding/aggregation family (`schemas/review-finding-v1.schema.json`,
+`schemas/review-aggregation-v1.schema.json`, `scripts/v40_rules.py`,
+`scripts/v40_semantics.py`); redefines nothing and creates no second Review
+lifecycle, event family, state dimension or registry. `reduce_current_aggregate`
+below is the test oracle for the documented §9.3 reduction, not a runtime
+artifact. Purely local; no network, no runtime execution.
+"""
+
+from __future__ import annotations
+
+import itertools
+import json
+from pathlib import Path
+import re
+import sys
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
+from v40_rules import SEVERITY_RANK  # noqa: E402
+from v40_semantics import validate_review_aggregation  # noqa: E402
+
+PROTOCOL = "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+EVENT_V2 = "schemas/agent-event-v2.schema.json"
+FINDING_V1 = "schemas/review-finding-v1.schema.json"
+AGGREGATION_V1 = "schemas/review-aggregation-v1.schema.json"
+WORKFLOW = "standards/DEVELOPMENT_WORKFLOW.md"
+TEMPLATE = "templates/agent-event-comment.md"
+STATE_DIMENSIONS = "registries/state-dimensions-v1.json"
+
+CANONICAL_WORKFLOW_STATES = {
+    "planned",
+    "ready",
+    "claimed",
+    "implementing",
+    "review-ready",
+    "reviewing",
+    "changes-requested",
+    "validation-needed",
+    "merge-ready",
+    "blocked",
+    "done",
+}
+
+# T04A root-defect classes are owned by DEVELOPMENT_WORKFLOW.md §4; the machine
+# ids below are consumed as that owner's projection. Any drift on either side
+# (class list, ids or 1:1 correspondence) must fail this suite.
+EXPECTED_ROOT_CLASS_PROJECTION = (
+    ("PRODUCT_SEMANTICS_AUTHORITY_CONTRADICTION", "product semantics / authority contradiction"),
+    ("ARCHITECTURE_PUBLIC_CONTRACT", "architecture / public contract"),
+    ("IMPLEMENTATION_DEFECT", "implementation defect"),
+    ("TEST_FIXTURE_EVIDENCE_DEFECT", "test / fixture / evidence defect"),
+    ("ENVIRONMENT_TOOLCHAIN_EXTERNAL_BOUNDARY", "environment / toolchain / external boundary"),
+    ("EXECUTION_ATTRIBUTION_DEFECT", "execution / attribution defect"),
+    ("GATE_APPLICABILITY_AUTHORITY_AMBIGUITY", "gate applicability 或 authority ambiguity"),
+)
+
+SUBJECT_A = "a" * 40
+SUBJECT_B = "b" * 40
+
+
+def read(rel: str) -> str:
+    return (ROOT / rel).read_text(encoding="utf-8")
+
+
+def load_schema(rel: str) -> dict:
+    return json.loads(read(rel))
+
+
+def protocol_section_9() -> str:
+    text = read(PROTOCOL)
+    start = text.index("## 9. Review event invariants")
+    end = text.index("## 10. Builder / Reviewer / Validator routing")
+    return text[start:end]
+
+
+def protocol_subsection(heading: str) -> str:
+    section = protocol_section_9()
+    start = section.index(heading)
+    rest = section[start + len(heading) :]
+    next_heading = rest.find("\n### ")
+    return rest if next_heading == -1 else rest[:next_heading]
+
+
+def protocol_block_after(heading: str) -> str:
+    subsection = protocol_subsection(heading)
+    return subsection[
+        subsection.index("```text") + len("```text") : subsection.index("```", subsection.index("```text") + 1)
+    ]
+
+
+def workflow_root_class_block() -> str:
+    workflow = read(WORKFLOW)
+    start = workflow.index("### Repair routing：root defect class")
+    end = workflow.index("### Non-converging repair")
+    section = workflow[start:end]
+    return section[
+        section.index("```text") + len("```text") : section.index("```", section.index("```text") + 1)
+    ]
+
+
+def normalize_lines(block: str) -> list[str]:
+    return [" ".join(line.split()) for line in block.strip().splitlines() if line.strip()]
+
+
+def parse_protocol_projection(block: str) -> list[tuple[str, str]]:
+    rows = []
+    for line in block.strip().splitlines():
+        if not line.strip():
+            continue
+        machine_id, prose = re.split(r"\s{2,}", line.strip(), maxsplit=1)
+        rows.append((machine_id, prose))
+    return rows
+
+
+def workflow_root_classes() -> list[str]:
+    """The owner's class list, with its trailing cross-reference annotation removed."""
+    return [
+        re.sub(r"（[^）]*）$", "", line).strip() for line in normalize_lines(workflow_root_class_block())
+    ]
+
+
+def findings_schema() -> dict:
+    return load_schema(EVENT_V2)["properties"]["findings"]
+
+
+def record_schema() -> dict:
+    return findings_schema()["properties"]["records"]["items"]
+
+
+def review_result_event(findings: object, *, sha: str = SUBJECT_A, status: str = "FAIL") -> dict:
+    return {
+        "schema": "ai-dev/event-v2",
+        "event": "REVIEW_RESULT",
+        "actor_role": "reviewer",
+        "operator_kind": "chatgpt-web",
+        "operator_id": "chatgpt-web:reviewer-r1",
+        "session_ref": "review-session-1",
+        "transport_actor": "github:kaicreator-mm",
+        "task": "#857",
+        "pr": "#888",
+        "sha": sha,
+        "review_policy": "required",
+        "status": status,
+        "findings": findings,
+        "next_state": "changes-requested",
+    }
+
+
+def record(finding_id: str, severity: str = "P1", root_class: str = "IMPLEMENTATION_DEFECT") -> dict:
+    return {
+        "finding_id": finding_id,
+        "severity": severity,
+        "root_defect_class": root_class,
+        "evidence_refs": ["#857:comment-1"],
+    }
+
+
+def fact(
+    event_ref: str,
+    *,
+    sha: str = SUBJECT_A,
+    status: str = "FAIL",
+    operator_id: str = "chatgpt-web:reviewer-r1",
+    records: tuple[dict, ...] = (),
+) -> dict:
+    assert isinstance(records, tuple), "records fixtures must be tuples of records"
+    return {
+        "event_ref": event_ref,
+        "sha": sha,
+        "status": status,
+        "operator_id": operator_id,
+        "records": records,
+    }
+
+
+def reduce_current_aggregate(facts: list[dict], live_subject: str) -> dict:
+    """Reference reduction of GITHUB_AGENT_INTERACTION_PROTOCOL.md §9.1–§9.3.
+
+    Deterministic test oracle: exact-subject currentness, identity/root-class
+    convergence with retained provenance, fail-closed conflicts and
+    blocker-dominant judgment (the existing `finding-union-blocker-dominance`
+    aggregation policy). Never resolves authority from reviewer/model count.
+    """
+    current = [item for item in facts if item["sha"] == live_subject]
+    result: dict = {
+        "current_subject": live_subject,
+        "historical_facts": tuple(sorted(item["event_ref"] for item in facts if item["sha"] != live_subject)),
+        "state": "NO_CURRENT_REVIEW",
+        "judgment": None,
+        "findings": (),
+        "conflicts": (),
+        "unresolved_blocker_refs": (),
+    }
+    if not current:
+        return result
+
+    verdicts = sorted({item["status"] for item in current})
+    if len(verdicts) > 1:
+        result.update(state="FAIL_CLOSED_VERDICT_CONFLICT", conflicts=tuple(verdicts))
+        return result
+
+    grouped: dict[str, list[tuple[str, dict]]] = {}
+    for item in current:
+        origin = f"{item['operator_id']}:{item['event_ref']}"
+        for entry in item["records"]:
+            grouped.setdefault(entry["finding_id"], []).append((origin, entry))
+
+    logical: list[dict] = []
+    conflicts: list[str] = []
+    for finding_id in sorted(grouped):
+        group = grouped[finding_id]
+        severities = sorted({entry["severity"] for _, entry in group})
+        root_classes = sorted({entry["root_defect_class"] for _, entry in group})
+        if len(severities) > 1 or len(root_classes) > 1:
+            conflicts.append(finding_id)
+            continue
+        logical.append(
+            {
+                "finding_id": finding_id,
+                "severity": severities[0],
+                "root_defect_class": root_classes[0],
+                "blocking": severities[0] in {"P0", "P1"},
+                "provenance": tuple(sorted({origin for origin, _ in group})),
+                "evidence_refs": tuple(
+                    sorted({ref for _, entry in group for ref in entry["evidence_refs"]})
+                ),
+            }
+        )
+    if conflicts:
+        result.update(state="FAIL_CLOSED_FINDING_CONFLICT", conflicts=tuple(sorted(conflicts)))
+        return result
+
+    unresolved = tuple(entry["finding_id"] for entry in logical if entry["blocking"])
+    judgment = "CHANGES_REQUESTED" if unresolved else {"PASS": "PASS", "FAIL": "CHANGES_REQUESTED"}[verdicts[0]]
+    result.update(
+        state="CURRENT",
+        judgment=judgment,
+        findings=tuple(logical),
+        unresolved_blocker_refs=unresolved,
+    )
+    return result
+
+
+class ReviewCurrentnessTests(unittest.TestCase):
+    """L3 positive case 2 / negative case 1: exact-subject currentness."""
+
+    def test_review_subject_is_the_event_level_exact_sha(self) -> None:
+        subsection = protocol_subsection("### 9.1 Review subject and exact-subject currentness")
+        self.assertIn("bound to exactly one subject: the event-level exact `sha`", subsection)
+
+    def test_current_and_stale_facts_are_defined_by_subject_equality(self) -> None:
+        block = protocol_block_after("### 9.1 Review subject and exact-subject currentness")
+        self.assertIn("current facts = accepted Review facts whose exact subject == the live current", block)
+        self.assertIn("stale facts   = Review facts bound to any other subject", block)
+
+    def test_stale_facts_are_historical_only_and_never_transferred(self) -> None:
+        subsection = protocol_subsection("### 9.1 Review subject and exact-subject currentness")
+        self.assertIn("Only current facts may satisfy the Review condition", subsection)
+        self.assertIn("never counted, re-bound or transferred as current", subsection)
+        self.assertIn("A previous subject's `PASS` never satisfies a successor subject", subsection)
+
+    def test_successor_review_is_legal_only_under_existing_owner_rules(self) -> None:
+        subsection = protocol_subsection("### 9.1 Review subject and exact-subject currentness")
+        self.assertIn("Successor/delta review is legal only under the existing owner rules", subsection)
+        self.assertIn("full re-review", subsection)
+        self.assertIn("binds to the new exact subject", subsection)
+
+    def test_ambiguous_subject_fails_closed(self) -> None:
+        subsection = protocol_subsection("### 9.1 Review subject and exact-subject currentness")
+        self.assertIn("currentness fails closed", subsection)
+        self.assertIn("stays unsatisfied rather than being guessed", subsection)
+
+
+class FindingRecordContractTests(unittest.TestCase):
+    """L3 positive case 1 / negative case 3: machine-reconstructible findings."""
+
+    def test_protocol_declares_the_additive_records_shape(self) -> None:
+        subsection = protocol_subsection("### 9.2 Machine finding records")
+        self.assertIn("Material findings SHOULD be reconstructible", subsection)
+        self.assertIn("REVIEW_RESULT.findings", subsection)
+        block = subsection[
+            subsection.index("```yaml") + len("```yaml") : subsection.index("```", subsection.index("```yaml") + 1)
+        ]
+        for token in ("records:", "finding_id:", "severity:", "root_defect_class:", "evidence_refs:"):
+            with self.subTest(token=token):
+                self.assertIn(token, block)
+
+    def test_schema_accepts_a_conforming_review_result_event(self) -> None:
+        schema = load_schema(EVENT_V2)
+        assert_supported_schema(schema)
+        event = review_result_event(
+            {
+                "p1": 1,
+                "records": [
+                    record("RV-1", "P1"),
+                    record("RV-2", "P2", "TEST_FIXTURE_EVIDENCE_DEFECT"),
+                ],
+            }
+        )
+        self.assertEqual(validate_subset(event, schema), [])
+
+    def test_missing_identity_severity_root_class_or_evidence_is_rejected(self) -> None:
+        items = record_schema()
+        complete = record("RV-1")
+        for field_name in ("finding_id", "severity", "root_defect_class", "evidence_refs"):
+            with self.subTest(missing=field_name):
+                incomplete = {key: value for key, value in complete.items() if key != field_name}
+                self.assertTrue(validate_subset(incomplete, items))
+        for override in ({"finding_id": ""}, {"evidence_refs": []}, {"evidence_refs": [""]}):
+            with self.subTest(invalid=override):
+                self.assertTrue(validate_subset({**complete, **override}, items))
+
+    def test_empty_records_array_is_rejected(self) -> None:
+        self.assertTrue(validate_subset({"records": []}, findings_schema()))
+
+    def test_historical_bucket_findings_remain_valid_history(self) -> None:
+        self.assertEqual(validate_subset({"p0": 0, "p1": 1, "p2": 2, "p3": 0}, findings_schema()), [])
+        schema = load_schema(EVENT_V2)
+        legacy = review_result_event({"p0": 0, "p1": 1, "p2": 2, "p3": 0})
+        self.assertEqual(validate_subset(legacy, schema), [])
+
+    def test_record_vocabulary_reuses_the_existing_finding_family(self) -> None:
+        family = load_schema(FINDING_V1)
+        items = record_schema()
+        record_properties = set(items["properties"])
+        family_properties = set(family["properties"])
+        # Only `root_defect_class` is additive; every other member already
+        # exists in the canonical Review finding contract.
+        self.assertEqual(record_properties - family_properties, {"root_defect_class"})
+        self.assertEqual(
+            items["properties"]["severity"]["enum"], family["properties"]["severity"]["enum"]
+        )
+        self.assertEqual(sorted(items["properties"]["severity"]["enum"]), sorted(SEVERITY_RANK))
+        self.assertEqual(
+            items["properties"]["evidence_refs"]["items"], family["properties"]["evidence_refs"]["items"]
+        )
+
+
+class RootDefectClassBindingTests(unittest.TestCase):
+    """L3 positive case 4: root-defect classification binds to T04A authority."""
+
+    def test_protocol_projection_matches_the_workflow_owner_classes(self) -> None:
+        projection = protocol_block_after("### 9.2 Machine finding records")
+        self.assertEqual(
+            parse_protocol_projection(projection),
+            list(EXPECTED_ROOT_CLASS_PROJECTION),
+        )
+
+    def test_workflow_owner_still_lists_the_same_classes(self) -> None:
+        self.assertEqual(
+            workflow_root_classes(), [prose for _, prose in EXPECTED_ROOT_CLASS_PROJECTION]
+        )
+        # The owner's own cross-reference annotation is preserved, not projected.
+        self.assertIn(
+            "gate applicability 或 authority ambiguity（→ 上一节）",
+            normalize_lines(workflow_root_class_block()),
+        )
+
+    def test_schema_enum_matches_the_projection_exactly(self) -> None:
+        items = record_schema()
+        self.assertEqual(
+            items["properties"]["root_defect_class"]["enum"],
+            [machine_id for machine_id, _ in EXPECTED_ROOT_CLASS_PROJECTION],
+        )
+
+    def test_projection_adds_no_class_and_owns_no_repair_routing(self) -> None:
+        subsection = protocol_subsection("### 9.2 Machine finding records")
+        self.assertIn("It adds, removes and redefines no class, and it owns no repair routing", subsection)
+        self.assertIn("Routing a finding's root defect class to repair/escalation stays owned by", subsection)
+        self.assertIn("`DEVELOPMENT_WORKFLOW.md` §4", subsection)
+
+
+class DeterministicAggregationTests(unittest.TestCase):
+    """L3 positive cases 2–3 / negative cases 1–4: deterministic currentness and aggregation."""
+
+    def test_only_current_subject_facts_enter_the_aggregate(self) -> None:
+        facts = [
+            fact("e-stale", sha=SUBJECT_B, status="PASS", records=(record("RV-9"),)),
+            fact("e-current", sha=SUBJECT_A, records=(record("RV-1"),)),
+        ]
+        result = reduce_current_aggregate(facts, SUBJECT_A)
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(result["historical_facts"], ("e-stale",))
+        self.assertEqual([entry["finding_id"] for entry in result["findings"]], ["RV-1"])
+
+    def test_stale_review_pass_never_satisfies_a_successor_subject(self) -> None:
+        facts = [fact("e-old", sha=SUBJECT_B, status="PASS", records=())]
+        result = reduce_current_aggregate(facts, SUBJECT_A)
+        self.assertEqual(result["state"], "NO_CURRENT_REVIEW")
+        self.assertIsNone(result["judgment"])
+        self.assertEqual(result["historical_facts"], ("e-old",))
+
+    def test_duplicate_findings_converge_with_provenance_preserved(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1"),), operator_id="chatgpt-web:reviewer-r1"),
+            fact("e-r2", records=(record("RV-1"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        result = reduce_current_aggregate(facts, SUBJECT_A)
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(len(result["findings"]), 1)
+        self.assertEqual(
+            result["findings"][0]["provenance"],
+            ("chatgpt-web:reviewer-r1:e-r1", "claude-code:reviewer-r2:e-r2"),
+        )
+
+    def test_reduction_is_invariant_to_event_order(self) -> None:
+        facts = [
+            fact("e-1", records=(record("RV-1"),)),
+            fact("e-2", records=(record("RV-2", "P2"),), operator_id="claude-code:reviewer-r2"),
+            fact("e-3", sha=SUBJECT_B, status="PASS", records=()),
+        ]
+        expected = reduce_current_aggregate(facts, SUBJECT_A)
+        for ordering in itertools.permutations(facts):
+            with self.subTest(ordering=[item["event_ref"] for item in ordering]):
+                self.assertEqual(reduce_current_aggregate(list(ordering), SUBJECT_A), expected)
+
+    def test_conflicting_current_verdicts_fail_closed(self) -> None:
+        facts = [
+            fact("e-pass", status="PASS", records=()),
+            fact("e-fail", status="FAIL", records=(), operator_id="claude-code:reviewer-r2"),
+        ]
+        result = reduce_current_aggregate(facts, SUBJECT_A)
+        self.assertEqual(result["state"], "FAIL_CLOSED_VERDICT_CONFLICT")
+        self.assertIsNone(result["judgment"])
+        self.assertEqual(result["conflicts"], ("FAIL", "PASS"))
+
+    def test_conflicting_finding_classification_fails_closed(self) -> None:
+        severity_conflict = [
+            fact("e-r1", records=(record("RV-1", "P1"),)),
+            fact("e-r2", records=(record("RV-1", "P3"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        root_conflict = [
+            fact("e-r1", records=(record("RV-1", "P1", "IMPLEMENTATION_DEFECT"),)),
+            fact(
+                "e-r2",
+                records=(record("RV-1", "P1", "TEST_FIXTURE_EVIDENCE_DEFECT"),),
+                operator_id="claude-code:reviewer-r2",
+            ),
+        ]
+        for facts in (severity_conflict, root_conflict):
+            with self.subTest(records=facts):
+                result = reduce_current_aggregate(facts, SUBJECT_A)
+                self.assertEqual(result["state"], "FAIL_CLOSED_FINDING_CONFLICT")
+                self.assertIsNone(result["judgment"])
+                self.assertEqual(result["conflicts"], ("RV-1",))
+
+    def test_reviewer_and_model_count_create_no_authority(self) -> None:
+        majority_pass = [
+            fact("e-pass-1", status="PASS", records=(), operator_id="chatgpt-web:reviewer-r1"),
+            fact("e-pass-2", status="PASS", records=(), operator_id="claude-code:reviewer-r2"),
+            fact("e-pass-3", status="PASS", records=(), operator_id="other:reviewer-r3"),
+            fact("e-fail", status="FAIL", records=(), operator_id="human:reviewer-r4"),
+        ]
+        result = reduce_current_aggregate(majority_pass, SUBJECT_A)
+        self.assertEqual(result["state"], "FAIL_CLOSED_VERDICT_CONFLICT")
+        self.assertIsNone(result["judgment"])
+
+        single_report = reduce_current_aggregate(
+            [fact("e-r1", records=(record("RV-1"),))], SUBJECT_A
+        )
+        repeated_reports = reduce_current_aggregate(
+            [
+                fact("e-r1", records=(record("RV-1"),), operator_id="chatgpt-web:reviewer-r1"),
+                fact("e-r2", records=(record("RV-1"),), operator_id="claude-code:reviewer-r2"),
+                fact("e-r3", records=(record("RV-1"),), operator_id="other:reviewer-r3"),
+            ],
+            SUBJECT_A,
+        )
+        self.assertEqual(single_report["judgment"], repeated_reports["judgment"])
+        self.assertEqual(
+            single_report["findings"][0]["severity"], repeated_reports["findings"][0]["severity"]
+        )
+        self.assertEqual(len(repeated_reports["findings"]), 1)
+
+    def test_unresolved_blocking_finding_dominates_the_judgment(self) -> None:
+        result = reduce_current_aggregate(
+            [fact("e-r1", status="PASS", records=(record("RV-1", "P0"),))], SUBJECT_A
+        )
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(result["judgment"], "CHANGES_REQUESTED")
+        self.assertEqual(result["unresolved_blocker_refs"], ("RV-1",))
+
+    def test_aggregate_is_accepted_by_the_existing_aggregation_contract(self) -> None:
+        result = reduce_current_aggregate(
+            [fact("e-r1", records=(record("RV-1", "P1"),))], SUBJECT_A
+        )
+        aggregate = {
+            "judgment": result["judgment"],
+            "requested_route": "changes-requested",
+            "requested_route_authority": "NON_AUTHORITATIVE_DERIVED_STATE",
+            "finding_refs": [entry["finding_id"] for entry in result["findings"]],
+            "unresolved_blocker_refs": list(result["unresolved_blocker_refs"]),
+        }
+        findings = [
+            {
+                "finding_id": entry["finding_id"],
+                "severity": entry["severity"],
+                "blocking": entry["blocking"],
+            }
+            for entry in result["findings"]
+        ]
+        self.assertEqual(validate_review_aggregation(aggregate, findings), [])
+
+        forbidden_pass = {**aggregate, "judgment": "PASS"}
+        errors = validate_review_aggregation(forbidden_pass, findings)
+        self.assertIn(
+            "PASS forbidden while unresolved valid blocker exists",
+            errors,
+        )
+
+    def test_aggregation_policy_and_route_authority_are_reused_not_redefined(self) -> None:
+        schema = load_schema(AGGREGATION_V1)
+        self.assertEqual(
+            schema["properties"]["aggregation_policy"]["const"], "finding-union-blocker-dominance"
+        )
+        self.assertEqual(
+            schema["properties"]["requested_route_authority"]["const"],
+            "NON_AUTHORITATIVE_DERIVED_STATE",
+        )
+        for member in ("judgment", "finding_refs", "unresolved_blocker_refs", "conflict_refs"):
+            with self.subTest(member=member):
+                self.assertIn(member, schema["required"])
+        subsection = protocol_subsection("### 9.3 Deterministic aggregation")
+        self.assertIn("schemas/review-aggregation-v1.schema.json", subsection)
+        self.assertIn("finding-union-blocker-dominance", subsection)
+        self.assertIn("conflict_refs", subsection)
+
+
+class OwnerBoundaryNegativeTests(unittest.TestCase):
+    """L3 negative case 5: no new family, dimension, waiver or gate authority."""
+
+    def test_no_new_review_event_type_is_introduced(self) -> None:
+        event_values = load_schema(EVENT_V2)["properties"]["event"]["enum"]
+        review_types = {value for value in event_values if "REVIEW" in value}
+        self.assertEqual(review_types, {"REVIEW_DECISION", "REVIEW_RESULT"})
+        for invented in ("REVIEW_FINDING", "REVIEW_FINDING_RECORD", "REVIEW_AGGREGATE", "FINDING_RECORD"):
+            with self.subTest(invented=invented):
+                self.assertNotIn(invented, event_values)
+
+    def test_no_new_workflow_state_is_introduced_in_section_9(self) -> None:
+        used_states = set(re.findall(r"state:([a-z-]+)", protocol_section_9()))
+        self.assertTrue(used_states <= CANONICAL_WORKFLOW_STATES, used_states - CANONICAL_WORKFLOW_STATES)
+
+    def test_no_event_order_majority_or_count_authority_is_granted(self) -> None:
+        subsection = protocol_subsection("### 9.3 Deterministic aggregation")
+        self.assertIn("invariant to event order or transport arrival order", subsection)
+        self.assertIn("fail closed", subsection)
+        self.assertIn(
+            "MUST NOT be resolved by majority, latest-wins, reviewer/model count, provider or "
+            "model reputation, cost, turnaround or file count",
+            subsection,
+        )
+        self.assertIn("reviewer/model count is coverage evidence only, never verdict authority", subsection)
+        self.assertNotIn("MAY waive", subsection)
+        self.assertNotIn("majority vote decides", subsection)
+
+    def test_evidence_verdict_authority_separation_is_stated(self) -> None:
+        subsection = protocol_subsection("### 9.2 Machine finding records")
+        self.assertIn("`Evidence != Verdict != Authority`", subsection)
+        self.assertIn("merge/release authority remains with the existing Gate Authority chain", subsection)
+
+    def test_validation_and_release_authority_are_not_taken(self) -> None:
+        subsection = protocol_subsection("### 9.3 Deterministic aggregation")
+        self.assertIn(
+            "It introduces no new event family, status dimension, lifecycle, scheduler, registry, "
+            "Validation authority or Release authority.",
+            subsection,
+        )
+
+    def test_no_new_state_dimension_or_review_registry_is_added(self) -> None:
+        registry = json.loads(read(STATE_DIMENSIONS))
+        dimensions = registry["dimensions"]
+        dimension_ids = {entry["dimension_id"] for entry in dimensions}
+        self.assertIn("review_judgment", dimension_ids)
+        self.assertFalse({"review_currentness", "review_finding"} & dimension_ids, dimension_ids)
+        review_dimension = next(entry for entry in dimensions if entry["dimension_id"] == "review_judgment")
+        self.assertEqual(review_dimension["vocabulary_ref"], "schemas/review-aggregation-v1.schema.json")
+        for invented in (
+            "schemas/review-currentness-v1.schema.json",
+            "schemas/review-finding-v2.schema.json",
+            "schemas/review-aggregation-v2.schema.json",
+        ):
+            with self.subTest(invented=invented):
+                self.assertFalse((ROOT / invented).exists())
+
+    def test_template_stays_within_the_existing_review_result_surface(self) -> None:
+        template = read(TEMPLATE)
+        self.assertIn("## REVIEW_RESULT example", template)
+        self.assertIn("records:", template)
+
+
+if __name__ == "__main__":
+    result = unittest.TextTestRunner(verbosity=2).run(
+        unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
+    )
+    raise SystemExit(0 if result.wasSuccessful() else 1)

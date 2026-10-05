@@ -178,9 +178,17 @@ findings:
   p1: 1
   p2: 2
   p3: 0
+  records:
+    - finding_id: "RV-1"
+      severity: P1
+      root_defect_class: IMPLEMENTATION_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
 local_validation_required: false
 next_state: changes-requested
 ```
+
+`findings.records` is the optional additive machine shape for material findings (`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.2): stable `finding_id`, `severity` (`P0`–`P3`), `root_defect_class` (the `DEVELOPMENT_WORKFLOW.md` §4 projection) and `evidence_refs`. Historical payloads without `records` remain valid history.
 
 Human-readable finding details SHOULD follow the payload:
 
