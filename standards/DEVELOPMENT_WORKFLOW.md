@@ -630,6 +630,69 @@ Review Policy 使用同一 authority chain。Standard default 不再为所有 Ve
 
 Architecture Research Demo 本身也不是默认 mandatory release gate；它只在 Stage 2 的 material UNKNOWN 需要 executable evidence 时成为 L2 Freeze 的前置证据。
 
+### Gate applicability 与合法来源
+
+Required gate 的 applicability 由同一 authority chain 决定，并针对确切 subject（Task / PR / candidate / validation tuple）解析。
+
+下列依据 MUST NOT 收窄、豁免、跳过或降级 required gate，也 MUST NOT 使其被记为 `NOT_APPLICABLE`：
+
+```text
+cost / 预算 / 资源紧张
+effort、turnaround / 交付速度 / 计划或发布压力
+变更文件数、行数、diff 大小或“看起来很小”
+docs-only / 机械生成 / 非代码外观
+Agent 或模型自评的 confidence / “看起来没问题”
+历史惯例 / 旧脚本先例 / 无人反对 / 沉默
+```
+
+- 这些依据 MAY 参与排序、调度与成本分配；MUST NOT 改变 gate applicability 或 gate 状态。
+- “docs-only / 机械生成 / 低风险”等类别只有在 authority 自身声明该类别为 `not-required` 时才产生 `NOT_APPLICABLE`（例如 Stage 2.6 的 Review Policy 选择）；executor MUST NOT 从变更外观反推 applicability。
+- 已经执行的 required gate，MUST NOT 因其结果不便而被追认为 `NOT_APPLICABLE`。
+- 降低 authority 已声明的 `required`（Review Policy 或其它 required gate）需要同级或更高 authority；lower-authority 的静默降级始终无效，只有 owning authority 的显式 disposition 才可改变 applicability。
+
+### Applicability UNKNOWN 或矛盾：fail closed
+
+当 required gate 的 applicability 为 UNKNOWN、证据不足、证据冲突，或 authority 之间相互矛盾时，MUST fail closed：
+
+```text
+MUST NOT 以 Builder/Controller/Validator 偏好裁决
+MUST NOT 以文件/发现顺序或先到先得裁决
+MUST NOT 以沉默、无人反对或历史先例裁决
+MUST NOT 记为 NOT_APPLICABLE
+MUST NOT 记为 PASS
+```
+
+- 该 gate 保持未满足（`NOT_RUN` / `BLOCKED`），直到 owning authority 给出 disposition。
+- disposition 路由到拥有该 gate 的 authority（Frozen PRD/Contract、Frozen Architecture、`PROJECT_OVERRIDES`、Task acceptance），并记录为可追溯事实。
+- fail closed 只影响该 gate 与真实依赖它的下游；与其无依赖关系的独立工作继续推进（§5）。
+
+### Repair routing：root defect class
+
+Required gate 出现 `FAIL`、finding 或 blocker 后，repair 必须归因到 root defect class，而不是只处理被引用的表象/症状：
+
+```text
+product semantics / authority contradiction
+architecture / public contract
+implementation defect
+test / fixture / evidence defect
+environment / toolchain / external boundary
+execution / attribution defect
+gate applicability 或 authority ambiguity（→ 上一节）
+```
+
+- 每个 repair MUST 声明它处理的 root class，并给出可证伪的收敛证据：该 root class 不再复现，而不只是表象消失。
+- 让表象消失但不处理 root class 的动作不构成 repair，也不是收敛证据，例如：放宽/删除/跳过检查或断言、把 required gate 改判为 `NOT_APPLICABLE`、重写或重新解释既有 evidence、只改文档/注释措辞、只把 finding 标记为已处理。
+- 若 root class 属于当前 Task write set 之外的所有者（产品语义、架构、公共 contract、其它组件、环境/工具链），MUST 把 repair 路由到该 owner 的既有路径（Product thaw/contradiction、Architecture Amendment、Interface Compatibility、环境 owner 等）；MUST NOT 在同一 PR 内静默扩大 scope，MUST NOT 就地重定义更高 authority。
+- repair 沿用既有 routing 与状态（Stage 4 的 Reviewer route 与 validation repair 路径）；本节不新增 route、workflow state 或 gate state。
+
+### Non-converging repair：escalation，而非 universal retry cap
+
+- 当同一 root class 反复复现，或新的 repair attempt 未带来新的 root-class 归因、新的可证伪证据或新的 disposition 时，即构成 non-converging；MUST escalation/adjudication，MUST NOT 无界循环。
+- escalation 指把事实与证据交回 owning authority 做 disposition：重新归因 root class、修订 authority/contract、在 authority 明确授权下做有界例外、或保持 `BLOCKED`。能否继续由 disposition 决定，MUST NOT 由重试计数决定。
+- 不存在 universal retry cap：任何固定次数/时间上限本身不是 gate authority，MUST NOT 独立地把 non-convergence 转成 `PASS`、`FAIL`、closeout 或 waiver；数值/计数只能作为触发路由与升级的 operational guard，与 `EXTERNAL_SYSTEM_EXECUTION_STANDARD.md`、`VALIDATION_STANDARD.md` 一致。
+- 反向同样成立：无限重试与无限等待被禁止；一旦没有新的收敛证据，就必须 escalation，而不是反复重跑同一 subject 期待不同结果。
+- 没有新的收敛证据时，重复的 repair attempt MUST NOT 产生新的 `IMPLEMENTATION_READY`、`state:merge-ready`、Review PASS 或 Validation PASS 结论。
+
 ## 5. Blocker Propagation
 
 Blocker 只沿依赖边传播。
