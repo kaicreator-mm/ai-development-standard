@@ -1,0 +1,77 @@
+task_id: T-006
+profile: architecture-aligned-registry-adoption
+positive:
+  - id: RA-01
+    assertion: pinned v4.7 T01-T06 COPY_EXACT paths exist and match pinned source bytes
+  - id: RA-02
+    assertion: current v4.8 manifest inventory is preserved additively
+  - id: RA-03
+    assertion: exactly three v4.8 machine families are registered once
+  - id: RA-04
+    assertion: interchange-envelope-v1 remains exactly once and no second interchange owner exists
+  - id: RA-05
+    assertion: semantic registry resolves one canonical owner per concern and grants no authority
+  - id: RA-06
+    assertion: progressive read router remains non-authoritative and fail-closed
+  - id: RA-07
+    assertion: state dimensions remain owner-qualified with forbidden cross-dimension inferences
+  - id: RA-08
+    assertion: project adoption and overrides preserve optional materiality and Fast Path
+  - id: RA-09
+    assertion: historical v4.7 evidence is not rebound to current v4.8 subjects
+negative:
+  - id: RA-N01
+    mutation: add a fourth durable v4.8 machine family
+    expected: FAIL_CLOSED
+  - id: RA-N02
+    mutation: duplicate Interchange v1 or add v2/second owner
+    expected: FAIL_CLOSED
+  - id: RA-N03
+    mutation: retain safe tokens but add registry/read-routing authority or gate grant
+    expected: FAIL_CLOSED
+  - id: RA-N04
+    mutation: retain safe tokens but state provider/model identity or availability authorizes/certifies correctness or routing admission
+    expected: FAIL_CLOSED
+  - id: RA-N05
+    mutation: retain safe tokens but make logical Agent capability evidence own runner resources/current Availability/current Validation or Review truth
+    expected: FAIL_CLOSED
+  - id: RA-N06
+    mutation: materialize Availability as a fourth durable machine family
+    expected: FAIL_CLOSED
+  - id: RA-N07
+    mutation: duplicate semantic concern with competing owner, broken owner, alias chain/cycle, or unknown materiality
+    expected: FAIL_CLOSED
+  - id: RA-N08
+    mutation: apply old exact-SHA evidence to a successor exact subject
+    expected: FAIL_CLOSED
+  - id: RA-N09
+    mutation: retain required no-effect tokens but add contradictory authority_effect/gate_effect/mutation grant
+    expected: FAIL_CLOSED
+  - id: RA-N10
+    mutation: require Fast Path to instantiate unrelated optional registry/profile/family
+    expected: FAIL_CLOSED
+  - id: RA-N11
+    mutation: alter any COPY_EXACT carried v4.7 byte
+    expected: FAIL_CLOSED
+  - id: RA-N12
+    mutation: remove a pre-T006 v4.8 manifest inventory entry or make migration destructive
+    expected: FAIL_CLOSED
+  - id: RA-N13
+    mutation: append contradictory prose while preserving all expected safe tokens
+    expected: FAIL_CLOSED
+required_commands:
+  - python -B scripts/test_v47_convergence_metadata_contracts.py
+  - python -B scripts/test_v47_authority_registry.py
+  - python -B scripts/test_v47_state_dimension_registry.py
+  - python -B scripts/test_v47_reference_conventions.py
+  - python -B scripts/test_v47_progressive_disclosure.py
+  - python -B scripts/test_v47_compatibility_aliases.py
+  - python -B scripts/test_v48_registry_adoption.py
+  - python -B scripts/test_v48_task_learning.py
+  - python -B scripts/test_v48_agent_capability_profile.py
+  - python -B scripts/test_v48_agent_capability_evidence.py
+  - python -B scripts/test_v48_interchange_profile.py
+  - python -B scripts/test_v48_contract_compatibility.py
+  - python -B scripts/test_work_item_contract_and_golden_templates.py
+  - python -B scripts/verify_standard.py
+classification: builder_commands_are_implementation_evidence_not_independent_validation

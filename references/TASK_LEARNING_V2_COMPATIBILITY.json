@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "record_id": "v49-t006-task-learning-v2",
+  "contract": {
+    "kind": "json-schema",
+    "identity": "task-learning"
+  },
+  "baseline": {
+    "version_ref": "ai-dev/task-learning-v1",
+    "sha_or_digest": "git-blob:f4df5ecb531cd577e8a38cd2a9887f73777ee53f"
+  },
+  "candidate": {
+    "version_ref": "ai-dev/task-learning-v2",
+    "sha_or_digest": "git-blob:a7547c2e29bc7551cc066f776d48e3926456022c"
+  },
+  "change_operations": [
+    "add-versioned-same-family-successor-contract",
+    "add-optional-execution-friction-class",
+    "add-optional-recurrence-refs",
+    "add-optional-root-cause-relation",
+    "add-optional-prevention-point-refs",
+    "add-optional-recurrence-audit-ref",
+    "add-optional-ads-evolution-candidate-link"
+  ],
+  "dimensions": [
+    {
+      "name": "owner-family-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v2.schema.json#/properties/owner_family",
+        "schemas/task-learning-v2.schema.json#/properties/predecessor_protocol_version",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#73-task-learning"
+      ]
+    },
+    {
+      "name": "historical-v1-record-validity",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v1.schema.json",
+        "references/TASK_LEARNING_EVIDENCE_REFERENCE.md",
+        "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+      ]
+    },
+    {
+      "name": "v1-core-field-semantics",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v1.schema.json#/properties/confidence_layers",
+        "schemas/task-learning-v2.schema.json#/properties/confidence_layers",
+        "schemas/task-learning-v1.schema.json#/properties/friction_classification",
+        "schemas/task-learning-v2.schema.json#/properties/friction_classification",
+        "references/TASK_LEARNING_V2_REFERENCE.md#family-identity"
+      ]
+    },
+    {
+      "name": "friction-classification-vocabulary",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v1.schema.json#/properties/friction_classification",
+        "schemas/task-learning-v2.schema.json#/properties/friction_classification",
+        "references/TASK_LEARNING_V2_REFERENCE.md#orthogonality-to-friction_classification"
+      ]
+    },
+    {
+      "name": "execution-friction-class-orthogonality",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v2.schema.json#/properties/execution_friction_class",
+        "docs/implementation/4.9.0/PRD.md",
+        "references/TASK_LEARNING_V2_REFERENCE.md#orthogonality-to-friction_classification"
+      ]
+    },
+    {
+      "name": "v1-parser-accepts-v2-instance",
+      "outcome": "INCOMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v1.schema.json#/properties/schema_version",
+        "schemas/task-learning-v2.schema.json#/properties/schema_version"
+      ],
+      "notes_ref": "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+    },
+    {
+      "name": "v2-parser-accepts-v1-instance",
+      "outcome": "INCOMPATIBLE",
+      "evidence_refs": [
+        "schemas/task-learning-v2.schema.json#/properties/owner_family",
+        "schemas/task-learning-v2.schema.json#/properties/predecessor_protocol_version"
+      ],
+      "notes_ref": "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+    },
+    {
+      "name": "authority-and-gate-boundaries",
+      "outcome": "COMPATIBLE",
+      "evidence_refs": [
+        "standards/DEVELOPMENT_WORKFLOW.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
+        "references/TASK_LEARNING_V2_REFERENCE.md#authority-and-routing-boundaries"
+      ]
+    },
+    {
+      "name": "version-aware-adoption",
+      "outcome": "CONDITIONALLY_COMPATIBLE",
+      "evidence_refs": [
+        "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+      ],
+      "notes_ref": "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+    }
+  ],
+  "producer_refs": [
+    "schemas/task-learning-v2.schema.json"
+  ],
+  "consumer_refs": [
+    "v1-only-task-learning-consumers",
+    "version-aware-task-learning-consumers"
+  ],
+  "compatibility_window_ref": "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility",
+  "notes_ref": "references/TASK_LEARNING_V2_REFERENCE.md#v1v2-compatibility"
+}

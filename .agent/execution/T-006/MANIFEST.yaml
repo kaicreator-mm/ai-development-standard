@@ -1,78 +1,31 @@
-pack_id: v4.8.0-T-006-architecture-rebind-r2
-task_id: T-006
+pack_id: v4.9.0-T-006-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-parent_issue: "#512"
-branch: task/v4.8.0-t06-registry-adoption-r2
-base_sha: e433c18bef84fea15abbc8d308fd9c9b4384c520
-base_tree: b26a75484c60fb797633580e82dad7f5953dc311
-v47_source_sha: d8f613127d0167453297a5a5e983de048607aa07
-v47_source_tree: 721dd393b7693d2ce82ebe0533a7fa51726d0a78
-superseded_pr: "#741@9b6bd9b38a3ff854269422b3248044933aac8ffe"
-task_pack_ref: docs/implementation/4.8.0/task-packs/T06_registry_adoption.md
-task_pack_blob: b9e6eb77a3828cfa8dcdc6f6d54e92cbcdb8e308
-l3_ref: docs/implementation/4.8.0/L3_T06_REGISTRY_ADOPTION.md
-l3_blob: d566d37abe4df6e0f39732da412b0f7cd00724a4
-frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
-frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
-frozen_dag_blob: 21d45c8d1a4ec94621eb8ca6051f21ece8227fdc
-generated_by: chatgpt-web:v48-t006-phase5-architecture-rebind
-generation_phase: T006_ARCHITECTURE_ALIGNMENT_PLANNING_REBIND
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-execution_ceiling: architecture_aligned_registry_adoption_integration
-pinned_standard_revision: version/v4.8.0@e433c18bef84fea15abbc8d308fd9c9b4384c520
-v47_carry_forward_mode: PINNED_T01_T06_PORTABLE_STACK
-copy_exact_count: 16
-builder_write_set_count: 22
-builder_write_set:
-  - standard-manifest.json
-  - schemas/authority-applicability-entry-v1.schema.json
-  - schemas/state-dimension-registry-v1.schema.json
-  - scripts/test_v47_convergence_metadata_contracts.py
-  - references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md
-  - scripts/test_v47_authority_registry.py
-  - registries/state-dimensions-v1.json
-  - references/STATE_DIMENSION_REGISTRY_REFERENCE.md
-  - scripts/test_v47_state_dimension_registry.py
-  - standards/REFERENCE_CONVENTION_STANDARD.md
-  - references/REFERENCE_CONVENTION_REFERENCE.md
-  - scripts/test_v47_reference_conventions.py
-  - references/PROGRESSIVE_DISCLOSURE_ROUTING.md
-  - scripts/resolve_standard_read_set.py
-  - scripts/test_v47_progressive_disclosure.py
-  - references/COMPATIBILITY_ALIAS_CONFORMANCE.md
-  - scripts/test_v47_compatibility_aliases.py
-  - standards/PROJECT_ADOPTION.md
-  - templates/project/.dev-standard/PROJECT_OVERRIDES.md
-  - references/V48_REGISTRY_ADOPTION_REFERENCE.md
-  - docs/implementation/4.8.0/MIGRATION_ADOPTION.md
-  - scripts/test_v48_registry_adoption.py
-read_only_owner_inputs:
-  - docs/implementation/4.8.0/PRD.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - docs/implementation/4.8.0/TASK_DAG.md
-  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
-  - standards/CI_RUNNER_CAPABILITY_STANDARD.md
-  - schemas/task-learning-v1.schema.json
-  - schemas/agent-capability-profile-v1.schema.json
-  - schemas/agent-capability-evidence-v1.schema.json
-  - schemas/interchange-envelope-v1.schema.json
-forbidden_builder_paths:
-  - docs/implementation/4.8.0/PRD.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - docs/implementation/4.8.0/L2_FREEZE.md
-  - docs/implementation/4.8.0/TASK_DAG.md
-  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
-  - standards/CI_RUNNER_CAPABILITY_STANDARD.md
-  - schemas/task-learning-v1.schema.json
-  - schemas/agent-capability-profile-v1.schema.json
-  - schemas/agent-capability-evidence-v1.schema.json
-  - schemas/interchange-envelope-v1.schema.json
-  - .github/workflows/**
+version: 4.9.0
+task_id: T-006
+parent_issue: "#725"
+branch: task/v4.9.0-t06-task-learning-v2
+base_sha: df94641e6082dc7a2988e73eafdffd3bf42668b9
+base_tree: a8c86675d003d397636304f3441a14385660f9c5
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T06_task_learning_v2.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG42_COMPAT, LG48_LEARNING]
+lineage_last_check_ref: "#745 lineage recompute + lineage composition PR #792 merged (df94641e); v4.8 Task Learning v1 owner surface (schemas/task-learning-v1.schema.json + owner standard) present at base"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-006/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-006/ per the #792/#788 canonical-path scheme; historical v4.8 L3/task-pack doc references to the old path are historical (records remain durable at _legacy)
+native_blockers: 0
 review_policy: required
-validation_owner: independent-from-builder
-validation_scope: exact-subject-integration
-external_real_claims_required: false
+validation_owner: same-family-compatibility
+validation_scope: same-family-compatibility-and-routing-authority-negatives
+builder_write_set:
+  - schemas/task-learning-v2.schema.json
+  - references/TASK_LEARNING_V2_COMPATIBILITY.json
+  - references/TASK_LEARNING_V2_REFERENCE.md
+  - scripts/test_v49_task_learning_v2.py
+read_only_owner_refs:
+  - schemas/task-learning-v1.schema.json
+  - standards/TASK_LEARNING_STANDARD.md
 core_artifacts:
   - .agent/execution/T-006/MANIFEST.yaml
   - .agent/execution/T-006/EXECUTION_CONTRACT.md
@@ -80,10 +33,7 @@ core_artifacts:
   - .agent/execution/T-006/TEST_MATRIX.yaml
   - .agent/execution/T-006/FAILURE_MATRIX.yaml
   - .agent/execution/T-006/REVIEW_CHECKLIST.md
-retention: durable
-package_excluded: true
-pack_state_at_generation: PACK_CURRENT
 implementation_state: NOT_PERFORMED
 validation_state: NOT_PERFORMED
 fresh_review_state: NOT_PERFORMED
-architecture_amendment_required: false
+package_excluded: true
