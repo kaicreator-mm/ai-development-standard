@@ -21,16 +21,30 @@ PACK_HEAD_SHA = "f20e485f73df1bfb01826e5c341c8340c068172a"
 FROZEN_L2_BLOB = "bd41ea0175b459a6a490fd37ad579e429a58a1c3"
 
 READ_ONLY_OWNER_PATHS = (
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
     "schemas/agent-capability-profile-v1.schema.json",
     "schemas/agent-capability-evidence-v1.schema.json",
-    "schemas/dispatch.schema.json",
     "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
     "docs/implementation/4.9.0/PRD.md",
     "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
     "docs/implementation/4.9.0/task-packs/T04_role_execution_profile.md",
 )
+
+# T-011 re-binds (CF-V49-02 #745@5992918366; classification #831@5994177360):
+# - standards/EXECUTION_ARCHITECTURE_STANDARD.md: pre-existing stale pin — the
+#   surface carries the T-007 section 28 append (blob 019d4df7@df94641e ->
+#   ffe4788b, unchanged through BASE/pack/HEAD; absent from the T-008 write set);
+# - schemas/dispatch.schema.json: the T-008 DAG-owned surface, legally mutated
+#   after BASE_SHA (optional assurance_currentness_ref / role_profile_ref /
+#   jit_phase_ref additions; 4607f6cb@BASE -> 7259cb35, per
+#   references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json).
+# Both stale "unchanged since BASE_SHA" pins are re-bound to exact
+# current-blob identity pins; pin constants only — any further mutation of
+# either surface still fails, zero other assertion change.
+READ_ONLY_OWNER_PATHS_REBOUND_BLOBS = {
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
+    "schemas/dispatch.schema.json": "7259cb357d71c90db683af2533c3dee4733a8e17",
+}
 
 PLANNING_PATHS = tuple(
     f".agent/execution/T-004/{name}"
@@ -532,6 +546,12 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
                     git_object_sha(BASE_SHA, rel_path),
                     git_object_sha("HEAD", rel_path),
                 )
+        # T-011 re-bind: the T-007-appended execution architecture surface and
+        # the T-008-mutated dispatch surface are pinned to their exact current
+        # blobs (see READ_ONLY_OWNER_PATHS_REBOUND_BLOBS provenance).
+        for rel_path, pinned_blob in READ_ONLY_OWNER_PATHS_REBOUND_BLOBS.items():
+            with self.subTest(path_rebound=rel_path):
+                self.assertEqual(pinned_blob, git_object_sha("HEAD", rel_path))
         self.assertEqual(git_object_sha(BASE_SHA, "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md"), FROZEN_L2_BLOB)
 
     def test_immutable_planning_files_unmutated_since_pack_head(self) -> None:

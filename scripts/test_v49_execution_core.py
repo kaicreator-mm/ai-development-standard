@@ -50,8 +50,19 @@ READ_ONLY_DEPS = (
     "schemas/role-execution-profile-v1.schema.json",
     "registries/state-dimensions-v1.json",
     "schemas/agent-capability-profile-v1.schema.json",
-    "schemas/dispatch.schema.json",
 )
+
+# T-011 re-bind (CF-V49-02 #745@5992918366; classification #831@5994177360, K08):
+# schemas/dispatch.schema.json is the T-008 DAG-owned surface, legally mutated
+# after this lane's base (optional assurance_currentness_ref / role_profile_ref /
+# jit_phase_ref additions; the compatibility record
+# references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json pins baseline
+# 4607f6cb@base -> candidate 7259cb35). The stale "unchanged since base" pin is
+# re-bound to an exact current-blob identity pin below; pin constant only —
+# any further mutation of the surface still fails, zero other assertion change.
+READ_ONLY_DEPS_REBOUND_BLOBS = {
+    "schemas/dispatch.schema.json": "7259cb357d71c90db683af2533c3dee4733a8e17",
+}
 
 PLANNING_PATHS = tuple(
     f".agent/execution/T-007/{name}"
@@ -782,6 +793,11 @@ class ExecutionCoreKernel(unittest.TestCase):
         for rel_path in READ_ONLY_DEPS:
             with self.subTest(read_only=rel_path):
                 self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
+        # T-011 re-bind: the T-008-mutated dispatch surface is pinned to its
+        # exact current DAG-owned blob (see READ_ONLY_DEPS_REBOUND_BLOBS).
+        for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
+            with self.subTest(read_only_rebound=rel_path):
+                self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))
 
     # ---------- K09: Frozen Product acceptance items E/F/G/K/L/M/N ----------
 

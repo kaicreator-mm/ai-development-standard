@@ -41,3 +41,13 @@ jobs:
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
       - run: python scripts/test_v43_conformance_dogfood.py
+      - run: python scripts/test_v49_execution_core.py
+      - run: python scripts/test_v49_authority_state_registry.py
+      - run: python scripts/test_v49_role_execution_profile.py
+      - run: python scripts/test_v49_task_learning_v2.py
+      - run: python scripts/test_v49_gate_currentness.py
+      - run: python scripts/test_v49_execution_contract_refs.py
+      - run: python scripts/test_v49_jit_dag_governance.py
+      - run: python scripts/test_v49_assurance_plan_v2.py
+      - run: python scripts/test_v49_assurance_owner.py
+      - run: python scripts/test_v49_release_applicability.py
