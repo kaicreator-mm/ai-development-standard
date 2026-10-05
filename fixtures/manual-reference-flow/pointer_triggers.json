@@ -1,0 +1,20 @@
+{
+  "fixture_id": "manual-reference-flow/pointer_triggers",
+  "description": "Pointer-only trigger examples for references/MANUAL_REFERENCE_FLOW_V49.md section 4, conforming to the canonical shapes owned by standards/ISSUE_FIRST_TASK_TRIGGER.md and executable in scripts/test_pointer_only_trigger_contract.py. Conforming examples carry only the repository + Issue/PR pointer plus an optional role/dispatch id; non-conforming examples each carry task-specific payload that must live in the durable Issue instead.",
+  "contract_owner_refs": [
+    "standards/ISSUE_FIRST_TASK_TRIGGER.md#user-visible-trigger-contract",
+    "standards/ISSUE_FIRST_TASK_TRIGGER.md#forbidden-task-specific-trigger-content",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#8-pointer-only-agent-invocation"
+  ],
+  "conforming": [
+    "完成 `owner/repo` Issue #732。",
+    "执行 `owner/repo` Issue #732 的当前 READY builder dispatch。",
+    "执行 `owner/repo` Issue #732 的当前 READY validation dispatch dispatch-17。",
+    "完成 `owner/repo` PR #792 的当前 READY Independent Review dispatch。"
+  ],
+  "nonconforming": [
+    "完成 `owner/repo` Issue #732，baseline d53e943e，只改 references/**。",
+    "完成 `owner/repo` Issue #732，先跑 verify_standard.py 再跑 focused test。",
+    "Continue repo-x v4.9 current READY validation work in Issue #732."
+  ]
+}

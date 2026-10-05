@@ -1,0 +1,102 @@
+{
+  "fixture_id": "manual-reference-flow/durable_facts",
+  "description": "Durable-fact examples used by references/MANUAL_REFERENCE_FLOW_V49.md. Every fact is read from a git object, a GitHub surface, or a repository file at an exact revision. Nothing here requires a scheduler daemon, a runtime database, or any proprietary transport; each read is reproducible by any operator with git and gh.",
+  "allowed_surfaces": ["git", "github-api", "repository-file"],
+  "facts": [
+    {
+      "fact_id": "F-SUBJECT-SHA",
+      "kind": "durable",
+      "surface": "git",
+      "read": "git rev-parse version/v4.9.0",
+      "example_observation": "d53e943ec7109648485b64a647ed2c7cf553531d",
+      "used_by_walkthroughs": ["W-A", "W-E"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+      ]
+    },
+    {
+      "fact_id": "F-FROZEN-BLOB",
+      "kind": "durable",
+      "surface": "git",
+      "read": "git rev-parse version/v4.9.0:docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "example_observation": "bd41ea0175b459a6a490fd37ad579e429a58a1c3",
+      "used_by_walkthroughs": ["W-B", "W-E"],
+      "owner_refs": [
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix"
+      ]
+    },
+    {
+      "fact_id": "F-PLAN-BINDING",
+      "kind": "durable",
+      "surface": "repository-file",
+      "read": "git show <subject>:<plan-path>  # the plan document plus its currentness_binding block at the exact revision",
+      "example_observation": "currentness_binding.state and the stored component digests, as issued by the plan owner",
+      "used_by_walkthroughs": ["W-A"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+        "schemas/assurance-plan-v2.schema.json#currentness_binding"
+      ]
+    },
+    {
+      "fact_id": "F-NATIVE-DEPENDENCY",
+      "kind": "durable",
+      "surface": "github-api",
+      "read": "gh api repos/OWNER/REPO/issues/NUMBER/dependencies/blocked_by --jq '.[].state'",
+      "example_observation": "native blocked-by edges of the work item, each DONE or open; body text and Markdown tables never substitute for these edges",
+      "used_by_walkthroughs": ["W-B", "W-E"],
+      "owner_refs": [
+        "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+      ]
+    },
+    {
+      "fact_id": "F-DISPATCH-RECORD",
+      "kind": "durable",
+      "surface": "github-api",
+      "read": "gh api repos/OWNER/REPO/issues/comments/COMMENT_ID --jq '.body'",
+      "example_observation": "the exact-subject dispatch record on the Issue (subject, base, role, independence axes)",
+      "used_by_walkthroughs": ["W-C"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#11-dispatch-lifecycle-atomic-claim-and-staleness"
+      ]
+    },
+    {
+      "fact_id": "F-CLAIM-RECORD",
+      "kind": "durable",
+      "surface": "github-api",
+      "read": "gh api repos/OWNER/REPO/issues/NUMBER/comments --jq '[.[] | select(.body | startswith(\"CLAIM\"))] | length'",
+      "example_observation": "the accepted claim record on the Issue; a competitor re-reading it is rejected as duplicate/stale",
+      "used_by_walkthroughs": ["W-C"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#111-required-claim-serialization-capability",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+      ]
+    },
+    {
+      "fact_id": "F-UNRESOLVED-FINDING",
+      "kind": "durable",
+      "surface": "github-api",
+      "read": "gh api repos/OWNER/REPO/pulls/NUMBER/reviews --jq '[.[] | select(.state == \"CHANGES_REQUESTED\")]'",
+      "example_observation": "the durable unresolved-finding set; it persists until per-finding successor verification or owning-authority disposition",
+      "used_by_walkthroughs": ["W-D"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects"
+      ]
+    },
+    {
+      "fact_id": "F-TASK-PACK",
+      "kind": "durable",
+      "surface": "repository-file",
+      "read": "git show <subject>:docs/implementation/4.9.0/task-packs/T13_manual_reference_flow.md",
+      "example_observation": "the current Task Pack for the exact subject; envelope authority E1/E2 reads this, never chat text",
+      "used_by_walkthroughs": ["W-B", "W-E"],
+      "owner_refs": [
+        "docs/implementation/4.9.0/task-packs/T13_manual_reference_flow.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+      ]
+    }
+  ]
+}
