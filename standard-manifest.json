@@ -12,6 +12,7 @@
     "normative_standards": [
       "standards/ARCHITECTURE_DESIGN_STANDARD.md",
       "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+      "standards/ASSURANCE_PLAN_STANDARD.md",
       "standards/CHATGPT_WEB_ROLE.md",
       "standards/CI_EVIDENCE_STANDARD.md",
       "standards/CI_EXECUTION_STANDARD.md",
@@ -332,6 +333,29 @@
         "semantic_concern": "execution.agent_capability_evidence",
         "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
         "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "assurance-proof-currentness",
+        "semantic_concern": "assurance.proof_composition_and_currentness",
+        "canonical_owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "role-execution-profile",
+        "semantic_concern": "execution.role_execution_profile_projection",
+        "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN",
+        "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "release-applicability",
+        "semantic_concern": "release.per_gate_subject_applicability",
+        "canonical_owner_ref": "standards/RELEASE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN",
+        "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"
       }
     ]
   }

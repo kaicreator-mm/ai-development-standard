@@ -1,22 +1,30 @@
-task: T-003
-required:
-  - id: concrete-gap-first
-    proves: existing Interchange v1 and GitHub event profile are inspected before any mutation; NO_CHANGE_REQUIRED is valid
-  - id: existing-family-reuse
-    proves: protocol_version remains ai-dev/interchange-v1 and no fourth Exchange family/owner is introduced
-  - id: capability-owner-reference
-    proves: receiver/executor capability semantics resolve through durable Task/Dispatch/T-015-owned facts rather than ad-hoc envelope fields
-  - id: correlation-non-authority
-    proves: authority_effect remains CORRELATION_ONLY_NON_AUTHORITATIVE and ACK/delivery/progress cannot become gate truth
-  - id: replay-conflict-currentness
-    proves: exact subject identity, causation, payload refs and existing replay/conflict semantics remain compatible
-  - id: historical-compatibility
-    proves: no required-field or event-family breaking change is introduced
-  - id: focused-suite
-    command: python -B scripts/test_v48_interchange_profile.py
-  - id: protocol-regression
-    command: python -B scripts/test_protocol_schemas.py
-  - id: repository-verifier
-    command: python -B scripts/verify_standard.py
-validation: independent protocol/schema compatibility validation on exact candidate
-review: fresh exact-HEAD review required after validation
+task_id: T-003
+tests:
+  - id: R01
+    oracle: every v4.9 semantic concern has exactly one canonical owner/applicability entry; duplicates or ambiguity FAIL (N01)
+  - id: R02
+    oracle: registry/discovery/provenance metadata cannot imply semantic/mutation/merge/dispatch/review/validation/release authority (N02/N13)
+  - id: R03
+    oracle: task/dependency DONE never implies LG47 lineage current in any registry surface (N03)
+  - id: R04
+    oracle: Role Profile presence cannot imply Agent Capability proven (N04); Agent Capability/Role Profile cannot imply role action or terminal authority (N05)
+  - id: R05
+    oracle: concern-level Release applicability cannot imply version-level Release applicability (N06)
+  - id: R06
+    oracle: proof/currentness CURRENT/TRUE cannot imply Validation/Review/Release PASS or Task READY (N07)
+  - id: R07
+    oracle: WAITING_LINEAGE remains a derived projection and cannot become a canonical workflow state or replace a native dependency (N08)
+  - id: R08
+    oracle: stale/broken/ambiguous owner or applicability refs fail closed; never a permissive/default owner (N09)
+  - id: R09
+    oracle: old-SHA PASS or current registry snapshot cannot transfer to successor/current subject (N10)
+  - id: R10
+    oracle: provider/model/tool/runtime availability cannot become authority (N11)
+  - id: R11
+    oracle: no second discovery table/resolver or parallel state vocabulary exists (N12); no workflow lifecycle state added
+  - id: R12
+    oracle: inherited v4.7 state-dimension negatives F01–F10 remain intact and non-weakened (N14); both registries validate against their v1 schemas
+required_builder_checks:
+  - python -B scripts/verify_standard.py
+  - python -B scripts/test_v49_authority_state_registry.py
+validation_must_rebind_sources: true
