@@ -63,13 +63,21 @@ COPY_EXACT = (
     "scripts/test_v47_compatibility_aliases.py",
 )
 COPY_EXACT_BLOBS = {
+    # T-011 re-bind (CF-V49-01 #722@5985991276 / CF-V49-02 #745@5992918366;
+    # classification #831@5994177360, RA01): the three registry-stack surfaces
+    # below were legally mutated by the v4.9 T-003 authority/state registration
+    # (T003-PACK-R2 write set, #801) after the v4.7 carry-forward. Their stale
+    # pinned blob constants are re-bound to the post-T003 DAG-owned blobs
+    # (59fd5f84->17d178e5, c6f955ca->ac92b744, 60ce5b58->a879afe4). Pin
+    # constants only: byte-identity assertion strength is unchanged and any
+    # further single-byte mutation of a carried path still fails (RA-N11).
     "schemas/authority-applicability-entry-v1.schema.json": "2e4a0c26053fbc55ba44aea93d6de377a5ecfb97",
     "schemas/state-dimension-registry-v1.schema.json": "54e3b8f8147e211c5028690c9f1fa72e1e5d1dbd",
     "scripts/test_v47_convergence_metadata_contracts.py": "22337a95afcef0bd4da5ac029f750398a997d098",
-    "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md": "59fd5f842fb27a42db9e7b6bd8e348fcf79d1a3b",
+    "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md": "17d178e579177d93f9641d4e1c4d998459e98b3b",
     "scripts/test_v47_authority_registry.py": "731e3fd4b00145dfe3ebf50f8322016b2d420a0c",
-    "registries/state-dimensions-v1.json": "c6f955ca576ddd63bbda25a674737d86880209b7",
-    "references/STATE_DIMENSION_REGISTRY_REFERENCE.md": "60ce5b58ecbfc46b1c624ebdfd9af01a0d6262b7",
+    "registries/state-dimensions-v1.json": "ac92b744f0c751916f226f4d4b60e3ecbb50dd7a",
+    "references/STATE_DIMENSION_REGISTRY_REFERENCE.md": "a879afe48f3ca3d1752fa2ea390d91dbe63b6359",
     "scripts/test_v47_state_dimension_registry.py": "4541d57738297a0f2c4524e128e10275e368032f",
     "standards/REFERENCE_CONVENTION_STANDARD.md": "ba6a95b124c1804ea4e13c5c6d058e9ade2cc905",
     "references/REFERENCE_CONVENTION_REFERENCE.md": "4b79f1ad217d090fae4a60f13ec7757fab39ffbd",
@@ -98,6 +106,20 @@ V48_NEW_AUTHORITY_ENTRIES = [
     {"schema_version": 1, "entry_id": "agent-capability-evidence", "semantic_concern": "execution.agent_capability_evidence", "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
 ]
 
+# T-011 re-bind (CF-V49-01/02; classification #831@5994177360, RA05): the
+# post-T003 v4.9 registry inventory. These three entries were registered by
+# the v4.9 T-003 authority/state lane (T003-PACK-R2, #801) and are pinned
+# byte-exact below; the registry count pin becomes carried + exactly three
+# v4.8 new + exactly three v4.9 new. Ownership of assurance composition
+# stays with ASSURANCE_PLAN_STANDARD; role profile projection and release
+# per-gate applicability stay with their pre-existing owners; no entry
+# grants authority (authority-free metadata rule unchanged).
+V49_NEW_AUTHORITY_ENTRIES = [
+    {"schema_version": 1, "entry_id": "assurance-proof-currentness", "semantic_concern": "assurance.proof_composition_and_currentness", "canonical_owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "role-execution-profile", "semantic_concern": "execution.role_execution_profile_projection", "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN", "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"},
+    {"schema_version": 1, "entry_id": "release-applicability", "semantic_concern": "release.per_gate_subject_applicability", "canonical_owner_ref": "standards/RELEASE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN", "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"},
+]
+
 AUTHORIZED_SECTION_ADDITIONS = {
     "discovery_standards": {"standards/REFERENCE_CONVENTION_STANDARD.md"},
     "machine_contracts": set(V48_MACHINE_FAMILIES) | {
@@ -123,6 +145,66 @@ AUTHORIZED_SECTION_ADDITIONS = {
         "scripts/test_v47_state_dimension_registry.py",
         "scripts/test_v48_registry_adoption.py",
     },
+}
+
+# T-011 re-bind (CF-V49-01 #722@5985991276 / CF-V49-02 #745@5992918366;
+# classification #831@5994177360, RA02): the v4.9 authorized manifest
+# additions, consuming completed v4.9 owner outputs (T-001..T-010) plus the
+# T-003 authority/state registration and the T-011 central adoption wiring.
+# The exact-set guard in section_conformance_problems is unchanged: the union
+# below only extends the pinned authorization inventory; any unlisted path,
+# removal of a baseline/predecessor entry, or duplicate still fails, and
+# registry metadata keeps granting no semantic authority (see
+# references/REGISTRY_ADOPTION_V49_REFERENCE.md).
+AUTHORIZED_SECTION_ADDITIONS_V49 = {
+    # v4.9 T-003 registered the assurance owner standard into the normative
+    # inventory (golden coverage record updated in the same T003-PACK-R2 lane).
+    "normative_standards": {
+        "standards/ASSURANCE_PLAN_STANDARD.md",
+    },
+    # v4.9 machine contracts: role-execution-profile-v1 is the ONLY new default
+    # machine family; assurance-plan-v2 and task-learning-v2 are same-family
+    # successors of their registered v1 predecessors, not new families.
+    "machine_contracts": {
+        "schemas/assurance-plan-v2.schema.json",
+        "schemas/role-execution-profile-v1.schema.json",
+        "schemas/task-learning-v2.schema.json",
+    },
+    "references": {
+        "references/ASSURANCE_PLAN_OWNER_REFERENCE.md",
+        "references/ASSURANCE_PLAN_V2_COMPATIBILITY.json",
+        "references/ASSURANCE_PLAN_V2_REFERENCE.md",
+        "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md",
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+        "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md",
+        "references/REGISTRY_ADOPTION_V49_REFERENCE.md",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md",
+        "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
+        "references/TASK_LEARNING_V2_COMPATIBILITY.json",
+        "references/TASK_LEARNING_V2_REFERENCE.md",
+    },
+    "verification": {
+        "scripts/test_v49_assurance_owner.py",
+        "scripts/test_v49_assurance_plan_v2.py",
+        "scripts/test_v49_authority_state_registry.py",
+        "scripts/test_v49_execution_contract_refs.py",
+        "scripts/test_v49_execution_core.py",
+        "scripts/test_v49_gate_currentness.py",
+        "scripts/test_v49_jit_dag_governance.py",
+        "scripts/test_v49_release_applicability.py",
+        "scripts/test_v49_role_execution_profile.py",
+        "scripts/test_v49_task_learning_v2.py",
+    },
+}
+AUTHORIZED_SECTION_ADDITIONS = {
+    section: frozenset(additions) | AUTHORIZED_SECTION_ADDITIONS_V49.get(section, frozenset())
+    for section, additions in AUTHORIZED_SECTION_ADDITIONS.items()
+} | {
+    section: frozenset(additions)
+    for section, additions in AUTHORIZED_SECTION_ADDITIONS_V49.items()
+    if section not in AUTHORIZED_SECTION_ADDITIONS
 }
 
 # Frozen pre-T006 baseline inventory (standard-manifest.json at BASE_MANIFEST_SHA).
@@ -527,8 +609,15 @@ def semantic_registry_problems(candidate: dict) -> list[str]:
         got = by_id.get(expected["entry_id"])
         if got != expected:
             problems.append(f"missing or altered v4.8 discovery entry: {expected['entry_id']}")
-    if len(entries) != len(V47_SEMANTIC_AUTHORITY_ENTRIES) + len(V48_NEW_AUTHORITY_ENTRIES):
-        problems.append("semantic registry entry count deviates from carried + exactly three new")
+    # T-011 RA05 re-bind: the v4.9 post-T003 entries are pinned byte-exact the
+    # same way (see V49_NEW_AUTHORITY_ENTRIES provenance); exact-set strength
+    # is preserved — any unlisted entry, drop, rename or alteration fails.
+    for expected in V49_NEW_AUTHORITY_ENTRIES:
+        got = by_id.get(expected["entry_id"])
+        if got != expected:
+            problems.append(f"missing or altered v4.9 registry entry: {expected['entry_id']}")
+    if len(entries) != len(V47_SEMANTIC_AUTHORITY_ENTRIES) + len(V48_NEW_AUTHORITY_ENTRIES) + len(V49_NEW_AUTHORITY_ENTRIES):
+        problems.append("semantic registry entry count deviates from carried + exactly three v4.8 new + exactly three v4.9 new")
     return problems
 
 
@@ -685,10 +774,46 @@ class RegistryAdoptionTests(unittest.TestCase):
         self.assertEqual(contracts.count(INTERCHANGE_V1), 1)
         self.assertEqual(machine_family_problems(self.manifest), [])
 
+    # T-011 A01 (v4.9 family accounting; DAG v0.1 T-011 acceptance): exactly
+    # one new default machine family on the v4.9 line, the same-family
+    # successors recognized as successors, and the v1 predecessors still
+    # registered. Provenance-commented additive guard over the post-T003
+    # inventory; the v4.8 RA03/RA04 pins above are untouched.
+    def test_ra10_v49_family_accounting_exactly_one_new_default_family(self) -> None:
+        contracts = self.manifest["sections"]["machine_contracts"]
+        # The only new default family, registered exactly once.
+        self.assertEqual(contracts.count("schemas/role-execution-profile-v1.schema.json"), 1)
+        # Same-family successors registered exactly once, next to their v1
+        # predecessors which remain registered exactly once.
+        for successor, predecessor in (
+            ("schemas/assurance-plan-v2.schema.json", "schemas/assurance-plan-v1.schema.json"),
+            ("schemas/task-learning-v2.schema.json", "schemas/task-learning-v1.schema.json"),
+        ):
+            self.assertEqual(contracts.count(successor), 1)
+            self.assertEqual(contracts.count(predecessor), 1)
+        # The registered v4.9 machine-contract additions are exactly these
+        # three paths; any fourth new/unlisted contract still fails.
+        v49_new = sorted(set(AUTHORIZED_SECTION_ADDITIONS_V49["machine_contracts"]))
+        self.assertEqual(v49_new, [
+            "schemas/assurance-plan-v2.schema.json",
+            "schemas/role-execution-profile-v1.schema.json",
+            "schemas/task-learning-v2.schema.json",
+        ])
+        self.assertEqual(machine_family_problems(self.manifest), [])
+
+    def test_ra_n14_unlisted_v49_machine_contract_fails(self) -> None:
+        mutant = deepcopy(self.manifest)
+        mutant["sections"]["machine_contracts"].append("schemas/role-execution-profile-v2.schema.json")
+        self.expect_structural_rejection(mutant)
+
     def test_ra05_registry_resolves_one_owner_per_concern_without_authority(self) -> None:
         self.assertEqual(semantic_registry_problems(self.manifest), [])
         resolved = resolve_registry(self.manifest, self.schema, root=ROOT)
         for expected in V48_NEW_AUTHORITY_ENTRIES:
+            self.assertEqual(resolved[expected["semantic_concern"]], expected["canonical_owner_ref"])
+        # T-011 RA05 re-bind: the post-T003 v4.9 concerns resolve to their
+        # registered owners exactly like the v4.8 discovery concerns.
+        for expected in V49_NEW_AUTHORITY_ENTRIES:
             self.assertEqual(resolved[expected["semantic_concern"]], expected["canonical_owner_ref"])
         self.assertEqual(resolved["ci.runner_capability_adoption"], "standards/CI_RUNNER_CAPABILITY_STANDARD.md")
         for entry in self.manifest["semantic_authorities"]["entries"]:
