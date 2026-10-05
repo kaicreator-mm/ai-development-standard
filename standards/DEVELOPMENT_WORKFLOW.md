@@ -79,7 +79,29 @@ required evidence
 
 ### Stage 1 — Product / Scope
 
-按需执行 L1 Product Evidence，并冻结 PRD / Scope。
+Stage 1 把 Idea/Intent 与 Stage 0 Intake/Baseline 的结果收敛为被 Product authority 冻结的产品语义。对 material / new normative Product scope，canonical Stage-1 序列 MUST 可按顺序重构：
+
+```text
+Idea/Intent
+→ Intake/Baseline（Stage 0）
+→ semantic L1 Product Evidence
+→ Product Research（as needed）
+→ Draft PRD / Scope
+→ selected Product Review
+→ Product Freeze
+```
+
+语义与权威边界：
+
+- **semantic L1 Product Evidence** 是语义框架/证据步骤，回答“解决什么问题、为谁解决、成功标准是什么”。L1 不要求独立成文件，不得被坍缩为强制外部研究。
+- **Product Research** 仅当现有/静态证据不足以做出 PRD 决策时按比例选择（as needed），范围与所需决策成比例；它对产品 UNKNOWN 给出 disposition 并综合证据。Product Research 生产 evidence，不持有 Product authority，不构成第二产品权威；其结论由 Product authority 采纳或拒绝。
+- **selected Product Review** 是对 Draft PRD / Scope 这一确切 Product subject 的独立 evidence/judgment，不是 universal Product Review gate。它不同于 Stage 2.6 面向 implementation Task/PR 的 Review Policy，也不替代后者。选择规则由 applicable Product/project policy 与风险决定，与 Frozen Product / L2 一致：
+  - Product scope 为新/实质变更的 normative、semantic、compatibility-sensitive 或 authority-sensitive 内容，或其它 applicable policy 要求时，Product Review MUST 执行；
+  - 低风险/已在既有范围内的 Product Freeze，当无任何 owner 要求时，Product Review 可选择或省略；
+  - 适用性 UNKNOWN 或相互矛盾时 fail closed，交给 authority/risk disposition，不得静默降级。
+  - 低风险/证据充分的工作在无任何更高权威 owner 要求时，不得被强制加入独立 Product Research 或独立 Product Review，可以保持 compact/inline（与 §7 快速路径一致）。
+- **Product Freeze** 是 Product authority 的显式冻结行为，把一个确切 Product subject 绑定为冻结记录；与本文 “PRD / Scope Freeze” 是同一事件，不是新增 gate。Reviewer 可以推荐 Freeze，但 Product Review PASS、研究结论或 Execution Agent 的意见都只是 evidence/judgment，本身不产生冻结效力，不能替代或自动产生 Product Freeze；只有 Product authority（或其授权的 routing rule）授权该 transition 时，Controller 才能确定性地记录 Freeze。
+- **Architecture Research / Research Demo 属于 Stage 2**，不得前移到 Product Freeze 之前充当产品发现（product discovery）的替代品。Product Freeze 后若 Architecture Research 发现产品范围不可行/矛盾，走既有 Product thaw/contradiction 路径。
 
 PRD / Scope Freeze 应明确：
 
@@ -94,7 +116,7 @@ PRD / Scope Freeze 应明确：
 
 #### Stage 1 Checkpoint
 
-PRD Freeze 和最终被下游依赖的 L1 Evidence MUST 形成远端 checkpoint。
+PRD Freeze（Product Freeze）和最终被下游依赖的 L1 Evidence MUST 形成远端 checkpoint。
 
 在 Version Branch Mode，默认直接形成 `version/vX.Y.Z` 上的稳定 commit/checkpoint。不要为了每个 Evidence 文件机械创建独立 branch。
 
