@@ -84,7 +84,7 @@
     {
       "scenario_id": "C09_S3_predecessor_done_does_not_inherit_lineage_currentness",
       "exact_refs": [
-        "standards/EXECUTion_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
         "registries/state-dimensions-v1.json"
       ],
       "frozen_scenario": "K",
