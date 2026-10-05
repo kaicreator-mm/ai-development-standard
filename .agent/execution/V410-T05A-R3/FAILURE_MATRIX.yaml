@@ -1,0 +1,20 @@
+task_id: V410-T05A
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or Task Pack identity is invalid
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: integration base or owner blob changes before accepted claim
+    action: stop; controller classifies drift and rebinds as required
+  - id: RESIDUAL_GAP_NOT_PROVEN
+    when: existing owners already satisfy all Task Pack invariants
+    action: NO_CHANGE_REQUIRED with durable executable evidence; do not invent owner mutation
+  - id: OUT_OF_SCOPE_GAP
+    when: required change belongs to compatibility, decomposition, central wiring or another canonical owner outside allowed scope
+    action: stop and route to owner; do not absorb scope
+  - id: PROVENANCE_FAILURE
+    when: claim is absent/late or superseded evidence is reused as authority
+    action: invalidate candidate provenance; successor execution required
+  - id: ARCHITECTURE_CONTRADICTION
+    when: satisfying Task appears to require a new shared-code/component owner family or registry
+    action: stop and escalate; do not widen architecture
