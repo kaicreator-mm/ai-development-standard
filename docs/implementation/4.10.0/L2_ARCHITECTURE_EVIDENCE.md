@@ -1,33 +1,38 @@
-# v4.10.0 L2 Architecture Evidence — Whole-Project Convergence
+# v4.10.0 L2 Architecture Evidence — Successor Whole-Project Convergence
 
-Status: **L2 CANDIDATE v0.1 — FRESH INDEPENDENT ARCHITECTURE REVIEW REQUIRED — NOT FROZEN**
+Status: **L2 SUCCESSOR CANDIDATE v0.2 — FRESH INDEPENDENT ARCHITECTURE REVIEW REQUIRED — NOT FROZEN**
 
 Parent planning: `#779`
 
-L2 tracking: `#815`
+Successor L2 tracking: `#838`
 
-Frozen Product authority:
+Historical L2 tracking: `#815` — v0.1 only; stale after Product thaw.
+
+Current Frozen Product authority:
 
 ```text
-PRODUCT_FREEZE=#814
+PRODUCT_REFREEZE=#837
 PRD_PATH=docs/implementation/4.10.0/PRD.md
-PRD_BLOB=e4c26448acb9a5f88c7f15dc4d023bb9fe0f9e4e
-FRESH_PRODUCT_REVIEW=#813@5987814305 PASS
+PRD_REVISION=v0.4
+PRD_BLOB=b0b9906035eee253aad4bff0274d3d4c8f90b9db
+FRESH_PRODUCT_REVIEW=#833@5993569646 PASS
 ```
 
-Planning baseline: `main@92e4f764a2630a131d3f156b39f0f09064c9849e` / tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`.
+Planning baseline remains the v4.10 planning baseline `main@92e4f764a2630a131d3f156b39f0f09064c9849e`; implementation admission MUST later re-read then-current canonical owners and legal integration baseline before mutation.
 
-Planning independence: per `#779@5987705061`, this L2 and the later Task DAG may be completed without waiting for execution/release/currentness of other versions. Implementation must still rebind to the then-current legal baseline before mutation.
+Planning independence: per `#779@5987705061`, v4.10 Product/L2/Task-DAG planning does not wait for execution/release currentness of other versions. This does not permit implementation against stale owners.
 
-This document is Architecture Evidence only. It does not authorize implementation or an authoritative Task DAG until Fresh Architecture Review + L2 Freeze.
+This document is Architecture Evidence only. It does not authorize L2 Freeze, Task DAG authority, implementation, Release Qualification or merge until a genuinely Fresh Independent Architecture Review passes on this exact successor subject and Controller records L2 Freeze.
 
 ---
 
 ## 1. Architecture decision
 
-v4.10 is implemented as **convergence of existing semantic owners**, not as a new orchestration/runtime layer.
+v4.10 is implemented as **convergence and composition of existing semantic owners**, with the smallest additive hardening needed to make the Frozen Product v0.4 truthful end-to-end.
 
-The seven Product planes are architectural views over the existing owner graph:
+The architecture MUST NOT introduce a new orchestration platform, Product-review state machine, Human workflow state machine, component registry, learning database, telemetry authority, Release state machine or parallel Task/DAG/Dispatch/Claim family.
+
+The seven Product planes remain architectural views over one owner graph:
 
 ```text
 AUTHORITY_AND_INTENT
@@ -39,96 +44,190 @@ LEARNING_AND_EVOLUTION
 PROJECTION_AND_CONFORMANCE
 ```
 
-They are not seven new standards, services, registries or state machines.
+They are not seven new standards/services/registries.
 
-The governing architecture is:
+The governing composition is:
 
 ```text
-Frozen Product authority
+Frozen Product v0.4
         ↓
 current canonical owner discovery
         ↓
-owner-local normative hardening
-        ├─ workflow / lifecycle
-        ├─ task decomposition / DAG
-        ├─ execution / dispatch / claim
+owner-local semantic hardening
+        ├─ Product discovery / lifecycle routing
+        ├─ Architecture / research
+        ├─ Task decomposition / DAG
+        ├─ Dispatch / Claim / human decision
         ├─ implementation quality / compatibility
-        ├─ validation / review / release
-        └─ research / learning / adoption
+        ├─ Validation / Review / repair
+        ├─ Release / Closure
+        └─ optional Task Learning / cost feedback
         ↓
-additive machine/projection wiring only where needed
+projection + machine-contract updates only where determinism needs them
         ↓
-central manifest / template / prompt / verifier convergence
+central manifest/template/prompt/verifier convergence
         ↓
-whole-project conformance + self/downstream dogfood
+requirement-linked Product acceptance + whole-project dogfood
 ```
 
-No new top-level lifecycle is permitted.
+The architecture is successful only if Minimum ADS remains usable without a reducer/controller runtime while Advanced ADS can automate the same semantics.
 
 ---
 
-## 2. Architecture invariants
+## 2. Frozen Product drivers and architecture invariants
 
-1. **One semantic concern → one canonical owner or explicit composition rule.** Projection surfaces never become competing owners.
-2. **Durable fact != semantic authority.** GitHub/repository records carry facts/currentness but do not create correctness authority.
-3. **Authority != Capability != Authorization.** A capable Agent cannot widen delegated authority.
-4. **Evidence != Verdict.** Builder summaries, CI, Validation and Review retain distinct meanings.
-5. **Task/PR PASS != Release PASS.** Concern assurance and release assurance remain separate.
-6. **Currentness is first-class.** Historical PASS never silently transfers to a changed exact subject.
-7. **Human is a first-class actor.** Human judgment/approval/authorization is represented as an explicit control point, not a generic failure fallback.
-8. **One Task/DAG/Dispatch/Claim family.** Delegation and handoff enrich existing execution lineage rather than creating nested competing schedulers.
-9. **Builder explanation is non-authoritative.** Review navigation may accelerate understanding but cannot self-certify correctness.
-10. **Human reviewability is implementation quality.** A green but materially opaque/noisy diff may still be unacceptable for review.
-11. **Reuse is semantic, not textual.** Similar code does not automatically justify a shared abstraction.
-12. **Shared asset promotion is explicit.** Importability does not imply supported API; Task-local code cannot silently become public/stable authority.
-13. **No central component registry by default.** Repository-native module/package/export/architecture/dependency metadata is preferred.
-14. **Agent-dispatchable granularity is qualitative.** No universal LOC/file/time/token threshold.
-15. **Learning is evidence, not authority.** No execution observation may auto-amend ADS or waive a gate.
-16. **Telemetry is advisory.** Cost/latency/estimate-vs-actual data cannot weaken owner-required assurance.
-17. **Private chain-of-thought is never a required artifact.** Externalizable rationale and evidence refs are sufficient.
-18. **Minimum adoption remains lightweight.** Manual/GitHub-native projects must not require a runtime service/database to conform.
-19. **Compatibility and semantic lineage are non-weakening.** Recovered/recomposed trees require their own evidence; version identity is not evidence transfer.
-20. **Central wiring is integration, not semantic ownership.** Manifest/templates/verifier work references owner-local decisions rather than redefining them.
+### 2.1 Active Product drivers
+
+The active Product requirement set is exactly:
+
+```text
+R1  Product discovery lifecycle coherence
+R2  Whole-project owner/lifecycle convergence
+R3  Human + Multi-Agent collaboration clarity
+R4  Human controllability + automation-first quality
+R6  Proportional assurance and convergent repair
+R7  Agent-oriented granularity
+R11 Projection/conformance alignment
+R12 Discoverability / compatibility / lineage
+```
+
+Subordinate Product dispositions that architecture MUST preserve:
+
+```text
+R5  = EXISTING_OWNER_ONLY
+R8  = OPTIONAL_PROPORTIONAL_EXISTING_TASK_LEARNING
+R9  = L2_DETAIL
+R10 = EXISTING_OWNER_ONLY; Product-vs-Architecture research separation is owned by R1
+```
+
+### 2.2 Architecture invariants
+
+1. **One semantic concern → one canonical owner or explicit composition rule.** Projections and evidence indexes never become competing authority.
+2. **Durable fact != semantic authority.** GitHub/repository/evidence records carry facts/currentness; they do not create correctness authority.
+3. **Authority != Capability != Authorization.** Model/tool strength never widens authority.
+4. **Evidence != Verdict != Authority.** Product Review/Validation/CI/Builder summaries cannot themselves freeze Product or qualify Release.
+5. **Task/PR PASS != Release PASS.** Release remains separately owned.
+6. **Exact-subject currentness is first-class.** Historical PASS remains historical after subject drift.
+7. **Product Review is proportional evidence/judgment.** It is required when Frozen Product/risk/policy requires it, not unconditionally for every low-risk adopter Product Freeze.
+8. **Product Freeze is a Product-authority act.** A review recommendation never manufactures Product authority.
+9. **Human intervention defaults to minimal, but Human controllability/auditability is mandatory.** Authorized humans can inspect, stop/cancel/redirect, decide authority-sensitive questions and reconstruct causation where policy allows/requires.
+10. **No mandatory human line-by-line code review.** Quality is protected through applicable architecture/contracts/tests/checks/CI evidence/Validation/Review/security/compatibility/release practices.
+11. **Maintainability and diff hygiene remain quality concerns.** Automation-first does not legalize destructive whole-file rewrites, mixed concerns, hidden semantic churn or loss of canonical/generated-source ownership.
+12. **One Task/DAG/Dispatch/Claim family.** Delegation/handoff enrich existing lineage; no nested competing scheduler lifecycle.
+13. **Task granularity is qualitative.** No universal LOC/file/time/token threshold.
+14. **Reuse is semantic, not textual.** Importability is not a public contract and similarity is not a DRY mandate.
+15. **Task Learning is optional/proportional evidence.** It never becomes a mandatory Product gate or authority mutation channel.
+16. **Cost/process telemetry is advisory L2/implementation input.** It cannot waive gates or rank truth.
+17. **Product Research and Architecture Research have different purposes.** Product Research informs Product scope before Freeze; Architecture Research/Demo falsifies architecture assumptions after Product Freeze.
+18. **Private chain-of-thought is never a required artifact.** Externalizable rationale/evidence refs are sufficient.
+19. **Minimum adoption remains lightweight.** No runtime/database/controller is required for conformance.
+20. **Compatibility and semantic lineage are non-weakening.** Recovered/recomposed subjects need current evidence; version identity is not rolled backward to inherit qualification.
+21. **Product acceptance §19 is evidence obligation, not a second Release standard.** Existing owners produce the facts; Release owns final candidate qualification.
+22. **`ADS_CORE_FEATURE_FREEZE_ELIGIBLE` is Product authority.** Architecture/Closure/CI/Reviewer/model vote may supply evidence only; `YES|NO` is recorded by Product authority and `NO` may coexist with successful v4.10 delivery.
+23. **Central wiring is integration, not semantic ownership.** Manifest/templates/verifiers reference owner-local decisions rather than redefining them.
 
 ---
 
-## 3. Canonical owner composition map
+## 3. Canonical owner/composition map
 
-The exact baseline may gain same-family successors before v4.10 implementation begins; Task admission must re-read current owners. The semantic placement below remains authoritative unless L2 is explicitly thawed.
+The implementation baseline may contain same-family successors. Task admission MUST re-read current canonical owner refs. The semantic placement below is frozen by this L2 once approved; file-level successors may replace paths only through explicit non-weakening owner evolution.
 
-| Product concern | Canonical owner/composition | v4.10 architecture action | Forbidden duplication |
+| Concern | Canonical owner/composition | v4.10 architecture action | Forbidden duplication |
 |---|---|---|---|
-| Product scope | Frozen v4.10 PRD / Product Freeze | consume only | L2 redefining Product |
-| Architecture decisions | `ARCHITECTURE_DESIGN_STANDARD.md` + Frozen L2 | record composition/boundaries | implementation inventing architecture |
-| Research modes | `ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` + workflow/research templates | clarify static research vs executable Demo | second Research lifecycle |
-| Task decomposition | `TASK_DECOMPOSITION_STANDARD.md` | add Agent-dispatchable/reviewability/reuse-boundary guidance | numeric split policy |
-| live DAG mutation | `TASK_DAG_GOVERNANCE_STANDARD.md` | preserve explicit SPLIT/SUPERSEDE/ADD/dependency mutation | hidden DAG mutation |
-| Task/Execution Pack | `EXECUTION_PACK_STANDARD.md` | project review/reuse/currentness metadata where material | parallel Task authority |
-| lifecycle / gate routing | `DEVELOPMENT_WORKFLOW.md` | reconcile terminal routes/review-repair semantics | second workflow state machine |
-| execution / dispatch / claim | `EXECUTION_ARCHITECTURE_STANDARD.md` | add multi-actor responsibility/delegation projection and learning/cost consumption | second scheduler/claim family |
-| Agent event/operator attribution | `GITHUB_AGENT_INTERACTION_PROTOCOL.md` | carry parent/causation/handoff refs where needed | second event protocol |
-| local/provider procedures | existing role/handoff standards | consume as procedures | provider-specific semantic authority |
-| implementation quality | `IMPLEMENTATION_QUALITY_STANDARD.md` | add human-reviewability/shared-asset maintainability baseline | standalone Review Brief authority |
-| public/cross-module compatibility | `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` | govern `PUBLIC_STABLE`/deprecation/change impact | custom component compatibility rules |
-| Validation truth | `VALIDATION_STANDARD.md` | preserve exact-subject evidence/currentness | Builder/CI manufacturing Validation PASS |
-| Review findings/aggregation | current Review/Adversarial Review owner + `review-finding` / `review-aggregation` contracts | converge severity→verdict, successor/delta review and unresolved-finding handling | latest-PASS-wins |
-| CI execution/evidence | CI standards | execution evidence only | CI success becoming Review/Release truth |
-| release applicability/qualification | `RELEASE_STANDARD.md` | preserve separate release authority | concern PASS aggregated into release PASS |
-| owner discovery | `standard-manifest.json#semantic_authorities` + reference convention/registry surfaces | complete/repair current owner discoverability | second owner registry |
-| state vocabulary | current state-dimension registry / execution-state family | extend only if a genuinely new dimension is required | duplicate enums in prose/templates |
-| Task Learning / evolution | existing Task Learning semantic owner under `EXECUTION_ARCHITECTURE_STANDARD.md` + `task-learning` family | same-family semantic-learning successor/projection | new learning DB/family/intake |
-| project adoption | `PROJECT_ADOPTION.md` | make Minimum vs Advanced path explicit/discoverable | mandatory orchestration runtime |
-| immutable compatibility | project pin + compatibility governance | preserve exact revision/currentness truth | `main/latest` as authority |
+| Product scope / Product acceptance / core-freeze outcome | Frozen PRD v0.4 + Product authority record | consume; produce evidence refs only | L2/Controller/Release redefining Product |
+| development lifecycle / Stage routing | `standards/DEVELOPMENT_WORKFLOW.md` | harden Stage 1 to Idea→semantic L1→Product Research as needed→Draft PRD→risk/policy-selected Product Review→Product Freeze; preserve Fast Path | second lifecycle |
+| Product Review routing | Frozen Product + `DEVELOPMENT_WORKFLOW.md`; durable review facts through existing GitHub interaction/review surfaces where applicable | add proportional selection/independence/currentness guidance without a new generic Review state machine | unconditional review for every adopter; review=freeze authority |
+| Architecture decisions | `standards/ARCHITECTURE_DESIGN_STANDARD.md` + Frozen L2 | record drivers/invariants/owners/UNKNOWNs | implementation inventing architecture |
+| Architecture Research/Demo | `standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` + Stage 2 workflow | preserve post-Product-Freeze architecture evidence role | Product Research being routed through Architecture Demo |
+| Product Research materialization | Stage 1 `DEVELOPMENT_WORKFLOW.md` + L1/Product artifacts/templates | define proportional/inline vs bounded research routing | new Research lifecycle/authority |
+| Task decomposition | `standards/TASK_DECOMPOSITION_STANDARD.md` | add Agent-dispatchable/context/evidence questions only where not already covered; preserve coherent concern + safe parallelism | numeric split policy; fake parallelism |
+| live DAG mutation | `standards/TASK_DAG_GOVERNANCE_STANDARD.md` | preserve explicit mutation/currentness | hidden DAG mutation |
+| Task/Execution Pack | `standards/EXECUTION_PACK_STANDARD.md` | project current authority/evidence/acceptance refs where useful | parallel Task authority |
+| execution / Dispatch / Claim / human decision | `standards/EXECUTION_ARCHITECTURE_STANDARD.md` | reuse derived ready sets, dispatch/claim serialization and Human Decision Queue; add responsibility/causation projection only if a real gap remains | second scheduler/claim/human workflow |
+| GitHub event/operator attribution | `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` + Work Item contract | carry bounded causation/delegation/handoff facts where needed | second event protocol |
+| implementation quality / maintainability | `standards/IMPLEMENTATION_QUALITY_STANDARD.md` + Task Decomposition | harden diff-hygiene/change-summary guidance if needed; do not make human readability a mandatory pass gate | standalone Human Reviewability authority |
+| public/cross-module compatibility | `standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` | preserve supported/public contract and migration/deprecation truth | component-specific compatibility authority |
+| Validation truth | `standards/VALIDATION_STANDARD.md` | map acceptance to concern/integration/closure evidence on exact subjects | Builder/CI manufacturing Validation PASS |
+| Review findings / independent judgment | existing review policy/finding/aggregation surfaces | clarify severity→verdict, successor/delta currentness and repair convergence only where gaps exist | latest-PASS-wins; model-count authority |
+| CI execution/evidence | CI standards | evidence/execution only | CI success becoming Product/Review/Release authority |
+| Release qualification | `standards/RELEASE_STANDARD.md` | consume Frozen Product/L2/terminal DAG/required evidence; preserve READY/CONDITIONAL/BLOCKED/FAIL | §19 creating second Release verdict family |
+| owner discovery | `standard-manifest.json#semantic_authorities` + reference conventions | complete/repair owner discovery and compatibility aliases | second owner registry |
+| state vocabulary | existing state-dimension registry / execution-state family | extend only for a proven new dimension | duplicate prose/template enums |
+| shared-code safety (former R5) | Architecture + Task Decomposition + Implementation Quality + Interface Compatibility | preserve non-weakening reuse/public-contract invariants only | Product-level component subsystem/registry |
+| Task Learning (former R8) | existing Task Learning semantic owner in `EXECUTION_ARCHITECTURE_STANDARD.md` + `task-learning` machine family | optional/proportional same-family hardening only | mandatory terminal learning gate/new DB |
+| cost/process feedback (former R9) | L2/implementation planning evidence; existing execution facts where available | optional descriptive inputs only | scheduling/quality authority |
+| research coherence (former R10) | Stage 1 workflow + Architecture Research owner | converge purpose/routing; R1 owns Product-level separation | second Research authority |
+| project adoption | `standards/PROJECT_ADOPTION.md` | make Minimum/Advanced routing discoverable | mandatory orchestration runtime |
+
+`standard-manifest.json#semantic_authorities` remains the canonical discovery surface for listed concerns such as development lifecycle, execution state, validation evidence, release qualification, architecture research demo and Task Learning. v4.10 extends that registry only when a material current owner is missing; it does not create a competing registry.
 
 ---
 
-## 4. Whole-project authority convergence architecture (R1/R11/R12)
+## 4. Lifecycle and authority composition (R1/R2)
 
-### 4.1 Owner inventory
+### 4.1 Product front-end
 
-v4.10 must derive one `OWNER_AUTHORITY_CONVERGENCE_MATRIX` from the repository tree at the implementation baseline.
+The canonical semantic flow is:
 
-For every material concern classify:
+```text
+USER IDEA / INTENT
+→ INTAKE / BASELINE
+→ L1 PRODUCT EVIDENCE / PROBLEM FRAMING
+→ PRODUCT RESEARCH as needed
+→ Product unknown disposition / evidence synthesis
+→ DRAFT PRD / SCOPE
+→ Product Review when selected by Frozen Product / policy / risk
+→ PRODUCT FREEZE by Product authority
+→ L2 ARCHITECTURE EVIDENCE
+→ Architecture UNKNOWN disposition / Demo as needed
+→ L2 FREEZE
+→ TASK DAG
+```
+
+L1 is a semantic framing/evidence step, not necessarily a standalone file. On sufficient-evidence low-risk work, Intake/L1/research disposition may be compact/inline and existing Fast Path may remain legal. Semantic authority/evidence required by applicable policy may not be skipped.
+
+### 4.2 Product Review selection
+
+Architecture does not introduce a universal Product Review gate. Stage 1 must express a selection rule compatible with Frozen Product v0.4:
+
+```text
+PRODUCT_REVIEW_REQUIRED
+  when Product scope is new/materially changed normative, semantic,
+  compatibility-sensitive or authority-sensitive,
+  or another applicable Product/project policy requires it
+
+PRODUCT_REVIEW_SELECTABLE_OR_OMITTABLE
+  for low-risk/already-scoped Product Freeze where no owner requires it
+
+UNKNOWN / contradictory applicability
+  fail closed to authority/risk disposition; do not silently downgrade
+```
+
+ADS v4.10 itself is normative/authority-sensitive and therefore required Fresh independent Product Review; downstream projects do not inherit that ceremony mechanically.
+
+### 4.3 Review evidence vs Product authority
+
+```text
+Product Review
+= evidence / independent judgment on an exact Product subject
+
+Product Freeze
+= explicit Product-authority record binding one exact Product subject
+```
+
+A reviewer may recommend Freeze but cannot create it merely by `PASS`. A Controller may deterministically record Freeze only when the Product authority/routing rule authorizes that transition.
+
+### 4.4 Architecture contradiction
+
+After Product Freeze, Architecture Research may discover that Product scope is infeasible/contradictory. It routes through the existing Product-thaw/contradiction path. L2/implementation MUST NOT silently weaken Product acceptance.
+
+---
+
+## 5. Whole-project owner convergence architecture (R2/R11/R12)
+
+### 5.1 Owner convergence matrix
+
+Implementation must derive an `OWNER_AUTHORITY_CONVERGENCE_MATRIX` from the then-current repository:
 
 ```text
 CONCERN
@@ -139,540 +238,464 @@ COMPATIBILITY_ALIASES
 LEGACY_SURFACES
 STATUS=CURRENT|COMPATIBILITY_ONLY|DEPRECATED|HISTORICAL_ONLY|SUPERSEDED|GAP|CONFLICT
 ACTION=KEEP|HARDEN_OWNER|REWIRE_PROJECTION|CLASSIFY_LEGACY|REMOVE_IF_AUTHORIZED|STOP_FOR_DISPOSITION
+EVIDENCE_REFS
 ```
 
-The matrix is planning/implementation evidence, not a new runtime registry. Stable current owner discovery continues through the existing manifest/registry surfaces.
+This matrix is planning/implementation evidence. It is not a runtime registry and does not supersede `standard-manifest.json#semantic_authorities`.
 
-### 4.2 Repair rule
+### 5.2 Repair rule
 
-When prose/schema/template/verifier disagree:
+When prose/schema/template/prompt/verifier/CI projection disagree:
 
 1. identify the canonical semantic owner;
-2. decide the intended invariant at that owner;
-3. repair subordinate projections to match;
-4. add deterministic negative coverage where materially useful;
-5. do not add another precedence layer solely to hide the contradiction.
+2. recover the intended invariant from current Frozen authority;
+3. repair owner-local semantics only if the owner itself is deficient;
+4. rewire subordinate projections to match;
+5. add deterministic positive/negative conformance coverage where useful;
+6. do not add another precedence layer solely to hide contradiction.
 
-### 4.3 Legacy rule
+A stale passing verifier never outranks current authority. Prose must not claim enforcement that does not exist.
 
-Reachable legacy content must be classified when a fresh Agent could reasonably consume it. Unreachable dead history need not be cosmetically rewritten.
+### 5.3 Legacy rule
 
----
-
-## 5. Multi-Agent collaboration architecture (R3)
-
-### 5.1 Preserve the existing dispatch family
-
-Delegation/handoff is represented inside the existing work/dispatch lineage.
-
-Candidate semantic fields, whether stored directly or by refs, are:
-
-```text
-parent_work_ref
-parent_dispatch_ref
-requester_or_delegator
-responsibility_owner
-executor
-responsibility_mode=DELEGATED_SUBWORK|RESPONSIBILITY_HANDOFF
-caused_by_event_ref
-authority_scope_ref
-result_return_ref
-```
-
-No child work object may obtain broader effective authority than the intersection of legally delegatable authority, Task/Work authority, role authority and external/project authorization.
-
-### 5.2 Delegation
-
-`DELEGATED_SUBWORK` means the parent/delegator retains responsibility. The child performs a bounded operation and returns evidence/result. It does not become an independent Product/Task owner.
-
-### 5.3 Responsibility handoff
-
-`RESPONSIBILITY_HANDOFF` means active responsibility/control transfers explicitly. The durable handoff identifies the new responsibility owner and the authority scope being transferred.
-
-This is not a second Claim lifecycle; the existing Claim/ownership semantics remain in force.
-
-### 5.4 Typed human participation
-
-Human interaction is projected through existing work/event/handoff mechanisms with explicit semantic type:
-
-```text
-INFORMATION_REQUIRED
-APPROVAL_REQUIRED
-AUTHORITY_DECISION_REQUIRED
-AUTHORIZATION_REQUIRED
-```
-
-These types describe why the execution cannot legally proceed autonomously; they do not create a new Human workflow state machine.
+Reachable legacy surfaces receive an explicit `CURRENT|COMPATIBILITY_ONLY|DEPRECATED|HISTORICAL_ONLY|SUPERSEDED|FUTURE_MAJOR|NOT_PLANNED`-equivalent disposition when ambiguity can mislead a fresh user/Agent. Dead unreachable history need not be cosmetically rewritten.
 
 ---
 
-## 6. Human reviewability architecture (R4)
+## 6. Human + Multi-Agent collaboration and control architecture (R3/R4)
 
-### 6.1 Canonical owner
+### 6.1 Preserve existing execution family
 
-The implementation-quality invariant belongs to `IMPLEMENTATION_QUALITY_STANDARD.md`.
+Human/Agent execution composes the existing Work Item → Dispatch → Claim → result/evidence architecture. The optional reducer/controller remains a projection; manual GitHub-native operation remains legal.
 
-`TASK_DECOMPOSITION_STANDARD.md` supplies the upstream control: a change that cannot be reviewed coherently may indicate an oversized/mixed concern.
+Delegation/handoff MUST NOT create nested authority or a second Claim lifecycle.
 
-`EXECUTION_PACK_STANDARD.md`, the implementation PR template and Builder terminal may project the same review map. They do not own correctness.
+### 6.2 Responsibility semantics
 
-### 6.2 Implementation Review Brief projection
-
-For material changes, project one bounded structure:
+Two semantic modes are sufficient at Product/L2 level:
 
 ```text
-INTENT / NON_GOALS
-CHANGE_MAP
-BEHAVIOR_CHANGE
-KEY_INVARIANTS
-IMPLEMENTATION_DECISIONS (externalizable rationale only)
-REVIEW_HOTSPOTS
-DIFF_HYGIENE
-EVIDENCE_MAP
-KNOWN_LIMITATIONS
-REVIEW_ORDER
-SHARED_ASSETS_CONSUMED_CREATED_MODIFIED
-CONSUMER_IMPACT
+DELEGATED_SUBWORK
+  delegator retains responsibility;
+  child performs bounded work and returns result/evidence
+
+RESPONSIBILITY_HANDOFF
+  active responsibility/control transfers explicitly
+  within bounded delegatable authority
 ```
 
-Storage policy:
+A durable implementation must make enough facts reconstructible to identify, where material:
 
-- Prefer existing PR / Builder terminal / Execution Pack surfaces.
-- Avoid a mandatory standalone document family.
-- A machine schema is optional only if deterministic tooling needs it; if introduced it must remain a projection of Implementation Quality / Task authority.
+```text
+requester/delegator
+responsibility owner
+executor/operator
+parent/causal work or dispatch reference
+subject/authority scope
+result/evidence return reference
+handoff/delegation mode
+```
 
-### 6.3 Reviewability blocking
+These are semantic facts, not a frozen requirement that every listed name become a new schema field. Existing Dispatch/Event/Issue refs should be reused first. Additive machine fields are justified only when deterministic reconstruction cannot otherwise be achieved.
 
-`HUMAN_REVIEWABILITY=BLOCKED` is a review/quality reason, not a new lifecycle state.
+### 6.3 Authority attenuation
 
-Objective signals may include unexplained whole-file rewrite, inseparable generated/semantic churn, unexpected mass comment/doc loss, opaque critical invariants, or multiple independent concerns in one diff.
+```text
+EFFECTIVE_CHILD_AUTHORITY
+<= legally delegatable authority
+∩ current Work/Task authority
+∩ role authority
+∩ project/external authorization
+```
 
-No universal numeric threshold is allowed.
+Capability, credentials or tool access do not expand this intersection.
+
+### 6.4 Human control points
+
+Use the existing `EXECUTION_ARCHITECTURE_STANDARD.md` Human Decision Queue / durable work-event mechanisms for authority-sensitive intervention. Product-level semantic reasons may include information, approval, authority decision or external authorization, but v4.10 does not require a new fixed global enum if existing owner vocabulary can express the distinction.
+
+Required behavior:
+
+- humans are not woken merely to relay prompts, poll CI or compute deterministic ready sets;
+- authority-sensitive Product/Architecture/security/public-contract/gate/limitation/destructive decisions route to appropriate human/Product authority unless explicitly delegated;
+- an authorized human can inspect current authority/evidence/claim state and, where policy permits, stop/cancel/redirect future automated transitions;
+- causation for authority-bearing decisions is durably reconstructible.
+
+Human controllability is a hard Product behavior. Human line-by-line code reading is not.
 
 ---
 
-## 7. Shared code asset architecture (R5)
+## 7. Automation-first quality and maintainability architecture (R4)
 
-No single new Shared Component owner is created. The concern composes existing owners.
+### 7.1 Quality composition
 
-### 7.1 Semantic classification
-
-Use a conceptual classification, not necessarily a mandatory machine enum for every helper:
+No new quality owner is created. Applicable quality derives from composition of:
 
 ```text
-TASK_LOCAL
-MODULE_INTERNAL_SHARED
-PROJECT_SHARED
-PUBLIC_STABLE
-DEPRECATED
+Frozen Product / Architecture invariants
++ Task acceptance
++ Implementation Quality
++ Testing / deterministic checks
++ CI execution evidence where selected
++ Validation exact-subject evidence
++ independent Review where selected/required
++ compatibility/security/migration owners where applicable
++ Release qualification at closure
 ```
 
-The classification becomes durable only when material to architecture, compatibility, ownership or review.
+One mechanism never manufactures another owner's PASS.
 
-### 7.2 Owner composition
+### 7.2 Maintainability/diff hygiene
 
-```text
-Architecture Design
-  owns whether a shared component boundary is semantically valid
+`IMPLEMENTATION_QUALITY_STANDARD.md` remains language-neutral baseline. v4.10 may harden existing quality/review guidance against materially destructive patterns such as:
 
-Implementation Quality
-  owns maintainable/supported implementation surface and discoverability expectations
+- unnecessary whole-file rewrite;
+- unrelated formatting/generated churn mixed with semantic change;
+- mass comment/doc loss that removes maintained intent;
+- hidden semantic changes outside declared scope;
+- multiple independent concerns mixed into one Task/PR;
+- direct edits to generated outputs that ignore regeneration authority;
+- unnecessary abstraction or public-surface widening.
 
-Task Decomposition / DAG
-  owns promotion Task, shared-core-first decomposition and consumer/integration topology
+These are defect/maintenance/evidence risks. They are not proof that a human must manually understand every generated line.
 
-Interface Compatibility Governance
-  owns externally/cross-module stable contract change/deprecation/migration
+### 7.3 Change summary
 
-Validation / Review
-  own exact evidence and independent judgment
-
-Task Learning
-  may retain reusable observations but never owns the component contract
-```
-
-### 7.3 Agent reuse decision
-
-When materially relevant, the executor selects:
-
-```text
-USE_EXISTING
-EXTEND_EXISTING
-KEEP_LOCAL
-PROPOSE_SHARED_COMPONENT
-```
-
-`PROPOSE_SHARED_COMPONENT` does not widen current Task authority. Promotion beyond scope requires a bounded architecture/task decision.
-
-### 7.4 Consumer impact
-
-A shared-component mutation must expose known material consumers or a bounded discovery basis, compatibility class, critical invariants, focused component tests and affected-consumer/integration evidence according to risk.
-
-Repository-native dependency/export/package tooling should be used for discovery where available. A central component registry is explicitly out of scope unless future evidence proves it necessary.
+A proportional Builder/Agent change summary MAY/SHOULD be projected through existing PR/Builder/Execution Pack surfaces when it materially helps an Agent, reviewer or human control point. It is navigation/handoff information, not correctness evidence, and no standalone Review Brief authority is created.
 
 ---
 
-## 8. Agent-oriented Task granularity architecture (R7)
+## 8. Agent-oriented Task granularity and DAG architecture (R7)
 
-Extend `TASK_DECOMPOSITION_STANDARD.md` with two additional qualitative questions:
+`TASK_DECOMPOSITION_STANDARD.md` remains owner with its existing principle:
 
-1. Is the concern **Agent-dispatchable** with bounded context/write set and independent exact-subject evidence?
-2. Is the concern **human-reviewable** without requiring unrelated sibling implementation to understand it?
+> Minimum coherent concern + maximum safe parallelism.
 
-Prefer:
+v4.10 adds no numeric threshold. Planning should additionally ensure a material Task is:
+
+1. bounded enough for an eligible Agent to receive the required context/authority/write set;
+2. capable of producing an independently identifiable exact evidence subject where its gates require that;
+3. not dependent on unrelated sibling implementation merely to be correct;
+4. maintainable without hiding a shared mutable authority collision.
+
+Prefer real-boundary structure:
 
 ```text
-contract/shared semantic core
+shared contract / owner semantic core when genuinely required
         ↓
-parallel independently valid leaves/consumers
+parallel independently valid concern leaves
         ↓
-central integration/conformance
+explicit central integration / projection / conformance
 ```
 
-only where the boundaries are real.
+only when each leaf is independently valid. A large atomic invariant may remain one Task with stronger internal structure/tests; fake splitting is forbidden.
 
-Task-level and Dispatch-level parallelism remain distinct. Dispatch subdivision cannot fabricate new semantic Tasks or bypass DAG mutation authority.
-
-A large Task is not automatically wrong; when one atomic invariant truly spans a large surface it stays coherent and receives stronger structure/tests/review mapping instead of fake splitting.
+Task-level and Dispatch-level parallelism remain distinct. Dispatch subdivision cannot silently mutate Frozen DAG semantics.
 
 ---
 
-## 9. Proportional assurance and repair convergence architecture (R6)
+## 9. Assurance and repair convergence architecture (R6)
 
 ### 9.1 Assurance floor
 
-v4.10 does not create a new assurance owner. Existing applicable owners compose the minimum legal assurance floor. Cost, model strength, file count or convenience cannot reduce it.
+Existing owners compose the smallest legal assurance path. Cost, file count, `docs-only`, model confidence, provider success or schedule pressure cannot independently reduce a required gate.
 
-### 9.2 Repair convergence
+Applicability `UNKNOWN` or contradictory gate facts fail closed to owner/policy disposition rather than convenience.
 
-Existing Review/Workflow owners should gain bounded operational clarification for:
+### 9.2 Review / repair convergence
 
-- severity → verdict behavior where currently ambiguous;
-- unresolved P0/P1 dominance;
-- P2/P3 disposition without unnecessary full repair cycles when policy permits;
-- root-defect-class repair rather than symptom-only patching;
-- successor/delta re-review scope when exact-subject/currentness rules permit;
+Where current owners are ambiguous, v4.10 should clarify using existing Review/Workflow semantics:
+
+- severity → verdict behavior;
+- unresolved P0/P1 dominance where policy defines it;
+- bounded P2/P3 disposition without unnecessary semantic cycles;
+- root-defect-class repair rather than cited-symptom-only repair;
+- exact-subject successor/delta review currentness;
 - mechanical/test-harness residual classification;
-- non-converging repair-loop escalation to owner/controller adjudication;
-- diff-hygiene/transport-capability findings.
+- non-converging repair-loop escalation/adjudication;
+- diff hygiene / executor mutation capability findings.
 
-Do not define a universal repair-round cap. Repeated loops are a signal for disposition/decomposition, not automatic permission to stop.
+No universal repair-round cap is created. Repetition is evidence that decomposition/authority/root cause requires disposition.
 
-### 9.3 Tool/transport eligibility
+### 9.3 Executor capability
 
-Executor eligibility may include mutation capability when the Task requires safe line-local/shared-file changes. An executor unable to safely mutate the required surface must route/block rather than compensate with destructive whole-file rewriting.
-
----
-
-## 10. Execution learning and cost-feedback architecture (R8/R9)
-
-### 10.1 Same-family Task Learning
-
-Semantic execution learning extends the existing Task Learning/Evolution owner only.
-
-Conceptual item types:
-
-```text
-DISCOVERY
-ERROR_ROOT_CAUSE
-ENVIRONMENT_FACT
-IMPLEMENTATION_DECISION
-PROCESS_FINDING
-KNOWLEDGE_CANDIDATE
-```
-
-Truth posture:
-
-```text
-PROVEN
-SUPPORTED
-HYPOTHESIS
-```
-
-Evidence-bound items reference the exact task/subject/environment/code/test/review facts where applicable.
-
-`HYPOTHESIS` is never authority.
-
-### 10.2 Retention/noise
-
-Do not retain raw chain-of-thought, secrets, full machine inventories, huge command logs or duplicate authoritative content. Prefer references to stable evidence.
-
-`NO_MATERIAL_EXECUTION_LEARNING` is valid.
-
-### 10.3 Promotion
-
-Promotion into durable project/ADS knowledge is an explicit owner decision based on recurrence/reproducibility/materiality. Learning records cannot mutate standards automatically.
-
-### 10.4 Cost feedback
-
-Keep planning estimate and observed execution data non-authoritative:
-
-```text
-PLAN (optional/materiality-driven)
-- active-time range
-- elapsed/wait range
-- expected gate shape/cost class
-- parallelism/write-collision risk
-- confidence
-
-ACTUAL (where trustworthy)
-- elapsed timestamps
-- active time or UNKNOWN
-- gate/CI/dependency wait
-- repair count
-- estimate-vs-actual class
-- unique gate findings/decision change where known
-```
-
-Where exact active time is unknowable, record `UNKNOWN`.
-
-The preferred projection is existing Task DAG/Task Pack planning metadata plus Task terminal/Task Learning/version aggregation, not a new telemetry service or gate owner.
+If safe mutation of a shared/line-sensitive surface is required, executor eligibility may treat mutation capability as a hard predicate. An executor that cannot safely mutate the required surface routes/blocks rather than compensating through destructive rewrite.
 
 ---
 
-## 11. Research / standard-self L1 architecture (R10)
+## 10. Subordinate concerns without Product re-expansion (R5/R8/R9/R10)
 
-Keep one `RESEARCH` family.
+### 10.1 Shared-code safety — existing-owner-only
 
-Static/source/design research:
+No Shared Component Product requirement or registry is created.
 
-```text
-may remain inline when small
-may become a bounded Issue when independently trackable/cross-session/parallel/decision-bearing
-terminal disposition may be ADOPT|ADAPT|DEFER|REJECT|INSUFFICIENT_EVIDENCE
-```
+Existing owners preserve these non-weakening invariants:
 
-Executable Architecture Research Demo is used only when static evidence cannot establish a material architecture fact and a falsifiable executable hypothesis is required.
+- importability does not imply stable/public contract;
+- a Task cannot silently widen into project-wide refactor/promotion;
+- public/stable changes remain compatibility-authority concerns;
+- textual similarity does not mandate DRY extraction;
+- universal component registry is not required.
 
-Standards/protocol/governance products add L1 prompts for owner overlap, internal dogfood/incidents, compatibility/SemVer and weakening/duplicate-authority risk. Ordinary applications load those questions only when applicable.
+Exact asset classes, producer/consumer/maintainer taxonomy or reuse-decision metadata are implementation/L2 choices only when evidence shows value.
 
----
+### 10.2 Task Learning — optional/proportional existing family
 
-## 12. Projection and conformance architecture (R11/R12)
+Existing Task Learning semantics may capture concise reusable execution knowledge for material work. `NO_MATERIAL_EXECUTION_LEARNING` remains legal. No learning artifact is a required terminal Product gate.
 
-After owner-local semantics are settled, one central integration concern aligns:
+Never require raw/private chain-of-thought, secrets, huge logs or automatic promotion. Promotion into durable project/ADS knowledge is a separate authority decision.
 
-- `standard-manifest.json` / owner discovery;
-- state/authority registries as applicable;
-- schemas and compatibility/read rules;
-- L1/L2/L3 prompts;
-- Task/Execution Pack and implementation PR templates;
-- review/validation/version-closure checklists;
-- project adoption/navigation/reference surfaces;
-- verifier/CI deterministic checks;
-- golden/reference fixtures and negative examples.
+### 10.3 Cost/process feedback — L2 detail
 
-The central concern must not rewrite owner semantics. It verifies/projections them.
+Where trustworthy, planning/execution MAY record descriptive ranges/facts such as expected vs observed elapsed/wait class, repair count, resource contention or gate value. `UNKNOWN` is preferred to fabricated precision.
 
-A fresh adopter path should be testable from repository entrypoints without private historical knowledge.
+These facts may inform future planning/scheduling policy but never waive required evidence or create correctness/ranking authority.
+
+### 10.4 Research coherence — existing owners implement R1
+
+Product Research is Stage 1 evidence for Product scope/acceptance and may be inline/minimal or a bounded Issue when material. Architecture Research/Demo remains Stage 2 evidence for falsifiable architecture assumptions.
+
+Do not create one universal executable Research pipeline for both. The coherence requirement is shared purpose/terminology/routing, not a second Research authority.
 
 ---
 
-## 13. Machine-contract posture
+## 11. Product acceptance evidence architecture (Frozen PRD §19)
 
-v4.10 strongly prefers additive/same-family evolution over new machine families.
+Architecture maps each active Product requirement to existing owners and evidence production. It does not define a second release verdict.
 
-### 13.1 Likely same-family changes
-
-Subject to implementation-time currentness:
-
-- dispatch/event/execution projection: optional parent/causation/responsibility/handoff refs if deterministic multi-Agent tooling requires them;
-- Task Learning: same-family successor/additive fields for semantic execution learning and evidence/currentness;
-- review finding/aggregation: only if current contracts cannot represent required convergence/disposition semantics;
-- Task/Execution Pack: optional reviewability/shared-asset/cost metadata where machine consumption is useful.
-
-### 13.2 No required new registry
-
-Do not create:
-
-- component registry;
-- human-decision database;
-- collaboration scheduler family;
-- Review Brief authority/schema solely for documentation convenience;
-- cost telemetry database;
-- second owner/state registry.
-
-### 13.3 Compatibility
-
-Any machine-contract successor is governed by Interface Compatibility authority. Historical payloads retain original meaning; optional additions must not retroactively make old records invalid without explicit migration authority.
-
----
-
-## 14. Product requirement → architecture proof map
-
-| PRD requirement | Architecture proof | Primary implementation concern |
+| Product req | Primary architecture evidence producers | Required closure/falsification shape |
 |---|---|---|
-| R1 owner convergence | Owner matrix + canonical registry projection | C1 |
-| R2 lifecycle coherence | workflow/state/dispatch transition audit + negative conformance | C2/C5 |
-| R3 Human+Multi-Agent | responsibility/delegation/handoff/attenuation + typed human participation | C2 |
-| R4 reviewability | Implementation Quality invariant + Review Brief projections + diff hygiene | C3 |
-| R5 shared-code lifecycle | owner-composed classification/reuse/promotion/consumer impact | C3/C4 |
-| R6 proportional assurance/repair | existing assurance floor + review/repair convergence | C5 |
-| R7 Agent granularity | Task Decomposition + DAG mutation + integration pattern | C4 |
-| R8 execution learning | same-family Task Learning successor/projection | C6 |
-| R9 cost/process feedback | optional estimate/actual projection + aggregation | C6 |
-| R10 research coherence | one Research family + static/Demo applicability | C7 |
-| R11 projection alignment | central manifest/template/schema/verifier integration | C7/C8 |
-| R12 discoverability/compatibility/lineage | adoption/navigation/legacy classification + compatibility checks | C1/C8 |
+| R1 | Stage 1 workflow, L1/Product artifacts, Product review/freeze records | material new scope follows semantic stages; sufficient-evidence path demonstrates compact/inline L1 and no unnecessary Research/Product Review ceremony |
+| R2 | owner convergence matrix, workflow/manifest/current owner refs | duplicate/stale/contradictory owner or transition detected/dispositioned; no unresolved material contradiction at closure |
+| R3 | Execution Architecture + GitHub work/event lineage + focused dogfood | delegation vs handoff, attenuation and causation/responsibility reconstructible without second execution lifecycle |
+| R4 | Implementation Quality + tests/checks/Validation/Review + Human Decision Queue | routine autonomous change obtains quality evidence without mandatory human line review; authority-sensitive case routes to correct human/control authority; stop/cancel/redirect/audit demonstrated where policy permits |
+| R6 | Review/Workflow/Validation applicability and repair evidence | illegal cost/label/model-confidence gate reduction fails closed; non-converging repair loop receives bounded adjudication |
+| R7 | Task Decomposition/DAG evidence | broad work split only on real independently valid seams or retained atomic with bounded evidence; no hidden DAG mutation/fake parallelism |
+| R11 | projection/conformance verifier + owner refs | stale passing projection cannot override owner; false prose claim of enforcement detected/dispositioned |
+| R12 | discovery/adoption/compatibility/currentness/release identity evidence | fresh adopter finds current owners; recomposed successor does not inherit historical qualification; version identity not rolled backward to recover evidence |
+
+Cross-cutting closure must also prove a lightweight Minimum ADS path and an Advanced ADS path preserving the same authority/currentness truth.
+
+### 11.1 Evidence aggregation boundary
+
+A version-level acceptance/closure index MAY point to the above evidence. Such an index is a projection/reference surface, not a new Gate Authority, Validation state or Release verdict.
+
+Release Qualification remains owned by `RELEASE_STANDARD.md` and consumes the applicable frozen scope, Architecture, terminal DAG, exact candidate and required evidence.
+
+### 11.2 Release blockers
+
+PRD §19.3 release blockers route to their existing owners. L2/Task DAG must ensure work exists to produce/disposition each required evidence family; they do not redefine blocker meaning.
 
 ---
 
-## 15. Candidate implementation concern decomposition
+## 12. `ADS_CORE_FEATURE_FREEZE_ELIGIBLE` evidence boundary
 
-This is **L2 decomposition input**, not yet the authoritative Task DAG.
-
-### C1 — Authority / owner / legacy convergence
-
-Build whole-project owner and reachable-legacy matrices; repair canonical owner discovery/classification and remove ambiguity without adding another owner registry.
-
-### C2 — Lifecycle + Human/Multi-Agent collaboration convergence
-
-Harden existing workflow/execution/interaction owners for delegation vs responsibility handoff, authority attenuation, typed human participation, causation/responsibility lineage and transition coherence.
-
-### C3 — Human Reviewability + Shared Asset implementation quality
-
-Harden Implementation Quality / compatibility / Builder projections for Review Brief, diff hygiene, supported shared surfaces, producer-consumer-maintainer responsibilities and consumer impact.
-
-### C4 — Task Decomposition / DAG / reuse-promotion granularity
-
-Add Agent-dispatchable + human-reviewable decomposition guidance, contract/shared-core → leaves → integration pattern, explicit promotion boundary and existing DAG mutation composition.
-
-### C5 — Assurance / Review / Repair convergence
-
-Clarify existing review/aggregation/Validation/workflow owner composition, repair convergence, successor/delta re-review, adverse finding carry-forward and executor mutation-capability routing.
-
-### C6 — Execution Learning + Cost Feedback
-
-Extend the existing Task Learning/Evolution path with bounded semantic learning, truth levels/currentness/promotion/noise rules and optional estimate-vs-actual/gate-value projections.
-
-### C7 — Research + L1 + Adoption/Projection hardening
-
-Clarify static research vs executable Demo, standards-self L1 applicability, minimum-vs-advanced adoption and update prompts/templates/checklists/references consistently.
-
-### C8 — Central integration / conformance / dogfood
-
-Wire manifest/registries/schemas/verifier/golden references; run whole-project cross-owner conformance and representative minimum/advanced/multi-Agent/reviewability/shared-component/research dogfood. Owner defects route back to C1–C7 rather than being silently fixed in central wiring.
-
-Directional DAG shape:
+Architecture MUST support, but MUST NOT decide, the later Product-authority outcome:
 
 ```text
-C1 ─┐
-C2 ─┤
-C3 ─┤
-C4 ─┼──> C7 where owner projections require settled semantics
-C5 ─┤
-C6 ─┘
-
-C1..C7 ──> C8 central integration/conformance/dogfood
+ADS_CORE_FEATURE_FREEZE_ELIGIBLE=YES|NO
 ```
 
-Exact dependencies must be minimized during Task DAG materialization. Conceptual relationship alone is not a dependency.
+### 12.1 Evidence inputs
+
+The decision consumes at minimum references proving:
+
+- PRD §19 Product acceptance satisfied on applicable release subject;
+- R2 owner/lifecycle matrix has no unresolved material duplicate/contradictory authority;
+- R11 has no unresolved material prose↔projection/verifier/CI contradiction;
+- reachable current-impacting legacy/backlog ambiguity is dispositioned;
+- R12 currentness/compatibility/lineage truth is coherent.
+
+### 12.2 Decision authority
+
+The decision is durably recorded by Product authority or an explicitly delegated bounded actor. Existing Product/human decision mechanisms should be reused. No new Release state or execution state is required merely for this `YES|NO`.
+
+`NO` is valid with evidence and does not itself mean v4.10 Release failed. Version Closure, Release READY, CI, Controller state, Review PASS or model consensus cannot automatically imply `YES`.
 
 ---
 
-## 16. Write-set / ownership strategy
+## 13. Research / UNKNOWN disposition
 
-Task DAG materialization should isolate owner-local semantic files from central wiring.
+No executable Architecture Research Demo is currently required before successor L2 review. The architecture choices in this L2 are owner-composition and protocol-boundary choices supported by current repository standards.
 
-Expected pattern:
+Material architecture unknowns are bounded as follows:
+
+| UNKNOWN | Disposition | Why it does not block L2 candidate |
+|---|---|---|
+| exact machine fields for responsibility/delegation/causation | `STATIC_EVIDENCE_SUFFICIENT_FOR_BOUNDARY; TASK_LEVEL_MINIMAL_EXTENSION_IF_NEEDED` | semantic facts are clear; exact projection can reuse existing refs first and is reversible/additive |
+| whether Product Review needs a dedicated schema | `NO_SCHEMA_BY_DEFAULT` | Review is evidence/judgment; Issue/comment/current review surfaces are sufficient unless deterministic tooling later proves a machine need |
+| exact acceptance evidence index format | `REFERENCE_INDEX_OR_EXISTING_CLOSURE_SURFACE` | evidence-to-owner map is defined; storage shape does not change Product/architecture authority |
+| exact core-feature-freeze decision record format | `DURABLE_PRODUCT_AUTHORITY_RECORD; NO_NEW_STATE_DIMENSION_BY_DEFAULT` | decision semantics/authority are fixed; representation can use existing durable decision record conventions |
+| exact shared-code taxonomy/reuse metadata | `OPTIONAL_EXISTING_OWNER_DETAIL` | Frozen Product explicitly demoted R5 from Product scope |
+| exact cost feedback fields | `OPTIONAL_L2_IMPLEMENTATION_DETAIL` | Frozen Product classifies R9 as L2 detail and non-authoritative |
+
+If implementation discovers that any of these choices changes public contracts, durability, failure semantics, authority or compatibility materially, route through Architecture contradiction/review rather than silently escalating Task freedom.
+
+---
+
+## 14. Machine-contract and projection strategy
+
+### 14.1 Reuse-first rule
+
+Before adding a schema/registry/event field:
+
+1. identify the semantic owner;
+2. determine whether existing durable refs already make the fact reconstructible;
+3. add a same-family optional field only when deterministic projection/validation materially needs it;
+4. preserve backward compatibility unless Frozen authority explicitly authorizes breaking change;
+5. add negative verifier coverage for authority/currentness-sensitive fields.
+
+### 14.2 Likely additive projection areas
+
+Potential, not pre-authorized, same-family extensions include:
+
+- existing Dispatch/Event/Work Item refs for parent/causation/responsibility when reconstruction currently fails;
+- Stage 1 templates/prompts/checklists for Product Research disposition and Product Review applicability/currentness;
+- Task/Execution Pack refs to Frozen Product acceptance/gate obligations where useful;
+- Task Learning same-family fields only if existing schema cannot express the selected optional evidence;
+- manifest/reference/adoption updates needed to make current owners and entrypoints discoverable;
+- closure/conformance references that map PRD §19 requirements to existing evidence.
+
+A machine contract MUST NOT create semantic authority absent from its owner.
+
+### 14.3 Projection convergence
+
+For each owner-local change, update only materially affected projections:
 
 ```text
-owner-local Tasks:
-  standards/<canonical-owner>.md
-  owner-specific schemas/references/tests
-
-projection Task(s):
-  prompts/templates/checklists/adoption/reference surfaces
-
-central integration:
-  standard-manifest.json
-  shared registries
-  global verifier/golden/conformance suites
+normative prose
+schema/registry if deterministic machine behavior needs it
+template/prompt/checklist/reference
+positive + negative fixtures/tests
+verifier/CI projection
+adoption/discovery docs
 ```
 
-If one shared file must be touched by many concerns, defer that shared mutation to C8 unless the file is itself the canonical owner for one concern.
-
-One concern / one PR remains preferred.
+Do not touch every surface mechanically when the concern does not project there.
 
 ---
 
-## 17. Validation and review architecture
+## 15. Minimum vs Advanced adoption architecture
 
-Each implementation concern should have the smallest strict concern evidence appropriate to its owner.
+### Minimum ADS
 
-Examples:
+A conforming low-risk project can remain repository/GitHub-native with:
 
-- normative prose + schema: focused semantic/schema negative tests;
-- workflow/state: lifecycle transition/forbidden-inference cases;
-- Task decomposition: positive/negative DAG/decomposition examples;
-- reviewability/shared assets: dogfood fixtures proving both justified reuse and justified keep-local, plus noisy-diff rejection;
-- learning: truth/currentness/privacy/noise/promotion negative tests;
-- projection: manifest/read-set/template/verifier consistency checks.
+- pinned applicable ADS authority;
+- semantic Product/Scope/L1 facts proportional to the work;
+- Product Research only when evidence is insufficient;
+- Product Review only when Product/risk/policy requires it;
+- explicit Product authority when Product Freeze is material;
+- bounded Task/PR execution;
+- required tests/Validation/Review according to applicable owners;
+- exact currentness/compatibility truth;
+- explicit human authority/control points where needed.
 
-C8 owns integrated cross-standard regression and representative end-to-end dogfood. Leaf tasks should not all inherit the full closure suite merely because it exists.
+It does not require a reducer/controller service, component registry, learning DB, telemetry system or full multi-Agent orchestration.
 
-Independent Review remains separate from executable Validation where policy requires it.
+### Advanced ADS
 
----
-
-## 18. Dogfood architecture
-
-At minimum C8 should exercise:
-
-1. minimum/manual ADS bounded maintenance;
-2. advanced multi-Agent execution with delegated subwork;
-3. explicit human authority decision;
-4. reviewable Agent implementation with Review Brief;
-5. deliberately noisy/opaque diff rejected or decomposed despite green tests;
-6. `USE_EXISTING` shared component path;
-7. `EXTEND_EXISTING` with consumer-impact evidence;
-8. `KEEP_LOCAL` where abstraction would be wrong;
-9. `PROPOSE_SHARED_COMPONENT` routed without scope widening;
-10. `NO_MATERIAL_EXECUTION_LEARNING` trivial path;
-11. evidence-bound recurring execution learning;
-12. static research without Demo;
-13. executable Demo escalation when evidence requires it;
-14. legitimate Task split and a fake-parallelism negative case;
-15. bounded repair/re-review convergence;
-16. fresh adopter owner/discoverability navigation.
-
-Dogfood success is evidence for v4.10 implementation/release later; it is not required to freeze this L2 or Task DAG.
+Advanced projects may add Task DAG/JIT Execution Packs/Dispatch-Claim/resource-aware routing/parallel Agents/reducer-controller automation/proportional assurance/Task Learning/cost feedback/full release orchestration. These are implementations of the same authority/currentness semantics, not stronger authority.
 
 ---
 
-## 19. Architecture non-goals
+## 16. Candidate implementation concern decomposition
 
-v4.10 architecture MUST NOT introduce:
+These concerns are **L2 decomposition inputs only**. They are not yet the Frozen Task DAG and their dependency edges must be minimized during Task DAG materialization.
 
-- a generic Agent runtime;
-- a second Task/DAG/Dispatch/Claim family;
-- a second Review/Validation/Release family;
-- a mandatory central scheduler/database;
-- a universal shared-component registry;
-- automatic DRY/promotion rules;
-- universal LOC/file/time/token thresholds;
-- raw chain-of-thought capture;
-- an automatic learning→standard mutation path;
-- cost-based gate waiver;
-- provider/model identity as semantic authority;
-- historical PASS transfer to a different exact subject;
-- other-version execution as a prerequisite for v4.10 Product/L2/Task-DAG planning.
+### C1 — Stage 1 lifecycle / Product Research / Product Review / Freeze convergence
+
+Primary owners: `DEVELOPMENT_WORKFLOW.md`, L1/Product prompts/templates, Product planning references.
+
+Deliver: Idea→semantic L1→Product Research as needed→Draft PRD→risk/policy-selected Product Review→Product Freeze authority; legal compact/Fast Path; v4.10 itself remains Fresh-review-required.
+
+### C2 — Human + Multi-Agent responsibility, causation and control
+
+Primary owners: `EXECUTION_ARCHITECTURE_STANDARD.md`, `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, Work Item/Dispatch/Event projections.
+
+Deliver: delegation vs handoff, attenuation, reconstructible causation/responsibility, Human Decision Queue/control semantics with minimal intervention; no second Claim/Human workflow.
+
+### C3 — Automation-first quality / Task granularity / safe mutation
+
+Primary owners: `IMPLEMENTATION_QUALITY_STANDARD.md`, `TASK_DECOMPOSITION_STANDARD.md`, Task/DAG/Execution Pack projections.
+
+Deliver: evidence-first quality, maintainability/diff hygiene, Agent-dispatchable qualitative boundaries, real-safe parallelism and safe mutation capability routing; no mandatory human readability gate.
+
+### C4 — Assurance / Review / Repair convergence
+
+Primary owners: current Review/Workflow/Validation composition.
+
+Deliver: fail-closed gate applicability, severity/verdict/currentness clarification, root-class repair, successor/delta review rules and non-converging loop adjudication without a second Review lifecycle.
+
+### C5 — Subordinate owner hardening: shared-code / Task Learning / cost / research
+
+Primary owners: existing Architecture/Task/Implementation/Compatibility, Task Learning, Stage 1/Architecture Research owners.
+
+Deliver only evidence-backed gaps; preserve `R5 existing-owner-only`, `R8 optional/proportional`, `R9 L2 detail`, `R10 existing-owner`. Avoid feature re-expansion.
+
+### C6 — Owner discovery / projection / machine conformance
+
+Primary owners: manifest/reference conventions, schemas/templates/prompts/checklists/verifiers/CI projections.
+
+Deliver owner convergence matrix, stale/legacy classification, minimal same-family machine updates and negative conformance coverage. Central registry duplication forbidden.
+
+### C7 — Product acceptance / closure / core-feature-freeze evidence wiring
+
+Primary owners: Frozen Product §19 + Validation/Release/Closure/Product authority composition.
+
+Deliver requirement→evidence mapping in durable planning/closure surfaces, explicit release-blocker coverage, Minimum/Advanced dogfood references and a durable Product-authority `ADS_CORE_FEATURE_FREEZE_ELIGIBLE=YES|NO` decision input path. Do not create a second Release verdict.
+
+### C8 — Central integration / whole-project conformance / dogfood
+
+Primary purpose: integrate owner-local changes, wire central shared projections, execute whole-project conformance/falsification and route discovered owner defects back to C1–C7.
+
+C8 is not a semantic owner and MUST NOT silently repair owner semantics inside integration wiring.
+
+### 16.1 Dependency posture
+
+The conceptual relation is:
+
+```text
+C1..C7 ──> C8
+```
+
+Only real code/authority/evidence dependencies may become Task DAG edges. Conceptual relationship, desired review order or shared version membership is insufficient to create a dependency.
+
+Where C1–C7 touch shared manifest/template/verifier surfaces, prefer owner-local changes plus one explicit C8 central-wiring task to reduce write collisions.
 
 ---
 
-## 20. L2 Freeze criteria
+## 17. Architecture acceptance / falsification
 
-L2 may be Frozen when a genuinely Fresh Independent Architecture Review confirms on the exact candidate that:
+A Fresh Independent Architecture Review must falsify at least:
 
-1. every Product requirement R1–R12 has a legal owner/composition path;
-2. no proposed architecture creates a parallel lifecycle/owner family;
-3. multi-Agent collaboration uses existing Task/Dispatch/Claim semantics with bounded responsibility/authority lineage;
-4. Review Brief remains a non-authoritative projection;
-5. shared-code lifecycle composes existing Architecture/Quality/Task/Compatibility owners without central registry or mechanical DRY;
-6. Task granularity remains qualitative and uses existing DAG mutation authority;
-7. execution learning/cost feedback stay in existing Learning/Evolution paths and cannot waive gates;
-8. machine-contract changes are additive/same-family where possible and compatibility-governed;
-9. candidate concern decomposition C1–C8 is sufficient to produce a compact Task DAG without reopening Product scope;
-10. no unresolved P0/P1 Architecture finding remains.
+1. Product v0.4 semantics are preserved without L2 inventing or weakening Product requirements.
+2. Product Review is proportional evidence/judgment and Product Freeze remains Product authority; no unconditional downstream review ceremony is introduced.
+3. Human controllability maps to existing Human Decision/execution mechanisms with minimal routine intervention; no mandatory Human Reviewability gate survives from historical L2 v0.1.
+4. automation-first quality does not weaken maintainability/diff hygiene or exact evidence.
+5. R5/R8/R9/R10 remain subordinate and do not reappear as new Product/owner families.
+6. every active Product requirement R1/R2/R3/R4/R6/R7/R11/R12 has a plausible owner/evidence production path for PRD §19 acceptance.
+7. Release/Validation ownership is preserved and §19 does not define duplicate gate/verdict states.
+8. `ADS_CORE_FEATURE_FREEZE_ELIGIBLE` remains Product authority consuming evidence and cannot be manufactured by Closure/Release/CI/Review.
+9. Product Research vs Architecture Research separation is operational without a second Research lifecycle.
+10. machine-contract additions are reuse-first/additive and no new registry/runtime/database is assumed.
+11. C1–C8 are sufficiently coherent for later Task DAG materialization and C8 does not become semantic owner.
+12. planning independence from other version execution does not imply stale implementation admission.
 
-After L2 Freeze, materialize the authoritative Task DAG from C1–C8 with only real dependencies. Do not begin implementation until Task Packs/L3/JIT admission required by the then-current standard are satisfied.
+Any unresolved high-impact architecture owner conflict, authority duplication or Product contradiction blocks L2 Freeze.
+
+---
+
+## 18. L2 Freeze gate
+
+This successor L2 remains **NOT FROZEN**.
+
+Freeze requires:
+
+- a genuinely Fresh high-capability Independent Architecture Review on the exact successor L2 blob and exact PR planning HEAD/tree;
+- `PRODUCT_BOUNDARY_PRESERVED=PASS`;
+- no unresolved P0/P1 and no unresolved architecture-boundary P2;
+- all high-impact architecture UNKNOWNs either resolved or explicitly safe to defer under the owning standard;
+- currentness rechecked immediately before the terminal and before Controller Freeze.
+
+Only after L2 Freeze may #817 materialize the compact authoritative Task DAG. L2 Freeze does not itself authorize implementation; implementation admission still follows Task/DAG/JIT/current-baseline rules.
