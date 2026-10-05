@@ -1,85 +1,23 @@
-# T-012 Execution Contract
+# T-012 JIT Execution Contract
 
-## Exact subject
+## Exact authority
+- Issue: #731 / T-012 Deterministic Proportional-Orchestration Conformance Suite. Risk: critical/high. L3: required test-oracle review.
+- Base: `version/v4.9.0@d53e943ec7109648485b64a647ed2c7cf553531d`, tree `5ad2dbd8c312a67bb050a3199ab9b29b70c23406` (post T-011 central wiring).
+- Frozen Product (`a8ec7030...`), Frozen L2 (`bd41ea01...`), Frozen Task DAG v0.2 (`b9fe0cc7...`), current Task Pack and L3 remain authoritative.
+- Immutable DAG v0.1 `### T-012` (blob `4f358ba2...`) is the normative concern. Native blockers zero; all five lineage refs current at base.
+- Tests may assert Frozen owner semantics but may NOT redefine them. Final integrated conformance binds ACTUAL MERGED owner outputs and current predecessor lineage.
 
-- Base: `257e95531551960cb163a3e20ab2b3d13f415d3c`
-- Base tree: `1171de2c8afb08d6f793a258ffd0b586007e9dbf`
-- Target: `version/v4.8.0`
-- Branch: `task/v4.8.0-t12-469-dogfood`
-- Task: `T-012` / Issue `#518`
-- Task Pack blob: `10168f6ea2a1cb3b0ffff9c1a493b0904d82942f`
-- L3 blob: `82f0ac808f423d861c030413046c2b2e689bfc1d`
-- Source evidence planning anchor: `ai-development-standard#469@5925124956`
+## Required result
+1. `scripts/test_v49_conformance_suite.py` — deterministic suite covering AT MINIMUM the DAG v0.1 `### T-012` coverage list: precedence vs conjunction; reduction proof fail-closed; assurance currentness TOCTOU; adverse finding carry-forward; selector/independence conflicts; JIT in-envelope vs DAG mutation; gate-owned transfer/currentness; Release per-gate applicability/non-aggregation; predecessor lineage wait; Task Learning same-family compatibility; manual-compatible state reconstruction. Bind each scenario to actual merged owner outputs (T-002/T-004/T-005/T-006/T-007/T-008/T-009/T-010 surfaces at this base) with exact refs. The suite is a TEST ORACLE: it asserts owner semantics, never redefines them, and makes no runtime claim beyond executed tests.
+2. `fixtures/conformance-suite/**` — scenario fixtures.
+3. AUTHORIZED RE-BINDS (Controller per F1/F2 disclosures; provenance-commented, pin-constants only, zero assertion-logic change):
+   - `scripts/test_v49_gate_currentness.py` t07 tree-scoped pin: re-bind from `d8fd03db..HEAD ⊆ T-010 write set` (structurally red at any integrated tree) to the actual merged T-010 delta at this base — assert the T-010 content is present via its merged files (same strength: the T-010 outputs must be exactly present);
+   - `scripts/test_v48_integration_closure.py`: C01 inventory-size pin re-bind to the post-T-011 manifest inventory; C08 workflow pin re-bind to the current (post-T-011 + T-012-appended) workflow command set — exact-set strength preserved.
+4. `.github/workflows/verify-standard.yml`: append the conformance-suite command in the established style (no removals/reorders).
 
-The Builder may implement only the bounded #469 evidence synthesis described by the Task Pack/L3. This pack does not authorize Product/L2/DAG, normative standards, schemas, model-routing policy, completed upstream Task artifacts, CI/workflows, T-014, Version Closure or Release authority changes.
+## Hard boundaries
+- Suite asserts owner semantics; owner defects discovered route back to owning Tasks (report, do not repair owner files).
+- No Product/L2/DAG mutation; frozen blobs resolve unchanged at candidate.
 
-## Builder write set
-
-Exactly:
-
-```text
-docs/implementation/4.8.0/dogfood/469/**
-```
-
-Expected outputs are `EVIDENCE_MATRIX.md`, `EXECUTION_OBSERVATIONS.md` and `RESULT.md`. Another file under the same directory is permitted only when strictly evidence-supporting and subordinate to those outputs.
-
-If a path outside the write set is required, stop. Do not widen the pack. A normative semantic/public-contract change may be recorded only as an evidence disposition routed to ordinary ADS evolution governance.
-
-## Freedom / execution-profile contract
-
-`agent_freedom=F1_BOUNDED_IMPLEMENTATION`.
-
-The Builder may organize tables and wording inside the fixed evidence contract. It may not invent missing measurements, reinterpret Review/Validation authority, change source statuses, redesign routing policy, or infer a savings/universal model rule.
-
-A bounded/lower-cost Builder is admissible only when current capability/profile/evidence and Task constraints make it hard-eligible. Provider/model identity is provenance only. If no bounded Builder is eligible, an eligible stronger Builder may execute the same F1 contract; the freedom ceiling does not widen.
-
-Material ambiguity about source meaning/currentness, comparability, authority, write set or required disposition must stop/escalate rather than be guessed through.
-
-## Dual currentness preflight
-
-Before authoritative Builder work, both currentness dimensions must pass:
-
-1. **Repository currentness** — live `version/v4.8.0` still equals base `257e95531551960cb163a3e20ab2b3d13f415d3c`; Task Pack/L3 blobs and branch match this pack; native #518 blockers remain zero.
-2. **Source-evidence currentness** — re-read #469. If a material successor exists after planning anchor comment `5925124956`, stop with `BLOCKED_SOURCE_CURRENTNESS` and request an explicit evidence rebind before writing result artifacts.
-
-Repository base and source-evidence currentness are independent. Passing one does not waive the other.
-
-## Required evidence semantics
-
-The candidate must preserve:
-
-1. #469 is dogfood evidence, not standard authority;
-2. exact source refs distinguish historical checkpoint, current consumed anchor and T-012's own observations;
-3. source-reported external executions are not presented as T-012 executions;
-4. Builder, independent Validator and Fresh Reviewer identities/results remain distinct;
-5. `0`, `NONE_REPORTED`, `NOT_REPORTED`, `NOT_MEASURED`, `NOT_APPLICABLE` and `BLOCKED` remain semantically distinct;
-6. provider/model identity is provenance only;
-7. green Builder/Validation status does not erase later Fresh Review findings;
-8. stale pack/L3/base/source evidence cannot silently rebind;
-9. clarification/escalation/edit-test-loop/drift/rework fields are recorded only when exact evidence supports them;
-10. T-012 records its own Builder execution metrics separately from source-task metrics;
-11. economic/cost claims require comparable measured methodology; otherwise `ECONOMIC_SAVINGS=NOT_MEASURED`;
-12. bounded successes do not establish a blanket strong→low-cost rule;
-13. any `ADS_EVOLUTION_CANDIDATE` is only an input to ordinary ADS governance, never automatic adoption.
-
-## Planning/implementation phase separation
-
-Phase 1 may create/update only the T-012 Task Pack, task-scoped L3 and `.agent/execution/T-012/**`. It must not create or edit `docs/implementation/4.8.0/dogfood/469/**` result artifacts.
-
-The result directory is Phase-2 Builder work after a separate accepted Builder dispatch/claim.
-
-## Completion evidence
-
-Builder terminal must bind:
-
-- exact live base and Pack HEAD/tree;
-- exact candidate HEAD/tree;
-- exact candidate diff and write-set proof;
-- exact #469 source anchor/currentness result consumed;
-- BDF-01..BDF-12 evidence-matrix coverage;
-- T-012 Builder profile/provenance and actually observed measurements;
-- `git diff --check`, exact changed-path listing and `python -B scripts/verify_standard.py` results;
-- `ECONOMIC_SAVINGS=NOT_MEASURED` unless the exact evidence includes a genuinely comparable measured methodology;
-- Validation and Fresh Review as pending, not self-claimed.
-
-Independent Validation is required on the exact candidate and consumed source evidence, followed by genuinely Fresh Independent Review on the exact validated candidate.
+## Mutation authority
+Only the five Builder write-set paths in MANIFEST plus the six immutable `.agent/execution/T-012/**` planning files.

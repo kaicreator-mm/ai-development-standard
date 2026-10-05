@@ -1,0 +1,308 @@
+{
+  "fixture_id": "v4.9.0-T-012-C06-jit-envelope-vs-dag-mutation",
+  "owner_refs": [
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+    "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+    "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+    "schemas/dag-mutation-record-v1.schema.json",
+    "docs/implementation/4.9.0/PRD.md#l-task-dag-scope-protection",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_jit_dag_governance.py",
+    "scripts/test_v49_execution_core.py"
+  ],
+  "clean_envelope_conditions": {
+    "creates_no_new_semantic_concern": false,
+    "changes_no_task_ownership": false,
+    "changes_no_dependency_semantics": false,
+    "widens_no_write_acceptance_scope": false
+  },
+  "clean_effects": {
+    "new_semantic_concern": false,
+    "task_ownership_change": false,
+    "dependency_semantics_change": false,
+    "write_scope_widening": false,
+    "task_identity_change": false
+  },
+  "fact_plane": {
+    "plane_id": "t012",
+    "live_topology_digest": "dag:digest-1111",
+    "task_pack_refs_current": {
+      "task-pack:v4.9.0/T-012": "CURRENT"
+    }
+  },
+  "mutation_record": {
+    "schema_version": 1,
+    "mutation_id": "mutation:T-012:0001",
+    "mutation_class": "ADD_DEPENDENCY",
+    "requested_by": "github:kaicreator-mm/ai-development-standard#731",
+    "approved_by": "controller:v4.9.0",
+    "reason": "integration ordering requires an explicit blocked-by edge",
+    "affected_task_refs": [
+      "github:kaicreator-mm/ai-development-standard#731"
+    ],
+    "old_topology_ref": "dag:digest-1111",
+    "new_topology_ref": "dag:digest-2222",
+    "old_edges": [],
+    "new_edges": [
+      [
+        "#731",
+        "#729"
+      ]
+    ],
+    "scope_impact": "no acceptance-scope change",
+    "release_impact": "none",
+    "task_pack_impact_refs": [
+      "task-pack:v4.9.0/T-012"
+    ],
+    "review_impact": "none",
+    "validation_impact_ref": "validation:none@1",
+    "created_at": "2026-10-04T00:00:00Z"
+  },
+  "native_hydration": {
+    "authorized_executor": true,
+    "performed": true,
+    "read_back": true
+  },
+  "scenarios": [
+    {
+      "scenario_id": "C06_S1_in_envelope_jit_phase_is_bookkeeping_not_mutation",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "jit-phase-in-envelope",
+        "action": "jit_phase_dispatch_same_issue",
+        "declared_in": "task-pack:v4.9.0/T-012",
+        "envelope_conditions": {
+          "creates_no_new_semantic_concern": false,
+          "changes_no_task_ownership": false,
+          "changes_no_dependency_semantics": false,
+          "widens_no_write_acceptance_scope": false
+        },
+        "effects": {
+          "new_semantic_concern": false,
+          "task_ownership_change": false,
+          "dependency_semantics_change": false,
+          "write_scope_widening": false,
+          "task_identity_change": false
+        }
+      },
+      "expect": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED",
+        "semantic_topology_changed": false
+      }
+    },
+    {
+      "scenario_id": "C06_S2_phase_not_proven_in_envelope_is_blocked_never_auto_admitted",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "docs/implementation/4.9.0/PRD.md#l-task-dag-scope-protection"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposals": [
+        {
+          "id": "jit-phase-unproven-envelope",
+          "action": "jit_phase_dispatch_same_issue",
+          "declared_in": "task-pack:v4.9.0/T-012",
+          "envelope_conditions": {
+            "creates_no_new_semantic_concern": false,
+            "changes_no_task_ownership": null,
+            "changes_no_dependency_semantics": false,
+            "widens_no_write_acceptance_scope": false
+          },
+          "effects": {
+            "new_semantic_concern": false,
+            "task_ownership_change": false,
+            "dependency_semantics_change": false,
+            "write_scope_widening": false,
+            "task_identity_change": false
+          }
+        },
+        {
+          "id": "jit-phase-outside-envelope",
+          "action": "jit_phase_dispatch_same_issue",
+          "declared_in": "task-pack:v4.9.0/T-012",
+          "envelope_conditions": {
+            "creates_no_new_semantic_concern": true,
+            "changes_no_task_ownership": false,
+            "changes_no_dependency_semantics": false,
+            "widens_no_write_acceptance_scope": false
+          },
+          "effects": {
+            "new_semantic_concern": false,
+            "task_ownership_change": false,
+            "dependency_semantics_change": false,
+            "write_scope_widening": false,
+            "task_identity_change": false
+          }
+        }
+      ],
+      "expect": {
+        "routes": [
+          "BLOCKED_OUT_OF_TASK_ENVELOPE",
+          "BLOCKED_OUT_OF_TASK_ENVELOPE"
+        ],
+        "note": "a phase that cannot be proven in-envelope is never treated as in-envelope; undeclared is blocked, not auto-admitted; a phase with NO envelope declaration is covered by the core kernel case below"
+      }
+    },
+    {
+      "scenario_id": "C06_S3_add_dependency_is_material_mutation_routed_to_v43_owner",
+      "exact_refs": [
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "runtime-add-dependency",
+        "action": "ADD_DEPENDENCY",
+        "bound_topology_digest": "dag:digest-1111",
+        "mutation_record": "USE_RECORD",
+        "native_hydration": {
+          "authorized_executor": true,
+          "performed": true,
+          "read_back": true
+        }
+      },
+      "expect": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_ADD_DEPENDENCY",
+        "mutation_record_required": true,
+        "native_mutation_performed": true,
+        "note": "adding a blocked-by edge produces owner mutation evidence and native hydration; it is never a JIT phase"
+      }
+    },
+    {
+      "scenario_id": "C06_S4_textual_dependency_list_never_substitutes_native_edges",
+      "exact_refs": [
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "runtime-add-dependency-textual",
+        "action": "ADD_DEPENDENCY",
+        "bound_topology_digest": "dag:digest-1111",
+        "mutation_record": "USE_RECORD",
+        "native_hydration": {
+          "authorized_executor": true,
+          "performed": false,
+          "read_back": false,
+          "textual_dependency_list_only": true
+        }
+      },
+      "expect": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG",
+        "contains_reason": "FAIL_CLOSED_TEXTUAL_LIST_NOT_NATIVE"
+      }
+    },
+    {
+      "scenario_id": "C06_S5_stale_mutation_record_fails_closed_preserving_live_dag",
+      "exact_refs": [
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "runtime-add-dependency-stale",
+        "action": "ADD_DEPENDENCY",
+        "bound_topology_digest": "dag:digest-STALE",
+        "mutation_record": "USE_RECORD",
+        "native_hydration": {
+          "authorized_executor": true,
+          "performed": true,
+          "read_back": true
+        }
+      },
+      "expect": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG",
+        "contains_reason": "FAIL_CLOSED_STALE_MUTATION_RECORD"
+      }
+    },
+    {
+      "scenario_id": "C06_S6_telemetry_only_justification_cannot_authorize_mutation",
+      "exact_refs": [
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "split-for-smaller-units",
+        "action": "SPLIT",
+        "telemetry_only_justification": "context growth and duration exceeded advisory budget",
+        "bound_topology_digest": "dag:digest-1111",
+        "mutation_record": "USE_RECORD",
+        "native_hydration": {
+          "authorized_executor": true,
+          "performed": true,
+          "read_back": true
+        }
+      },
+      "expect": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG",
+        "contains_reason": "FAIL_CLOSED_TELEMETRY_CANNOT_AUTHORIZE"
+      }
+    },
+    {
+      "scenario_id": "C06_S7_unknown_action_fails_closed_ambiguous",
+      "exact_refs": [
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_jit_dag_governance.py classify_and_route",
+      "proposal": {
+        "id": "mystery-action",
+        "action": "refine_dependencies_in_body_text",
+        "bound_topology_digest": "dag:digest-1111",
+        "mutation_record": "USE_RECORD",
+        "native_hydration": {
+          "authorized_executor": true,
+          "performed": true,
+          "read_back": true
+        }
+      },
+      "expect": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG",
+        "contains_reason": "FAIL_CLOSED_AMBIGUOUS_ACTION"
+      }
+    },
+    {
+      "scenario_id": "C06_S8_core_classifier_routes_topology_change_away_from_jit",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+      ],
+      "frozen_scenario": "L",
+      "kernel_binding": "scripts/test_v49_execution_core.py classify_topology_change",
+      "proposals": [
+        {
+          "action": "new_task",
+          "expect_route": "V43_MUTATION_ADD"
+        },
+        {
+          "action": "add_dependency",
+          "expect_route": "V43_MUTATION_ADD_DEPENDENCY"
+        },
+        {
+          "action": "remove_dependency",
+          "expect_route": "V43_MUTATION_REMOVE_DEPENDENCY"
+        },
+        {
+          "action": "rescope_write_set",
+          "expect_route": "V43_MUTATION_CLASS_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

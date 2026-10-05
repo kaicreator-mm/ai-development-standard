@@ -1,0 +1,181 @@
+{
+  "fixture_id": "v4.9.0-T-012-C09-predecessor-lineage-wait",
+  "owner_refs": [
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+    "registries/state-dimensions-v1.json",
+    "docs/implementation/4.9.0/PRD.md#k-known-sequence-block",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_execution_core.py"
+  ],
+  "forbidden_inference_rule_ids": [
+    "F11_TASK_DONE_NOT_LINEAGE_CURRENT",
+    "F17_WAITING_LINEAGE_NOT_WORKFLOW_BLOCKED",
+    "F18_WAITING_LINEAGE_NOT_GATE_PASS",
+    "F19_WAITING_LINEAGE_NOT_GATE_FAIL"
+  ],
+  "current_dimensions": {
+    "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+    "owner_authority_digest": "owner:aps@v49",
+    "proof_input_digest": "proof:inputs@1",
+    "task_pack_digest": "pack:T012@1",
+    "release_decision_digest": "release:none",
+    "unresolved_finding_digest": "findings:"
+  },
+  "in_envelope_proof": {
+    "declared_in": "task-pack:v4.9.0/T-012",
+    "envelope_conditions": {"creates_no_new_semantic_concern": false, "changes_no_task_ownership": false, "changes_no_dependency_semantics": false, "widens_no_write_acceptance_scope": false}
+  },
+  "admission_available": {"state": "AVAILABLE"},
+  "scenarios": [
+    {
+      "scenario_id": "C09_S1_all_lineage_current_ready",
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / jit_verdict",
+      "facts": {
+        "plan_binding": {"bound_components": {
+          "subject_identity_ref": "sha:1111111111111111111111111111111111111111",
+          "owner_authority_digest": "owner:aps@v49",
+          "proof_input_digest": "proof:inputs@1",
+          "task_pack_digest": "pack:T012@1",
+          "release_decision_digest": "release:none",
+          "unresolved_finding_digest": "findings:"
+        }},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG42_COMPAT", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG43_DAG", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG47_REGISTRY", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG48_EXEC", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG48_LEARNING", "status": "INTEGRATED_CURRENT"}
+        ]
+      },
+      "phase": {"dependency_state": "DONE", "envelope_proof": "USE_IN_ENVELOPE_PROOF"},
+      "expect": {"posture": "CURRENT", "verdict": "READY", "projection": null}
+    },
+    {
+      "scenario_id": "C09_S2_stale_predecessor_surface_waits_not_dispatches",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "docs/implementation/4.9.0/PRD.md#k-known-sequence-block"
+      ],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / waiting_lineage_projection / jit_verdict",
+      "facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG42_COMPAT", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG48_EXEC", "status": "STALE"}
+        ]
+      },
+      "phase": {"dependency_state": "DONE", "envelope_proof": "USE_IN_ENVELOPE_PROOF"},
+      "expect": {
+        "posture": "WAITING_LINEAGE",
+        "verdict": "WAITING_LINEAGE",
+        "projection": {"dispatchable": false, "claimable": false, "workflow_state": null, "gate_verdict": null, "reasons": ["lineage:LG48_EXEC"]},
+        "note": "known-not-ready work stays in the wait projection instead of dispatching a guaranteed-BLOCKED sequence block"
+      }
+    },
+    {
+      "scenario_id": "C09_S3_predecessor_done_does_not_inherit_lineage_currentness",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "registries/state-dimensions-v1.json"
+      ],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture",
+      "facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG48_LEARNING", "status": "UNKNOWN", "note": "predecessor task is state:done but its owned surface was never integrated"}
+        ]
+      },
+      "expect": {
+        "posture": "WAITING_LINEAGE",
+        "forbidden_inference_rule_id": "F11_TASK_DONE_NOT_LINEAGE_CURRENT",
+        "note": "a predecessor's completion never inherits lineage currentness"
+      }
+    },
+    {
+      "scenario_id": "C09_S4_wait_projection_is_never_a_workflow_or_gate_verdict",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "registries/state-dimensions-v1.json"
+      ],
+      "frozen_scenario": "K",
+      "forbidden_inference_rule_ids": ["F17_WAITING_LINEAGE_NOT_WORKFLOW_BLOCKED", "F18_WAITING_LINEAGE_NOT_GATE_PASS", "F19_WAITING_LINEAGE_NOT_GATE_FAIL"],
+      "expect": {
+        "projection_workflow_state": null,
+        "projection_gate_verdict": null,
+        "note": "the wait posture never becomes a canonical Issue state or a gate verdict; it is derived, reason-bound, recomputable"
+      }
+    },
+    {
+      "scenario_id": "C09_S5_failed_lineage_is_blocked",
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / jit_verdict",
+      "facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG43_DAG", "status": "FAILED"}
+        ]
+      },
+      "phase": {"dependency_state": "DONE", "envelope_proof": "USE_IN_ENVELOPE_PROOF"},
+      "expect": {"posture": "BLOCKED", "verdict": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C09_S6_pending_dependency_blocked_before_lineage",
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py jit_verdict",
+      "facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [{"surface_ref": "lineage:LG42_COMPAT", "status": "INTEGRATED_CURRENT"}]
+      },
+      "phase": {"dependency_state": "PENDING", "envelope_proof": "USE_IN_ENVELOPE_PROOF"},
+      "expect": {"verdict": "BLOCKED"}
+    },
+    {
+      "scenario_id": "C09_S7_surface_integrated_recompute_drops_projection",
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection"],
+      "frozen_scenario": "K",
+      "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / waiting_lineage_projection / jit_verdict",
+      "before_facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG42_COMPAT", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG48_EXEC", "status": "STALE"}
+        ]
+      },
+      "after_facts": {
+        "plan_binding": {"bound_components": "USE_ALL_CURRENT_COMPONENTS"},
+        "current_dimensions": "USE_CURRENT_DIMENSIONS",
+        "unresolved_findings": [],
+        "lineage_refs": [
+          {"surface_ref": "lineage:LG42_COMPAT", "status": "INTEGRATED_CURRENT"},
+          {"surface_ref": "lineage:LG48_EXEC", "status": "INTEGRATED_CURRENT"}
+        ]
+      },
+      "phase": {"dependency_state": "DONE", "envelope_proof": "USE_IN_ENVELOPE_PROOF"},
+      "expect": {
+        "before": {"posture": "WAITING_LINEAGE", "projection_non_dispatchable": true},
+        "after": {"posture": "CURRENT", "projection": null, "verdict": "READY"},
+        "note": "when the required predecessor surface becomes integrated/current, recompute drops the projection and normal evaluation resumes"
+      }
+    }
+  ]
+}

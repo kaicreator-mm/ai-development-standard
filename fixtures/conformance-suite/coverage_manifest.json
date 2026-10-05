@@ -1,0 +1,200 @@
+{
+  "coverage_manifest_id": "v4.9.0-T-012-coverage-manifest",
+  "dag_v01_t012": {
+    "source_path": "docs/implementation/4.9.0/task-dag-history/TASK_DAG-v0.1-first-candidate.md",
+    "blob": "4f358ba2b32e01ae17ddcdf970151cf28e44bb3f",
+    "heading": "### T-012 — Deterministic Proportional-Orchestration Conformance Suite"
+  },
+  "frozen_authority_blobs": {
+    "prd": "a8ec7030a14337a4c2dca853dc474e965679d610",
+    "prd_path": "docs/implementation/4.9.0/PRD.md",
+    "l2": "bd41ea0175b459a6a490fd37ad579e429a58a1c3",
+    "l2_path": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
+    "dag_v02": "b9fe0cc7089f64929b4bcf45f7230d950e864db2",
+    "dag_v02_path": "docs/implementation/4.9.0/TASK_DAG.md"
+  },
+  "coverage_items": [
+    {
+      "id": "C01",
+      "dag_coverage_item": "precedence vs conjunction;",
+      "test_class": "C01GateAuthorityPrecedenceAndConjunction",
+      "fixture": "precedence_conjunction.json",
+      "frozen_scenarios": ["A", "B"],
+      "l2_positive_scenario_numbers": [2, 4],
+      "l2_negative_oracle_lines": ["Gate Authority lower default + higher override -> treat both as independent atoms", "one owner permits skip -> remove independent other-owner gate"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+        "standards/ASSURANCE_PLAN_STANDARD.md#10-owner-scoped-assurance-floor-and-cross-owner-composition",
+        "schemas/assurance-plan-v2.schema.json#cross_owner_composition"
+      ]
+    },
+    {
+      "id": "C02",
+      "dag_coverage_item": "reduction proof fail-closed behavior;",
+      "test_class": "C02ReductionProofFailClosed",
+      "fixture": "reduction_fail_closed.json",
+      "frozen_scenarios": ["M"],
+      "l2_positive_scenario_numbers": [3, 5],
+      "l2_negative_oracle_lines": ["risk:low/docs-only/model judgment -> reduction PROVEN_TRUE without owner proof", "recommended+skip -> legal solely because reviewer chose skip", "missing owner/applicability -> assume not applicable"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+        "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate"
+      ]
+    },
+    {
+      "id": "C03",
+      "dag_coverage_item": "assurance currentness TOCTOU;",
+      "test_class": "C03AssuranceCurrentnessToctou",
+      "fixture": "currentness_toctou.json",
+      "frozen_scenarios": ["F"],
+      "l2_positive_scenario_numbers": [6, 7],
+      "l2_negative_oracle_lines": ["Assurance Plan stale on new finding/proof/authority -> Claim/merge continues"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "scripts/test_v49_gate_currentness.py"
+      ]
+    },
+    {
+      "id": "C04",
+      "dag_coverage_item": "adverse finding carry-forward;",
+      "test_class": "C04AdverseFindingCarryForward",
+      "fixture": "carry_forward.json",
+      "frozen_scenarios": ["N", "J"],
+      "l2_positive_scenario_numbers": [8, 9],
+      "l2_negative_oracle_lines": ["R1 FAIL -> R2 PASS erases R1 blocker", "same-subject reviewer redispatch -> PASS-shopping", "successor SHA -> predecessor P1 finding dropped without per-finding disposition"],
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#91-carry-forward-rule",
+        "scripts/test_v49_gate_currentness.py"
+      ]
+    },
+    {
+      "id": "C05",
+      "dag_coverage_item": "selector/independence conflicts;",
+      "test_class": "C05SelectorIndependenceConflicts",
+      "fixture": "selector_independence.json",
+      "frozen_scenarios": ["G"],
+      "l2_positive_scenario_numbers": [10],
+      "l2_negative_oracle_lines": ["Role Profile claim switch -> bypass existing Claim rule", "provider/model name -> Role authority"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
+        "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
+        "scripts/test_v48_integration_closure.py",
+        "scripts/test_v49_role_execution_profile.py"
+      ]
+    },
+    {
+      "id": "C06",
+      "dag_coverage_item": "JIT in-envelope vs DAG mutation;",
+      "test_class": "C06JitEnvelopeVsDagMutation",
+      "fixture": "jit_envelope_dag_mutation.json",
+      "frozen_scenarios": ["L"],
+      "l2_positive_scenario_numbers": [11, 12],
+      "l2_negative_oracle_lines": ["new blocked-by edge -> no v4.3 DAG mutation evidence", "JIT phase not in Assurance Plan/Task Pack -> treated as in-envelope"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+        "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "schemas/dag-mutation-record-v1.schema.json",
+        "scripts/test_v49_jit_dag_governance.py",
+        "scripts/test_v49_execution_core.py"
+      ]
+    },
+    {
+      "id": "C07",
+      "dag_coverage_item": "gate-owned transfer/currentness;",
+      "test_class": "C07GateOwnedTransferCurrentness",
+      "fixture": "gate_transfer_currentness.json",
+      "frozen_scenarios": ["H", "I"],
+      "l2_positive_scenario_numbers": [8],
+      "l2_negative_oracle_lines": ["stale PASS -> successor PASS", "no transfer rule -> historical PASS reused", "candidate drift -> Hidden/RQ PASS transferred"],
+      "owner_refs": [
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix",
+        "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "scripts/test_v49_gate_currentness.py"
+      ]
+    },
+    {
+      "id": "C08",
+      "dag_coverage_item": "Release per-gate applicability/non-aggregation;",
+      "test_class": "C08ReleasePerGateApplicability",
+      "fixture": "release_applicability.json",
+      "frozen_scenarios": ["B", "D", "O"],
+      "l2_positive_scenario_numbers": [13, 14],
+      "l2_negative_oracle_lines": ["concern NOT_APPLICABLE aggregate -> version NOT_APPLICABLE", "DEFERRED_TO_VERSION_CLOSURE -> version release gate removed"],
+      "owner_refs": [
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "standards/RELEASE_STANDARD.md#113-no-concern-to-version-aggregation",
+        "standards/RELEASE_STANDARD.md#115-prospective-migration-only",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md",
+        "scripts/test_v49_gate_currentness.py",
+        "scripts/test_v49_release_applicability.py"
+      ]
+    },
+    {
+      "id": "C09",
+      "dag_coverage_item": "predecessor lineage wait;",
+      "test_class": "C09PredecessorLineageWait",
+      "fixture": "lineage_wait.json",
+      "frozen_scenarios": ["K"],
+      "l2_positive_scenario_numbers": [15],
+      "l2_negative_oracle_lines": ["WAITING_LINEAGE -> canonical Issue state invented", "predecessor not integrated -> generic compatibility rebind starts dependent execution"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "registries/state-dimensions-v1.json",
+        "scripts/test_v49_execution_core.py"
+      ]
+    },
+    {
+      "id": "C10",
+      "dag_coverage_item": "Task Learning same-family compatibility;",
+      "test_class": "C10TaskLearningSameFamilyCompat",
+      "fixture": "task_learning_compat.json",
+      "frozen_scenarios": ["Q"],
+      "l2_positive_scenario_numbers": [16],
+      "l2_negative_oracle_lines": ["Task Learning v1 closed schema -> silently add fields under v1 identity", "execution_friction_class -> replace friction_classification"],
+      "owner_refs": [
+        "schemas/task-learning-v2.schema.json",
+        "schemas/task-learning-v1.schema.json",
+        "references/TASK_LEARNING_V2_REFERENCE.md",
+        "references/TASK_LEARNING_V2_COMPATIBILITY.json",
+        "scripts/test_v49_task_learning_v2.py"
+      ]
+    },
+    {
+      "id": "C11",
+      "dag_coverage_item": "manual-compatible state reconstruction.",
+      "test_class": "C11ManualCompatibleStateReconstruction",
+      "fixture": "manual_reconstruction.json",
+      "frozen_scenarios": ["P"],
+      "l2_positive_scenario_numbers": [17, 18],
+      "l2_negative_oracle_lines": ["baseline=selected dogfood -> downstream generality satisfied", "orchestrator/Builder self-audit -> independent dogfood audit", "transport ACK/cache/state card -> gate/project authority"],
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+        "scripts/test_v49_execution_core.py",
+        "scripts/test_v49_gate_currentness.py"
+      ]
+    },
+    {
+      "id": "C12",
+      "dag_coverage_item": "(manifest) every DAG v0.1 T-012 coverage item is bound by an executable, deterministic test class bound to merged owner outputs with exact refs; the suite redefines no owner semantics.",
+      "test_class": "C12CoverageManifest",
+      "fixture": "coverage_manifest.json",
+      "frozen_scenarios": [],
+      "l2_positive_scenario_numbers": [],
+      "l2_negative_oracle_lines": [],
+      "owner_refs": [
+        "docs/implementation/4.9.0/task-dag-history/TASK_DAG-v0.1-first-candidate.md",
+        ".agent/execution/T-012/TEST_MATRIX.yaml"
+      ]
+    }
+  ]
+}

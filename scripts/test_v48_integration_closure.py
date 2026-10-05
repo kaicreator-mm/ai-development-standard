@@ -123,6 +123,21 @@ PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS = frozenset({
     "schemas/migration-transition-v1.schema.json",
 })
 
+# F2 RE-BIND (T-012, authorized pin-constants-only change; disclosure
+# #730@5998009516, MANIFEST controller_authorizations[1]): the post-T-011
+# integrated manifest legally carries the merged v4.9 machine contracts over
+# the v4.8-composed inventory (exactly three, registered by the merged T-002 /
+# T-004 / T-006 owner outputs at version/v4.9.0@d53e943e). The C01 inventory
+# pin is re-bound to the post-T-011 inventory; the exactly-three v4.8
+# partition below keeps its full strength — any fourth new family, dropped
+# family, rename, or silent v4.9 mutation still fails. Zero assertion-logic
+# change.
+V49_MERGED_MACHINE_CONTRACTS = frozenset({
+    "schemas/assurance-plan-v2.schema.json",
+    "schemas/role-execution-profile-v1.schema.json",
+    "schemas/task-learning-v2.schema.json",
+})
+
 # C03 fixture — inherited v4.1-v4.7 semantic concern -> canonical owner map.
 # Concerns and owners are inherited unchanged into v4.8; re-owning any of
 # them, or introducing a second owner for any concern, is an integration
@@ -236,6 +251,60 @@ FORBIDDEN_VERDICT_PATTERNS = (
 )
 
 REF_PATTERN = re.compile(r"(#\d+@\d+|#\d+|[0-9a-f]{40})")
+
+# F2 RE-BIND (T-012, authorized pin-constants-only change; disclosure
+# #730@5998009516, MANIFEST controller_authorizations[1]): INTEGRATED_-
+# REGRESSION_EVIDENCE.json is a frozen v4.8 closure-INPUTS artifact bound to
+# its own v4.8 baseline; after T-011 the workflow legally carries the merged
+# v4.9 battery and after T-012 the appended conformance command, so the C08
+# workflow pin is re-bound two ways with exact-set strength preserved on BOTH
+# sides: (1) the evidence must still cover the exact v4.8 baseline workflow
+# command set it was generated against; (2) the CURRENT workflow command set
+# is pinned exactly (baseline + merged post-baseline additions + the T-012
+# append) — any removal, reorder of vocabulary, or unlisted addition fails.
+# Zero assertion-logic change otherwise.
+V48_BASELINE_WORKFLOW_COMMANDS = (
+    "python scripts/verify_standard.py",
+    "python scripts/test_verify_standard.py",
+    "python scripts/test_verify_project_standard.py",
+    "python scripts/test_project_execution_profile.py",
+    "python scripts/test_protocol_schemas.py",
+    "python scripts/test_v33_lifecycle_contracts.py",
+    "python scripts/test_v33_semantic_regressions.py",
+    "python scripts/test_v34_lifecycle_contracts.py",
+    "python scripts/test_v34_review_repairs.py",
+    "python scripts/test_v40_operation_contracts.py",
+    "python scripts/test_v40_adoption_migration.py",
+    "python scripts/test_v40_final_hardening.py",
+    "python scripts/test_v40_dogfood_hardening.py",
+    "python scripts/test_v40_r2_machine_hardening.py",
+    "python scripts/test_v40_r3_carryforward.py",
+    "python scripts/test_v40_t010_successor_hardening.py",
+    "python scripts/test_v40_t010_canonical_surface.py",
+    "python scripts/test_v40_t012_pre_release_hardening.py",
+    "python scripts/test_v40_reference_flows.py",
+    "python scripts/test_pointer_only_trigger_contract.py",
+    "python scripts/test_work_item_contract_and_golden_templates.py",
+    "python scripts/test_task_dag_lane_parallelism.py",
+    "python scripts/verify_event_writer_surfaces.py",
+    "python scripts/test_execution_architecture.py",
+    "python scripts/verify_runner_capability_reference.py",
+)
+
+CURRENT_WORKFLOW_COMMANDS = V48_BASELINE_WORKFLOW_COMMANDS + (
+    "python scripts/test_v43_conformance_dogfood.py",
+    "python scripts/test_v49_execution_core.py",
+    "python scripts/test_v49_authority_state_registry.py",
+    "python scripts/test_v49_role_execution_profile.py",
+    "python scripts/test_v49_task_learning_v2.py",
+    "python scripts/test_v49_gate_currentness.py",
+    "python scripts/test_v49_execution_contract_refs.py",
+    "python scripts/test_v49_jit_dag_governance.py",
+    "python scripts/test_v49_assurance_plan_v2.py",
+    "python scripts/test_v49_assurance_owner.py",
+    "python scripts/test_v49_release_applicability.py",
+    "python scripts/test_v49_conformance_suite.py",
+)
 
 
 def read(path: Path) -> str:
@@ -363,8 +432,12 @@ class V48IntegrationClosureInputs(unittest.TestCase):
         """C01: count and identities come from Frozen L2/Product, not test counts."""
         manifest = load_manifest()
         registered = manifest["sections"]["machine_contracts"]
+        # F2 RE-BIND (T-012, pin constants only; provenance at
+        # V49_MERGED_MACHINE_CONTRACTS above): the inventory-size pin is
+        # re-bound to the post-T-011 inventory (v4.8 composed inventory plus
+        # the three merged v4.9 machine contracts).
         self.assertEqual(
-            19 + len(PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS),
+            19 + len(PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS) + len(V49_MERGED_MACHINE_CONTRACTS),
             len(registered),
             "machine-contract inventory size drifted; re-derive the family count from Frozen L2",
         )
@@ -375,8 +448,10 @@ class V48IntegrationClosureInputs(unittest.TestCase):
         # family, a dropped family or a rename all break the exact partition.
         self.assertEqual(
             frozenset(registered_set - new_family_paths),
-            PRE_V48_MACHINE_CONTRACTS | PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS,
-            "registered machine contracts outside the three v4.8 families must equal the pre-v4.8 inventory plus the composed predecessor inventory",
+            PRE_V48_MACHINE_CONTRACTS
+            | PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS
+            | V49_MERGED_MACHINE_CONTRACTS,
+            "registered machine contracts outside the three v4.8 families must equal the pre-v4.8 inventory plus the composed predecessor inventory plus the three merged v4.9 contracts",
         )
         self.assertEqual(
             3,
@@ -706,10 +781,23 @@ class V48IntegrationClosureInputs(unittest.TestCase):
         self.assertIn("python scripts/verify_standard.py", recorded)
         self.assertIn("python -B scripts/test_v48_integration_closure.py", recorded)
         # Every pinned `run:` command from the workflow is present verbatim.
+        # F2 RE-BIND (T-012; provenance at V48_BASELINE_WORKFLOW_COMMANDS):
+        # the frozen v4.8 evidence is pinned against the exact v4.8 baseline
+        # workflow command set it was generated against, and the current
+        # workflow command set is pinned exactly (post-T-011 battery plus the
+        # T-012 conformance append) — exact-set strength preserved on both
+        # sides.
         pinned = pinned_workflow_commands()
         self.assertGreaterEqual(len(pinned), 25)
-        missing = [command for command in pinned if command not in recorded]
+        missing = [
+            command for command in V48_BASELINE_WORKFLOW_COMMANDS if command not in recorded
+        ]
         self.assertEqual([], missing, f"pinned regression commands missing from evidence: {missing}")
+        self.assertEqual(
+            sorted(CURRENT_WORKFLOW_COMMANDS),
+            sorted(pinned),
+            "workflow command set drifted; only an authorized re-bind may move this pin",
+        )
         # NOT_RUN rows are honest: only allowed with an exact reason.
         for row in evidence.get("not_run", []):
             self.assertIn("reason", row)

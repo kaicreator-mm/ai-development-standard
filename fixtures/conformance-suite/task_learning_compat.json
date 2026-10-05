@@ -1,0 +1,184 @@
+{
+  "fixture_id": "v4.9.0-T-012-C10-task-learning-same-family-compat",
+  "owner_refs": [
+    "schemas/task-learning-v2.schema.json",
+    "schemas/task-learning-v1.schema.json",
+    "references/TASK_LEARNING_V2_REFERENCE.md",
+    "references/TASK_LEARNING_V2_COMPATIBILITY.json",
+    "docs/implementation/4.9.0/PRD.md#q-recurring-failure",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_task_learning_v2.py"
+  ],
+  "family_identity": {
+    "schema_version": "ai-dev/task-learning-v2",
+    "owner_family": "task-learning",
+    "predecessor_protocol_version": "ai-dev/task-learning-v1"
+  },
+  "valid_v2_record": {
+    "schema_version": "ai-dev/task-learning-v2",
+    "owner_family": "task-learning",
+    "predecessor_protocol_version": "ai-dev/task-learning-v1",
+    "learning_id": "learning:T-012:001",
+    "repository_ref": "github:kaicreator-mm/ai-development-standard",
+    "work_item_ref": "github:kaicreator-mm/ai-development-standard#731",
+    "implementation_subject_ref": "git:kaicreator-mm/ai-development-standard@1111111111111111111111111111111111111111",
+    "authority_refs": [
+      "task-pack:v4.9.0/T-012"
+    ],
+    "summary": "Repeated missing-contract friction traced to one prevention point.",
+    "source_test_validation_review_refs": [
+      "test:test_v49_conformance_suite#C10"
+    ],
+    "confidence_layers": [
+      "IDENTITY_BOUND"
+    ],
+    "execution_friction_class": "repeated_failure_mode",
+    "recurrence_refs": [
+      "learning:T-011:001"
+    ],
+    "root_cause_relation": "SAME",
+    "recurrence_audit_ref": "audit:v4.9.0/recurrence-t012",
+    "prevention_point_refs": [
+      "task-pack:v4.9.0/T-012"
+    ],
+    "disposition": "MORE_EVIDENCE"
+  },
+  "valid_v1_record": {
+    "schema_version": "ai-dev/task-learning-v1",
+    "learning_id": "learning:v4.8:001",
+    "repository_ref": "github:kaicreator-mm/ai-development-standard",
+    "work_item_ref": "github:kaicreator-mm/ai-development-standard#700",
+    "implementation_subject_ref": "git:kaicreator-mm/ai-development-standard@2222222222222222222222222222222222222222",
+    "authority_refs": [
+      "task-pack:v4.8.0/T-014"
+    ],
+    "summary": "Historical v4.8 learning record.",
+    "source_test_validation_review_refs": [
+      "test:test_v48_task_learning#positive"
+    ],
+    "confidence_layers": [
+      "IDENTITY_BOUND"
+    ],
+    "friction_classification": "STANDARD_FRICTION_CANDIDATE",
+    "disposition": "NO_CHANGE"
+  },
+  "injected_v2_records": [
+    {
+      "note": "v1-identity silently gains fields",
+      "mutate": {
+        "schema_version": "ai-dev/task-learning-v1",
+        "execution_friction_class": "missing_contract",
+        "recurrence_refs": [
+          "learning:x"
+        ],
+        "root_cause_relation": "SAME",
+        "recurrence_audit_ref": "audit:x"
+      },
+      "expect_v1_valid": false
+    },
+    {
+      "note": "execution_friction_class replaces friction_classification",
+      "mutate": {
+        "friction_classification": "workflow_waste"
+      },
+      "expect": "friction_classification_not_in_v2_vocabulary"
+    },
+    {
+      "note": "relation declared with empty/unresolvable audit evidence",
+      "mutate": {
+        "recurrence_audit_ref": "",
+        "recurrence_refs": []
+      },
+      "expect_v2_valid": false
+    },
+    {
+      "note": "evolution candidate ref without ADS candidate classification",
+      "mutate": {
+        "ads_evolution_candidate_ref": "evolution-intake:ADS-CAND-9"
+      },
+      "expect_v2_valid": false
+    }
+  ],
+  "audit_resolution_cases": [
+    {
+      "case": "resolvable",
+      "resolvable": [
+        "audit:v4.9.0/recurrence-t012",
+        "learning:T-011:001"
+      ],
+      "expect_relation": "SAME"
+    },
+    {
+      "case": "stale_audit_ref",
+      "resolvable": [
+        "learning:T-011:001"
+      ],
+      "expect_relation": null
+    },
+    {
+      "case": "empty_recurrence_refs",
+      "mutate": {
+        "recurrence_refs": []
+      },
+      "resolvable": [
+        "audit:v4.9.0/recurrence-t012"
+      ],
+      "expect_relation": null
+    }
+  ],
+  "compatibility_expectations": {
+    "owner_family_semantics": "compatible",
+    "historical_v1_record_validity": "compatible",
+    "direct_v1_schema_validation_of_v2": "not-claimed-incompatible",
+    "v1_only_consumer_adoption": "requires-explicit-version-negotiation"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "C10_S1_recurrence_produces_bounded_same_family_output",
+      "exact_refs": [
+        "docs/implementation/4.9.0/PRD.md#q-recurring-failure",
+        "references/TASK_LEARNING_V2_REFERENCE.md"
+      ],
+      "frozen_scenario": "Q",
+      "expect": {
+        "same_family": true,
+        "no_parallel_learning_lifecycle": true,
+        "ads_linkage_only_through_existing_intake": true,
+        "note": "a materially related recurrence produces a bounded v4.8-compatible Task Learning output without creating a parallel learning lifecycle"
+      }
+    },
+    {
+      "scenario_id": "C10_S2_v2_reader_fails_closed_on_v1_identity_drift",
+      "exact_refs": [
+        "references/TASK_LEARNING_V2_REFERENCE.md",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "Q",
+      "expect": {
+        "v1_identity_gaining_v2_fields_rejected": true,
+        "note": "a v1 identity must not silently gain fields; v1 closed schema stays closed"
+      }
+    },
+    {
+      "scenario_id": "C10_S3_friction_vocabularies_stay_orthogonal",
+      "exact_refs": [
+        "references/TASK_LEARNING_V2_REFERENCE.md"
+      ],
+      "frozen_scenario": "Q",
+      "expect": {
+        "v1_friction_classification_enum_unchanged": true,
+        "v2_execution_friction_class_vocabulary": [
+          "workflow_waste",
+          "missing_contract",
+          "execution_ambiguity",
+          "repeated_failure_mode",
+          "useful_pattern",
+          "bad_pattern"
+        ],
+        "no_translation_between_vocabularies": true,
+        "co_occurrence_allowed": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "fixture_id": "v4.9.0-T-012-C11-manual-compatible-state-reconstruction",
+  "owner_refs": [
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#21-runtime-portability-and-reconstruction",
+    "docs/implementation/4.9.0/PRD.md#p-downstream-manualgithub-native-dogfood",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_execution_core.py",
+    "scripts/test_v49_gate_currentness.py"
+  ],
+  "durable_fact_plane": [
+    {
+      "fact_id": "E1",
+      "kind": "lineage_surface",
+      "surface_ref": "lineage:LG42_COMPAT",
+      "status": "INTEGRATED_CURRENT",
+      "recorded_at": "2026-10-01T00:00:00Z"
+    },
+    {
+      "fact_id": "E2",
+      "kind": "lineage_surface",
+      "surface_ref": "lineage:LG48_EXEC",
+      "status": "INTEGRATED_CURRENT",
+      "recorded_at": "2026-10-01T00:00:00Z"
+    },
+    {
+      "fact_id": "E3",
+      "kind": "lineage_surface",
+      "surface_ref": "lineage:LG43_DAG",
+      "status": "INTEGRATED_CURRENT",
+      "recorded_at": "2026-10-01T00:00:00Z"
+    },
+    {
+      "fact_id": "E4",
+      "kind": "lineage_surface",
+      "surface_ref": "lineage:LG47_REGISTRY",
+      "status": "INTEGRATED_CURRENT",
+      "recorded_at": "2026-10-01T00:00:00Z"
+    },
+    {
+      "fact_id": "E5",
+      "kind": "lineage_surface",
+      "surface_ref": "lineage:LG48_LEARNING",
+      "status": "INTEGRATED_CURRENT",
+      "recorded_at": "2026-10-01T00:00:00Z"
+    },
+    {
+      "fact_id": "E6",
+      "kind": "plan_binding_component",
+      "component": "subject_identity_ref",
+      "value": "sha:1111111111111111111111111111111111111111"
+    },
+    {
+      "fact_id": "E7",
+      "kind": "plan_binding_component",
+      "component": "owner_authority_digest",
+      "value": "owner:aps@v49"
+    },
+    {
+      "fact_id": "E8",
+      "kind": "plan_binding_component",
+      "component": "proof_input_digest",
+      "value": "proof:inputs@1"
+    },
+    {
+      "fact_id": "E9",
+      "kind": "plan_binding_component",
+      "component": "task_pack_digest",
+      "value": "pack:T012@1"
+    },
+    {
+      "fact_id": "E10",
+      "kind": "plan_binding_component",
+      "component": "release_decision_digest",
+      "value": "release:none"
+    },
+    {
+      "fact_id": "E15",
+      "kind": "plan_binding_component",
+      "component": "unresolved_finding_digest",
+      "value": "findings:"
+    },
+    {
+      "fact_id": "E11",
+      "kind": "unresolved_finding",
+      "finding_id": "F-OPEN-1",
+      "state": "UNRESOLVED"
+    },
+    {
+      "fact_id": "E12",
+      "kind": "adverse_finding",
+      "finding_id": "F-ADV-9",
+      "origin_subject": "sha:aaaa111111111111111111111111111111111111",
+      "state": "UNRESOLVED"
+    },
+    {
+      "fact_id": "E13",
+      "kind": "owner_issued_evidence",
+      "row_id": "M02",
+      "owner_ref": "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+      "verdict": "PASS",
+      "subject_identity": "sha:1111111111111111111111111111111111111111",
+      "record_id": "validation:x@1"
+    },
+    {
+      "fact_id": "E14",
+      "kind": "derived_state_deletion",
+      "deleted": [
+        "ready_set",
+        "plan_posture",
+        "waiting_projections",
+        "unresolved_finding_digest"
+      ]
+    }
+  ],
+  "expected_reconstructed_state": {
+    "lineage_posture": "CURRENT",
+    "plan_binding_state": "STALE",
+    "plan_stale_components": [
+      "unresolved_finding_digest"
+    ],
+    "unresolved_findings": [
+      "F-ADV-9",
+      "F-OPEN-1"
+    ],
+    "consultable_evidence_record_ids": [
+      "validation:x@1"
+    ]
+  },
+  "phase": {
+    "dependency_state": "DONE",
+    "declared_in": "task-pack:v4.9.0/T-012",
+    "envelope_conditions_clean": true
+  },
+  "scenarios": [
+    {
+      "scenario_id": "C11_S1_reconstruction_from_github_facts_converges",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+      ],
+      "frozen_scenario": "P",
+      "expect": {
+        "replay_orders_converge": [
+          "canonical",
+          "reversed",
+          "rotated"
+        ],
+        "identical_derived_state": true,
+        "note": "crash/restart reconstruction replays to the same state from GitHub/repository/evidence facts alone; there is no hidden mutable latch"
+      }
+    },
+    {
+      "scenario_id": "C11_S2_derived_state_deletion_loses_nothing",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection"
+      ],
+      "frozen_scenario": "P",
+      "expect": {
+        "post_deletion_reconstruction_equals_pre_deletion": true,
+        "note": "derived state is recomputable cache; deleting it loses nothing"
+      }
+    },
+    {
+      "scenario_id": "C11_S3_no_daemon_state_required_all_flows_manually_executable",
+      "exact_refs": [
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+        "docs/implementation/4.9.0/PRD.md#p-downstream-manualgithub-native-dogfood"
+      ],
+      "frozen_scenario": "P",
+      "expect": {
+        "suite_runtime_requirements": [
+          "python-stdlib",
+          "git",
+          "repository-files"
+        ],
+        "external_services_required": [],
+        "daemon_state_required": false,
+        "note": "all flows remain manually executable through GitHub/durable artifacts without daemon state; this suite itself runs offline on stdlib + git + repository facts"
+      }
+    },
+    {
+      "scenario_id": "C11_S4_dogfood_baseline_selected_distinction_preserved",
+      "exact_refs": [
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "P",
+      "expect": {
+        "baseline_equals_selected_zero_delta_is_compatibility_evidence_only": true,
+        "orchestrator_self_audit_not_independent": true,
+        "note": "downstream generality requires a nonzero legal proportional delta and an independent audit; orchestrator/Builder self-audit never satisfies it"
+      }
+    }
+  ]
+}
