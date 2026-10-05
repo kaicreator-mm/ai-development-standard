@@ -1,26 +1,27 @@
-pack_id: v4.8.0-T-014-jit
+pack_id: v4.9.0-T-014-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
+version: 4.9.0
 task_id: T-014
-parent_issue: "#520"
-branch: task/v4.8.0-t14-integration-closure-inputs
-base_sha: 6bfb8aecd4c7e533ae4f392dc4e58de1da71d5b4
-base_tree: 593dd5d12890f68e3830419b07b909ccf587dc2b
-frozen_product_blob: f26439580e00de6ed8b2e27d732a3095eb566219
-frozen_l2_blob: f88c85454e80101a0fdf56050e21f11a05279841
-frozen_dag_blob: 72dfeee93c092296004c7083b71fdd877d7f1b34
-task_pack_ref: docs/implementation/4.8.0/task-packs/T14_integration_closure_inputs.md
-task_pack_blob: 1373438d17ca540c69d14f835d0f7252b7221b82
-l3_ref: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-l3_blob: 8af06fd5bd7237b260fe478c23cb410c0e15898f
+parent_issue: "#733"
+branch: task/v4.9.0-t14-dogfood-audit-contract
+base_sha: d53e943ec7109648485b64a647ed2c7cf553531d
+base_tree: 5ad2dbd8c312a67bb050a3199ab9b29b70c23406
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T14_dogfood_audit_contract.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG42_COMPAT, LG47_REGISTRY, LG48_EXEC]
+lineage_last_check_ref: "#745 lineage recompute + composition PR #792 + all merges through T-012 base (d53e943e); surfaces present at base"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-014/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-014/ per the #792/#788 canonical-path scheme; T-005->T-010->T-014 Release-owner serialization respected (NO Release surface edits; contract binds T-005 owner by reference)
 native_blockers: 0
 review_policy: required
-validation_owner: independent-from-builders
-validation_scope: integrated-closure-inputs
+validation_owner: dogfood-and-independent-auditor-contract
+validation_scope: evidence-contract-negatives
 builder_write_set:
-  - scripts/test_v48_integration_closure.py
-  - docs/implementation/4.8.0/closure/CLOSURE_INPUTS.md
-  - docs/implementation/4.8.0/closure/INTEGRATED_REGRESSION_EVIDENCE.json
+  - references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md
+  - scripts/test_v49_dogfood_audit_contract.py
+  - fixtures/dogfood-audit-contract/**
 core_artifacts:
   - .agent/execution/T-014/MANIFEST.yaml
   - .agent/execution/T-014/EXECUTION_CONTRACT.md
