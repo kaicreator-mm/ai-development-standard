@@ -75,3 +75,17 @@ Small or non-code changes need not instantiate irrelevant implementation-quality
 If an ecosystem-specific question is unresolved, route it to the applicable language/archetype profile or project authority rather than inventing a universal rule.
 
 If this standard conflicts with an existing Testing, CI, Validation, Release, Dependency/Toolchain or Config/Secrets owner, fail closed and route to that owner. Do not redefine the owner here.
+
+## 11. Material change hygiene
+
+Maintainability and diff hygiene remain enforceable implementation-quality concerns. They are evaluated from durable maintenance and evidence facts — declared scope, change summaries, diff structure, generated-source authority and project check results — not from a universal requirement that a human read every changed line.
+
+When material to maintained intent or evidence, the following mutation patterns are reviewable implementation-quality defects:
+
+- an unnecessary whole-file rewrite or mass comment/doc loss that destroys maintained intent;
+- unrelated formatting or generated churn mixed with a semantic change;
+- a semantic change hidden outside the declared change scope;
+- direct mutation of generated output that ignores its regeneration authority;
+- unnecessary public-surface widening or abstraction.
+
+Materiality is judged by maintenance and evidence impact: docs/style churn alone is not automatically a defect. These defect categories bind Agents, tooling and humans equally; they do not introduce a universal human line-by-line review gate and MUST NOT be used to restore one. Automated checks and tests remain the primary quality mechanism, and their passing alone never creates Validation or Release authority.
