@@ -15,6 +15,8 @@ l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
 lineage_refs: [LG47_REGISTRY]
 lineage_last_check_ref: "#745 lineage recompute #745@5983506269 + lineage composition PR #792 merged (df94641e); LG surfaces verified at base"
 lineage_evidence: registries/state-dimensions-v1.json + schemas/authority-applicability-entry-v1.schema.json + schemas/state-dimension-registry-v1.schema.json + standard-manifest.json semantic_authorities present at base df94641e
+pack_revision: T003-PACK-R2
+amendment_ref: "#722@5985991276 (CI-pinned golden coverage coupling; +1 path)"
 jit_note: prior-program (v4.8) execution records at .agent/execution/T-003/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-003/ per the #792/#788 canonical-path scheme; no executable code reads that path
 native_blockers: 0
 review_policy: required
@@ -26,6 +28,7 @@ builder_write_set:
   - references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md
   - references/STATE_DIMENSION_REGISTRY_REFERENCE.md
   - scripts/test_v49_authority_state_registry.py
+  - templates/golden/STANDARD_COVERAGE.json
 read_only_schema_inputs:
   - schemas/authority-applicability-entry-v1.schema.json
   - schemas/state-dimension-registry-v1.schema.json

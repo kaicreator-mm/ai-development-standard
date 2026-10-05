@@ -2,7 +2,7 @@
 
 ## Exact subject / write set
 - [ ] Candidate PR HEAD/TREE/base are exact and current (base `version/v4.9.0@df94641e...`).
-- [ ] Diff is limited to the five Builder paths declared in MANIFEST plus immutable `.agent/execution/T-003/**` planning files.
+- [ ] Diff is limited to the six Builder paths declared in MANIFEST (incl. templates/golden/STANDARD_COVERAGE.json, pack R2) plus immutable `.agent/execution/T-003/**` planning files.
 - [ ] Frozen Product/L2/DAG-v0.2 blobs and current Task Pack (`14c65526...`)/L3 blobs resolve unchanged at the candidate.
 
 ## Registry integration acceptance

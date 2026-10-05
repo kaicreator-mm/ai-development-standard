@@ -27,4 +27,4 @@ Integrate v4.9 semantic concerns with the v4.7-inherited Authority/Applicability
 
 ## Mutation authority
 
-Only the five Builder paths in MANIFEST `builder_write_set` are writable, plus the six immutable `.agent/execution/T-003/**` planning files. Everything else read-only. Builder tests are not independent Validation.
+Only the six Builder paths in MANIFEST `builder_write_set` are writable (pack revision T003-PACK-R2 added `templates/golden/STANDARD_COVERAGE.json` per #722@5985991276: the CI-pinned golden-template coverage ledger is the mechanical twin of a `normative_standards` registration and must travel in the same change), plus the six immutable `.agent/execution/T-003/**` planning files. Everything else read-only. Builder tests are not independent Validation.
