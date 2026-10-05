@@ -1,0 +1,10 @@
+task_id: T-007
+semantic_defect_in_owner_contract: REPORT_OWNER_FINDING_DO_NOT_PATCH_HERE
+stale_evidence_rebind: FAIL
+claim_promoted_to_proof: FAIL
+provider_promoted_to_authority: FAIL
+infrastructure_owner_capture: FAIL
+fourth_family_detected: FAIL
+private_cot_requirement_detected: FAIL
+historical_required_payload_regression: FAIL
+extra_write_path: CONTROLLER_REBIND_REQUIRED

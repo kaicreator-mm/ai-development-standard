@@ -1,0 +1,40 @@
+{
+  "fixture_id": "execution-core-v49/facts_lineage_stale",
+  "description": "Dependencies DONE but a required predecessor-owned lineage surface is STALE: WAITING_LINEAGE posture, work non-dispatchable (Product K).",
+  "work_item": {
+    "work_item_id": "issue:901",
+    "workflow_state": "ready",
+    "dependencies": [
+      {"dependency_ref": "issue:701", "state": "DONE"}
+    ]
+  },
+  "lineage_refs": [
+    {"surface_ref": "surface:LG42_COMPAT", "status": "INTEGRATED_CURRENT", "integrated_ref": "mirror@df94641e"},
+    {"surface_ref": "surface:LG47_REGISTRY", "status": "STALE", "integrated_ref": "mirror@7586083"}
+  ],
+  "plan_binding": {
+    "plan_id": "plan:P-901",
+    "owner": "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+    "binding_state": "CURRENT",
+    "bound_components": {
+      "subject_identity_ref": "issue:901",
+      "owner_authority_digest": "oa-d1",
+      "proof_input_digest": "pi-d1",
+      "task_pack_digest": "tp-d1",
+      "release_decision_digest": "empty-set",
+      "unresolved_finding_digest": "findings:"
+    },
+    "binding_digest": "bind-current-d1"
+  },
+  "current_dimensions": {
+    "subject_identity_ref": "issue:901",
+    "owner_authority_digest": "oa-d1",
+    "proof_input_digest": "pi-d1",
+    "task_pack_digest": "tp-d1",
+    "release_decision_digest": "empty-set",
+    "unresolved_finding_digest": "findings:"
+  },
+  "unresolved_findings": [],
+  "verdict_chronology": [],
+  "composite_admission": {"mode": "SINGLE_WRITER_ADMISSION", "state": "AVAILABLE"}
+}

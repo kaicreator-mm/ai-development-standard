@@ -1,0 +1,40 @@
+{
+  "fixture_id": "execution-core-v49/claim_races",
+  "description": "Deterministic claim-race scripts over one protected claim key (issue:900, builder). Each ordering lists serialized admission attempts; a step may inject a fact-plane drift before its attempt.",
+  "protected_claim_key": ["repository:ai-development-standard", "issue:900", "builder"],
+  "orderings": [
+    {
+      "ordering_id": "race-A-both-before-drift",
+      "steps": [
+        {"operator": "op-1", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null},
+        {"operator": "op-2", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null}
+      ],
+      "expected": {"accepted": ["op-1"], "rejected": ["op-2"], "rejection_reasons": {"op-2": "DUPLICATE_INCOMPATIBLE_CLAIM"}}
+    },
+    {
+      "ordering_id": "race-B-drift-before-second-claim",
+      "steps": [
+        {"operator": "op-1", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null},
+        {"operator": "op-2", "facts_fixture": "facts_plan_drift.json", "expected_generation": 1, "inject_drift": "new_adverse_finding"}
+      ],
+      "expected": {"accepted": ["op-1"], "rejected": ["op-2"], "rejection_reasons": {"op-2": "STALE_PLAN_BINDING_RECOMPUTE"}}
+    },
+    {
+      "ordering_id": "race-C-drift-races-the-admission-itself",
+      "steps": [
+        {"operator": "op-1", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": "new_adverse_finding"},
+        {"operator": "op-2", "facts_fixture": "facts_plan_drift.json", "expected_generation": 0, "inject_drift": null}
+      ],
+      "expected": {"accepted": [], "rejected": ["op-1", "op-2"], "rejection_reasons": {"op-1": "STALE_PLAN_BINDING_RECOMPUTE", "op-2": "STALE_PLAN_BINDING_RECOMPUTE"}}
+    },
+    {
+      "ordering_id": "race-D-stale-generation",
+      "steps": [
+        {"operator": "op-1", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null},
+        {"operator": "op-2", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null},
+        {"operator": "op-1", "facts_fixture": "facts_current.json", "expected_generation": 0, "inject_drift": null}
+      ],
+      "expected": {"accepted": ["op-1"], "rejected": ["op-2", "op-1-resume"], "rejection_reasons": {"op-2": "DUPLICATE_INCOMPATIBLE_CLAIM", "op-1-resume": "IDEMPOTENT_RESUME"}}
+    }
+  ]
+}

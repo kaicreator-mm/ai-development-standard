@@ -1,0 +1,22 @@
+{
+  "fixture_id": "execution-core-v49/phase_table",
+  "description": "JIT phase predicate truth-table inputs (standard section 28.2): dependency, lineage, envelope-proof and admission dimensions with the exact expected verdict for every combination.",
+  "dependency_states": ["DONE", "PENDING", "UNKNOWN"],
+  "lineage_states": ["CURRENT", "STALE", "UNKNOWN"],
+  "envelope_proofs": [
+    {"proof_id": "IN_PLAN", "declared_in": "assurance_plan_activity", "envelope_conditions": {"new_concern": false, "ownership_change": false, "dependency_semantics_change": false, "scope_widening": false}},
+    {"proof_id": "IN_PACK", "declared_in": "task_pack_declaration", "envelope_conditions": {"new_concern": false, "ownership_change": false, "dependency_semantics_change": false, "scope_widening": false}},
+    {"proof_id": "UNDECLARED", "declared_in": null, "envelope_conditions": null},
+    {"proof_id": "VIOLATED", "declared_in": "task_pack_declaration", "envelope_conditions": {"new_concern": true, "ownership_change": false, "dependency_semantics_change": false, "scope_widening": false}},
+    {"proof_id": "UNPROVABLE", "declared_in": "assurance_plan_activity", "envelope_conditions": {"new_concern": false, "ownership_change": false, "dependency_semantics_change": false, "scope_widening": null}}
+  ],
+  "admission_states": ["AVAILABLE", "FAILED", "UNKNOWN"],
+  "verdict_rule": {
+    "dependencies_DONE_lineage_CURRENT_envelope_proven_admission_AVAILABLE": "READY",
+    "dependencies_not_DONE_known": "BLOCKED",
+    "dependencies_UNKNOWN": "WAITING_LINEAGE",
+    "lineage_STALE_or_UNKNOWN": "WAITING_LINEAGE",
+    "envelope_undeclared_or_violated_or_unprovable": "BLOCKED",
+    "admission_FAILED_or_UNKNOWN": "BLOCKED"
+  }
+}
