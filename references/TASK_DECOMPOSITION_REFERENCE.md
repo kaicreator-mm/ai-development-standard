@@ -59,3 +59,16 @@ Conceptual ordering alone is not a dependency.
 - Are dependencies real rather than conversational?
 - Is any dependency being removed solely to manufacture READY?
 - Is a stacked PR justified by actual unmerged code-baseline dependence?
+- Could a qualified Agent dispatch, execute and validate this Task from the durable facts alone?
+
+## 8. Sequential single-file ownership
+
+Two Tasks may touch the same file when each owns a different concern and the second builds on the first's merged result: for example, one Task migrates a schema definition and a later Task adds the feature that consumes it. The later Task declares a real dependency on the earlier one's integrated baseline, and the live DAG carries the ordering.
+
+This is legitimate because concerns are distinct and conflict is explicitly controlled through the dependency. Running the same two Tasks as “parallel” branches that both edit the file would be fake parallelism.
+
+## 9. Agent-dispatch worksheet check
+
+Before freezing a Task, resolve every dispatch fact from the §1 worksheet into durable authority: identity/concern, frozen authority refs, expected output, allowed write-set, forbidden scope, acceptance, gates, validation owner, review policy, integration target, dependencies, failure/escalation.
+
+If a required fact lives only in a conversation, thread or someone's memory, either freeze it into durable authority or keep the work unplanned. The v4.10 JIT Execution Pack (TASK/PLAN/CONTEXT/DOD/COMMANDS/HANDOFF per Task, bound to an exact integration baseline and owner blob) is the current dogfood of this pattern.
