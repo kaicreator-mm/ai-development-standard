@@ -1,0 +1,36 @@
+{
+  "schema_version": "ai-dev/role-execution-profile-v1",
+  "role_profile_id": "role-profile:builder/v4.9-stale-source-ref",
+  "role": "builder",
+  "profile_version": "1",
+  "source_authority_refs": [
+    "fixture:source-authority/retired_requirements_authority.json#current",
+    "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11"
+  ],
+  "source_authority_projection": {
+    "projection_state": "BLOCKED_SOURCE_REF_UNRESOLVED",
+    "resolution_policy": "source-authorities-prevail-never-last-writer-wins",
+    "unresolved_refs": [
+      "fixture:source-authority/retired_requirements_authority.json#current"
+    ]
+  },
+  "allowed_actions": [
+    "wait for lineage refresh"
+  ],
+  "forbidden_actions": [
+    "assume the retired snapshot's requirements by default",
+    "begin authoritative execution on stale lineage"
+  ],
+  "required_evidence_refs": [
+    "ads:schema/agent-capability-evidence-v1.schema.json#exact_subject_ref"
+  ],
+  "terminal_authority_ref": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11",
+  "eligibility_predicate_refs": [
+    "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#27.2"
+  ],
+  "independence_requirement_refs": [
+    "ads:std/ASSURANCE_PLAN_STANDARD.md#10"
+  ],
+  "mutation_class": "MUTABLE",
+  "claim_policy_ref": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11"
+}

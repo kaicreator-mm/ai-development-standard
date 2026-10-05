@@ -1,0 +1,16 @@
+{
+  "schema_version": "ai-dev/agent-capability-profile-v1",
+  "profile_id": "logical-agent:web-strong-builder",
+  "profile_version": "1",
+  "logical_agent_or_runtime_class_ref": "agent-class:chatgpt-web",
+  "provider_model_provenance": "provider-model:example/strong-model",
+  "eligible_role_claims": ["builder", "planning-builder"],
+  "reasoning_or_semantic_capability_claims": ["schema-contract-authoring"],
+  "language_archetype_claims": ["python", "json-schema"],
+  "logical_tool_use_class_claims": ["github-repository-write"],
+  "max_agent_freedom_claim": "F1_BOUNDED_IMPLEMENTATION",
+  "skill_refs": ["skill:repository-contract-work"],
+  "security_or_side_effect_class_claims": ["requires-explicit-mutation-authority"],
+  "environment_or_runner_requirement_refs": ["runner-class:python3"],
+  "compatibility_refs": ["ads:v4"]
+}

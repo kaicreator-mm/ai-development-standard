@@ -1,0 +1,10 @@
+{
+  "source_id": "authority:task-requirements-agreeing",
+  "status": "CURRENT",
+  "owner": "ads:std/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#12.1",
+  "normalized_requirements": {
+    "max_agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+    "mutation_class": "MUTABLE",
+    "claim_policy": "CLAIM_REQUIRED"
+  }
+}

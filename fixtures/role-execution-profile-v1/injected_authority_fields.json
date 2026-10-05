@@ -1,0 +1,36 @@
+{
+  "schema_version": "ai-dev/role-execution-profile-v1",
+  "role_profile_id": "role-profile:builder/v4.9-injected-authority-fields",
+  "role": "builder",
+  "profile_version": "1",
+  "source_authority_refs": [
+    "fixture:source-authority/task_requirements_authority_agreeing.json#current"
+  ],
+  "source_authority_projection": {
+    "projection_state": "PROJECTED",
+    "resolution_policy": "source-authorities-prevail-never-last-writer-wins"
+  },
+  "allowed_actions": [
+    "implement declared write-set paths inside the owned concern"
+  ],
+  "forbidden_actions": [
+    "mutate read-only owner surfaces"
+  ],
+  "required_evidence_refs": [
+    "ads:schema/agent-capability-evidence-v1.schema.json#exact_subject_ref"
+  ],
+  "terminal_authority_ref": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11",
+  "eligibility_predicate_refs": [
+    "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#27.2"
+  ],
+  "mutation_class": "MUTABLE",
+  "claim_policy_ref": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11",
+  "granted_role_actions": ["merge", "freeze-candidate", "self-approve-gates"],
+  "terminal_authority_grant": "SELF_GRANTED",
+  "capability_proof": {"proven": true, "basis": "profile-presence"},
+  "provider_model_provenance": "provider-model:example/strong-model",
+  "provider_authority": "AUTHORIZED_BY_PROVIDER_IDENTITY",
+  "model_routing_authority": "MODEL_USAGE_POLICY_OVERRIDDEN",
+  "lifecycle_state": "claim-skipped",
+  "claim_switch": "NOT_REQUIRED"
+}

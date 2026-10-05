@@ -1,0 +1,37 @@
+{
+  "schema_version": "ai-dev/role-execution-profile-v1",
+  "role_profile_id": "role-profile:validator/v4.9-default",
+  "role": "validator",
+  "profile_version": "1",
+  "source_authority_refs": [
+    "fixture:source-authority/dispatch_requirements_authority.json#current",
+    "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#11"
+  ],
+  "source_authority_projection": {
+    "projection_state": "PROJECTED",
+    "resolution_policy": "source-authorities-prevail-never-last-writer-wins"
+  },
+  "allowed_actions": [
+    "execute read-only validation oracles on the exact subject",
+    "record PASS/FAIL/BLOCKED evidence with exact identity",
+    "report deviations and limitations"
+  ],
+  "forbidden_actions": [
+    "mutate implementation source",
+    "merge the candidate",
+    "grant role actions or terminal authority to any subject"
+  ],
+  "required_evidence_refs": [
+    "ads:schema/agent-capability-evidence-v1.schema.json#evidence_strength"
+  ],
+  "terminal_authority_ref": "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#7",
+  "eligibility_predicate_refs": [
+    "ads:std/EXECUTION_ARCHITECTURE_STANDARD.md#27.2"
+  ],
+  "independence_requirement_refs": [
+    "ads:std/ASSURANCE_PLAN_STANDARD.md#9"
+  ],
+  "selector_conflict_policy_ref": "ads:std/ASSURANCE_PLAN_STANDARD.md#9",
+  "mutation_class": "READ_ONLY",
+  "claim_policy_ref": "ads:std/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#12.1"
+}
