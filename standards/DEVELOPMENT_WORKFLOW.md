@@ -99,7 +99,7 @@ Idea/Intent
   - Product scope 为新/实质变更的 normative、semantic、compatibility-sensitive 或 authority-sensitive 内容，或其它 applicable policy 要求时，Product Review MUST 执行；
   - 低风险/已在既有范围内的 Product Freeze，当无任何 owner 要求时，Product Review 可选择或省略；
   - 适用性 UNKNOWN 或相互矛盾时 fail closed，交给 authority/risk disposition，不得静默降级。
-  - 低风险/证据充分的工作在无任何更高权威 owner 要求时，不得被强制加入独立 Product Research 或独立 Product Review，可以保持 compact/inline（与 §7 快速路径一致）。
+  - 低风险/证据充分的工作在无任何更高权威 owner 要求时，不得被强制加入独立 Product Research 或独立 Product Review，可以保持 compact/inline（与 §7 快速路径一致）；applicable policy 要求的语义权威/证据不得因 compact/inline 而被跳过。
 - **Product Freeze** 是 Product authority 的显式冻结行为，把一个确切 Product subject 绑定为冻结记录；与本文 “PRD / Scope Freeze” 是同一事件，不是新增 gate。Reviewer 可以推荐 Freeze，但 Product Review PASS、研究结论或 Execution Agent 的意见都只是 evidence/judgment，本身不产生冻结效力，不能替代或自动产生 Product Freeze；只有 Product authority（或其授权的 routing rule）授权该 transition 时，Controller 才能确定性地记录 Freeze。
 - **Architecture Research / Research Demo 属于 Stage 2**，不得前移到 Product Freeze 之前充当产品发现（product discovery）的替代品。Product Freeze 后若 Architecture Research 发现产品范围不可行/矛盾，走既有 Product thaw/contradiction 路径。
 

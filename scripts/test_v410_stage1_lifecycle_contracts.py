@@ -75,6 +75,8 @@ class Stage1NegativeInvariantTests(unittest.TestCase):
         section = stage1_section()
         self.assertIn("不得被强制加入独立 Product Research 或独立 Product Review", section)
         self.assertIn("可以保持 compact/inline", section)
+        # L2 4.1: semantic authority/evidence required by applicable policy may not be skipped
+        self.assertIn("applicable policy 要求的语义权威/证据不得因 compact/inline 而被跳过", section)
         workflow = read("standards/DEVELOPMENT_WORKFLOW.md")
         self.assertIn("可跳过 L1/L2/L3", workflow)
 
