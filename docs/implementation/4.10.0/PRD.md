@@ -1,25 +1,28 @@
 # ai-development-standard v4.10.0 PRD — Whole-Project Convergence for Human + Multi-Agent Development
 
-Status: **PRODUCT SUCCESSOR CANDIDATE v0.2 — PRODUCT THAWED — FRESH EXTERNAL ADVERSARIAL REVIEW REQUIRED**
+Status: **PRODUCT SUCCESSOR CANDIDATE v0.3 — PRODUCT THAWED — FRESH EXTERNAL RE-REVIEW REQUIRED**
 
-PRD revision: `v0.2`
+PRD revision: `v0.3`
 
 Planning baseline: `main@92e4f764a2630a131d3f156b39f0f09064c9849e` / tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`
 
 Planning parent: `#779`
 
-Historical Product Review/Freeze:
+Historical Product review/freeze lineage:
 
 ```text
 PRD_v0.1_BLOB=e4c26448acb9a5f88c7f15dc4d023bb9fe0f9e4e
 FRESH_PRODUCT_REVIEW=#813@5987814305 PASS
 PRODUCT_FREEZE=#814
 PRODUCT_THAW_R1=#821 + docs/implementation/4.10.0/PRODUCT_THAW_R1.md
+PRD_v0.2_BLOB=bacf667bbc6eeba337a5f75ff63dc090b2173155
+FRESH_EXTERNAL_PRODUCT_REVIEW_R2=#822@5988605274 CHANGES_REQUESTED
+R2_FINDINGS=P0:0;P1:0;P2:3;P3:0
 ```
 
-The v0.1 review/freeze remain historical evidence for the exact old subject. They do not transfer to v0.2.
+Historical evidence remains attributable only to the exact subject it reviewed. No v0.1/v0.2 verdict transfers automatically to v0.3.
 
-Material evidence inputs: `#808`, `#782`, `#696`, `#775`, `#803`, `#190`, `#186`, `#807`, `#810`, `#811`, and Product Amendment `#821`.
+Material evidence inputs: `#808`, `#782`, `#696`, `#775`, `#803`, `#190`, `#186`, `#807`, `#810`, `#811`, Product Amendment `#821`, and external Product review `#822`.
 
 Planning independence: per `#779@5987705061`, v4.10 Product/L2/Task-DAG planning may proceed independently of execution/release currentness of other versions. Other-version facts are evidence inputs only.
 
@@ -35,7 +38,7 @@ The Product goal is:
 
 > Make ADS a coherent, machine-projectable, human-controllable and operationally convergent **Human + Multi-Agent Development Collaboration Protocol and Executable Standard System**, so heterogeneous Agents can perform most planning/execution/validation/review work autonomously while humans retain explicit control over intent, authority-sensitive decisions, exceptions and intervention points.
 
-v4.10 is primarily a **convergence and stabilization** release. It MUST prefer strengthening/composing existing owners over inventing parallel subsystems.
+v4.10 is primarily a **convergence and stabilization** release. It MUST prefer strengthening/composing existing owners over inventing parallel subsystems or Product features.
 
 The target outcome is eligibility for a later:
 
@@ -57,7 +60,7 @@ Human + Multi-Agent Development Collaboration Protocol
 Executable Standard System
 ```
 
-It standardizes how intent, Product evidence, research, architecture, executable work, semantic authority, durable facts, evidence, independent judgment, currentness, compatibility, control and learning relate across humans and Agents.
+It standardizes how intent, Product evidence, research, architecture, executable work, semantic authority, durable facts, evidence, independent judgment, currentness, compatibility and human control relate across humans and Agents.
 
 ADS v4.10 MUST NOT become a:
 
@@ -181,7 +184,7 @@ Task admission
 -> required independent Review / multi-LLM adversarial review where policy selects it
 -> bounded repair / successor evidence
 -> expected-head integration
--> bounded learning / cost feedback where useful
+-> optional/proportional existing-owner Task Learning where materially useful
 -> Version Closure / Hidden / Release Qualification where applicable
 -> immutable baseline / compatibility evolution
 ```
@@ -205,7 +208,7 @@ ADS v4.10 MUST make these jobs coherent end-to-end:
 9. Keep prose, machine contracts, templates, prompts, checklists, examples, verifiers and CI materially aligned with canonical owners.
 10. Preserve compatibility, semantic lineage, release identity and non-weakening evolution.
 11. Make current owners, lifecycle entrypoints and adoption paths discoverable without private chat history.
-12. Support bounded reuse/learning improvements only where they demonstrably reduce repeated work or improve future decisions without creating new authority families.
+12. Ensure optional reuse/learning/cost optimizations stay within existing owners or L2 detail and do not become new authority families or mandatory ceremony.
 
 ---
 
@@ -243,7 +246,7 @@ Covers machine-contract/owner discovery, immutable pins, migration/adoption, com
 
 ### 6.6 LEARNING_AND_EVOLUTION
 
-Covers existing Task Learning, semantic execution learning candidates, cost/gate feedback, dogfood and ADS evolution intake. Learning never self-mutates authority.
+Covers the **existing Task Learning / evolution owner family** and optional/proportional execution learning. Learning never self-mutates authority and is not a mandatory Product gate.
 
 ### 6.7 PROJECTION_AND_CONFORMANCE
 
@@ -287,29 +290,15 @@ No rule says one mechanism alone proves quality. Review Policy remains risk/auth
 
 ### 7.3 Implementation/change summary
 
-A Builder/Agent SHOULD produce a **proportional implementation/change summary** when it materially helps another Agent, reviewer or human control point. It may include:
+A Builder/Agent SHOULD produce a **proportional implementation/change summary** when it materially helps another Agent, reviewer or human control point. It may include intent/non-goals, semantic change map, behavior delta, critical invariants, concise externalizable rationale, high-risk/hotspot areas, evidence map, limitations and shared/public surface impact.
 
-- intent/non-goals;
-- semantic change map;
-- behavior delta;
-- critical invariants;
-- concise externalizable rationale;
-- high-risk/hotspot areas;
-- evidence map;
-- limitations;
-- shared/public surface impact.
-
-This is navigation/handoff information, not correctness evidence and not self-certification.
-
-It SHOULD be generated automatically from existing Task/PR/Builder surfaces where practical and SHOULD NOT require a new standalone report family.
+This is navigation/handoff information, not correctness evidence and not self-certification. It SHOULD be generated from existing Task/PR/Builder surfaces where practical and SHOULD NOT require a new standalone report family.
 
 ### 7.4 Maintainability/diff hygiene remains real
 
 Removing mandatory `HUMAN_REVIEWABILITY=BLOCKED` does not authorize unreadable engineering.
 
-Whole-file rewrites, unrelated formatting churn, mass comment/doc loss, hidden semantic changes, mixed independent concerns, weak module boundaries and unnecessary abstraction remain legitimate Implementation Quality / Task Decomposition / Review findings.
-
-The reason is maintainability, defect risk and evidence quality — not an assumption that a human must manually read every generated line.
+Whole-file rewrites, unrelated formatting churn, mass comment/doc loss, hidden semantic changes, mixed independent concerns, weak module boundaries and unnecessary abstraction remain legitimate Implementation Quality / Task Decomposition / Review findings because they increase defect, maintenance or evidence risk.
 
 ---
 
@@ -380,7 +369,7 @@ It MUST NOT require a reducer/controller service, learning database, component r
 
 ### 9.2 Advanced Multi-Agent ADS
 
-Advanced adopters MAY use Task DAG, JIT admission, Task/Execution Packs, Dispatch/Claim, resource-aware routing, parallel Agents, reducer/controller automation, proportional Assurance, learning/cost feedback and full release orchestration.
+Advanced adopters MAY use Task DAG, JIT admission, Task/Execution Packs, Dispatch/Claim, resource-aware routing, parallel Agents, reducer/controller automation, proportional Assurance, optional existing-owner learning/cost feedback and full release orchestration.
 
 Advanced automation must preserve the same Product/authority/currentness semantics.
 
@@ -411,7 +400,7 @@ Dispatch / Claim / Execution
 Tests / CI / Validation / Review
 Integration
 Closure / Hidden / RQ where applicable
-Evolution / Learning
+Evolution / Learning where applicable
 ```
 
 ### 10.3 Prose ↔ executable alignment
@@ -428,34 +417,18 @@ Dead unreachable history need not be cosmetically rewritten.
 
 ---
 
-## 11. Shared code asset governance — candidate Product scope pending adversarial review
+## 11. Shared-code governance — existing-owner convergence, not a Product feature
 
-This concern remains **open for Product convergence**. v4.10 must not assume a heavyweight component-governance subsystem is necessary.
-
-Desired outcome to test:
-
-> Agents should avoid both repeated reinvention and premature abstraction, using existing Architecture/Implementation/Task/Compatibility owners where possible.
-
-Candidate concepts remain:
+External Product review #822 resolved the former R5 candidate as:
 
 ```text
-TASK_LOCAL
-MODULE_INTERNAL_SHARED
-PROJECT_SHARED
-PUBLIC_STABLE
-DEPRECATED
+R5_SHARED_CODE_DISPOSITION=REDUCE_TO_EXISTING_OWNER_REQUIREMENT
+R5_PRODUCT_CLASSIFICATION=EXISTING_OWNER_ONLY
 ```
 
-and bounded decisions such as:
+v4.10 therefore does **not** create a separate Product requirement, component-governance subsystem or universal registry for shared code.
 
-```text
-USE_EXISTING
-EXTEND_EXISTING
-KEEP_LOCAL
-PROPOSE_SHARED_COMPONENT
-```
-
-Hard invariants that are already justified:
+Existing Architecture / Task Decomposition / Implementation Quality / Interface Compatibility owners should be hardened only as needed to preserve these non-weakening invariants:
 
 - importability does not automatically create a stable/public contract;
 - a Task must not silently widen itself into a project-wide refactor;
@@ -463,7 +436,7 @@ Hard invariants that are already justified:
 - no mechanical DRY mandate;
 - no mandatory universal component registry.
 
-Fresh adversarial review must decide whether the remaining producer/consumer/maintainer guidance belongs at Product level or should be reduced to existing-owner/L2/implementation guidance.
+Producer/consumer/maintainer taxonomy, exact asset classes and reuse-decision mechanics are L2/existing-owner implementation choices, not Product acceptance criteria.
 
 ---
 
@@ -509,77 +482,52 @@ Review/repair convergence should ensure:
 
 ---
 
-## 14. Execution learning and cost feedback — candidate Product scope pending adversarial review
+## 14. Existing Task Learning and cost/process feedback placement
 
-Execution may produce useful knowledge beyond the final artifact, but v4.10 must avoid turning every Task into a reporting ceremony.
-
-Candidate distinction:
+External Product review #822 resolved the former R8/R9 candidates as:
 
 ```text
-TRANSIENT_RUN_DATA
-TASK_EXECUTION_LEARNING
-PROMOTED_KNOWLEDGE
+R8_EXECUTION_LEARNING_DISPOSITION=OPTIONAL_PROPORTIONAL_EXISTING_TASK_LEARNING
+R8_PRODUCT_CLASSIFICATION=EXISTING_OWNER_ONLY
+R9_COST_PROCESS_FEEDBACK=L2_DETAIL
 ```
 
-Hard constraints already justified:
+### 14.1 Task Learning posture
+
+Material executions MAY emit concise, evidence-bound learning under the **existing Task Learning family** when doing so has reusable value. Trivial work may emit none.
+
+Hard non-weakening constraints remain:
 
 - no private chain-of-thought/scratchpad retention requirement;
 - no secrets/full environment dumps/raw-log archive by default;
-- fact vs inference must remain explicit;
+- fact vs inference remains explicit;
 - learning cannot auto-amend Product/Architecture/ADS authority;
-- `NO_MATERIAL_EXECUTION_LEARNING` must remain valid;
-- cost/latency telemetry never self-waives a required gate;
-- record `UNKNOWN` rather than fabricate active-time precision.
+- `NO_MATERIAL_EXECUTION_LEARNING` remains valid;
+- no mandatory terminal learning gate is created.
 
-Fresh adversarial review must determine whether execution learning should be:
+### 14.2 Cost/process feedback posture
 
-```text
-A. standard terminal concern for material Tasks
-B. optional/proportional capability under existing Task Learning
-C. narrower, only for recurrence/incident/process-significant cases
-```
-
-and whether any schema/terminal additions are Product-level or L2/implementation detail.
+Estimate-vs-actual, queue/wait, repair-count or gate-value telemetry is an **optional L2/implementation optimization input**, not v4.10 Product acceptance and never authority for waiving a required gate. Prefer `UNKNOWN` over fabricated precision.
 
 ---
 
-## 15. Research coherence
+## 15. Research owner coherence — existing-owner implementation of R1
 
-### 15.1 Product Research before PRD
+External Product review #822 resolved former R10 as:
 
-L1 frames the Product question and identifies evidence/unknowns. Product Research closes the material Product unknowns needed to formulate a defensible PRD.
+```text
+R10_PRODUCT_CLASSIFICATION=EXISTING_OWNER_ONLY
+PRODUCT_VS_ARCH_RESEARCH_SEPARATION=OWNED_BY_R1
+```
 
-Potential Product Research modes include:
+R1 owns the Product-level lifecycle distinction:
 
-- user/problem evidence;
-- current-system/repository evidence;
-- domain/source evidence;
-- competitor/market evidence when applicable;
-- prior incident/dogfood/adoption evidence;
-- external constraints or feasibility evidence when it changes Product scope.
+- Product Research occurs before PRD Freeze when Product evidence is insufficient;
+- Architecture Research / Demo occurs after Product Freeze when technical/architecture evidence is insufficient.
 
-It is evidence, not a second Product authority.
+Existing Research/workflow owners must be converged to this lifecycle without creating a second Research authority. Research may stay inline when small and sufficiently evidenced; executable Demo is required only when static/source/existing evidence cannot resolve a material falsifiable architecture assumption.
 
-### 15.2 Architecture Research after PRD
-
-Architecture Research / executable Demo answers technical/architecture uncertainty after Product scope is Frozen. It must not silently rewrite Product intent.
-
-### 15.3 One proportional research operation family
-
-v4.10 SHOULD prefer one coherent Research operation model with typed purpose/context rather than inventing disconnected research lifecycles.
-
-Research may stay inline when small and sufficiently evidenced. A bounded Issue is useful when research is independently trackable, cross-session, parallel or decision-bearing. Executable Demo is required only when static/source/existing evidence cannot resolve a material falsifiable architecture assumption.
-
-### 15.4 Standard-self L1 hardening
-
-For standards/protocol/governance products, L1 should additionally consider, as applicable:
-
-- current normative-owner overlap;
-- internal dogfood/incidents;
-- compatibility/SemVer impact;
-- duplicate-authority/weakening risk.
-
-Ordinary applications should not inherit this burden unless relevant.
+For standards/protocol/governance products, L1 should additionally consider current normative-owner overlap, internal dogfood/incidents, compatibility/SemVer impact and duplicate-authority/weakening risk where material.
 
 ---
 
@@ -615,9 +563,9 @@ Templates/prompts/checklists/examples must project current owners and lifecycle 
 
 ---
 
-## 18. Product requirements summary
+## 18. Converged Product requirements
 
-The following list is a **candidate v0.2 requirement set**. R5/R8 and the overall R1–R12 boundary are explicitly subject to Fresh external adversarial review.
+External Product review #822 pressure-tested the v0.2 R1–R12 list. The Product-level set is now intentionally limited to **eight** active requirements. Historical candidate IDs are preserved for traceability.
 
 ### R1 — Product discovery lifecycle coherence
 `User Idea/Intent -> L1 Product Evidence -> Product Research as needed -> Draft PRD -> Fresh Product Review -> Product Freeze` is explicit, proportional and distinct from Architecture Research.
@@ -631,23 +579,11 @@ Delegation vs responsibility handoff, authority attenuation, typed human control
 ### R4 — Human controllability + automation-first quality
 Human intervention is minimized by default, but authorized humans can inspect, stop, approve/reject authority-sensitive decisions and audit causation/evidence. Quality is primarily protected through applicable software-engineering evidence, Validation and independent/multi-LLM Review rather than mandatory human line review.
 
-### R5 — Shared-code lifecycle **[OPEN_PRODUCT_SCOPE]**
-Determine the minimum v4.10 Product requirement needed to support safe reuse/maintenance without mechanical DRY, silent API promotion or a central registry.
-
 ### R6 — Proportional assurance and convergent repair
 Required assurance remains fail-closed while duplicate ceremony and non-converging repair loops are reduced through existing owners.
 
 ### R7 — Agent-oriented granularity
 Tasks/Dispatches support bounded context, safe parallelism and independent evidence without numeric universal limits or hidden DAG mutation.
-
-### R8 — Execution learning **[OPEN_PRODUCT_SCOPE]**
-Determine whether material execution learning is a standard terminal concern or an optional/proportional existing-owner capability; no automatic authority mutation or telemetry explosion.
-
-### R9 — Cost/process feedback
-Where reliably measurable, estimate-vs-actual/gate/rework/wait evidence may improve future scheduling/policy without becoming authority.
-
-### R10 — Research coherence
-Product Research before PRD and Architecture Research after Product Freeze are distinct in purpose yet use a proportional coherent research model.
 
 ### R11 — Projection/conformance alignment
 Schemas/templates/prompts/checklists/references/fixtures/verifiers/CI materially align with canonical owners and lifecycle order.
@@ -655,13 +591,31 @@ Schemas/templates/prompts/checklists/references/fixtures/verifiers/CI materially
 ### R12 — Discoverability / compatibility / lineage
 Current owners, entrypoints, adoption paths, legacy classifications, compatibility and semantic-lineage/release-identity truth are discoverable and non-weakening.
 
+### Dispositioned former candidate requirements
+
+```text
+R5  = EXISTING_OWNER_ONLY
+      Shared-code safety belongs to Architecture/Task/Implementation/Compatibility owners.
+
+R8  = EXISTING_OWNER_ONLY
+      Execution learning is optional/proportional in the existing Task Learning family.
+
+R9  = L2_DETAIL
+      Cost/process feedback is optional optimization telemetry, not Product acceptance.
+
+R10 = EXISTING_OWNER_ONLY
+      Research workflow coherence belongs to existing owners; Product-vs-Architecture research separation is already R1.
+```
+
+These dispositions are part of Product scope: they prevent v4.10 from re-expanding into new feature/owner families.
+
 ---
 
 ## 19. Product acceptance / dogfood scenarios
 
-Representative falsification should include:
+Representative Product falsification should include:
 
-1. a raw user idea that is converted to L1 evidence, bounded Product Research, Draft PRD and Product Freeze without skipping/collapsing stages;
+1. a raw user idea converted to L1 evidence, bounded Product Research, Draft PRD and Product Freeze without skipping/collapsing stages;
 2. a trivial/known maintenance case that correctly avoids unnecessary Product Research ceremony;
 3. an Architecture unknown discovered after Product Freeze that uses Architecture Research without silently reopening Product scope;
 4. a multi-Agent task completed without routine human intervention, with tests/Validation/independent Review carrying quality assurance;
@@ -671,8 +625,9 @@ Representative falsification should include:
 8. a Task/Dispatch split that improves context/evidence/parallelism without fake concurrency;
 9. minimum-adoption project that does not deploy orchestration infrastructure;
 10. advanced project using JIT/Dispatch-Claim/controller automation while preserving the same authority semantics;
-11. fresh adopter navigating Idea -> L1 -> Research -> PRD -> L2 -> DAG from repository entrypoints alone;
-12. Shared Code Asset and Execution Learning scenarios selected only after their Product scope is resolved by the external adversarial review.
+11. fresh adopter navigating Idea -> L1 -> Research -> PRD -> L2 -> DAG from repository entrypoints alone.
+
+Shared-code, Task Learning and cost telemetry may receive L2/existing-owner dogfood, but they are not independent Product Freeze acceptance requirements.
 
 ---
 
@@ -689,11 +644,14 @@ v4.10 MUST NOT:
 - treat human inability to inspect every line as an automatic quality failure;
 - let Agent summaries self-certify correctness;
 - use multiple LLM votes as authority without the owning Review/Validation policy;
+- create a new Product-level shared-component governance family;
 - mandate DRY/common-component extraction by similarity alone;
 - let Agents silently promote task-local code into stable/public API;
 - require a universal component registry;
+- turn execution learning into a mandatory Product gate or new learning family;
 - store private chain-of-thought/scratch reasoning;
 - require every Task to emit non-empty learning/telemetry;
+- make cost/process telemetry a Product delivery authority;
 - impose universal LOC/file/time/token thresholds;
 - remove required gates because they are expensive;
 - make provider/model identity normative authority;
@@ -704,56 +662,45 @@ Breaking redesign belongs to a future major version.
 
 ---
 
-## 21. Open Product convergence questions for Fresh external adversarial review
+## 21. Resolved Product-scope decisions from external R2 review
 
-### OQ1 — Shared Code Asset governance
-Is R5 genuinely Product-level for v4.10, or should most/all of #811 be handled by existing Architecture/Implementation/Compatibility owners without a separate Product requirement?
-
-Required review disposition:
+The v0.2 open questions are closed in v0.3 exactly as recommended by #822:
 
 ```text
-KEEP_V410_PRODUCT
-| REDUCE_TO_EXISTING_OWNER_REQUIREMENT
-| L2_DETAIL_ONLY
-| DEFER_FUTURE_MAJOR
-| DROP
+OQ1_SHARED_CODE
+= REDUCE_TO_EXISTING_OWNER_REQUIREMENT
+
+OQ2_EXECUTION_LEARNING
+= OPTIONAL_PROPORTIONAL_EXISTING_TASK_LEARNING
+
+OQ3_R1_R12_PRESSURE_TEST
+= KEEP_PRODUCT: R1,R2,R3,R4,R6,R7,R11,R12
+= EXISTING_OWNER_ONLY: R5,R8,R10
+= L2_DETAIL: R9
+
+OQ4_MISSING_PRODUCT_CONCERNS
+= NONE
 ```
 
-### OQ2 — Execution Learning
-Should #807 become a standard terminal concern for material Tasks, remain optional/proportional under existing Task Learning, or narrow to recurring/process/incident-significant cases?
-
-### OQ3 — R1–R12 pressure test
-For every requirement classify:
-
-```text
-KEEP_V410_PRODUCT
-EXISTING_OWNER_ONLY
-L2_DETAIL
-DEFER_FUTURE_MAJOR
-DROP
-```
-
-The review should aggressively remove feature accumulation that does not materially contribute to v4.10 convergence.
-
-### OQ4 — Missing Product-level concerns
-Identify any Product-level capability required for a stable Human + Multi-Agent development standard that the current R1–R12 set omits. Do not promote architecture/tooling preferences to Product requirements without evidence.
+No unresolved Product-scope choice remains in this candidate.
 
 ---
 
-## 22. Product Freeze criteria v0.2
+## 22. Product Freeze criteria v0.3
 
-The successor PRD may be Frozen only after a genuinely Fresh external Product/Adversarial Review confirms that:
+The successor PRD may be Frozen only after a genuinely Fresh external Product re-review confirms that:
 
 1. Idea -> L1 -> Product Research -> Draft PRD -> Product Review/Freeze is correct, proportional and clearly distinct from Architecture Research;
 2. Human Controllability/Auditability is hard Product behavior while routine Human intervention remains minimized;
 3. quality assurance correctly relies on applicable tests/checks/CI evidence/Validation/independent or multi-LLM Review/architecture/engineering practices rather than mandatory human line review;
-4. Shared Code Asset scope receives an explicit bounded Product disposition;
-5. Execution Learning scope receives an explicit bounded Product disposition;
-6. every R1–R12 item is classified as truly Product-level or moved/deferred/dropped with basis;
-7. no duplicate lifecycle/owner family is introduced;
-8. minimum adoption remains lightweight;
-9. compatibility/lineage/currentness remain non-weakening;
-10. no unresolved P0/P1 Product finding remains.
+4. #822 R5 disposition is fully resolved as existing-owner-only without a new Product component-governance family;
+5. #822 R8 disposition is fully resolved as optional/proportional existing Task Learning without a mandatory terminal gate;
+6. #822 R9 is L2 detail and R10 is existing-owner coherence under R1 rather than duplicate Product requirements;
+7. the active Product requirement set is exactly R1/R2/R3/R4/R6/R7/R11/R12 unless the Fresh re-review finds a concrete Product defect;
+8. no duplicate lifecycle/owner family is introduced;
+9. minimum adoption remains lightweight;
+10. compatibility/lineage/currentness remain non-weakening;
+11. no unresolved P0/P1/P2 Product-scope finding remains.
 
 Only after successor Product Freeze may L2 be rebuilt/rebound. The old L2 blob `390dca32cab3d8647b15149a1ac3c04560c41ddb` is historical/stale because its Product input was thawed.
 
@@ -764,8 +711,8 @@ Only after successor Product Freeze may L2 be rebuilt/rebound. The old L2 blob `
 Current legal sequence:
 
 ```text
-PRD v0.2 successor candidate
--> Fresh external Product / Adversarial Review
+PRD v0.3 successor candidate
+-> Fresh external Product re-review
 -> bounded repair if needed
 -> successor Product Freeze
 -> rebuild/rebind L2 from successor Product authority
