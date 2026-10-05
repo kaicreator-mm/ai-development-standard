@@ -18,9 +18,21 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 STANDARD = "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
-PROJECTION_SURFACES = (
+# V410-T02B (successor concern) owns the machine/event/schema projection of the
+# settled §28 semantics; these T02B-owned surfaces carry the mode tokens since
+# its integration. The reference boundary and all other schemas stay clean.
+T02B_PROJECTION_SURFACES = (
     "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "schemas/dispatch.schema.json",
+    "schemas/agent-event-v2.schema.json",
+    "templates/agent-event-comment.md",
+)
+NON_PROJECTION_SURFACES = (
     "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+    "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+    "schemas/execution-state.schema.json",
+    "schemas/local-agent-handoff.schema.json",
+    "registries/state-dimensions-v1.json",
 )
 
 
@@ -296,13 +308,20 @@ class V410T02ASectionSemantics(unittest.TestCase):
             enum_tokens("### Dispatch state", "Pull workers MAY use"),
         )
 
-    def test_semantics_stay_owner_local_and_out_of_projection_surfaces(self) -> None:
-        # V410-T02B owns machine/event/schema projection; the settled semantic
-        # modes must not leak there prematurely.
-        for rel in PROJECTION_SURFACES:
+    def test_semantics_project_only_through_t02b_owned_surfaces(self) -> None:
+        # V410-T02B (successor concern) owns machine/event/schema projection:
+        # the settled semantic modes appear on the T02B-owned projection
+        # surfaces and nowhere else (reference boundary, other schemas).
+        for rel in T02B_PROJECTION_SURFACES:
+            self.assertIn("DELEGATED_SUBWORK", self.text(rel))
+            self.assertIn("RESPONSIBILITY_HANDOFF", self.text(rel))
+        for rel in NON_PROJECTION_SURFACES:
             self.assertNotIn("DELEGATED_SUBWORK", self.text(rel))
             self.assertNotIn("RESPONSIBILITY_HANDOFF", self.text(rel))
         for rel in glob.glob(str(ROOT / "schemas" / "*.json")):
+            rel_posix = str(Path(rel).relative_to(ROOT)).replace("\\", "/")
+            if rel_posix in T02B_PROJECTION_SURFACES:
+                continue
             body = Path(rel).read_text(encoding="utf-8")
             self.assertNotIn("DELEGATED_SUBWORK", body)
             self.assertNotIn("RESPONSIBILITY_HANDOFF", body)
