@@ -1,23 +1,15 @@
 # T-010 Review Checklist
 
-- Exact JIT base is `257e95531551960cb163a3e20ab2b3d13f415d3c` / tree `1171de2c8afb08d6f793a258ffd0b586007e9dbf`; native dependencies T-004/#511 and T-005/#509 are DONE and Issue #516 reads `blocked_by=0/2`.
-- Candidate implementation diff is exactly `scripts/test_v48_governance_conformance.py`; T-010 Task Pack/L3/JIT pack artifacts and all upstream owner files remain read-only to the Builder.
-- `TASK_LEARNING=NONE_MATERIAL` remains a proportional one-line closeout and does not require an empty Task Learning object.
-- Material Task Learning uses durable work/authority/evidence refs and bounded evidence layers; current behavioral claims require canonical immutable exact-subject/currentness equality.
-- Missing, mutable, malformed, ambiguous or drifted exact-subject/currentness remains historical-only and cannot silently bind successor code.
-- `IDENTITY_BOUND`, `BEHAVIOR_SUPPORTED` and `INDEPENDENTLY_CHALLENGED` never imply current Review PASS, Validation PASS, merge authorization or a global scalar score.
-- Task Learning `friction_classification` / `disposition` remains evidence/routing metadata and cannot mutate ADS or bypass T-005 governance.
-- `PROJECT_DEFECT`, `AGENT_EXECUTION_DEFECT`, `ENVIRONMENT_OR_TOOL_DEFECT` and `PROJECT_SPECIFIC_REQUIREMENT` route to their existing owners and cannot open an ADS standard change.
-- `STANDARD_FRICTION_CANDIDATE` may resolve only to `NO_CHANGE` or `MORE_EVIDENCE` until an explicit later reclassification; ambiguous cause/evidence routes to `MORE_EVIDENCE`.
-- Count, score, success/failure rate, cost, latency, provider/model label, scheduler/ranking output or heuristic cannot auto-promote friction or authorize a standard change.
-- `ADS_EVOLUTION_CANDIDATE` permits `OPEN_ADS_INTAKE` only and then follows ordinary `Intake -> L1 -> PRD -> L2 -> Task -> Review/Validation`; it is not approval or normative mutation authority.
-- Telemetry, model/provider output, scheduler/ranking output, Task Learning, CI and dogfood observations remain evidence refs only and cannot skip ordinary ADS governance.
-- Publication classification is explicit and fail-closed: absent `PUBLISHABLE`, evidence remains non-public; `PROJECT_PRIVATE` / `RESTRICTED` is not copied into public standard evidence.
-- Publication class is independent of evidence strength, owner authority and promotion status.
-- Secrets, credentials, private chain-of-thought and hidden-evaluator/Hidden Validation payloads are never publication material, including within otherwise publishable observations.
-- Accepted publishable evidence prefers refs/digests or minimized non-sensitive summaries over copied sensitive bodies.
-- Task Learning/governance evidence never substitutes for Frozen Product/L2/DAG, Task, ADR/Incident, Intent/Skill, Review/Validation, merge or release authority.
-- No new evolution lifecycle/schema/database/controller, automatic promotion engine, self-amending ADS path, economic-savings inference or blanket strong-to-low-cost routing policy is introduced.
-- `python -B scripts/test_v48_governance_conformance.py`, `python -B scripts/test_v48_task_learning.py`, `python -B scripts/test_v48_ads_evolution_governance.py`, `python -B scripts/test_work_item_contract_and_golden_templates.py`, and `python -B scripts/verify_standard.py` pass on the exact candidate.
-- Independent exact-subject concern Validation inspects scenario semantics and negative oracles before a genuinely Fresh exact-HEAD required Review. Builder, Validator and Reviewer remain distinct.
-- T-010 PASS does not itself complete T-013/T-014, Version Closure or Release Qualification.
+## Exact subject / write set
+- [ ] Candidate PR HEAD/TREE/base exact and current (base `version/v4.9.0@f4fe8854...`).
+- [ ] Diff limited to the three Builder write-set paths plus immutable `.agent/execution/T-010/**`.
+- [ ] Frozen Product/L2/DAG blobs, Task Pack, L3 resolve unchanged at candidate.
+
+## Owner-map acceptance
+- [ ] T01-T07 oracles executable and passing; stale-PASS prevention real; successor/adverse chains real.
+- [ ] Owner-specific evidence meaning canonical; no generic PASS-equivalence engine; Release binding by reference.
+- [ ] Every map row cites its owner by exact resolvable ref.
+
+## Gates
+- [ ] Repository verifier PASS; Builder checks not treated as independent Validation.
+- [ ] Independent currentness/transfer Validation PASS before Fresh Review; Fresh Review on same unchanged exact HEAD.

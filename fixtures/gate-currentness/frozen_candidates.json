@@ -1,0 +1,98 @@
+{
+  "fixture_id": "gate-currentness/frozen_candidates",
+  "description": "TEST_MATRIX T04 — Hidden/Closeout/RQ fresh/current candidate rules bound to standards/RELEASE_STANDARD.md owners (§3 prepared-vs-frozen, §4 operational immutability thaw chain, §5 hidden escaped defects, §6 release verdict). Frozen-candidate mutation invalidates per RELEASE_STANDARD; old evidence stays valid only for its old candidate/pack identities.",
+  "scenarios": [
+    {
+      "scenario_id": "T04_FC1_hidden_pass_current_frozen_candidate_binds",
+      "freeze_record": { "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "state": "FROZEN" },
+      "current_candidate": { "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "state": "FROZEN" },
+      "record": {
+        "record_id": "hidden:700",
+        "owner_ref": "standards/RELEASE_STANDARD.md#5-hidden-validation-and-escaped-defects",
+        "verdict": "PASS",
+        "subject_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc",
+        "binding": { "frozen_candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "private_pack_revision": "pack:hp1" }
+      },
+      "expect": { "disposition": "BOUND_CURRENT", "gate_satisfied": true }
+    },
+    {
+      "scenario_id": "T04_FC2_silent_post_freeze_mutation_invalidates_hidden",
+      "freeze_record": { "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "state": "FROZEN" },
+      "current_candidate": { "candidate_identity": "candidate:FC1@tree:dddddddddddddddddddddddddddddddddddddddd", "state": "FROZEN" },
+      "record": {
+        "record_id": "hidden:710",
+        "owner_ref": "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "verdict": "PASS",
+        "subject_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc",
+        "binding": { "frozen_candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "private_pack_revision": "pack:hp1" }
+      },
+      "expect": { "disposition": "FRESH_EXECUTION_REQUIRED", "gate_satisfied": false, "owner_rule": "declared ref SHA and tree must still match the freeze record before Hidden/RQ/integration" }
+    },
+    {
+      "scenario_id": "T04_FC3_legal_thaw_chain_new_freeze_new_hidden_binds",
+      "chain": [
+        "FROZEN",
+        "THAWED / INVALIDATED",
+        "fix/successor candidate",
+        "affected visible validation",
+        "new freeze",
+        "required Hidden Validation",
+        "new Release Qualification"
+      ],
+      "freeze_record": { "candidate_identity": "candidate:FC2@tree:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "state": "FROZEN", "predecessor": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc" },
+      "current_candidate": { "candidate_identity": "candidate:FC2@tree:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "state": "FROZEN" },
+      "record": {
+        "record_id": "hidden:720",
+        "owner_ref": "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "verdict": "PASS",
+        "subject_identity": "candidate:FC2@tree:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "binding": { "frozen_candidate_identity": "candidate:FC2@tree:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "private_pack_revision": "pack:hp2" }
+      },
+      "old_record": {
+        "record_id": "hidden:700",
+        "owner_ref": "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "verdict": "PASS",
+        "subject_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc",
+        "binding": { "frozen_candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "private_pack_revision": "pack:hp1" }
+      },
+      "expect": {
+        "disposition": "BOUND_CURRENT",
+        "gate_satisfied": true,
+        "old_record_disposition": "HISTORICAL_ONLY",
+        "old_record_gate_satisfied": false,
+        "old_evidence_note": "Old evidence remains valid only for its old candidate/pack identities"
+      }
+    },
+    {
+      "scenario_id": "T04_FC4_rq_on_drifted_candidate_fresh_only",
+      "freeze_record": { "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "state": "FROZEN" },
+      "current_candidate": { "candidate_identity": "candidate:FC3@tree:ffffffffffffffffffffffffffffffffffffffff", "state": "FROZEN" },
+      "record": {
+        "record_id": "rq:730",
+        "owner_ref": "standards/RELEASE_STANDARD.md#6-release-verdict",
+        "verdict": "READY",
+        "subject_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc",
+        "binding": { "frozen_candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc" }
+      },
+      "expect": { "disposition": "FRESH_EXECUTION_REQUIRED", "gate_satisfied": false }
+    },
+    {
+      "scenario_id": "T04_FC5_strengthened_pack_new_identity_old_pack_historical",
+      "escaped_defect_class": "HIDDEN_PACK_BLIND_SPOT",
+      "prior_pack": { "private_pack_revision": "pack:hp1", "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc" },
+      "strengthened_pack": { "private_pack_revision": "pack:hp2", "checksum": "sha256:pack2", "candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc" },
+      "record": {
+        "record_id": "hidden:740",
+        "owner_ref": "standards/RELEASE_STANDARD.md#5-hidden-validation-and-escaped-defects",
+        "verdict": "PASS",
+        "subject_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc",
+        "binding": { "frozen_candidate_identity": "candidate:FC1@tree:cccccccccccccccccccccccccccccccccccccccc", "private_pack_revision": "pack:hp1" }
+      },
+      "expect": {
+        "strengthened_pack_disposition": "FRESH_EXECUTION_REQUIRED",
+        "reason": "new immutable private pack identity/revision/checksum => fresh Hidden on the strengthened pack",
+        "prior_pack_evidence_note": "prior pack/candidate evidence preserved historically"
+      }
+    }
+  ]
+}

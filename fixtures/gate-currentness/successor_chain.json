@@ -1,0 +1,98 @@
+{
+  "fixture_id": "gate-currentness/successor_chain",
+  "description": "TEST_MATRIX T02 — successor/full/complete-delta Review semantics and carried findings (owners: DEVELOPMENT_WORKFLOW Stage 2.6/§4.4 + review-aggregation-v1 finding-union-blocker-dominance + L2 §9 + EXECUTION_ARCHITECTURE §28.5). Unresolved findings carry forward; only per-finding successor verification or owning-authority disposition empties the set; same-subject re-dispatch for PASS and fresh-reviewer PASS over an unresolved blocker are rejected.",
+  "findings": [
+    { "finding_id": "F-ADV-1", "state": "UNRESOLVED", "severity": "BLOCKER", "origin_subject": "sha:1111111111111111111111111111111111111111" },
+    { "finding_id": "F-ADV-2", "state": "UNRESOLVED", "severity": "MAJOR", "origin_subject": "sha:1111111111111111111111111111111111111111" }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "T02_SC1_still_present_blocks_successor",
+      "carried_findings": ["F-ADV-1", "F-ADV-2"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [
+        { "finding_id": "F-ADV-1", "outcome": "STILL_PRESENT", "evidence_refs": ["rev:402"] },
+        { "finding_id": "F-ADV-2", "outcome": "RESOLVED", "evidence_refs": ["rev:403"] }
+      ],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333" },
+      "expect": { "admissible": false, "unresolved_after": ["F-ADV-1"], "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION" }
+    },
+    {
+      "scenario_id": "T02_SC2_all_dispositioned_complete_delta_review_admits",
+      "carried_findings": ["F-ADV-1", "F-ADV-2"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [
+        { "finding_id": "F-ADV-1", "outcome": "RESOLVED", "evidence_refs": ["rev:410"] },
+        { "finding_id": "F-ADV-2", "outcome": "RESOLVED", "evidence_refs": ["rev:411"] }
+      ],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333" },
+      "expect": { "admissible": true, "unresolved_after": [] }
+    },
+    {
+      "scenario_id": "T02_SC3_not_applicable_requires_owning_rule_basis",
+      "carried_findings": ["F-ADV-1"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [
+        { "finding_id": "F-ADV-1", "outcome": "NOT_APPLICABLE_TO_SUCCESSOR", "evidence_refs": ["rev:420"], "owning_rule_basis": "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection" }
+      ],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333" },
+      "expect": { "admissible": true, "unresolved_after": [] }
+    },
+    {
+      "scenario_id": "T02_SC4_not_applicable_without_owning_basis_fails_closed",
+      "carried_findings": ["F-ADV-1"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [
+        { "finding_id": "F-ADV-1", "outcome": "NOT_APPLICABLE_TO_SUCCESSOR", "evidence_refs": ["rev:430"] }
+      ],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333" },
+      "expect": { "admissible": false, "unresolved_after": ["F-ADV-1"], "reason": "MISSING_OWNING_RULE_BASIS" }
+    },
+    {
+      "scenario_id": "T02_SC5_new_pass_without_consuming_carried_set_is_review_shopping",
+      "carried_findings": ["F-ADV-1"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333", "reviewer": "new-reviewer-b" },
+      "expect": { "admissible": false, "unresolved_after": ["F-ADV-1"], "reason": "REVIEW_SHOPPING_REJECTED" }
+    },
+    {
+      "scenario_id": "T02_SC6_same_subject_redispatch_for_pass_rejected",
+      "carried_findings": ["F-ADV-1"],
+      "successor_subject": "sha:1111111111111111111111111111111111111111",
+      "authorized_repair": false,
+      "per_finding_outcomes": [],
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:1111111111111111111111111111111111111111" },
+      "expect": { "admissible": false, "unresolved_after": ["F-ADV-1"], "reason": "UNAUTHORIZED_REVIEW_PATH" }
+    },
+    {
+      "scenario_id": "T02_SC7_owning_authority_disposition_empties_set",
+      "carried_findings": ["F-ADV-2"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [],
+      "owning_authority_disposition": {
+        "finding_id": "F-ADV-2",
+        "disposition": "DISPOSITIONED_NOT_A_DEFECT",
+        "authority_ref": "schemas/review-aggregation-v1.schema.json#aggregation_policy"
+      },
+      "successor_review": { "verdict": "PASS", "subject_identity": "sha:3333333333333333333333333333333333333333" },
+      "expect": { "admissible": true, "unresolved_after": [] }
+    },
+    {
+      "scenario_id": "T02_SC8_pass_on_old_subject_never_transfers_to_material_successor",
+      "carried_findings": ["F-ADV-1"],
+      "successor_subject": "sha:3333333333333333333333333333333333333333",
+      "authorized_repair": true,
+      "per_finding_outcomes": [],
+      "successor_review": null,
+      "predecessor_review_pass": { "verdict": "PASS", "subject_identity": "sha:1111111111111111111111111111111111111111" },
+      "expect": { "admissible": false, "unresolved_after": ["F-ADV-1"], "reason": "PASS_NOT_TRANSFERRED" }
+    }
+  ]
+}

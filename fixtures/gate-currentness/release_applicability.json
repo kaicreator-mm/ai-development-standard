@@ -1,0 +1,65 @@
+{
+  "fixture_id": "gate-currentness/release_applicability",
+  "description": "TEST_MATRIX T05 — Release applicability decision binding by reference to the T-005 owner (standards/RELEASE_STANDARD.md §11; references/RELEASE_APPLICABILITY_REFERENCE.md illustrative; scripts/test_v49_release_applicability.py owner test). This lane decides nothing: it binds existing Release-owned decisions, forbids concern-to-version aggregation (registry F12), and applies §11.4 fail-closed re-evaluation.",
+  "scenarios": [
+    {
+      "scenario_id": "T05_RA1_concern_decisions_never_omit_version_gate",
+      "concern_decisions": [
+        { "decision_ref": "rel-app:c1", "gate_id": "hidden-validation", "subject_ref": "concern:alpha", "applicability": "NOT_APPLICABLE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject" },
+        { "decision_ref": "rel-app:c2", "gate_id": "release-qualification", "subject_ref": "concern:beta", "applicability": "DEFERRED_TO_VERSION_CLOSURE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject" }
+      ],
+      "version_candidate": { "candidate_identity": "candidate:VC1@tree:1234567890abcdef1234567890abcdef12345678" },
+      "version_level_decision": null,
+      "expect": { "version_gate_omission_allowed": false, "reason": "NO_CONCERN_TO_VERSION_AGGREGATION" }
+    },
+    {
+      "scenario_id": "T05_RA2_fresh_release_owned_version_decision_required_now_governs",
+      "concern_decisions": [
+        { "decision_ref": "rel-app:c3", "gate_id": "hidden-validation", "subject_ref": "concern:alpha", "applicability": "NOT_APPLICABLE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject" }
+      ],
+      "version_candidate": { "candidate_identity": "candidate:VC1@tree:1234567890abcdef1234567890abcdef12345678" },
+      "version_level_decision": {
+        "decision_ref": "rel-app:v1",
+        "gate_id": "hidden-validation",
+        "subject_ref": "version-candidate:VC1",
+        "subject_identity": "candidate:VC1@tree:1234567890abcdef1234567890abcdef12345678",
+        "applicability": "REQUIRED_NOW",
+        "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "basis_or_proof_refs": ["release-rule:current"],
+        "decided_at": "2026-10-04T00:00:00Z"
+      },
+      "expect": { "version_gate_required": true, "concern_cancellation_attempted": true, "cancelled": false, "reason": "A concern's NOT_APPLICABLE decision cannot cancel a version gate (RELEASE_APPLICABILITY_REFERENCE)" }
+    },
+    {
+      "scenario_id": "T05_RA3_deferral_is_not_gate_satisfaction_at_version_closure",
+      "concern_decisions": [
+        { "decision_ref": "rel-app:c4", "gate_id": "release-qualification", "subject_ref": "concern:beta", "applicability": "DEFERRED_TO_VERSION_CLOSURE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject" }
+      ],
+      "version_candidate": { "candidate_identity": "candidate:VC1@tree:1234567890abcdef1234567890abcdef12345678" },
+      "version_level_decision": null,
+      "closure_claims_gate_satisfied_via_deferral": true,
+      "expect": { "version_gate_omission_allowed": false, "reason": "CONCERN_DEFERRED != VERSION_GATE_SATISFIED; Version Closure needs a fresh Release-owned evaluation" }
+    },
+    {
+      "scenario_id": "T05_RA4_stale_applicability_record_fail_closed",
+      "concern_decisions": [],
+      "version_candidate": { "candidate_identity": "candidate:VC2@tree:9abcdef0123456789abcdef0123456789abcdef0" },
+      "version_level_decision": {
+        "decision_ref": "rel-app:v0",
+        "gate_id": "hidden-validation",
+        "subject_ref": "version-candidate:VC1",
+        "subject_identity": "candidate:VC1@tree:1234567890abcdef1234567890abcdef12345678",
+        "applicability": "NOT_APPLICABLE",
+        "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "basis_or_proof_refs": ["release-rule:older"],
+        "decided_at": "2026-09-01T00:00:00Z"
+      },
+      "expect": { "decision_current": false, "disposition": "BLOCKED", "reason": "binding dimension (candidate identity) materially changed => re-evaluation required; stale decision is non-current (RELEASE_STANDARD §11.4)" }
+    },
+    {
+      "scenario_id": "T05_RA5_builder_or_concern_pass_cannot_mint_applicability",
+      "attempted_mint": { "actor": "builder", "gate_id": "hidden-validation", "subject_ref": "concern:alpha", "applicability": "NOT_APPLICABLE", "basis": "local concern PASS + risk:low" },
+      "expect": { "mint_accepted": false, "reason": "Release applicability is Release-owned; risk/labels/local success are never sufficient by themselves" }
+    }
+  ]
+}

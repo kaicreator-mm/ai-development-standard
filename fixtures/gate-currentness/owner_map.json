@@ -1,0 +1,180 @@
+{
+  "fixture_id": "gate-currentness/owner_map",
+  "description": "Machine-readable mirror of references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md rows M01-M10. The kernel asserts every owner_ref resolves in-repository (file exists + GitHub anchor present, or JSON-schema field present) and that the reference document contains each row and owner_ref verbatim. This map wires; owners decide.",
+  "authority_refs": {
+    "frozen_l2_matrix": "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#10-gate-owned-evidence-bindingcurrentness-matrix",
+    "frozen_l2_blob": "bd41ea0175b459a6a490fd37ad579e429a58a1c3",
+    "frozen_prd_dogfood": "docs/implementation/4.9.0/PRD.md#16-downstream-dogfood-and-measurement-contract",
+    "routing_vocabulary_is_not_verdicts": "registries/state-dimensions-v1.json#F13_ASSURANCE_CURRENT_NOT_VALIDATION_PASS"
+  },
+  "rows": [
+    {
+      "row_id": "M01",
+      "family": "assurance_plan_successor",
+      "owner_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
+        "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+        "schemas/assurance-plan-v2.schema.json#currentness_binding",
+        "schemas/assurance-plan-v2.schema.json#finding_carry_forward_policy",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+      ],
+      "binding_keys": [
+        "subject_identity_ref",
+        "owner_authority_digest",
+        "proof_input_digest",
+        "task_pack_digest",
+        "release_decision_digest",
+        "unresolved_finding_digest",
+        "binding_digest",
+        "state"
+      ],
+      "currentness_rule": "all-components-exact-current",
+      "transfer_rule": "STALE_or_UNKNOWN_never_authorizes_lower_path",
+      "wire_function": "recheck_state_before_TransDispatch_Claim_merge_Freeze_RQ"
+    },
+    {
+      "row_id": "M02",
+      "family": "concern_validation",
+      "owner_refs": [
+        "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "standards/VALIDATION_STANDARD.md#12-evidence-minimum"
+      ],
+      "binding_keys": ["tested_sha", "profile_scope", "environment_toolchain", "authority_refs"],
+      "currentness_rule": "tested_sha_equals_current_subject_sha",
+      "transfer_rule": "no_transfer_rule_to_successor_sha",
+      "wire_function": "subject_identity_match_only"
+    },
+    {
+      "row_id": "M03",
+      "family": "integration_validation_impact_decision",
+      "owner_refs": [
+        "standards/VALIDATION_STANDARD.md#6-exact-sha-evidence-and-drift",
+        "standards/VALIDATION_STANDARD.md#7-tested-checkpoint-vs-evidence-only-head"
+      ],
+      "binding_keys": [
+        "validated_head_sha",
+        "base_sha_at_validation",
+        "current_target_sha",
+        "base_delta_write_set_comparison",
+        "validation_impact",
+        "evidence_reuse_basis"
+      ],
+      "currentness_rule": "explicit_VALIDATION_IMPACT_DECISION_proving_none_with_delta_proof",
+      "transfer_rule": "affected_or_unknown_rerun_HEAD_drift_never_repaired",
+      "wire_function": "bind_existing_owner_tuple_or_rerun"
+    },
+    {
+      "row_id": "M04",
+      "family": "review",
+      "owner_refs": [
+        "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection",
+        "standards/DEVELOPMENT_WORKFLOW.md#44-independent-review按需",
+        "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#6-review-policy-and-risk",
+        "schemas/review-aggregation-v1.schema.json#aggregation_policy",
+        "schemas/review-finding-v1.schema.json",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+      ],
+      "binding_keys": [
+        "exact_subject_diff",
+        "current_authority",
+        "required_independence",
+        "carried_unresolved_findings"
+      ],
+      "currentness_rule": "material_successor_requires_new_full_or_complete_delta_review",
+      "transfer_rule": "pass_never_transferred_carry_forward_until_disposition",
+      "wire_function": "carry_findings_block_successor_pass_while_unresolved"
+    },
+    {
+      "row_id": "M05",
+      "family": "hidden_validation",
+      "owner_refs": [
+        "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "standards/RELEASE_STANDARD.md#5-hidden-validation-and-escaped-defects",
+        "standards/TEST_DATA_AND_SCENARIO_STANDARD.md"
+      ],
+      "binding_keys": ["frozen_candidate_identity", "private_pack_revision", "holder_policy"],
+      "currentness_rule": "fresh_only_on_candidate_pack_holder_drift",
+      "transfer_rule": "drift_requires_fresh_hidden_via_thaw_chain",
+      "wire_function": "frozen_candidate_identity_match"
+    },
+    {
+      "row_id": "M06",
+      "family": "closeout_release_qualification",
+      "owner_refs": [
+        "standards/RELEASE_STANDARD.md#3-candidate-prepared-vs-candidate-frozen",
+        "standards/RELEASE_STANDARD.md#4-operational-immutability",
+        "standards/RELEASE_STANDARD.md#6-release-verdict",
+        "standards/RELEASE_STANDARD.md#7-release-sequence"
+      ],
+      "binding_keys": ["frozen_candidate_identity", "predecessor_gate_bindings", "release_authority"],
+      "currentness_rule": "fresh_only_on_candidate_drift",
+      "transfer_rule": "never_convert_NOT_RUN_BLOCKED_to_PASS_or_old_candidate_to_successor",
+      "wire_function": "frozen_candidate_identity_match"
+    },
+    {
+      "row_id": "M07",
+      "family": "release_applicability_decision",
+      "owner_refs": [
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md",
+        "scripts/test_v49_release_applicability.py"
+      ],
+      "binding_keys": [
+        "gate_id",
+        "subject_ref",
+        "subject_identity",
+        "applicability",
+        "release_authority_ref",
+        "decision_ref",
+        "basis_or_proof_refs",
+        "candidate_or_currentness_identity"
+      ],
+      "currentness_rule": "re-evaluate_when_any_binding_dimension_materially_changes",
+      "transfer_rule": "concern_decision_never_aggregates_to_version_UNKNOWN_fail_closed",
+      "wire_function": "reference_only_no_minting_no_aggregation"
+    },
+    {
+      "row_id": "M08",
+      "family": "ci_evidence",
+      "owner_refs": [
+        "standards/CI_EVIDENCE_STANDARD.md#3-identity-model",
+        "standards/VALIDATION_STANDARD.md#8-ci-execution-channel-vs-validation-gate"
+      ],
+      "binding_keys": ["exact_sha", "run_id", "profile", "provider"],
+      "currentness_rule": "exact_subject_binding_where_material",
+      "transfer_rule": "never_generic_pass_transfer",
+      "wire_function": "subject_identity_match_only"
+    },
+    {
+      "row_id": "M09",
+      "family": "task_learning_evidence",
+      "owner_refs": [
+        "schemas/task-learning-v2.schema.json",
+        "references/TASK_LEARNING_EVIDENCE_REFERENCE.md#exact-subject-currentness"
+      ],
+      "binding_keys": ["work_ref", "subject_ref", "evidence_refs"],
+      "currentness_rule": "historical_learning_evidence_only",
+      "transfer_rule": "never_gate_pass",
+      "wire_function": "fixed_HISTORICAL_ONLY"
+    },
+    {
+      "row_id": "M10",
+      "family": "proportional_dogfood_report",
+      "owner_refs": [
+        "docs/implementation/4.9.0/PRD.md#163-exact-candidate-binding",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture"
+      ],
+      "binding_keys": [
+        "exact_ads_candidate",
+        "downstream_repository",
+        "pinned_authority_refs",
+        "mechanism_matrix",
+        "auditor_identity"
+      ],
+      "currentness_rule": "ads_candidate_thaw_drift_makes_report_historical_only",
+      "transfer_rule": "release_evidence_only_cannot_authorize_execution_or_RQ",
+      "wire_function": "exact_candidate_match_or_historical"
+    }
+  ]
+}
