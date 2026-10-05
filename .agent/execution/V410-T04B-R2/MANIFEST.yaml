@@ -1,0 +1,32 @@
+pack_id: V410-T04B-R2
+task_id: V410-T04B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 7a0ee000174512df85bf3d2cd611e8b2cf55c840
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T04B
+branch: task/v4.10.0-v410-t04b-review-currentness
+parent_issue: "#857"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 7a0ee000174512df85bf3d2cd611e8b2cf55c840
+generated_by: chatgpt-web:controller
+generated_at: "2026-10-06T03:15:00+06:30"
+dependency_completion:
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T02B@fee097db238b60d97ab2d449dcf210488d03814f
+material_paths:
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - schemas/agent-event-v2.schema.json
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - standards/VALIDATION_STANDARD.md
+  - templates/agent-event-comment.md
+  - scripts/test_v410_t04b_review_currentness.py
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
