@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/incident-event-v1.schema.json",
+  "title": "AI Development Incident Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "incident_id",
+    "event_id",
+    "event_kind",
+    "occurred_at",
+    "runtime_subject_refs",
+    "evidence_refs",
+    "actor_or_authority_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "incident_id": {"type": "string", "minLength": 1},
+    "event_id": {"type": "string", "minLength": 1},
+    "event_kind": {"type": "string", "minLength": 1},
+    "occurred_at": {"type": "string", "minLength": 1},
+    "runtime_subject_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "actor_or_authority_ref": {"type": "string", "minLength": 1},
+    "impact_ref": {"type": "string", "minLength": 1},
+    "severity_ref": {"type": "string", "minLength": 1},
+    "mitigation_action_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "recovery_action_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "deployment_recovery_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "migration_recovery_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "engineering_follow_up_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

@@ -1,3 +1,5 @@
+# v4.8.1 lineage recovery composition (#905; #805 Path D; #809 matrix + amendment):
+# recovered v4.4-v4.7 machine contracts carried by the composed union.
 """v4.8 T-014 integrated convergence / version-closure INPUTS conformance.
 
 Deterministic, offline, self-contained integrated oracle over the exact
@@ -115,12 +117,21 @@ PRE_V48_MACHINE_CONTRACTS = frozenset({
 # path outside pre-v4.8 inventory | predecessor contracts | the three v4.8
 # families still fails, as does dropping any of them.
 PREDECESSOR_COMPOSITION_MACHINE_CONTRACTS = frozenset({
+    "schemas/artifact-promotion-v1.schema.json",
+    "schemas/build-manifest-v1.schema.json",
     "schemas/compatibility-record-v1.schema.json",
     "schemas/dag-mutation-record-v1.schema.json",
     "schemas/dependency-risk-exception-v1.schema.json",
     "schemas/dependency-toolchain-profile-v1.schema.json",
+    "schemas/deployment-plan-v1.schema.json",
+    "schemas/deployment-result-v1.schema.json",
     "schemas/execution-context-v1.schema.json",
+    "schemas/incident-event-v1.schema.json",
+    "schemas/intent-assumption-record-v1.schema.json",
+    "schemas/maintenance-policy-v1.schema.json",
     "schemas/migration-transition-v1.schema.json",
+    "schemas/runtime-observation-context-v1.schema.json",
+    "schemas/skill-metadata-v1.schema.json",
 })
 
 # C03 fixture — inherited v4.1-v4.7 semantic concern -> canonical owner map.
