@@ -41,6 +41,16 @@ A local developer may have a newer compiler or additional linter installed. That
 7. Is any tool/check result being promoted into Validation or Release truth?
 8. Are language/archetype profiles mapping Core requirements rather than becoming competing owners?
 
+## Change hygiene review prompts
+
+9. Does the diff contain an unnecessary whole-file rewrite or mass comment/doc loss that removes maintained intent?
+10. Is unrelated formatting or generated churn mixed with a semantic change?
+11. Is any semantic change outside the declared change scope?
+12. Does the diff mutate generated output directly instead of its regeneration authority?
+13. Is public-surface or abstraction growth necessary, or convenience widening?
+
+A "yes" is a reviewable implementation-quality defect only when it is material to maintained intent or evidence. Docs/style churn alone is not automatically a defect. None of these prompts asks for a universal human line-by-line review gate; a change summary projected through existing PR/Builder/Execution Pack surfaces is navigation information, not correctness evidence.
+
 ## Failure posture
 
 When ecosystem-specific behavior is unclear, use the applicable profile/project authority. When a check/result question belongs to Testing, CI, Validation or Release, route there rather than extending this standard's authority.
