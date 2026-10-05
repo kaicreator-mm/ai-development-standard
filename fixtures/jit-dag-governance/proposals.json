@@ -1,0 +1,1192 @@
+{
+  "comment": "Runtime/JIT proposal scenarios for the deterministic classifier. Envelope condition and effect values follow the v4.9 kernel convention: true = violation/effect present, false = condition holds/effect absent, null = unprovable (fails closed). Semantic mutation vocabulary and routes are owned by v43 Task DAG Governance; records conform to schemas/dag-mutation-record-v1.schema.json required fields (validated at runtime from the owner schema, not duplicated here).",
+  "proposals": [
+    {
+      "id": "BK01_jit_phase_in_envelope",
+      "origin": "runtime_jit",
+      "action": "jit_phase_dispatch_same_issue",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "BK02_claim_record",
+      "origin": "runtime_jit",
+      "action": "claim_or_dispatch_record",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "BK03_waiting_lineage_projection",
+      "origin": "runtime_jit",
+      "action": "derived_state_projection",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "BK04_jit_branch_creation",
+      "origin": "runtime_jit",
+      "action": "branch_or_worktree_creation",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "BK05_pr_stack_creation",
+      "origin": "runtime_jit",
+      "action": "pr_stack_creation",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "BK06_status_annotation",
+      "origin": "runtime_jit",
+      "action": "status_label_or_annotation_update",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BOOKKEEPING",
+        "route": "NO_MUTATION_REQUIRED"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "LNEG01_phase_outside_envelope_scope_widening",
+      "origin": "runtime_jit",
+      "action": "jit_phase_dispatch_same_issue",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": true
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BLOCKED",
+        "route": "BLOCKED_OUT_OF_TASK_ENVELOPE"
+      },
+      "binding": "Frozen Product L; EXECUTION_ARCHITECTURE_STANDARD.md 28.7 L [K02/K09]",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "LNEG02_undeclared_phase_never_in_envelope",
+      "origin": "runtime_jit",
+      "action": "jit_phase_dispatch_same_issue",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "BLOCKED",
+        "route": "BLOCKED_OUT_OF_TASK_ENVELOPE"
+      },
+      "binding": "Frozen L2 negative: JIT phase not in Assurance Plan/Task Pack treated as in-envelope => reject [K02/K10]",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "LNEG03_topology_effect_mislabeled_as_bookkeeping",
+      "origin": "runtime_jit",
+      "action": "status_label_or_annotation_update",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "binding": "EXECUTION_ARCHITECTURE_STANDARD.md 28.2: material topology change is not a JIT phase",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "LNEG04_unknown_action_smaller_units",
+      "origin": "runtime_jit",
+      "action": "resize_task_for_smaller_units",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": true,
+      "mutation_record": null,
+      "native_hydration": null,
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "binding": "#775 late evidence binding: identity/dependencies never silently edited for smaller work units",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM01_runtime_ADD",
+      "origin": "runtime_jit",
+      "action": "ADD",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM01",
+        "mutation_class": "ADD",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "new semantic implementation concern discovered during JIT materialization",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM01/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728",
+          "#726 -> #NEW"
+        ],
+        "scope_impact": "one new bounded Task; no existing scope change",
+        "release_impact": "none beyond current version integration",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "new Task requires review:required",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_ADD"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM02_runtime_ADD_DEPENDENCY",
+      "origin": "runtime_jit",
+      "action": "ADD_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM02",
+        "mutation_class": "ADD_DEPENDENCY",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "material blocked-by edge discovered missing after dispatch",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM02/new-topology",
+        "old_edges": [],
+        "new_edges": [
+          "#NEWDEP -> #728"
+        ],
+        "scope_impact": "none",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_ADD_DEPENDENCY"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM03_runtime_REMOVE_DEPENDENCY_reEvaluated",
+      "origin": "runtime_jit",
+      "action": "REMOVE_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM03",
+        "mutation_class": "REMOVE_DEPENDENCY",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "edge obsolete; no longer encodes a material contract, evidence or integration dependency",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM03/new-topology",
+        "old_edges": [
+          "#T006 -> #728"
+        ],
+        "new_edges": [],
+        "scope_impact": "none",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "readiness re-evaluated after removal per owner section 6",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "readiness_re_evaluated": true,
+      "fabricates_readiness": false,
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_REMOVE_DEPENDENCY"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM04_REMOVE_DEPENDENCY_fabricates_readiness",
+      "origin": "runtime_jit",
+      "action": "REMOVE_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM04",
+        "mutation_class": "REMOVE_DEPENDENCY",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "remove edge so the dependent task can dispatch now",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM04/new-topology",
+        "old_edges": [
+          "#T006 -> #728"
+        ],
+        "new_edges": [],
+        "scope_impact": "none",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "readiness_re_evaluated": false,
+      "fabricates_readiness": true,
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_READINESS_FABRICATION",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM05_planning_SPLIT",
+      "origin": "planning",
+      "action": "SPLIT",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM05",
+        "mutation_class": "SPLIT",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "task materially oversized while semantically coherent; owner-authorized split",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM05/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728",
+          "#726 -> #NEWSUCC"
+        ],
+        "scope_impact": "concern partitioned; identity preserved per owner section 5",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "successor Task Pack + review required",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_SPLIT"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM06_planning_MERGE",
+      "origin": "planning",
+      "action": "MERGE",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM06",
+        "mutation_class": "MERGE",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "duplicate concerns consolidated by explicit owner-authorized merge",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM06/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728"
+        ],
+        "scope_impact": "explicit absorption via mutation; no silent absorption",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "merged Task Pack re-review",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_MERGE"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM07_planning_SUPERSEDE",
+      "origin": "planning",
+      "action": "SUPERSEDE",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM07",
+        "mutation_class": "SUPERSEDE",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "concern re-framed; successor Task replaces predecessor authority",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM07/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #NEWSUCC"
+        ],
+        "scope_impact": "successor carries concern; predecessor superseded",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "successor review:required",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_SUPERSEDE"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM08_planning_DEFER",
+      "origin": "planning",
+      "action": "DEFER",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM08",
+        "mutation_class": "DEFER",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "concern re-planned to a later integration window; edges preserved",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM08/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728"
+        ],
+        "scope_impact": "none; stays in live DAG with re-planned target",
+        "release_impact": "deferred beyond current version",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_DEFER"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM09_planning_CHANGE_LANE",
+      "origin": "planning",
+      "action": "CHANGE_LANE",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM09",
+        "mutation_class": "CHANGE_LANE",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "lane reassignment recorded explicitly",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM09/new-topology",
+        "old_edges": [],
+        "new_edges": [],
+        "scope_impact": "lane binding only",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_CHANGE_LANE"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM10_planning_CHANGE_INTEGRATION_OWNER",
+      "origin": "planning",
+      "action": "CHANGE_INTEGRATION_OWNER",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM10",
+        "mutation_class": "CHANGE_INTEGRATION_OWNER",
+        "requested_by": "planning-amendment:#745",
+        "approved_by": "controller:#745",
+        "reason": "integration owner reassigned by explicit mutation",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM10/new-topology",
+        "old_edges": [],
+        "new_edges": [],
+        "scope_impact": "ownership binding only",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_MUTATION_CHANGE_INTEGRATION_OWNER"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM11_runtime_semantic_without_mutation_record",
+      "origin": "runtime_jit",
+      "action": "ADD_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": null,
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_MISSING_MUTATION_RECORD",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM12_runtime_textual_dependency_list_only",
+      "origin": "runtime_jit",
+      "action": "ADD_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM12",
+        "mutation_class": "ADD_DEPENDENCY",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "dependency recorded as body-text list in the issue",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM12/new-topology",
+        "old_edges": [],
+        "new_edges": [
+          "#NEWDEP -> #728"
+        ],
+        "scope_impact": "none",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": false,
+        "read_back": false,
+        "textual_dependency_list_only": true
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_TEXTUAL_LIST_NOT_NATIVE",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM13_runtime_native_capability_unavailable",
+      "origin": "runtime_jit",
+      "action": "SPLIT",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM13",
+        "mutation_class": "SPLIT",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "owner-authorized split; native connector cannot write edges",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM13/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728",
+          "#726 -> #NEWSUCC"
+        ],
+        "scope_impact": "concern partitioned",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "successor Task Pack + review required",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": false,
+        "performed": false,
+        "read_back": false,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "SEMANTIC_MUTATION",
+        "route": "V43_NATIVE_MUTATION_HANDOFF"
+      },
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "SM14_runtime_stale_mutation_record",
+      "origin": "runtime_jit",
+      "action": "ADD_DEPENDENCY",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": false,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": false,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "bound_topology_digest": "dag-digest-t008-merged-5f21",
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM14",
+        "mutation_class": "ADD_DEPENDENCY",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "approved against an earlier topology that has since drifted",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM14/new-topology",
+        "old_edges": [],
+        "new_edges": [
+          "#NEWDEP -> #728"
+        ],
+        "scope_impact": "none",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "drifted",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_STALE_MUTATION_RECORD"
+    },
+    {
+      "id": "SM15_runtime_unknown_currentness",
+      "origin": "runtime_jit",
+      "action": "SUPERSEDE",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "bound_topology_digest": "UNKNOWN",
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM15",
+        "mutation_class": "SUPERSEDE",
+        "requested_by": "runtime-jit-proposal:#728",
+        "approved_by": "controller:#745",
+        "reason": "topology digest unprovable at proposal time",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/SM15/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #NEWSUCC"
+        ],
+        "scope_impact": "successor carries concern",
+        "release_impact": "none",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "successor review:required",
+        "validation_impact_ref": "deterministic mutation-classification validation",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_UNKNOWN_CURRENTNESS"
+    },
+    {
+      "id": "SM16_runtime_incomplete_mutation_record",
+      "origin": "runtime_jit",
+      "action": "ADD",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": false,
+        "changes_no_dependency_semantics": false,
+        "widens_no_task_scope": false
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": false,
+        "dependency_semantics_changed": false,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": false,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-SM16",
+        "mutation_class": "ADD",
+        "requested_by": "runtime-jit-proposal:#728",
+        "reason": "record missing approved_by, edges and validation impact",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ]
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_MISSING_MUTATION_RECORD",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    },
+    {
+      "id": "TEL01_telemetry_only_split_request",
+      "origin": "runtime_jit",
+      "action": "SPLIT",
+      "envelope_conditions": {
+        "creates_no_new_semantic_concern": true,
+        "changes_no_task_ownership": true,
+        "changes_no_dependency_semantics": true,
+        "widens_no_task_scope": true
+      },
+      "effects": {
+        "new_semantic_concern": true,
+        "task_identity_changed": true,
+        "dependency_semantics_changed": true,
+        "scope_widened": false
+      },
+      "telemetry_only_justification": true,
+      "mutation_record": {
+        "schema_version": 1,
+        "mutation_id": "M-T009-TEL01",
+        "mutation_class": "SPLIT",
+        "requested_by": "runtime-telemetry:duration/loc/context-growth",
+        "approved_by": "runtime-telemetry:changed-file-count",
+        "reason": "task exceeded advisory telemetry thresholds; wants smaller work units",
+        "affected_task_refs": [
+          "kaicreator-mm/ai-development-standard#728"
+        ],
+        "old_topology_ref": "docs/implementation/4.9.0/TASK_DAG.md@b9fe0cc7",
+        "new_topology_ref": "proposals/TEL01/new-topology",
+        "old_edges": [
+          "#726 -> #728"
+        ],
+        "new_edges": [
+          "#726 -> #728",
+          "#726 -> #NEWSUCC"
+        ],
+        "scope_impact": "none recorded",
+        "release_impact": "none recorded",
+        "task_pack_impact_refs": [
+          "docs/implementation/4.9.0/task-packs/T09_jit_dag_governance.md"
+        ],
+        "review_impact": "none recorded",
+        "validation_impact_ref": "none recorded",
+        "created_at": "2026-10-04T00:00:00Z"
+      },
+      "native_hydration": {
+        "authorized_executor": true,
+        "performed": true,
+        "read_back": true,
+        "textual_dependency_list_only": false
+      },
+      "fact_plane": "current",
+      "expected": {
+        "classification": "FAIL_CLOSED",
+        "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+      },
+      "expected_reason": "FAIL_CLOSED_TELEMETRY_CANNOT_AUTHORIZE",
+      "bound_topology_digest": "dag-digest-t008-merged-5f21"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "comment": "Deterministic classification fixture: bookkeeping action vocabulary (execution-container operations, NOT semantic mutation) and expected per-class routes. The semantic mutation vocabulary itself is NOT duplicated here: tests load it at runtime from the v4.3 owner standard section 3 (cited, not copied).",
+  "bookkeeping_actions": [
+    "jit_phase_dispatch_same_issue",
+    "claim_or_dispatch_record",
+    "derived_state_projection",
+    "branch_or_worktree_creation",
+    "pr_stack_creation",
+    "status_label_or_annotation_update"
+  ],
+  "bookkeeping_invariants": {
+    "semantic_topology_changed": false,
+    "native_edges_changed": 0,
+    "semantic_tasks_created": 0,
+    "semantic_tasks_closed_or_superseded": 0
+  },
+  "expected_routes": {
+    "ADD": "V43_MUTATION_ADD",
+    "ADD_DEPENDENCY": "V43_MUTATION_ADD_DEPENDENCY",
+    "REMOVE_DEPENDENCY": "V43_MUTATION_REMOVE_DEPENDENCY",
+    "SPLIT": "V43_MUTATION_SPLIT",
+    "MERGE": "V43_MUTATION_MERGE",
+    "SUPERSEDE": "V43_MUTATION_SUPERSEDE",
+    "DEFER": "V43_MUTATION_DEFER",
+    "CHANGE_LANE": "V43_MUTATION_CHANGE_LANE",
+    "CHANGE_INTEGRATION_OWNER": "V43_MUTATION_CHANGE_INTEGRATION_OWNER"
+  },
+  "special_routes": {
+    "unavailable_native_capability": "V43_NATIVE_MUTATION_HANDOFF",
+    "fail_closed": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
+  },
+  "envelope_conditions": [
+    "creates_no_new_semantic_concern",
+    "changes_no_task_ownership",
+    "changes_no_dependency_semantics",
+    "widens_no_task_scope"
+  ]
+}
