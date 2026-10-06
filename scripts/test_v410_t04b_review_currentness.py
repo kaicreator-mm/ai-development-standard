@@ -150,6 +150,29 @@ def record_schema() -> dict:
     return findings_schema()["properties"]["records"]["items"]
 
 
+def template_review_example_block() -> str:
+    template = read(TEMPLATE)
+    marker = "## REVIEW_RESULT example"
+    section = template[template.index(marker) + len(marker) :]
+    start = section.index("```yaml") + len("```yaml")
+    return section[start : section.index("```", start)]
+
+
+def parse_example_buckets_and_records(block: str) -> tuple[dict[str, int], list[str]]:
+    """Minimal reader for the canonical writer fixture: buckets + record severities."""
+    buckets: dict[str, int] = {}
+    severities: list[str] = []
+    for raw_line in block.splitlines():
+        line = raw_line.strip()
+        bucket = re.fullmatch(r"p([0-3]):\s*(\d+)", line)
+        if bucket:
+            buckets[f"p{bucket.group(1)}"] = int(bucket.group(2))
+        severity = re.fullmatch(r"severity:\s*(P[0-3])", line)
+        if severity:
+            severities.append(severity.group(1))
+    return buckets, severities
+
+
 def review_result_event(findings: object, *, sha: str = SUBJECT_A, status: str = "FAIL") -> dict:
     return {
         "schema": "ai-dev/event-v2",
@@ -193,6 +216,7 @@ def fact(
     status: str = "FAIL",
     operator_id: str = "chatgpt-web:reviewer-r1",
     records: tuple[dict, ...] = (),
+    buckets: dict | None = None,
 ) -> dict:
     assert isinstance(records, tuple), "records fixtures must be tuples of records"
     return {
@@ -201,6 +225,24 @@ def fact(
         "status": status,
         "operator_id": operator_id,
         "records": records,
+        "buckets": buckets,
+    }
+
+
+def disposition(
+    event_ref: str,
+    finding_id: str,
+    duplicate_of: str,
+    *,
+    sha: str = SUBJECT_A,
+) -> dict:
+    """Durable `review-finding-v1` DUPLICATE disposition fact (same-family shape)."""
+    return {
+        "event_ref": event_ref,
+        "sha": sha,
+        "finding_id": finding_id,
+        "duplicate_of": duplicate_of,
+        "status": "DUPLICATE",
     }
 
 
@@ -228,19 +270,25 @@ def _record_well_formed(entry: object) -> bool:
     return True
 
 
-def reduce_current_aggregate(facts: list[dict], live_subject: str) -> dict:
+def reduce_current_aggregate(facts: list[dict], live_subject: str, dispositions: tuple[dict, ...] = ()) -> dict:
     """Reference reduction of GITHUB_AGENT_INTERACTION_PROTOCOL.md §9.1–§9.3.
 
     Deterministic test oracle: exact-subject currentness, the §9.2 writer/
-    conformance gate for current material findings, identity / explicit
-    `duplicate_of` convergence with retained provenance, fail-closed conflicts
-    and blocker-dominant judgment (the existing `finding-union-blocker-dominance`
-    aggregation policy). Never resolves authority from reviewer/model count.
+    conformance gate for current material findings (well-formed records and
+    exact bucket↔record reconstruction), identity / explicit `duplicate_of`
+    convergence — at emission or via a later durable same-subject
+    `review-finding-v1` DUPLICATE disposition — with retained provenance,
+    fail-closed conflicts and blocker-dominant judgment (the existing
+    `finding-union-blocker-dominance` aggregation policy). Never resolves
+    authority from reviewer/model count, ordering or similarity.
     """
     current = [item for item in facts if item["sha"] == live_subject]
     result: dict = {
         "current_subject": live_subject,
         "historical_facts": tuple(sorted(item["event_ref"] for item in facts if item["sha"] != live_subject)),
+        "historical_dispositions": tuple(
+            sorted(item["event_ref"] for item in dispositions if item["sha"] != live_subject)
+        ),
         "state": "NO_CURRENT_REVIEW",
         "judgment": None,
         "findings": (),
@@ -261,15 +309,24 @@ def reduce_current_aggregate(facts: list[dict], live_subject: str) -> dict:
         return result
 
     # §9.2 writer/admission/conformance gate: a current REVIEW_RESULT that
-    # reports material findings (non-PASS verdict, or any structured record)
-    # must carry a well-formed records projection; an opaque payload is not
-    # machine-reconstructible and fails closed instead of becoming a judgment.
+    # reports material findings (non-PASS verdict, any structured record, or a
+    # positive severity bucket) must carry a well-formed records projection
+    # whose per-severity counts exactly reconstruct the reported buckets; an
+    # opaque payload is not machine-reconstructible and fails closed instead of
+    # becoming a judgment.
     for item in current:
-        reports_material = item["status"] != "PASS" or bool(item["records"])
+        buckets = item.get("buckets")
+        reports_material = item["status"] != "PASS" or bool(item["records"]) or bool(buckets and any(buckets.values()))
         if not reports_material:
             continue
         if not item["records"] or any(not _record_well_formed(entry) for entry in item["records"]):
             return fail_closed("FAIL_CLOSED_NON_RECONSTRUCTIBLE_FINDING", (item["event_ref"],))
+        if buckets is not None:
+            for index, severity in enumerate(("P0", "P1", "P2", "P3")):
+                claimed = buckets.get(f"p{index}", 0)
+                reconstructed = sum(1 for entry in item["records"] if entry["severity"] == severity)
+                if claimed != reconstructed:
+                    return fail_closed("FAIL_CLOSED_NON_RECONSTRUCTIBLE_FINDING", (item["event_ref"],))
 
     grouped: dict[str, list[tuple[str, dict]]] = {}
     for item in current:
@@ -289,28 +346,80 @@ def reduce_current_aggregate(facts: list[dict], live_subject: str) -> dict:
         has_unlinked = any(not e.get("duplicate_of") for _, e in grouped[fid])
         if has_linked and has_unlinked:
             return fail_closed("FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE", (fid,))
+
+    # §9.2 post-hoc reconciliation: durable same-subject `review-finding-v1`
+    # DUPLICATE dispositions consumed as a separate fact stream. One finding id
+    # may carry exactly one disposition target; a disposition contradicting an
+    # in-emission `duplicate_of` link is competing, not latest-wins.
+    current_dispositions = sorted(
+        (d for d in dispositions if d["sha"] == live_subject),
+        key=lambda d: (d["finding_id"], d["event_ref"]),
+    )
+    disposition_link: dict[str, str] = {}
+    disposition_refs: dict[str, list[str]] = {}
+    for item in current_dispositions:
+        fid, target = item["finding_id"], item["duplicate_of"]
+        if fid == target:
+            return fail_closed("FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE", (fid,))
+        if fid in disposition_link and disposition_link[fid] != target:
+            return fail_closed("FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE", (fid,))
+        emission_target = next(
+            (entry["duplicate_of"] for _, entry in grouped.get(fid, ()) if entry.get("duplicate_of")),
+            None,
+        )
+        if emission_target is not None and emission_target != target:
+            return fail_closed("FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE", (fid,))
+        disposition_link[fid] = target
+        disposition_refs.setdefault(fid, []).append(item["event_ref"])
+
+    # Union-graph validation over emission + disposition links: every link must
+    # point at a known canonical finding of the same subject — no
+    # reconciliation of unknown ids, no self-links, no chains, no cycles.
+    combined: dict[str, str] = {}
+    for entries in grouped.values():
+        for _, entry in entries:
+            if entry.get("duplicate_of"):
+                combined[entry["finding_id"]] = entry["duplicate_of"]
+    for fid, target in disposition_link.items():
+        combined[fid] = target
+    for fid, target in sorted(combined.items()):
+        if fid not in grouped or target == fid or target not in grouped or target in combined:
+            return fail_closed("FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE", (fid, target))
+
+    target_severities_by_id = {fid: {entry["severity"] for _, entry in grouped[fid]} for fid in grouped}
+    target_classes_by_id = {fid: {entry["root_defect_class"] for _, entry in grouped[fid]} for fid in grouped}
     for target in sorted(duplicates):
-        # A valid target must exist and be canonical: a target that is itself
-        # `duplicate_of`-linked is a chain (or, with mutual links, a cycle).
-        if target not in grouped or target in linked_somewhere:
-            return fail_closed(
-                "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE",
-                (target, *(fid for fid, _, _ in duplicates[target])),
-            )
-        target_severities = {e["severity"] for _, e in grouped[target]}
-        target_classes = {e["root_defect_class"] for _, e in grouped[target]}
         for fid, _, entry in duplicates[target]:
-            if entry["severity"] not in target_severities or entry["root_defect_class"] not in target_classes:
+            if (
+                entry["severity"] not in target_severities_by_id[target]
+                or entry["root_defect_class"] not in target_classes_by_id[target]
+            ):
                 return fail_closed("FAIL_CLOSED_FINDING_CONFLICT", (fid, target))
 
-    # Merge fully-linked duplicate ids into their canonical target groups;
-    # by this point every remaining linked id is a pure duplicate source.
-    merged = {fid: list(entries) for fid, entries in grouped.items() if fid not in linked_somewhere}
+    # Merge: emission-linked ids first, then post-hoc disposition-reconciled
+    # ids; agreeing emission+disposition links are consumed once (provenance
+    # refs still recorded). Reconciliation never rewrites original facts.
+    merged = {
+        fid: list(entries)
+        for fid, entries in grouped.items()
+        if fid not in linked_somewhere and fid not in disposition_link
+    }
     duplicate_ids_by_target: dict[str, tuple[str, ...]] = {}
+    disposition_refs_by_target: dict[str, tuple[str, ...]] = {}
     for target in sorted(duplicates):
         duplicate_ids_by_target[target] = tuple(sorted(fid for fid, _, _ in duplicates[target]))
         merged.setdefault(target, list(grouped[target]))
         merged[target].extend((origin, entry) for _, origin, entry in duplicates[target])
+    for fid in sorted(disposition_link):
+        target = disposition_link[fid]
+        if fid not in linked_somewhere:
+            merged[target].extend(grouped[fid])
+        duplicate_ids_by_target[target] = tuple(
+            sorted(set(duplicate_ids_by_target.get(target, ())) | {fid})
+        )
+        disposition_refs_by_target[target] = tuple(
+            sorted(set(disposition_refs_by_target.get(target, ())) | set(disposition_refs.get(fid, ())))
+        )
 
     logical: list[dict] = []
     conflicts: list[str] = []
@@ -332,6 +441,7 @@ def reduce_current_aggregate(facts: list[dict], live_subject: str) -> dict:
                     sorted({ref for _, entry in group for ref in entry["evidence_refs"]})
                 ),
                 "duplicate_ids": duplicate_ids_by_target.get(finding_id, ()),
+                "disposition_refs": disposition_refs_by_target.get(finding_id, ()),
             }
         )
     if conflicts:
@@ -471,6 +581,18 @@ class FindingRecordContractTests(unittest.TestCase):
         self.assertIn("REQUIRED for new material findings", template)
         self.assertIn("never satisfy the new-writer contract", template)
         self.assertIn("duplicate_of", template)
+        self.assertIn("MUST equal the per-severity record counts", template)
+        self.assertIn("review-finding-v1` durable `DUPLICATE` disposition", template)
+
+    def test_template_example_is_bucket_record_consistent(self) -> None:
+        # R4 P1-1: the canonical writer fixture must satisfy its own MUST —
+        # bucket counts exactly reconstruct from the example's records.
+        block = template_review_example_block()
+        buckets, severities = parse_example_buckets_and_records(block)
+        self.assertTrue(buckets, "fixture must declare severity buckets")
+        self.assertTrue(severities, "fixture must declare records")
+        reconstructed = {f"p{index}": severities.count(f"P{index}") for index in range(4)}
+        self.assertEqual(buckets, reconstructed)
 
 
 class RootDefectClassBindingTests(unittest.TestCase):
@@ -872,6 +994,245 @@ class DeterministicAggregationTests(unittest.TestCase):
         self.assertIn("schemas/review-aggregation-v1.schema.json", subsection)
         self.assertIn("finding-union-blocker-dominance", subsection)
         self.assertIn("conflict_refs", subsection)
+
+
+class WriterBucketConsistencyTests(unittest.TestCase):
+    """R4 P1-1: positive severity buckets must reconstruct exactly from records."""
+
+    def test_positive_bucket_without_matching_record_fails_closed(self) -> None:
+        result = reduce_current_aggregate(
+            [fact("e-opaque", records=(record("RV-1", "P1"),), buckets={"p0": 0, "p1": 1, "p2": 1, "p3": 0})],
+            SUBJECT_A,
+        )
+        self.assertEqual(result["state"], "FAIL_CLOSED_NON_RECONSTRUCTIBLE_FINDING")
+        self.assertIsNone(result["judgment"])
+
+    def test_record_without_its_bucket_entry_fails_closed(self) -> None:
+        result = reduce_current_aggregate(
+            [fact("e-undercount", records=(record("RV-1", "P1"), record("RV-2", "P2")), buckets={"p1": 1, "p2": 0})],
+            SUBJECT_A,
+        )
+        self.assertEqual(result["state"], "FAIL_CLOSED_NON_RECONSTRUCTIBLE_FINDING")
+        self.assertIsNone(result["judgment"])
+
+    def test_consistent_buckets_reconstruct_and_duplicate_records_count(self) -> None:
+        result = reduce_current_aggregate(
+            [
+                fact(
+                    "e-writer",
+                    records=(
+                        record("RV-1", "P1"),
+                        record("RV-2", "P2", "TEST_FIXTURE_EVIDENCE_DEFECT"),
+                        record("RV-3", "P2", "TEST_FIXTURE_EVIDENCE_DEFECT", duplicate_of="RV-2"),
+                    ),
+                    buckets={"p0": 0, "p1": 1, "p2": 2, "p3": 0},
+                )
+            ],
+            SUBJECT_A,
+        )
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(result["judgment"], "CHANGES_REQUESTED")
+        self.assertEqual([entry["finding_id"] for entry in result["findings"]], ["RV-1", "RV-2"])
+        self.assertEqual(result["findings"][1]["duplicate_ids"], ("RV-3",))
+
+    def test_all_zero_buckets_without_records_stay_legal_for_pass(self) -> None:
+        result = reduce_current_aggregate(
+            [fact("e-clean", status="PASS", records=(), buckets={"p0": 0, "p1": 0, "p2": 0, "p3": 0})],
+            SUBJECT_A,
+        )
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(result["judgment"], "PASS")
+
+    def test_protocol_states_the_bucket_record_reconstruction_rule(self) -> None:
+        subsection = protocol_subsection("### 9.2 Machine finding records")
+        self.assertIn(
+            "A newly emitted event that reports severity bucket counts MUST be exactly reconstructible "
+            "from its own `records`",
+            subsection,
+        )
+        self.assertIn("bucket `pN` MUST equal the number of `records` entries with `severity: PN`", subsection)
+        self.assertIn("A positive bucket without a matching record is an opaque material finding", subsection)
+        self.assertIn("fails the current new-writer/aggregate conformance path", subsection)
+        self.assertIn("Duplicate records count in the emitting event's bucket counts", subsection)
+
+
+class PostHocDuplicateReconciliationTests(unittest.TestCase):
+    """R4 P1-2: durable same-subject review-finding-v1 DUPLICATE disposition path."""
+
+    def test_independent_unlinked_finding_reconciles_via_later_disposition(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),), operator_id="chatgpt-web:reviewer-r1"),
+            fact(
+                "e-r2",
+                records=(record("RV-7", "P1"),),
+                operator_id="claude-code:reviewer-r2",
+            ),
+        ]
+        dispositions = (disposition("d-1", "RV-7", "RV-1"),)
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(len(result["findings"]), 1)
+        converged = result["findings"][0]
+        self.assertEqual(converged["finding_id"], "RV-1")
+        self.assertEqual(converged["duplicate_ids"], ("RV-7",))
+        self.assertEqual(converged["disposition_refs"], ("d-1",))
+        self.assertEqual(
+            converged["provenance"],
+            ("chatgpt-web:reviewer-r1:e-r1", "claude-code:reviewer-r2:e-r2"),
+        )
+        self.assertEqual(result["unresolved_blocker_refs"], ("RV-1",))
+
+    def test_reconciliation_is_invariant_to_stream_order(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),), operator_id="chatgpt-web:reviewer-r1"),
+            fact("e-r2", records=(record("RV-7", "P1"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        dispositions = (disposition("d-1", "RV-7", "RV-1"),)
+        expected = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        stream = [("fact", item) for item in facts] + [("disp", item) for item in dispositions]
+        for ordering in itertools.permutations(stream):
+            order_facts = [item for kind, item in ordering if kind == "fact"]
+            order_disps = tuple(item for kind, item in ordering if kind == "disp")
+            with self.subTest(ordering=[item["event_ref"] for _, item in ordering]):
+                self.assertEqual(
+                    reduce_current_aggregate(order_facts, SUBJECT_A, order_disps),
+                    expected,
+                )
+
+    def test_unreconciled_independent_ids_stay_distinct(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),)),
+            fact("e-r2", records=(record("RV-7", "P1"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        result = reduce_current_aggregate(facts, SUBJECT_A, ())
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual([entry["finding_id"] for entry in result["findings"]], ["RV-1", "RV-7"])
+
+    def test_stale_cross_subject_disposition_never_reconciles(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),)),
+            fact("e-r2", records=(record("RV-7", "P1"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        dispositions = (disposition("d-stale", "RV-7", "RV-1", sha=SUBJECT_B),)
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual([entry["finding_id"] for entry in result["findings"]], ["RV-1", "RV-7"])
+        self.assertEqual(result["historical_dispositions"], ("d-stale",))
+
+    def test_competing_dispositions_fail_closed(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"), record("RV-2", "P2"))),
+            fact("e-r2", records=(record("RV-7", "P1"),), operator_id="claude-code:reviewer-r2"),
+        ]
+        dispositions = (
+            disposition("d-a", "RV-7", "RV-1"),
+            disposition("d-b", "RV-7", "RV-2"),
+        )
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+        self.assertIsNone(result["judgment"])
+
+    def test_disposition_contradicting_emission_link_fails_closed(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"), record("RV-2", "P2"))),
+            fact(
+                "e-r2",
+                records=(record("RV-7", "P1", "IMPLEMENTATION_DEFECT", duplicate_of="RV-1"),),
+                operator_id="claude-code:reviewer-r2",
+            ),
+        ]
+        dispositions = (disposition("d-1", "RV-7", "RV-2"),)
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+        self.assertIsNone(result["judgment"])
+
+    def test_disposition_agreeing_with_emission_link_converges_once(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),)),
+            fact(
+                "e-r2",
+                records=(record("RV-7", "P1", "IMPLEMENTATION_DEFECT", duplicate_of="RV-1"),),
+                operator_id="claude-code:reviewer-r2",
+            ),
+        ]
+        dispositions = (disposition("d-1", "RV-7", "RV-1"),)
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "CURRENT")
+        self.assertEqual(len(result["findings"]), 1)
+        converged = result["findings"][0]
+        self.assertEqual(converged["duplicate_ids"], ("RV-7",))
+        self.assertEqual(
+            converged["provenance"],
+            ("chatgpt-web:reviewer-r1:e-r1", "claude-code:reviewer-r2:e-r2"),
+        )
+        self.assertEqual(converged["disposition_refs"], ("d-1",))
+
+    def test_disposition_with_unknown_id_or_target_fails_closed(self) -> None:
+        base = [fact("e-r1", records=(record("RV-1", "P1"),))]
+        unknown_target = reduce_current_aggregate(
+            base, SUBJECT_A, (disposition("d-1", "RV-7", "RV-1"),)
+        )
+        self.assertEqual(unknown_target["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+        unknown_source = reduce_current_aggregate(
+            base, SUBJECT_A, (disposition("d-1", "RV-1", "RV-404"),)
+        )
+        self.assertEqual(unknown_source["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+        self_link = reduce_current_aggregate(
+            base, SUBJECT_A, (disposition("d-1", "RV-1", "RV-1"),)
+        )
+        self.assertEqual(self_link["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+
+    def test_disposition_chain_fails_closed(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1"),)),
+            fact("e-r2", records=(record("RV-7", "P1"),), operator_id="claude-code:reviewer-r2"),
+            fact("e-r3", records=(record("RV-8", "P1"),), operator_id="other:reviewer-r3"),
+        ]
+        dispositions = (
+            disposition("d-a", "RV-7", "RV-1"),
+            disposition("d-b", "RV-8", "RV-7"),
+        )
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "FAIL_CLOSED_AMBIGUOUS_EQUIVALENCE")
+        self.assertIsNone(result["judgment"])
+
+    def test_reconciled_pair_with_conflicting_classification_fails_closed(self) -> None:
+        facts = [
+            fact("e-r1", records=(record("RV-1", "P1", "IMPLEMENTATION_DEFECT"),)),
+            fact(
+                "e-r2",
+                records=(record("RV-7", "P3", "IMPLEMENTATION_DEFECT"),),
+                operator_id="claude-code:reviewer-r2",
+            ),
+        ]
+        dispositions = (disposition("d-1", "RV-7", "RV-1"),)
+        result = reduce_current_aggregate(facts, SUBJECT_A, dispositions)
+        self.assertEqual(result["state"], "FAIL_CLOSED_FINDING_CONFLICT")
+        self.assertIsNone(result["judgment"])
+
+    def test_protocol_states_the_durable_reconciliation_path(self) -> None:
+        subsection = protocol_subsection("### 9.2 Machine finding records")
+        self.assertIn("Emission and reconciliation are separate durable facts", subsection)
+        self.assertIn(
+            "a later durable `review-finding-v1` finding fact with `status: DUPLICATE`, "
+            "`resolution_code: DUPLICATE` and `duplicate_of: <canonical finding_id>`",
+            subsection,
+        )
+        self.assertIn("a disposition bound to another subject is stale history and is never consumed", subsection)
+        self.assertIn(
+            "Competing dispositions (one finding id linked to different targets), a disposition "
+            "contradicting an in-emission `duplicate_of` link",
+            subsection,
+        )
+        self.assertIn("never by latest-wins, ordering, majority or count", subsection)
+        self.assertIn("both provenance records stay in the converged finding", subsection)
+        aggregation = protocol_subsection("### 9.3 Deterministic aggregation")
+        self.assertIn(
+            "reconciliation may also arrive after emission as a durable same-subject `DUPLICATE` "
+            "disposition",
+            aggregation,
+        )
+        self.assertIn("without rewriting the original reviewer facts", aggregation)
 
 
 class OwnerBoundaryNegativeTests(unittest.TestCase):
