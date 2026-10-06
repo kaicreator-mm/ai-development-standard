@@ -37,7 +37,7 @@
     "execution_environment": {"type": "string", "enum": ["WEB", "LOCAL"], "description": "Coarse execution environment (WEB | LOCAL). Environment never implies authority and never substitutes for role, eligibility, capability, independence, exact-subject currentness or authorization. Provider/model identity is operator/capability provenance only (#861 bounded refinement)."},
     "compatibility_group": {"type": ["string", "null"], "minLength": 1, "description": "Optional non-default compatibility group participating in the derived protected claim key (slot 4 after normalization). Null/omitted means the __default__ group."},
     "compatibility_authority_ref": {"type": ["string", "null"], "minLength": 1, "description": "Durable resolvable higher-authority validation reference authorizing the non-default compatibility group. Required whenever compatibility_group is a non-default string; never downgraded to the __default__ group."},
-    "admission_generation": {"type": ["integer", "null"], "description": "Monotonic per-claim-key admission generation for CAS (non-negative integer). Reserve moves g to g+1; claim requires the current value; a stale value resolves STALE with zero canonical mutation; terminal states never decrement."},
+    "admission_generation": {"type": ["integer", "null"], "minimum": 0, "description": "Monotonic per-claim-key admission generation for CAS (non-negative integer, schema-enforced minimum 0). Reserve moves g to g+1; claim requires the current value; a stale value resolves STALE with zero canonical mutation; terminal states never decrement."},
     "scheduler_origin": {"type": "string", "enum": ["WEB", "LOCAL"], "description": "Request/writer provenance of the scheduling origin only. Never an input to the protected claim key, eligibility, or any authority decision."}
   },
   "allOf": [
@@ -85,9 +85,9 @@
       "if": {"properties": {"responsibility_mode": {"const": "RESPONSIBILITY_HANDOFF"}}, "required": ["responsibility_mode"]},
       "then": {"required": ["created_by"]}
     },
-      {
-        "if": {"properties": {"compatibility_group": {"type": "string", "minLength": 1}}, "required": ["compatibility_group"]},
-        "then": {"required": ["compatibility_authority_ref"]}
-      }
+    {
+      "if": {"properties": {"compatibility_group": {"type": "string", "minLength": 1}}, "required": ["compatibility_group"]},
+      "then": {"required": ["compatibility_authority_ref"]}
+    }
   ]
 }

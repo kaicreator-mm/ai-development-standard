@@ -508,6 +508,75 @@ def package_leaks(packaged_paths: Iterable[str], roots: Sequence[str] = EXECUTIO
 
 DEFAULT_COMPATIBILITY_GROUP = "__default__"
 
+ENVIRONMENT_PROFILE_CONTRADICTION = "ENVIRONMENT_PROFILE_CONTRADICTION"
+
+# A7: the historical profiles whose unambiguous legacy mapping projects the
+# coarse execution environment. PLATFORM_VALIDATOR/CLOSURE_VALIDATOR are
+# environment-orthogonal (A9/A10) and map through the explicit field only.
+EXECUTION_PROFILE_ENVIRONMENTS = {
+    "LOCAL_BUILDER": "LOCAL",
+    "LOCAL_VALIDATOR": "LOCAL",
+    "WEB_REVIEWER": "WEB",
+}
+
+ENVIRONMENT_ORTHOGONAL_PROFILES = ("PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR")
+
+
+def project_dispatch_environment(dispatch: Mapping[str, object]) -> str:
+    """A7/A8/A9/A10/FC1 projection verifier for one dispatch record.
+
+    Returns the routable execution environment: ``"LOCAL"``/``"WEB"`` for an
+    unambiguous profile (A7), the explicit environment for an
+    environment-orthogonal profile (A9), or ``"UNKNOWN"`` when the record is
+    not routable by environment (A10/FC1; never guessed). A current writer
+    whose explicit environment contradicts the unambiguous legacy mapping is
+    rejected with ``ENVIRONMENT_PROFILE_CONTRADICTION`` (A8) instead of being
+    silently reinterpreted. Malformed input fails closed.
+    """
+    profile = dispatch.get("execution_profile")
+    if not isinstance(profile, str) or not profile:
+        raise ValueError("execution_profile is required and must be a non-empty string")
+    environment = dispatch.get("execution_environment")
+    if environment is not None and environment not in ("WEB", "LOCAL"):
+        raise ValueError(f"invalid execution_environment: {environment!r}")
+    mapped = EXECUTION_PROFILE_ENVIRONMENTS.get(profile)
+    if mapped is not None:
+        if environment is not None and environment != mapped:
+            raise ValueError(
+                f"{ENVIRONMENT_PROFILE_CONTRADICTION}: execution_profile={profile!r} "
+                f"maps to execution_environment={mapped!r} but the writer supplied "
+                f"execution_environment={environment!r}; no silent reinterpretation"
+            )
+        return mapped
+    if profile in ENVIRONMENT_ORTHOGONAL_PROFILES:
+        return environment if environment is not None else "UNKNOWN"
+    return "UNKNOWN"
+
+
+def protected_claim_key_conforms(dispatch: Mapping[str, object]) -> bool:
+    """B5/B6: the persisted protected claim key is audit provenance, never trusted.
+
+    Returns True only when the dispatch carries no scheduler/user-supplied
+    ``claim_key`` authority field (B6: the key is reducer-derived only) and any
+    persisted ``protected_claim_key`` equals the deterministic re-derivation
+    from the dispatch identity (B5). Malformed identities fail closed to False.
+    """
+    if "claim_key" in dispatch:
+        return False
+    persisted = dispatch.get("protected_claim_key")
+    if persisted is None:
+        return True
+    try:
+        derived = derive_claim_key(
+            dispatch.get("repository"),
+            dispatch.get("task"),
+            dispatch.get("role"),
+            dispatch.get("compatibility_group"),
+        )
+    except (TypeError, ValueError):
+        return False
+    return persisted == derived
+
 
 def normalize_group(compatibility_group: object) -> str:
     """Normalize an omitted/null/empty compatibility group to ``__default__``.
@@ -602,7 +671,9 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
 
     Sorts by (derived protected claim key, dispatch_id). Malformed rows fail
     closed; the caller enforces the legacy-singular rule on the enclosing
-    state surface when more than one active row exists.
+    state surface when more than one active row exists. Exact subject refs
+    (``issue``/``pr``) are validated and carried through when present (W2 row
+    spec); they are never invented for rows that omit them.
     """
     rows: list[tuple[str, str, dict]] = []
     for entry in entries:
@@ -620,8 +691,13 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
             raise ValueError("active dispatch row missing repository")
         if not isinstance(task, str) or not task:
             raise ValueError("active dispatch row missing task")
+        row = dict(entry)
+        for ref_field in ("issue", "pr"):
+            ref = row.get(ref_field)
+            if ref is not None and (not isinstance(ref, str) or not re.fullmatch(r"#\d+", ref)):
+                raise ValueError(f"active dispatch row has invalid exact subject ref {ref_field}: {ref!r}")
         key = derive_claim_key(repository, task, str(role), entry.get("compatibility_group"))
-        rows.append((key, dispatch_id, dict(entry)))
+        rows.append((key, dispatch_id, row))
     rows.sort(key=lambda item: (item[0], item[1]))
     return [item[2] for item in rows]
 
