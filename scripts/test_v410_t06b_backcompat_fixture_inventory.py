@@ -1,16 +1,22 @@
 """V410-T06B verification: backcompat/golden/conformance fixture inventory integrity.
 
-Pure stdlib, no network. Run from the repository root:
+Pure stdlib, no network. Runnable from any working directory; repository-relative
+paths resolve against this script's repository root:
 
     python scripts/test_v410_t06b_backcompat_fixture_inventory.py
 
 Checks:
   1. HEAD is bound to base 30334e8c7b90a327f8597b86c88c785b98df07f7 either
-     exactly, or via additive-only drift limited to this unit's own allowed
-     write set (the execution pack directory and this script).
+     exactly, or by descending from it with additive-only drift limited to this
+     unit's own allowed write set (the execution pack directory and this script).
   2. Every fixture path listed in BACKCOMPAT_FIXTURE_INVENTORY.md exists.
   3. Every `python scripts/...` producer command entrypoint in the inventory exists.
   4. Prints fixture counts by kind.
+
+Because binding case 2 confines every difference from the pinned base to this
+unit's own additive write set, every path outside that set is byte-identical to
+the base tree, so checks 2 and 3 evaluate the same repository content they would
+have evaluated at the exact base.
 
 Exit non-zero on any failure; prints BACKCOMPAT_FIXTURE_INVENTORY_VERIFIED=PASS on success.
 """
@@ -24,9 +30,10 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
 BASE_SHA = "30334e8c7b90a327f8597b86c88c785b98df07f7"
 PACK_DIR = ".agent/execution/V410-T06B-LOCAL-BACKCOMPAT-FIXTURE-INVENTORY-R1"
-INVENTORY = Path(PACK_DIR) / "BACKCOMPAT_FIXTURE_INVENTORY.md"
+INVENTORY = ROOT / PACK_DIR / "BACKCOMPAT_FIXTURE_INVENTORY.md"
 SELF = "scripts/test_v410_t06b_backcompat_fixture_inventory.py"
 
 KINDS = ("backcompat", "golden", "conformance", "contract")
@@ -41,7 +48,7 @@ def fail(msg: str) -> None:
 
 def git(*args: str) -> str:
     return subprocess.run(
-        ["git", *args], capture_output=True, text=True, check=True
+        ["git", *args], cwd=ROOT, capture_output=True, text=True, check=True
     ).stdout.strip()
 
 
@@ -50,15 +57,25 @@ def check_head_binding() -> None:
     if head == BASE_SHA:
         print(f"HEAD binding: exact base {head}")
         return
-    # Additive-only drift: every path changed since base must belong to this unit.
+    # Additive-only drift: HEAD must descend from the pinned base, and every path
+    # changed since that base must belong to this unit's allowed write set.
+    descends = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", BASE_SHA, "HEAD"],
+        cwd=ROOT, capture_output=True, text=True,
+    ).returncode == 0
+    if not descends:
+        fail(f"HEAD {head} does not descend from base {BASE_SHA}")
+        return
     try:
-        changed = git("diff", "--name-only", f"{BASE_SHA}..{HEAD}").splitlines()
-    except subprocess.CalledProcessError:
-        changed = None
+        changed = git("diff", "--name-only", f"{BASE_SHA}..{head}").splitlines()
+    except subprocess.CalledProcessError as exc:
+        fail(f"could not diff {BASE_SHA}..{head}: {exc}")
+        return
+    if not changed:
+        print(f"HEAD binding: descendant {head} carries no drift from base {BASE_SHA}")
+        return
     allowed_prefix = PACK_DIR + "/"
-    if changed is not None and changed and all(
-        p.startswith(allowed_prefix) or p == SELF for p in changed
-    ):
+    if all(p.startswith(allowed_prefix) or p == SELF for p in changed):
         print(
             f"HEAD binding: additive-only drift from base "
             f"{BASE_SHA} to {head} (allowed write set only, {len(changed)} paths)"
@@ -105,11 +122,11 @@ def check_fixture_paths(paths: list[str]) -> tuple[int, int]:
     ok = 0
     for p in paths:
         if any(ch in p for ch in "*?["):
-            if glob.glob(p):
+            if glob.glob(str(ROOT / p)):
                 ok += 1
             else:
                 fail(f"fixture glob matched nothing: {p}")
-        elif Path(p).exists():
+        elif (ROOT / p).exists():
             ok += 1
         else:
             fail(f"fixture path missing: {p}")
@@ -120,7 +137,7 @@ def check_producer_commands(text: str) -> tuple[int, int]:
     commands = sorted(set(re.findall(r"python (scripts/[\w./_-]+\.py)", text)))
     ok = 0
     for cmd in commands:
-        if Path(cmd).is_file():
+        if (ROOT / cmd).is_file():
             ok += 1
         else:
             fail(f"producer entrypoint missing: {cmd}")
