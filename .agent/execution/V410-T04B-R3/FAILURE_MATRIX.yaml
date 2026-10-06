@@ -1,0 +1,23 @@
+task_id: V410-T04B
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, base/task/branch binding or pinned standard is malformed
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: integration base or material owner inputs drift before accepted repair claim
+    action: stop; controller classifies/rebinds
+  - id: P1_1_NOT_CLOSED
+    when: a newly emitted current material finding may still omit deterministic structured reconstruction data and satisfy current review aggregation
+    action: fail; keep repair open
+  - id: P1_2_NOT_CLOSED
+    when: same logical defect under different finding IDs lacks durable deterministic equivalence/disposition or ambiguity can be guessed
+    action: fail; keep repair open
+  - id: PARALLEL_AUTHORITY
+    when: repair introduces a second review/finding lifecycle, registry, majority rule, Validation or Release authority
+    action: stop and route to canonical owner
+  - id: LEGACY_PACK_LEAK
+    when: historical legacy V410-T04B six-file pack is reintroduced into the successor candidate
+    action: fail; remove historical pack leakage before gates
+  - id: OUT_OF_SCOPE
+    when: required change exceeds the bounded two-P1 repair concern
+    action: stop and route upward; do not widen task
