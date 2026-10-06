@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "task_id": "T09",
+  "purpose": "Version Closure input only; not Version Closure, Candidate Freeze, Release Qualification, Release READY, or merge authorization.",
+  "builder_source_baseline": {
+    "branch": "task/278-v45-cross-standard-conformance",
+    "commit_sha": "afa91a5db54a3121d839a9192f16466c2bc552d0",
+    "tree_sha": "041280f27af875bf6fca398d7719dad056b8fb3d",
+    "integration_target": "version/v4.5.0",
+    "task_pack_blob": "74ef948b63aeb0092b779788d91c7d6b3ffd550f"
+  },
+  "exact_candidate_binding": {
+    "status": "UNBOUND",
+    "candidate_sha": null,
+    "candidate_tree": null,
+    "evidence_location": "GitHub Issue #278, the T09 PR, and the distinct exact-current-target Integration Validation issue created after Builder HEAD finalization.",
+    "reason": "The exact candidate SHA/tree and tested current-target tuple are external evidence so recording them does not create an evidence-only successor HEAD."
+  },
+  "component_suites": [
+    "scripts/test_v45_runtime_observation_conformance.py",
+    "scripts/test_v45_incident_feedback_conformance.py",
+    "scripts/test_v45_maintenance_hotfix_conformance.py",
+    "scripts/test_v45_adoption_wiring.py"
+  ],
+  "negative_inference_families": [
+    "Deployment SUCCESS -> Runtime Healthy",
+    "health endpoint PASS -> business journey PASS",
+    "monitoring backend available -> product healthy",
+    "no alert -> no incident",
+    "incident recovered -> permanent defect fixed",
+    "RECOVERED -> VERIFIED",
+    "VERIFIED -> all follow-up complete",
+    "incident record -> rewrite earlier Release/Deployment evidence",
+    "incident closure -> erase prior events/follow-up",
+    "telemetry usefulness -> permission to persist secrets/PII",
+    "branch/tag exists -> version supported",
+    "backport/cherry-pick -> old exact-SHA Validation transfers",
+    "hotfix urgency -> release/validation truth waived",
+    "mitigation -> follow-up complete"
+  ],
+  "required_tuples": [
+    {
+      "id": "local-real-exact-current-target-integration",
+      "required": true,
+      "scope": "integration",
+      "executor_role": "NEW independent INTEGRATION_VALIDATOR",
+      "status": "NOT_RUN",
+      "requested_command": "python -B scripts/test_v45_runtime_observation_conformance.py && python -B scripts/test_v45_incident_feedback_conformance.py && python -B scripts/test_v45_maintenance_hotfix_conformance.py && python -B scripts/test_v45_adoption_wiring.py && python -B scripts/test_v45_cross_standard_conformance.py && python -B scripts/verify_standard.py",
+      "tested_identity": {
+        "candidate_sha": null,
+        "candidate_tree": null,
+        "target_sha": null,
+        "target_tree": null,
+        "combined_tree": null,
+        "environment_ref": null,
+        "commands_profile_ref": null,
+        "currentness": "NOT_RUN"
+      },
+      "evidence_ref": null
+    }
+  ],
+  "required_gates": [
+    {
+      "gate": "integration conformance regression",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence_ref": null
+    },
+    {
+      "gate": "exact-candidate integration Validation",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence_ref": null
+    },
+    {
+      "gate": "Fresh Independent Review",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence_ref": null
+    }
+  ],
+  "ci_observation": {
+    "profile": "GitHub Actions verify-standard / Python 3.12",
+    "status": "NOT_RUN",
+    "required_for_t09_gate": false,
+    "evidence_ref": null
+  },
+  "known_findings": [],
+  "closure_input_state": "BLOCKED",
+  "blocking_reason": "Exact candidate SHA/tree, required exact-current-target integration tuple, Integration Validation, and Fresh Independent Review are not yet established.",
+  "forbidden_builder_conclusions": [
+    "Candidate Freeze",
+    "Version Closure PASS",
+    "Release Qualification PASS",
+    "Release READY",
+    "merge-ready"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/deployment-plan-v1.schema.json",
+  "title": "AI Development Deployment Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "plan_id",
+    "artifact_ref",
+    "target_environment_ref",
+    "rollout_strategy",
+    "verification_profile_refs",
+    "rollback_or_forward_policy_ref",
+    "side_effect_authority_ref"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "plan_id": {"type": "string", "minLength": 1},
+    "artifact_ref": {"type": "string", "minLength": 1},
+    "target_environment_ref": {"type": "string", "minLength": 1},
+    "configuration_profile_ref": {"type": "string", "minLength": 1},
+    "secret_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "migration_transition_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "preflight_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "rollout_strategy": {"type": "string", "minLength": 1},
+    "verification_profile_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "rollback_or_forward_policy_ref": {"type": "string", "minLength": 1},
+    "side_effect_authority_ref": {"type": "string", "minLength": 1},
+    "operator_or_automation_ref": {"type": "string", "minLength": 1}
+  }
+}

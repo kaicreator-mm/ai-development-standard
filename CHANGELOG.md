@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.8.1 — Unreleased pre-v4.8 lineage recovery integration candidate
+
+v4.8.1 的血缘恢复集成候选：按 #805@5987352394 的 Path D 条件授权、#809@5989016307 的精确缺失/重叠/属主矩阵（经 BUILDER_MATRIX_AMENDMENT_1@6004888809 修正，并以 DELTA_RE_REVIEW PASS@6005027628 关闭 FRESH_MATRIX_REVIEW 门）与 #905 EXECUTION_CLAIM@6005038421，将四个合格语义前驱——`version/v4.4.0-sequential`（`7e162ad5e261890264ffd20d1583e6844cd6fa5a`）、`version/v4.5.0`（`4366c5fbc5a4965ccafed1e2134cc1886b432ac8`）、`version/v4.6.0`（`4ff6e1c42c61457abffc3f4bedf1169d1dfc9e99`）、`version/v4.7.0`（`d8f613127d0167453297a5a5e983de048607aa07`）——中当前 `main`（`92e4f764a2630a131d3f156b39f0f09064c9849e` / tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`）缺失的规范属主、machine contract、reference 与 focused verification 面，按路径逐 blob 忠实导入（77 个新增路径；另有 7 个引用路径在 `main` 中已存在且字节一致），并按 `MISSING_INVARIANT_COMPOSE_ONLY_MISSING_DELTA` 策略组合共享面。本条目只记录实际发生的组合事实，不产生任何 release/integration 断言。
+
+- **v4.4 Build/Distribution/Deployment 族**：3 个 normative owners（`BUILD_ARTIFACT`/`DISTRIBUTION`/`DEPLOYMENT_GOVERNANCE_STANDARD`）+ 4 个 machine contracts（`build-manifest-v1`/`artifact-promotion-v1`/`deployment-plan-v1`/`deployment-result-v1`）+ 3 个 references + 8 个 focused suites，逐字节原样导入，blob SHA 与 `version/v4.4.0-sequential` 一致。
+- **v4.5 Operations 族**：`INCIDENT_RECOVERY_FEEDBACK`/`MAINTENANCE_EOL_HOTFIX`/`OBSERVABILITY_RUNTIME_EVIDENCE` standards + 3 schemas + 3 references + 9 focused suites，逐字节原样导入。
+- **v4.6 AI-Native 族**：`CONTEXT_ENGINEERING`/`INTENT_ASSUMPTION_GOVERNANCE`/`SKILL_PROCEDURE_GOVERNANCE` standards + 2 schemas + 4 references + 8 focused suites，逐字节原样导入。
+- **v4.7 gate-evidence 族**：`V47_SEMANTIC_CONFORMANCE_MATRIX`/`V47_CLOSURE_CONFORMANCE_REFERENCE` + 4 focused suites + `scripts/v47_conformance.py`，逐字节原样导入。
+- **FIXTURE 证据随行**：恢复 suites 运行所需的版本级 evidence corpora（`docs/implementation/4.4.0`/`4.5.0`/`4.6.0`/`4.7.0` 下的 MIGRATION_ADOPTION、closure-inputs、dogfood corpora 与 v4.7 task-packs）作为 FIXTURE 随套件导入（沿用 `docs/implementation/4.3.0/dogfood/fixtures` 服务 `test_v43_conformance_dogfood.py` 的既有先例）；仍为 provenance evidence，不注册为 normative owner。
+- **共享面组合（compose-only-missing-delta）**：`checklists/project-init.md`、`checklists/pr-review.md`、`checklists/version-closure.md` 各回补 2 条 v4.7 血缘路由条目（canonical owner 经 `standard-manifest.json#semantic_authorities` 发现、incompatible convergence 路由至 `FUTURE_MAJOR_REGISTER`、v4.7 adoption/planning 文档非权威、兼容别名保全）；`templates/project/.dev-standard/PROJECT_OVERRIDES.md` 的 v4.8 Convergence Discovery 节回补 2 条 recovered v4.7 指针；`templates/golden/STANDARD_COVERAGE.json` 做覆盖并集（含 9 个恢复 standards 的 coverage 记录）并重组 `semantic_discovery` 块（`NON_AUTHORITATIVE_WIRING_ONLY`）。
+- **注册面接线（ADD-only，不新增 registry/owner/lifecycle）**：`standard-manifest.json` normative_standards 36→45、machine_contracts 25→34、references 23→33、verification 63→93；`semantic_authorities` 保持 11 条不变。
+- **身份面**：`VERSION=4.8.1`；README 现行版本行与顺序集成谱系声明更新；无任何 v4.4–v4.7 历史 release 身份回放，无历史 RQ 转移，版本保持单调（低于 v4.9.0）。
+- **无断言姿态**：本候选在其独立 INDEPENDENT_LOCAL_VALIDATION、GENUINELY_FRESH_REVIEW、Version Closure/Candidate Freeze/Private Hidden/Fresh Closeout/Release Qualification 与 `main` 集成完成前，不得视为已发布标准；#809 矩阵与各项评审结论只绑定各自 exact SHA/tree；历史候选的全部门禁结论 HISTORICAL_ONLY / NON_TRANSFERABLE；`v4.9.0` 身份与 Task 实现归 v4.9 Controller（#745），不受本组合影响。
+
 ## v4.8.0 — Unreleased sequential integration candidate
 
 v4.8.0 的顺序集成候选：按 #787@5981213563 的组合授权与 #705 Phase-1 先例，将 #787@5981189207 已完成 Release Qualification（`READY`，仅绑定该 exact SHA/tree）的 `version/v4.8.0` 冻结候选 `0ac1a3d43163271469811c2867ff684f680f7443`（tree `779fde0846ef775c31e8372f969534573aac72f5`）的语义增量忠实重放到 `main`（`f62930bd3512a463358b8b642b1bbc5993566940` / tree `6426f3e691bfc93ce3161c14b89031011fbfffb0`）之上，形成顺序集成 successor（merge-base `94cad2b0487e8a552c66d6bcd1cba36b7779383d`）。本条目只记录实际发生的组合事实，不产生任何 release/integration 断言。
