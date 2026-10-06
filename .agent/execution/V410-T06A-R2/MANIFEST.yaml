@@ -1,16 +1,18 @@
-pack_id: V410-T06A-R1
+pack_id: V410-T06A-R2
 task_id: V410-T06A
 repository: kaicreator-mm/ai-development-standard
 version: v4.10.0
 base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
 base_tree: 09db8216ec49caf84b45f404474cfbf4cb5e6ad2
+rebind_of: V410-T06A-R1
+rebind_reason: "R1 write set (manifest additive rows + registration) is machine-incompatible with carried frozen-inventory guards while TEST_MATRIX requires them PASS_UNMODIFIED; Option A adopted per BLOCKED terminal #860@6013810495"
 task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06A
 branch: task/v4.10.0-v410-t06a-owner-convergence
 parent_issue: "#860"
 agent_freedom: F1_BOUNDED_IMPLEMENTATION
 pinned_standard_revision: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
-generated_by: claude-code:zcode-glm-local-controller (V410-T06A-LOCAL-FINAL-REBIND-JIT-R1)
-generated_at: "2026-10-06T10:48:00+00:00"
+generated_by: claude-code:zcode-glm-local-controller (V410-T06A-LOCAL-PACK-REBIND-JIT-R2)
+generated_at: "2026-10-06T10:48:30+00:00"
 dependency_completion:
   - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
   - V410-T04B@eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
@@ -21,12 +23,35 @@ dependency_notes:
   - "V410-T04B: DONE_MERGED by PR #918 merge eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601; R4 gates PASS (#857@6012480047 Validator, #857@6013055900 Fresh Review)"
   - "V410-T05A: DONE_INTEGRATED by PR #902 merge 30334e8c7b90a327f8597b86c88c785b98df07f7"
   - "V410-T05B: DONE_NO_CHANGE_REQUIRED, closeout exact subject f1daaffb6ae3469dc0e77e881ed73e17e6586295"
+material_paths:
+  - standard-manifest.json
+  - references/
+  - scripts/
+  - standards/
 rebind_inputs:
   - "#860@6001754071 (R1 WEB JIT prep)"
   - "#860@6003285698/#860@6004011808/#860@6004281177/#860@6009822924 (R2-R5 partial rebinds)"
   - "#860@6012404321 (R6 WEB final-rebind checklist)"
   - "#860@6012773360 (LOCAL owner snapshot R1)"
   - "#860@6013406812 (WEB owner-convergence oracle R1)"
+  - "#860@6013701030 (JIT R1 terminal + Builder R1 dispatch)"
+  - "#860@6013793088 (PACK_INVALID corrective event)"
+  - "#860@6013810495 (Builder R1 BLOCKED terminal: write-set contradiction + Option A)"
+  - "#860@6014594214 (this rebind claim)"
+write_set_resolution:
+  adopted: OPTION_A_ZERO_MANIFEST_DELTA
+  surfaces:
+    - references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md (new; NOT manifest-registered)
+    - scripts/test_v410_owner_convergence.py (new; NOT manifest-registered; executes directly)
+  standard_manifest_delta: NONE
+  blocked_manifest_mutations:
+    - "semantic_authorities additive rows -> test_v48_registry_adoption.semantic_registry_problems exact-count guard"
+    - "sections.references registration -> test_v48_registry_adoption.section_conformance_problems exact-set guard"
+    - "sections.verification registration -> test_v48_registry_adoption.section_conformance_problems exact-set guard"
+  blocking_contract: scripts/test_v48_registry_adoption.py (RA-02/RA-05; PASS_UNMODIFIED per this pack's TEST_MATRIX)
+  authoritative_basis: "Frozen L2 #842 section 3 ('v4.10 extends that registry only when a material current owner is missing') is the v4.10 authorization for registry growth; the mechanical mechanism (frozen-inventory guard evolution) is T06B/#861 conformance-wiring territory, not a builder-side guard amendment"
+  routed_gap: REGISTRY_GROWTH_AND_FROZEN_INVENTORY_GUARD_EVOLUTION -> #861
+  evidence: "#860@6013810495 (reproduction commands + outputs); this pack's FAILURE_MATRIX class REGISTRY_GROWTH_BLOCKED"
 owner_blobs:
   standard-manifest.json: 21730a0251e35e13591d2c84de1c66d6ab2c2408
   standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md: e385102c7e8ea56068c7b3c7d517e169804069d0
@@ -55,11 +80,6 @@ legacy_classification:
   - scripts/test_v47_reference_conventions.py@bf6888bd0171f1d560766120eeeaa9ffc6802c05: CURRENT_CARRIED_FORWARD
   - standards/GITHUB_WORKFLOW.md@a96d9c186b21cc20726d9e4f60709ed173e77dac: COMPATIBILITY_ONLY (one-hop alias)
   - standards/VERSION_INTEGRATION_WORKFLOW.md@60e2bdee7f07c57bee17d792dc9c4e53bae514fb: COMPATIBILITY_ONLY (one-hop alias)
-material_paths:
-  - standard-manifest.json
-  - references/
-  - scripts/
-  - standards/
 core_artifacts:
   - MANIFEST.yaml
   - EXECUTION_CONTRACT.md
@@ -67,6 +87,8 @@ core_artifacts:
   - FAILURE_MATRIX.yaml
   - IMPLEMENTATION_MAP.md
   - REVIEW_CHECKLIST.md
+historical_packs:
+  - V410-T06A-R1@225ea4b02168d741024d930f42631a0c9baca1ba (metadata-corrected in place; superseded for execution by R2)
 retention: durable
 package_excluded: true
 pack_state_at_generation: PACK_CURRENT

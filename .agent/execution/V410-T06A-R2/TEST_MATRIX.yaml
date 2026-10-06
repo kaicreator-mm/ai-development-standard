@@ -1,0 +1,56 @@
+# V410-T06A R2 test matrix — all commands run from repo root on the exact candidate
+
+matrix:
+  - id: T-focused
+    command: python scripts/test_v410_owner_convergence.py
+    status: NEW
+    expect: PASS
+    covers: [P1, P2, P3, P4, P6, P8, P9, N1, N2, N3, N4, N5, N6, N7]
+    notes: executes against the real merged manifest + checkout; includes order-permutation resolution invariance, competing-owner mutants (both orders), stale-owner rejection mutant, guard-intactness probes and the manifest blob-identity zero-delta proof; no fixture-copy substitution
+  - id: T-registry
+    command: python scripts/test_v47_authority_registry.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P1, P3]
+  - id: T-aliases
+    command: python scripts/test_v47_compatibility_aliases.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P4]
+  - id: T-registry-adoption
+    command: python scripts/test_v48_registry_adoption.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P2, P3, P6, P7]
+    notes: RA-02/RA-05 frozen-inventory guards are the machine reason this rebind carries ZERO manifest delta; their unmodified PASS is the negative proof against unauthorized manifest mutation
+  - id: T-reference-conventions
+    command: python scripts/test_v47_reference_conventions.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P6, P7]
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P3, P10]
+    notes: verify_standard checks that declared paths exist; it does not require undeclared files to be registered, so the unregistered new reference/test keep it green (read scripts/verify_standard.py)
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+  - id: T-t04b-focus
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+    notes: proves no T04B owner-family regression from the T06A diff (zero expected interaction)
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED
+    expect: PASS
+    covers: [P10]
+provenance:
+  oracle: "#860@6013406812 (P10 CONFORMANCE_EXECUTION)"
+  rebind: "#860@6013810495 (write-set contradiction + Option A: zero manifest delta, gap recorded + routed to #861)"
+  baseline_behavior: carried suites PASS on base eea3e69 (pre-existing green); focused suite absent pre-change (negative guard)
