@@ -1,32 +1,35 @@
-pack_id: v4.8.0-T-015-94cad2b0
-task_id: T-015
+pack_id: v4.9.0-T-015-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
-base_sha: 94cad2b0487e8a552c66d6bcd1cba36b7779383d
-task_pack_ref: github:kaicreator-mm/ai-development-standard@94cad2b0487e8a552c66d6bcd1cba36b7779383d:docs/implementation/4.8.0/task-packs/T15_agent_capability_profile.md
-branch: task/v4.8.0-t15-agent-capability-profile
-parent_issue: "#522"
-agent_freedom: F1_BOUNDED_IMPLEMENTATION
-pinned_standard_revision: 94cad2b0487e8a552c66d6bcd1cba36b7779383d
-generated_by: chatgpt-web:v48-root-jit-controller
-generated_at: 2026-10-01T09:35:00Z
-dependency_completion: []
-material_paths:
-  - docs/implementation/4.8.0/task-packs/T15_agent_capability_profile.md
-  - docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-  - docs/implementation/4.8.0/L2_ARCHITECTURE_EVIDENCE.md
-  - standards/CI_RUNNER_CAPABILITY_STANDARD.md
-  - standards/MODEL_USAGE_POLICY.md
-  - schemas/agent-capability-profile-v1.schema.json
-  - scripts/test_v48_agent_capability_profile.py
-  - references/AGENT_CAPABILITY_PROFILE_REFERENCE.md
+version: 4.9.0
+task_id: T-015
+parent_issue: "#734"
+branch: task/v4.9.0-t15-integrated-dogfood
+base_sha: a4f1debe663813712d4f740ec70c14ca6342b0ac
+base_tree: 76e18763c525e357a14e2d21036e597b07151a91
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T15_integrated_dogfood.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG_SEQ_FULL]
+lineage_last_check_ref: "#805 recovery integrated (main 4c632256) + post-recovery recompose PR #909 merged (tip a4f1debe); LG_SEQ_FULL CURRENT (rebound validation #912 verified recovered families present)"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-015/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-015/ per the #792/#788 canonical-path scheme; no executable code reads that path
+native_blockers: 0
+review_policy: required
+validation_owner: integrated-dogfood-and-closure-handoff
+validation_scope: integration-exact-subject-dogfood-closure-handoff
+builder_write_set:
+  - docs/implementation/4.9.0/integration/INTEGRATION_DOGFOOD_REPORT.md
+  - docs/implementation/4.9.0/integration/RELEASE_EVIDENCE_HANDOFF.md
+  - scripts/test_v49_integrated_dogfood.py
 core_artifacts:
-  - MANIFEST.yaml
-  - EXECUTION_CONTRACT.md
-  - TEST_MATRIX.yaml
-  - FAILURE_MATRIX.yaml
-  - IMPLEMENTATION_MAP.md
-  - REVIEW_CHECKLIST.md
-retention: durable
+  - .agent/execution/T-015/MANIFEST.yaml
+  - .agent/execution/T-015/EXECUTION_CONTRACT.md
+  - .agent/execution/T-015/IMPLEMENTATION_MAP.md
+  - .agent/execution/T-015/TEST_MATRIX.yaml
+  - .agent/execution/T-015/FAILURE_MATRIX.yaml
+  - .agent/execution/T-015/REVIEW_CHECKLIST.md
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
 package_excluded: true
-pack_state_at_generation: PACK_CURRENT

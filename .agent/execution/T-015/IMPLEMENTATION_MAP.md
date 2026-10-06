@@ -1,7 +1,8 @@
 # T-015 Implementation Map
 
-Read first: T-015 Task Pack; v4.8 L3 T-015; Frozen L2 capability owner table; existing CI runner/host capability standard and v4.6 Skill governance; model usage policy.
+Builder writes only:
+1. `docs/implementation/4.9.0/integration/INTEGRATION_DOGFOOD_REPORT.md` — integrated dogfood report per EXECUTION_CONTRACT item 1 (predecessor identity check; journeys; reconciliation; downstream exercise per T-014 contract; bounded claims).
+2. `docs/implementation/4.9.0/integration/RELEASE_EVIDENCE_HANDOFF.md` — closure-consumable handoff per item 2.
+3. `scripts/test_v49_integrated_dogfood.py` — deterministic oracles per item 3. Style references (read-only): `test_v49_conformance_suite.py`, `test_v49_manual_reference_flow.py`, `test_v49_dogfood_audit_contract.py`.
 
-Create `schemas/agent-capability-profile-v1.schema.json`, `scripts/test_v48_agent_capability_profile.py`, and `references/AGENT_CAPABILITY_PROFILE_REFERENCE.md` only.
-
-Use refs/classes for infrastructure requirements rather than copied inventories. Keep claim metadata distinct from current availability, evidence strength, authorization and runtime health. No global scalar score or provider-specific mandatory vocabulary.
+Read-only inputs: all merged v4.9 task surfaces (T-002..T-014) at the base; recovered predecessor families; Frozen PRD §16; Frozen L2; T-014 `references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md` (the downstream contract to exercise); T-010 gate matrix; DAG v0.1 `### T-015`; L3 T-015 section.
