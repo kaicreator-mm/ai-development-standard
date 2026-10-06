@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 import re
 import unittest
@@ -370,8 +371,52 @@ class ProtocolSchemaTests(unittest.TestCase):
         self.assertTrue(any("state" in error for error in errors), errors)
 
 
+class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
+    """W9 extension: A11 byte-stable couplings + additive dispatch/state/event fields."""
+
+    def test_a11_profile_enum_and_role_couplings_are_byte_stable(self) -> None:
+        schema = load_schema("dispatch.schema.json")
+        assert_supported_schema(schema)
+        self.assertEqual(
+            schema["properties"]["execution_profile"]["enum"],
+            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"],
+        )
+        couplings = sorted(
+            json.dumps(c, sort_keys=True)
+            for c in schema["allOf"]
+            if "execution_profile" in c.get("if", {}).get("properties", {})
+        )
+        # 3 profile->role couplings, unchanged shape from the pre-T06B schema
+        self.assertEqual(len(couplings), 3)
+
+    def test_a12_handoff_environment_stays_the_validation_gate_field(self) -> None:
+        handoff = load_schema("local-agent-handoff.schema.json")
+        assert_supported_schema(handoff)
+        self.assertIn("execution_environment", handoff["properties"])
+        dispatch = load_schema("dispatch.schema.json")
+        self.assertEqual(dispatch["properties"]["execution_environment"]["enum"], ["WEB", "LOCAL"])
+
+    def test_new_dispatch_fields_are_additive_and_subset_conformant(self) -> None:
+        schema = load_schema("dispatch.schema.json")
+        assert_supported_schema(schema)
+        for name in ("execution_environment", "compatibility_group",
+                     "compatibility_authority_ref", "admission_generation", "scheduler_origin"):
+            self.assertIn(name, schema["properties"])
+        self.assertNotIn("execution_environment", schema["required"])
+        conditional = [c for c in schema["allOf"]
+                       if "compatibility_group" in c.get("if", {}).get("properties", {})]
+        self.assertEqual(conditional[0]["then"]["required"], ["compatibility_authority_ref"])
+
+    def test_event_schema_lineage_fields_are_additive_optional(self) -> None:
+        schema = load_schema("agent-event-v2.schema.json")
+        assert_supported_schema(schema)
+        for name in ("source_proposal_ref", "canonical_admission_ref", "scheduler_origin"):
+            self.assertIn(name, schema["properties"])
+            self.assertNotIn(name, schema.get("required", []))
+
+
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(
-        unittest.defaultTestLoader.loadTestsFromTestCase(ProtocolSchemaTests)
+        unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     )
     raise SystemExit(0 if result.wasSuccessful() else 1)
