@@ -17,7 +17,15 @@ The T06A Task Pack requires gates of "manifest/reference/discovery verification 
 
 ### CLASS_1 — Central manifest (`standard-manifest.json`)
 
-Owner of the central manifest/discovery write surface per Task Pack. Contains: `sections` (authority / normative_standards / compatibility_entries / templates / checklists / prompts / machine_contracts / profiles / references / verification / **discovery_standards** / **registries**), `semantic_authorities` metadata (11 entries, each with exactly one `canonical_owner_ref` and optional `compatibility_alias_refs`), and `state_dimensions` metadata.
+Owner of the central manifest/discovery write surface per Task Pack. Its structural key surface at base is stated here as a machine-checked assertion, because a prose enumeration is exactly what drifts silently:
+
+```text
+top_level_keys = schema_version description sections semantic_authorities
+section_keys = authority normative_standards compatibility_entries templates checklists prompts machine_contracts profiles references verification discovery_standards registries
+semantic_authority_entry_fields = schema_version entry_id semantic_concern canonical_owner_ref applicability_posture compatibility_alias_refs
+```
+
+`semantic_authorities` holds 11 entries, each with exactly one string `canonical_owner_ref`; `compatibility_alias_refs` is present on `development-lifecycle` and `github-agent-coordination` only. State-dimension metadata is **not** carried by this manifest: it lives in the separate registry `registries/state-dimensions-v1.json` (`dimensions[]`), which the manifest reaches only through `sections.registries`. `scripts/test_v410_t06a_test_command_map.py` re-derives the three key lists above from `standard-manifest.json` and fails on any mismatch.
 
 - `python scripts/verify_standard.py` — manifest ↔ disk inventory verification incl. code-owned bootstrap set (fails if a listed file is missing or an unlisted file shadows; observed PASS at base: 220 manifest files, 41 bootstrap-required files).
 - `python scripts/test_verify_standard.py` — negative/self tests for the manifest verifier (observed PASS).
@@ -75,7 +83,7 @@ Owner of the central manifest/discovery write surface per Task Pack. Contains: `
 
 ## Gap dispositions (explicit, no silent omissions, no opportunistic repair)
 
-1. **No T06A-dedicated successor test exists at base** (`scripts/test_v410_t06a_*.py` absent). Expected: T06A has not executed. Disposition: T06A execution (or its campaign successor) adds its focused suite under its own pack; this map does not create it.
+1. **No T06A-dedicated concern suite exists at base** (the base tree `eea3e69` contains no `scripts/test_v410_t06a_*.py`). The only file matching that glob on this candidate is this preparation unit's own map verifier, `scripts/test_v410_t06a_test_command_map.py`, which checks pack and citation integrity and asserts nothing about T06A semantics. Expected: T06A has not executed. Disposition: T06A execution (or its campaign successor) adds its focused suite under its own pack; this map does not create it.
 2. **Sibling preparation pack `V410-T06A-LOCAL-OWNER-SNAPSHOT-R1` is not integrated** (its worktree holds only untracked pack files on base `30334e8`; no commit/PR). This map does not depend on it and recomputes all facts from base `eea3e69`.
 3. **Base drift vs sibling units**: siblings pinned `30334e8` (T05A-R3); this unit pins `eea3e69` (adds T04B R3/R4 repair, PR #918). Any consumer of sibling-unit preparation evidence must rebind to the T06A execution subject; drift is recorded in `FAILURE_MATRIX.yaml` (`CURRENTNESS_DRIFT`), not repaired here.
 4. **`_legacy/` absent on this line** (see CLASS_4). Disposition: base-tree fact; legacy classification at T06A execution time must enumerate `.agent/execution/T-*` packs and compatibility entries as the reachable legacy surface on the exact subject, and re-check whether `_legacy/` appears on the final integration subject.

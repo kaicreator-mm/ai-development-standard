@@ -19,6 +19,7 @@ Review target: branch `task/v4.10.0-v410-t06a-local-test-command-map-r1` @ `eea3
 - [ ] Every command row in `TEST_COMMAND_MAP.md` exists at base under `scripts/`.
 - [ ] Surface citations exist: `standard-manifest.json`, `standards/REFERENCE_CONVENTION_STANDARD.md`, `references/REFERENCE_CONVENTION_REFERENCE.md`, `references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md`, `references/PROGRESSIVE_DISCLOSURE_ROUTING.md`, `references/STATE_DIMENSION_REGISTRY_REFERENCE.md`, `registries/state-dimensions-v1.json`.
 - [ ] Negative stale-owner coverage is real: `test_v47_compatibility_aliases.py` contains silent-removal, unindexed-legacy-alias, unknown-alias, and alias-not-owner rows.
+- [ ] CLASS_1's three machine-checked key lists (`top_level_keys`, `section_keys`, `semantic_authority_entry_fields`) match `standard-manifest.json` exactly, and the map does not attribute state-dimension metadata to the manifest (it is the separate registry `registries/state-dimensions-v1.json`). The R1 repair note in `IMPLEMENTATION_MAP.md` records the earlier misattribution.
 - [ ] Gap dispositions are explicit (five rows); none silently drops a surface.
 - [ ] `resolve_standard_read_set.py` is not cited as a standalone gate command.
 

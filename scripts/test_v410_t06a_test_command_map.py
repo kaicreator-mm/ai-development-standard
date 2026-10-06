@@ -105,6 +105,31 @@ class TestCommandMapVerifier(unittest.TestCase):
         for rel in GATE_COMMANDS:
             self.assertIn(rel, self.map_text, f"command not cited in map: {rel}")
 
+    def test_class1_manifest_key_surface_matches_manifest(self) -> None:
+        """CLASS_1 must state the manifest key surface as lists that match the real manifest.
+
+        A prose enumeration of manifest keys is what let an earlier revision
+        attribute `state_dimensions` to the manifest when it is a separate
+        registry; these lists are re-derived from the manifest and compared.
+        """
+        class1 = self.map_text.split("### CLASS_1")[1].split("### CLASS_2")[0]
+        claimed = {}
+        for key in ("top_level_keys", "section_keys", "semantic_authority_entry_fields"):
+            match = re.search(rf"^{key} = (.+)$", class1, re.MULTILINE)
+            self.assertIsNotNone(match, f"CLASS_1 does not state {key}")
+            claimed[key] = match.group(1).split()
+
+        entry_fields: list[str] = []
+        for entry in self.manifest["semantic_authorities"]["entries"]:
+            for name in entry:
+                if name not in entry_fields:
+                    entry_fields.append(name)
+
+        self.assertEqual(claimed["top_level_keys"], list(self.manifest.keys()))
+        self.assertEqual(claimed["section_keys"], list(self.manifest["sections"].keys()))
+        self.assertEqual(claimed["semantic_authority_entry_fields"], entry_fields)
+        self.assertNotIn("state_dimensions", self.manifest)
+
     def test_negative_stale_owner_coverage_is_real(self) -> None:
         lowered = self.map_text.lower()
         self.assertIn("negative stale-owner", lowered)
