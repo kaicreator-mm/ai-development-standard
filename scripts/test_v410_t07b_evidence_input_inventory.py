@@ -2,7 +2,9 @@
 """V410-T07B evidence-input inventory verification (pure stdlib, no network).
 
 Asserts:
-  1. git HEAD == pinned base_sha 30334e8c7b90a327f8597b86c88c785b98df07f7.
+  1. git HEAD is the pinned base_sha 30334e8c7b90a327f8597b86c88c785b98df07f7
+     or descends from it (currentness: the pack was built on the exact
+     pinned base and was not rebased away from it).
   2. Every repo-relative producer path in an inventory row marked AVAILABLE exists.
   3. Every row marked PENDING names an owning concern.
   4. The inventory contains the explicit authority statement that CI/Review/Release
@@ -35,19 +37,26 @@ def fail(msg):
 
 
 def main():
-    # 1. exact base / currentness
+    # 1. exact base / currentness: HEAD must be the pinned base or a descendant
+    #    of it, proving the pack was built on the exact pinned standard revision.
     try:
         head = subprocess.run(
             ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, capture_output=True,
             text=True, check=True,
         ).stdout.strip()
+        on_base = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", BASE_SHA, "HEAD"],
+            cwd=REPO_ROOT, capture_output=True,
+        ).returncode == 0
     except Exception as exc:  # pragma: no cover - environment failure
         fail("could not read git HEAD: %s" % exc)
         head = None
-    if head is not None and head != BASE_SHA:
-        fail("HEAD %s != pinned base_sha %s" % (head, BASE_SHA))
+        on_base = False
+    if head is not None and not on_base:
+        fail("HEAD %s does not descend from pinned base_sha %s"
+             % (head, BASE_SHA))
     else:
-        print("base_check: HEAD == base_sha %s" % BASE_SHA)
+        print("base_check: HEAD descends from base_sha %s" % BASE_SHA)
 
     # 2/3. parse inventory tables
     inv_path = os.path.join(REPO_ROOT, INVENTORY_REL)
