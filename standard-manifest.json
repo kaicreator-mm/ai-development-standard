@@ -173,7 +173,8 @@
       "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
       "references/REFERENCE_CONVENTION_REFERENCE.md",
       "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
-      "references/V48_REGISTRY_ADOPTION_REFERENCE.md"
+      "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
+      "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -238,7 +239,10 @@
       "scripts/test_v47_progressive_disclosure.py",
       "scripts/test_v47_reference_conventions.py",
       "scripts/test_v47_state_dimension_registry.py",
-      "scripts/test_v48_registry_adoption.py"
+      "scripts/test_v48_registry_adoption.py",
+      "scripts/test_v410_owner_convergence.py",
+      "scripts/test_v410_t06b_multi_dispatch_conformance.py",
+      "scripts/test_v410_t06b_core_inventory.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
@@ -331,6 +335,48 @@
         "entry_id": "agent-capability-evidence",
         "semantic_concern": "execution.agent_capability_evidence",
         "canonical_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "task-decomposition",
+        "semantic_concern": "task.decomposition_and_granularity",
+        "canonical_owner_ref": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "task-dag-governance",
+        "semantic_concern": "task.dag_mutation_and_currentness",
+        "canonical_owner_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "execution-pack",
+        "semantic_concern": "execution.pack_contract_and_classification",
+        "canonical_owner_ref": "standards/EXECUTION_PACK_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "implementation-quality",
+        "semantic_concern": "implementation.quality_and_maintainability",
+        "canonical_owner_ref": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "interface-compatibility",
+        "semantic_concern": "interface.public_contract_compatibility",
+        "canonical_owner_ref": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "project-adoption",
+        "semantic_concern": "project.adoption_routing",
+        "canonical_owner_ref": "standards/PROJECT_ADOPTION.md",
         "applicability_posture": "MATERIALITY_DRIVEN"
       }
     ]
