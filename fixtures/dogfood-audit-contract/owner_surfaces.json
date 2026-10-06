@@ -49,8 +49,6 @@
     "references/AGENT_CAPABILITY_PROFILE_REFERENCE.md",
     "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
     "scripts/test_v49_release_applicability.py",
-    "scripts/test_v49_gate_currentness.py",
-    "scripts/test_v49_execution_core.py",
     "registries/state-dimensions-v1.json",
     "docs/implementation/4.9.0/PRD.md",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
@@ -58,6 +56,10 @@
     "docs/implementation/4.9.0/task-packs/T14_dogfood_audit_contract.md",
     "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md"
   ],
+  "rebounded_since_base": {
+    "scripts/test_v49_gate_currentness.py": "32519ca9d63bea335a6f71a89297ae2b25351751",
+    "scripts/test_v49_execution_core.py": "5ed17b4144fab88e3ce6ca88a70b23288c87b9a9"
+  },
   "owner_sentences_must_not_be_copied": [
     "The independent auditor cannot be the orchestrator/Builder principal for the tested decisions.",
     "The baseline is the legal workflow under the project's bound authority without the tested v4.9 proportional decision, not an invented maximum ceremony strawman.",

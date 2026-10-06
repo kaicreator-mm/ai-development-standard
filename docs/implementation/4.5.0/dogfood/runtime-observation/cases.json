@@ -1,0 +1,28 @@
+{
+  "evidence_level": "COMMITTED_FIXTURE_ONLY_NOT_REAL_RUNTIME",
+  "cases": [
+    {"id":"dimensioned-positive","expect":"FIXTURE_CONFORMANT","expected_subject":{"artifact_ref":"sha256:fixture-artifact-01","deployment_ref":"ref:deployment-01","environment_ref":"ref:environment-01","configuration_profile_ref":"ref:config-01","signal_source_ref":"ref:telemetry-01","observation_window":{"start_ref":"2026-09-30T12:00:00Z","end_ref":"2026-09-30T12:05:00Z"}},"observation":{"schema_version":1,"observation_id":"fixture-01","artifact_ref":"sha256:fixture-artifact-01","deployment_ref":"ref:deployment-01","environment_ref":"ref:environment-01","configuration_profile_ref":"ref:config-01","observation_window":{"start_ref":"2026-09-30T12:00:00Z","end_ref":"2026-09-30T12:05:00Z"},"signal_refs":["ref:health-01","ref:liveness-01","ref:resource-01","ref:errors-01","ref:business-01"],"evidence_refs":["ref:redacted-evidence-01"]},"required_dimensions":["health/readiness","liveness","performance/resource","error/failure","business/domain"],"signals":[{"ref":"ref:health-01","source_ref":"ref:telemetry-01","dimension":"health/readiness","state":"OBSERVED","observed_at":"2026-09-30T12:01:00Z"},{"ref":"ref:liveness-01","source_ref":"ref:telemetry-01","dimension":"liveness","state":"OBSERVED","observed_at":"2026-09-30T12:01:00Z"},{"ref":"ref:resource-01","source_ref":"ref:telemetry-01","dimension":"performance/resource","state":"OBSERVED","observed_at":"2026-09-30T12:02:00Z"},{"ref":"ref:errors-01","source_ref":"ref:telemetry-01","dimension":"error/failure","state":"OBSERVED","observed_at":"2026-09-30T12:03:00Z"},{"ref":"ref:business-01","source_ref":"ref:telemetry-01","dimension":"business/domain","state":"OBSERVED","observed_at":"2026-09-30T12:04:00Z"}]},
+    {"id":"custom-label-positive","copy":"dimensioned-positive","expect":"FIXTURE_CONFORMANT","overrides":{"project_dimensions":["project/checkout"],"required_dimensions":["project/checkout"],"signals":[{"ref":"ref:health-01","source_ref":"ref:telemetry-01","dimension":"project/checkout","state":"OBSERVED","observed_at":"2026-09-30T12:01:00Z"}],"observation.signal_refs":["ref:health-01"]}},
+    {"id":"artifact-mismatch","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.artifact_ref":"sha256:other"}},
+    {"id":"deployment-mismatch","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.deployment_ref":"ref:other-deployment"}},
+    {"id":"environment-mismatch","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.environment_ref":"ref:other-environment"}},
+    {"id":"source-mismatch","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"signals.0.source_ref":"ref:other-backend"}},
+    {"id":"config-mismatch","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.configuration_profile_ref":"ref:other-config"}},
+    {"id":"time-conflict","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"signals.0.observed_at":"2026-09-30T12:10:00Z"}},
+    {"id":"unknown-window","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.observation_window.end_ref":"unknown"}},
+    {"id":"required-source-unavailable","copy":"dimensioned-positive","expect":"NOT_RUN","overrides":{"signals.0.state":"UNAVAILABLE"}},
+    {"id":"backend-reachable-only","copy":"dimensioned-positive","expect":"NOT_RUN","overrides":{"signals.0.state":"BACKEND_REACHABLE"}},
+    {"id":"no-alert-only","copy":"dimensioned-positive","expect":"NOT_RUN","overrides":{"signals.0.state":"NO_ALERT"}},
+    {"id":"deployment-not-health","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"DEPLOYMENT_SUCCESS_IS_HEALTHY"}},
+    {"id":"health-not-business","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"HEALTH_IS_BUSINESS_PASS"}},
+    {"id":"monitor-not-health","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"BACKEND_REACHABLE_IS_HEALTHY"}},
+    {"id":"quiet-not-health","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"NO_ALERT_IS_HEALTHY"}},
+    {"id":"observation-not-validation","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"RUNTIME_OBSERVATION_IS_VALIDATION_PASS"}},
+    {"id":"observation-not-release","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"RUNTIME_OBSERVATION_IS_RELEASE_READY"}},
+    {"id":"observation-not-task","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"attempted_inference":"RUNTIME_OBSERVATION_IS_TASK_DONE"}},
+    {"id":"qualified-history","copy":"dimensioned-positive","expect":"FIXTURE_CONFORMANT","overrides":{"historical":true,"historical_qualification_ref":"ref:historical-adoption-01"}},
+    {"id":"unqualified-history","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"historical":true}},
+    {"id":"retroactive-history","copy":"dimensioned-positive","expect":"REJECT_INFERENCE","overrides":{"historical":true,"historical_qualification_ref":"ref:historical-adoption-01","attempted_inference":"HISTORICAL_RETROACTIVE_PASS"}},
+    {"id":"missing-identity","copy":"dimensioned-positive","expect":"BLOCKED","overrides":{"observation.observation_id":""}}
+  ]
+}

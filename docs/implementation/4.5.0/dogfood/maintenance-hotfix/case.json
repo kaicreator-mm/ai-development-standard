@@ -1,0 +1,57 @@
+{
+  "fidelity": "CONTROLLED_DISPOSABLE_GIT_NOT_PROJECT_MAINTENANCE",
+  "policy_id": "fixture-policy-v2-security-only",
+  "product_ref": "fixture://demo-service",
+  "source_branch": "main",
+  "source_sha": "d95e55c1d0cda233c648f01e7adc079181c68cba",
+  "target_support_line": "maintenance/v2",
+  "target_baseline_sha": "fda33c596039f19f124be57053c07c76806572bf",
+  "result_sha": "5488dd2e24b9d1ef38d6d6212b0198ddabb31ac0",
+  "change_class": "security-fix",
+  "owner_ref": "fixture://demo-service/owner/maintenance-team",
+  "source_evidence_claim": {
+    "subject_sha": "d95e55c1d0cda233c648f01e7adc079181c68cba",
+    "status": "PASS",
+    "evidence_ref": "fixture://source-only-claim-not-transferable",
+    "environment_ref": "fixture://main-only",
+    "authority_ref": "fixture://claim-not-independent-proof"
+  },
+  "fixture_testing": {
+    "subject_sha": "5488dd2e24b9d1ef38d6d6212b0198ddabb31ac0",
+    "fidelity": "DISPOSABLE_GIT_FIXTURE_ONLY",
+    "command": "python3 -m unittest scripts/test_v45_maintenance_hotfix_conformance.py -v",
+    "assertion": "actual result Git tree has security_bug=patched and matches source patch; test result recorded only at execution"
+  },
+  "backport_preparation": {
+    "status": "FIXTURE_ONLY"
+  },
+  "real_backport_completion": {
+    "status": "NOT_RUN"
+  },
+  "real_project_result_validation": {
+    "status": "NOT_RUN",
+    "subject_sha": null,
+    "evidence_ref": null
+  },
+  "fresh_independent_review": {
+    "status": "NOT_RUN"
+  },
+  "release_qualification": {
+    "status": "NOT_RUN"
+  },
+  "deployment_result": {
+    "status": "NOT_RUN"
+  },
+  "fast_path": {
+    "waived_optional_ceremony": [
+      "batch-scheduling"
+    ],
+    "required_gates": [
+      "exact-result-testing",
+      "exact-result-validation",
+      "fresh-independent-review",
+      "release-qualification",
+      "rollback-when-applicable"
+    ]
+  }
+}

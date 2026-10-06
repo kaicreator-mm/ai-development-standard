@@ -11,12 +11,14 @@
   },
   "candidate": {
     "version_ref": "ai-dev/dispatch-v1",
-    "sha_or_digest": "git-blob:7259cb357d71c90db683af2533c3dee4733a8e17"
+    "sha_or_digest": "git-blob:123a66223f6dea42966c4a181dae3cc0776c3ba3"
   },
   "change_operations": [
     "add-optional-assurance-currentness-ref",
     "add-optional-role-profile-ref",
-    "add-optional-jit-phase-ref"
+    "add-optional-jit-phase-ref",
+    "add-optional-intent-assumption-refs",
+    "add-optional-skill-metadata-refs"
   ],
   "dimensions": [
     {

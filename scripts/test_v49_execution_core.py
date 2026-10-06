@@ -60,8 +60,15 @@ READ_ONLY_DEPS = (
 # 4607f6cb@base -> candidate 7259cb35). The stale "unchanged since base" pin is
 # re-bound to an exact current-blob identity pin below; pin constant only —
 # any further mutation of the surface still fails, zero other assertion change.
+#
+# Post-recovery recompose re-bind (#805 POST_RECOVERY_EXACT_RECOMPOSE, #745):
+# the recovery-integrated main merge (4c632256) legally carries the recovered
+# v4.6 dispatch wiring (+2 optional array fields intent_assumption_refs /
+# skill_metadata_refs, composed as a field union with the T-008 ref fields).
+# The pin is re-bound to the exact current composed blob; pin constant only —
+# any further mutation of the surface still fails, zero other assertion change.
 READ_ONLY_DEPS_REBOUND_BLOBS = {
-    "schemas/dispatch.schema.json": "7259cb357d71c90db683af2533c3dee4733a8e17",
+    "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
 }
 
 PLANNING_PATHS = tuple(

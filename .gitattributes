@@ -1,0 +1,10 @@
+# Byte-exact evidence corpora: no EOL conversion (hash-bound fixtures).
+# Added by v4.8.1 lineage recovery composition (#905) so restored verifiers
+# reproduce the recorded digests on checkout regardless of core.autocrlf.
+docs/implementation/4.4.0/dogfood/** -text
+docs/implementation/4.5.0/dogfood/** -text
+docs/implementation/4.6.0/dogfood/** -text
+docs/implementation/4.7.0/dogfood/** -text
+docs/implementation/4.4.0/closure-inputs/** -text
+docs/implementation/4.5.0/closure-inputs/** -text
+.agent/execution/_legacy/** -text
