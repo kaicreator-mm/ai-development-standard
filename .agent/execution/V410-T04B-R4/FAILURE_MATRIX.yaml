@@ -1,0 +1,21 @@
+task_id: V410-T04B
+repair_round: R4
+failure_classes:
+  - id: PACK_INVALID
+    when: canonical core inventory or exact binding is malformed
+    action: stop before claim/mutation
+  - id: CURRENTNESS_DRIFT
+    when: integration base, repair base, owner blobs or PR head drift before claim
+    action: stop and rebind
+  - id: WRITER_BUCKET_RECORD_MISMATCH
+    when: current/new event positive severity buckets are not exactly reconstructible from accepted records
+    action: fail closed; repair remains open
+  - id: POSTHOC_DUPLICATE_NOT_CONSUMABLE
+    when: later durable DUPLICATE disposition cannot reconcile prior independent finding ids
+    action: fail closed; repair remains open
+  - id: AMBIGUOUS_DUPLICATE_DISPOSITION
+    when: competing/cyclic/stale/cross-subject duplicate relations exist
+    action: fail closed; no latest-wins/majority guess
+  - id: AUTHORITY_EXPANSION
+    when: repair introduces lifecycle/registry/Validation/Release/T04A/T02B authority
+    action: stop and route to owner
