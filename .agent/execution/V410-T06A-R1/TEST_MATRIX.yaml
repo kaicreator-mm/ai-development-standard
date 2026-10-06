@@ -32,7 +32,7 @@ matrix:
     status: CARRIED
     expect: PASS_UNMODIFIED
     covers: [P3, P10]
-    notes: 220 manifest files + token assertions; new reference/test must be registered (manifest sections + verification) before this passes
+    notes: 220 manifest files + token assertions; registration of the new surfaces is NOT required for this command to pass (corrected — see corrections below)
   - id: T-protocol-schemas
     command: python scripts/test_protocol_schemas.py
     status: CARRIED
@@ -48,3 +48,27 @@ matrix:
 provenance:
   oracle: "#860@6013406812 (P10 CONFORMANCE_EXECUTION)"
   baseline_behavior: carried suites PASS on base eea3e69 (pre-existing green); focused suite absent pre-change (negative guard)
+corrections:
+  - round: V410-T06A-PACK-REBIND-R2
+    date: "2026-10-06"
+    class: FALSE_MACHINE_CONFORMANCE_CLAIM
+    subject: "matrix[T-manifest].notes"
+    was: >-
+      220 manifest files + token assertions; new reference/test must be registered
+      (manifest sections + verification) before this passes
+    is: >-
+      220 manifest files + token assertions; registration of the new surfaces is NOT required
+      for this command to pass
+    basis: >-
+      scripts/verify_standard.py at base eea3e69 verifies that manifest-declared paths exist
+      and that bootstrap-required assets are declared; it performs no undeclared-file scan.
+      Measured on the T06A candidate: PASS, manifest files 220, both new surfaces unregistered.
+    resolution: >-
+      Registration is machine-blocked by the carried v4.8 RA-05 section/additions guards
+      (scripts/test_v48_registry_adoption.py@55f78fd9b88bb0e4efd97790b9586beb78e06206) and was
+      resolved by R2 as zero-manifest-delta with discoverability by repository path
+      (V410-T06A-R2/MANIFEST.yaml write_set_resolution). The defect recorded in
+      references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md section 5(b) is closed by this
+      correction; conformance-wiring ownership of the guard family remains with T06B (#861).
+    authority_effect: NONE
+    gate_effect: NONE

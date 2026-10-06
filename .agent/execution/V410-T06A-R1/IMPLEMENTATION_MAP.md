@@ -25,14 +25,19 @@ Rules per entry: `semantic_concern` string must match the L2 §3 concern naming 
   - CURRENT_CARRIED_FORWARD: AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE@59fd5f84…, COMPATIBILITY_ALIAS_CONFORMANCE@c7009868…, V48_REGISTRY_ADOPTION_REFERENCE@375ac48e…, test_v47_authority_registry@731e3fd4…, test_v47_compatibility_aliases@80d9f483…, test_v48_registry_adoption@55f78fd9…, test_v47_reference_conventions@bf6888bd… — evidence: live manifest registration (@21730a02…) + test_v48_registry_adoption chaining + carried suites green on base.
   - COMPATIBILITY_ONLY (one-hop aliases, never owners): GITHUB_WORKFLOW@a96d9c18…, VERSION_INTEGRATION_WORKFLOW@60e2bdee….
 - Explicit declarations: authority_effect=NONE, gate_effect=NONE, mutation_authorized=false; discovery/evidence only, never required at runtime.
-- Register in manifest `references` section (needed for verify_standard PASS).
+- ~~Register in manifest `references` section (needed for verify_standard PASS).~~ **CORRECTED (V410-T06A-PACK-REBIND-R2):** `verify_standard` does not require registration of this surface (it checks declared paths exist and bootstrap-required assets are declared; no undeclared-file scan). Registration in `references` is machine-blocked by the carried v4.8 RA-05 section/additions guard and is resolved by R2 as zero manifest delta — discoverability is by repository path (`V410-T06A-R2/MANIFEST.yaml` `write_set_resolution`; `references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md` §3).
 
 ## Surface C — scripts/test_v410_owner_convergence.py (new focused regression)
 
 - Reuses `test_v47_authority_registry.resolve_registry` semantics (import, not reimplement).
 - Positive: P1 unique-owner order-permutation; P2 added rows ↔ L2 §3 material concerns on exact base tree; P3 manifest invariants (schema_version=1, 11 legacy entry_ids unmodified, sections intact, inventories disjoint); P4 both aliases one-hop non-owner; P6 legacy dispositions present with evidence; P8 fresh-observer reconstructibility shape.
 - Negative: N1 competing owner both orders; N2 broken targets; N3 stale-owner rejection mutant (historical T04B R3 candidate must not win); N4 gap/conflict STOP_FOR_DISPOSITION; N7 deletion-from-both-inventories mutant.
-- Register in manifest `verification` section.
+- ~~Register in manifest `verification` section.~~ **CORRECTED (V410-T06A-PACK-REBIND-R2):** not required by `verify_standard` and machine-blocked by the same carried v4.8 guard; resolved by R2 as zero manifest delta (see surface B correction above).
+
+## Corrections (round V410-T06A-PACK-REBIND-R2)
+
+- `class: FALSE_MACHINE_CONFORMANCE_CLAIM`. The two lines above (surfaces B and C) instructed registration in `standard-manifest.json` sections while asserting that `verify_standard` PASS required it. The causal claim is **false** (measured at the T06A candidate: `verify_standard` → PASS, `manifest files: 220`, both surfaces unregistered), and the instruction itself is machine-incompatible with the carried v4.8 RA-05 guard, which any such registration would fail. Provenance of the correction: `MANIFEST.yaml` `conformance_corrections` and `TEST_MATRIX.yaml` `corrections`.
+- This pack remains **superseded for execution by `V410-T06A-R2`** (and by `V410-T06A-R3` for the successor round): the R1 write set above is retained as published history, not as executable instruction. `authority_effect=NONE`, `gate_effect=NONE`.
 
 ## T06B boundary
 

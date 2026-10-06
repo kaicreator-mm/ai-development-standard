@@ -1,0 +1,171 @@
+pack_id: V410-T06A-R3
+task_id: V410-T06A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+base_tree: 09db8216ec49caf84b45f404474cfbf4cb5e6ad2
+rebind_of: V410-T06A-R2
+rebind_reason: >-
+  R2 is retained byte-identical as the executed authority for candidate f294173, but two defects
+  remain open at that candidate and both are pack-level: (1) the R1 pack still shipped a false
+  machine-conformance claim and a machine-incompatible registration instruction (corrected in place
+  by this round, see V410-T06A-R1 MANIFEST conformance_corrections); (2) the frozen-v4.8 inventory
+  contradiction was left as pack-internal tension (N7's unconditional guard-amendment clause vs the
+  guard-evolution routing; reference section 2 "must remain unmodified" vs section 3 routing) instead
+  of an authority-consistent disposition — recorded here. Additionally, the R2 candidate's focused
+  suite holds candidate-scope assertions live against a frozen base, so it fails for every successor
+  candidate (measured); the successor write set below is bounded to the durable-form repair of that
+  suite plus the reference scope correction.
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06A
+branch: task/v4.10.0-v410-t06a-owner-convergence
+parent_issue: "#860"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+generated_by: claude-code:zcode-glm-local-controller (V410-T06A-PACK-REBIND-R2)
+generated_at: "2026-10-06T11:53:03+00:00"
+dependency_completion:
+  - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T04B@eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+  - V410-T05A@30334e8c7b90a327f8597b86c88c785b98df07f7
+  - V410-T05B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+dependency_notes:
+  - "V410-T01B: DONE, integrated by PR #880 merge f1daaffb6ae3469dc0e77e881ed73e17e6586295 (re-verified: git log -1 f1daaff)"
+  - "V410-T04B: DONE_MERGED by PR #918 merge eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601 = current version/v4.10.0 tip (re-verified via git ls-remote at the rebind)"
+  - "V410-T05A: DONE_INTEGRATED by PR #902 merge 30334e8c7b90a327f8597b86c88c785b98df07f7 (re-verified)"
+  - "V410-T05B: DONE_NO_CHANGE_REQUIRED, closeout exact subject f1daaffb6ae3469dc0e77e881ed73e17e6586295"
+material_paths:
+  - standard-manifest.json
+  - references/
+  - scripts/
+  - standards/
+rebind_inputs:
+  - "#860@6001754071 (R1 WEB JIT prep)"
+  - "#860@6003285698/#860@6004011808/#860@6004281177/#860@6009822924 (R2-R5 partial rebinds)"
+  - "#860@6012404321 (R6 WEB final-rebind checklist)"
+  - "#860@6012773360 (LOCAL owner snapshot R1)"
+  - "#860@6013406812 (WEB owner-convergence oracle R1)"
+  - "#860@6013701030 (JIT R1 terminal + Builder R1 dispatch)"
+  - "#860@6013793088 (PACK_INVALID corrective event)"
+  - "#860@6013810495 (Builder R1 BLOCKED terminal: write-set contradiction + Option A)"
+  - "#860@6014594214 (pack-rebind R2 claim: R1 metadata correction + R2 materialization)"
+  - "#860@6014639837 (Builder R2 claim; pack V410-T06A-R2 @4e58fae)"
+  - "V410-T06A-PACK-REBIND-R2 (this round): R1 machine-conformance correction + frozen-v4.8 inventory disposition + successor write set"
+dispositions:
+  - id: FROZEN_V48_INVENTORY_VS_V410_REGISTRY_GROWTH
+    class: FROZEN_INVENTORY_CONTRADICTION
+    subject: "scripts/test_v48_registry_adoption.py@55f78fd9b88bb0e4efd97790b9586beb78e06206 (RA-02 semantic_registry_problems exact-count; RA-05 section_conformance_problems exact-set) vs Frozen L2 #842 section 3 registry-growth authorization"
+    authority_chain: >-
+      Frozen Product #837 > Frozen Architecture L2 #842 (blob b03f12700153e128f4a4c02b7e8d7adf960fd7d3, section 3:
+      "v4.10 extends that registry only when a material current owner is missing") > refined Task DAG #848 >
+      Task Pack R1 sections V410-T06A/V410-T06B > Execution Pack (R1/R2/R3) > agent choice
+    finding: >-
+      The guard is a carried conformance projection of the v4.8 inventory, i.e. a lower-authority artifact
+      than the Frozen Architecture. Its INVARIANT (unique-owner resolution; no unauthorized additions to
+      manifest sections; count pinned to carried + authorized new) remains authoritative as a rejection of
+      unauthorized mutation. Its PINNED INVENTORY (11 semantic rows; exact section sets as of v4.8) is stale
+      with respect to the L2-authorized v4.10 growth.
+    disposition:
+      - "Registry growth remains authorized by Frozen L2 #842 section 3 and is owned by V410-T06B (#861), whose charter is conformance wiring and whose acceptance (a2)/(a3) name this exact case (a stale passing verifier cannot override current authority; false prose enforcement claims are detected/dispositioned)."
+      - "Guard evolution is required for T06B completion, forbidden to T06A (T06A's write set excludes verifier/CI wiring; NO_GREEN_BY_DELETION forbids T06A green-by-weakening), and is not a silent repair: the guard evolve and the manifest delta MUST move together so the invariant keeps holding (constructive proof: guard allow-list + manifest changed together => guard suite OK, verify_standard PASS)."
+      - "T06A-scope readings (binding for T06A only, R2 wording retained byte-identical as executed authority and read through this disposition): reference section 2 'must remain unmodified' = not amended by T06A; TEST_MATRIX PASS_UNMODIFIED = the T06A candidate's negative proof of no unauthorized manifest mutation; N7's 'or amending a carried conformance guard => FAIL' = scoped to T06A's candidate (no green by deleting/weakening a carried guard). None of these is a global immutability claim."
+      - "The discovery gap stays OPEN in T06A (STATUS=GAP / ACTION=STOP_FOR_DISPOSITION / ROUTED_TO=T06B(#861)); 'MUST NOT be claimed as closed' binds claims made without the disposition; T06B closes it only through its own authorized, evidenced evolution."
+    effect: "recording only; no source, guard, manifest or write-set mutation; authority_effect=NONE; gate_effect=NONE"
+  - id: R1_FALSE_MACHINE_CONFORMANCE_CLAIM
+    class: FALSE_MACHINE_CONFORMANCE_CLAIM
+    subject: "V410-T06A-R1/TEST_MATRIX.yaml (T-manifest notes) and V410-T06A-R1/IMPLEMENTATION_MAP.md (surfaces B/C registration instructions)"
+    disposition: >-
+      Corrected in place by this controller round (pack prose is controller-owned; the R1 pack stays retained
+      as published history and remains superseded for execution by R2). The reference's section 5(b) record of
+      this defect is closed by the correction; guard-family conformance-wiring ownership remains T06B (#861).
+    effect: "pack prose correction only; classify_pack_staleness re-read PACK_CURRENT; authority_effect=NONE"
+  - id: CANDIDATE_SCOPE_ASSERTIONS_LIVE
+    class: SNAPSHOT_ASSERTION_SELF_INVALIDATION
+    subject: "scripts/test_v410_owner_convergence.py candidate-scope assertions (frozen-base diff-set equality, manifest blob identity, entry-id set, non-registration, guard source freeze)"
+    finding: >-
+      Measured at the R2 candidate: these assertions encode the T06A candidate-local resolution as live
+      invariants against the frozen base eea3e69. Any successor candidate that tracks any file fails them
+      (adding this pack's six paths is sufficient); the authorized T06B evolution (guard + manifest together)
+      fails four of them. They are therefore snapshots, not durable regressions.
+    disposition: >-
+      Required T06A repair before merge (this candidate is still unmerged, where the correction costs one
+      file): re-express them as recorded evidence plus durable behavioral forms under the bounded successor
+      write set below. This is not a T06B projection defect claim transfer: T06B keeps its own obligations
+      (registry growth, guard evolution, false-prose disposition of whatever remains after this repair).
+    effect: "successor write set binding; authority_effect=NONE"
+write_set_resolution:
+  adopted: OPTION_A_ZERO_MANIFEST_DELTA
+  retained_from: V410-T06A-R2
+  standard_manifest_delta: NONE
+  guards: "scripts/test_v48_registry_adoption.py and all other carried suites remain unmodified in T06A"
+  blocked_manifest_mutations:
+    - "semantic_authorities additive rows -> RA-02 exact-count guard"
+    - "sections.references registration -> RA-05 exact-set guard"
+    - "sections.verification registration -> RA-05 exact-set guard"
+  routed_gap: REGISTRY_GROWTH_AND_FROZEN_INVENTORY_GUARD_EVOLUTION -> #861
+successor_write_set:
+  - path: scripts/test_v410_owner_convergence.py
+    change: durable-form repair of the candidate-scope assertions
+    required_properties:
+      - "P1 successor-safe: the suite PASSES on any successor tip whose change set is authorized by that successor's own pack; no assertion may depend on the branch tip being exactly this candidate"
+      - "P2 recorded: T06A's R2 candidate resolution (frozen-base diff shape = the 14 declared paths, manifest blob 21730a0251e35e13591d2c84de1c66d6ab2c2408, guard non-amendment, non-registration, zero manifest delta) stays machine-recorded in-tree as dated evidence with its recorded identities, not as a live tip assertion"
+      - "P3 durable twins: guard behavior is tested by function (mutated in-memory manifest must still be rejected), not by freezing the guard's source text or its authorized-additions constant"
+      - "P4 fail-closed preserved: every N1-N7 mutant is still rejected; no negative case weakened"
+      - "P5 no green by deletion: no semantic assertion is removed to satisfy P1; the recorded evidence of P2 is not achieved by deleting the negative cases"
+  - path: references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md
+    change: scope correction per the dispositions above
+    required_properties:
+      - "Q1 the guard family's 'must remain unmodified' is stated as T06A-scope (not amended by T06A) with the evolution ownership recorded as T06B (#861) under the Frozen L2 authorization"
+      - "Q2 the gap remains STATUS=GAP / ACTION=STOP_FOR_DISPOSITION / ROUTED_TO=T06B(#861) and no surface claims closure"
+      - "Q3 section 5(b)'s defect record is updated to the corrected state (R1 pack correction landed; residual conformance-wiring ownership with T06B)"
+      - "Q4 non-authority declarations, exact-SHA evidence refs and reconstructibility (section 4) are preserved; no resolver/runtime-contract/precedence/lifecycle/service is introduced"
+      - "Q5 the gap-discipline tokens asserted by the focused suite ('recorded, not guessed'; 'MUST NOT be claimed as closed'; ROUTED_TO=T06B(#861); DISCOVERY_REGISTRATION=BLOCKED_BY_V48_FROZEN_INVENTORY_GUARD) either remain present or are consciously updated in the same commit as their assertions"
+forbidden:
+  - "any standard-manifest.json delta (Option A retained); any amendment of a carried conformance guard; any schema/template/prompt/checklist/golden/verifier/CI change"
+  - "upstream semantic-owner rewrite; second owner registry; new event family/state dimension/lifecycle"
+  - "weakening or deleting a fail-closed case to obtain green; removing a declared gap row"
+  - "silently rewriting base_sha or any recorded historical blob; rewriting V410-T06A-R2 pack artifacts (executed authority, retained byte-identical)"
+  - "self-approval, verdict/gate/mutation semantics in the diff, merge by the Builder"
+owner_blobs:
+  standard-manifest.json: 21730a0251e35e13591d2c84de1c66d6ab2c2408
+  standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md: e385102c7e8ea56068c7b3c7d517e169804069d0
+  templates/agent-event-comment.md: e0a6f40c21ae76c03cdeb42bb67af77c861cb913
+  schemas/agent-event-v2.schema.json: f7e7af8462278f507f94f84b05a4b1faf38bdd39
+  schemas/review-finding-v1.schema.json: 508d43f65573fa2b0bcaca4405282114d5479481
+  schemas/review-aggregation-v1.schema.json: 4c69f568d6521182cd8c50983e28a9ad6062440b
+  scripts/v40_rules.py: 0567e744b5f53ca0244c95ce660a64901f2a0bd2
+  scripts/v40_semantics.py: 85dacf8fcf24ddea2f79b8a43bd6ce52bc1928ba
+  scripts/test_v48_registry_adoption.py: 55f78fd9b88bb0e4efd97790b9586beb78e06206
+  scripts/verify_standard.py: "read at base eea3e69 (no undeclared-file scan; declared-path existence + bootstrap-required declarations)"
+  standards/DEVELOPMENT_WORKFLOW.md: a7fef842927e58a93b671fe9869b9395559845ac
+  standards/VALIDATION_STANDARD.md: 1522b85f9e68cc4a1591ea5899b53c224998e5a8
+  standards/TASK_DECOMPOSITION_STANDARD.md: f355c020f07828a62ad617ffa80cb40b708ab4d4
+  standards/TASK_DAG_GOVERNANCE_STANDARD.md: e2ecfdbf0cd79f750aff40276e46a59159465f78
+  standards/EXECUTION_PACK_STANDARD.md: c7bd2e4ffb87a0ac7fabc54fd78c4eb1fae6ef0d
+  standards/IMPLEMENTATION_QUALITY_STANDARD.md: 3beba2d0324d95674b7bad2ef621e2aa81c66563
+  standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md: 266aefe32e0990c24fc8c1d6d731c4a3456fc3fc
+  standards/PROJECT_ADOPTION.md: aac0d4bff0ed67e6e23d89903e58732524cab024
+  standards/REFERENCE_CONVENTION_STANDARD.md: ba6a95b124c1804ea4e13c5c6d058e9ade2cc905
+  references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md@f294173: "the successor corrects this surface in place (scope correction Q1-Q3); recorded as the rebind input, not as a frozen owner blob"
+legacy_classification:
+  - references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md@59fd5f842fb27a42db9e7b6bd8e348fcf79d1a3b: CURRENT_CARRIED_FORWARD
+  - references/COMPATIBILITY_ALIAS_CONFORMANCE.md@c7009868f3f8f8987635075c7e3c1c755411537a: CURRENT_CARRIED_FORWARD
+  - references/V48_REGISTRY_ADOPTION_REFERENCE.md@375ac48e43b5f5588f9e128b318ae0c164262237: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_authority_registry.py@731e3fd4b00145dfe3ebf50f8322016b2d420a0c: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_compatibility_aliases.py@80d9f4832ad0b81b393216aa7132433e6a06b116: CURRENT_CARRIED_FORWARD
+  - scripts/test_v48_registry_adoption.py@55f78fd9b88bb0e4efd97790b9586beb78e06206: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_reference_conventions.py@bf6888bd0171f1d560766120eeeaa9ffc6802c05: CURRENT_CARRIED_FORWARD
+  - standards/GITHUB_WORKFLOW.md@a96d9c186b21cc20726d9e4f60709ed173e77dac: COMPATIBILITY_ONLY (one-hop alias)
+  - standards/VERSION_INTEGRATION_WORKFLOW.md@60e2bdee7f07c57bee17d792dc9c4e53bae514fb: COMPATIBILITY_ONLY (one-hop alias)
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+historical_packs:
+  - V410-T06A-R1@225ea4b02168d741024d930f42631a0c9baca1ba (metadata corrected in place @4e58faeb5119cf390dcb142e0c1d894a1cf11c1d; machine-conformance prose corrected in place by this round; superseded for execution by R2)
+  - V410-T06A-R2@4e58faeb5119cf390dcb142e0c1d894a1cf11c1d (executed authority for candidate f294173c970d35cf9f9ce4eb4925339e324a801a; retained byte-identical; superseded for execution by R3)
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

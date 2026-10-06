@@ -1,0 +1,100 @@
+# V410-T06A R3 test matrix — all commands run from repo root on the exact committed candidate
+
+matrix:
+  - id: T-focused
+    command: python scripts/test_v410_owner_convergence.py
+    status: REPAIRED
+    expect: PASS
+    covers: [P1, P2, P3, P4, P5, P6, P8, P9, N1, N2, N3, N4, N5, N6, N7]
+    notes: >-
+      encodes the repaired durable form (EXECUTION_CONTRACT.md section 3 properties P1-P5): executes against
+      the real merged manifest + checkout; keeps order-permutation resolution invariance, competing-owner
+      mutants (both orders), stale-owner rejection, guard-behavior probes and the fail-closed cases; the
+      T06A candidate-shape resolution is carried as dated recorded evidence, not as a live tip assertion;
+      no fixture-copy substitution
+  - id: T-focused-successor-safety
+    command: python scripts/test_v410_owner_convergence.py
+    status: REPAIRED_EVIDENCE
+    expect: PASS_ON_AUTHORIZED_EVOLUTION
+    covers: [P1]
+    notes: >-
+      evidence obligation, not an in-suite claim: on a scratch copy, with the guard allow-list and the
+      manifest moved together as T06B is authorized to do, the repaired suite must PASS (no spurious
+      failure); with the manifest grown without the guard (or the guard alone), the carried guard suite
+      must still FAIL. Record both reproductions.
+  - id: T-registry
+    command: python scripts/test_v47_authority_registry.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P1, P3]
+  - id: T-aliases
+    command: python scripts/test_v47_compatibility_aliases.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P4]
+  - id: T-registry-adoption
+    command: python scripts/test_v48_registry_adoption.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P2, P3, P6, P7]
+    notes: >-
+      RA-02/RA-05 frozen-inventory guards remain unmodified in T06A (Option A retained). Their unmodified
+      PASS is the negative proof against unauthorized manifest mutation; their authorized evolution is
+      T06B's (#861) under the disposition in EXECUTION_CONTRACT.md section 2 — it is not a T06A change
+  - id: T-reference-conventions
+    command: python scripts/test_v47_reference_conventions.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P6, P7]
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P3, P10]
+    notes: >-
+      verifies declared-path existence and bootstrap-required declarations; it performs no undeclared-file
+      scan, so the unregistered T06A surfaces keep it green (read scripts/verify_standard.py). This is the
+      measured basis for the R1 pack machine-conformance correction this round
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+    notes: fail-closed schema subset guard; no schema changes are allowed in this task, so this is a negative guard
+  - id: T-t04b-focus
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+    notes: proves no T04B owner-family regression from the T06A diff (zero expected interaction)
+  - id: T-full-visible-set
+    command: 'for f in scripts/test_*.py; do python "$f"; done'
+    status: CARRIED
+    expect: PASS
+    covers: [P10]
+    notes: >-
+      run on the COMMITTED tree, never on a dirty one: an uncommitted working-tree path reddens
+      scripts/test_v48_orchestration_dogfood.py (ODF-11) independently of this task's change
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED
+    expect: PASS
+    covers: [P10]
+provenance:
+  oracle: "#860@6013406812 (P10 CONFORMANCE_EXECUTION)"
+  rebind: "#860@6013810495 (Option A: zero manifest delta, gap recorded + routed to #861)"
+  this_round: "V410-T06A-PACK-REBIND-R2 (R1 machine-conformance correction; frozen-v4.8 inventory disposition; successor write set)"
+  baseline_behavior: >-
+    at the rebind, candidate f294173 measured 77/77 + verify_standard PASS (220) + focused 22 OK on a clean
+    checkout; carried suites PASS on base eea3e69 (pre-existing green)
+rebind_tip_expectation:
+  measured_at: "the rebind commit (this pack's materialization)"
+  test: test_candidate_diff_shape_is_exact
+  state: FAIL_EXPECTED_BY_DESIGN
+  reason: >-
+    the rebind tip additionally carries the six .agent/execution/V410-T06A-R3/* paths, so the R2 suite's live
+    frozen-base diff-set assertion sees 20 paths instead of the 14 declared ones. This is exactly the
+    SNAPSHOT_ASSERTION_SELF_INVALIDATION class the successor write set repairs (property P1/P2). The rebind
+    tip is NOT the candidate under validation; the repaired suite must be green at the Builder's committed
+    candidate.
+  other_assertions_at_rebind_tip: unchanged (the R1 pack corrections are content-only; no test freezes R1 pack bytes)

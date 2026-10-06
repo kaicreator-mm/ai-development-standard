@@ -1,0 +1,83 @@
+# V410-T06A R3 failure matrix — every class MUST fail closed (oracle N1-N10, #860@6013406812)
+
+failures:
+  - id: N1
+    class: COMPETING_OWNER
+    trigger: second semantic_authorities entry claiming an already-indexed semantic_concern with a competing owner, or duplicate entry_id
+    expected: fail closed under forward AND reversed entry order; no fallback winner
+  - id: N2
+    class: BROKEN_TARGETS
+    trigger: missing/non-normative canonical_owner_ref; alias not in compatibility inventory; alias==owner; alias chain/cycle; alias claimed by two entries; absolute/path-escaping/backslash refs
+    expected: fail closed, no fallback winner
+  - id: N3
+    class: STALE_NOT_CURRENT
+    trigger: historical/superseded/version-labelled provenance surface winning current owner resolution via file order, discoverability, recency, or a historical PASS
+    expected: focused test contains an explicit stale-owner rejection mutant; MUST fail closed
+  - id: N4
+    class: GAP_CONFLICT_STOPS
+    trigger: material v4.10 concern without uniquely reconstructible owner/composition — including the machine-blocked registry registration
+    expected: STATUS=GAP|CONFLICT + ACTION=STOP_FOR_DISPOSITION recorded in the convergence reference and routed; guessing/ordering/nearest-owner/latest-PASS fallback = FAIL
+  - id: N5
+    class: REGISTRY_NOT_AUTHORITY
+    trigger: any manifest/reference row carrying or implying mutation/merge/side-effect/verdict-transfer/gate-waiver/Product-Freeze/Release-READY authority
+    expected: fail closed; reference must carry authority_effect=NONE, gate_effect=NONE, mutation_authorized=false equivalents; entry_id is discovery identity, not an authorization principal
+  - id: N6
+    class: NO_SECOND_REGISTRY
+    trigger: convergence reference defining a resolver, runtime contract, precedence layer, lifecycle, or service, or claiming to supersede semantic_authorities or owner standards
+    expected: FAIL
+  - id: N7
+    class: NO_GREEN_BY_DELETION
+    scope: T06A candidate
+    trigger: >-
+      conformance attempted by removing a committed stable compatibility path from both inventories, deleting a
+      gap row, weakening a negative case, or amending a carried conformance guard within this task's candidate
+    expected: >-
+      FAIL. Unindexed legacy compatibility path = ambiguity = fail closed, never a guessed target. This class is
+      T06A-scoped: it forbids T06A green-by-weakening a carried guard; it does NOT forbid the T06B-owned,
+      L2-authorized guard evolution (EXECUTION_CONTRACT.md section 2), which preserves the guard's invariant and
+      moves guard + manifest together
+  - id: N8
+    class: PROJECTION_NEVER_OVERRIDES_OWNER
+    trigger: stale passing schema/template/verifier/CI projection contradicting a current owner
+    expected: >-
+      recorded with ACTION=REWIRE_PROJECTION and routed (T06B #861 / owning concern); never treated as authority,
+      never silently repaired inside T06A. The frozen-v4.8 inventory guard is dispositioned authority-consistently
+      (T06B-owned evolution; stale pin vs invariant) rather than left as an open T06A contradiction
+  - id: N9
+    class: NO_UPSTREAM_REWRITE
+    trigger: any semantic hunk in an upstream owner standard, standard-manifest.json, or any excluded surface
+    expected: write-set violation = FAIL
+  - id: N10
+    class: DRIFT_REBIND
+    trigger: integration head/tree, manifest blob, or any bound owner blob drifts before/during execution against the eea3e69 binding
+    expected: STALE_SUBJECT = FAIL; mandatory currentness re-read at claim time; STOP_FOR_DISPOSITION
+  - id: SNAPSHOT_ASSERTION_SELF_INVALIDATION
+    class: CANDIDATE_SCOPE_ASSERTION_LIVE
+    trigger: a durable suite asserting a candidate-local property against a frozen base (frozen-base diff-set equality, manifest blob identity, entry-id set, non-registration, guard source freeze)
+    expected: >-
+      FAIL as a durable regression; repair to recorded evidence + durable behavioral form (properties P1-P5,
+      EXECUTION_CONTRACT.md section 3). Measured: any successor candidate fails the diff-set assertion; the
+      authorized T06B evolution fails four of them; no successor configuration keeps the R2 suite green
+  - id: FALSE_MACHINE_CONFORMANCE_CLAIM
+    class: PACK_PROSE_VS_MACHINE_BEHAVIOR
+    trigger: pack prose asserting a machine-conformance requirement the machine does not enforce, or instructing a mutation the carried guards reject
+    expected: >-
+      FAIL; correct in place with attribution (round, class, was/is, measured basis, resolution) — as done for
+      V410-T06A-R1 this round; never leave a false claim shipped in a retained pack
+  - id: FROZEN_INVENTORY_CONTRADICTION
+    class: FROZEN_INVENTORY_VS_AUTHORIZED_GROWTH
+    trigger: candidate attempts any standard-manifest.json delta to close the discovery gap, or reads the T06A-scope guard constraint as a global immutability claim
+    expected: >-
+      carried RA-02/RA-05 guards FAIL the candidate; correct handling is the recorded GAP row + routing to #861,
+      read through the section 2 disposition. Amending the guarding contract from the guarded task, or claiming
+      the gap closed, = FAIL
+  - id: PACK_METADATA_INVALID
+    class: PACK_INVALID_METADATA
+    trigger: pack manifest wire-format violations (annotated dependency_completion, missing material_paths, untruthful generated_at)
+    expected: classify_pack_staleness == PACK_INVALID blocks claim-time gates; metadata corrected in place with provenance moved to dependency_notes (R1 correction; evidence #860@6013793088)
+stop_conditions:
+  - any P0/P1 review finding
+  - any fail-closed class triggering on the real candidate
+  - any standard-manifest.json delta vs blob 21730a0251e35e13591d2c84de1c66d6ab2c2408
+  - integration head moving past eea3e69 before merge admission
+  - the repaired suite failing on an authorized successor evolution (P1 violation), or the T06A candidate-shape record missing (P2 violation)

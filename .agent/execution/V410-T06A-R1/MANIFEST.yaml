@@ -27,6 +27,31 @@ rebind_inputs:
   - "#860@6012404321 (R6 WEB final-rebind checklist)"
   - "#860@6012773360 (LOCAL owner snapshot R1)"
   - "#860@6013406812 (WEB owner-convergence oracle R1)"
+superseded_by: V410-T06A-R2
+execution_state: SUPERSEDED_FOR_EXECUTION
+conformance_corrections:
+  - round: V410-T06A-PACK-REBIND-R2
+    date: "2026-10-06"
+    class: FALSE_MACHINE_CONFORMANCE_CLAIM
+    paths:
+      - TEST_MATRIX.yaml
+      - IMPLEMENTATION_MAP.md
+    basis: >-
+      scripts/verify_standard.py at base eea3e69 verifies declared-path existence and
+      bootstrap-required declarations only; it performs no undeclared-file scan. Measured at the
+      T06A candidate: PASS, manifest files 220, with both T06A surfaces unregistered. The previous
+      prose claimed registration in standard-manifest.json sections was required for that PASS,
+      and instructed it — an instruction the carried v4.8 RA-05 guard rejects.
+    resolution: >-
+      R2's zero-manifest-delta resolution (V410-T06A-R2/MANIFEST.yaml write_set_resolution) is the
+      operative one; the defect recorded in references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md
+      section 5(b) is closed by this correction. Guard-family evolution stays routed to T06B (#861).
+    effect: >-
+      prose only: no change to base_sha, base_tree, dependency_completion, agent_freedom, branch,
+      task_pack_ref, pinned_standard_revision, material_paths or core_artifacts; classify_pack_staleness
+      re-read back PACK_CURRENT after the correction
+    authority_effect: NONE
+    gate_effect: NONE
 owner_blobs:
   standard-manifest.json: 21730a0251e35e13591d2c84de1c66d6ab2c2408
   standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md: e385102c7e8ea56068c7b3c7d517e169804069d0
