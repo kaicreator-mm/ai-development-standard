@@ -11,6 +11,15 @@ extension (D1/D4/E3/G3/G8) lives in ``test_execution_architecture.py``; the
 A-section schema verdicts live in ``test_protocol_schemas.py``. Reuses the
 carried fail-closed subset guards; purely local; no network. Exact per-case
 coverage is pinned by the pack TEST_MATRIX (``covers`` + ``dispositions``).
+
+R4 (bounded repair after Validation R3 #861@6025948290): the reducer emits
+only the contracted row with profile-aware environment projection
+(LOCAL_BUILDER/LOCAL_VALIDATOR/WEB_REVIEWER via ``project_dispatch_environment``)
+and B5/B6 persisted-key mismatch fail-closed; the integration regression embeds
+``project_active_dispatches`` output into a complete execution-state instance
+and validates it through the real ``schemas/execution-state.schema.json``
+(legacy-profile positives plus leak/missing-field/non-null-group/UNKNOWN and
+mismatch negatives), which replaces the withdrawn trim-expectation assertion.
 """
 
 from __future__ import annotations
@@ -209,9 +218,9 @@ class MultiActiveProjectionTests(unittest.TestCase):
 
     def _rows(self) -> list[dict]:
         return [
-            {"repository": "r", "task": "#2", "role": "validator", "dispatch_id": "d-a", "claimed_by": "x"},
-            {"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d-z", "claimed_by": "y"},
-            {"repository": "r", "task": "#1", "role": "validator", "dispatch_id": "d-b", "claimed_by": "z"},
+            {"repository": "r", "task": "#2", "role": "validator", "dispatch_id": "d-a", "claimed_by": "x", "execution_profile": "LOCAL_VALIDATOR"},
+            {"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d-z", "claimed_by": "y", "execution_profile": "LOCAL_BUILDER"},
+            {"repository": "r", "task": "#1", "role": "validator", "dispatch_id": "d-b", "claimed_by": "z", "execution_profile": "PLATFORM_VALIDATOR", "execution_environment": "LOCAL"},
         ]
 
     def test_projection_is_stable_by_key_then_id(self) -> None:
@@ -226,35 +235,67 @@ class MultiActiveProjectionTests(unittest.TestCase):
             [{"repository": "r", "task": "#1", "role": "scheduler", "dispatch_id": "d"}],
             ["not-a-mapping"],
             [{"repository": "r", "task": "#1", "role": "builder"}],
-            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_environment": "REMOTE"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "execution_environment": "REMOTE"}],
             [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "claimed_by": ""}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d"}],  # missing execution_profile
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": ""}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "execution_environment": "WEB"}],  # A8 contradiction
         ):
             with self.subTest(mutant=mutant):
                 with self.assertRaises(ValueError):
                     project_active_dispatches(mutant)
 
+    def test_non_string_group_and_bad_keys_fail_closed(self) -> None:
+        with self.assertRaises(TypeError):
+            project_active_dispatches(
+                [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "compatibility_group": 5}]
+            )
+        for mutant in (
+            # B5: persisted key does not match the deterministic re-derivation
+            {"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "protected_claim_key": "r#1:builder:interop"},
+            # B6: a scheduler-supplied claim_key authority field is rejected outright
+            {"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "claim_key": "r#1:builder:__default__"},
+        ):
+            with self.subTest(mutant=mutant):
+                with self.assertRaises(ValueError):
+                    project_active_dispatches([mutant])
+
+    def test_metadata_cannot_alter_keys_membership_or_ordering(self) -> None:
+        # E/G: scheduler origin, provider/model and parent-dispatch provenance
+        # must not change key derivation, row membership or projected ordering.
+        decorated = [
+            dict(row, scheduler_origin="WEB", provider="provider-x", model="model-x", parent_dispatch="d-parent")
+            for row in self._rows()
+        ]
+        self.assertEqual(project_active_dispatches(decorated), project_active_dispatches(self._rows()))
+
     def test_exact_subject_refs_are_carried_and_validated(self) -> None:
         rows = project_active_dispatches(
             [
-                {"repository": "r", "task": "#861", "role": "builder", "dispatch_id": "d-a", "issue": "#861", "pr": "#927"},
-                {"repository": "r", "task": "#862", "role": "reviewer", "dispatch_id": "d-b", "pr": None},
-                {"repository": "r", "task": "#863", "role": "validator", "dispatch_id": "d-c"},
+                {"repository": "r", "task": "#861", "role": "builder", "dispatch_id": "d-a", "execution_profile": "LOCAL_BUILDER", "issue": "#861", "pr": "#927"},
+                {"repository": "r", "task": "#862", "role": "reviewer", "dispatch_id": "d-b", "execution_profile": "WEB_REVIEWER", "pr": None},
+                {"repository": "r", "task": "#863", "role": "validator", "dispatch_id": "d-c", "execution_profile": "LOCAL_VALIDATOR"},
             ]
         )
         self.assertEqual(rows[0]["issue"], "#861")
         self.assertEqual(rows[0]["pr"], "#927")
         self.assertNotIn("issue", rows[2])
         for mutant in (
-            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "issue": "861"}],
-            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "pr": "#abc"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "issue": "861"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_profile": "LOCAL_BUILDER", "pr": "#abc"}],
         ):
             with self.subTest(mutant=mutant):
                 with self.assertRaises(ValueError):
                     project_active_dispatches(mutant)
 
-    def test_reducer_output_conforms_to_execution_state_row_schema(self) -> None:
+    def test_group_normalization_introduces_no_trim(self) -> None:
+        # normalize_group semantics are fixed: blank-only -> __default__; a
+        # non-blank string (including padded) is emitted UNCHANGED — the
+        # reducer introduces no trim/canonicalization rule, and the derived
+        # key serializes exactly the emitted group.
         item = load_schema(EXECUTION_STATE_SCHEMA)["properties"]["active_dispatches"]["items"]
-        assert_supported_schema(item)
+        self.assertEqual(normalize_group("  "), DEFAULT_COMPATIBILITY_GROUP)
+        self.assertEqual(normalize_group(" blue "), " blue ")
         rows = project_active_dispatches(
             [
                 {
@@ -262,7 +303,7 @@ class MultiActiveProjectionTests(unittest.TestCase):
                     "task": "#861",
                     "role": "builder",
                     "dispatch_id": "d-a",
-                    "execution_environment": "LOCAL",
+                    "execution_profile": "LOCAL_BUILDER",
                     "compatibility_group": " blue ",
                     "claimed_by": "agent-a",
                     "issue": "#861",
@@ -277,17 +318,19 @@ class MultiActiveProjectionTests(unittest.TestCase):
                     "dispatch_id": "d-a",
                     "role": "builder",
                     "execution_environment": "LOCAL",
-                    "compatibility_group": "blue",
-                    "protected_claim_key": "r#861:builder:blue",
+                    "compatibility_group": " blue ",
+                    "protected_claim_key": "r#861:builder: blue ",
                     "claimed_by": "agent-a",
                     "issue": "#861",
                     "pr": "#927",
                 }
             ],
         )
+        self.assertEqual(rows[0]["protected_claim_key"], derive_claim_key("r", "#861", "builder", " blue "))
         self.assertEqual(validate_subset(rows[0], item), [])
         self.assertNotIn("repository", rows[0])
         self.assertNotIn("task", rows[0])
+        self.assertNotIn("execution_profile", rows[0])
 
     def test_schema_projection_is_non_authoritative_additive_shape(self) -> None:
         schema = load_schema(EXECUTION_STATE_SCHEMA)
@@ -295,10 +338,198 @@ class MultiActiveProjectionTests(unittest.TestCase):
         projection = schema["properties"]["active_dispatches"]
         item = projection["items"]
         self.assertEqual(item["additionalProperties"], False)
+        # W8-R4: the row contract requires all six projected fields; the
+        # projected group is a normalized non-null non-empty string.
+        self.assertEqual(
+            item["required"],
+            [
+                "dispatch_id",
+                "role",
+                "execution_environment",
+                "compatibility_group",
+                "protected_claim_key",
+                "claimed_by",
+            ],
+        )
+        self.assertEqual(item["properties"]["compatibility_group"], {"type": "string", "minLength": 1})
         self.assertIn("protected_claim_key", item["properties"])
         for ref_field in ("issue", "pr"):
             self.assertIn(ref_field, item["properties"])
         self.assertIn("NON_AUTHORITATIVE_DERIVED_STATE", projection["description"])
+
+
+class ExecutionStateIntegrationTests(unittest.TestCase):
+    """Oracle W8-R4: reducer output inside a complete execution-state instance.
+
+    Embeds ``project_active_dispatches(source)`` directly as
+    ``active_dispatches`` of a minimal execution-state and validates the whole
+    state through the real ``schemas/execution-state.schema.json`` — helper-only
+    and schema-shape-only assertions are not a substitute.
+    """
+
+    def _source(self) -> list[dict]:
+        return [
+            {
+                # legacy builder profile -> LOCAL; default group; absent claimed_by;
+                # derivation-only fields plus non-row metadata that must not leak.
+                "repository": "r",
+                "task": "#861",
+                "role": "builder",
+                "dispatch_id": "d-builder",
+                "execution_profile": "LOCAL_BUILDER",
+                "issue": "#861",
+                "pr": "#927",
+                "scheduler_origin": "LOCAL",
+                "operator_kind": "claude-code",
+                "admission_generation": 4,
+            },
+            {
+                # environment-orthogonal profile with NO explicit environment -> null
+                "repository": "r",
+                "task": "#861",
+                "role": "validator",
+                "dispatch_id": "d-orthogonal",
+                "execution_profile": "PLATFORM_VALIDATOR",
+                "claimed_by": "val-1",
+                "compatibility_authority_ref": "#861@6023707736",
+            },
+            {
+                # environment-orthogonal profile WITH explicit environment -> LOCAL
+                "repository": "r",
+                "task": "#861",
+                "role": "validator",
+                "dispatch_id": "d-orthogonal-local",
+                "execution_profile": "PLATFORM_VALIDATOR",
+                "execution_environment": "LOCAL",
+            },
+            {
+                # legacy reviewer profile -> WEB; null group -> __default__;
+                # explicit null pr ref is carried as supplied.
+                "repository": "r",
+                "task": "#862",
+                "role": "reviewer",
+                "dispatch_id": "d-reviewer",
+                "execution_profile": "WEB_REVIEWER",
+                "compatibility_group": None,
+                "pr": None,
+            },
+            {
+                # legacy validator profile -> LOCAL; blank group -> __default__;
+                # no issue/pr fields -> refs stay absent.
+                "repository": "r",
+                "task": "#861",
+                "role": "validator",
+                "dispatch_id": "d-legacy-validator",
+                "execution_profile": "LOCAL_VALIDATOR",
+                "compatibility_group": "  ",
+            },
+        ]
+
+    def _expected_rows(self) -> list[dict]:
+        return [
+            {
+                "dispatch_id": "d-builder",
+                "role": "builder",
+                "execution_environment": "LOCAL",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#861:builder:__default__",
+                "claimed_by": None,
+                "issue": "#861",
+                "pr": "#927",
+            },
+            {
+                "dispatch_id": "d-legacy-validator",
+                "role": "validator",
+                "execution_environment": "LOCAL",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#861:validator:__default__",
+                "claimed_by": None,
+            },
+            {
+                "dispatch_id": "d-orthogonal",
+                "role": "validator",
+                "execution_environment": None,
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#861:validator:__default__",
+                "claimed_by": "val-1",
+            },
+            {
+                "dispatch_id": "d-orthogonal-local",
+                "role": "validator",
+                "execution_environment": "LOCAL",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#861:validator:__default__",
+                "claimed_by": None,
+            },
+            {
+                "dispatch_id": "d-reviewer",
+                "role": "reviewer",
+                "execution_environment": "WEB",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#862:reviewer:__default__",
+                "claimed_by": None,
+                "pr": None,
+            },
+        ]
+
+    def test_full_execution_state_with_reducer_output_validates(self) -> None:
+        schema = load_schema(EXECUTION_STATE_SCHEMA)
+        assert_supported_schema(schema)
+        rows = project_active_dispatches(self._source())
+        # exact contracted rows, stably ordered by (derived key, dispatch_id)
+        self.assertEqual(rows, self._expected_rows())
+        state = {
+            "repository": "r",
+            "work_item": "#861",
+            "workflow_state": "implementing",
+            "ready_queues": [],
+            "derived_from": ["test"],
+            "active_dispatches": rows,
+        }
+        self.assertEqual(validate_subset(state, schema), [])
+
+    def test_projection_is_order_independent(self) -> None:
+        self.assertEqual(
+            project_active_dispatches(list(reversed(self._source()))),
+            project_active_dispatches(self._source()),
+        )
+
+    def test_derived_key_equals_deterministic_rederivation(self) -> None:
+        for row in project_active_dispatches(self._source()):
+            source = next(e for e in self._source() if e["dispatch_id"] == row["dispatch_id"])
+            self.assertEqual(
+                row["protected_claim_key"],
+                derive_claim_key(source["repository"], source["task"], source["role"], source.get("compatibility_group")),
+            )
+
+    def test_row_schema_rejects_leaked_or_missing_or_malformed_fields(self) -> None:
+        item = load_schema(EXECUTION_STATE_SCHEMA)["properties"]["active_dispatches"]["items"]
+        assert_supported_schema(item)
+        valid_row = {
+            "dispatch_id": "d",
+            "role": "builder",
+            "execution_environment": "LOCAL",
+            "compatibility_group": "__default__",
+            "protected_claim_key": "r#1:builder:__default__",
+            "claimed_by": None,
+        }
+        self.assertEqual(validate_subset(valid_row, item), [])
+        for name, mutant in (
+            ("leaked repository", dict(valid_row, repository="r")),
+            ("leaked task", dict(valid_row, task="#1")),
+            ("leaked execution_profile", dict(valid_row, execution_profile="LOCAL_BUILDER")),
+            ("leaked scheduler_origin", dict(valid_row, scheduler_origin="WEB")),
+            ("missing execution_environment", {k: v for k, v in valid_row.items() if k != "execution_environment"}),
+            ("missing compatibility_group", {k: v for k, v in valid_row.items() if k != "compatibility_group"}),
+            ("missing protected_claim_key", {k: v for k, v in valid_row.items() if k != "protected_claim_key"}),
+            ("missing claimed_by", {k: v for k, v in valid_row.items() if k != "claimed_by"}),
+            ("raw null group", dict(valid_row, compatibility_group=None)),
+            ("empty group", dict(valid_row, compatibility_group="")),
+            ("UNKNOWN sentinel", dict(valid_row, execution_environment="UNKNOWN")),
+            ("empty key", dict(valid_row, protected_claim_key="")),
+        ):
+            with self.subTest(mutant=name):
+                self.assertNotEqual(validate_subset(mutant, item), [])
 
 
 class WriterProvenanceTests(unittest.TestCase):

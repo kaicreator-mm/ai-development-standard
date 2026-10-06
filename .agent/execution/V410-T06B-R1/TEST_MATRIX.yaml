@@ -10,9 +10,9 @@
 matrix:
   - id: T-t06b-focus
     command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
-    status: NEW (W8; R2 extended: B5/B6 persisted-key conformance, FC1 unknown-profile projection, active_dispatches exact subject refs)
+    status: NEW (W8; R2 extended: B5/B6 persisted-key conformance, FC1 unknown-profile projection, active_dispatches exact subject refs; R4: reducer emits the contracted row only, with profile-aware environment projection (LOCAL_BUILDER/LOCAL_VALIDATOR/WEB_REVIEWER) and persisted-key mismatch fail-closed; integration regression validates reducer output inside a complete execution-state through schemas/execution-state.schema.json; the withdrawn R3 trim-expectation assertion is replaced by an explicit no-trim pin)
     expect: PASS
-    covers: [B1-B4,B6,B5; C1,C2 (durable-format, never-downgrade); D2,D3,D5; F3,F4; H1,H4,H5; terminal precedence T5 with stale-loser disposition; J1 negative guard; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1,FC2,FC3,FC4,FC5,FC11,FC12]
+    covers: [B1-B4,B6,B5; C1,C2 (durable-format, never-downgrade); D2,D3,D5; F3,F4; H1,H4,H5 (incl. full execution-state schema integration); terminal precedence T5 with stale-loser disposition; J1 negative guard; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1,FC2,FC3,FC4,FC5,FC11,FC12]
   - id: T-protocol-schemas
     command: python scripts/test_protocol_schemas.py
     status: EXTENDED (W9; R2 extended: A1-A10 schema verdicts, A8 projection-verifier rejection, A6 minimum-0 subset support)
@@ -38,8 +38,8 @@ matrix:
     expect: PASS after the authorized guard+manifest co-evolution (case-H mode); historical invariants/negatives preserved; baseline-rewrite remains impossible
   - id: T-owner-convergence
     command: python scripts/test_v410_owner_convergence.py
-    status: CONSCIOUS-UPDATE (W13 Stage 5)
-    expect: PASS after its zero-delta/coupled assertions are updated inside the authorized growth change (documented in that diff)
+    status: CONSCIOUS-UPDATE (W13 Stage 5; R4 currentness sync: historical T06A zero-delta premise explicitly labeled, W13_GROWTH_OWNER_FAMILIES naming, guards documented as accepting exactly the authorized co-evolution)
+    expect: PASS (assertions describe the landed W13 17-entry state)
   - id: T-t04b-focus
     command: python scripts/test_v410_t04b_review_currentness.py
     status: CARRIED

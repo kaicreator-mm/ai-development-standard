@@ -43,7 +43,9 @@ REFERENCE = ROOT / "references" / "V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md
 PACK_R2 = ROOT / ".agent" / "execution" / "V410-T06A-R2"
 
 BASE_SHA = "eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601"
-MANIFEST_BLOB = "21730a0251e35e13591d2c84de1c66d6ab2c2408"
+# Historical pre-W13 manifest blob (T06A-era lineage only; the current candidate
+# manifest moved under the authorized #861 W13 co-evolution — see W13 facts).
+T06A_HISTORICAL_MANIFEST_BLOB = "21730a0251e35e13591d2c84de1c66d6ab2c2408"
 R3_HISTORICAL_HEAD = "e03beedd9d02336407365efa66efc43d34e96954"
 
 V47_ENTRY_IDS = {
@@ -65,8 +67,11 @@ ALIASES = {
     "standards/VERSION_INTEGRATION_WORKFLOW.md": "standards/DEVELOPMENT_WORKFLOW.md",
 }
 
-# T06A-era material owner-family gaps. Under W13 the first six are now registered; reference-convention resolves by explicit composition (§1.2).
-GAP_FAMILIES = (
+# Material v4.10 owner families asserted as the landed W13 state: the first six
+# are registered via the authorized #861 W13 evolution (11 -> 17); the seventh
+# (reference-convention) resolves by explicit composition (§1.2). Historical
+# context: these were the T06A-era discovery rows before that evolution.
+W13_GROWTH_OWNER_FAMILIES = (
     "standards/TASK_DECOMPOSITION_STANDARD.md",
     "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
     "standards/EXECUTION_PACK_STANDARD.md",
@@ -124,10 +129,10 @@ class OwnerResolutionTests(unittest.TestCase):
             reordered["sections"][section] = list(reversed(values))
         self.assertEqual(resolve_registry(reordered, schema, root=ROOT), baseline)
 
-    def test_gap_families_resolved_in_the_reference(self) -> None:
+    def test_growth_owner_families_resolved_in_the_reference(self) -> None:
         # W13 resolution: six families registered via the authorized evolution;
         # reference-convention resolves through the explicit L2 §3 composition.
-        for owner in GAP_FAMILIES[:6]:
+        for owner in W13_GROWTH_OWNER_FAMILIES[:6]:
             with self.subTest(owner=owner):
                 self.assertIn(owner, self.reference)
         self.assertIn("CURRENT (registry growth, #861 W13)", self.reference)
@@ -147,7 +152,7 @@ class OwnerResolutionTests(unittest.TestCase):
             with self.subTest(owner=owner):
                 self.assertIn(owner, self.reference)
 
-    def test_gap_family_rows_are_registered_verbatim(self) -> None:
+    def test_growth_family_rows_are_registered_verbatim(self) -> None:
         entries = self.manifest["semantic_authorities"]["entries"]
         by_id = {entry["entry_id"]: entry for entry in entries}
         expected = {
@@ -178,7 +183,9 @@ class OwnerResolutionTests(unittest.TestCase):
         self.assertEqual({e["entry_id"] for e in entries[11:]}, set(growth_ids))
 
     def test_carried_frozen_inventory_guards_pass_on_the_real_manifest(self) -> None:
-        # The carried v4.8 invariant checks must remain green after the authorized W13 evolution.
+        # Current truth: the carried v4.8 guards accept exactly the authorized
+        # W13 co-evolution while preserving the embedded baseline invariants —
+        # guard and manifest moved together (case-H; RA-01 rewrite impossible).
         self.assertEqual(t48.section_conformance_problems(self.manifest), [])
         self.assertEqual(t48.semantic_registry_problems(self.manifest), [])
 

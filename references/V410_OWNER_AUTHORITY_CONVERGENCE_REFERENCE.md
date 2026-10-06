@@ -11,15 +11,15 @@ This reference is **planning/implementation evidence only**. It is discovery/evi
 
 ## 0. Subject binding (exact)
 
-- Integration subject: `version/v4.10.0` @ `eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601` (tree `09db8216ec49caf84b45f404474cfbf4cb5e6ad2`), the PR #918 merge (V410-T04B R4).
-- Manifest subject: `standard-manifest.json` @ blob `21730a0251e35e13591d2c84de1c66d6ab2c2408` — unchanged by T06A (zero delta; the focused test asserts this by blob identity).
+- **Current candidate (post-W13, current):** PR #927 (`task/v4.10.0-v410-t06b-machine-projection` T06B repair lineage). The current registry subject is `standard-manifest.json` @ blob `c4fc9ecf9bfdedf10cfe5da5f05818d27e45757a` with exactly **17** `semantic_authorities` entries (11 carried + 6 authorized #861 W13 growth rows); the convergence reference and its three verification files are registered (§3). Current-state claims in this reference bind to that readback.
+- **Historical T06A-origin binding (provenance only, never current):** integration subject `version/v4.10.0` @ `eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601` (tree `09db8216ec49caf84b45f404474cfbf4cb5e6ad2`), the PR #918 merge (V410-T04B R4); its manifest subject `standard-manifest.json` @ blob `21730a0251e35e13591d2c84de1c66d6ab2c2408` is the **pre-W13** registry that T06A left unchanged (zero delta **at that historical subject**). That zero-delta premise was consciously superseded by the authorized #861 W13 co-evolution and is kept here as labeled lineage, not as a current claim.
 - Historical candidates remain reachable history, never current authority: T04B R3 candidate `e03beedd9d02336407365efa66efc43d34e96954` (superseded by R4), PR #901 @ `82ac1e909875bea1b4838cf010f768e601802ca8`, PR #881 evidence. `R3_GATE_TRANSFER=NO`; historical PASS never satisfies a successor subject.
 - Snapshot/refresh order for re-reads: `docs/implementation/4.10.0/L2_ARCHITECTURE_EVIDENCE.md` @ blob `b03f12700153e128f4a4c02b7e8d7adf960fd7d3` (Frozen L2 v0.2, #842).
 
 ## 1. Owner convergence matrix (L2 §5.1 shape)
 
 `STATUS=CURRENT|COMPATIBILITY_ONLY|DEPRECATED|HISTORICAL_ONLY|SUPERSEDED|GAP|CONFLICT`;
-`ACTION=KEEP|HARDEN_OWNER|REWIRE_PROJECTION|CLASSIFY_LEGACY|REMOVE_IF_AUTHORIZED|STOP_FOR_DISPOSITION`; `R: <task-id>@<40-hex>` = exact-blob evidence refs.
+`ACTION=KEEP|HARDEN_OWNER|REWIRE_PROJECTION|CLASSIFY_LEGACY|REMOVE_IF_AUTHORIZED|STOP_FOR_DISPOSITION`; `R: <task-id>@<40-hex>` = exact-blob evidence refs. Evidence refs of the form `manifest@21730a02` cite the **historical pre-W13 registry lineage** (blob `21730a0251e35e13591d2c84de1c66d6ab2c2408`); the current registry subject is manifest blob `c4fc9ecf9bfdedf10cfe5da5f05818d27e45757a` (17 entries, §0/§3) and every carried entry cited below is present in that current readback.
 
 ### 1.1 Concerns with a current discovery row (registry intact)
 
@@ -34,7 +34,7 @@ This reference is **planning/implementation evidence only**. It is discovery/evi
 | architecture decisions | `standards/ARCHITECTURE_DESIGN_STANDARD.md` + Frozen L2 #842 | L2 evidence; UNKNOWNs | — | — | L2 v0.1 (#815/#816) HISTORICAL_ONLY | CURRENT | KEEP | R:ARCHITECTURE_DESIGN_STANDARD.md@66218c8a2779a9f84c67433426b9c5512f9f831a; L2@b03f12700153e128f4a4c02b7e8d7adf960fd7d3 |
 | architecture research / demo | `standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` | Stage 2 research evidence | — | — | — | CURRENT | KEEP | R:ARCHITECTURE_RESEARCH_DEMO_STANDARD.md@acf9be390a3cad77abbcccc9ce3b953cc1acad2a; manifest entry `research-demo`@21730a02 |
 | CI execution / evidence | `standards/CI_EXECUTION_STANDARD.md` | CI evidence projections (never authority) | `schemas/agent-event-v2.schema.json` CI events | — | — | CURRENT | KEEP | R:CI_EXECUTION_STANDARD.md@9360315bc61a6672fbef6208750642154ebe7b48; CI_EVIDENCE_STANDARD.md@35f387f257aac5505a1153abf7180dfd83daa556 |
-| owner discovery (composition) | `standard-manifest.json#semantic_authorities` + `standards/REFERENCE_CONVENTION_STANDARD.md` (explicit L2 composition rule) | sections inventory; registry entries; this reference as evidence | `schemas/authority-applicability-entry-v1.schema.json` | one-hop aliases (§1.3) | carried v4.7/v4.8 discovery assets (§2, all CURRENT_CARRIED_FORWARD) | CURRENT | KEEP | R:standard-manifest.json@21730a0251e35e13591d2c84de1c66d6ab2c2408; REFERENCE_CONVENTION_STANDARD.md@ba6a95b124c1804ea4e13c5c6d058e9ade2cc905 |
+| owner discovery (composition) | `standard-manifest.json#semantic_authorities` + `standards/REFERENCE_CONVENTION_STANDARD.md` (explicit L2 composition rule) | sections inventory; registry entries; this reference as evidence | `schemas/authority-applicability-entry-v1.schema.json` | one-hop aliases (§1.3) | carried v4.7/v4.8 discovery assets (§2, all CURRENT_CARRIED_FORWARD) | CURRENT | KEEP | R:standard-manifest.json@c4fc9ecf9bfdedf10cfe5da5f05818d27e45757a (current readback; pre-W13 lineage `21730a02`); REFERENCE_CONVENTION_STANDARD.md@ba6a95b124c1804ea4e13c5c6d058e9ade2cc905 |
 
 ### 1.2 Material v4.10 owner families — registry growth LANDED (resolved by the authorized W13 evolution)
 
@@ -42,7 +42,7 @@ The T06A-era coverage gap is CLOSED: six families received `semantic_authorities
 
 | CONCERN | CANONICAL_OWNER | PROJECTION_SURFACES | MACHINE_CONTRACTS | COMPATIBILITY_ALIASES | LEGACY_SURFACES | STATUS | ACTION | EVIDENCE_REFS |
 |---|---|---|---|---|---|---|---|---|
-| task decomposition / Agent-dispatchable granularity | `standards/TASK_DECOMPOSITION_STANDARD.md` | Task Pack R1 §V410-T06A; L2 §8 | — | — | — | CURRENT (registry growth, #861 W13) | KEEP | R:TASK_DECOMPOSITION_STANDARD.md@f355c020f07828a62ad617ffa80cb40b708ab4d4; registry check: no entry (manifest@21730a02) |
+| task decomposition / Agent-dispatchable granularity | `standards/TASK_DECOMPOSITION_STANDARD.md` | Task Pack R1 §V410-T06A; L2 §8 | — | — | — | CURRENT (registry growth, #861 W13) | KEEP | R:TASK_DECOMPOSITION_STANDARD.md@f355c020f07828a62ad617ffa80cb40b708ab4d4; registry check: registered as `task-decomposition` (current manifest `c4fc9ecf...`, added by #861 W13; no row existed at pre-W13 `manifest@21730a02` — historical lineage only) |
 | live DAG mutation / currentness | `standards/TASK_DAG_GOVERNANCE_STANDARD.md` | #848 refined DAG; #916 scheduler checkpoints | — | — | — | CURRENT (registry growth, #861 W13) | KEEP | R:TASK_DAG_GOVERNANCE_STANDARD.md@e2ecfdbf0cd79f750aff40276e46a59159465f78 |
 | Task / Execution Pack | `standards/EXECUTION_PACK_STANDARD.md` | Execution Packs (`.agent/execution/*`); pack classification tokens | `schemas/execution-pack-manifest.schema.json` | — | R1 pack (metadata-corrected; superseded for execution by R2) | CURRENT (registry growth, #861 W13) | KEEP | R:EXECUTION_PACK_STANDARD.md@c7bd2e4ffb87a0ac7fabc54fd78c4eb1fae6ef0d |
 | implementation quality / maintainability | `standards/IMPLEMENTATION_QUALITY_STANDARD.md` | diff-hygiene/change-summary guidance (non-gating) | — | — | — | CURRENT (registry growth, #861 W13) | KEEP | R:IMPLEMENTATION_QUALITY_STANDARD.md@3beba2d0324d95674b7bad2ef621e2aa81c66563 |
@@ -57,9 +57,9 @@ The T06A-era coverage gap is CLOSED: six families received `semantic_authorities
 | `standards/GITHUB_WORKFLOW.md` | `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` | `github-agent-coordination` | COMPATIBILITY_ONLY | CLASSIFY_LEGACY | R:GITHUB_WORKFLOW.md@a96d9c186b21cc20726d9e4f60709ed173e77dac |
 | `standards/VERSION_INTEGRATION_WORKFLOW.md` | `standards/DEVELOPMENT_WORKFLOW.md` | `development-lifecycle` | COMPATIBILITY_ONLY | CLASSIFY_LEGACY | R:VERSION_INTEGRATION_WORKFLOW.md@60e2bdee7f07c57bee17d792dc9c4e53bae514fb |
 
-## 2. Legacy classification (carried version-labelled assets at exact subject `eea3e69`)
+## 2. Legacy classification (historical T06A-origin snapshot at exact subject `eea3e69`)
 
-Basis is live successor/currentness evidence, never the version label. All blobs below are byte-identical to the LOCAL owner snapshot (`#860@6012773360`); none is rewritten, deleted or reinterpreted.
+Basis is live successor/currentness evidence, never the version label. **This section is the historical T06A-origin snapshot**: at that exact pre-W13 subject the carried blobs below were byte-identical to the LOCAL owner snapshot (`#860@6012773360`) and none was deleted or reinterpreted. **Current truth (W13 candidate):** they remain carried unchanged **except** `scripts/test_v48_registry_adoption.py`, which is consciously evolved by the authorized #861 W13 guard evolution — its row below records the split provenance (pre-W13 baseline blob vs. authorized current evolution); nothing was deleted or reinterpreted.
 
 | ASSET | DISPOSITION | EVIDENCE |
 |---|---|---|
@@ -68,7 +68,7 @@ Basis is live successor/currentness evidence, never the version label. All blobs
 | `references/V48_REGISTRY_ADOPTION_REFERENCE.md`@375ac48e43b5f5588f9e128b318ae0c164262237 | CURRENT_CARRIED_FORWARD | registered carrier + `test_v48_registry_adoption` chaining green on base |
 | `scripts/test_v47_authority_registry.py`@731e3fd4b00145dfe3ebf50f8322016b2d420a0c | CURRENT_CARRIED_FORWARD | enforced resolver semantics reused by this task's focused test |
 | `scripts/test_v47_compatibility_aliases.py`@80d9f4832ad0b81b393216aa7132433e6a06b116 | CURRENT_CARRIED_FORWARD | enforced alias conformance, green on base |
-| `scripts/test_v48_registry_adoption.py`@55f78fd9b88bb0e4efd97790b9586beb78e06206 | CURRENT_BASELINE_THEN_AUTHORIZED_W13_EVOLUTION | the cited blob is the pre-W13 carried guard baseline; the current candidate consciously evolves this file under #861 W13 (six growth rows + authorized section additions + exact-count guard) while preserving all v4.8 historical invariants and RA-01/RA-02/RA-05 negative protections |
+| `scripts/test_v48_registry_adoption.py`@55f78fd9b88bb0e4efd97790b9586beb78e06206 | CURRENT_BASELINE_THEN_AUTHORIZED_W13_EVOLUTION | the cited blob is the pre-W13 carried guard baseline; the current candidate consciously evolves this file (current blob `358bf0aeb4b7b1fb87511d6aca80b2c7539abd81`) under #861 W13 — six growth rows + authorized section additions + exact-count guard (`V410_T06A_GROWTH_ENTRIES` / `AUTHORIZED_SECTION_ADDITIONS` / `BASELINE_SECTIONS`), an authorized evolution, NOT a whole-file byte-identity requirement — while preserving all v4.8 historical invariants and RA-01/RA-02/RA-05 negative protections |
 | `scripts/test_v47_reference_conventions.py`@bf6888bd0171f1d560766120eeeaa9ffc6802c05 | CURRENT_CARRIED_FORWARD | enforced reference conventions, green on base |
 | `standards/GITHUB_WORKFLOW.md`@a96d9c186b21cc20726d9e4f60709ed173e77dac | COMPATIBILITY_ONLY (one-hop alias) | manifest `compatibility_entries`@21730a02 |
 | `standards/VERSION_INTEGRATION_WORKFLOW.md`@60e2bdee7f07c57bee17d792dc9c4e53bae514fb | COMPATIBILITY_ONLY (one-hop alias) | manifest `compatibility_entries`@21730a02 |
@@ -96,7 +96,7 @@ R12 Discoverability/compatibility       -> standard-manifest.json + REFERENCE_CO
 
 All §1 and §2 rows cite exact 40-hex blob evidence. Projections remain subordinate to their semantic owners; no row in this reference may be read as carrying authority (§0 declarations).
 
-## 5. T06B routing (recorded, not fixed here)
+## 5. T06B routing (T06A-era historical provenance; consumed — no open current route)
 
-- `ACTION=REWIRE_PROJECTION` observations routed to #861: (a) §3 registry-growth/frozen-inventory-guard evolution; (b) the Execution Pack TEST_MATRIX note in `V410-T06A-R1` claiming "new reference/test must be registered (manifest sections + verification) before verify_standard passes" is factually wrong — `scripts/verify_standard.py` verifies declared paths exist and does not require undeclared files to be registered (read it); recorded as a projection/instruction defect for the conformance-wiring owner.
+- `ACTION=REWIRE_PROJECTION` observations routed to #861 (T06A-era routing, kept as labeled historical provenance only): (a) §3 registry-growth/frozen-inventory-guard evolution — **resolved** by the authorized W13 co-evolution (§3); (b) the Execution Pack TEST_MATRIX note in `V410-T06A-R1` claiming "new reference/test must be registered (manifest sections + verification) before verify_standard passes" was factually wrong at its subject — `scripts/verify_standard.py` verifies declared paths exist and does not require undeclared files to be registered — and is **consumed** by the T06B lineage (#861): the current T06B pack carries no such claim, and the registration facts are machine-asserted by the W13-registered suites. Neither item is an open current route from this reference.
 - No schema/template/prompt/checklist/golden/verifier/CI change is made or proposed by T06A.

@@ -669,10 +669,15 @@ def admission_generation_conforms(
 def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[dict]:
     """Project the NON_AUTHORITATIVE active_dispatches rows stably.
 
-    Input-only routing fields (repository/task) are used to derive the protected
-    claim key but are never emitted. Every output row is the contracted W2
-    schema projection: normalized compatibility group, derived claim key,
-    nullable environment/claimer, plus exact subject refs when supplied.
+    Input-only routing fields (repository/task/execution_profile) are used to
+    derive the protected claim key and the projected environment but are never
+    emitted. Every output row is the contracted W2 schema projection: the
+    profile-aware environment (A7/A9; legacy LOCAL_BUILDER/LOCAL_VALIDATOR/
+    WEB_REVIEWER project through ``project_dispatch_environment``), the
+    normalized compatibility group, the deterministically re-derived claim key,
+    nullable claimer, plus exact subject refs when supplied. A persisted
+    ``protected_claim_key`` (or scheduler-supplied ``claim_key``) that does not
+    match the re-derivation fails closed (B5/B6) instead of being copied.
     """
     rows: list[tuple[str, str, dict]] = []
     for entry in entries:
@@ -691,11 +696,10 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
         if not isinstance(task, str) or not task:
             raise ValueError("active dispatch row missing task")
 
-        execution_environment = entry.get("execution_environment")
-        if execution_environment not in {None, "WEB", "LOCAL"}:
-            raise ValueError(
-                f"active dispatch row has invalid execution_environment: {execution_environment!r}"
-            )
+        # A7/A9: the emitted environment always comes from the profile-aware
+        # projection, never from the raw field. The helper-internal UNKNOWN
+        # sentinel is emitted as null: the row contract permits WEB|LOCAL|null.
+        environment = project_dispatch_environment(entry)
         compatibility_group = normalize_group(entry.get("compatibility_group"))
         claimed_by = entry.get("claimed_by")
         if claimed_by is not None and (
@@ -704,10 +708,18 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
             raise ValueError(f"active dispatch row has invalid claimed_by: {claimed_by!r}")
 
         key = derive_claim_key(repository, task, str(role), compatibility_group)
+        # B5/B6: a persisted key is audit provenance only; it must equal the
+        # deterministic re-derivation or the reducer fails closed (a supplied
+        # claim_key authority field is rejected outright by the helper).
+        if not protected_claim_key_conforms(entry):
+            raise ValueError(
+                f"active dispatch row {dispatch_id!r} carries a stale, mismatched "
+                "or scheduler-supplied protected_claim_key; fail closed (B5/B6)"
+            )
         row = {
             "dispatch_id": dispatch_id,
             "role": role,
-            "execution_environment": execution_environment,
+            "execution_environment": None if environment == "UNKNOWN" else environment,
             "compatibility_group": compatibility_group,
             "protected_claim_key": key,
             "claimed_by": claimed_by,
