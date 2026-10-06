@@ -1,22 +1,18 @@
-task: T-015
-required:
-  - id: logical-claims-positive
-    proves: logical executor/operator/model capability claims are representable provider-neutrally
-  - id: infrastructure-owner-negative
-    proves: OS/toolchain/device/resource/network/concurrency inventories cannot migrate into this profile owner
-  - id: provider-provenance-negative
-    proves: provider/model labels do not imply correctness, authority or universal routing rank
-  - id: skill-proof-negative
-    proves: Skill Metadata/procedure metadata is not capability proof
-  - id: credential-authority-negative
-    proves: tool or credential possession grants no side-effect authority
-  - id: no-fourth-family-negative
-    proves: Availability/Exchange is not materialized as a new family here
-  - id: focused-suite
-    command: python -B scripts/test_v48_agent_capability_profile.py
-  - id: protocol-regression
-    command: python -B scripts/test_protocol_schemas.py
-  - id: repository-verifier
-    command: python -B scripts/verify_standard.py
-validation: independent schema and owner-boundary validation on final exact PR HEAD
-review: fresh exact-HEAD review required after validation
+task_id: T-015
+tests:
+  - id: I01
+    oracle: predecessor-lineage exact identity check executable — every merged v4.9 task output + recovered family bound at the exact base with exact refs
+  - id: I02
+    oracle: representative positive/negative orchestration journeys execute deterministically from the T-007 kernel + T-012 conformance surfaces
+  - id: I03
+    oracle: normative docs/contracts/tests/registry reconciliation checks pass at the candidate (consistency across surfaces)
+  - id: I04
+    oracle: handoff completeness — no NOT_RUN/BLOCKED converted to PASS; no unsupported generality claim for unexercised mechanisms; downstream generality NOT_SATISFIED unless the qualifying contract is met
+  - id: I05
+    oracle: all safety negatives zero for any run used as generality evidence; no stale predecessor/evidence binding laundered
+  - id: I06
+    oracle: handoff documents contain no Version Closure / Release Qualification verdict (inputs only)
+required_builder_checks:
+  - python -B scripts/verify_standard.py
+  - python -B scripts/test_v49_integrated_dogfood.py
+validation_must_rebind_sources: true
