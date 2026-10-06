@@ -1,0 +1,79 @@
+{
+  "fixture_id": "manual-reference-flow/walkthroughs",
+  "description": "Machine-readable mirror of the five walkthroughs in references/MANUAL_REFERENCE_FLOW_V49.md (W-A manual currentness, W-B deterministic recompute, W-C claim admission and race resolution, W-D adverse-finding carry-forward, W-E JIT phase admission worked on T-013). Each step reads durable facts from fixtures/manual-reference-flow/durable_facts.json and, where a conclusion is drawn, marks it as a projection from fixtures/manual-reference-flow/derived_projections.json.",
+  "walkthroughs": [
+    {
+      "walkthrough_id": "W-A",
+      "title": "manual currentness check before an authority-bearing transition",
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
+      ],
+      "steps": [
+        {"action": "read the plan document at its exact repository path", "reads": ["F-PLAN-BINDING"]},
+        {"action": "re-derive each bound component digest from current facts", "reads": ["F-SUBJECT-SHA", "F-PLAN-BINDING"]},
+        {"action": "classify per the owner rule", "reads": ["F-SUBJECT-SHA", "F-PLAN-BINDING"], "derived": ["D-PLAN-CURRENTNESS-POSTURE"]},
+        {"action": "proceed only on CURRENT; otherwise recompute/rebind, stronger path, or BLOCKED", "reads": []}
+      ]
+    },
+    {
+      "walkthrough_id": "W-B",
+      "title": "manual deterministic recompute of the JIT verdict",
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+      ],
+      "steps": [
+        {"action": "P1 read native blocked-by dependency states", "reads": ["F-NATIVE-DEPENDENCY"]},
+        {"action": "P2 verify each required predecessor surface resolves byte-identical at the current base", "reads": ["F-FROZEN-BLOB", "F-SUBJECT-SHA"]},
+        {"action": "P3 check Task-envelope declaration and composite admission", "reads": ["F-TASK-PACK"]},
+        {"action": "derive the verdict as a pure function of P1-P3", "reads": [], "derived": ["D-JIT-VERDICT", "D-WAITING-LINEAGE"]}
+      ]
+    },
+    {
+      "walkthrough_id": "W-C",
+      "title": "manual claim admission and race resolution",
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#11-dispatch-lifecycle-atomic-claim-and-staleness",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#111-required-claim-serialization-capability",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+      ],
+      "steps": [
+        {"action": "re-read the dispatch record on the Issue", "reads": ["F-DISPATCH-RECORD"]},
+        {"action": "re-run plan currentness consumption", "reads": ["F-PLAN-BINDING", "F-SUBJECT-SHA"], "derived": ["D-PLAN-CURRENTNESS-POSTURE"]},
+        {"action": "post the claim; platform serialization linearizes at most one claim", "reads": ["F-CLAIM-RECORD"]},
+        {"action": "competitor re-reads and is rejected as duplicate/stale without publishing anything", "reads": ["F-CLAIM-RECORD"]}
+      ]
+    },
+    {
+      "walkthrough_id": "W-D",
+      "title": "adverse-finding carry-forward without review shopping",
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects"
+      ],
+      "steps": [
+        {"action": "read the durable unresolved-finding set", "reads": ["F-UNRESOLVED-FINDING"]},
+        {"action": "observe that a new reviewer, model, route, SHA, or unrelated PASS never removes an unresolved finding", "reads": ["F-UNRESOLVED-FINDING"], "derived": ["D-LATEST-VERDICT-CHRONOLOGY"]},
+        {"action": "re-review only against a successor subject from an authorized repair path, carrying every relevant unresolved finding", "reads": ["F-UNRESOLVED-FINDING"]},
+        {"action": "close a finding only via per-finding successor verification or owning-authority disposition", "reads": ["F-UNRESOLVED-FINDING"]}
+      ]
+    },
+    {
+      "walkthrough_id": "W-E",
+      "title": "JIT phase admission worked on this Task (T-013)",
+      "owner_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
+        "standards/TASK_DAG_GOVERNANCE_STANDARD.md"
+      ],
+      "steps": [
+        {"action": "P1 native dependencies T-008/T-010/T-011 read DONE from GitHub native facts", "reads": ["F-NATIVE-DEPENDENCY"]},
+        {"action": "P2 full sequential predecessor lineage physically present; frozen blobs byte-identical at base and pack head", "reads": ["F-FROZEN-BLOB", "F-SUBJECT-SHA"]},
+        {"action": "P3 concern and write set declared by DAG v0.1 section T-013 and the current Task Pack; execution pack materialized; composite admission passed", "reads": ["F-TASK-PACK"]},
+        {"action": "verdict READY derived; JIT branch and pack materialized as execution-container bookkeeping; pointer-only trigger emitted", "reads": [], "derived": ["D-JIT-VERDICT"]}
+      ]
+    }
+  ]
+}

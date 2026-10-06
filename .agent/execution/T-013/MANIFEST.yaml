@@ -1,28 +1,27 @@
-pack_id: v4.8.0-T-013-jit
+pack_id: v4.9.0-T-013-jit
 repository: kaicreator-mm/ai-development-standard
-version: 4.8.0
+version: 4.9.0
 task_id: T-013
-parent_issue: "#519"
-branch: task/v4.8.0-t13-cross-project-evolution-dogfood
-base_sha: 4c49487423e4aabc7bb1e296da74eee2a6f55da8
-base_tree: 4cb78609ef805559e3fcd023dc4215a7e596d149
-task_pack_ref: docs/implementation/4.8.0/task-packs/T13_cross_project_evolution_dogfood.md
-task_pack_blob: 9b96b567e8b0fec23cab08502f5dd9a907c4ef59
-l3_ref: docs/implementation/4.8.0/L3_REFERENCE_PACKS.md
-l3_blob: 8af06fd5bd7237b260fe478c23cb410c0e15898f
-preflight_ref: "#519@5972662840"
+parent_issue: "#732"
+branch: task/v4.9.0-t13-manual-reference-flow
+base_sha: d53e943ec7109648485b64a647ed2c7cf553531d
+base_tree: 5ad2dbd8c312a67bb050a3199ab9b29b70c23406
+frozen_product_blob: a8ec7030a14337a4c2dca853dc474e965679d610
+frozen_l2_blob: bd41ea0175b459a6a490fd37ad579e429a58a1c3
+frozen_dag_v02_blob: b9fe0cc7089f64929b4bcf45f7230d950e864db2
+task_pack_ref: docs/implementation/4.9.0/task-packs/T13_manual_reference_flow.md
+l3_ref: docs/implementation/4.9.0/L3_REFERENCE_PACKS.md
+lineage_refs: [LG_SEQ_FULL]
+lineage_last_check_ref: "#745 lineage recompute + composition PR #792 + all merges through T-012 base (d53e943e); full sequential predecessor lineage physically present at base (LG_SEQ_FULL = v4.2-v4.8 integrated surfaces + v4.9 working line)"
+jit_note: prior-program (v4.8) execution records at .agent/execution/T-013/ relocated byte-identical to .agent/execution/_legacy/v4.8/T-013/ per the #792/#788 canonical-path scheme
 native_blockers: 0
-review_policy: required
-validation_owner: independent-from-builder
-validation_scope: cross-project-currentness-privacy-evidence-strength
+review_policy: recommended
+validation_owner: reference-and-example-checks
+validation_scope: docs-reference-link-and-example-checks
 builder_write_set:
-  - docs/implementation/4.8.0/dogfood/evolution/EVIDENCE_MATRIX.json
-  - docs/implementation/4.8.0/dogfood/evolution/EVOLUTION_DOGFOOD_REPORT.md
-  - docs/implementation/4.8.0/dogfood/evolution/VALIDATION_HANDOFFS.md
-read_only_sources:
-  - kaicreator-mm/ai-development-standard#469
-  - kaicreator-mm/domain-ux#162
-  - kaicreator-mm/runx#143
+  - references/MANUAL_REFERENCE_FLOW_V49.md
+  - fixtures/manual-reference-flow/**
+  - scripts/test_v49_manual_reference_flow.py
 core_artifacts:
   - .agent/execution/T-013/MANIFEST.yaml
   - .agent/execution/T-013/EXECUTION_CONTRACT.md
