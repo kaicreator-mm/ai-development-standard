@@ -56,6 +56,29 @@ authoritative remote at the rebind      version/v4.10.0 = eea3e69 (unchanged); b
 
 After this round's pack commit: `test_candidate_diff_shape_is_exact` fails on the rebind tip by design (six added pack paths) and `PACK_CURRENT` re-reads hold for R1 and R3; the Builder's repair restores green at the candidate.
 
+## 3.1 Authorized-evolution and evolution-channel probes (first-hand, scratch detached worktree at the rebind tip)
+
+```text
+case H  guard AUTHORIZED_SECTION_ADDITIONS += the two T06A surfaces
+        AND manifest sections.references/verification += the same two paths
+        guard suite      OK (19 tests)
+        verify_standard  PASS (manifest files 222)
+        focused suite    FAILED (failures=4) -> C1 diff-shape, C5 guard-not-amended,
+                         C2 manifest-blob-identity, C4 not-registered
+        => the authorized evolution is mechanically possible and stays green where it must;
+           the R2 suite's four candidate-scope assertions are precisely what must be repaired (P1)
+
+probe   embedded BASELINE_SECTIONS += the same two paths (baseline mutation instead of the
+        authorized channel)
+        guard suite      FAILED (failures=1) -> RA-01 "embedded BASELINE_SECTIONS no longer match
+                         the frozen base manifest"
+        => growth is additive-only through the authorized channel; green-by-deletion/baseline-rewrite
+           is impossible by guard design, which is why the section-2 disposition scopes N7 to T06A
+           rather than to the authorized T06B evolution
+
+scratch removed after measurement (git worktree remove); no tree outside _tmp was mutated
+```
+
 ## 4. T06B boundary (unchanged)
 
 schemas/agent-event-v2, review-finding-v1, review-aggregation-v1, templates, prompts, checklists, golden, verifier/CI wiring, registry growth and frozen-inventory-guard evolution, execution-environment WEB|LOCAL refinement = **#861**. Any residual stale projection is recorded as `ACTION=REWIRE_PROJECTION` and routed, never repaired here.
