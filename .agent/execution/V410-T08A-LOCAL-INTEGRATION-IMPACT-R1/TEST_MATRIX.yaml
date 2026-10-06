@@ -1,0 +1,52 @@
+task_id: V410-T08A
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: integration_impact_verification
+    command: python scripts/test_v410_t08a_integration_impact.py
+    full_run: true
+  - id: standard_sanity
+    command: python scripts/verify_standard.py
+    full_run: true
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    full_run: true
+  - id: interface_compatibility
+    command: python scripts/test_v42_interface_compatibility.py
+    full_run: true
+  - id: task_decomposition
+    command: python scripts/test_v43_task_decomposition.py
+    full_run: true
+  - id: stage1_lifecycle
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+    full_run: true
+  - id: implementation_quality
+    command: python scripts/test_v410_t03a_implementation_quality.py
+    full_run: true
+  - id: product_projections
+    command: python scripts/test_v410_t01b_product_projections.py
+    full_run: false
+    note: executed green in this prep unit; authoritative full run occurs at T08A integration time
+  - id: gate_repair_routing
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+    full_run: false
+    note: executed green in this prep unit; authoritative full run occurs at T08A integration time
+  - id: collaboration_control
+    command: python scripts/test_v410_t02a_collaboration_control.py
+    full_run: false
+    note: post-T02B-R2 version; authoritative full run occurs at T08A integration time
+  - id: machine_projection
+    command: python scripts/test_v410_t02b_machine_projection.py
+    full_run: false
+    note: executed green in this prep unit; authoritative full run occurs at T08A integration time
+  - id: shared_code_safety
+    command: python scripts/test_v410_t05a_shared_code_safety.py
+    full_run: false
+    note: executed green in this prep unit; authoritative full run occurs at T08A integration time
+negative_invariants:
+  - no_hidden_semantic_fixes_under_integration
+  - visible_pass_is_not_hidden_or_rq_pass
+  - semantic_defects_routed_to_owning_concern
+  - no_product_l2_or_dag_mutation_without_authority
+  - no_hidden_validation_or_rq_verdict_fabrication
+  - integration_prep_does_not_satisfy_t07b_admission_gate
+  - impact_analysis_current_only_at_pinned_base_sha

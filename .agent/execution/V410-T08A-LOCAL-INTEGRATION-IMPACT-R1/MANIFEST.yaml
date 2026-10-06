@@ -1,0 +1,50 @@
+pack_id: V410-T08A-LOCAL-INTEGRATION-IMPACT-R1
+task_id: V410-T08A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T08A
+branch: task/v4.10.0-v410-t08a-local-integration-impact-r1
+parent_issue: "#864"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T15:40:29+06:30"
+dependency_completion:
+  - V410-T01A@df1ee51a0d6d1c30092c01102ca320db51091535
+  - V410-T02A@2276afe7fdd057f300386ab19925ae37a4065684
+  - V410-T03A@46fe74936cd88184bbd898643851b585d3299291
+  - V410-T03B@98ccd07ee18f3a8a8f10e91e04295324ebb130d8
+  - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T02B-R2@fee097db238b60d97ab2d449dcf210488d03814f
+  - V410-T05A-R3@30334e8c7b90a327f8597b86c88c785b98df07f7
+  - note: V410-T04B (PR #918 open) and V410-T05B pending; V410-T08A admission stays gated on V410-T07B
+material_paths:
+  - scripts/test_v410_stage1_lifecycle_contracts.py
+  - scripts/test_v410_t02a_collaboration_control.py
+  - scripts/test_v410_t02b_machine_projection.py
+  - scripts/test_v410_t03a_implementation_quality.py
+  - scripts/test_v43_task_decomposition.py
+  - scripts/test_v410_t01b_product_projections.py
+  - scripts/test_v410_t04a_gate_repair_routing.py
+  - scripts/test_v410_t05a_shared_code_safety.py
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - standards/IMPLEMENTATION_QUALITY_STANDARD.md
+  - standards/TASK_DECOMPOSITION_STANDARD.md
+  - standards/VALIDATION_STANDARD.md
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - schemas/dispatch.schema.json
+  - schemas/agent-event-v2.schema.json
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+  - INTEGRATION_IMPACT.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

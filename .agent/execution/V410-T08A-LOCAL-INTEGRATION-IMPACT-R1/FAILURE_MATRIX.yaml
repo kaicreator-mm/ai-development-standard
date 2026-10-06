@@ -1,0 +1,26 @@
+task_id: V410-T08A
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or Task Pack identity is invalid
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: integration base changes (e.g. T04B #918 or T05B merges) before this analysis is consumed
+    action: stop; re-run impact analysis and conformance list against the new exact candidate
+  - id: SEMANTIC_DEFECT_FOUND
+    when: a visible suite fails on the integrated candidate and the defect belongs to an upstream owner
+    action: route defect to owning concern via repair/DAG governance; do not fix invisibly inside integration wiring
+  - id: COMPOSITION_CONTRADICTION
+    when: two predecessor merges assert contradictory semantics on the same surface
+    action: stop; escalate to owning authorities for explicit disposition; fail closed
+  - id: OUT_OF_SCOPE_MUTATION
+    when: integration work attempts Product/L2/DAG/standard/schema/authority mutation
+    action: stop; route to owning authority
+  - id: PROVENANCE_FAILURE
+    when: contract claim is absent/late relative to first file mutation of this unit
+    action: invalidate candidate provenance; successor execution required
+  - id: VERDICT_FABRICATION
+    when: visible integration PASS is presented as Hidden Validation or Release Qualification PASS
+    action: invalidate candidate; visible PASS is neither and must never be labeled as such
+  - id: PREMATURE_ADMISSION
+    when: T08A admission is attempted while V410-T07B gate or outstanding predecessors (T04B/T05B) are unresolved
+    action: stop; admission stays gated per Task Pack dependencies
