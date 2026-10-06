@@ -1,0 +1,51 @@
+pack_id: V410-T07B-LOCAL-EVIDENCE-INPUT-INVENTORY-R1
+task_id: V410-T07B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T07B
+branch: task/v4.10.0-v410-t07b-local-evidence-input-inventory-r1
+parent_issue: "#863"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T15:41:00+06:30"
+dependency_completion:
+  integrated:
+    - V410-T01A@df1ee51a0d6d1c30092c01102ca320db51091535
+    - V410-T01B@3d735304f40064128554ff4dca24b45c37149f6b
+    - V410-T02A@2276afe7fdd057f300386ab19925ae37a4065684
+    - V410-T02B@fee097db238b60d97ab2d449dcf210488d03814f
+    - V410-T03A@46fe74936cd88184bbd898643851b585d3299291
+    - V410-T03B@98ccd07ee18f3a8a8f10e91e04295324ebb130d8
+    - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+    - V410-T05A-R3@30334e8c7b90a327f8597b86c88c785b98df07f7
+  pending:
+    - V410-T06A
+    - V410-T06B
+    - V410-T07A
+    - V410-T08A
+    - V410-V01
+  pending_notes:
+    - V410-T07A is the direct admission dependency of V410-T07B and is not integrated at base_sha; this pack is a local preparation unit and marks T07A-produced inputs PENDING.
+    - V410-V01 validation is FROZEN_CONTRACT_NOT_YET_DISPATCHABLE at base_sha; its output is a PENDING input.
+material_paths:
+  - docs/implementation/4.10.0/PRD.md
+  - docs/implementation/4.10.0/PRODUCT_FREEZE.md
+  - docs/implementation/4.10.0/L2_FREEZE.md
+  - docs/implementation/4.10.0/REFINED_TASK_DAG_FREEZE_R1.md
+  - docs/implementation/4.10.0/V410_V01_VALIDATION_CONTRACT.md
+  - docs/implementation/4.10.0/TASK_PACKS_R1.md
+  - docs/implementation/4.10.0/TASK_DAG.md
+  - scripts/test_v410_t07b_evidence_input_inventory.py
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - EVIDENCE_INPUT_INVENTORY.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

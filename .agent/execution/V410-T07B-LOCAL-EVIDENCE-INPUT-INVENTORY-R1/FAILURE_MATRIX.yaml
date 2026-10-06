@@ -1,0 +1,24 @@
+task_id: V410-T07B
+pack_id: V410-T07B-LOCAL-EVIDENCE-INPUT-INVENTORY-R1
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: base_sha, branch, Task Pack identity or parent issue binding is invalid
+    action: stop before any pack mutation; controller rebuilds pack
+  - id: PROVENANCE_FAILURE
+    when: user dispatch claim is not recorded in EXECUTION_CONTRACT.md before other pack files
+    action: invalidate pack; successor execution required
+  - id: CURRENTNESS_DRIFT
+    when: HEAD differs from 30334e8c7b90a327f8597b86c88c785b98df07f7 at verification time
+    action: stop; rebind inventory to the new exact base before use
+  - id: DEPENDENCY_ADMISSION_GAP
+    when: V410-T07A-produced inputs are treated as AVAILABLE before T07A is actually integrated
+    action: keep them PENDING with owning concern V410-T07A; never backfill from expectation
+  - id: FALSE_AVAILABILITY
+    when: a PENDING input is marked AVAILABLE or a producer path marked AVAILABLE does not exist at base_sha
+    action: verification script exits non-zero; inventory must be corrected
+  - id: AUTHORITY_USURPATION
+    when: any CI/Review/Release/Closure/Controller/Reviewer/model-vote surface is listed as producer of the freeze decision
+    action: stop; route to Product authority; decision cannot be manufactured
+  - id: SCOPE_CREEP
+    when: inventory work starts mutating source/product documents or creates a release state dimension
+    action: stop and revert; route real gaps to their owning concern Tasks

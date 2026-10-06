@@ -1,0 +1,15 @@
+task_id: V410-T07B
+pack_id: V410-T07B-LOCAL-EVIDENCE-INPUT-INVENTORY-R1
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: evidence_input_inventory_verified
+    command: python scripts/test_v410_t07b_evidence_input_inventory.py
+    purpose: verify HEAD == base_sha, AVAILABLE producer paths exist, PENDING inputs name an owning concern, authority statement present
+negative_invariants:
+  - ci_review_release_cannot_manufacture_freeze_yes
+  - no_new_release_state_dimension
+  - pending_inputs_never_marked_available
+  - builder_summary_is_not_independent_evidence
+  - historical_evidence_does_not_transfer_across_subject_drift
+  - task_or_pr_pass_is_not_release_pass
+  - no_is_a_legitimate_evidence_backed_outcome
