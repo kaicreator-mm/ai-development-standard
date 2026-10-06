@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Verify the V410-V01 local capability map (preparation unit R1).
 
-Pure stdlib, no network. ``git`` subprocess is used only to assert HEAD identity.
+Pure stdlib, no network. ``git`` subprocess is used only to assert HEAD binding.
 
 This script verifies the MAP'S OWN INTEGRITY ONLY:
-  * HEAD == pinned base SHA;
+  * HEAD is bound to the pinned base SHA: equal to it, or a descendant whose only
+    drift is this unit's own additive write set (pack directory + this script);
   * the capability map covers all 15 contract subjects exactly once;
   * every local command entrypoint recorded as AVAILABLE exists at base_sha.
+
+Binding case 2 confines every difference from the pinned base to this unit's own
+additive write set, so every path outside that set is byte-identical to the base
+tree and AVAILABLE-entrypoint existence carries the same assurance it had at base.
 
 It does NOT execute the mapped validation commands and confers no PASS on any
 V410-V01 subject, Task, PR, or release. Host-scope commands (GitHub platform)
@@ -23,6 +28,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_SHA = "30334e8c7b90a327f8597b86c88c785b98df07f7"
+PACK_PREFIX = ".agent/execution/V410-V01-LOCAL-CAPABILITY-MAP-R1/"
+SELF = "scripts/test_v410_v01_capability_map.py"
 MAP_PATH = ROOT / ".agent" / "execution" / "V410-V01-LOCAL-CAPABILITY-MAP-R1" / "CAPABILITY_MAP.md"
 REQUIRED_SUBJECTS = set(range(1, 16))
 
@@ -47,6 +54,35 @@ def head_sha() -> str:
     except (OSError, subprocess.CalledProcessError) as exc:
         fail(f"cannot read git HEAD: {exc}")
     return out.stdout.strip()
+
+
+def check_head_binding() -> str:
+    """Return the binding class of HEAD against the pinned base, or fail closed."""
+    head = head_sha()
+    if head == BASE_SHA:
+        return "exact_base"
+    descends = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", BASE_SHA, "HEAD"],
+        cwd=ROOT, capture_output=True, text=True,
+    ).returncode == 0
+    if not descends:
+        fail(
+            f"HEAD {head} does not descend from base_sha {BASE_SHA}; map is not "
+            "current — re-derive at exact candidate"
+        )
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", f"{BASE_SHA}..{head}"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if diff.returncode != 0:
+        fail(f"git diff {BASE_SHA}..{head} failed: {diff.stderr.strip()}")
+    outside = [
+        path for path in diff.stdout.splitlines()
+        if not path.startswith(PACK_PREFIX) and path != SELF
+    ]
+    if outside:
+        fail("drift outside the allowed write set: " + ", ".join(outside))
+    return "descendant_additive_only"
 
 
 def parse_map(text: str) -> dict[int, dict]:
@@ -146,8 +182,7 @@ def check_command(command: str) -> None:
 
 
 def main() -> int:
-    if head_sha() != BASE_SHA:
-        fail(f"HEAD != base_sha {BASE_SHA}; map is not current — re-derive at exact candidate")
+    binding = check_head_binding()
 
     text = MAP_PATH.read_text(encoding="utf-8")
     subjects = parse_map(text)
@@ -178,6 +213,7 @@ def main() -> int:
     print("CAPABILITY_MAP_VERIFIED")
     print(f"BASE_SHA={BASE_SHA}")
     print(f"HEAD={head_sha()}")
+    print(f"HEAD_BINDING={binding}")
     print(f"SUBJECTS_TOTAL={len(subjects)}")
     print(f"SUBJECTS_AVAILABLE={available}")
     print(f"SUBJECTS_AVAILABLE_LOCAL_BLOCKED_HOST={split}")

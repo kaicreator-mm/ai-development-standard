@@ -158,6 +158,7 @@ END
 ## Verification
 
 Run `python scripts/test_v410_v01_capability_map.py` from the repository root. It asserts
-HEAD == base_sha, asserts every local command entrypoint marked AVAILABLE exists, asserts
-all 15 subjects are covered exactly once, and emits a `CAPABILITY_MAP_VERIFIED` summary
-block. A green run verifies the MAP's integrity only — it is not a Validation result.
+that HEAD is bound to `base_sha` (equal to it, or a descendant whose only drift is this
+unit's own additive write set), asserts every local command entrypoint marked AVAILABLE
+exists, asserts all 15 subjects are covered exactly once, and emits a `CAPABILITY_MAP_VERIFIED`
+summary block. A green run verifies the MAP's integrity only — it is not a Validation result.

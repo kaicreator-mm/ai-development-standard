@@ -48,6 +48,40 @@ NOTE=this verifies map integrity only; not a V410-V01 validation PASS
 Exit code: `0`. All 15 contract subjects covered exactly once; every AVAILABLE local
 command entrypoint exists at the exact base tree.
 
+## 1b. Gate repair (R1, post-generation)
+
+Section 1 was produced out-of-band (temp clone at the exact base with the pack overlaid)
+because the verifier then required `HEAD == base_sha`, a condition that cannot hold at
+this pack's own committed revision: the pack commit necessarily sits one commit above the
+pinned base. A reviewer checking out this branch got FAIL, and the PASS existed only via
+that reconstruction.
+
+The verifier now asserts the campaign's binding rule instead: HEAD must equal the pinned
+base, or descend from it with every changed path inside this unit's additive write set
+(pack directory + `scripts/test_v410_v01_capability_map.py`). The descendant case confines
+every difference from base to that write set, so every other path — including every
+AVAILABLE command entrypoint this gate checks — is byte-identical to the base tree. The
+gate is therefore runnable in-band and still proves the map was derived on the pinned base.
+
+In-band run on this pack branch (verbatim, exit `0`):
+
+```
+CAPABILITY_MAP_VERIFIED
+BASE_SHA=30334e8c7b90a327f8597b86c88c785b98df07f7
+HEAD=c94d9ad2c1afda8edb3a8084eb13f46ab0b13179
+HEAD_BINDING=descendant_additive_only
+SUBJECTS_TOTAL=15
+SUBJECTS_AVAILABLE=12
+SUBJECTS_AVAILABLE_LOCAL_BLOCKED_HOST=3
+SUBJECTS_BLOCKED=0
+HOST_SCOPE_COMMANDS=RECORDED_NOT_EXECUTED
+CANDIDATE_STATE=CANDIDATE_NOT_READY
+NOTE=this verifies map integrity only; not a V410-V01 validation PASS
+```
+
+Subject counts are unchanged from the section 1 run (`15/12/3/0`), so no map claim
+depended on the check that was repaired.
+
 ## 2. TEST_MATRIX capability commands — results
 
 All commands run from the exact-base checkout root; every entry exited `0`:
