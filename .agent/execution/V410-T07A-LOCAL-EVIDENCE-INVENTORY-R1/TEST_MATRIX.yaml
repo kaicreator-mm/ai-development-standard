@@ -1,0 +1,37 @@
+task_id: V410-T07A
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: evidence_inventory_verification
+    command: python scripts/test_v410_t07a_evidence_inventory.py
+  - id: stage1_lifecycle_contracts
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+  - id: product_projections
+    command: python scripts/test_v410_t01b_product_projections.py
+  - id: collaboration_control
+    command: python scripts/test_v410_t02a_collaboration_control.py
+  - id: machine_projection
+    command: python scripts/test_v410_t02b_machine_projection.py
+  - id: implementation_quality
+    command: python scripts/test_v410_t03a_implementation_quality.py
+  - id: gate_repair_routing
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+  - id: shared_code_safety
+    command: python scripts/test_v410_t05a_shared_code_safety.py
+  - id: task_decomposition
+    command: python scripts/test_v43_task_decomposition.py
+  - id: interface_compatibility
+    command: python scripts/test_v42_interface_compatibility.py
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+  - id: verify_standard
+    command: python scripts/verify_standard.py
+negative_invariants:
+  - historical_evidence_does_not_silently_transfer_to_successor
+  - no_second_release_verdict_state_machine
+  - pending_producers_never_marked_current
+  - currentness_marker_is_not_a_pass_verdict
+  - product_requirements_not_redefined_by_inventory
+  - release_blockers_remain_visible_through_pending_marks
+notes:
+  - The evidence_inventory_verification suite is the only suite added by this unit; all others are existing relied-upon owners.
+  - End-to-end §19.1 falsification and Release-gate suites (V410-V01, T08A) are intentionally absent: their producers are PENDING and must not be simulated here.

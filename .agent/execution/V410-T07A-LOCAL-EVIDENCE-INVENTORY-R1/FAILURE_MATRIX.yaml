@@ -1,0 +1,23 @@
+task_id: V410-T07A
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or Task Pack identity is invalid
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: integration base or owner blob changes before accepted claim
+    action: stop; controller classifies drift and rebinds as required
+  - id: PASS_INFERRED_FROM_PRESENCE
+    when: a producer that merely exists at base SHA is treated as passing acceptance evidence
+    action: reject; presence marks reconstructibility only, PENDING producers never become CURRENT by inference
+  - id: PENDING_WITHOUT_OWNER
+    when: an inventory row is marked PENDING without an explicit owning task concern
+    action: reject; every PENDING row must name its owner concern (enforced by scripts/test_v410_t07a_evidence_inventory.py)
+  - id: PROVENANCE_FAILURE
+    when: claim is absent/late or superseded evidence is reused as authority
+    action: invalidate candidate provenance; successor execution required
+  - id: SCOPE_CREEP_INTO_RELEASE_AUTHORITY
+    when: the inventory starts issuing Release verdicts, redefines Product requirements, or transfers historical qualification
+    action: stop; those belong to existing owners (Release authority, Product authority, T07B/V01 respectively)
+  - id: SOURCE_MUTATION
+    when: any pre-existing file is modified by this preparation unit
+    action: stop; this unit is additions-only under its allowed write set

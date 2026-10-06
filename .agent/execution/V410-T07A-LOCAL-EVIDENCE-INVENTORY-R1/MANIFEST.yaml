@@ -1,0 +1,53 @@
+pack_id: V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1
+task_id: V410-T07A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T07A
+branch: task/v4.10.0-v410-t07a-local-evidence-inventory-r1
+parent_issue: "#862"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T15:40:06+06:30"
+dependency_completion:
+  - V410-T01A@df1ee51
+  - V410-T02A@2276afe
+  - V410-T01B@f1daaff
+  - V410-T03A@46fe74936cd88184bbd898643851b585d3299291
+  - V410-T03B@98ccd07ee18f3a8a8f10e91e04295324ebb130d8
+  - V410-T02B-R2@fee097d
+  - V410-T04A@41236cb
+  - V410-T05A-R3@30334e8c7b90a327f8597b86c88c785b98df07f7
+  - note: V410-T04B, V410-T05B, V410-T06A, V410-T06B, V410-T07B, V410-T08A, V410-V01 are PENDING at base_sha; T07A admission is gated on V410-T06B per TASK_PACKS_R1.md, so every producer owned by those tasks is marked PENDING in EVIDENCE_INVENTORY.md and no PASS is inferred.
+material_paths:
+  - docs/implementation/4.10.0/PRD.md
+  - docs/implementation/4.10.0/TASK_PACKS_R1.md
+  - docs/implementation/4.10.0/PRODUCT_FREEZE.md
+  - docs/implementation/4.10.0/PRODUCT_THAW_R1.md
+  - docs/implementation/4.10.0/L1_PRODUCT_EVIDENCE.md
+  - docs/implementation/4.10.0/L2_ARCHITECTURE_EVIDENCE.md
+  - docs/implementation/4.10.0/L2_FREEZE.md
+  - docs/implementation/4.10.0/TASK_DAG.md
+  - docs/implementation/4.10.0/REFINED_TASK_DAG_FREEZE_R1.md
+  - docs/implementation/4.10.0/EXECUTION_DAG_MATERIALIZATION_R1.md
+  - docs/implementation/4.10.0/V410_V01_VALIDATION_CONTRACT.md
+  - scripts/test_v410_stage1_lifecycle_contracts.py
+  - scripts/test_v410_t01b_product_projections.py
+  - scripts/test_v410_t02a_collaboration_control.py
+  - scripts/test_v410_t02b_machine_projection.py
+  - scripts/test_v410_t03a_implementation_quality.py
+  - scripts/test_v410_t04a_gate_repair_routing.py
+  - scripts/test_v410_t05a_shared_code_safety.py
+  - scripts/test_v410_t07a_evidence_inventory.py
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - EVIDENCE_INVENTORY.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
