@@ -1,0 +1,50 @@
+# V410-T06A R1 test matrix — all commands run from repo root on the exact candidate
+
+matrix:
+  - id: T-focused
+    command: python scripts/test_v410_owner_convergence.py
+    status: NEW
+    expect: PASS
+    covers: [P1, P2, P3, P4, P6, N1, N2, N3, N4, N7]
+    notes: executes against the real merged manifest + checkout; includes order-permutation duplicate-owner mutant and stale-owner rejection mutant; no fixture-copy substitution
+  - id: T-registry
+    command: python scripts/test_v47_authority_registry.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P1, P3]
+  - id: T-aliases
+    command: python scripts/test_v47_compatibility_aliases.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P4]
+  - id: T-registry-adoption
+    command: python scripts/test_v48_registry_adoption.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P6, P7]
+  - id: T-reference-conventions
+    command: python scripts/test_v47_reference_conventions.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P6, P7]
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P3, P10]
+    notes: 220 manifest files + token assertions; new reference/test must be registered (manifest sections + verification) before this passes
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+    notes: fail-closed schema subset guard; no schema changes allowed in this task, this is a negative guard
+  - id: T-t04b-focus
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+    covers: [P9]
+    notes: proves no T04B owner-family regression from T06A diff (zero expected interaction)
+provenance:
+  oracle: "#860@6013406812 (P10 CONFORMANCE_EXECUTION)"
+  baseline_behavior: carried suites PASS on base eea3e69 (pre-existing green); focused suite absent pre-change (negative guard)

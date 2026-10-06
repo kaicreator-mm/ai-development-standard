@@ -1,0 +1,62 @@
+pack_id: V410-T06A-R1
+task_id: V410-T06A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+base_tree: 09db8216ec49caf84b45f404474cfbf4cb5e6ad2
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06A
+branch: task/v4.10.0-v410-t06a-owner-convergence
+parent_issue: "#860"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+generated_by: claude-code:zcode-glm-local-controller (V410-T06A-LOCAL-FINAL-REBIND-JIT-R1)
+generated_at: "2026-10-06T10:05:00+00:00"
+dependency_completion:
+  - V410-T01B@851 (DONE, integrated by PR #880)
+  - V410-T04B@857 (DONE_MERGED@eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601; R4 PASS+PASS #857@6012480047/#857@6013055900)
+  - V410-T05A@858 (DONE_INTEGRATED@30334e8c7b90a327f8597b86c88c785b98df07f7)
+  - V410-T05B@859 (DONE_NO_CHANGE_REQUIRED)
+rebind_inputs:
+  - "#860@6001754071 (R1 WEB JIT prep)"
+  - "#860@6003285698/#860@6004011808/#860@6004281177/#860@6009822924 (R2-R5 partial rebinds)"
+  - "#860@6012404321 (R6 WEB final-rebind checklist)"
+  - "#860@6012773360 (LOCAL owner snapshot R1)"
+  - "#860@6013406812 (WEB owner-convergence oracle R1)"
+owner_blobs:
+  standard-manifest.json: 21730a0251e35e13591d2c84de1c66d6ab2c2408
+  standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md: e385102c7e8ea56068c7b3c7d517e169804069d0
+  templates/agent-event-comment.md: e0a6f40c21ae76c03cdeb42bb67af77c861cb913
+  schemas/agent-event-v2.schema.json: f7e7af8462278f507f94f84b05a4b1faf38bdd39
+  schemas/review-finding-v1.schema.json: 508d43f65573fa2b0bcaca4405282114d5479481
+  schemas/review-aggregation-v1.schema.json: 4c69f568d6521182cd8c50983e28a9ad6062440b
+  scripts/v40_rules.py: 0567e744b5f53ca0244c95ce660a64901f2a0bd2
+  scripts/v40_semantics.py: 85dacf8fcf24ddea2f79b8a43bd6ce52bc1928ba
+  standards/DEVELOPMENT_WORKFLOW.md: a7fef842927e58a93b671fe9869b9395559845ac
+  standards/VALIDATION_STANDARD.md: 1522b85f9e68cc4a1591ea5899b53c224998e5a8
+  standards/TASK_DECOMPOSITION_STANDARD.md: f355c020f07828a62ad617ffa80cb40b708ab4d4
+  standards/TASK_DAG_GOVERNANCE_STANDARD.md: e2ecfdbf0cd79f750aff40276e46a59159465f78
+  standards/EXECUTION_PACK_STANDARD.md: c7bd2e4ffb87a0ac7fabc54fd78c4eb1fae6ef0d
+  standards/IMPLEMENTATION_QUALITY_STANDARD.md: 3beba2d0324d95674b7bad2ef621e2aa81c66563
+  standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md: 266aefe32e0990c24fc8c1d6d731c4a3456fc3fc
+  standards/PROJECT_ADOPTION.md: aac0d4bff0ed67e6e23d89903e58732524cab024
+  standards/REFERENCE_CONVENTION_STANDARD.md: ba6a95b124c1804ea4e13c5c6d058e9ade2cc905
+legacy_classification:
+  - references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md@59fd5f842fb27a42db9e7b6bd8e348fcf79d1a3b: CURRENT_CARRIED_FORWARD
+  - references/COMPATIBILITY_ALIAS_CONFORMANCE.md@c7009868f3f8f8987635075c7e3c1c755411537a: CURRENT_CARRIED_FORWARD
+  - references/V48_REGISTRY_ADOPTION_REFERENCE.md@375ac48e43b5f5588f9e128b318ae0c164262237: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_authority_registry.py@731e3fd4b00145dfe3ebf50f8322016b2d420a0c: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_compatibility_aliases.py@80d9f4832ad0b81b393216aa7132433e6a06b116: CURRENT_CARRIED_FORWARD
+  - scripts/test_v48_registry_adoption.py@55f78fd9b88bb0e4efd97790b9586beb78e06206: CURRENT_CARRIED_FORWARD
+  - scripts/test_v47_reference_conventions.py@bf6888bd0171f1d560766120eeeaa9ffc6802c05: CURRENT_CARRIED_FORWARD
+  - standards/GITHUB_WORKFLOW.md@a96d9c186b21cc20726d9e4f60709ed173e77dac: COMPATIBILITY_ONLY (one-hop alias)
+  - standards/VERSION_INTEGRATION_WORKFLOW.md@60e2bdee7f07c57bee17d792dc9c4e53bae514fb: COMPATIBILITY_ONLY (one-hop alias)
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
