@@ -437,6 +437,66 @@ A `required` review cannot be skipped or routed directly to merge-ready. A `reco
 
 `REVIEW_RESULT` must bind to the reviewed SHA and policy. Review `PASS` is not Release PASS.
 
+### 9.1 Review subject and exact-subject currentness
+
+Every Review fact is bound to exactly one subject: the event-level exact `sha` it was published for (the reviewed PR HEAD / candidate commit). For one work item:
+
+```text
+current facts = accepted Review facts whose exact subject == the live current
+                candidate subject
+stale facts   = Review facts bound to any other subject
+```
+
+- Only current facts may satisfy the Review condition or feed the current finding aggregate.
+- Stale facts remain immutable historical evidence: queryable as history, but never counted, re-bound or transferred as current. A previous subject's `PASS` never satisfies a successor subject, and a previous subject's findings are never silently carried into a successor aggregate.
+- Successor/delta review is legal only under the existing owner rules (§7, `prompts/independent-review-bootstrap.md`): a narrow delta may use a delta review, cross-module/architecture/test-semantic change requires full re-review, and either result binds to the new exact subject.
+- When the current subject or a fact's subject association is missing or ambiguous, currentness fails closed: the Review condition stays unsatisfied rather than being guessed.
+
+### 9.2 Machine finding records
+
+Newly emitted `REVIEW_RESULT` events that report material findings MUST be machine-reconstructible from the existing `REVIEW_RESULT.findings` surface without human interpretation: every material finding MUST be projected into `findings.records` with stable identity, severity, root-defect class and evidence. Historical payloads without `records` remain readable immutable history; they never satisfy this new-writer contract and are never promoted into a current judgment.
+
+```yaml
+findings:
+  records:
+    - finding_id: <stable identity of the logical finding>
+      severity: P0 | P1 | P2 | P3
+      root_defect_class: <root defect class projection id>
+      evidence_refs:
+        - <durable evidence reference>
+      duplicate_of: <canonical finding_id, only on an explicit duplicate record>
+```
+
+- `finding_id` / `severity` / `evidence_refs` reuse the existing Review finding family (`schemas/review-finding-v1.schema.json` and its validators `scripts/v40_rules.py`, `scripts/v40_semantics.py`: `validate_finding_disposition`, `validate_review_aggregation`); `severity` stays in the existing `P0–P3` family. A record inlines the material finding's identity/severity/evidence block; the Review subject is inherited from the event `sha`, and `status` / `blocking` / disposition continue to belong to the existing finding/disposition flow.
+- `finding_id` is stable for one logical defect across re-emission on the same subject and MUST NOT be renumbered by appearance order. Independent reviewers are not assumed to coordinate identities: two records represent the same logical defect only when they share one `finding_id`, or when one record durably declares the existing finding-family duplicate relation `duplicate_of: <canonical finding_id>` (the `schemas/review-finding-v1.schema.json` `status: DUPLICATE` + `duplicate_of` semantics, inlined). Root-defect-class equality is classification evidence, never logical-defect identity; similarity, ordering and count never establish equivalence.
+- Duplicate equivalence is deterministic and fails closed. A `duplicate_of` link is valid only when the target `finding_id` exists in the same current aggregate, the target is itself canonical (not `duplicate_of`-linked: no chains or cycles), and the linked records agree on `severity` and `root_defect_class`. A missing target, a chain or cycle, or a materially conflicting linked record MUST NOT be guessed, majority-resolved or silently merged: the current aggregate fails closed instead.
+- `root_defect_class` is a projection of the root defect classes owned by `DEVELOPMENT_WORKFLOW.md` §4. It adds, removes and redefines no class, and it owns no repair routing or escalation:
+
+```text
+PRODUCT_SEMANTICS_AUTHORITY_CONTRADICTION   product semantics / authority contradiction
+ARCHITECTURE_PUBLIC_CONTRACT                architecture / public contract
+IMPLEMENTATION_DEFECT                       implementation defect
+TEST_FIXTURE_EVIDENCE_DEFECT                test / fixture / evidence defect
+ENVIRONMENT_TOOLCHAIN_EXTERNAL_BOUNDARY     environment / toolchain / external boundary
+EXECUTION_ATTRIBUTION_DEFECT                execution / attribution defect
+GATE_APPLICABILITY_AUTHORITY_AMBIGUITY      gate applicability 或 authority ambiguity
+```
+
+- A finding whose identity, severity, root-defect class or evidence is missing or ambiguous is not machine-reconstructible: it MUST NOT be guessed, defaulted, silently dropped or converted into a current `PASS`.
+- Findings are evidence and judgment. `Evidence != Verdict != Authority`: a record supports a judgment, `REVIEW_RESULT` is a verdict fact, and merge/release authority remains with the existing Gate Authority chain. Routing a finding's root defect class to repair/escalation stays owned by `DEVELOPMENT_WORKFLOW.md` §4.
+
+### 9.3 Deterministic aggregation
+
+The current finding aggregate is a derived projection over durable Review facts:
+
+- it consumes only current-subject accepted facts (§9.1); stale facts stay historical;
+- a current `REVIEW_RESULT` that reports material findings without the structured §9.2 projection is not machine-reconstructible: the aggregate fails closed for that subject instead of deriving a judgment from an opaque payload;
+- findings converge by stable identity or by an explicit durable `duplicate_of` equivalence (§9.2) into one logical finding while preserving every originating reviewer's provenance (`operator_id` / `session_ref` / event reference); independent IDs without that relation remain distinct findings;
+- the result is deterministic and invariant to event order or transport arrival order;
+- materially conflicting current facts fail closed: a conflicting verdict on the same subject, the same identity classified with materially conflicting severity or root-defect class, or an ambiguous or materially conflicting duplicate equivalence MUST NOT be resolved by majority, latest-wins, reviewer/model count, provider or model reputation, cost, turnaround or file count;
+- reviewer/model count is coverage evidence only, never verdict authority; and
+- aggregation reuses the existing aggregation contract (`schemas/review-aggregation-v1.schema.json`: `judgment` / `finding_refs` / `unresolved_blocker_refs` / `conflict_refs` under `aggregation_policy: finding-union-blocker-dominance`, with `scripts/v40_rules.py` semantics). It introduces no new event family, status dimension, lifecycle, scheduler, registry, Validation authority or Release authority.
+
 ## 10. Builder / Reviewer / Validator routing
 
 The execution architecture computes ready sets; this protocol defines how the role results are recorded.

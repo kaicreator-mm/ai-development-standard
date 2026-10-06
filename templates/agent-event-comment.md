@@ -178,9 +178,23 @@ findings:
   p1: 1
   p2: 2
   p3: 0
+  records:
+    - finding_id: "RV-1"
+      severity: P1
+      root_defect_class: IMPLEMENTATION_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+    - finding_id: "RV-2"
+      severity: P1
+      root_defect_class: IMPLEMENTATION_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+      duplicate_of: "RV-1"
 local_validation_required: false
 next_state: changes-requested
 ```
+
+`findings.records` is the machine projection for material findings in newly emitted `REVIEW_RESULT` events and is REQUIRED for new material findings (`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.2): stable `finding_id`, `severity` (`P0`–`P3`), `root_defect_class` (the `DEVELOPMENT_WORKFLOW.md` §4 projection), `evidence_refs`, and `duplicate_of` linkage when the same logical defect was already reported under a different finding id. Historical payloads without `records` remain valid history but never satisfy the new-writer contract.
 
 Human-readable finding details SHOULD follow the payload:
 
