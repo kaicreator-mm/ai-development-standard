@@ -70,6 +70,10 @@ COVERAGE = ROOT / "templates" / "golden" / "STANDARD_COVERAGE.json"
 BASE_SHA = "a4f1debe663813712d4f740ec70c14ca6342b0ac"
 BASE_TREE = "76e18763c525e357a14e2d21036e597b07151a91"
 PACK_HEAD_SHA = "046710a2d8ac55ec3e2e517cc447d7b1accc31f0"
+# T-015 integration merge (canonical candidate) and its pre-merge pack
+# candidate (the merge's second parent).
+INTEGRATION_MERGE_SHA = "135345a5a1f77d4f73336fc691c6ce68b387a290"
+INTEGRATION_MERGE_SECOND_PARENT_SHA = "cf08631b110fefa085a0a5cc71dc30cb605a185c"
 FROZEN_PRD_BLOB = "a8ec7030a14337a4c2dca853dc474e965679d610"
 FROZEN_L2_BLOB = "bd41ea0175b459a6a490fd37ad579e429a58a1c3"
 FROZEN_DAG_V02_BLOB = "b9fe0cc7089f64929b4bcf45f7230d950e864db2"
@@ -431,9 +435,9 @@ def git(*args: str) -> str:
     ).stdout.strip()
 
 
-def is_ancestor(sha: str) -> bool:
+def is_ancestor(sha: str, target: str = "HEAD") -> bool:
     return subprocess.run(
-        ["git", "merge-base", "--is-ancestor", sha, "HEAD"],
+        ["git", "merge-base", "--is-ancestor", sha, target],
         cwd=ROOT, check=False, capture_output=True, text=True,
     ).returncode == 0
 
@@ -571,8 +575,29 @@ class I01PredecessorLineageIdentity(unittest.TestCase):
             T013_REBIND_SHA, BASE_SHA, PACK_HEAD_SHA,
         ):
             self.assertTrue(is_ancestor(sha), f"lineage commit not an ancestor of HEAD: {sha}")
-        # The T-015 execution pack is the direct predecessor of the candidate work.
-        self.assertEqual(PACK_HEAD_SHA, git("rev-parse", "HEAD^"))
+        # The T-015 execution pack reaches the candidate through the T-015
+        # integration merge, pinned by SHA with its exact two parents (base +
+        # pre-merge pack candidate); the pack head is reachable via the
+        # merge's second-parent lineage, and HEAD descends from that merge.
+        # rebind per Stage1 #919 P1-2 (#919@6010747472): linear HEAD^ pin ->
+        # merged-topology ancestry (pack reachable via integration-merge
+        # second parent); strength preserved (exact parents + ancestry +
+        # content pins).
+        self.assertTrue(
+            is_ancestor(INTEGRATION_MERGE_SHA),
+            "T-015 integration merge not an ancestor of HEAD",
+        )
+        self.assertEqual(
+            [BASE_SHA, INTEGRATION_MERGE_SECOND_PARENT_SHA],
+            git(
+                "rev-parse",
+                f"{INTEGRATION_MERGE_SHA}^1", f"{INTEGRATION_MERGE_SHA}^2",
+            ).splitlines(),
+        )
+        self.assertTrue(
+            is_ancestor(PACK_HEAD_SHA, f"{INTEGRATION_MERGE_SHA}^2"),
+            "pack head not reachable via the integration-merge second parent",
+        )
         # The exact-base postulate binds the frozen DAG v0.1 section for T-015.
         self.assertEqual(DAG_V01_BLOB, git_blob_sha("HEAD", DAG_V01.relative_to(ROOT).as_posix()))
 
