@@ -1,7 +1,9 @@
 """V410-T08A LOCAL-INTEGRATION-IMPACT-R1 verification script.
 
 Pure stdlib, no network. Verifies on the exact integrated candidate:
-  1. HEAD == base_sha (30334e8c7b90a327f8597b86c88c785b98df07f7)
+  1. HEAD == base_sha (30334e8c7b90a327f8597b86c88c785b98df07f7); if this unit's own
+     pack commits already sit on top, HEAD must be a descendant of base_sha whose
+     diff vs base touches ONLY this unit's allowed write set
   2. Every `python scripts/...` entrypoint in the composed conformance command list
      inside INTEGRATION_IMPACT.md exists on disk
   3. Every per-predecessor merge SHA in the impact table exists in git history
@@ -20,13 +22,14 @@ import sys
 
 BASE_SHA = "30334e8c7b90a327f8597b86c88c785b98df07f7"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-IMPACT_MD = os.path.join(
-    REPO_ROOT,
-    ".agent",
-    "execution",
-    "V410-T08A-LOCAL-INTEGRATION-IMPACT-R1",
-    "INTEGRATION_IMPACT.md",
+PACK_DIR = os.path.join(
+    ".agent", "execution", "V410-T08A-LOCAL-INTEGRATION-IMPACT-R1"
 )
+ALLOWED_WRITE_SET = {
+    PACK_DIR.replace(os.sep, "/"),
+    "scripts/test_v410_t08a_integration_impact.py",
+}
+IMPACT_MD = os.path.join(REPO_ROOT, PACK_DIR, "INTEGRATION_IMPACT.md")
 
 MERGE_SHA_RE = re.compile(r"\b([0-9a-f]{40})\b")
 
@@ -50,8 +53,26 @@ def git(*args: str) -> str:
 def check_head() -> None:
     head = git("rev-parse", "HEAD")
     print(f"HEAD={head}")
-    if head != BASE_SHA:
-        fail(f"HEAD {head} != base_sha {BASE_SHA}; run on the exact integrated candidate")
+    if head == BASE_SHA:
+        print("base check: HEAD == base_sha (exact integrated candidate)")
+        return
+    # This unit's own pack commits may sit on top of base; only the allowed
+    # write set may differ from base, and base must be an ancestor of HEAD.
+    merge_base = git("merge-base", BASE_SHA, "HEAD")
+    if merge_base != BASE_SHA:
+        fail(f"base_sha {BASE_SHA} is not an ancestor of HEAD {head}")
+    changed = git("diff", "--name-only", BASE_SHA, "HEAD").splitlines()
+    changed = [c for c in changed if c]
+    outside = [
+        c
+        for c in changed
+        if not (
+            c in ALLOWED_WRITE_SET or c.startswith(PACK_DIR.replace(os.sep, "/") + "/")
+        )
+    ]
+    print(f"base check: HEAD is descendant of base_sha; changed_paths={len(changed)}")
+    if outside:
+        fail(f"diff vs base touches paths outside allowed write set: {outside}")
 
 
 def check_command_entrypoints(text: str) -> list[str]:

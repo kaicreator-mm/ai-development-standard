@@ -121,6 +121,8 @@ regression remains a T08A-integration-time obligation on the then-current candid
 Verification script output (verbatim tail):
 
 ```text
+HEAD=30334e8c7b90a327f8597b86c88c785b98df07f7
+base check: HEAD == base_sha (exact integrated candidate)
 entrypoint: scripts/test_v410_t05a_shared_code_safety.py -> OK
 merge_sha: df1ee51a0d6d1c30092c01102ca320db51091535 -> OK
 merge_sha: 2276afe7fdd057f300386ab19925ae37a4065684 -> OK
