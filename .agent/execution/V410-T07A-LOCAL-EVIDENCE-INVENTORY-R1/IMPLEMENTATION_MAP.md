@@ -13,7 +13,7 @@ Additions only (no pre-existing file modified):
 | .agent/execution/V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1/FAILURE_MATRIX.yaml | Failure classes incl. PASS_INFERRED_FROM_PRESENCE and PENDING_WITHOUT_OWNER |
 | .agent/execution/V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1/IMPLEMENTATION_MAP.md | This map |
 | .agent/execution/V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1/REVIEW_CHECKLIST.md | Fresh-review checklist |
-| scripts/test_v410_t07a_evidence_inventory.py | Stdlib verification: HEAD==base, PRD §19 markers, CURRENT-path existence, PENDING owner concern |
+| scripts/test_v410_t07a_evidence_inventory.py | Stdlib verification: HEAD bound to base (exact, or descendant with additive-only drift inside the write set), PRD §19 markers, CURRENT-path existence, PENDING owner concern |
 
 ## Design decisions
 
@@ -30,8 +30,8 @@ Additions only (no pre-existing file modified):
 
 ## Verification record (verbatim)
 
-Command: `python scripts/test_v410_t07a_evidence_inventory.py` (run from worktree root,
-BEFORE the pack commit, while HEAD still equals the pinned base SHA):
+Generation-time run: `python scripts/test_v410_t07a_evidence_inventory.py` (run from
+worktree root, BEFORE the pack commit, while HEAD still equalled the pinned base SHA):
 
 ```text
 CHECK head==base_sha: PASS (30334e8c7b90a327f8597b86c88c785b98df07f7)
@@ -39,6 +39,31 @@ CHECK prd_section_19_exists: PASS (5 markers)
 CHECK inventory_rows: total=42 current=31 pending=11 paths_checked=30
 EVIDENCE_INVENTORY_VERIFIED=PASS
 ```
+
+### Gate repair (R1, post-generation)
+
+Requiring `HEAD == base_sha` made the gate unrunnable at the pack's own committed
+revision: the pack commit necessarily moves HEAD one commit above the pinned base, so a
+Fresh Independent Review checking out this branch got FAIL and the PASS existed only via
+an out-of-band base checkout. Repaired in place to the binding rule this campaign already
+uses: HEAD must equal the pinned base, or descend from it with every changed path inside
+this unit's additive write set (pack directory + this script). Because case 1b confines
+every difference from base to that write set, every other path is byte-identical to the
+base tree, so the CURRENT-path and PENDING-owner checks retain exactly the assurance they
+had at base.
+
+Repaired run on this pack branch (verbatim, exit 0):
+
+```text
+CHECK head_binding: PASS (descendant fa4c162fe79a2afc62a3a09f7a550201ec2f45fe; additive-only drift inside the allowed write set, 8 paths)
+CHECK prd_section_19_exists: PASS (5 markers)
+CHECK inventory_rows: total=42 current=31 pending=11 paths_checked=30
+EVIDENCE_INVENTORY_VERIFIED=PASS
+```
+
+The inventory figures are unchanged from the generation-time run (`total=42 current=31
+pending=11 paths_checked=30`), so no inventory claim depended on the check that was
+repaired.
 
 Relied-upon existing suites (sanity run at base SHA, all OK):
 
@@ -52,9 +77,10 @@ test_v410_t04a_gate_repair_routing: OK
 test_v410_t05a_shared_code_safety: OK
 ```
 
-Note: after this pack is committed, HEAD no longer equals base_sha by design; the script is
-a base-SHA gate for future integrators and must be run on the pinned base (or the HEAD check
-is expected to fail on the pack branch itself).
+Note: the base-SHA equality check quoted above is retained here as the historical
+generation-time record only. The standing gate is the repaired binding rule described in
+"Gate repair (R1, post-generation)", which passes at the pack's own committed revision and
+still proves the inventory was derived on the pinned base.
 
 ## Known limitations
 

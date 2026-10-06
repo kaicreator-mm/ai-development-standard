@@ -30,6 +30,6 @@ For Fresh Independent Review of this pack. Base: `30334e8c7b90a327f8597b86c88c78
 
 ## Verification evidence
 
-- [ ] `python scripts/test_v410_t07a_evidence_inventory.py` prints `EVIDENCE_INVENTORY_VERIFIED=PASS` on the pinned base.
+- [ ] `python scripts/test_v410_t07a_evidence_inventory.py` prints `EVIDENCE_INVENTORY_VERIFIED=PASS` on this pack branch, with HEAD bound to the pinned base (exactly, or as its descendant with additive-only drift confined to the pack directory and this script).
 - [ ] Verbatim output recorded in IMPLEMENTATION_MAP.md matches a fresh run.
 - [ ] Relied-upon v410 suites listed in TEST_MATRIX.yaml pass at base SHA.

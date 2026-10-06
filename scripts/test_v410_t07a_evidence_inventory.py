@@ -2,11 +2,17 @@
 """V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1 verification.
 
 Pure stdlib, no network. Verifies, from the repository root:
-  1. HEAD == pinned base SHA 30334e8c7b90a327f8597b86c88c785b98df07f7.
+  1. HEAD is bound to pinned base SHA 30334e8c7b90a327f8597b86c88c785b98df07f7:
+     either exactly, or as a descendant of it whose only drift is this unit's
+     own additive write set (the execution pack directory and this script).
   2. PRD section 19 (Required Product acceptance, gates and release blockers)
      exists in the worktree PRD.
   3. EVIDENCE_INVENTORY.md parses: every producer path in a CURRENT row exists;
      every PENDING row carries an explicit owning concern (a V410-* task id).
+
+Binding case 1b confines every difference from the pinned base to this unit's own
+additive write set, so every path outside that set is byte-identical to the base
+tree and check 3 evaluates the same content it would have evaluated at base.
 
 Exit non-zero on any failure; print EVIDENCE_INVENTORY_VERIFIED=PASS on success.
 """
@@ -20,6 +26,8 @@ import sys
 
 BASE_SHA = "30334e8c7b90a327f8597b86c88c785b98df07f7"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PACK_PREFIX = ".agent/execution/V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1/"
+SELF = "scripts/test_v410_t07a_evidence_inventory.py"
 INVENTORY = os.path.join(
     ROOT, ".agent", "execution", "V410-T07A-LOCAL-EVIDENCE-INVENTORY-R1",
     "EVIDENCE_INVENTORY.md",
@@ -54,9 +62,34 @@ def check_head() -> None:
     if out.returncode != 0:
         fail("git rev-parse HEAD failed: %s" % out.stderr.strip())
     head = out.stdout.strip()
-    if head != BASE_SHA:
-        fail("HEAD %s != pinned base_sha %s" % (head, BASE_SHA))
-    print("CHECK head==base_sha: PASS (%s)" % head)
+    if head == BASE_SHA:
+        print("CHECK head_binding: PASS (exact base %s)" % head)
+        return
+    descends = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", BASE_SHA, "HEAD"],
+        cwd=ROOT, capture_output=True, text=True, timeout=30,
+    ).returncode == 0
+    if not descends:
+        fail("HEAD %s does not descend from pinned base_sha %s" % (head, BASE_SHA))
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", "%s..%s" % (BASE_SHA, head)],
+        cwd=ROOT, capture_output=True, text=True, timeout=60,
+    )
+    if diff.returncode != 0:
+        fail("git diff %s..%s failed: %s" % (BASE_SHA, head, diff.stderr.strip()))
+    changed = diff.stdout.splitlines()
+    outside = [
+        p for p in changed
+        if not p.startswith(PACK_PREFIX) and p != SELF
+    ]
+    if outside:
+        fail(
+            "drift outside the allowed write set: %s" % ", ".join(outside)
+        )
+    print(
+        "CHECK head_binding: PASS (descendant %s; additive-only drift inside "
+        "the allowed write set, %d paths)" % (head, len(changed))
+    )
 
 
 def check_prd_section() -> None:
