@@ -1,0 +1,21 @@
+pack_id: v4.4-v4.7-lineage-recovery-jit
+repository: kaicreator-mm/ai-development-standard
+version: 4.8.0 (monotonic identity preserved; NO historical version identity replay)
+task_id: RECOVERY (#805 PATH 4 — not a Frozen DAG task; Program lineage disposition implementation)
+parent_issue: "#805"
+branch: composition/v4.4-v4.7-lineage-recovery
+base_sha: 92e4f764a2630a131d3f156b39f0f09064c9849e
+base_tree: db8cd8185c6206e93512a455a1f9f8b1e121033f
+matrix_input: "#805@6005658166 (as amended by FRESH_MATRIX_REVIEW #805@6006444536, corrections C1/C2/C3)"
+source_refs:
+  v44: version/v4.4.0-sequential@7e162ad5e261890264ffd20d1583e6844cd6fa5a
+  v45: version/v4.5.0@4366c5fb (pin exact sha from matrix)
+  v46: version/v4.6.0@4ff6e1c4
+  v47: version/v4.7.0@d8f613127d0167453297a5a5e983de048607aa07
+identity_policy: MONOTONIC_CURRENT_VERSION_PRESERVE_V48_OR_LATER; HISTORICAL_VERSION_IDENTITY_REPLAY=NO; HISTORICAL_RQ_TRANSFER=NO
+forbidden_replay: candidate identity blobs (VERSION/README/CHANGELOG top-level identity) + .agent/execution/* candidate-side divergent blobs (24 excluded-evidence path-instances)
+write_set_authority: the reviewed MISSING_SURFACE_MATRIX (90 pure imports) + SEMANTIC_UNION wiring deltas (23) + identity edits (12, truthful-only) as amended by FRESH_MATRIX_REVIEW; CONFLICT/UNKNOWN => STOP_FOR_OWNER_DISPOSITION
+implementation_state: NOT_PERFORMED
+validation_state: NOT_PERFORMED
+fresh_review_state: NOT_PERFORMED
+package_excluded: true
