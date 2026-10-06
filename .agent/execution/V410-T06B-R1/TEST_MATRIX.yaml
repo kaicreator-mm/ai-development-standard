@@ -1,0 +1,63 @@
+# V410-T06B R1 test matrix — all commands from repo root on the exact candidate
+
+matrix:
+  - id: T-t06b-focus
+    command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
+    status: NEW (W8)
+    expect: PASS
+    covers: [oracle B,C,D,E,F,G,H; J frozen guards; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1-FC12]
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: EXTENDED (W9)
+    expect: PASS
+    covers: [A1-A13 incl. A8/A11/A12/A13; J4 assert_supported_schema]
+  - id: T-execution-architecture
+    command: python scripts/test_execution_architecture.py
+    status: EXTENDED (W10)
+    expect: PASS
+    covers: [D1,D2,E3,G8,N1,N5,N7; existing §11 oracle unbroken]
+  - id: T-v34-lifecycle
+    command: python scripts/test_v34_lifecycle_contracts.py
+    status: EXTENDED (W11)
+    expect: PASS
+    covers: [I1-I6 core-inventory exact-set; N13]
+  - id: T-v34-rules
+    command: python -c "import sys;sys.path.insert(0,'scripts');import v34_rules" (smoke; full coverage via W8/W11)
+    status: EXTENDED (W7)
+    expect: PASS
+  - id: T-registry-adoption
+    command: python scripts/test_v48_registry_adoption.py
+    status: CARRIED-UNDER-AUTHORIZED-EVOLUTION (W13 Stage 5)
+    expect: PASS after the authorized guard+manifest co-evolution (case-H mode); historical invariants/negatives preserved; baseline-rewrite remains impossible
+  - id: T-owner-convergence
+    command: python scripts/test_v410_owner_convergence.py
+    status: CONSCIOUS-UPDATE (W13 Stage 5)
+    expect: PASS after its zero-delta/coupled assertions are updated inside the authorized growth change (documented in that diff)
+  - id: T-t04b-focus
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+  - id: T-v47-family
+    command: python scripts/test_v47_authority_registry.py && python scripts/test_v47_compatibility_aliases.py && python scripts/test_v47_reference_conventions.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+  - id: T-t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+    status: CARRIED (W12: NOT edited; FROZEN_* guards stay green)
+    expect: PASS_UNMODIFIED
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: EXTENDED (W13)
+    expect: PASS
+    covers: [registration of W8; drift tokens; hazard-7 negative preserved]
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED
+    expect: PASS
+negative_invariants:
+  - no silent weakening of execution_profile enum/couplings (A11 byte-stable)
+  - no brand/model/authority coupling to execution_environment (A13; semantics 3-8 of #861 refinement)
+  - no second registry/lifecycle/scheduler/claim family (J1-J3 frozen guards)
+  - no NO_GREEN_BY_DELETION: guard evolution preserves v4.8 historical invariants and negatives (case-H/RA-01 evidence)
+  - no unauthorized manifest mutation outside the W13 authorized co-evolution
+  - no merge without fresh Validation + genuinely Fresh Independent Review on one unchanged HEAD/tree

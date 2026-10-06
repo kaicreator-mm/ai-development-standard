@@ -1,0 +1,63 @@
+# V410-T06B R1 failure matrix — fail-closed classes (oracle A-J/65 + dogfood T1-T5, #861@6012842432/@6013355359)
+
+failures:
+  - id: A_SECTION
+    class: SCHEMA_CONFORMANCE
+    trigger: dispatch/execution-state/event schema violations (A1-A13), incl. A8 ENVIRONMENT_PROFILE_CONTRADICTION, A11 profile-coupling weakening, A12 handoff-schema divergence, A13 environment/operator_kind conflation
+    expected: fail closed in W9
+  - id: B_SECTION
+    class: CLAIM_KEY_CANONICALIZATION
+    trigger: claim-key reorder/mismatch/extra segment; non-canonical group normalization; revision/session id in slot 4 (T1)
+    expected: fail closed in W7/W8
+  - id: C_SECTION
+    class: AUTHORIZED_NON_DEFAULT
+    trigger: non-default compatibility_group without durable higher-authority validation ref (authorize_non_default a-f)
+    expected: fail closed; never downgrades to __default__
+  - id: D_SECTION
+    class: ADMISSION_GENERATION_CAS
+    trigger: reserve/claim/stale/re-claim/terminal violations of monotonic per-key CAS
+    expected: stale ⇒ STALE with zero canonical mutation; terminal never decrements
+  - id: E_SECTION
+    class: MULTI_ACTIVE_PROJECTION
+    trigger: multi-active visibility rules; singular field set while >1 active; unstable ordering
+    expected: fail closed in W8/W10
+  - id: F_SECTION
+    class: WRITER_PROVENANCE
+    trigger: prose-form proposal refs; missing canonical_admission_ref on current writers; TARGET_ENVIRONMENT/execution_environment disagreement not fail-closed (T3/T4)
+    expected: fail closed in W5/W8
+  - id: G_SECTION
+    class: TERMINAL_PRECEDENCE_AND_INVARIANCE
+    trigger: scheduler checkpoint/proposal treated as authority; provider/environment invariance broken (G8)
+    expected: fail closed (T5)
+  - id: H_SECTION
+    class: DERIVED_STATE_DISCIPLINE
+    trigger: active_dispatches projection mutability/authority claims; NON_AUTHORITATIVE_DERIVED_STATE violations
+    expected: fail closed
+  - id: I_SECTION
+    class: PACK_CORE_EXACT_SET
+    trigger: missing/duplicate/legacy-core/superset pack core inventories (I1-I6)
+    expected: PACK_INVALID; historical packs readable
+  - id: J_SECTION
+    class: FROZEN_GUARDS
+    trigger: new event type (J1), dispatch_state enum changes (J2), state-dimensions changes (J3), schema subset violations (J4)
+    expected: frozen guards stay green
+  - id: T_DOGFOOD
+    class: T1-T5_DOGFOOD_CLAUSES
+    trigger: T1 key canonicalization; T2 stale-loser canonical mutation; T3 missing durable refs; T4 TARGET_ENVIRONMENT disagreement; T5 terminal precedence
+    expected: worked negatives FC-T1a..FC-T5 fail closed
+  - id: REGISTRY_GROWTH_BLOCKED
+    class: UNAUTHORIZED_MANIFEST_MUTATION
+    trigger: manifest/guard changes outside the W13 authorized co-evolution (single change moving AUTHORIZED_SECTION_ADDITIONS + manifest + registrations together)
+    expected: carried RA-01/RA-02/RA-05 guards fail the candidate; partial evolution is forbidden (case-H evidence #860 drift side-branch)
+  - id: N7_NO_GREEN_BY_DELETION
+    class: GUARD_WEAKENING
+    trigger: v48 historical invariants/negatives weakened during the authorized evolution; T06A focused suite updated without conscious documentation
+    expected: FAIL
+  - id: N10_DRIFT_REBIND
+    class: STALE_SUBJECT
+    trigger: integration head/tree or pinned blob drift vs the ab8339f binding before/during execution
+    expected: STOP_FOR_DISPOSITION; mandatory re-read at claim and merge time
+stop_conditions:
+  - any P0/P1 review finding
+  - any carried suite red (except the two consciously-updated files inside the authorized W13 change, documented in that diff)
+  - integration head moving past ab8339f before merge admission
