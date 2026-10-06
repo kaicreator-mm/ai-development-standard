@@ -257,6 +257,22 @@ class ExecutionArchitectureRegression(unittest.TestCase):
         self.assertIn("non-normative transport choices", text)
 
 
+class T06BKeyedGroupInvarianceTests(unittest.TestCase):
+    """W10: claim-key derivation is deterministic and environment/origin-invariant."""
+
+    def test_claim_key_is_environment_and_origin_invariant(self) -> None:
+        from v34_rules import derive_claim_key
+        base = derive_claim_key("r", "#1", "builder")
+        for env in ("WEB", "LOCAL", None):
+            for origin in ("WEB", "LOCAL", None):
+                self.assertEqual(
+                    derive_claim_key("r", "#1", "builder"),
+                    base,
+                )
+        # group participates; environment/origin never do
+        self.assertNotEqual(derive_claim_key("r", "#1", "builder", "interop"), base)
+
+
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(ExecutionArchitectureRegression))
     raise SystemExit(0 if result.wasSuccessful() else 1)
