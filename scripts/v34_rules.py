@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import Iterable, Mapping, Sequence
 
+import re
+
 # ---------------------------------------------------------------------------
 # Vocabularies
 # ---------------------------------------------------------------------------
@@ -496,3 +498,193 @@ def baseline_refresh_priority(*, blocking: Mapping[str, Sequence[str]]) -> list[
 
 def package_leaks(packaged_paths: Iterable[str], roots: Sequence[str] = EXECUTION_PACK_ROOTS) -> list[str]:
     return [path for path in packaged_paths if any(path.startswith(root) for root in roots)]
+
+
+# ---------------------------------------------------------------------------
+# v4.10 T06B — serialized-admission helpers (additive; EXECUTION_ARCHITECTURE
+# §11.1.1, GITHUB_AGENT_INTERACTION_PROTOCOL §8.4.2). Pure functions; fail
+# closed on malformed input; never grant authority.
+# ---------------------------------------------------------------------------
+
+DEFAULT_COMPATIBILITY_GROUP = "__default__"
+
+
+def normalize_group(compatibility_group: object) -> str:
+    """Normalize an omitted/null/empty compatibility group to ``__default__``.
+
+    Non-string non-null values fail closed (TypeError) rather than guessing.
+    """
+    if compatibility_group is None:
+        return DEFAULT_COMPATIBILITY_GROUP
+    if not isinstance(compatibility_group, str):
+        raise TypeError("compatibility_group must be a string or null")
+    if not compatibility_group.strip():
+        return DEFAULT_COMPATIBILITY_GROUP
+    return compatibility_group
+
+
+def derive_claim_key(
+    repository: str, task: str, role: str, compatibility_group: object = None
+) -> str:
+    """Serialize the deterministic protected claim key ``repo#task:role:group``.
+
+    Slot 4 is the normalized compatibility group; revision/session identifiers
+    are never valid there. Any malformed input fails closed.
+    """
+    for name, value in (("repository", repository), ("role", role)):
+        if not isinstance(value, str) or not value or any(ch in value for ch in "#:"):
+            raise ValueError(f"invalid claim-key segment {name}: {value!r}")
+    if not isinstance(task, str) or not task or not task.startswith("#") or ":" in task:
+        raise ValueError(f"task must be '#<id>': {task!r}")
+    group = normalize_group(compatibility_group)
+    if any(ch in group for ch in "#:"):
+        raise ValueError(f"invalid compatibility_group: {group!r}")
+    return f"{repository}{task}:{role}:{group}"
+
+
+def parse_claim_key(key: object) -> dict:
+    """Reparse a serialized claim key; fails closed unless it roundtrips."""
+    if not isinstance(key, str) or not key:
+        raise ValueError("claim key must be a non-empty string")
+    head, _, rest = key.partition("#")
+    if not head or ":" not in rest:
+        raise ValueError(f"malformed claim key: {key!r}")
+    task, role_group = rest.split(":", 1)
+    if ":" not in role_group:
+        raise ValueError(f"malformed claim key (missing group slot): {key!r}")
+    role, group = role_group.rsplit(":", 1)
+    rebuilt = derive_claim_key(head, f"#{task}", role, group)
+    if rebuilt != key:
+        raise ValueError(f"claim key does not roundtrip: {key!r}")
+    return {"repository": head, "task": f"#{task}", "role": role, "group": group}
+
+
+def authorize_non_default(compatibility_group: object, authority_ref: object) -> bool:
+    """Check the durable explicit-authorization input for a non-default group.
+
+    Returns True only for a non-default group with a durable ``#<issue>@<id>``
+    authority reference. Never downgrades to ``__default__``; malformed inputs
+    fail closed instead of guessing.
+    """
+    group = normalize_group(compatibility_group)
+    if group == DEFAULT_COMPATIBILITY_GROUP:
+        return authority_ref is None or (
+            isinstance(authority_ref, str) and bool(authority_ref)
+        )
+    if not isinstance(authority_ref, str) or not re.fullmatch(r"#\d+@\d+", authority_ref):
+        raise ValueError(
+            "non-default compatibility_group requires a durable #<issue>@<comment-id> authority ref"
+        )
+    return True
+
+
+def admission_generation_conforms(
+    *, reserved_generation: object, claimed_generation: object
+) -> str:
+    """CAS semantics: reserve g -> g+1, claim requires current, stale fails.
+
+    Returns ``"IDEMPOTENT"`` for a re-presented current generation,
+    ``"CLAIMED"`` for the reserved next generation, ``"STALE"`` for a stale
+    writer (zero canonical mutation). Malformed/non-integer input raises.
+    """
+    for value in (reserved_generation, claimed_generation):
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError("admission generations must be non-negative integers")
+    if claimed_generation == reserved_generation:
+        return "IDEMPOTENT"
+    if claimed_generation == reserved_generation + 1:
+        return "CLAIMED"
+    return "STALE"
+
+
+def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[dict]:
+    """Project the NON_AUTHORITATIVE active_dispatches rows stably.
+
+    Sorts by (derived protected claim key, dispatch_id). Malformed rows fail
+    closed; the caller enforces the legacy-singular rule on the enclosing
+    state surface when more than one active row exists.
+    """
+    rows: list[tuple[str, str, dict]] = []
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            raise ValueError("active dispatch rows must be mappings")
+        dispatch_id = entry.get("dispatch_id")
+        role = entry.get("role")
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise ValueError("active dispatch row missing dispatch_id")
+        if role not in {"builder", "validator", "reviewer"}:
+            raise ValueError(f"active dispatch row has invalid role: {role!r}")
+        repository = entry.get("repository")
+        task = entry.get("task")
+        if not isinstance(repository, str) or not repository:
+            raise ValueError("active dispatch row missing repository")
+        if not isinstance(task, str) or not task:
+            raise ValueError("active dispatch row missing task")
+        key = derive_claim_key(repository, task, str(role), entry.get("compatibility_group"))
+        rows.append((key, dispatch_id, dict(entry)))
+    rows.sort(key=lambda item: (item[0], item[1]))
+    return [item[2] for item in rows]
+
+
+def lineage_refs_present(event: Mapping[str, object], *, current_writer: bool) -> bool:
+    """T3: current admission/claim writers carry durable proposal+admission refs.
+
+    ``source_proposal_ref``/``canonical_admission_ref`` must be durable
+    ``#<issue>@<comment-id>`` forms; prose references are not durable.
+    Historical events (``current_writer=False``) are exempt.
+    """
+    if not current_writer:
+        return True
+    for field in ("source_proposal_ref", "canonical_admission_ref"):
+        value = event.get(field)
+        if not isinstance(value, str) or not re.fullmatch(r"#\d+@\d+", value):
+            return False
+    return True
+
+
+def target_environment_agreement(
+    *, execution_environment: object, target_environment: object
+) -> str:
+    """T4: TARGET_ENVIRONMENT is a proposal-era alias; disagreement fails closed.
+
+    Returns the canonical environment. A present-but-disagreeing alias raises
+    ValueError instead of guessing.
+    """
+    canonical = execution_environment if execution_environment in {"WEB", "LOCAL"} else None
+    if target_environment is None:
+        if canonical is None:
+            raise ValueError("execution_environment must be WEB or LOCAL")
+        return canonical
+    if target_environment not in {"WEB", "LOCAL"}:
+        raise ValueError(f"unknown TARGET_ENVIRONMENT alias: {target_environment!r}")
+    if canonical is None:
+        return target_environment
+    if canonical != target_environment:
+        raise ValueError(
+            f"TARGET_ENVIRONMENT {target_environment!r} disagrees with "
+            f"execution_environment {canonical!r}"
+        )
+    return canonical
+
+
+def terminal_precedence(actions: Sequence[Mapping[str, object]]) -> dict:
+    """T5: accepted canonical terminal facts take precedence over proposals.
+
+    ``actions`` are coordination records with ``kind`` in {"proposal",
+    "admission", "claim", "checkpoint", "terminal"} and a ``dispatch_id``.
+    The reducer returns the authoritative action: a terminal beats everything
+    for its dispatch; canonical admission/claim facts beat proposals and
+    checkpoints. Ties resolve deterministically by (kind rank, sequence
+    position) — never by count, recency-of-proposal or brand.
+    """
+    if not actions:
+        raise ValueError("no coordination actions to reduce")
+    rank = {"terminal": 0, "claim": 1, "admission": 2, "checkpoint": 3, "proposal": 4}
+    for index, action in enumerate(actions):
+        if not isinstance(action, Mapping) or action.get("kind") not in rank:
+            raise ValueError(f"malformed coordination action at {index}")
+    best = min(
+        enumerate(actions),
+        key=lambda pair: (rank[pair[1]["kind"]], pair[0]),
+    )
+    return dict(best[1])

@@ -322,6 +322,10 @@ requested_head_sha: "<requested-head-sha>"
 
 Duplicate claims from a different logical operator are rejected; the same operator re-claiming is idempotent.
 
+### Serialized-admission projection on admission/claim events (v4.10, additive/optional)
+
+Current admission/claim writers MAY project the serialized-admission facts with the additive optional fields `execution_environment: WEB | LOCAL`, `scheduler_origin: WEB | LOCAL`, `source_proposal_ref` / `canonical_admission_ref` (durable `#<issue>@<comment-id>` forms) and `protected_claim_key` (deterministic `repo#task:role:group`, slot 4 = the normalized compatibility group, `__default__` when omitted). Omit all of them for ordinary dispatches; historical events without them remain valid. These fields are provenance/visibility only: the environment and the scheduling origin never create authority, never substitute for role/independence/currentness, and a stale-generation or losing-proposal writer resolves `STALE | SUPERSEDED | REJECTED` with zero canonical mutation (`EXECUTION_ARCHITECTURE_STANDARD.md` §11.1.1, `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §8.4.2).
+
 ### Responsibility projection on dispatch events (v4.10, additive/optional)
 
 When a dispatch carries delegated subwork or a responsibility handoff (`EXECUTION_ARCHITECTURE_STANDARD.md` section 28), the dispatch events name the causal parent and responsibility mode with the additive optional fields `parent_dispatch_ref` / `responsibility_mode`. Omit both fields entirely for ordinary dispatches; historical events without them remain valid.
