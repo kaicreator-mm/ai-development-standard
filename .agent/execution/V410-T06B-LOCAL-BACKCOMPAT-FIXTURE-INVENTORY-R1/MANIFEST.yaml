@@ -1,0 +1,36 @@
+pack_id: V410-T06B-LOCAL-BACKCOMPAT-FIXTURE-INVENTORY-R1
+task_id: V410-T06B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06B
+branch: task/v4.10.0-v410-t06b-local-backcompat-fixture-inventory-r1
+parent_issue: "#861"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T09:11:15+06:30"
+dependency_completion:
+  - V410-T01A@359e4a967c1ead0ff7ddd805e5161a7519b0e2b1
+  - V410-T01B@3d735304f40064128554ff4dca24b45c37149f6b
+  - V410-T02A@60a49951a1862c83e0a07daf99b689c5ed3af0cb
+  - V410-T02B-R2@9e34e9639c3f0a46303e6b1d8964a53a4adae9d6
+  - V410-T03A@788473b6cb3b9978f2a67f7ccb0ee977149242dd
+  - V410-T03B@cb6e290411af19ab8601f2ddf9a4d840797138de
+  - V410-T04A@be03b44b5e77ef3c76c68370821a510282eacdd8
+  - V410-T05A-R3@a7247fd97caa348d2e4ad2347596392a7726aa69
+  - note: T06A and its LOCAL snapshot unit are preparation-parallel to this unit (execution admission of T06B semantic work is still gated on T06A per TASK_PACKS); V410-T04B and V410-T05B are pending at generation time.
+material_paths:
+  - .agent/execution/V410-T06B-LOCAL-BACKCOMPAT-FIXTURE-INVENTORY-R1/BACKCOMPAT_FIXTURE_INVENTORY.md
+  - scripts/test_v410_t06b_backcompat_fixture_inventory.py
+  - docs/implementation/4.10.0/TASK_PACKS_R1.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

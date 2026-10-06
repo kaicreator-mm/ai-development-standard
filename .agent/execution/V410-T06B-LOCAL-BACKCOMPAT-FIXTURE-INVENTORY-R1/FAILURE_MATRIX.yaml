@@ -1,0 +1,29 @@
+task_id: V410-T06B
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or Task Pack identity is invalid
+    action: stop before any mutation; controller rebuilds pack
+  - id: HEAD_BINDING_VIOLATION
+    when: HEAD is not the exact base and drift is outside the additive allowed write set
+    action: stop; verification script exits non-zero; controller rebinds
+  - id: FIXTURE_PATH_DRIFT
+    when: a fixture path listed in BACKCOMPAT_FIXTURE_INVENTORY.md does not exist at base
+    action: stop; inventory must be regenerated against the exact tree before any wiring
+  - id: PRODUCER_ENTRYPOINT_DRIFT
+    when: a producer command's script entrypoint listed in the inventory does not exist
+    action: stop; route discovery of renamed/moved producers to T06A/T06B owner
+  - id: CURRENTNESS_DRIFT
+    when: integration base or owner blob changes before T06B execution admission (T06A gate)
+    action: stop; controller classifies drift and rebinds as required
+  - id: SCOPE_CREEP_INTO_WIRING
+    when: this inventory unit attempts central projection/conformance wiring or owner mutation
+    action: stop; semantic work belongs to the T06B implementation unit after T06A admission
+  - id: SECOND_REGISTRY_CREATION
+    when: any parallel golden index, registry, or discovery surface is added
+    action: stop and remove; templates/GOLDEN_INDEX.md and existing registries remain sole owners
+  - id: FIXTURE_MUTATION
+    when: any inventoried fixture, golden file, schema, template, or suite is modified by this unit
+    action: stop and revert; preparation units are add-only
+  - id: PROVENANCE_FAILURE
+    when: Builder claim is absent or the pack binds a different base/pack than dispatched
+    action: invalidate pack; successor execution required

@@ -1,0 +1,35 @@
+task_id: V410-T06B
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: backcompat_fixture_inventory
+    command: python scripts/test_v410_t06b_backcompat_fixture_inventory.py
+  - id: semantic_regressions_v33
+    command: python scripts/test_v33_semantic_regressions.py
+  - id: carryforward_v40_r3
+    command: python scripts/test_v40_r3_carryforward.py
+  - id: contract_compatibility_v48
+    command: python scripts/test_v48_contract_compatibility.py
+  - id: interchange_replay_v48
+    command: python scripts/test_v48_interchange_replay_restart.py
+  - id: interface_compatibility
+    command: python scripts/test_v42_interface_compatibility.py
+  - id: compatibility_aliases_v47
+    command: python scripts/test_v47_compatibility_aliases.py
+  - id: golden_templates
+    command: python scripts/test_work_item_contract_and_golden_templates.py
+  - id: verifier_regression
+    command: python scripts/test_verify_standard.py
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+  - id: v410_predecessors
+    command: python scripts/test_v410_t02b_machine_projection.py && python scripts/test_v410_t04a_gate_repair_routing.py && python scripts/test_v410_t05a_shared_code_safety.py
+  - id: verify_standard
+    command: python scripts/verify_standard.py
+negative_invariants:
+  - stale_passing_verifier_cannot_override_current_authority
+  - projection_does_not_create_second_registry
+  - fixture_inventory_does_not_mutate_fixtures
+  - inventory_adds_no_parallel_golden_index
+  - no_blanket_touch_every_file_migration
+  - historical_pack_evidence_does_not_rebind_as_current
+  - head_binding_exact_or_additive_only_to_allowed_write_set
