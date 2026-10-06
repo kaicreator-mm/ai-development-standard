@@ -1,6 +1,6 @@
 # V410-T07B-LOCAL-EVIDENCE-INPUT-INVENTORY-R1 Implementation Map
 
-Exact baseline: `30334e8c7b90a327f8597b86c88c785b98df07f7` (HEAD; origin/version/v4.10.0 tip).
+Exact baseline: `30334e8c7b90a327f8597b86c88c785b98df07f7` (= `origin/version/v4.10.0` tip at generation).
 
 Read-only source surfaces consumed (blob SHAs at the exact base):
 
@@ -21,3 +21,19 @@ All T07A/T06A/T06B/T08A/V410-V01-produced inputs are inventoried as PENDING with
 owning concern named; nothing is backfilled. This pack is preparation only — the
 Product-authority decision path it maps stays with Product authority, and the decision
 record (input D5) remains PENDING by design.
+
+## Verification record (verbatim)
+
+`python scripts/test_v410_t07b_evidence_input_inventory.py` on this pack branch (exit 0):
+
+```text
+base_check: HEAD descends from base_sha 30334e8c7b90a327f8597b86c88c785b98df07f7
+authority_statement: present
+counts: total_inputs=23 available=6 pending=17 producer_paths_checked=7
+EVIDENCE_INPUT_INVENTORY_VERIFIED=PASS
+```
+
+The binding check accepts the pinned base or a descendant of it, because the pack's own
+commits necessarily sit above the base (see the R1 test commit). Every AVAILABLE input's
+producer path is exercised by the run, and the authority statement the inventory requires
+is present.
