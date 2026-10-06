@@ -178,9 +178,28 @@ findings:
   p1: 1
   p2: 2
   p3: 0
+  records:
+    - finding_id: "RV-1"
+      severity: P1
+      root_defect_class: IMPLEMENTATION_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+    - finding_id: "RV-2"
+      severity: P2
+      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+    - finding_id: "RV-3"
+      severity: P2
+      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+      duplicate_of: "RV-2"
 local_validation_required: false
 next_state: changes-requested
 ```
+
+`findings.records` is the machine projection for material findings in newly emitted `REVIEW_RESULT` events and is REQUIRED for new material findings (`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.2): stable `finding_id`, `severity` (`P0`–`P3`), `root_defect_class` (the `DEVELOPMENT_WORKFLOW.md` §4 projection), `evidence_refs`, and `duplicate_of` linkage when the same logical defect was already reported under a different finding id. The bucket counts of a newly emitted event MUST equal the per-severity record counts (`p1: 1` + `p2: 2` ⇔ exactly one `P1` record and two `P2` records above); duplicate records count in the emitting event's buckets. A later reconciliation of independently emitted findings uses the existing `review-finding-v1` durable `DUPLICATE` disposition, not a rewritten event. Historical payloads without `records` remain valid history but never satisfy the new-writer contract.
 
 Human-readable finding details SHOULD follow the payload:
 

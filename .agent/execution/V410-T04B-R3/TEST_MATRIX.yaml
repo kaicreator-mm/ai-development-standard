@@ -1,0 +1,28 @@
+task_id: V410-T04B
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+  - id: event_writer_surfaces
+    command: python scripts/verify_event_writer_surfaces.py
+  - id: execution_architecture
+    command: python scripts/test_execution_architecture.py
+  - id: t02a_collaboration
+    command: python scripts/test_v410_t02a_collaboration_control.py
+  - id: t02b_projection
+    command: python scripts/test_v410_t02b_machine_projection.py
+  - id: t04a_gate_repair
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+  - id: t04b_focused
+    command: python scripts/test_v410_t04b_review_currentness.py
+  - id: verify_standard
+    command: python scripts/verify_standard.py
+negative_invariants:
+  - current_material_finding_without_structured_identity_severity_root_class_evidence_cannot_satisfy_aggregate
+  - historical_bucket_only_review_remains_readable_but_not_promoted_to_new_writer_contract
+  - independent_duplicate_ids_converge_only_through_durable_existing_family_equivalence
+  - ambiguous_or_conflicting_duplicate_equivalence_fails_closed
+  - stale_subject_review_never_enters_current_aggregate
+  - conflicting_current_review_facts_fail_closed
+  - reviewer_or_model_count_never_creates_authority
+  - no_new_review_event_state_lifecycle_registry_or_finding_registry
