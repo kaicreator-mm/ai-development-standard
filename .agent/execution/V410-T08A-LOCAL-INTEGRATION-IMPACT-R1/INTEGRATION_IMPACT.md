@@ -118,11 +118,23 @@ All eleven commands in §2 were executed locally on the exact candidate
 This is recorded as visible preparation evidence only; the authoritative full visible
 regression remains a T08A-integration-time obligation on the then-current candidate.
 
-Verification script output (verbatim tail):
+Verification script output (verbatim, full, on this pack branch — the gate accepts the
+pinned base or a descendant of it whose only drift is this unit's additive write set,
+because this unit's own commits necessarily sit above that base):
 
 ```text
-HEAD=30334e8c7b90a327f8597b86c88c785b98df07f7
-base check: HEAD == base_sha (exact integrated candidate)
+HEAD=e22a27a0aeffeab9a23845c2877a7b816b0fea7b
+base check: HEAD is descendant of base_sha; changed_paths=8
+entrypoint: scripts/verify_standard.py -> OK
+entrypoint: scripts/test_protocol_schemas.py -> OK
+entrypoint: scripts/test_v42_interface_compatibility.py -> OK
+entrypoint: scripts/test_v43_task_decomposition.py -> OK
+entrypoint: scripts/test_v410_stage1_lifecycle_contracts.py -> OK
+entrypoint: scripts/test_v410_t03a_implementation_quality.py -> OK
+entrypoint: scripts/test_v410_t01b_product_projections.py -> OK
+entrypoint: scripts/test_v410_t04a_gate_repair_routing.py -> OK
+entrypoint: scripts/test_v410_t02a_collaboration_control.py -> OK
+entrypoint: scripts/test_v410_t02b_machine_projection.py -> OK
 entrypoint: scripts/test_v410_t05a_shared_code_safety.py -> OK
 merge_sha: df1ee51a0d6d1c30092c01102ca320db51091535 -> OK
 merge_sha: 2276afe7fdd057f300386ab19925ae37a4065684 -> OK
@@ -135,3 +147,9 @@ merge_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7 -> OK
 counts: commands=11 merge_shas=8
 INTEGRATION_IMPACT_VERIFIED=PASS
 ```
+
+An earlier revision of this section recorded the generation-time run, when HEAD still
+equalled the pinned base (`base check: HEAD == base_sha (exact integrated candidate)`).
+That line cannot hold once this unit's own commits exist on the branch, so the record is
+replaced with the full output a reviewer reproduces today; the counts are unchanged
+(`commands=11 merge_shas=8`, all eleven entrypoints and eight merge SHAs OK).
