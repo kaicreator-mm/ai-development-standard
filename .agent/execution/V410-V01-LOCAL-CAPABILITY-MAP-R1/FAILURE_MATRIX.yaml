@@ -1,0 +1,20 @@
+task_id: V410-V01
+failure_classes:
+  - id: CANDIDATE_NOT_READY
+    when: preparation is mistaken for executable Validation before T08A-integrated exact candidate exists
+    action: stop; this map is preparation only; real V01 dispatch re-reads every input at the exact candidate
+  - id: MAP_INTEGRITY_FAILURE
+    when: capability map fails scripts/test_v410_v01_capability_map.py (HEAD drift, missing subject, missing entrypoint)
+    action: stop; re-derive the map at the current exact base before any use
+  - id: HOST_FACT_INFERENCE_ATTEMPT
+    when: a validator tries to conclude PASS/BLOCKED resolution of a host-native subject from source inspection
+    action: stop; mark host part BLOCKED with owner=GitHub platform and read live host facts at dispatch
+  - id: SELF_CERTIFICATION_ATTEMPT
+    when: this preparation map or any Builder evidence is used as V01 Validation PASS
+    action: invalidate; V01 PASS requires independent execution against the exact candidate
+  - id: EVIDENCE_TRANSFER_AFTER_DRIFT
+    when: historical Review/Validation evidence is carried onto a changed exact candidate without re-establishment
+    action: stop; apply currentness rules and re-establish affected evidence
+  - id: SCOPE_VIOLATION
+    when: preparation mutates source, other worktrees, main clone, or creates PRs/issue comments
+    action: stop and restore; preparation write set is the pack directory plus the map script only

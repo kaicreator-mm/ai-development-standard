@@ -1,0 +1,49 @@
+pack_id: V410-V01-LOCAL-CAPABILITY-MAP-R1
+task_id: V410-V01
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: docs/implementation/4.10.0/V410_V01_VALIDATION_CONTRACT.md
+branch: task/v4.10.0-v410-v01-local-capability-map-r1
+parent_issue: "#865"
+agent_freedom: NOT_APPLICABLE_TO_VALIDATION_WORK_ITEM
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T09:10:52+06:30"
+dependency_completion:
+  - V410-T01A@df1ee51a0d6d1c30092c01102ca320db51091535
+  - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T02A@2276afe7fdd057f300386ab19925ae37a4065684
+  - V410-T02B@fee097db238b60d97ab2d449dcf210488d03814f
+  - V410-T03A@46fe74936cd88184bbd898643851b585d3299291
+  - V410-T03B@98ccd07ee18f3a8a8f10e91e04295324ebb130d8
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T05A@30334e8c7b90a327f8597b86c88c785b98df07f7
+  - note: CANDIDATE_NOT_READY — T04B/T05B/T06A-T08A pending; real V01 execution waits for the T08A-integrated exact candidate
+material_paths:
+  - docs/implementation/4.10.0/V410_V01_VALIDATION_CONTRACT.md
+  - docs/implementation/4.10.0/REFINED_TASK_DAG_FREEZE_R1.md
+  - docs/implementation/4.10.0/TASK_PACKS_R1.md
+  - docs/implementation/4.10.0/PRODUCT_FREEZE.md
+  - docs/implementation/4.10.0/PRD.md
+  - docs/implementation/4.10.0/L1_PRODUCT_EVIDENCE.md
+  - docs/implementation/4.10.0/L2_FREEZE.md
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - standards/EXECUTION_PACK_STANDARD.md
+  - standards/TASK_DAG_GOVERNANCE_STANDARD.md
+  - standards/ISSUE_FIRST_TASK_TRIGGER.md
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - standards/VALIDATION_STANDARD.md
+  - standards/RELEASE_STANDARD.md
+  - standards/IMPLEMENTATION_QUALITY_STANDARD.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - CAPABILITY_MAP.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
