@@ -1,0 +1,64 @@
+# V410-T06B LOCAL-POST-T06A-IMPACT-DELTA-R1 failure matrix
+# Read-only analysis unit: every class below MUST fail closed. No class may be
+# silently waved through, and none authorizes a repair inside this unit.
+
+failures:
+  - id: S1
+    class: SUBJECT_DRIFT
+    trigger: PR #925 head, merge ref, or base moves away from the recorded binding (f294173 / 1b68c331 / eea3e69), or PR #925 is merged and the candidate changes shape
+    expected: this analysis is STALE for the new subject; re-derive before any consumer relies on D1-D7 — never re-bind silently
+
+  - id: S2
+    class: NOT_READ_ONLY
+    trigger: any mutation of a pre-existing file (standards, schemas, templates, prompts, references, scripts, other execution packs, standard-manifest.json) by this unit
+    expected: FAIL; write set is this pack directory only
+
+  - id: S3
+    class: VERDICT_AUTHORITY
+    trigger: this unit emitting READY, Concern Validation PASS/FAIL, Independent Review verdict, Release Qualification, or any gate waiver
+    expected: FAIL; output is planning/analysis evidence with authority_effect=NONE and verdict=NONE. Quoted suite output is evidence, not a verdict.
+
+  - id: S4
+    class: UNVERIFIED_CLAIM
+    trigger: recording a claim about PR #925 (or about a carried suite) without a reproduced command and its observed output
+    expected: FAIL; every verdict in POST_T06A_IMPACT_DELTA.md sections 3, 5, and 6 carries a reproduction record (section 9)
+
+  - id: S5
+    class: SCRATCH_NOT_RESTORED
+    trigger: a probe mutation left in place in a scratch copy or a worktree not owned by this unit
+    expected: FAIL; every probe restores its target and asserts `git status --short` empty (verified for scratch, succ, v410-t06a-owner-convergence, v410-t06b-local-backcompat-fixture-inventory-r1)
+
+  - id: S6
+    class: CONTRADICTION_SILENTLY_RESOLVED
+    trigger: this unit deciding, executing, or pre-authorizing a disposition of X1-X4 (guard-amendment prohibition vs routing; gap-open prose vs closure), or presenting a recommended shape as authorization
+    expected: FAIL; X1-X4 are recorded for T06B to disposition with its own evidence; recommendations are explicitly non-authorizing
+
+  - id: S7
+    class: STALE_INVENTORY_CARRIED
+    trigger: treating the prior T06B LOCAL inventory (base 30334e8) as current at base eea3e69, or assuming its pins-what prose survived PR #918
+    expected: FAIL; four inventoried surfaces drifted (D4) and the inventory omits the registry-growth guard's blocking role (D3)
+
+  - id: S8
+    class: SUCCESSOR_DEFECT_REPAIRED_IN_PLACE
+    trigger: this unit amending scripts/test_v410_owner_convergence.py, scripts/test_v48_registry_adoption.py, the T06A reference, or the prior T06B verification script
+    expected: FAIL; this unit NAMES required dispositions (D5, D6) and executes none of them. Amending a T06A-owned surface is T06B's decision, not this unit's.
+
+  - id: S9
+    class: CI_FALSE_CONFIDENCE
+    trigger: reporting D5/D6 as "not a problem because CI is green" or "caught by CI"
+    expected: FAIL; CI runs a fixed 26-step list excluding every test_v410_* suite (D7). The red surfaces are invisible to CI by construction.
+
+  - id: S10
+    class: SCOPE_CREEP_UNANALYZED
+    trigger: asserting a materially affected surface exists without it appearing in material_paths, or asserting PR #925 breaks something outside the measured file set
+    expected: FAIL; material_paths enumerates the analyzed surfaces and every severity claim in section 10 traces to a measured probe
+
+  - id: S11
+    class: DIRTY_TREE_MEASUREMENT
+    trigger: reporting a full-visible-set result measured on an uncommitted tree as the subject's health, or attributing the ODF-11 dirty-tree red (D8) to PR #925, to T06A, or to T06B's change
+    expected: FAIL; D8 is a pre-existing property of the base (`scripts/test_v48_orchestration_dogfood.py` unions `git status --porcelain --untracked-files=all` into its candidate path set). Baselines must be taken on a committed clean tree.
+
+stop_conditions:
+  - any S1-S10 class triggering on this unit's own output
+  - any change to the repository-under-analysis beyond this pack directory
+  - any request to implement, fix, rebind, or verdict on the defects recorded here

@@ -1,0 +1,71 @@
+pack_id: V410-T06B-LOCAL-POST-T06A-IMPACT-DELTA-R1
+task_id: V410-T06B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+base_tree: 09db8216ec49caf84b45f404474cfbf4cb5e6ad2
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06B
+branch: task/v4.10.0-v410-t06b-local-post-t06a-impact-delta-r1
+parent_issue: "#861"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T18:00:59+06:30"
+analysis_subject:
+  kind: pull_request
+  pr: "#925"
+  head_sha: f294173c970d35cf9f9ce4eb4925339e324a801a
+  merge_ref_sha: 1b68c331e2ce921bd85de00311b04ec57c0afa50
+  merge_state: OPEN_NOT_MERGED
+  external_delta: "14 files, +1008, -0 (purely additive)"
+dependency_completion:
+  - V410-T01A@df1ee51a0d6d1c30092c01102ca320db51091535
+  - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T02A@2276afe7fdd057f300386ab19925ae37a4065684
+  - V410-T02B-R2@fee097db238b60d97ab2d449dcf210488d03814f
+  - V410-T03A@46fe74936cd88184bbd898643851b585d3299291
+  - V410-T03B@98ccd07ee18f3a8a8f10e91e04295324ebb130d8
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T04B@eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+  - V410-T05A-R3@30334e8c7b90a327f8597b86c88c785b98df07f7
+dependency_notes:
+  - "V410-T06A: PR #925 OPEN and NOT merged (head f294173c970d35cf9f9ce4eb4925339e324a801a, base eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601). Task Pack dependency dependencies=[V410-T06A] is therefore UNSATISFIED at this base; T06B execution admission remains gated on the T06A merge. This analysis unit does not and cannot satisfy that gate."
+  - "V410-T04B: DONE_MERGED (PR #918 merge eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601) and is the base itself. V410-T05B: DONE_NO_CHANGE_REQUIRED per T06A R2 dependency_notes."
+  - "Prior T06B unit: V410-T06B-LOCAL-BACKCOMPAT-FIXTURE-INVENTORY-R1 @ branch head 16b7daffea8d752a441c39cbabb156b09a7417c1, pinned base 30334e8c7b90a327f8597b86c88c785b98df07f7 — one merge stale relative to this unit's base."
+analysis_write_set:
+  - .agent/execution/V410-T06B-LOCAL-POST-T06A-IMPACT-DELTA-R1/*
+read_only_declaration:
+  implementation_performed: false
+  semantic_wiring_performed: false
+  source_or_fixture_mutation: NONE
+  standard_manifest_delta: NONE
+  new_verification_script_authored: false
+  authority_effect: NONE
+  gate_effect: NONE
+  mutation_authorized: false
+  verdict_authority: NONE
+  readme_ready_verdict_emitted: false
+material_paths:
+  - scripts/test_v410_owner_convergence.py
+  - references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md
+  - scripts/test_v48_registry_adoption.py
+  - scripts/verify_standard.py
+  - scripts/test_v410_t06b_backcompat_fixture_inventory.py
+  - standard-manifest.json
+  - .github/workflows/verify-standard.yml
+  - .agent/execution/V410-T06A-R1/TEST_MATRIX.yaml
+  - .agent/execution/V410-T06A-R2/MANIFEST.yaml
+  - .agent/execution/V410-T06A-R2/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-T06B-LOCAL-BACKCOMPAT-FIXTURE-INVENTORY-R1/BACKCOMPAT_FIXTURE_INVENTORY.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+optional_artifacts:
+  - POST_T06A_IMPACT_DELTA.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

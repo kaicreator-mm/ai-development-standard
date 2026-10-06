@@ -1,0 +1,107 @@
+# V410-T06B LOCAL-POST-T06A-IMPACT-DELTA-R1 test matrix
+# All commands run from repository root. Read-only unit: no new verification script is
+# authored; these are the commands this unit actually executed and their observed results.
+# Re-execution on the candidate subject must reproduce the same verdicts.
+
+matrix:
+  - id: A-subject-extraction
+    command: git -C _mirror/ai-development-standard.git diff --name-status eea3e69..f294173
+    status: ANALYSIS_INPUT
+    expect: "14 x A, zero M/D (purely additive)"
+    covers: [D1]
+    notes: local mirror carries refs/pull/925/merge (1b68c331); no network/GitHub API needed (API was unreachable during the session)
+
+  - id: B-baseline-verifier
+    command: python scripts/verify_standard.py
+    status: CARRIED
+    expect: "PASS; manifest files: 220; bootstrap-required files: 41"
+    covers: [D1, X-claims]
+    notes: run on a clean detached checkout at f294173 — PR #925 leaves the verifier green
+
+  - id: C-baseline-full-visible-set
+    command: for f in scripts/test_*.py; do python "$f"; done
+    status: CARRIED
+    expect: "PASS=77 FAIL=0"
+    covers: [D1]
+    notes: PR #925 leaves no red suite; every failure reported in D5/D6 is caused by T06B's own chartered work
+
+  - id: D-baseline-focused
+    command: python scripts/test_v410_owner_convergence.py
+    status: CARRIED
+    expect: "Ran 22 tests ... OK"
+    covers: [D5]
+    notes: green exactly at f294173
+
+  - id: E-registry-growth-probe
+    command: python _tmp/v410-t06b-post-t06a-impact-delta-r1/registry_growth_probe.py
+    status: ANALYSIS_ONLY
+    expect: "all four growth routes blocked; verifier green in all four"
+    covers: [D1, R1, R2]
+    notes: |
+      Routes probed on a restored-each-time scratch copy:
+        A semantic_authorities += 1 schema-valid row -> guard exit=1
+          "semantic registry entry count deviates from carried + exactly three new"
+        B sections.references += V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md -> guard exit=1
+          "unauthorized additions to references: ['references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md']"
+        C sections.verification += scripts/test_v410_owner_convergence.py -> guard exit=1
+          "unauthorized additions to verification: ['scripts/test_v410_owner_convergence.py']"
+        D new dedicated section -> guard exit=1 (RA-06 also: 'BLOCKED' != 'RESOLVED')
+      verify_standard exit=0 PASS in every route (220/221/221/222 manifest files).
+      Confirms T06A's "machine-blocked" claim and refutes the R1 TEST_MATRIX causal note.
+
+  - id: F-successor-collision-probe
+    command: python _tmp/v410-t06b-post-t06a-impact-delta-r1/collision_probe.py
+    status: ANALYSIS_ONLY
+    expect: "no configuration keeps the T06A focused suite green"
+    covers: [D5, C1..C6]
+    notes: |
+      Detached scratch at f294173; tree restored each case.
+        P1 stage 1 new path                    -> focused FAILED (failures=1)  [C1 only]
+        E  register T06A ref+test in manifest   -> guard FAILED (1); focused FAILED (4)
+        F  evolve guard allow-list only         -> guard FAILED (1); focused FAILED (3)
+        G  guard+manifest partial (references)  -> guard FAILED (1); focused FAILED (5)
+        H  guard+manifest TOGETHER, complete    -> guard OK; verify PASS; focused FAILED (4)
+        I  H + seven GAP rows                   -> guard OK; verify PASS; focused FAILED (6)
+
+  - id: G-prior-inventory-script-probe
+    command: python scripts/test_v410_t06b_backcompat_fixture_inventory.py
+    status: ANALYSIS_ONLY
+    expect: "PASS on its own branch; exit=1 at the post-T06A tip"
+    covers: [D6]
+    notes: |
+      On branch 16b7daff (base 30334e8 + pack): BACKCOMPAT_FIXTURE_INVENTORY_VERIFIED=PASS
+      At detached f294173: exit=1
+        "FAIL: HEAD f294173c970d35cf9f9ce4eb4925339e324a801a is not bound to base
+         30334e8c7b90a327f8597b86c88c785b98df07f7 and drift is outside the allowed write set"
+      (30 drifted paths.)
+
+  - id: H-ci-visibility
+    command: grep -n "test_v410" .github/workflows/verify-standard.yml
+    status: ANALYSIS_INPUT
+    expect: "no match"
+    covers: [D7]
+    notes: CI runs a fixed 26-step explicit producer list; no test_v410_* suite is present, so D5/D6 will not surface in CI
+
+  - id: I-dirty-tree-hazard
+    command: python scripts/test_v48_orchestration_dogfood.py   # clean vs one untracked path
+    status: CARRIED
+    expect: "exit=0 clean; exit=1 with any uncommitted path outside the T-011 write set"
+    covers: [D8]
+    notes: |
+      Measured at f294173: clean -> exit=0; + untracked .agent/execution/PROBE-PACK/MANIFEST.yaml
+      -> exit=1 "path outside Builder write set: .agent/execution/PROBE-PACK/MANIFEST.yaml";
+      staged -> exit=1; removed -> exit=0. Mechanism: candidate_paths_between (lines 151-166)
+      unions the durable lane diff with `git status --porcelain --untracked-files=all`.
+      Pre-existing at the base and NOT caused by PR #925, but it makes any LOCAL full-set
+      measurement on an uncommitted tree a false red. This unit's own pack reproduced it
+      (PASS=75 FAIL=1 before commit vs PASS=77 FAIL=0 on the clean committed subject).
+
+provenance:
+  oracle: Task Pack docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06B (acceptance a1-a5)
+  subject: PR #925 @ f294173c970d35cf9f9ce4eb4925339e324a801a (base eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601)
+  baseline_behavior: "carried suites and verifier PASS on the subject (77/77 + PASS); every failure in D5/D6 is new and caused by T06B's chartered work"
+  disclaimer: |
+    This unit performs no validation of any T06B or T06A candidate and emits no verdict.
+    No PASS recorded here is a Concern Validation, Independent Review, or Release
+    Qualification verdict. The "PASS" strings quoted above are verbatim command output
+    from read-only executions of carried suites.
