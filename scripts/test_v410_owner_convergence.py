@@ -86,22 +86,6 @@ CORE_OWNERS = (
     "standard-manifest.json",
 )
 
-EXPECTED_CANDIDATE_PATHS = {
-    ".agent/execution/V410-T06A-R1/EXECUTION_CONTRACT.md",
-    ".agent/execution/V410-T06A-R1/FAILURE_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R1/IMPLEMENTATION_MAP.md",
-    ".agent/execution/V410-T06A-R1/MANIFEST.yaml",
-    ".agent/execution/V410-T06A-R1/REVIEW_CHECKLIST.md",
-    ".agent/execution/V410-T06A-R1/TEST_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R2/EXECUTION_CONTRACT.md",
-    ".agent/execution/V410-T06A-R2/FAILURE_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R2/IMPLEMENTATION_MAP.md",
-    ".agent/execution/V410-T06A-R2/MANIFEST.yaml",
-    ".agent/execution/V410-T06A-R2/REVIEW_CHECKLIST.md",
-    ".agent/execution/V410-T06A-R2/TEST_MATRIX.yaml",
-    "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
-    "scripts/test_v410_owner_convergence.py",
-}
 
 REQUIREMENT_TOKENS = ("R1 ", "R2 ", "R3 ", "R4 ", "R6 ", "R7 ", "R11 ", "R12 ")
 
@@ -315,19 +299,79 @@ class NonAuthorityBoundaryTests(unittest.TestCase):
 
 
 class CandidateShapeTests(unittest.TestCase):
-    """P9/N9: the candidate diff is exactly the pack + the two source surfaces."""
+    """P9/N9: candidate diffs stay inside owned surfaces; upstream owners untouched.
 
-    def test_candidate_diff_shape_is_exact(self) -> None:
+    T06A-history note: this assertion originally pinned the exact 14-path T06A
+    candidate diff on `task/v4.10.0-v410-t06a-owner-convergence` (merged as PR
+    #925, base eea3e69). V410-T06B (#861, base ab8339f) consciously re-scopes it
+    per the T06A-routed registry-growth disposition: successor candidates assert
+    forbidden-surface exclusion plus an explicit owned-path allowlist instead of
+    an exact closed set, because the T06B candidate intentionally evolves schemas,
+    prose, verifier and (under its W13 authorized co-evolution) the manifest and
+    carried guards.
+    """
+
+    T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
+
+    # Surfaces the T06B candidate may touch (write set of
+    # .agent/execution/V410-T06B-R1/EXECUTION_CONTRACT.md, plus its own pack).
+    T06B_ALLOWED_PREFIXES = (
+        ".agent/execution/V410-T06B-R1/",
+        "schemas/dispatch.schema.json",
+        "schemas/execution-state.schema.json",
+        "schemas/agent-event-v2.schema.json",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "templates/agent-event-comment.md",
+        "scripts/v34_rules.py",
+        "scripts/test_v410_t06b_multi_dispatch_conformance.py",
+        "scripts/test_protocol_schemas.py",
+        "scripts/test_execution_architecture.py",
+        "scripts/test_v34_lifecycle_contracts.py",
+        "scripts/verify_standard.py",
+        "standard-manifest.json",
+        "scripts/test_v48_registry_adoption.py",
+        "scripts/test_v410_owner_convergence.py",
+        "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
+    )
+
+    # Upstream semantic-owner standards and frozen authorities that must never
+    # appear in ANY successor candidate diff (N9).
+    FORBIDDEN_PATHS = (
+        "standards/DEVELOPMENT_WORKFLOW.md",
+        "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+        "standards/PROJECT_ADOPTION.md",
+        "standards/VALIDATION_STANDARD.md",
+        "standards/RELEASE_STANDARD.md",
+        "docs/implementation/4.10.0/L2_ARCHITECTURE_EVIDENCE.md",
+        "docs/implementation/4.10.0/TASK_PACKS_R1.md",
+    )
+
+    def test_candidate_diff_never_touches_forbidden_surfaces(self) -> None:
+        changed = self._changed_paths()
+        violations = sorted(changed & set(self.FORBIDDEN_PATHS))
+        self.assertEqual(violations, [])
+
+    def test_t06b_candidate_diff_stays_inside_owned_surfaces(self) -> None:
+        changed = self._changed_paths(self.T06B_BASE_SHA)
+        outside = sorted(
+            path for path in changed if not path.startswith(self.T06B_ALLOWED_PREFIXES)
+        )
+        self.assertEqual(outside, [])
+
+    def _changed_paths(self, base: str = BASE_SHA) -> set[str]:
         result = subprocess.run(
-            ["git", "diff", "--name-only", BASE_SHA, "--"],
+            ["git", "diff", "--name-only", base, "--"],
             cwd=ROOT,
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            self.fail(f"cannot diff against {BASE_SHA}: {result.stderr.strip()}")
-        changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
-        self.assertEqual(changed, EXPECTED_CANDIDATE_PATHS)
+            self.fail(f"cannot diff against {base}: {result.stderr.strip()}")
+        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
     def test_pack_r2_core_inventory_is_complete(self) -> None:
         for rel in (
