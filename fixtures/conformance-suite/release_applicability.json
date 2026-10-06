@@ -1,0 +1,130 @@
+{
+  "fixture_id": "v4.9.0-T-012-C08-release-per-gate-applicability",
+  "owner_refs": [
+    "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+    "standards/RELEASE_STANDARD.md#113-no-concern-to-version-aggregation",
+    "standards/RELEASE_STANDARD.md#114-currentness-and-re-evaluation",
+    "standards/RELEASE_STANDARD.md#115-prospective-migration-only",
+    "references/RELEASE_APPLICABILITY_REFERENCE.md",
+    "docs/implementation/4.9.0/PRD.md#b-bounded-normative-semantic-change",
+    "docs/implementation/4.9.0/PRD.md#d-release-significantcurrently-release-governed-change",
+    "docs/implementation/4.9.0/PRD.md#o-prospective-migration",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "scripts/test_v49_gate_currentness.py",
+    "scripts/test_v49_release_applicability.py"
+  ],
+  "applicability_vocabulary": ["REQUIRED_NOW", "DEFERRED_TO_VERSION_CLOSURE", "NOT_APPLICABLE", "UNKNOWN"],
+  "version_candidate": {"candidate_identity": "version:v4.9.0-rc1"},
+  "scenarios": [
+    {
+      "scenario_id": "C08_S1_concern_decisions_never_determine_version_applicability",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#113-no-concern-to-version-aggregation",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios"
+      ],
+      "frozen_scenarios": ["B", "D"],
+      "kernel_binding": "scripts/test_v49_gate_currentness.py version_gate_omission_allowed",
+      "concern_decisions": [
+        {"gate_id": "hidden-validation", "subject_ref": "concern:x", "applicability": "NOT_APPLICABLE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"},
+        {"gate_id": "release-qualification", "subject_ref": "concern:y", "applicability": "DEFERRED_TO_VERSION_CLOSURE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"}
+      ],
+      "version_level_decision": null,
+      "expect": {"version_gate_omission_allowed": false, "note": "CONCERN_NOT_APPLICABLE != VERSION_NOT_APPLICABLE; no fresh Release-owned version decision => nothing omitted"}
+    },
+    {
+      "scenario_id": "C08_S2_deferral_is_not_gate_satisfaction_at_version_closure",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#113-no-concern-to-version-aggregation",
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"
+      ],
+      "frozen_scenarios": ["D"],
+      "kernel_binding": "scripts/test_v49_gate_currentness.py version_gate_omission_allowed",
+      "concern_decisions": [
+        {"gate_id": "release-qualification", "subject_ref": "concern:y", "applicability": "DEFERRED_TO_VERSION_CLOSURE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"}
+      ],
+      "version_level_decision": {"gate_id": "release-qualification", "subject_identity": "version:v4.9.0-rc1", "applicability": "REQUIRED_NOW", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"},
+      "closure_claims_gate_satisfied_via_deferral": true,
+      "expect": {"version_gate_omission_allowed": false, "note": "CONCERN_DEFERRED != VERSION_GATE_SATISFIED; deferral only moves the fresh evaluation to Version Closure"}
+    },
+    {
+      "scenario_id": "C08_S3_unknown_applicability_fail_closed_to_stronger_path",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md"
+      ],
+      "frozen_scenarios": ["D"],
+      "kernel_binding": "scripts/test_v49_gate_currentness.py version_gate_omission_allowed",
+      "concern_decisions": [],
+      "version_level_decision": {"gate_id": "hidden-validation", "subject_identity": "version:v4.9.0-rc1", "applicability": "UNKNOWN", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"},
+      "expect": {
+        "version_gate_omission_allowed": false,
+        "route": "STRONGER_EXISTING_RELEASE_PATH_OR_BLOCKED",
+        "note": "UNKNOWN MUST NOT be read as NOT_APPLICABLE or implicit deferral"
+      }
+    },
+    {
+      "scenario_id": "C08_S4_only_fresh_release_owned_not_applicable_permits_omission",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "standards/RELEASE_STANDARD.md#114-currentness-and-re-evaluation"
+      ],
+      "frozen_scenarios": ["B"],
+      "kernel_binding": "scripts/test_v49_gate_currentness.py version_gate_omission_allowed / release_decision_current",
+      "concern_decisions": [],
+      "version_level_decision": {
+        "gate_id": "hidden-validation",
+        "subject_identity": "version:v4.9.0-rc1",
+        "applicability": "NOT_APPLICABLE",
+        "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "decision_ref": "release-decision:rc1-hidden-001",
+        "basis_or_proof_refs": ["release-rule:deterministic-proof-001"]
+      },
+      "expect": {
+        "version_gate_omission_allowed": true,
+        "decision_current": true,
+        "note": "positive control: Release-owned deterministic proof of NOT_APPLICABLE on the exact version subject, all bindings current"
+      }
+    },
+    {
+      "scenario_id": "C08_S5_stale_binding_makes_old_applicability_historical",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#114-currentness-and-re-evaluation",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md"
+      ],
+      "frozen_scenarios": ["O"],
+      "kernel_binding": "scripts/test_v49_gate_currentness.py release_decision_current",
+      "concern_decisions": [],
+      "version_level_decision": {"gate_id": "hidden-validation", "subject_identity": "version:v4.8.0-final", "applicability": "NOT_APPLICABLE", "release_authority_ref": "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"},
+      "expect": {"decision_current": false, "reason": "NONCURRENT_SUBJECT_BINDING", "note": "old applicability evidence remains historical for its old binding; re-evaluation, not editing history"}
+    },
+    {
+      "scenario_id": "C08_S6_prospective_migration_never_shortens_inflight_frozen_candidate",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#115-prospective-migration-only",
+        "docs/implementation/4.9.0/PRD.md#o-prospective-migration"
+      ],
+      "frozen_scenarios": ["O"],
+      "inflight_candidate": {"state": "FROZEN", "gates_required": ["hidden-validation", "release-qualification"], "bound_authority": "v4.8-release-authority"},
+      "new_rule": {"adopted": "v4.9-release-applicability-profile", "would_require": [], "posture": "PROSPECTIVE_ONLY"},
+      "expect": {
+        "gates_required_after_adoption": ["hidden-validation", "release-qualification"],
+        "retroactive_shortening_allowed": false,
+        "note": "a newly adopted applicability rule never retroactively shortens gates already required for an in-flight frozen/qualified candidate"
+      }
+    },
+    {
+      "scenario_id": "C08_S7_builder_or_concern_pass_cannot_mint_applicability",
+      "exact_refs": [
+        "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject",
+        "references/RELEASE_APPLICABILITY_REFERENCE.md"
+      ],
+      "frozen_scenarios": ["B"],
+      "attempted_mint": {"actor": "builder", "gate_id": "hidden-validation", "applicability": "NOT_APPLICABLE", "basis": "task PASS"},
+      "expect": {
+        "mint_rejected": true,
+        "note": "an Orchestrator, Builder, Reviewer, Validator, CI system, risk label or model judgment cannot mint Release applicability; only the Release owner decides"
+      }
+    }
+  ]
+}

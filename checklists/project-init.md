@@ -63,6 +63,23 @@ Use this checklist when creating a new project or adopting the development stand
 - [ ] Candidate PREPARED != FROZEN, PR PASS != Release PASS, and Release READY != Repository Integration complete remain explicit project assumptions.
 - [ ] v3.4→v4 historical evidence migration preserves original identity/result and does not rewrite PASS/FAIL/CHANGES_REQUESTED.
 - [ ] v4.1 execution-foundation adoption is prospective; old executions are not retroactively relabeled as having context/toolchain/environment evidence that was never recorded.
+- [ ] For v4.7+ recovered lineage surfaces, canonical concern ownership is discovered through `standard-manifest.json#semantic_authorities`; `docs/implementation/4.7.0/MIGRATION_ADOPTION.md` is used only as non-authoritative adoption wiring, not as a second owner.
+- [ ] Optional recovered v4.7 registries/profiles are loaded only when applicable; an incompatible convergence need is routed to `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` instead of forcing a physical path/contract migration.
+
+## v4.6 AI-native Adoption
+
+Apply these checks only to projects pinned to a v4.6 revision. Adoption is materiality-driven; this section does not require empty machine records for non-material concerns.
+
+- [ ] `PROJECT_OVERRIDES.md` records the v4.6 AI-native profile or explicitly keeps the canonical materiality-driven defaults.
+- [ ] The project recognizes exactly three new normative owners: Intent/Assumption Governance, Context Engineering, and Skill/Reusable Procedure Governance.
+- [ ] Material intent/interpretation/assumption/UNKNOWN handling cannot silently become Product/Architecture/Task authority; durable machine use points to `schemas/intent-assumption-record-v1.schema.json` only when needed.
+- [ ] Required development truth is recoverable from durable GitHub/repository owner surfaces; a project-local Context Snapshot/chat transcript is not the authority substitute.
+- [ ] Reusable Skills/procedures have explicit admission/provenance/compatibility handling when material; installation/tool capability is not treated as trust or side-effect authorization.
+- [ ] Assurance/Review, F0–F3, Dispatch/Handoff, Validation and Release are referenced through their existing owners rather than duplicated in project-local AI-native policy.
+- [ ] Fast Path may omit non-material Intent/Skill records, but it does not omit material authority/currentness facts or higher-authority required gates.
+- [ ] Historical evidence is not retrofitted or relabeled as v4.6-produced evidence.
+- [ ] No repository-wide v4.7 resolver or second lifecycle/autonomy/Review/Validation/Release vocabulary is introduced by adoption.
+
 
 ## GitHub
 

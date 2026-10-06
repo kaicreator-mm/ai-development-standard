@@ -43,7 +43,13 @@ READ_ONLY_OWNER_PATHS = (
 # either surface still fails, zero other assertion change.
 READ_ONLY_OWNER_PATHS_REBOUND_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
-    "schemas/dispatch.schema.json": "7259cb357d71c90db683af2533c3dee4733a8e17",
+    # Post-recovery recompose re-bind (#805 POST_RECOVERY_EXACT_RECOMPOSE,
+    # #745): the recovery-integrated main merge (4c632256) legally carries the
+    # recovered v4.6 dispatch wiring (+2 optional array fields) composed into
+    # the same DAG-owned dispatch surface; pin re-bound to the exact composed
+    # blob 123a6622. Pin constant only — any further mutation still fails,
+    # zero other assertion change.
+    "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
 }
 
 PLANNING_PATHS = tuple(

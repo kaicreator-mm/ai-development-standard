@@ -1,0 +1,141 @@
+{
+  "fixture_id": "v4.9.0-T-012-C04-adverse-finding-carry-forward",
+  "owner_refs": [
+    "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
+    "standards/ASSURANCE_PLAN_STANDARD.md#3-existing-aggregation-authority-is-preserved",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+    "docs/implementation/4.9.0/PRD.md#n-adverse-review-cannot-be-shopped-around",
+    "docs/implementation/4.9.0/PRD.md#j-hiddenrelease-high-risk-finding",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#91-carry-forward-rule",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#92-authorized-repair--re-review",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
+    "schemas/review-aggregation-v1.schema.json#aggregation_policy",
+    "scripts/test_v49_gate_currentness.py"
+  ],
+  "owner_anchors": {
+    "carry_forward_policy": "unresolved-valid-findings-carry-forward",
+    "aggregation_policy": "finding-union-blocker-dominance",
+    "blocker_resolution": "unresolved-valid-blocker-dominates"
+  },
+  "origin_subject": "sha:aaaa111111111111111111111111111111111111",
+  "findings": [
+    {"finding_id": "F-BLK-1", "state": "UNRESOLVED", "severity": "BLOCKER", "origin_subject": "sha:aaaa111111111111111111111111111111111111"},
+    {"finding_id": "F-BLK-2", "state": "UNRESOLVED", "severity": "BLOCKER", "origin_subject": "sha:aaaa111111111111111111111111111111111111"}
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "C04_S1_new_reviewer_pass_never_erases_unresolved_blocker",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "docs/implementation/4.9.0/PRD.md#n-adverse-review-cannot-be-shopped-around"
+      ],
+      "frozen_scenario": "N",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [],
+      "successor_subject": "sha:bbbb222222222222222222222222222222222222",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": true,
+      "expect": {"admissible": false, "unresolved_after": ["F-BLK-1"], "reason": "BLOCKER_DOMINANCE", "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION"}
+    },
+    {
+      "scenario_id": "C04_S2_same_subject_redispatch_for_pass_rejected",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "N",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [],
+      "successor_subject": "sha:aaaa111111111111111111111111111111111111",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": false,
+      "expect": {"admissible": false, "unresolved_after": ["F-BLK-1"], "reason": "UNAUTHORIZED_REVIEW_PATH", "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION"}
+    },
+    {
+      "scenario_id": "C04_S3_authorized_repair_successor_dispositions_every_carried_finding",
+      "exact_refs": [
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#91-carry-forward-rule",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#92-authorized-repair--re-review"
+      ],
+      "frozen_scenario": "N",
+      "carried_findings": ["F-BLK-1", "F-BLK-2"],
+      "per_finding_outcomes": [
+        {"finding_id": "F-BLK-1", "outcome": "RESOLVED", "evidence_refs": ["validation:successor-rerun@1"]},
+        {"finding_id": "F-BLK-2", "outcome": "NOT_APPLICABLE_TO_SUCCESSOR", "owning_rule_basis": "standards/DEVELOPMENT_WORKFLOW.md#stage-26--review-policy-selection"}
+      ],
+      "successor_subject": "sha:bbbb222222222222222222222222222222222222",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": true,
+      "expect": {"admissible": true, "unresolved_after": [], "reason": null, "carry_disposition": null}
+    },
+    {
+      "scenario_id": "C04_S4_not_applicable_without_owning_rule_basis_fails_closed",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+      ],
+      "frozen_scenario": "N",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [
+        {"finding_id": "F-BLK-1", "outcome": "NOT_APPLICABLE_TO_SUCCESSOR"}
+      ],
+      "successor_subject": "sha:bbbb222222222222222222222222222222222222",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": true,
+      "expect": {"admissible": false, "unresolved_after": ["F-BLK-1"], "reason": "MISSING_OWNING_RULE_BASIS", "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION"}
+    },
+    {
+      "scenario_id": "C04_S5_new_sha_alone_carries_finding_forward",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "N",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [],
+      "successor_subject": "sha:cccc333333333333333333333333333333333333",
+      "successor_review": null,
+      "authorized_repair": false,
+      "expect": {"admissible": false, "unresolved_after": ["F-BLK-1"], "reason": "PASS_NOT_TRANSFERRED", "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION"}
+    },
+    {
+      "scenario_id": "C04_S6_new_adverse_finding_between_dispatch_and_claim_fails_claim",
+      "exact_refs": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+      ],
+      "frozen_scenario": "J",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [
+        {"finding_id": "F-BLK-1", "outcome": "STILL_PRESENT"}
+      ],
+      "successor_subject": "sha:bbbb222222222222222222222222222222222222",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": true,
+      "expect": {"admissible": false, "unresolved_after": ["F-BLK-1"], "reason": "CARRY_FORWARD_UNTIL_DISPOSITION", "carry_disposition": "CARRY_FORWARD_UNTIL_DISPOSITION"}
+    },
+    {
+      "scenario_id": "C04_S7_owning_authority_disposition_clears_finding_only_with_authority",
+      "exact_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward"
+      ],
+      "frozen_scenario": "J",
+      "carried_findings": ["F-BLK-1"],
+      "per_finding_outcomes": [],
+      "owning_authority_disposition": {"finding_id": "F-BLK-1", "authority_ref": "standards/DEVELOPMENT_WORKFLOW.md#44-independent-review"},
+      "successor_subject": "sha:bbbb222222222222222222222222222222222222",
+      "successor_review": {"reviewer": "R2", "verdict": "PASS"},
+      "authorized_repair": true,
+      "expect": {"admissible": true, "unresolved_after": [], "reason": null, "carry_disposition": null}
+    },
+    {
+      "scenario_id": "C04_S8_hidden_release_finding_forces_thaw_requalification_route",
+      "exact_refs": [
+        "docs/implementation/4.9.0/PRD.md#j-hiddenrelease-high-risk-finding",
+        "standards/RELEASE_STANDARD.md#4-operational-immutability"
+      ],
+      "frozen_scenario": "J",
+      "carrier_chain": ["FROZEN", "THAWED / INVALIDATED", "fix", "affected visible validation", "new freeze", "required Hidden Validation", "new Release Qualification"],
+      "expect": {"proportional_shortcut_allowed": false, "note": "a real release finding triggers required thaw/repair/requalification, never proportional optimization"}
+    }
+  ]
+}

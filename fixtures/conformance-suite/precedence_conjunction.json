@@ -1,0 +1,141 @@
+{
+  "fixture_id": "v4.9.0-T-012-C01-precedence-conjunction",
+  "owner_refs": [
+    "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+    "standards/ASSURANCE_PLAN_STANDARD.md#10-owner-scoped-assurance-floor-and-cross-owner-composition",
+    "schemas/assurance-plan-v2.schema.json#cross_owner_composition",
+    "schemas/assurance-plan-v2.schema.json#assurance_floor",
+    "docs/implementation/4.9.0/PRD.md#a-low-risk-semantic-neutral-maintenance",
+    "docs/implementation/4.9.0/PRD.md#b-bounded-normative-semantic-change",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
+    "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios"
+  ],
+  "owner_anchors": {
+    "assurance_standard_9_conjunction": "CURRENT_OWNER_AUTHORITY\nAND OWNER_PERMISSION=ALLOW_REDUCTION\nAND REQUIRED_PREDICATE_PROOFS_PRESENT\nAND EVERY_REQUIRED_PREDICATE_STATE=TRUE\nAND EVERY_PROOF_BASIS in {durable-fact, deterministic-check, owner-record}\nAND PROOF_AND_PERMISSION_CURRENT",
+    "assurance_standard_10_policy": "policy=conjunctive-no-cancellation\ncancellation_allowed=false",
+    "schema_cross_owner_policy_const": "conjunctive-no-cancellation",
+    "schema_cancellation_allowed_const": false,
+    "assurance_standard_non_proof_facts": "docs-only"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "C01_S1_higher_gate_authority_override_precedes_lower_default",
+      "exact_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "A",
+      "concerns": [
+        {
+          "concern_id": "review",
+          "owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+          "requirements": [
+            {"requirement_id": "review-default-recommended", "authority_rank": 1, "policy": "recommended", "strength_ref": "default"},
+            {"requirement_id": "review-override-required", "authority_rank": 2, "policy": "required", "strength_ref": "gate-authority-override"}
+          ]
+        }
+      ],
+      "expect": {
+        "resolved_requirement_ids": ["review-override-required"],
+        "floor_requirement_ids": ["review-override-required"],
+        "independent_atoms_in_floor": 1,
+        "note": "lower default + higher override compose to ONE current requirement (Gate Authority precedence); treating both as independent atoms is the rejected L2 negative"
+      }
+    },
+    {
+      "scenario_id": "C01_S2_owner_proven_docs_only_reduction_legal_prospective",
+      "exact_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
+        "docs/implementation/4.9.0/PRD.md#b-bounded-normative-semantic-change",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios"
+      ],
+      "frozen_scenario": "B",
+      "concerns": [
+        {
+          "concern_id": "review",
+          "owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+          "requirements": [
+            {"requirement_id": "review-full", "authority_rank": 2, "policy": "required", "strength_ref": "baseline"},
+            {"requirement_id": "review-focused", "authority_rank": 1, "policy": "required", "strength_ref": "reduced-owner-proven"}
+          ],
+          "resolution": {
+            "resolution_id": "focused",
+            "selected_requirement_id": "review-focused",
+            "owner_permission": "ALLOW_REDUCTION",
+            "permission_current": true,
+            "predicate_proofs": [
+              {"predicate_id": "docs-only", "state": true, "proof_basis": "deterministic-check"},
+              {"predicate_id": "risk:low", "state": true, "proof_basis": "durable-fact"}
+            ]
+          }
+        }
+      ],
+      "expect": {
+        "resolved_requirement_ids": ["review-focused"],
+        "floor_requirement_ids": ["review-focused"],
+        "resolution_outcome": "REDUCED",
+        "note": "lower Review path accepted only with owner-positive deterministic proof under the owner conjunction"
+      }
+    },
+    {
+      "scenario_id": "C01_S3_one_owner_permission_never_cancels_other_owner_requirement",
+      "exact_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#10-owner-scoped-assurance-floor-and-cross-owner-composition",
+        "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
+      ],
+      "frozen_scenario": "A",
+      "concerns": [
+        {
+          "concern_id": "concern-x",
+          "owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+          "requirements": [{"requirement_id": "x-review", "authority_rank": 2, "policy": "required", "strength_ref": "baseline"}],
+          "resolution": {
+            "resolution_id": "x-not-applicable",
+            "selected_requirement_id": "x-review",
+            "owner_permission": "NOT_APPLICABLE",
+            "permission_current": true,
+            "predicate_proofs": [{"predicate_id": "x-out-of-scope", "state": true, "proof_basis": "owner-record"}]
+          }
+        },
+        {
+          "concern_id": "concern-y",
+          "owner_ref": "standards/VALIDATION_STANDARD.md",
+          "requirements": [{"requirement_id": "y-validation-required", "authority_rank": 2, "policy": "required", "strength_ref": "baseline"}]
+        }
+      ],
+      "expect": {
+        "resolved_requirement_ids": ["y-validation-required"],
+        "floor_requirement_ids": ["y-validation-required"],
+        "cancellation_attempted": true,
+        "floor_retains_other_owner_requirement": true,
+        "note": "one owner permits skip; the independent other-owner gate stays in the floor (no cross-owner cancellation)"
+      }
+    },
+    {
+      "scenario_id": "C01_S4_conjunctive_floor_never_collapses_to_single_score",
+      "exact_refs": [
+        "standards/ASSURANCE_PLAN_STANDARD.md#10-owner-scoped-assurance-floor-and-cross-owner-composition",
+        "schemas/assurance-plan-v2.schema.json#assurance_floor"
+      ],
+      "frozen_scenario": "A",
+      "concerns": [
+        {
+          "concern_id": "review",
+          "owner_ref": "standards/ASSURANCE_PLAN_STANDARD.md",
+          "requirements": [{"requirement_id": "review-required", "authority_rank": 2, "policy": "required", "strength_ref": "baseline"}]
+        },
+        {
+          "concern_id": "validation",
+          "owner_ref": "standards/VALIDATION_STANDARD.md",
+          "requirements": [{"requirement_id": "validation-required", "authority_rank": 2, "policy": "required", "strength_ref": "baseline"}]
+        }
+      ],
+      "expect": {
+        "resolved_requirement_ids": ["review-required", "validation-required"],
+        "floor_requirement_ids": ["review-required", "validation-required"],
+        "floor_is_owner_scoped_set": true,
+        "note": "the floor is an explicit owner-bound requirement set, not one global risk/review score"
+      }
+    }
+  ]
+}

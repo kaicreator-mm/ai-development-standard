@@ -1,43 +1,293 @@
 {
   "schema_version": 1,
-  "description": "Every active normative standard must have positive, forbidden, and rationale coverage. Concrete artifact templates are additionally indexed in templates/GOLDEN_INDEX.md.",
+  "description": "Every active normative standard must have positive, forbidden, and rationale coverage. Concrete artifact templates are additionally indexed in templates/GOLDEN_INDEX.md. Recovered v4.4-v4.7 lineage discovery metadata below is non-authoritative wiring only and points to canonical owners/read surfaces.",
   "coverage": [
-    {"standard":"standards/ARCHITECTURE_DESIGN_STANDARD.md","golden_ref":"references/ARCHITECTURE_DECISION_REFERENCE.md","forbidden_ref":"standards/ARCHITECTURE_DESIGN_STANDARD.md#8-no-universal-paradigm","rationale_ref":"standards/ARCHITECTURE_DESIGN_STANDARD.md#1-purpose"},
-    {"standard":"standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md","golden_ref":"templates/research-demo-issue.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard"},
-    {"standard":"standards/ASSURANCE_PLAN_STANDARD.md","golden_ref":"references/ASSURANCE_PLAN_OWNER_REFERENCE.md","forbidden_ref":"standards/ASSURANCE_PLAN_STANDARD.md#6-forbidden-interpretations","rationale_ref":"standards/ASSURANCE_PLAN_STANDARD.md#1-purpose-and-owner-continuity"},
-    {"standard":"standards/CHATGPT_WEB_ROLE.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role"},
-    {"standard":"standards/CI_EVIDENCE_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard"},
-    {"standard":"standards/CI_EXECUTION_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard"},
-    {"standard":"standards/CI_RUNNER_CAPABILITY_STANDARD.md","golden_ref":"templates/ci-runner-capability.yaml","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-runner-capability-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-runner-capability-standard"},
-    {"standard":"standards/CODEX_HANDOFF_PROTOCOL.md","golden_ref":"templates/codex-handoff-issue.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-handoff-protocol","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-handoff-protocol"},
-    {"standard":"standards/CODEX_ROLE.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role"},
-    {"standard":"standards/CONFIGURATION_SECRETS_STANDARD.md","golden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map","forbidden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts","rationale_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"},
-    {"standard":"standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard"},
-    {"standard":"standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md","golden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map","forbidden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts","rationale_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"},
-    {"standard":"standards/DEVELOPMENT_WORKFLOW.md","golden_ref":"templates/task-dag.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#development-workflow","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#development-workflow"},
-    {"standard":"standards/DOCUMENTATION_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard"},
-    {"standard":"standards/EXECUTION_ARCHITECTURE_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard"},
-    {"standard":"standards/EXECUTION_PACK_STANDARD.md","golden_ref":"templates/execution-pack/README.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-pack-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-pack-standard"},
-    {"standard":"standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md","golden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map","forbidden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts","rationale_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"},
-    {"standard":"standards/GIT_EXECUTION_STANDARD.md","golden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map","forbidden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts","rationale_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"},
-    {"standard":"standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md","golden_ref":"templates/agent-event-comment.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-agent-interaction-protocol","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-agent-interaction-protocol"},
-    {"standard":"standards/GITHUB_CAPABILITY_FALLBACK.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback"},
-    {"standard":"standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md","golden_ref":"templates/task-issue.md","forbidden_ref":"templates/golden/ANTI_PATTERNS.md","rationale_ref":"standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#14-forbidden-examples-and-rationale"},
-    {"standard":"standards/GOLDEN_TEMPLATE_STANDARD.md","golden_ref":"templates/GOLDEN_INDEX.md","forbidden_ref":"standards/GOLDEN_TEMPLATE_STANDARD.md#9-forbidden-examples-and-rationale","rationale_ref":"standards/GOLDEN_TEMPLATE_STANDARD.md#9-forbidden-examples-and-rationale"},
-    {"standard":"standards/IMPLEMENTATION_QUALITY_STANDARD.md","golden_ref":"references/IMPLEMENTATION_QUALITY_REFERENCE.md","forbidden_ref":"standards/IMPLEMENTATION_QUALITY_STANDARD.md#7-composition-with-existing-owners","rationale_ref":"standards/IMPLEMENTATION_QUALITY_STANDARD.md#1-purpose"},
-    {"standard":"standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard"},
-    {"standard":"standards/ISSUE_FIRST_TASK_TRIGGER.md","golden_ref":"standards/ISSUE_FIRST_TASK_TRIGGER.md#user-visible-trigger-contract","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#issue-first-task-trigger","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#issue-first-task-trigger"},
-    {"standard":"standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md","golden_ref":"templates/local-agent-handoff-issue.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#local-agent-handoff-protocol","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#local-agent-handoff-protocol"},
-    {"standard":"standards/MODEL_USAGE_POLICY.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy"},
-    {"standard":"standards/PROJECT_ADOPTION.md","golden_ref":"templates/project/AGENTS.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-adoption","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-adoption"},
-    {"standard":"standards/PROJECT_STRUCTURE.md","golden_ref":"templates/project/AGENTS.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-structure","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-structure"},
-    {"standard":"standards/RELEASE_STANDARD.md","golden_ref":"templates/final-closeout.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#release-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#release-standard"},
-    {"standard":"standards/REPOSITORY_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard"},
-    {"standard":"standards/TASK_DAG_GOVERNANCE_STANDARD.md","golden_ref":"references/TASK_DAG_GOVERNANCE_REFERENCE.md","forbidden_ref":"standards/TASK_DAG_GOVERNANCE_STANDARD.md#11-non-goals","rationale_ref":"standards/TASK_DAG_GOVERNANCE_STANDARD.md#1-purpose"},
-    {"standard":"standards/TASK_DECOMPOSITION_STANDARD.md","golden_ref":"references/TASK_DECOMPOSITION_REFERENCE.md","forbidden_ref":"standards/TASK_DECOMPOSITION_STANDARD.md#10-anti-patterns","rationale_ref":"standards/TASK_DECOMPOSITION_STANDARD.md#1-purpose"},
-    {"standard":"standards/TESTING_STANDARD.md","golden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard"},
-    {"standard":"standards/TEST_DATA_AND_SCENARIO_STANDARD.md","golden_ref":"templates/test-data-pack.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#test-data-and-scenario-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#test-data-and-scenario-standard"},
-    {"standard":"standards/VALIDATION_STANDARD.md","golden_ref":"templates/validation-report.md","forbidden_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#validation-standard","rationale_ref":"templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#validation-standard"},
-    {"standard":"standards/WORKSPACE_ARTIFACT_STANDARD.md","golden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map","forbidden_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts","rationale_ref":"docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"}
-  ]
+    {
+      "standard": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "golden_ref": "references/ARCHITECTURE_DECISION_REFERENCE.md",
+      "forbidden_ref": "standards/ARCHITECTURE_DESIGN_STANDARD.md#8-no-universal-paradigm",
+      "rationale_ref": "standards/ARCHITECTURE_DESIGN_STANDARD.md#1-purpose"
+    },
+    {
+      "standard": "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+      "golden_ref": "templates/research-demo-issue.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#architecture-research-demo-standard"
+    },
+    {
+      "standard": "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/BUILD_ARTIFACT_REFERENCE.md#example-release-vs-debug",
+      "forbidden_ref": "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md#10-required-forbidden-inferences",
+      "rationale_ref": "references/BUILD_ARTIFACT_REFERENCE.md#example-rebuild"
+    },
+    {
+      "standard": "standards/CHATGPT_WEB_ROLE.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#chatgpt-web-role"
+    },
+    {
+      "standard": "standards/CI_EVIDENCE_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-evidence-standard"
+    },
+    {
+      "standard": "standards/CI_EXECUTION_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-execution-standard"
+    },
+    {
+      "standard": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+      "golden_ref": "templates/ci-runner-capability.yaml",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-runner-capability-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#ci-runner-capability-standard"
+    },
+    {
+      "standard": "standards/CODEX_HANDOFF_PROTOCOL.md",
+      "golden_ref": "templates/codex-handoff-issue.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-handoff-protocol",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-handoff-protocol"
+    },
+    {
+      "standard": "standards/CODEX_ROLE.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#codex-role"
+    },
+    {
+      "standard": "standards/CONFIGURATION_SECRETS_STANDARD.md",
+      "golden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map",
+      "forbidden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts",
+      "rationale_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"
+    },
+    {
+      "standard": "standards/CONTEXT_ENGINEERING_STANDARD.md",
+      "golden_ref": "references/CONTEXT_ENGINEERING_REFERENCE.md",
+      "forbidden_ref": "standards/CONTEXT_ENGINEERING_STANDARD.md#11-required-forbidden-inferences",
+      "rationale_ref": "standards/CONTEXT_ENGINEERING_STANDARD.md#2-authority-resolution"
+    },
+    {
+      "standard": "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#data-migration-governance-standard"
+    },
+    {
+      "standard": "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+      "golden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map",
+      "forbidden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts",
+      "rationale_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"
+    },
+    {
+      "standard": "standards/DEPLOYMENT_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/DEPLOYMENT_REFERENCE.md#example-staging-vs-production",
+      "forbidden_ref": "standards/DEPLOYMENT_GOVERNANCE_STANDARD.md#10-required-forbidden-inferences",
+      "rationale_ref": "references/DEPLOYMENT_REFERENCE.md#example-credentials"
+    },
+    {
+      "standard": "standards/DEVELOPMENT_WORKFLOW.md",
+      "golden_ref": "templates/task-dag.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#development-workflow",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#development-workflow"
+    },
+    {
+      "standard": "standards/DISTRIBUTION_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/DISTRIBUTION_REFERENCE.md#example-container-registry",
+      "forbidden_ref": "standards/DISTRIBUTION_GOVERNANCE_STANDARD.md#8-required-forbidden-inferences",
+      "rationale_ref": "references/DISTRIBUTION_REFERENCE.md#example-package-repository"
+    },
+    {
+      "standard": "standards/DOCUMENTATION_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#documentation-standard"
+    },
+    {
+      "standard": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-architecture-standard"
+    },
+    {
+      "standard": "standards/EXECUTION_PACK_STANDARD.md",
+      "golden_ref": "templates/execution-pack/README.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-pack-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#execution-pack-standard"
+    },
+    {
+      "standard": "standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md",
+      "golden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map",
+      "forbidden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts",
+      "rationale_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"
+    },
+    {
+      "standard": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "golden_ref": "templates/agent-event-comment.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-agent-interaction-protocol",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-agent-interaction-protocol"
+    },
+    {
+      "standard": "standards/GITHUB_CAPABILITY_FALLBACK.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#github-capability-fallback"
+    },
+    {
+      "standard": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+      "golden_ref": "templates/task-issue.md",
+      "forbidden_ref": "templates/golden/ANTI_PATTERNS.md",
+      "rationale_ref": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#14-forbidden-examples-and-rationale"
+    },
+    {
+      "standard": "standards/GIT_EXECUTION_STANDARD.md",
+      "golden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map",
+      "forbidden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts",
+      "rationale_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"
+    },
+    {
+      "standard": "standards/GOLDEN_TEMPLATE_STANDARD.md",
+      "golden_ref": "templates/GOLDEN_INDEX.md",
+      "forbidden_ref": "standards/GOLDEN_TEMPLATE_STANDARD.md#9-forbidden-examples-and-rationale",
+      "rationale_ref": "standards/GOLDEN_TEMPLATE_STANDARD.md#9-forbidden-examples-and-rationale"
+    },
+    {
+      "standard": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "golden_ref": "references/IMPLEMENTATION_QUALITY_REFERENCE.md",
+      "forbidden_ref": "standards/IMPLEMENTATION_QUALITY_STANDARD.md#7-composition-with-existing-owners",
+      "rationale_ref": "standards/IMPLEMENTATION_QUALITY_STANDARD.md#1-purpose"
+    },
+    {
+      "standard": "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md",
+      "golden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#owner-routing-reference-only",
+      "forbidden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#forbidden-inferences",
+      "rationale_ref": "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md#8-failure-handling"
+    },
+    {
+      "standard": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/INTENT_ASSUMPTION_REFERENCE.md",
+      "forbidden_ref": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md#6-executable-adversarial-minimum",
+      "rationale_ref": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md#4-promotion-and-contradiction-gate"
+    },
+    {
+      "standard": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#interface-compatibility-governance-standard"
+    },
+    {
+      "standard": "standards/ISSUE_FIRST_TASK_TRIGGER.md",
+      "golden_ref": "standards/ISSUE_FIRST_TASK_TRIGGER.md#user-visible-trigger-contract",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#issue-first-task-trigger",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#issue-first-task-trigger"
+    },
+    {
+      "standard": "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "golden_ref": "templates/local-agent-handoff-issue.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#local-agent-handoff-protocol",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#local-agent-handoff-protocol"
+    },
+    {
+      "standard": "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
+      "golden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#owner-routing-reference-only",
+      "forbidden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#forbidden-inferences",
+      "rationale_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#scoped-applicability-independent-of-a0a4"
+    },
+    {
+      "standard": "standards/MODEL_USAGE_POLICY.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#model-usage-policy"
+    },
+    {
+      "standard": "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
+      "golden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#owner-routing-reference-only",
+      "forbidden_ref": "docs/implementation/4.5.0/MIGRATION_ADOPTION.md#forbidden-inferences",
+      "rationale_ref": "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md#8-failure-handling"
+    },
+    {
+      "standard": "standards/PROJECT_ADOPTION.md",
+      "golden_ref": "templates/project/AGENTS.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-adoption",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-adoption"
+    },
+    {
+      "standard": "standards/PROJECT_STRUCTURE.md",
+      "golden_ref": "templates/project/AGENTS.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-structure",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#project-structure"
+    },
+    {
+      "standard": "standards/RELEASE_STANDARD.md",
+      "golden_ref": "templates/final-closeout.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#release-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#release-standard"
+    },
+    {
+      "standard": "standards/REPOSITORY_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#repository-standard"
+    },
+    {
+      "standard": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/SKILL_PROCEDURE_REFERENCE.md#3-positive-read-only-invocation",
+      "forbidden_ref": "references/SKILL_PROCEDURE_REFERENCE.md#4-five-mandatory-adversarial-refusals",
+      "rationale_ref": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md#1-purpose-and-authority-boundary"
+    },
+    {
+      "standard": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+      "golden_ref": "references/TASK_DAG_GOVERNANCE_REFERENCE.md",
+      "forbidden_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md#11-non-goals",
+      "rationale_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md#1-purpose"
+    },
+    {
+      "standard": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "golden_ref": "references/TASK_DECOMPOSITION_REFERENCE.md",
+      "forbidden_ref": "standards/TASK_DECOMPOSITION_STANDARD.md#10-anti-patterns",
+      "rationale_ref": "standards/TASK_DECOMPOSITION_STANDARD.md#1-purpose"
+    },
+    {
+      "standard": "standards/TESTING_STANDARD.md",
+      "golden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#testing-standard"
+    },
+    {
+      "standard": "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
+      "golden_ref": "templates/test-data-pack.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#test-data-and-scenario-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#test-data-and-scenario-standard"
+    },
+    {
+      "standard": "standards/VALIDATION_STANDARD.md",
+      "golden_ref": "templates/validation-report.md",
+      "forbidden_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#validation-standard",
+      "rationale_ref": "templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md#validation-standard"
+    },
+    {
+      "standard": "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+      "golden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#4-owner-map",
+      "forbidden_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts",
+      "rationale_ref": "docs/implementation/4.1.0/MIGRATION_ADOPTION.md#8-forbidden-shortcuts"
+    },
+    {
+      "standard": "standards/ASSURANCE_PLAN_STANDARD.md",
+      "golden_ref": "references/ASSURANCE_PLAN_OWNER_REFERENCE.md",
+      "forbidden_ref": "standards/ASSURANCE_PLAN_STANDARD.md#6-forbidden-interpretations",
+      "rationale_ref": "standards/ASSURANCE_PLAN_STANDARD.md#1-purpose-and-owner-continuity"
+    }
+  ],
+  "semantic_discovery": {
+    "status": "NON_AUTHORITATIVE_WIRING_ONLY",
+    "canonical_owner_registry_ref": "standard-manifest.json#semantic_authorities",
+    "state_dimension_registry_ref": "registries/state-dimensions-v1.json",
+    "read_routing_helper_ref": "scripts/resolve_standard_read_set.py",
+    "project_specialization_ref": "templates/project/.dev-standard/PROJECT_OVERRIDES.md",
+    "migration_adoption_ref": "docs/implementation/4.7.0/MIGRATION_ADOPTION.md",
+    "future_major_register_ref": "docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md",
+    "mutation_authority": false,
+    "gate_authority": false
+  }
 }

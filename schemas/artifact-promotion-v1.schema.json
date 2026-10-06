@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/artifact-promotion-v1.schema.json",
+  "title": "AI Development Artifact Promotion v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "promotion_id",
+    "build_ref",
+    "artifact",
+    "content_policy_evidence_refs",
+    "promotion_authority_ref",
+    "provenance_refs"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "promotion_id": {"type": "string", "minLength": 1},
+    "build_ref": {"type": "string", "minLength": 1},
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "immutable_identity"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "immutable_identity": {"type": "string", "minLength": 1},
+        "size": {"type": "integer"},
+        "platform_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "content_policy_evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "promotion_authority_ref": {"type": "string", "minLength": 1},
+    "candidate_ref": {"type": "string", "minLength": 1},
+    "release_ref": {"type": "string", "minLength": 1},
+    "provenance_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "sbom_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "publication_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

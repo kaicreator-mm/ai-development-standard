@@ -1,26 +1,22 @@
 task_id: T-014
 tests:
-  - id: C01
-    oracle: exactly three new v4.8 machine families are identified from Frozen L2/Product with exact refs, and the count assertion fails on any other count
-  - id: C02
-    oracle: Interchange owner is reused (single canonical surface), not duplicated, with exact ref
-  - id: C03
-    oracle: owner uniqueness holds across v4.1–v4.8 — no semantic concern has two canonical owners; duplicates or ambiguity FAIL
-  - id: C04
-    oracle: hard eligibility-before-ranking is enforced by the integrated execution surfaces (ranking cannot precede eligibility)
-  - id: C05
-    oracle: composite resource atomicity is retained (composite resource claims succeed or fail as a unit)
-  - id: C06
-    oracle: historical compatibility and Fast Path surfaces remain valid and present
-  - id: C07
-    oracle: dogfood claims are bounded to evidence strength; no economic-savings or universal-routing inference exists without comparable measured evidence
-  - id: C08
-    oracle: INTEGRATED_REGRESSION_EVIDENCE.json covers verify_standard.py plus every pinned run: command with exit codes recorded
-  - id: C09
-    oracle: closure inputs contain no Version Closure / Release Qualification verdict
-  - id: C10
-    oracle: every unresolved adverse finding / NOT_RUN|BLOCKED item is listed with an exact ref and routing
+  - id: D01
+    oracle: exact ADS candidate binding — a report without exact-candidate binding rejects
+  - id: D02
+    oracle: legal baseline vs selected workflow accounting — unaccounted delta rejects
+  - id: D03
+    oracle: mechanism exercise matrix complete — missing exercises reject
+  - id: D04
+    oracle: nonzero proportional delta requirement enforced — zero-delta reports reject
+  - id: D05
+    oracle: ambiguous predicates fail closed
+  - id: D06
+    oracle: independent auditor eligibility/profile — ineligible auditor rejects; auditor identity cannot grant authority
+  - id: D07
+    oracle: report/checklist is Release evidence only — cannot self-authorize execution or RQ
+  - id: D08
+    oracle: owner surfaces cited not copied; no Release surface edits; no Product/L2/DAG mutation
 required_builder_checks:
   - python -B scripts/verify_standard.py
-  - python -B scripts/test_v48_integration_closure.py
+  - python -B scripts/test_v49_dogfood_audit_contract.py
 validation_must_rebind_sources: true

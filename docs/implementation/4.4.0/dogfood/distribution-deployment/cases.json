@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "FIXTURE_ONLY_NOT_AN_EXECUTED_RESULT",
+  "runtime_profile": "local isolated loopback subprocess + temporary filesystem publication; not registry/cloud/production",
+  "cases": [
+    {"id": "immutable-digest-vs-repointed-channel", "input": "same mutable alias repointed to new bytes", "forbidden": "old exact artifact qualification transfers", "expected": "REJECT"},
+    {"id": "publication-without-rollout", "input": "temporary publication exists; service never launched", "forbidden": "deployment success", "expected": "REJECT"},
+    {"id": "plan-vs-observed-result", "input": "valid sandbox plan and separate actual service probe", "forbidden": "plan alone means execution", "expected": "REQUIRE_EXACT_PROBE"},
+    {"id": "partial-vs-success", "input": "partial or failed or rolled-back result", "forbidden": "universal success/Release PASS", "expected": "PRESERVE_NAMESPACED_STATE"},
+    {"id": "staging-vs-production", "input": "sandbox:local-1 probe passed", "forbidden": "production environment passed", "expected": "REJECT"},
+    {"id": "credential-capability-vs-authority", "input": "tool and credential available but no current authorized plan", "forbidden": "external or production side effect allowed", "expected": "BLOCK"},
+    {"id": "rollback-plan-vs-execution", "input": "rollback policy exists without rollback result", "forbidden": "rollback executed", "expected": "REJECT"},
+    {"id": "artifact-vs-data-rollback", "input": "service restored previous artifact", "forbidden": "v4.2 migration/data rollback completed", "expected": "KEEP_SEPARATE_OWNER"},
+    {"id": "mock-vs-external-provider", "input": "temporary local publication and real loopback service", "forbidden": "external registry or production deployment verified", "expected": "BOUND_FIDELITY"}
+  ]
+}
