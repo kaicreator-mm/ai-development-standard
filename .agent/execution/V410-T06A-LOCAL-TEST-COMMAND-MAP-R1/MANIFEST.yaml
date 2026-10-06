@@ -1,0 +1,31 @@
+pack_id: V410-T06A-LOCAL-TEST-COMMAND-MAP-R1
+task_id: V410-T06A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06A
+branch: task/v4.10.0-v410-t06a-local-test-command-map-r1
+parent_issue: "#860"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T09:51:27+00:00"
+dependency_note:
+  - T04B integrated at base (merge eea3e69, PR #918); T05B status must be re-read at T06A claim time; this pack claims no dependency completion and no T06A acceptance gate.
+material_paths:
+  - .agent/execution/V410-T06A-LOCAL-TEST-COMMAND-MAP-R1/TEST_COMMAND_MAP.md
+  - scripts/test_v410_t06a_test_command_map.py
+  - standard-manifest.json
+  - standards/REFERENCE_CONVENTION_STANDARD.md
+  - references/
+  - registries/state-dimensions-v1.json
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

@@ -1,0 +1,36 @@
+task_id: V410-T06A
+base_sha: eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+required:
+  - id: test_command_map_currentness
+    command: python scripts/test_v410_t06a_test_command_map.py
+  - id: manifest_inventory
+    command: python scripts/verify_standard.py
+  - id: manifest_verifier_negatives
+    command: python scripts/test_verify_standard.py
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+  - id: reference_conventions
+    command: python scripts/test_v47_reference_conventions.py
+  - id: authority_registry
+    command: python scripts/test_v47_authority_registry.py
+  - id: negative_stale_owner_aliases
+    command: python scripts/test_v47_compatibility_aliases.py
+  - id: convergence_metadata
+    command: python scripts/test_v47_convergence_metadata_contracts.py
+  - id: state_dimension_registry
+    command: python scripts/test_v47_state_dimension_registry.py
+  - id: progressive_disclosure
+    command: python scripts/test_v47_progressive_disclosure.py
+  - id: registry_adoption
+    command: python scripts/test_v48_registry_adoption.py
+  - id: ads_evolution_governance
+    command: python scripts/test_v48_ads_evolution_governance.py
+  - id: execution_architecture_baseline
+    command: python scripts/test_execution_architecture.py
+negative_invariants:
+  - map_does_not_create_second_owner_registry
+  - map_does_not_mutate_manifest_or_standards_or_references
+  - library_module_not_cited_as_standalone_gate
+  - missing_entrypoint_recorded_blocked_not_substituted
+  - base_drift_supersedes_observed_results_column
+  - preparation_does_not_claim_t06a_acceptance_gates

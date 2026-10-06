@@ -1,0 +1,26 @@
+task_id: V410-T06A
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or Task Pack identity is invalid
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: CURRENTNESS_DRIFT
+    when: worktree HEAD departs from eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601 (or origin/version/v4.10.0 moves) before the map is consumed
+    action: stop; re-run every matrix command on the new exact subject and regenerate the observed-results column
+  - id: OUT_OF_SCOPE_WRITE
+    when: any pre-existing file (standard-manifest.json, standards/, schemas/, scripts/ other than the one new verifier, references/, registries/, docs/implementation/4.10.0/*, .agent/execution/*) is mutated
+    action: stop and revert; this unit is add-only
+  - id: ENTRYPOINT_DANGLING
+    when: a command entrypoint or owner/surface path cited in TEST_COMMAND_MAP.md does not exist at the consumption subject
+    action: record BLOCKED for that row; do not substitute; fail the verifier if dangling at preparation base
+  - id: MAP_OMISSION
+    when: a T06A-owned surface class (manifest, semantic-authority/discovery, owner-discovery references, legacy classification) has no verifying command row in the map
+    action: regenerate TEST_COMMAND_MAP.md; omissions must be explicit gap dispositions, never silent
+  - id: AUTHORITY_INFLATION
+    when: the map is cited as satisfying T06A acceptance, concern Validation, or Independent Review
+    action: reject the citation; this unit is preparation input only
+  - id: PROVENANCE_FAILURE
+    when: this contract was not written before other file mutations of the unit
+    action: invalidate candidate provenance; successor execution required
+  - id: PREMATURE_T06A_EXECUTION
+    when: T06A source mutation is attempted on the strength of this preparation pack
+    action: stop; T06A execution admission stays gated by the Task Pack dependency set
