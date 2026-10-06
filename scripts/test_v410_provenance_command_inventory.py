@@ -4,7 +4,9 @@ Preparation-unit gate for V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1 (Issue #900
 Pure stdlib; no network; git subprocess allowed; NO gh dependency.
 
 Checks, all fail-closed:
-1. HEAD == preparation base SHA 30334e8c7b90a327f8597b86c88c785b98df07f7.
+1. HEAD is bound to preparation base SHA 30334e8c7b90a327f8597b86c88c785b98df07f7:
+   equal to it, or a descendant whose only drift is this unit's own additive
+   write set (the execution pack directory and this script).
 2. COMMAND_INVENTORY.md exists and every `python scripts/...` command entrypoint
    listed in the per-leaf "Commands to re-establish current acceptance" sections
    exists in the repo.
@@ -12,6 +14,10 @@ Checks, all fail-closed:
 4. The #854 section retains the historical 'claim posted post-implementation'
    finding.
 5. The campaign-level binding procedure names the exact-SHA re-read step.
+
+Binding case 1b confines every difference from the pinned base to this unit's own
+additive write set, so every path outside that set is byte-identical to the base
+tree and check 2 evaluates the same entrypoints it would have evaluated at base.
 
 On success prints counts and COMMAND_INVENTORY_VERIFIED=PASS, exit 0.
 Any failure prints COMMAND_INVENTORY_VERIFIED=FAIL with reasons, exit non-zero.
@@ -26,10 +32,13 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK_DIR = ROOT / ".agent" / "execution" / "V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1"
+PACK_PREFIX = ".agent/execution/V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1/"
+SELF = "scripts/test_v410_provenance_command_inventory.py"
 INVENTORY = PACK_DIR / "COMMAND_INVENTORY.md"
 BASE_SHA = "30334e8c7b90a327f8597b86c88c785b98df07f7"
 
 failures: list[str] = []
+head_binding = "unbound"
 
 
 def check(condition: bool, message: str) -> None:
@@ -37,18 +46,43 @@ def check(condition: bool, message: str) -> None:
         failures.append(message)
 
 
-def head_sha() -> str:
-    out = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT, capture_output=True, text=True, check=True,
+def git(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", *args], cwd=ROOT, capture_output=True, text=True,
     )
-    return out.stdout.strip()
+
+
+def check_head_binding() -> str:
+    """Bind HEAD to the pinned preparation base, or record a failure."""
+    out = git("rev-parse", "HEAD")
+    if out.returncode != 0:
+        check(False, f"git rev-parse HEAD failed: {out.stderr.strip()}")
+        return "unbound"
+    sha = out.stdout.strip()
+    if sha == BASE_SHA:
+        return "exact_base"
+    if git("merge-base", "--is-ancestor", BASE_SHA, "HEAD").returncode != 0:
+        check(False, f"HEAD {sha!r} does not descend from preparation base {BASE_SHA!r}")
+        return "unbound"
+    diff = git("diff", "--name-only", f"{BASE_SHA}..{sha}")
+    if diff.returncode != 0:
+        check(False, f"git diff {BASE_SHA}..{sha} failed: {diff.stderr.strip()}")
+        return "unbound"
+    outside = [
+        path for path in diff.stdout.splitlines()
+        if not path.startswith(PACK_PREFIX) and path != SELF
+    ]
+    if outside:
+        check(False, "drift outside the allowed write set: " + ", ".join(outside))
+        return "unbound"
+    return "descendant_additive_only"
 
 
 def main() -> int:
-    # 1. Exact base binding.
-    sha = head_sha()
-    check(sha == BASE_SHA, f"HEAD {sha!r} != preparation base {BASE_SHA!r}")
+    global head_binding
+
+    # 1. Base binding.
+    head_binding = check_head_binding()
 
     # 2. Inventory presence.
     check(INVENTORY.is_file(), f"missing inventory: {INVENTORY}")
@@ -121,12 +155,14 @@ def main() -> int:
 def report(commands: int = 0, units: int = 0) -> int:
     if failures:
         print(f"COMMAND_INVENTORY_VERIFIED=FAIL")
+        print(f"HEAD_BINDING={head_binding}")
         print(f"PARSED_COMMANDS={commands}")
         print(f"UNIT_SECTIONS={units}")
         for f in failures:
             print(f"FAIL: {f}")
         return 1
     print(f"HEAD_SHA={BASE_SHA}")
+    print(f"HEAD_BINDING={head_binding}")
     print(f"PARSED_COMMANDS={commands}")
     print(f"UNIT_SECTIONS={units}")
     print("LEAVES_COVERED=850,851,852,853,854,855,856")

@@ -24,4 +24,4 @@ Claim: the user dispatch for this preparation unit was recorded BEFORE any file 
 
 ## Gates
 
-This unit's gate is `scripts/test_v410_provenance_command_inventory.py` (PASS recorded at preparation base). Campaign gates per #900: all seven units PASS on one exact subject; LOCAL Validator campaign with separate per-task verdict rows; genuinely fresh independent WEB Reviewer campaign with separate per-task verdicts plus campaign-provenance verification; subject drift supersedes affected gate evidence; historical Validation/Review PASS does not transfer.
+This unit's gate is `scripts/test_v410_provenance_command_inventory.py`; it binds HEAD to the preparation base (exactly, or as a descendant whose only drift is this unit's additive write set) and its verbatim PASS on this branch is recorded in `IMPLEMENTATION_MAP.md`. Campaign gates per #900: all seven units PASS on one exact subject; LOCAL Validator campaign with separate per-task verdict rows; genuinely fresh independent WEB Reviewer campaign with separate per-task verdicts plus campaign-provenance verification; subject drift supersedes affected gate evidence; historical Validation/Review PASS does not transfer.

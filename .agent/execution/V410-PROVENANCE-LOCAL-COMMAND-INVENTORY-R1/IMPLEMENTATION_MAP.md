@@ -24,6 +24,31 @@ Shared supporting evidence at baseline: `scripts/test_protocol_schemas.py`, `scr
 - `.agent/execution/V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1/` (this pack; six core artifacts + `COMMAND_INVENTORY.md` primary deliverable)
 - `scripts/test_v410_provenance_command_inventory.py` (preparation gate; PASS recorded at baseline)
 
+## Gate repair (R1, post-generation)
+
+The gate as first committed required `HEAD == preparation base`, which can only hold
+before this pack's own commit lands; a reviewer checking out this branch got FAIL and the
+recorded PASS existed only via an out-of-band base checkout. HEAD must now equal the
+preparation base or descend from it with additive-only drift confined to this unit's
+allowed write set (pack directory + this script). That case confines every difference from
+base to the write set, so every command entrypoint checked by the gate is byte-identical to
+the base tree and the check keeps its original assurance.
+
+Repaired run on this pack branch (verbatim, exit 0), which also exercises the inventory
+parser that the base-equality check had been masking:
+
+```text
+HEAD_SHA=30334e8c7b90a327f8597b86c88c785b98df07f7
+HEAD_BINDING=descendant_additive_only
+PARSED_COMMANDS=17
+UNIT_SECTIONS=7
+LEAVES_COVERED=850,851,852,853,854,855,856
+COMMAND_INVENTORY_VERIFIED=PASS
+```
+
+All seven affected leaves are covered exactly once, all 17 inventoried command entrypoints
+exist on this branch, and the #854 historical-finding retention checks pass.
+
 ## Conformance model
 
 `.agent/execution/V410-T05A-R3/` (PR #902) is the conformant re-execution model mimicked by this pack's structure. Unlike T05A-R3, none of the seven affected leaves has a conformant successor; this campaign is each leaf's first conformant-provenance acceptance pass on the current integrated state.
