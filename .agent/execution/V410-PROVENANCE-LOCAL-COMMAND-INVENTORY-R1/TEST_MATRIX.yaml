@@ -1,0 +1,66 @@
+task_id: V410-PROVENANCE-REMEDIATION
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+required:
+  - id: command_inventory_self_check
+    command: python scripts/test_v410_provenance_command_inventory.py
+    execution_time: preparation
+  - id: unit_850_t01a_stage1_lifecycle
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+    execution_time: campaign
+  - id: unit_850_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_851_t01b_product_projections
+    command: python scripts/test_v410_t01b_product_projections.py
+    execution_time: campaign
+  - id: unit_851_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_852_t02a_collaboration_control
+    command: python scripts/test_v410_t02a_collaboration_control.py
+    execution_time: campaign
+  - id: unit_852_execution_architecture
+    command: python scripts/test_execution_architecture.py
+    execution_time: campaign
+  - id: unit_852_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_853_t02b_machine_projection
+    command: python scripts/test_v410_t02b_machine_projection.py
+    execution_time: campaign
+  - id: unit_853_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_853_event_writer_surfaces
+    command: python scripts/verify_event_writer_surfaces.py
+    execution_time: campaign
+  - id: unit_854_t03a_implementation_quality
+    command: python scripts/test_v410_t03a_implementation_quality.py
+    execution_time: campaign
+  - id: unit_854_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_855_t03b_task_decomposition
+    command: python scripts/test_v43_task_decomposition.py
+    execution_time: campaign
+  - id: unit_855_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+  - id: unit_856_t04a_gate_repair_routing
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+    execution_time: campaign
+  - id: unit_856_review_repairs
+    command: python scripts/test_v34_review_repairs.py
+    execution_time: campaign
+  - id: unit_856_protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+    execution_time: campaign
+negative_invariants:
+  - campaign_does_not_mutate_source
+  - historical_provenance_preserved_not_rewritten
+  - no_change_required_only_via_actual_execution
+  - claim_before_execution_enforced
+  - historical_validation_review_pass_does_not_transfer
+  - subject_drift_supersedes_gate_evidence
+  - no_waiver_invention
+  - no_candidate_freeze_or_release_pass_claim

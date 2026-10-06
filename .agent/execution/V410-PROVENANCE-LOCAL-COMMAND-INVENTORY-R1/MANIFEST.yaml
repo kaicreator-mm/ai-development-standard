@@ -1,0 +1,30 @@
+pack_id: V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1
+task_id: V410-PROVENANCE-REMEDIATION
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+task_pack_ref: Issue #900 (provenance remediation campaign)
+branch: task/v4.10.0-v410-provenance-local-command-inventory-r1
+parent_issue: "#900"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: zcode:local-dispatch
+generated_at: "2026-10-06T15:43:20+06:30"
+dependency_completion:
+  - note: "Campaign DAG membership NO; blocker YES-until-terminal-PASS. Preparation MAY proceed per Issue #900; campaign execution gated on V410-T08A (#864) integration and MUST rebind to that exact integration SHA/tree."
+  - V410-T08A@PENDING (#864 OPEN at preparation time; re-read required)
+material_paths:
+  - .agent/execution/V410-PROVENANCE-LOCAL-COMMAND-INVENTORY-R1/COMMAND_INVENTORY.md
+  - scripts/test_v410_provenance_command_inventory.py
+  - standards/EXECUTION_PACK_STANDARD.md
+  - schemas/execution-pack-manifest.schema.json
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

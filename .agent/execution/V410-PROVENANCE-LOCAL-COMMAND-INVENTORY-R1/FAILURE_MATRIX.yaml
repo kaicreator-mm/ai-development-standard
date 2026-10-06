@@ -1,0 +1,29 @@
+task_id: V410-PROVENANCE-REMEDIATION
+failure_classes:
+  - id: EXECUTION_PACK_INVALID
+    when: canonical core inventory, manifest binding, base, branch or campaign identity is invalid
+    action: stop before claim/mutation; controller rebuilds pack
+  - id: T08A_NOT_INTEGRATED
+    when: campaign execution attempted before V410-T08A (#864) integration and exact-SHA rebind
+    action: stop; wait for #864 and rebind to the exact integration SHA/tree
+  - id: CURRENTNESS_DRIFT
+    when: integration base or owner blob changes after this inventory's preparation base
+    action: re-verify every listed command entrypoint on the new exact subject; supersede affected gate evidence
+  - id: COMMAND_ENTRYPOINT_MISSING
+    when: a listed `python scripts/...` entrypoint does not exist on the exact campaign subject
+    action: record that unit BLOCKED; do not substitute or infer PASS
+  - id: RESIDUAL_GAP_NOT_PROVEN
+    when: NO_CHANGE_REQUIRED is claimed without actual current-state execution evidence
+    action: reject; NO_SOURCE_CHANGE is legal only when executed evidence proves unit acceptance
+  - id: HISTORICAL_FINDING_REWRITE
+    when: any edit softens, closes or rewrites the historical PACK_INVALID or #854 claim-posted-post-implementation findings
+    action: stop and invalidate; historical nonconformance must be preserved
+  - id: OUT_OF_SCOPE_REPAIR
+    when: a material residual gap is repaired under this campaign instead of routed to its owning concern
+    action: stop that unit; route a bounded repair to the owning concern
+  - id: PROVENANCE_FAILURE
+    when: campaign claim is absent/late relative to campaign execution, or historical evidence is reused as remediation authority
+    action: invalidate candidate provenance; successor execution required
+  - id: GATE_PARTIAL_TRANSFER
+    when: Validator or Reviewer batches results without separate per-task verdict rows, or historical PASS transfers
+    action: reject gate evidence; re-run with per-task verdicts on the exact subject
