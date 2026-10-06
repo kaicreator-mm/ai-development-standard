@@ -1,12 +1,16 @@
 """V410-T06B focused regression — serialized-admission machine conformance.
 
-Covers oracle sections B (claim-key canonicalization), C (authorized
-non-default groups), D (admission-generation CAS), E (multi-active
-projection), F (writer provenance), G (terminal precedence and invariance),
-H (derived-state discipline) and the J frozen guards, plus the dogfood
-T1-T5 worked negatives, exercising the additive W7 helpers in
-``scripts/v34_rules.py`` and the W1-W3 schema additions. Reuses the carried
-fail-closed subset guards; purely local; no network.
+Covers oracle sections B (claim-key canonicalization incl. B5/B6 persisted-key
+conformance), C (authorized non-default groups, durable-format level), D
+(admission-generation CAS), E/H (multi-active projection and derived-state
+discipline incl. exact subject refs), F (writer provenance), G (terminal
+precedence and invariance) and the J frozen guards, plus the dogfood T1-T5
+worked negatives, exercising the additive W7 helpers in
+``scripts/v34_rules.py`` and the W1-W3 schema additions. The keyed race
+extension (D1/D4/E3/G3/G8) lives in ``test_execution_architecture.py``; the
+A-section schema verdicts live in ``test_protocol_schemas.py``. Reuses the
+carried fail-closed subset guards; purely local; no network. Exact per-case
+coverage is pinned by the pack TEST_MATRIX (``covers`` + ``dispositions``).
 """
 
 from __future__ import annotations
@@ -22,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_protocol_schemas import assert_supported_schema  # noqa: E402
 from v34_rules import (  # noqa: E402
     DEFAULT_COMPATIBILITY_GROUP,
+    ENVIRONMENT_PROFILE_CONTRADICTION,
     admission_generation_conforms,
     authorize_non_default,
     derive_claim_key,
@@ -29,6 +34,8 @@ from v34_rules import (  # noqa: E402
     normalize_group,
     parse_claim_key,
     project_active_dispatches,
+    project_dispatch_environment,
+    protected_claim_key_conforms,
     target_environment_agreement,
     terminal_precedence,
 )
@@ -131,8 +138,74 @@ class AdmissionGenerationCasTests(unittest.TestCase):
                     admission_generation_conforms(**kwargs)
 
 
+class ProtectedClaimKeyConformanceTests(unittest.TestCase):
+    """Oracle B5/B6 (+FC3): the persisted key is audit provenance, never trusted."""
+
+    def _dispatch(self, **overrides) -> dict:
+        value = {
+            "repository": "kaicreator-mm/ai-development-standard",
+            "task": "#861",
+            "role": "builder",
+            "dispatch_id": "D-A",
+        }
+        value.update(overrides)
+        return value
+
+    def test_persisted_key_must_equal_rederivation(self) -> None:
+        dispatch = self._dispatch(protected_claim_key="kaicreator-mm/ai-development-standard#861:builder:__default__")
+        self.assertTrue(protected_claim_key_conforms(dispatch))
+        mutant = self._dispatch(protected_claim_key="kaicreator-mm/ai-development-standard#861:builder:interop")
+        self.assertFalse(protected_claim_key_conforms(mutant))
+
+    def test_scheduler_supplied_claim_key_is_rejected(self) -> None:
+        supplied = self._dispatch(
+            claim_key="kaicreator-mm/ai-development-standard#861:builder:__default__",
+            protected_claim_key="kaicreator-mm/ai-development-standard#861:builder:__default__",
+        )
+        self.assertFalse(protected_claim_key_conforms(supplied))
+
+    def test_absent_persisted_key_stays_readable(self) -> None:
+        self.assertTrue(protected_claim_key_conforms(self._dispatch()))
+
+    def test_malformed_identity_fails_closed(self) -> None:
+        for mutant in (
+            self._dispatch(task="861", protected_claim_key="anything"),
+            self._dispatch(role="bu:ilder", protected_claim_key="anything"),
+        ):
+            with self.subTest(mutant=mutant):
+                self.assertFalse(protected_claim_key_conforms(mutant))
+
+
+class EnvironmentProfileProjectionTests(unittest.TestCase):
+    """FC1/A7-A10: environment projection never guesses and never reinterprets."""
+
+    def test_unknown_profile_projects_unknown_and_stays_readable(self) -> None:
+        self.assertEqual(
+            project_dispatch_environment({"execution_profile": "LEGACY_HOST_AGENT"}),
+            "UNKNOWN",
+        )
+
+    def test_contradiction_token_is_stable(self) -> None:
+        with self.assertRaises(ValueError) as caught:
+            project_dispatch_environment(
+                {"execution_profile": "LOCAL_BUILDER", "execution_environment": "WEB"}
+            )
+        self.assertIn(ENVIRONMENT_PROFILE_CONTRADICTION, str(caught.exception))
+
+    def test_agreeing_explicit_environment_matches_the_legacy_mapping(self) -> None:
+        self.assertEqual(
+            project_dispatch_environment(
+                {"execution_profile": "WEB_REVIEWER", "execution_environment": "WEB"}
+            ),
+            "WEB",
+        )
+
+
 class MultiActiveProjectionTests(unittest.TestCase):
     """Oracle E + H: stable ordering, NON_AUTHORITATIVE derived state."""
+
+    def test_zero_active_rows_project_empty(self) -> None:
+        self.assertEqual(project_active_dispatches([]), [])
 
     def _rows(self) -> list[dict]:
         return [
@@ -158,6 +231,25 @@ class MultiActiveProjectionTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     project_active_dispatches(mutant)
 
+    def test_exact_subject_refs_are_carried_and_validated(self) -> None:
+        rows = project_active_dispatches(
+            [
+                {"repository": "r", "task": "#861", "role": "builder", "dispatch_id": "d-a", "issue": "#861", "pr": "#927"},
+                {"repository": "r", "task": "#862", "role": "reviewer", "dispatch_id": "d-b", "pr": None},
+                {"repository": "r", "task": "#863", "role": "validator", "dispatch_id": "d-c"},
+            ]
+        )
+        self.assertEqual(rows[0]["issue"], "#861")
+        self.assertEqual(rows[0]["pr"], "#927")
+        self.assertNotIn("issue", rows[2])
+        for mutant in (
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "issue": "861"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "pr": "#abc"}],
+        ):
+            with self.subTest(mutant=mutant):
+                with self.assertRaises(ValueError):
+                    project_active_dispatches(mutant)
+
     def test_schema_projection_is_non_authoritative_additive_shape(self) -> None:
         schema = load_schema(EXECUTION_STATE_SCHEMA)
         assert_supported_schema(schema)
@@ -165,6 +257,8 @@ class MultiActiveProjectionTests(unittest.TestCase):
         item = projection["items"]
         self.assertEqual(item["additionalProperties"], False)
         self.assertIn("protected_claim_key", item["properties"])
+        for ref_field in ("issue", "pr"):
+            self.assertIn(ref_field, item["properties"])
         self.assertIn("NON_AUTHORITATIVE_DERIVED_STATE", projection["description"])
 
 

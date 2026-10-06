@@ -1,9 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 import json
 from pathlib import Path
+import sys
 import unittest
+
+from v34_rules import (
+    authorize_non_default,
+    derive_claim_key,
+    project_dispatch_environment,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -70,6 +77,44 @@ def claim_dispatch(
         operator_id=operator_id,
         phase="CLAIMED",
     )
+
+
+@dataclass(frozen=True)
+class KeyedAdmissionState:
+    """Keyed extension of the §11 race oracle: one ClaimCell per derived
+    protected claim key. Purely derived state; never an authority source."""
+
+    cells: dict[str, ClaimCell] = field(default_factory=dict)
+
+
+def keyed_reserve(
+    state: KeyedAdmissionState,
+    dispatch: dict,
+    *,
+    serialization_available: bool = True,
+) -> tuple[str, KeyedAdmissionState]:
+    """Keyed serialized-admission oracle (W10, D1/D2/E3/G8 + A8/C2 gates).
+
+    Order is normative: the A8 environment/profile projection verifier fails
+    closed first, then the C2 non-default authority gate (never downgraded),
+    then the claim key is derived from the dispatch identity alone, then the
+    per-key CAS applies. Metadata (scheduler origin, execution environment,
+    operator/provider, parent/responsibility) never reaches the key.
+    """
+    project_dispatch_environment(dispatch)
+    group = dispatch.get("compatibility_group")
+    authorize_non_default(group, dispatch.get("compatibility_authority_ref"))
+    key = derive_claim_key(dispatch["repository"], dispatch["task"], dispatch["role"], group)
+    cell = state.cells.get(key, ClaimCell())
+    verdict, updated = reserve_dispatch(
+        cell,
+        expected_generation=dispatch.get("admission_generation", cell.generation),
+        dispatch_id=dispatch["dispatch_id"],
+        serialization_available=serialization_available,
+    )
+    cells = dict(state.cells)
+    cells[key] = updated
+    return verdict, KeyedAdmissionState(cells)
 
 
 class ExecutionArchitectureRegression(unittest.TestCase):
@@ -257,22 +302,213 @@ class ExecutionArchitectureRegression(unittest.TestCase):
         self.assertIn("non-normative transport choices", text)
 
 
-class T06BKeyedGroupInvarianceTests(unittest.TestCase):
-    """W10: claim-key derivation is deterministic and environment/origin-invariant."""
+class T06BKeyedAdmissionOracleTests(unittest.TestCase):
+    """W10 (R2 repair): keyed ClaimCell race oracle + non-vacuous invariance.
+
+    Replaces the R1 placeholder whose env/origin loop never fed the function
+    under test. Every variant below flows through the REAL reducer surfaces:
+    ``v34_rules.derive_claim_key`` derives keys from full dispatch objects, and
+    ``v34_rules.project_dispatch_environment`` / ``authorize_non_default`` gate
+    each keyed admission. Mutation sensitivity: if scheduler origin,
+    execution environment, operator/provider identity, parent/responsibility
+    metadata ever leaked into key derivation, the invariance assertion fails
+    AND the race tests would show two accepted cells instead of
+    winner + zero-mutation loser.
+    """
+
+    def _dispatch(self, **overrides) -> dict:
+        value = {
+            "dispatch_id": "D-A",
+            "repository": "kaicreator-mm/ai-development-standard",
+            "task": "#861",
+            "role": "builder",
+            "execution_profile": "LOCAL_BUILDER",
+            "dispatch_state": "READY",
+            "admission_generation": 0,
+            "scheduler_origin": "LOCAL",
+            "execution_environment": "LOCAL",
+            "operator_id": "claude-code:worker-a",
+            "parent_dispatch_ref": None,
+            "responsibility_mode": None,
+        }
+        value.update(overrides)
+        return value
 
     def test_claim_key_is_environment_and_origin_invariant(self) -> None:
-        from v34_rules import derive_claim_key
-        base = derive_claim_key("r", "#1", "builder")
-        for env in ("WEB", "LOCAL", None):
-            for origin in ("WEB", "LOCAL", None):
+        # The metadata dimensions vary through REAL dispatch objects; the
+        # derived key never moves. Group is the only slot-4 dimension.
+        base = self._dispatch()
+        base_key = derive_claim_key(base["repository"], base["task"], base["role"], base.get("compatibility_group"))
+        variants = [
+            self._dispatch(scheduler_origin="WEB"),
+            self._dispatch(execution_environment="WEB"),
+            self._dispatch(operator_id="codex:worker-b"),
+            self._dispatch(operator_id="claude-code:worker-a", dispatch_id="D-A2"),
+            self._dispatch(parent_dispatch_ref="D-parent", responsibility_mode="DELEGATED_SUBWORK"),
+            self._dispatch(responsibility_mode="RESPONSIBILITY_HANDOFF"),
+        ]
+        for variant in variants:
+            with self.subTest(dispatch_id=variant["dispatch_id"], operator_id=variant["operator_id"]):
                 self.assertEqual(
-                    derive_claim_key("r", "#1", "builder"),
-                    base,
+                    derive_claim_key(variant["repository"], variant["task"], variant["role"], variant.get("compatibility_group")),
+                    base_key,
                 )
-        # group participates; environment/origin never do
-        self.assertNotEqual(derive_claim_key("r", "#1", "builder", "interop"), base)
+        self.assertNotEqual(
+            derive_claim_key(base["repository"], base["task"], base["role"], "interop"),
+            base_key,
+        )
+
+    def test_d1_web_and_local_scheduler_race_one_default_key(self) -> None:
+        web = self._dispatch(dispatch_id="D-web", scheduler_origin="WEB")
+        local = self._dispatch(dispatch_id="D-local", scheduler_origin="LOCAL")
+        self.assertEqual(
+            derive_claim_key(web["repository"], web["task"], web["role"], web.get("compatibility_group")),
+            derive_claim_key(local["repository"], local["task"], local["role"], local.get("compatibility_group")),
+        )
+        first, after_first = keyed_reserve(KeyedAdmissionState(), web)
+        self.assertEqual("ACCEPTED", first)
+        second, after_second = keyed_reserve(after_first, local)
+        self.assertEqual("STALE", second)
+        # Zero canonical mutation for the loser: the winner's cell is untouched
+        # and no second cell exists (origin never manufactures a key).
+        self.assertEqual(after_first.cells, after_second.cells)
+        self.assertEqual(1, len(after_second.cells))
+
+    def test_e3_origin_race_is_order_independent(self) -> None:
+        for first_dispatch, second_dispatch in (
+            (self._dispatch(dispatch_id="D-web", scheduler_origin="WEB"), self._dispatch(dispatch_id="D-local", scheduler_origin="LOCAL")),
+            (self._dispatch(dispatch_id="D-local", scheduler_origin="LOCAL"), self._dispatch(dispatch_id="D-web", scheduler_origin="WEB")),
+        ):
+            verdict_a, state_a = keyed_reserve(KeyedAdmissionState(), first_dispatch)
+            verdict_b, state_b = keyed_reserve(state_a, second_dispatch)
+            with self.subTest(winner=first_dispatch["dispatch_id"]):
+                self.assertEqual("ACCEPTED", verdict_a)
+                self.assertEqual("STALE", verdict_b)
+                self.assertEqual(1, len(state_b.cells))
+
+    def test_d2_stale_generation_is_rejected_with_zero_mutation(self) -> None:
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch())
+        self.assertEqual("ACCEPTED", verdict)
+        stale, unchanged = keyed_reserve(
+            state,
+            self._dispatch(dispatch_id="D-stale", admission_generation=0),
+        )
+        self.assertEqual("STALE", stale)
+        self.assertEqual(state.cells, unchanged.cells)
+
+    def test_d3_f2_idempotent_replay_creates_no_new_identity(self) -> None:
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch())
+        self.assertEqual("ACCEPTED", verdict)
+        replay, replayed = keyed_reserve(
+            state,
+            self._dispatch(admission_generation=1),
+        )
+        self.assertEqual("IDEMPOTENT", replay)
+        self.assertEqual(state.cells, replayed.cells)
+
+    def test_d4_terminal_release_never_decrements_generation(self) -> None:
+        # Same carried semantics as the v4.8 ownership oracle's
+        # record_terminal_release: phase moves to a terminal state, the
+        # per-key generation is never written backwards.
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch())
+        self.assertEqual("ACCEPTED", verdict)
+        key = derive_claim_key("kaicreator-mm/ai-development-standard", "#861", "builder")
+        released = replace(state.cells[key], phase="TERMINAL")
+        self.assertEqual(state.cells[key].generation, released.generation)
+        self.assertEqual("TERMINAL", released.phase)
+        terminal_state = KeyedAdmissionState(cells={key: released})
+        stale_successor, unchanged = keyed_reserve(
+            terminal_state,
+            self._dispatch(dispatch_id="D-succ", admission_generation=0),
+        )
+        self.assertEqual("STALE", stale_successor)
+        self.assertEqual(terminal_state.cells, unchanged.cells)
+        same_generation_replay, still = keyed_reserve(
+            terminal_state,
+            self._dispatch(admission_generation=1),
+        )
+        self.assertEqual("IDEMPOTENT", same_generation_replay)
+        self.assertEqual(terminal_state.cells, still.cells)
+
+    def test_g8_parent_child_cannot_widen_compatibility(self) -> None:
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch())
+        self.assertEqual("ACCEPTED", verdict)
+        child = self._dispatch(
+            dispatch_id="D-child",
+            admission_generation=1,
+            parent_dispatch_ref="D-A",
+            responsibility_mode="DELEGATED_SUBWORK",
+        )
+        self.assertEqual(
+            derive_claim_key("kaicreator-mm/ai-development-standard", "#861", "builder"),
+            derive_claim_key("kaicreator-mm/ai-development-standard", "#861", "builder", None),
+        )
+        child_verdict, child_state = keyed_reserve(state, child)
+        self.assertEqual("DUPLICATE", child_verdict)
+        self.assertEqual(state.cells, child_state.cells)
+        self.assertEqual(1, len(child_state.cells))
+
+    def test_g3_provider_identity_never_manufactures_parallelism(self) -> None:
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch())
+        self.assertEqual("ACCEPTED", verdict)
+        other_provider = self._dispatch(
+            dispatch_id="D-provider-b",
+            admission_generation=1,
+            operator_id="codex:worker-b",
+        )
+        competitor, competed = keyed_reserve(state, other_provider)
+        self.assertEqual("DUPLICATE", competitor)
+        self.assertEqual(state.cells, competed.cells)
+
+    def test_n1_h6_two_default_group_builders_admit_exactly_one(self) -> None:
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch(dispatch_id="D-b1"))
+        self.assertEqual("ACCEPTED", verdict)
+        second, after = keyed_reserve(
+            state,
+            self._dispatch(dispatch_id="D-b2", admission_generation=1),
+        )
+        self.assertEqual("DUPLICATE", second)
+        self.assertEqual(1, len(after.cells))
+
+    def test_c6_h3_authorized_non_default_groups_run_parallel(self) -> None:
+        windows = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6023707736",
+        )
+        linux = self._dispatch(
+            dispatch_id="D-linux",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/linux",
+            compatibility_authority_ref="#861@6023707736",
+        )
+        first, after_first = keyed_reserve(KeyedAdmissionState(), windows)
+        second, after_second = keyed_reserve(after_first, linux)
+        self.assertEqual("ACCEPTED", first)
+        self.assertEqual("ACCEPTED", second)
+        self.assertEqual(2, len(after_second.cells))
+
+    def test_c2_non_default_without_authority_fails_closed_before_cas(self) -> None:
+        unauthorized = self._dispatch(
+            dispatch_id="D-unauth",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref=None,
+        )
+        with self.assertRaises(ValueError):
+            keyed_reserve(KeyedAdmissionState(), unauthorized)
+
+    def test_a8_contradiction_is_rejected_before_any_admission(self) -> None:
+        contradicted = self._dispatch(execution_environment="WEB")
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), contradicted)
+        self.assertIn("ENVIRONMENT_PROFILE_CONTRADICTION", str(caught.exception))
 
 
 if __name__ == "__main__":
-    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(ExecutionArchitectureRegression))
+    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
     raise SystemExit(0 if result.wasSuccessful() else 1)
