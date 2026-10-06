@@ -1,0 +1,12 @@
+test_01_exact_identity_pinned_to_repeatable_real_cherry_pick (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_01_exact_identity_pinned_to_repeatable_real_cherry_pick) ... ok
+test_02_policy_authority_not_git_topology (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_02_policy_authority_not_git_topology) ... ok
+test_03_policy_baseline_is_pinned_not_placeholder (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_03_policy_baseline_is_pinned_not_placeholder) ... ok
+test_04_fresh_result_focused_test_is_not_source_test (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_04_fresh_result_focused_test_is_not_source_test) ... ok
+test_05_source_pass_and_stale_result_claim_never_transfer (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_05_source_pass_and_stale_result_claim_never_transfer) ... ok
+test_06_hotfix_fast_path_release_deployment_separation (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_06_hotfix_fast_path_release_deployment_separation) ... ok
+test_07_no_real_project_pass_in_bounded_fixture (scripts.test_v45_maintenance_hotfix_conformance.MaintenanceHotfixConformance.test_07_no_real_project_pass_in_bounded_fixture) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.046s
+
+OK

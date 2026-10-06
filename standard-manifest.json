@@ -45,7 +45,16 @@
       "standards/TESTING_STANDARD.md",
       "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
       "standards/VALIDATION_STANDARD.md",
-      "standards/WORKSPACE_ARTIFACT_STANDARD.md"
+      "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+      "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md",
+      "standards/DEPLOYMENT_GOVERNANCE_STANDARD.md",
+      "standards/DISTRIBUTION_GOVERNANCE_STANDARD.md",
+      "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md",
+      "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
+      "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
+      "standards/CONTEXT_ENGINEERING_STANDARD.md",
+      "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md",
+      "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md"
     ],
     "compatibility_entries": [
       "standards/GITHUB_WORKFLOW.md",
@@ -137,7 +146,16 @@
       "schemas/agent-capability-profile-v1.schema.json",
       "schemas/authority-applicability-entry-v1.schema.json",
       "schemas/state-dimension-registry-v1.schema.json",
-      "schemas/task-learning-v1.schema.json"
+      "schemas/task-learning-v1.schema.json",
+      "schemas/artifact-promotion-v1.schema.json",
+      "schemas/build-manifest-v1.schema.json",
+      "schemas/deployment-plan-v1.schema.json",
+      "schemas/deployment-result-v1.schema.json",
+      "schemas/incident-event-v1.schema.json",
+      "schemas/maintenance-policy-v1.schema.json",
+      "schemas/runtime-observation-context-v1.schema.json",
+      "schemas/intent-assumption-record-v1.schema.json",
+      "schemas/skill-metadata-v1.schema.json"
     ],
     "profiles": [
       "profiles/README.md",
@@ -173,7 +191,17 @@
       "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
       "references/REFERENCE_CONVENTION_REFERENCE.md",
       "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
-      "references/V48_REGISTRY_ADOPTION_REFERENCE.md"
+      "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
+      "references/BUILD_ARTIFACT_REFERENCE.md",
+      "references/DEPLOYMENT_REFERENCE.md",
+      "references/DISTRIBUTION_REFERENCE.md",
+      "references/INCIDENT_RECOVERY_REFERENCE.md",
+      "references/MAINTENANCE_EOL_HOTFIX_REFERENCE.md",
+      "references/OBSERVABILITY_RUNTIME_REFERENCE.md",
+      "references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md",
+      "references/CONTEXT_ENGINEERING_REFERENCE.md",
+      "references/INTENT_ASSUMPTION_REFERENCE.md",
+      "references/SKILL_PROCEDURE_REFERENCE.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -238,7 +266,20 @@
       "scripts/test_v47_progressive_disclosure.py",
       "scripts/test_v47_reference_conventions.py",
       "scripts/test_v47_state_dimension_registry.py",
-      "scripts/test_v48_registry_adoption.py"
+      "scripts/test_v48_registry_adoption.py",
+      "scripts/test_v44_adoption_wiring.py",
+      "scripts/test_v44_build_artifact.py",
+      "scripts/test_v44_delivery_contracts.py",
+      "scripts/test_v44_deployment.py",
+      "scripts/test_v44_distribution.py",
+      "scripts/test_v44_distribution_deployment_conformance.py",
+      "scripts/test_v45_adoption_wiring.py",
+      "scripts/test_v46_adoption_wiring.py",
+      "scripts/test_v46_ai_native_contracts.py",
+      "scripts/test_v46_context_engineering.py",
+      "scripts/test_v46_existing_owner_integration.py",
+      "scripts/test_v46_intent_assumption.py",
+      "scripts/test_v46_skill_procedure.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"

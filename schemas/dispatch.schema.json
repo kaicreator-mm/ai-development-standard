@@ -29,6 +29,8 @@
     "result": {"type": "string", "enum": ["PASS", "FAIL", "BLOCKED"]},
     "superseded_reason": {"type": "string", "minLength": 1},
     "queue_ref": {"type": ["string", "null"], "minLength": 1},
+    "intent_assumption_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "skill_metadata_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "created_by": {"type": "string", "minLength": 1},
     "created_at": {"type": "string", "minLength": 1},
     "claimed_by": {"type": ["string", "null"], "minLength": 1}

@@ -16,11 +16,24 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] Required concern/integration work is merged.
 - [ ] Full required visible regression passes on the intended candidate.
 - [ ] Required Critical Journeys/platform/production build/package/install/external boundary tuples are explicit and truthful.
+- [ ] Where material to this Product/project, verify evidence is referenced from `standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md` for exact build/promoted artifact identity, `standards/DISTRIBUTION_GOVERNANCE_STANDARD.md` for optional publication binding, and `standards/DEPLOYMENT_GOVERNANCE_STANDARD.md` for distinct Plan/executed Result and side-effect authority. Do not manufacture any of those records for genuinely non-applicable stages or replace unexecuted real host/provider proof with fixture/CI success; see `docs/implementation/4.4.0/MIGRATION_ADOPTION.md` for adoption mapping.
 - [ ] Dependency/toolchain certification, configuration identity, artifact identity and external environment/fidelity facts match the actual closure subject where material.
 - [ ] Secret values are absent from ordinary closure evidence; durable evidence uses authorized refs/identity.
 - [ ] Build outputs/caches/runtime state are not promoted to Release artifacts by file existence alone.
 - [ ] CI/profile requirement is satisfied or its infrastructure exception/alternate-executor basis is valid.
 - [ ] Candidate Freeze occurs only after required visible freeze gates pass.
+
+## v4.6 AI-native Cross-standard Reconciliation (when v4.6 is in candidate)
+
+This is reconciliation only; it does not create a new Closure gate family.
+
+- [ ] The canonical manifest exposes exactly the three v4.6 normative AI-native owners and both new default machine-contract families.
+- [ ] Golden coverage remains exactly aligned with the active normative-standard set.
+- [ ] Project adoption/migration guidance is materiality-driven and non-weakening; Fast Path does not require empty Intent/Assumption or Skill records for genuinely non-material concerns.
+- [ ] Material intent/assumption promotion, context currentness and Skill admission remain subordinate to their owning authority and do not manufacture Product/Architecture/Task, mutation or side-effect authority.
+- [ ] Assurance/Review, F0–F3, Dispatch/Handoff, Validation and Release continue to use their existing owners; no duplicate AI-native lifecycle/result vocabulary is treated as closure evidence.
+- [ ] Historical evidence has not been retrofitted or relabeled as newly produced v4.6 evidence.
+- [ ] No Context Snapshot/database or repository-wide v4.7 resolver was introduced as part of v4.6 adoption wiring.
 
 ## Freeze Integrity
 
@@ -40,6 +53,8 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 - [ ] README/docs/config/migration guidance matches shipped behavior.
 - [ ] Architecture amendments reconcile shipped implementation without rewriting historical decisions.
 - [ ] Known limitations/deferred items are explicit.
+- [ ] For v4.7+, `docs/implementation/4.7.0/MIGRATION_ADOPTION.md` and `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` are reconciled as adoption/planning inputs only; neither is treated as Version Closure or Release authority.
+- [ ] Stable compatibility aliases/paths remain supported unless a separately authorized migration with its own compatibility evidence has replaced them.
 - [ ] Execution Foundation adoption/profile documentation matches what the integrated candidate actually uses; non-applicable machine contracts were not created merely for ceremony.
 
 ## Release Qualification

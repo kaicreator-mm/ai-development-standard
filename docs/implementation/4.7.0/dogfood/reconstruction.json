@@ -1,0 +1,103 @@
+{
+  "schema": "v4.7-t08-fresh-agent-dogfood/v1",
+  "evidence_class": "STATIC_OR_RECONSTRUCTION",
+  "authority_effect": "NONE",
+  "gate_effect": "NONE",
+  "real_fresh_session": {
+    "state": "NOT_RUN",
+    "blocker": "BUILDER_LOGICAL_CONTEXT_NOT_FRESH",
+    "reason": "The Builder session already contains task context and cannot serve as a genuinely fresh logical Agent/session. Independent exact-subject Validation must execute the REAL scenario."
+  },
+  "starting_pointers": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "task_issue": "https://github.com/kaicreator-mm/ai-development-standard/issues/352",
+    "pull_request": "https://github.com/kaicreator-mm/ai-development-standard/pull/624",
+    "task_branch": "task/352-v47-fresh-agent-self-dogfood",
+    "integration_target": "version/v4.7.0",
+    "task_pack": "docs/implementation/4.7.0/task-packs/T08_fresh_agent_self_dogfood.md",
+    "execution_pack": ".agent/execution/T-008/MANIFEST.yaml"
+  },
+  "bound_planning_identity": {
+    "base_sha": "3e9c24b671c5619b6024ec79a90b20f6eb1b9346",
+    "base_tree": "17163c9cfb78f3d2a11b8c713cc27abf627beb07",
+    "pack_head": "92a516c05400fae5c57d70a57c5c36dc085dd1cd",
+    "pack_tree": "5b2f75f2896fcc839b1db24b483aced94cf39318",
+    "task_pack_blob": "168acd4acf3e23fbb3ca3f6197e4192cb05a9f50",
+    "l3_blob": "6a2000cf9b8bf8024450eb5f0f0704960140095f"
+  },
+  "subject_resolution": {
+    "builder_head": "READ_LIVE_PR_HEAD_AFTER_IMPLEMENTATION",
+    "builder_tree": "READ_LIVE_COMMIT_TREE_AFTER_IMPLEMENTATION",
+    "expected_base": "READ_LIVE_PR_BASE_AND_REQUIRE_3e9c24b671c5619b6024ec79a90b20f6eb1b9346",
+    "stale_or_mismatched_subject": "BLOCKED",
+    "silent_rebase": "FORBIDDEN"
+  },
+  "composition_inputs": {
+    "progressive_disclosure_owner": [
+      "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
+      "scripts/resolve_standard_read_set.py"
+    ],
+    "semantic_conformance_owner": [
+      "references/V47_SEMANTIC_CONFORMANCE_MATRIX.md",
+      "scripts/v47_conformance.py",
+      "scripts/test_v47_semantic_conformance.py"
+    ]
+  },
+  "recover": {
+    "pinned_ads_and_current_authority": "from current repository/GitHub durable facts",
+    "canonical_owners": "compose T05 read-routing and T07 semantic-conformance without mutation",
+    "applicable_profiles_and_overrides": "read current project/profile/PROJECT_OVERRIDES materiality when present; fail closed on ambiguity",
+    "task_pr_exact_sha_base": "Issue #352 + PR #624 + live final PR HEAD/tree + expected version/v4.7.0 base",
+    "allowed_mutation_and_side_effects": [
+      "docs/implementation/4.7.0/dogfood/**",
+      "scripts/test_v47_fresh_agent_dogfood.py",
+      "durable PR/Validation-request workflow side effects required by the Frozen Task Pack"
+    ],
+    "required_gates": [
+      "builder-implementation",
+      "exact-subject-independent-validation",
+      "fresh-independent-review-after-validation-pass",
+      "controller-currentness-and-expected-head-merge-authorization"
+    ],
+    "next_action_or_blocker": "execute exact-subject independent Validation in a genuinely fresh logical session; REAL remains NOT_RUN/BLOCKED until then"
+  },
+  "adversarial_cases": [
+    {
+      "id": "A01_CHAT_ONLY_FACT_ABSENT",
+      "lower_authority_input": "prior-chat-only-value",
+      "expected": "IGNORED_NOT_REQUIRED"
+    },
+    {
+      "id": "A02_STALE_MEMORY_VS_LIVE_GITHUB",
+      "lower_authority_input": "stale-head",
+      "durable_input": "live-pr-head",
+      "expected": "DURABLE_WINS"
+    },
+    {
+      "id": "A03_TRANSPORT_SAMENESS",
+      "same_account_or_transport": true,
+      "expected": "NO_INDEPENDENCE_INFERENCE"
+    },
+    {
+      "id": "A04_STATIC_CANNOT_PROVE_REAL",
+      "static_result": "PASS",
+      "expected_real_state": "NOT_RUN"
+    },
+    {
+      "id": "A05_STALE_SUBJECT",
+      "observed_subject": "different-head-or-base",
+      "expected": "BLOCKED"
+    }
+  ],
+  "privacy": {
+    "private_chain_of_thought_required": false,
+    "allowed_evidence": [
+      "durable pointers",
+      "structured recovered facts",
+      "commands/results when applicable",
+      "operator/session reference",
+      "evidence classification",
+      "blocker or outcome"
+    ]
+  }
+}

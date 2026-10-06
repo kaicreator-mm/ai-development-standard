@@ -41,3 +41,12 @@ jobs:
       - run: python scripts/test_execution_architecture.py
       - run: python scripts/verify_runner_capability_reference.py
       - run: python scripts/test_v43_conformance_dogfood.py
+      - run: python scripts/test_v44_delivery_contracts.py
+      - run: python scripts/test_v44_build_artifact.py
+      - run: python scripts/test_v44_build_package_conformance.py
+      - run: python scripts/test_v44_distribution.py
+      - run: python scripts/test_v44_deployment.py
+      - run: python scripts/test_v44_distribution_deployment_conformance.py
+      - run: python scripts/test_v44_adoption_wiring.py
+      - run: python scripts/test_v44_cross_standard_conformance.py
+      - run: python -B scripts/test_v45_cross_standard_conformance.py
