@@ -140,6 +140,10 @@ for token in ("Just-in-time task branches", "Baseline refresh ordering", "Pull w
     if token not in execution:
         errors.append(f"Execution Architecture missing v3.4 semantic token: {token}")
 
+for token in ("compatibility_group", "admission_generation", "active_dispatches", "scheduler_origin"):
+    if token not in execution:
+        errors.append(f"Execution Architecture missing v4.10 serialized-admission token: {token}")
+
 pack_std = read("standards/EXECUTION_PACK_STANDARD.md")
 for token in ("PACK_CURRENT", "PACK_STALE_NONMATERIAL", "PACK_STALE_MATERIAL", "PACK_INVALID", "F0_MECHANICAL", "F1_BOUNDED_IMPLEMENTATION", "F2_ENGINEERING_DISCRETION", "F3_ARCHITECTURE_REQUIRED", "TASK_PACK_DEFECT", "ARCHITECTURE_CONTRADICTION", "EXECUTION_PACK_INVALID", "excludable"):
     if token not in pack_std:
@@ -170,6 +174,20 @@ protocol = read("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
 for token in ("DISPATCH_CLAIMED", "EXECUTION_PACK_STATE_CHANGED", "LOCAL_BUILDER", "no human prompt relay"):
     if token not in protocol:
         errors.append(f"Interaction Protocol missing v3.4 semantic token: {token}")
+
+for token in ("protected_claim_key", "source_proposal_ref", "canonical_admission_ref", "scheduler_origin"):
+    if token not in protocol:
+        errors.append(f"Interaction Protocol missing v4.10 lineage-provenance token: {token}")
+
+event_comment_template = read("templates/agent-event-comment.md")
+for token in ("source_proposal_ref", "canonical_admission_ref", "scheduler_origin"):
+    if token not in event_comment_template:
+        errors.append(f"Agent event comment template missing v4.10 lineage-provenance token: {token}")
+
+pack_manifest_template = read("templates/execution-pack/MANIFEST.yaml.md")
+for token in ("core_artifacts", "exactly the six core names"):
+    if token not in pack_manifest_template:
+        errors.append(f"Execution Pack MANIFEST template missing v4.10 exact-set token: {token}")
 
 web_role = read("standards/CHATGPT_WEB_ROLE.md")
 for token in ("Web 控制平面", "human prompt relay", "web-reviewer-bootstrap"):
@@ -234,6 +252,25 @@ dispatch_enum = parsed_schemas.get("schemas/dispatch.schema.json", {}).get("prop
 for state in ("READY", "CLAIMED", "RUNNING", "COMPLETED", "BLOCKED", "SUPERSEDED"):
     if state not in dispatch_enum:
         errors.append(f"dispatch schema missing pull state: {state}")
+
+dispatch_properties = parsed_schemas.get("schemas/dispatch.schema.json", {}).get("properties", {})
+for field in ("execution_environment", "compatibility_group", "compatibility_authority_ref", "admission_generation", "scheduler_origin"):
+    if field not in dispatch_properties:
+        errors.append(f"dispatch schema missing v4.10 serialized-admission field: {field}")
+if dispatch_properties.get("admission_generation", {}).get("minimum") != 0:
+    errors.append("dispatch schema admission_generation must pin schema minimum 0")
+
+event_properties = event_schema.get("properties", {})
+for field in ("source_proposal_ref", "canonical_admission_ref", "scheduler_origin"):
+    if field not in event_properties:
+        errors.append(f"agent-event-v2 schema missing v4.10 lineage-provenance property: {field}")
+
+execution_state_properties = parsed_schemas.get("schemas/execution-state.schema.json", {}).get("properties", {})
+if "active_dispatches" not in execution_state_properties:
+    errors.append("execution-state schema missing v4.10 active_dispatches projection")
+for ref_field in ("issue", "pr"):
+    if ref_field not in execution_state_properties.get("active_dispatches", {}).get("items", {}).get("properties", {}):
+        errors.append(f"execution-state active_dispatches rows missing v4.10 exact subject ref: {ref_field}")
 
 task_contract = parsed_schemas.get("schemas/task-contract.schema.json", {}).get("properties", {}).get("agent_freedom", {}).get("enum", [])
 for freedom in ("F0_MECHANICAL", "F1_BOUNDED_IMPLEMENTATION", "F2_ENGINEERING_DISCRETION", "F3_ARCHITECTURE_REQUIRED"):

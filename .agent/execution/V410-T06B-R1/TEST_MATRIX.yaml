@@ -1,29 +1,36 @@
 # V410-T06B R1 test matrix — all commands from repo root on the exact candidate
+#
+# R2 (V410-T06B-BOUNDED-REPAIR-R2, Fresh Review R1 #861@6019318714): the R1
+# `covers` lists overstated delivery (finding P2-3). They are restated here to
+# match machine evidence exactly; every previously overstated row is either now
+# backed by a real regression (P1-1/P1-2/P2-1/P2-2/P2-4/P3-1 repairs) or moved
+# to `dispositions` with its truthful owner. Oracle case ids reference
+# #861@6012842432 (sections A-J) and #861@6013355359 (T1-T5).
 
 matrix:
   - id: T-t06b-focus
     command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
-    status: NEW (W8)
+    status: NEW (W8; R2 extended: B5/B6 persisted-key conformance, FC1 unknown-profile projection, active_dispatches exact subject refs)
     expect: PASS
-    covers: [oracle B,C,D,E,F,G,H; J frozen guards; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1-FC12]
+    covers: [B1-B4,B6,B5; C1,C2 (durable-format, never-downgrade); D2,D3,D5; F3,F4; H1,H4,H5; terminal precedence T5 with stale-loser disposition; J1 negative guard; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1,FC2,FC3,FC4,FC5,FC11,FC12]
   - id: T-protocol-schemas
     command: python scripts/test_protocol_schemas.py
-    status: EXTENDED (W9)
+    status: EXTENDED (W9; R2 extended: A1-A10 schema verdicts, A8 projection-verifier rejection, A6 minimum-0 subset support)
     expect: PASS
-    covers: [A1-A13 incl. A8/A11/A12/A13; J4 assert_supported_schema]
+    covers: [A1-A10; A8 via schema-VALID + verifier REJECT; A11,A12 byte-stable guards; J4 assert_supported_schema; FC8]
   - id: T-execution-architecture
     command: python scripts/test_execution_architecture.py
-    status: EXTENDED (W10)
+    status: EXTENDED (W10; R2: vacuous placeholder replaced by a keyed ClaimCell race oracle over the real v34_rules reducers)
     expect: PASS
-    covers: [D1,D2,E3,G8,N1,N5,N7; existing §11 oracle unbroken]
-  - id: T-v34-lifecycle
-    command: python scripts/test_v34_lifecycle_contracts.py
-    status: EXTENDED (W11)
+    covers: [D1,D2,D3,D4; E3,E4-order-independence; F1,F2 (admission-race model); G3,G8; N1,N5,N7; A8 pre-admission rejection; C6,H3 authorized non-default parallelism; C2 fail-closed gate; existing §11 oracle unbroken]
+  - id: T-t06b-core-inventory
+    command: python scripts/test_v410_t06b_core_inventory.py
+    status: NEW (W11 delivered in a dedicated file; see dispositions DISP-W11-PLACEMENT)
     expect: PASS
-    covers: [I1-I6 core-inventory exact-set; N13]
+    covers: [I1-I6 core-inventory exact-set; N13 pack-level duplicates and manifest-level no-duplicates; FC10]
   - id: T-v34-rules
-    command: python -c "import sys;sys.path.insert(0,'scripts');import v34_rules" (smoke; full coverage via W8/W11)
-    status: EXTENDED (W7)
+    command: python -c "import sys;sys.path.insert(0,'scripts');import v34_rules" (smoke; full coverage via W8/W10/W11)
+    status: EXTENDED (W7; R2: project_dispatch_environment + protected_claim_key_conforms)
     expect: PASS
   - id: T-registry-adoption
     command: python scripts/test_v48_registry_adoption.py
@@ -43,17 +50,35 @@ matrix:
     expect: PASS_UNMODIFIED
   - id: T-t02b
     command: python scripts/test_v410_t02b_machine_projection.py
-    status: CARRIED (W12: NOT edited; FROZEN_* guards stay green)
+    status: CARRIED (W12: NOT edited; FROZEN_* guards stay green; J2/J3 byte-stability carried here)
     expect: PASS_UNMODIFIED
   - id: T-manifest
     command: python scripts/verify_standard.py
-    status: EXTENDED (W13)
+    status: EXTENDED (W13; R2 extended: drift-check tokens for the five new dispatch fields incl. admission_generation minimum 0, event lineage provenance, active_dispatches projection with exact subject refs, Pack exact-set writer/template examples)
     expect: PASS
     covers: [registration of W8; drift tokens; hazard-7 negative preserved]
   - id: T-task-check
     command: tools/task-check.sh
     status: CARRIED
     expect: PASS
+
+dispositions:
+  - id: DISP-W11-PLACEMENT
+    finding: P3-3
+    record: W11 (I1-I6/N13) landed in NEW scripts/test_v410_t06b_core_inventory.py instead of the TEST_MAP-enumerated scripts/test_v34_lifecycle_contracts.py. Not moved post-hoc: the dedicated file is manifest-registered and pinned by the authorized W13 guard set (test_guard_amendment_is_exactly_the_authorized_w13_set); relocating it now would churn a carried v3.4 suite and the registry ledger for zero semantic gain. T-v34-lifecycle is corrected to CARRIED and the delivered placement is pinned by T-t06b-core-inventory.
+  - id: DISP-C3-C5-AUTHORITY-RESOLUTION
+    finding: P2-3 (partial)
+    record: authorize_non_default enforces the durable #<issue>@<comment-id> format and never downgrades to __default__ (C2 and C7-format, machine-tested). Resolvability/staleness (C3), per-repository+task+role+group authorization (C4) and authority-family fit (C5) require durable GitHub fact resolution owned by the admission controller; no local machine model exists and none is claimed.
+  - id: DISP-G1-G2-G7
+    finding: P2-3 (partial)
+    record: G1/G2 (environment implies authority) are structurally enforced by the byte-stable profile-role couplings (A11, machine-pinned in T-protocol-schemas and T-t06b-focus) plus environment-never-authority prose (A13/hazard-1 test in this suite); G7/FC9 (verifier PASS vs contradictory owner) is an owner-precedence process rule with no local reducer, and inventing a second authority family is forbidden by the J guards. No dedicated tests claimed.
+  - id: DISP-H2-SINGULAR-NULL
+    finding: P2-3 (partial)
+    record: the legacy-singular null rule (H2, no arbitrary primary while more than one row is active) is documented in execution-state.schema.json active_dispatches description and enforced at the state-surface writer; it is not expressible in the fail-closed SUPPORTED schema subset and is not claimed as machine-tested.
+  - id: DISP-D6-CARRIED
+    finding: P2-3 (partial)
+    record: D6 (BLOCKED_UNSAFE_COMPOSITE_ADMISSION via SAFE_ADMISSION_MODES) remains carried by the v4.8 scheduling conformance suite; T06B claims no new D6 regression.
+
 negative_invariants:
   - no silent weakening of execution_profile enum/couplings (A11 byte-stable)
   - no brand/model/authority coupling to execution_environment (A13; semantics 3-8 of #861 refinement)

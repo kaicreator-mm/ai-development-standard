@@ -9,7 +9,7 @@ reuses the owner helpers, never reimplements them.
 
 from __future__ import annotations
 
-from copy import deepcopy
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -24,8 +24,6 @@ T06B_PACK = ROOT / ".agent" / "execution" / "V410-T06B-R1" / "MANIFEST.yaml"
 
 class CoreInventoryExactSetTests(unittest.TestCase):
     def _pack_core(self) -> list[str]:
-        import yaml  # noqa: F401  (unused; manifest read as text-based subset)
-
         text = T06B_PACK.read_text(encoding="utf-8")
         lines = text.splitlines()
         start = lines.index("core_artifacts:")
@@ -72,8 +70,19 @@ class CoreInventoryExactSetTests(unittest.TestCase):
             self.assertTrue(historical.is_file(), historical)
 
     def test_n13_no_duplicate_owner_family_registered(self) -> None:
-        manifest = (ROOT / "standard-manifest.json").read_text(encoding="utf-8")
-        self.assertEqual(manifest.count("core_artifacts"), manifest.count("core_artifacts"))
+        # N13 manifest-duplication aspect (R2 repair: the R1 form was a
+        # tautology). The durable pack manifest's core_artifacts list must name
+        # each required core artifact exactly once, and the standard manifest
+        # must declare every path exactly once (verify_standard's duplicate
+        # rule holds on the real registry, not just on synthetic mutants).
+        core = self._pack_core()
+        self.assertTrue(core_artifacts_complete(core))
+        self.assertEqual(len(core), len(set(core)), core)
+        manifest = json.loads((ROOT / "standard-manifest.json").read_text(encoding="utf-8"))
+        declared: list[str] = []
+        for values in manifest["sections"].values():
+            declared.extend(values)
+        self.assertEqual(len(declared), len(set(declared)))
 
 
 if __name__ == "__main__":
