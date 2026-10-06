@@ -1,0 +1,180 @@
+{
+  "packet_version": "v46-t06-session-handoff-dogfood-v1",
+  "claim_scope": {
+    "fixture_claim": "STATIC_FIXTURE_ONLY",
+    "proves": [
+      "A stateless fresh logical executor can reconstruct the required handoff fields from this durable packet and the durable refs it names without the originating chat transcript.",
+      "The handoff explicitly separates transport account identity from logical operator/context identity.",
+      "The packet preserves real-runtime, Validation, Review, Version Closure and merge boundaries instead of inferring them from fixture success."
+    ],
+    "does_not_prove": [
+      "REAL_EXTERNAL_AGENT_RUNTIME_PASS",
+      "REAL_MODEL_OR_PROVIDER_INDEPENDENCE",
+      "FRESH_TRANSPORT_ACCOUNT",
+      "EXACT_SUBJECT_VALIDATION_PASS",
+      "FRESH_INDEPENDENT_REVIEW_PASS",
+      "VERSION_CLOSURE_OR_RELEASE_PASS",
+      "MERGE_AUTHORITY"
+    ]
+  },
+  "subject": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "task": "T06",
+    "issue_number": 309,
+    "issue_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/309",
+    "dispatch_comment_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/309#issuecomment-5926413101",
+    "integration_target": "version/v4.6.0",
+    "task_branch": "task/309-v46-session-handoff-dogfood",
+    "authorized_base_sha": "0458982cd16ba8539085ee0fcc26d2bf46a60ceb",
+    "authorized_base_tree": "8853d15ab47b884f23a42ceefb9b301b8525a074",
+    "task_pack": {
+      "path": "docs/implementation/4.6.0/task-packs/T06_session_handoff_dogfood.md",
+      "blob_sha": "9fb2c513040d39c63888b090670af789f2f787aa"
+    }
+  },
+  "authority_refs": {
+    "frozen_product": {
+      "path": "docs/implementation/4.6.0/PRD.md",
+      "blob_sha": "1f6f0cbb96b45bdc3467dd0eb4f66d57df263b3a",
+      "frozen_authority_commit": "e6aa04981110376e623d19b7dd4d0c6d0e139bdf"
+    },
+    "frozen_l2": {
+      "path": "docs/implementation/4.6.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "blob_sha": "d2ac68f8361aaf40b7f2b6611e443b6f27b9dfbe",
+      "frozen_authority_commit": "f47ea81e8f8df32ac6c8b7cc922c405a17b704d9"
+    },
+    "frozen_task_dag": {
+      "path": "docs/implementation/4.6.0/TASK_DAG.md",
+      "blob_sha": "9f3d554a3395a47c0fe066cfa52af008548ab98d",
+      "frozen_authority_commit": "d3607c61f22b2c15fbb07d412c4e222e818b31c9"
+    },
+    "frozen_l3": {
+      "path": "docs/implementation/4.6.0/L3_REFERENCE_PACKS.md",
+      "blob_sha": "c219344d8b902bc5053adbdc2328a3147af8f7bf"
+    },
+    "t02_intent_owner": {
+      "path": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md",
+      "blob_sha": "dbc2b955c4b707d204cfec7d0124af81582a1f4c"
+    },
+    "t03_context_owner": {
+      "path": "standards/CONTEXT_ENGINEERING_STANDARD.md",
+      "blob_sha": "f41135fc95b75c1b077cbbd37e9645bd4bc7ff29"
+    },
+    "t04_skill_owner": {
+      "path": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md",
+      "blob_sha": "b4ba0074600dc3a3802663093b663e0f23b57da5"
+    },
+    "t05_existing_owner_integration": {
+      "path": "references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md",
+      "blob_sha": "87a1babb960fb7bc57d7ed3f6ce062c477e47ee5"
+    }
+  },
+  "request": {
+    "summary": "Implement only v4.6 T06 reproducible session/operator handoff dogfood on the pre-created task branch and open one PR to version/v4.6.0.",
+    "allowed_write_set": [
+      "docs/implementation/4.6.0/dogfood/**",
+      "scripts/test_v46_session_handoff_dogfood.py"
+    ],
+    "forbidden_scope": [
+      "rewrite T01-T05 owners",
+      "absorb T07 adoption wiring",
+      "implement v4.7 convergence",
+      "self-review",
+      "Version Closure",
+      "merge"
+    ]
+  },
+  "completed_evidence": [
+    {
+      "id": "dependency-unlock",
+      "status": "DURABLE_GITHUB_FACT",
+      "fact": "Controller dispatch comment records blocked_by=0 and pre-created branch from the exact version tip.",
+      "ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/309#issuecomment-5926413101"
+    },
+    {
+      "id": "t02",
+      "status": "MERGED_OWNER_SURFACE_PRESENT_AT_AUTHORIZED_BASE",
+      "ref": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md"
+    },
+    {
+      "id": "t03",
+      "status": "MERGED_OWNER_SURFACE_PRESENT_AT_AUTHORIZED_BASE",
+      "ref": "standards/CONTEXT_ENGINEERING_STANDARD.md"
+    },
+    {
+      "id": "t04",
+      "status": "MERGED_OWNER_SURFACE_PRESENT_AT_AUTHORIZED_BASE",
+      "ref": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md"
+    },
+    {
+      "id": "t05",
+      "status": "MERGED_OWNER_SURFACE_PRESENT_AT_AUTHORIZED_BASE",
+      "ref": "references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md"
+    }
+  ],
+  "findings_blockers": [
+    {
+      "id": "real-fresh-agent-validation",
+      "status": "NOT_RUN",
+      "severity": "gate_pending",
+      "finding": "Builder fixture execution does not prove a real fresh external Agent/runtime reconstruction or logical-context independence.",
+      "route": "docs/implementation/4.6.0/dogfood/REAL_RUNTIME_VALIDATION_REQUEST.md"
+    }
+  ],
+  "remaining_work": [
+    "Run exact-subject T06 Validation against the PR's live final HEAD/tree using a fresh logical context with no originating chat transcript.",
+    "If Validation claims a real external Agent/runtime dimension, execute that dimension exactly as requested; otherwise leave it NOT_RUN.",
+    "Run Fresh Independent Review after Validation evidence is durable.",
+    "Controller decides integration/merge; Builder does not merge."
+  ],
+  "next_owner_action": {
+    "owner": "Controller-dispatched independent T06 Validator",
+    "action": "Re-read the PR live HEAD/tree, bind the exact packet digest, then reconstruct the required handoff fields from durable inputs only and record exact-subject Validation evidence."
+  },
+  "forbidden_assumptions": [
+    "same GitHub/API transport account => same logical operator/context",
+    "different provider/model metadata => independence proven",
+    "fixture/static PASS => real external Agent/runtime PASS",
+    "historical chat/memory => overrides current durable authority",
+    "tool/model capability => mutation, merge or side-effect authority",
+    "PR opened => Validation PASS, Review PASS, Version Closure, Release or merge"
+  ],
+  "fresh_executor_input": {
+    "required_inputs": [
+      "this packet",
+      "durable repository/GitHub refs named by this packet",
+      "live currentness rereads required for the next action"
+    ],
+    "explicitly_excluded_inputs": [
+      "originating chat transcript",
+      "private chain-of-thought",
+      "unrecorded session memory"
+    ]
+  },
+  "expected_reconstruction": {
+    "requested_work": "v4.6 T06 session/operator handoff dogfood only",
+    "frozen_current_authority": [
+      "Frozen Product",
+      "Frozen L2",
+      "Frozen Task DAG",
+      "Frozen L3",
+      "T06 Task Pack",
+      "merged T02/T03/T04/T05 owner surfaces",
+      "live #309 dispatch/currentness facts"
+    ],
+    "exact_subject_identity": "kaicreator-mm/ai-development-standard#309 at authorized base 0458982cd16ba8539085ee0fcc26d2bf46a60ceb on task/309-v46-session-handoff-dogfood targeting version/v4.6.0",
+    "completed_evidence_ids": [
+      "dependency-unlock",
+      "t02",
+      "t03",
+      "t04",
+      "t05"
+    ],
+    "open_finding_ids": [
+      "real-fresh-agent-validation"
+    ],
+    "next_owner": "Controller-dispatched independent T06 Validator",
+    "next_action": "Re-read the PR live HEAD/tree, bind the exact packet digest, then reconstruct the required handoff fields from durable inputs only and record exact-subject Validation evidence.",
+    "forbidden_assumption_count": 6
+  }
+}

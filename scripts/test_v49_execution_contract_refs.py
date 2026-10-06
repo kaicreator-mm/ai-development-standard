@@ -22,6 +22,21 @@ T008_REF_FIELDS = frozenset(
     {"assurance_currentness_ref", "role_profile_ref", "jit_phase_ref"}
 )
 
+# Post-recovery recompose re-bind (#805 POST_RECOVERY_EXACT_RECOMPOSE, #745):
+# the recovery-integrated main merge (4c632256) legally carries the recovered
+# v4.6 dispatch wiring as +2 optional, reference-only, backward-compatible
+# array fields composed into the same DAG-owned dispatch surface. The additive
+# inventory the T-008 compatibility record declares therefore grows by exactly
+# these two fields; the delta/inventory assertions below compare against the
+# union — still an exact bounded set, so any other property mutation fails.
+# The v4.9 string-ref identity semantics (T008_REF_FIELDS loops) stay scoped:
+# the recovered array fields carry their own semantics, asserted by the
+# recovered v4.6 suites (scripts/test_v46_intent_assumption.py,
+# scripts/test_v46_ai_native_contracts.py).
+RECOVERY_REF_FIELDS = frozenset({"intent_assumption_refs", "skill_metadata_refs"})
+
+ADDITIVE_DISPATCH_FIELDS = T008_REF_FIELDS | RECOVERY_REF_FIELDS
+
 # Read-only dependency surfaces: pinned blobs at the v4.9.0 T-008 base.
 READ_ONLY_SURFACE_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
@@ -192,7 +207,7 @@ class ExecutionContractRefsV49BackwardCompatibilityTests(unittest.TestCase):
     def test_schema_change_is_purely_additive(self) -> None:
         base_props = self.base_schema["properties"]
         cand_props = SCHEMA_V2["properties"]
-        self.assertEqual(set(cand_props) - set(base_props), set(T008_REF_FIELDS))
+        self.assertEqual(set(cand_props) - set(base_props), set(ADDITIVE_DISPATCH_FIELDS))
         self.assertTrue(set(base_props) <= set(cand_props))
         for name, definition in base_props.items():
             self.assertEqual(
@@ -258,7 +273,7 @@ class ExecutionContractRefsV49OptionalFieldsTests(unittest.TestCase):
         self.assertEqual(binding, populated_refs())
 
     def test_field_inventory_is_bounded(self) -> None:
-        expected = set(base_dispatch_schema()["properties"]) | set(T008_REF_FIELDS)
+        expected = set(base_dispatch_schema()["properties"]) | set(ADDITIVE_DISPATCH_FIELDS)
         self.assertEqual(set(SCHEMA_V2["properties"]), expected)
 
 
@@ -350,13 +365,20 @@ class ExecutionContractRefsV49CompatibilityRecordTests(unittest.TestCase):
                 "add-optional-assurance-currentness-ref",
                 "add-optional-role-profile-ref",
                 "add-optional-jit-phase-ref",
+                # Post-recovery recompose re-bind (#805/#745): the recovered
+                # v4.6 dispatch wiring declares its two optional array fields.
+                "add-optional-intent-assumption-refs",
+                "add-optional-skill-metadata-refs",
             ],
         )
-        declared = {
-            operation.removeprefix("add-optional-").removesuffix("-ref").replace("-", "_") + "_ref"
-            for operation in operations
-        }
-        self.assertEqual(declared, set(T008_REF_FIELDS))
+        declared = set()
+        for operation in operations:
+            core = operation.removeprefix("add-optional-")
+            if core.endswith("-refs"):
+                declared.add(core[: -len("-refs")].replace("-", "_") + "_refs")
+            else:
+                declared.add(core.removesuffix("-ref").replace("-", "_") + "_ref")
+        self.assertEqual(declared, set(ADDITIVE_DISPATCH_FIELDS))
 
     def test_compatibility_dimensions_are_truthful(self) -> None:
         expected_outcomes = {
@@ -446,7 +468,7 @@ class ExecutionContractRefsV49AuthorityBoundaryTests(unittest.TestCase):
     def test_no_new_authority_fields_added(self) -> None:
         self.assertEqual(
             set(SCHEMA_V2["properties"]) - set(self.base_schema["properties"]),
-            set(T008_REF_FIELDS),
+            set(ADDITIVE_DISPATCH_FIELDS),
         )
 
 

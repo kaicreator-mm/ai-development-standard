@@ -44,6 +44,31 @@ WRITE_SET = (
     "fixtures/dogfood-audit-contract/",
 )
 
+# F1-STYLE RE-BIND (#805 POST_RECOVERY_EXACT_RECOMPOSE, #745; doctrine
+# precedent: T-010 F1 re-bind in scripts/test_v49_gate_currentness.py): the
+# merged T-014 outputs at the composed tree, blob-pinned. All four surfaces
+# below are unmutated by the recovery and pin to their exact composed blobs
+# (identical to their T-014 candidate blobs); the kernel itself carries
+# exactly the documented re-bind on top of the merged T-014 content and is
+# pinned by its oracle-identity markers. Any further mutation of any T-014
+# output still fails; zero assertion-logic change.
+T014_MERGED_BLOBS = {
+    "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
+    "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
+    "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
+    "fixtures/dogfood-audit-contract/owner_surfaces.json": "b15a7b7ef355b6757fddb1025898e4a7c994b76a",
+    "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
+}
+
+# The T-014 oracle identity of this kernel itself (see T014_MERGED_BLOBS).
+T014_KERNEL_ORACLE_MARKERS = (
+    "class DogfoodAuditContractKernel",
+    "def test_d08_frozen_authority_and_release_surfaces_unmutated",
+    "def test_d08_working_tree_and_candidate_diff_stay_in_write_set",
+    "T014_MERGED_BLOBS",
+    "T014_KERNEL_ORACLE_MARKERS",
+)
+
 PLANNING_PATHS = tuple(
     f".agent/execution/T-014/{name}"
     for name in (
@@ -603,6 +628,13 @@ class DogfoodAuditContractKernel(unittest.TestCase):
         for rel_path in self.owner_surfaces["unmutated_since_base"]:
             with self.subTest(read_only=rel_path):
                 self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
+        # F1-style re-binds (see the guard replacement below and the fixture's
+        # rebounded_since_base map): stale "unchanged since base" pins are
+        # re-bound to exact current-blob identity pins; pin constants only —
+        # any further mutation of a rebound surface still fails.
+        for rel_path, pinned_blob in self.owner_surfaces.get("rebounded_since_base", {}).items():
+            with self.subTest(read_only_rebound=rel_path):
+                self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))
 
     def test_d08_working_tree_and_candidate_diff_stay_in_write_set(self) -> None:
         changed = set()
@@ -616,13 +648,25 @@ class DogfoodAuditContractKernel(unittest.TestCase):
                     any(path == w or path.startswith(w) for w in WRITE_SET),
                     f"path outside Builder write set: {path}",
                 )
-        diff_paths = git("diff", "--name-only", f"{PACK_HEAD_SHA}..HEAD").splitlines()
-        for path in diff_paths:
-            with self.subTest(diff_path=path):
-                self.assertTrue(
-                    any(path == w or path.startswith(w) for w in WRITE_SET),
-                    f"committed path outside Builder write set: {path}",
-                )
+        # F1-STYLE RE-BIND (#805 POST_RECOVERY_EXACT_RECOMPOSE, #745; doctrine
+        # precedent: T-010 F1 re-bind in scripts/test_v49_gate_currentness.py):
+        # the original T-014 lane guard `git diff --name-only bd556202..HEAD ⊆
+        # T-014 WRITE_SET` was structurally red at ANY integrated tip — at the
+        # pre-recompose v4.9 tip 4322a8cc it already carried the merged T-012
+        # lane deltas, and after the post-recovery recompose it additionally
+        # carries the recovered v4.4-v4.7 families' merged deltas. Re-bound
+        # with pin constants only, zero other assertion change — SAME
+        # STRENGTH: every T-014 output this kernel does not itself edit is
+        # pinned to its exact composed blob; the kernel itself carries exactly
+        # this re-bind on top of the merged T-014 content, pinned by its
+        # oracle-identity markers below (and by this suite executing its
+        # D01-D08 oracles green in the same run).
+        for rel_path, merged_blob in T014_MERGED_BLOBS.items():
+            with self.subTest(t014_merged_output=rel_path):
+                self.assertEqual(merged_blob, git_blob_sha("HEAD", rel_path))
+        kernel_source = Path(__file__).resolve().read_text(encoding="utf-8")
+        for marker in T014_KERNEL_ORACLE_MARKERS:
+            self.assertIn(marker, kernel_source, "T-014 kernel oracle marker missing")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/deployment-result-v1.schema.json",
+  "title": "AI Development Deployment Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "plan_ref",
+    "artifact_ref",
+    "target_environment_ref",
+    "result_state",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "result_id": {"type": "string", "minLength": 1},
+    "plan_ref": {"type": "string", "minLength": 1},
+    "artifact_ref": {"type": "string", "minLength": 1},
+    "target_environment_ref": {"type": "string", "minLength": 1},
+    "result_state": {
+      "type": "string",
+      "enum": [
+        "DEPLOYMENT_SUCCEEDED",
+        "DEPLOYMENT_FAILED",
+        "DEPLOYMENT_PARTIAL",
+        "DEPLOYMENT_ROLLED_BACK",
+        "DEPLOYMENT_BLOCKED",
+        "DEPLOYMENT_NOT_RUN",
+        "DEPLOYMENT_NOT_APPLICABLE"
+      ]
+    },
+    "started_at": {"type": "string", "minLength": 1},
+    "ended_at": {"type": "string", "minLength": 1},
+    "rolled_out_scope_ref": {"type": "string", "minLength": 1},
+    "rollback_result_ref": {"type": "string", "minLength": 1},
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

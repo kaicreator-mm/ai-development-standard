@@ -313,6 +313,17 @@ v4.fast_path
 9. override MUST NOT 用 branch/latest/chat identity 替代 exact subject identity。
 10. override MUST NOT 通过把 `BLOCKED/NOT_RUN` 改写成 `NOT_APPLICABLE` 获得 green state。
 
+### 3.8 v4.5 独立适用性：runtime / incident / maintenance
+
+对采用 v4.5+ 的项目，`PROJECT_OVERRIDES.md` SHOULD 明确三项**相互独立**的适用性声明：`v4.runtime`、`v4.incident`、`v4.maintenance`。项目 MUST 依据 Frozen Product/Architecture/Task 和真实项目责任分别判断，而不是由 A0–A4 或 repository profile 自动推断。适用性与能力实现/验证状态是两维；声明 `APPLICABLE` 不构成 PASS。
+
+- `v4.runtime`：指明运行时观测的适用性、需求 authority、精确 artifact/deployment/environment/observation-window subject、数据来源及 required execution status。无部署或运行时责任的库 MAY 用有根据的 `NOT_APPLICABLE`，但 required runtime 信号缺失时 MUST 保持 `NOT_RUN` 或 `BLOCKED`。
+- `v4.incident`：指明 incident/recovery/engineering-feedback 是否属本项目责任，关联 incident owner、可批准的生产副作用 authority、证据来源与后续路由。不实际负责 incident 的非运行时库 MAY 用有根据的 `NOT_APPLICABLE`；仅模拟的 conformance 不能冒充真实生产事故或生产恢复 PASS。
+- `v4.maintenance`：单独指明 support-line、baseline、EOL/hotfix/backport 责任及 result-SHA validation policy。一个 runtime/incident 为 `NOT_APPLICABLE` 的 library 仍可能需要真实维护、支持与回移。分支、标签和安装包存在不构成 support status。
+
+`NOT_APPLICABLE` 必须有明确的非适用理由；未完成必须执行的评估或活动为 `NOT_RUN`，受阻为 `BLOCKED`，不得用不可用的 telemetry、runner、权限或 environment 推导出 `NOT_APPLICABLE` 或健康事实。新项目只对自身当前实际范围记录事实；不得回写历史 Release、incident、support 或 v4.1/v4.2/v4.4 evidence 的语义。三项规范及对应 reference、T01 schema 的路径以 pinned `standard-manifest.json` 为准；完整场景与禁止推断详见 `docs/implementation/4.5.0/MIGRATION_ADOPTION.md`。Testing、Test Data、Validation、Release 均沿用现有 owner，不创设第二套 Operations/Validation/Release 状态机。
+
+
 ## 4. 业务项目 AGENTS.md
 
 最小逻辑：

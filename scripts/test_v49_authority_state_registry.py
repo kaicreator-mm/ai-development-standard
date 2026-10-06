@@ -80,6 +80,21 @@ INHERITED_NORMATIVE_STANDARDS = [
     "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
     "standards/VALIDATION_STANDARD.md",
     "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+    # Post-recovery recompose re-bind (#805 POST_RECOVERY_EXACT_RECOMPOSE,
+    # #745): the recovery-integrated main merge (4c632256) carries the
+    # recovered v4.4-v4.7 normative families into the composed tree, so the
+    # inherited inventory the registry must carry grows by exactly these nine
+    # recovered standards. Constant extension only — the assertion stays an
+    # exact closed-set equality, so any other inventory mutation still fails.
+    "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md",
+    "standards/CONTEXT_ENGINEERING_STANDARD.md",
+    "standards/DEPLOYMENT_GOVERNANCE_STANDARD.md",
+    "standards/DISTRIBUTION_GOVERNANCE_STANDARD.md",
+    "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md",
+    "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md",
+    "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
+    "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
+    "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md",
 ]
 
 INHERITED_SEMANTIC_ENTRIES = [

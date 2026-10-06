@@ -128,6 +128,82 @@ Rules:
 - Testing, Validation and Release remain their existing authorities. v4.4 Deployment remains the rollout/result owner when Deployment is applicable; compatibility/migration evidence does not imply Deployment success.
 - Machine-contract availability, manifest/Golden discovery and technical necessity do not grant Task Pack mutation authority.
 
+## v4.4 Delivery Applicability Profile (materiality-driven; optional concerns)
+
+These fields identify project-owned delivery applicability and evidence locations; they are not new workflow states and do not make all four stages mandatory. For applicable stages, declare the actual product/project authority and exact platform or environment Validation tuples where material. Select each concern independently:
+
+- `v4.delivery.build`: `<REQUIRED | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.packaging`: `<REQUIRED + actual format/installation tuple | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.distribution`: `<REQUIRED + publication system | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- `v4.delivery.deployment`: `<REQUIRED + exact environment/side-effect authority | CONDITIONAL + materiality predicate | NOT_APPLICABLE + truthful rationale>`
+- Material exact immutable artifact identity / source-profile-toolchain refs: `<owning Build & Artifact refs or NOT_APPLICABLE — reason>`
+- Applicable distribution publication/binding evidence refs: `<owned evidence refs or NOT_RUN/BLOCKED with reason or NOT_APPLICABLE — reason>`
+- Applicable Deployment Plan and executed Result refs: `<separate owned refs or NOT_RUN/BLOCKED with reason or NOT_APPLICABLE — reason>`
+- Applicable non-container package/install and real environment Validation tuples: `<actual tested platform × runtime/toolchain × profile or NOT_RUN/BLOCKED with reason>`
+
+Rules:
+
+- Build & Artifact owns exact source/profile/toolchain/output and separate promotion to immutable artifact identity. Distribution owns publication; its alias/tag is only a locator. Deployment owns an exact Plan and an independently observed Result for exact artifact/environment/side-effect authorization. Release qualification stays with its own authority.
+- Project overrides MUST NOT weaken Frozen Product/Architecture/Task, applicable package-content security rules, any required exact-subject Validation/Review or Release Qualification.
+- `NOT_APPLICABLE` is permitted only when a concern is genuinely non-material (for example no publication for an internal source-only tool, no deployment for a library); missing required tooling/external registry/production access must remain `NOT_RUN` or `BLOCKED`, not fabricated N/A.
+- Fast Path may avoid empty delivery records only when changes truly do not materially affect the corresponding stage; material rebuilt bytes, required publication or target deployment cannot inherit historical PASS from matching version/tag/alias text.
+- Build succeeded != artifact promoted; artifact published != Deployment succeeded; Deployment Plan exists != executed Result; staging/mock succeeded != production succeeded; Release READY != Deployment SUCCESS.
+- The v4 adoption A0–A4 setting controls automation depth, not delivery applicability and not the truth floor. See pinned `standards/PROJECT_ADOPTION.md`, `standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md`, `standards/DISTRIBUTION_GOVERNANCE_STANDARD.md`, and `standards/DEPLOYMENT_GOVERNANCE_STANDARD.md`.
+
+### v4.5 Operations / Incident / Maintenance applicability (independent axes)
+
+For projects pinning v4.5+, declare **each** axis independently; do not equate A0–A4 adoption level or repository profile with applicability. These describe project-specific *scope* and implementation evidence, not a global Operations machine or a new mandatory gate.
+
+- `v4.runtime`: `<APPLICABLE — authority / subject / environment / evidence source / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+- `v4.incident`: `<APPLICABLE — authority / incident and feedback owner / safe evidence route / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+- `v4.maintenance`: `<APPLICABLE — authority / support line / baseline / backport-result validation policy / execution status | NOT_APPLICABLE — affirmative non-materiality rationale | NOT_RUN — required assessment or execution pending | BLOCKED — required authority/prerequisite unavailable>`
+
+`APPLICABLE` is a scope declaration **not** a PASS: specify separate real execution state (`NOT_RUN`, `BLOCKED` or exact-subject evidence with its owning result) for every required activity. An unknown required runtime obligation MUST remain `NOT_RUN/BLOCKED`, never default to `NOT_APPLICABLE`. Non-deployed libraries MAY truthfully set runtime/incident `NOT_APPLICABLE` with concrete reasons, while maintenance/support may still apply. Conversely a deployed service cannot treat missing telemetry as health or `NOT_APPLICABLE` where observation is required. Do not retrofit historical Release/incident/support facts. For owner documents, T01 schemas, migration matrix and negative examples see the pinned `docs/implementation/4.5.0/MIGRATION_ADOPTION.md` and manifest; existing Testing, Test Data, Validation and Release owners remain authoritative.
+
+## v4.6 AI-native / Agentic Governance Profile
+
+This profile is **materiality-driven**. It does not require projects to manufacture empty Intent/Assumption or Skill records for work where those records are not material, and it does not change the A0–A4 adoption level.
+
+Canonical project fields:
+
+- `v4.ai_native.intent_assumption`: `<materiality-driven | always-record + project reason | project-specific stronger policy>`
+- `v4.ai_native.context_currentness`: `<canonical | project-specific stricter live-reread policy>`
+- `v4.ai_native.skill_admission`: `<disabled | materiality-driven | project-specific stronger admission/evaluation policy>`
+- `v4.ai_native.durable_truth_surface`: `<GitHub/repository refs | project-specific durable owner surfaces>`
+
+Rules:
+
+- `standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md`, `standards/CONTEXT_ENGINEERING_STANDARD.md`, and `standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md` are the three v4.6 normative AI-native owners. Project overrides may specialize allowed defaults but MUST NOT weaken their hard constraints.
+- Material interpretation, assumption, UNKNOWN, promotion and contradiction handling use the Intent/Assumption owner and `schemas/intent-assumption-record-v1.schema.json` when a durable machine record is needed. Record shape never creates Product/Architecture/Task authority.
+- Context currentness uses durable owner references and live rereads; do not create a project-local Context Snapshot/database as a substitute for current authority.
+- Skill admission is required only when reusable procedure governance is material. Installed/discoverable Skill != trusted Skill, tool capability != side-effect authority, and Skill instructions never override current Product/Architecture/Task/Validation/Release authority.
+- Assurance/Review, F0–F3, Dispatch/Handoff, Validation and Release remain owned by their existing standards/contracts. Use `references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md` for the v4.6 cross-owner map instead of copying those semantics here.
+- Fast Path reduces ceremony, not truth. It does **not** require empty Intent/Assumption or Skill records when those concerns are genuinely non-material; material unresolved authority/currentness still fails closed.
+- Historical evidence is not retrofitted with v4.6 records or relabeled as newly produced v4.6 evidence.
+- This profile does not introduce a repository-wide v4.7 resolver, a second autonomy vocabulary, or parallel Review/Validation/Release state.
+
+Migration guidance: see `docs/implementation/4.6.0/MIGRATION_ADOPTION.md` after the project pins a v4.6 revision.
+
+
+### v4.7 Convergence Discovery (non-authoritative wiring)
+
+For projects pinned to v4.7+, these are discovery/read surfaces only:
+
+- Canonical owner discovery: `standard-manifest.json#semantic_authorities`
+- Qualified state/non-inference discovery when applicable: `registries/state-dimensions-v1.json`
+- Derived read routing helper when useful: `scripts/resolve_standard_read_set.py`
+- Migration/adoption delta: `docs/implementation/4.7.0/MIGRATION_ADOPTION.md`
+- Incompatible future-major planning input: `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md`
+
+Rules:
+
+- These are discovery/read surfaces only and MUST NOT grant mutation, Validation, Review, Closure, or Release authority.
+- Resolve/read the canonical owner before acting; compatibility aliases remain compatibility routes, not owners.
+- Load optional v4.7 registries/profiles only when they are applicable to the concern; their presence is not a project adoption requirement.
+- Fast Path proportionality remains intact: do not force unrelated optional registries/profiles/packs/automation merely because v4.7 contains them.
+- An incompatible path/schema/authority change goes to `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md` unless separate current authority explicitly allows it.
+
+
 ### v4.8 Convergence Discovery (non-authoritative wiring)
 
 For projects pinned to v4.8+, these are discovery/read surfaces only:
@@ -137,6 +213,8 @@ For projects pinned to v4.8+, these are discovery/read surfaces only:
 - Derived read routing helper when useful: `scripts/resolve_standard_read_set.py`
 - v4.8 registration/adoption map (non-authoritative): `references/V48_REGISTRY_ADOPTION_REFERENCE.md`
 - Migration/adoption delta: `docs/implementation/4.8.0/MIGRATION_ADOPTION.md`
+- v4.7 lineage migration/adoption delta (recovered, non-authoritative): `docs/implementation/4.7.0/MIGRATION_ADOPTION.md`
+- v4.7 lineage future-major planning input (recovered, non-authoritative): `docs/implementation/4.7.0/FUTURE_MAJOR_REGISTER.md`
 
 Rules:
 
