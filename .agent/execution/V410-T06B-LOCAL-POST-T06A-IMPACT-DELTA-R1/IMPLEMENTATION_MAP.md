@@ -18,7 +18,7 @@ inspected*, *what was executed*, and *what is handed to the T06B implementation 
 | `scripts/test_v410_t06b_backcompat_fixture_inventory.py` | `BASE_SHA=30334e8…` (line 34), `check_head_binding()` (55–84, allow-list 77–78) | D6 |
 | `standard-manifest.json` | blob `21730a0251e35e13591d2c84de1c66d6ab2c2408` at the subject | Growth-probe target; sections inventory (12 sections), `semantic_authorities.entries` = 11 |
 | `.github/workflows/verify-standard.yml` | 26 explicit `run: python` steps | D7 |
-| `scripts/test_v48_orchestration_dogfood.py` | `candidate_paths_between()` (151–166); ODF-11 write-set assertion (1019–1054, assert at 1053) | D8 |
+| `scripts/test_v48_orchestration_dogfood.py` | `candidate_paths_between()` (151–166); ODF-11 method (969–1067), write-set assertion (1019–1054, assert at 1053) | D8 |
 
 ## 2. Executed verifications (all read-only or reverted)
 

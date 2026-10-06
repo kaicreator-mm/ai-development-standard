@@ -48,7 +48,7 @@ Run on a clean detached checkout at `f294173`:
 | all 77 `scripts/test_*.py` | **PASS=77 FAIL=0** |
 | `python scripts/test_v410_owner_convergence.py` | `Ran 22 tests … OK` |
 
-**PR #925 does not leave the tree red.** T06B therefore inherits a green baseline, and any redness reported below is caused by T06B's own chartered work — not pre-existing.
+**PR #925 does not leave the tree red.** T06B therefore inherits a green baseline, and the D5/D6 redness reported below is caused by T06B's own chartered work rather than by PR #925. The one exception is **D8**, which is a pre-existing property of the base and unrelated to PR #925.
 
 ---
 
@@ -237,7 +237,7 @@ Consequences for T06B:
 
 ### D8 — A dirty working tree reddens a carried suite (measurement hazard, **not** caused by PR #925)
 
-Discovered while measuring this unit's own pack. `scripts/test_v48_orchestration_dogfood.py` tests `ODF-11` (`test_odf11_bounded_executor_eligible_success`, lines 1019–1062) builds its candidate path set from
+Discovered while measuring this unit's own pack. `scripts/test_v48_orchestration_dogfood.py` tests `ODF-11` (`test_odf11_bounded_executor_eligible_success`, method lines 969–1067; write-set verification block 1019–1054) builds its candidate path set from
 
 ```python
 candidate_paths_between(pack_head, lane_head)      # lines 151-166
@@ -259,7 +259,7 @@ and then asserts every path is either exactly `scripts/test_v48_orchestration_do
 Consequences for T06B's evidence runs:
 
 1. **Any LOCAL builder with uncommitted work has a red `test_v48_orchestration_dogfood.py`** — including a builder whose new files are entirely legitimate. This is a property of the base, present before PR #925 and unaffected by it.
-2. A "full visible set" measurement is therefore only meaningful on a **committed** tree. This unit's `77/77 PASS` baseline at `f294173` and the `PASS=75 FAIL=1` measurement inside its own worktree before commit differ *only* by this effect — the pack was untracked at the time.
+2. A "full visible set" measurement is therefore only meaningful on a **committed** tree. This unit's own pack reproduced it exactly: `PASS=75 FAIL=1` on its uncommitted tree versus `PASS=76 FAIL=0` on the same tree after commit — differing *only* by this effect, with ODF-11 the single failure.
 3. T06B should commit before measuring, or it will record a false red and risk misattributing it to its own change (or to PR #925).
 
 ---
