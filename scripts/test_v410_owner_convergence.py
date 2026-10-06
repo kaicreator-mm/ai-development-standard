@@ -8,14 +8,14 @@ Reuses the carried v4.7 resolver (`test_v47_authority_registry.resolve_registry`
 (`test_v47_compatibility_aliases.validate_current_aliases`) by import, not by
 reimplementation.
 
-R2 resolution encoded here (evidence #860@6013810495): the candidate carries
-**zero `standard-manifest.json` delta**. The seven material v4.10 owner families
-without a discovery row stay recorded as routed gaps in
-`references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md`; the registration
-mechanism is routed to T06B (#861). This suite asserts the zero-delta state
-(manifest blob identity), the truthful gap documentation, and the fail-closed
-boundaries; if a future authorized amendment (guards + manifest together) lands,
-these assertions are the ones that must be consciously updated in that task.
+Historical T06A R2 evidence (#860@6013810495) had zero
+`standard-manifest.json` delta and routed the seven discovery gaps to T06B.
+The current T06B/W13 candidate consciously supersedes that historical premise:
+guard + manifest evolved together, six owner-family rows were added (11 -> 17),
+the convergence reference and three verification files are registered, and the
+reference-convention concern resolves through the explicit composition rule.
+This suite now asserts that authorized evolved state while preserving the
+carried v4.7/v4.8 invariants and fail-closed boundaries.
 
 Purely local; no network, no runtime execution.
 """
@@ -65,7 +65,7 @@ ALIASES = {
     "standards/VERSION_INTEGRATION_WORKFLOW.md": "standards/DEVELOPMENT_WORKFLOW.md",
 }
 
-# Material v4.10 owner families with no current discovery row (routed gaps, §1.2).
+# T06A-era material owner-family gaps. Under W13 the first six are now registered; reference-convention resolves by explicit composition (§1.2).
 GAP_FAMILIES = (
     "standards/TASK_DECOMPOSITION_STANDARD.md",
     "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
@@ -178,7 +178,7 @@ class OwnerResolutionTests(unittest.TestCase):
         self.assertEqual({e["entry_id"] for e in entries[11:]}, set(growth_ids))
 
     def test_carried_frozen_inventory_guards_pass_on_the_real_manifest(self) -> None:
-        # These are the machine reason the candidate carries zero manifest delta.
+        # The carried v4.8 invariant checks must remain green after the authorized W13 evolution.
         self.assertEqual(t48.section_conformance_problems(self.manifest), [])
         self.assertEqual(t48.semantic_registry_problems(self.manifest), [])
 

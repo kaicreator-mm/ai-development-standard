@@ -7,7 +7,7 @@ mutation_authorized=false
 DISCOVERY_REGISTRATION=RESOLVED_BY_AUTHORIZED_V410_EVOLUTION (#861 W13; guard+manifest moved together)
 ```
 
-This reference is **planning/implementation evidence only**. It is discovery/evidence material for locating the current canonical owner of each v4.10 material concern. It is **not** a runtime registry, **not** a resolver, **not** a precedence layer, **not** a lifecycle or service, and it **does not supersede** `standard-manifest.json#semantic_authorities` or any owner standard. It carries no mutation, merge, side-effect, verdict-transfer, gate-waiver, Product-Freeze or Release-READY authority. It is **not registered** in `standard-manifest.json` (see §3); it is reachable at this repo path, from Execution Pack `.agent/execution/V410-T06A-R2/`, and from the focused verification `scripts/test_v410_owner_convergence.py`.
+This reference is **planning/implementation evidence only**. It is discovery/evidence material for locating the current canonical owner of each v4.10 material concern. It is **not** a runtime registry, **not** a resolver, **not** a precedence layer, **not** a lifecycle or service, and it **does not supersede** `standard-manifest.json#semantic_authorities` or any owner standard. It carries no mutation, merge, side-effect, verdict-transfer, gate-waiver, Product-Freeze or Release-READY authority. It is **registered** in `standard-manifest.json` under the W13 authorized discovery evolution (see §3), together with its focused verification surfaces. That registration is discovery metadata only and grants no runtime, precedence, mutation, merge, gate-waiver, or Release-READY authority.
 
 ## 0. Subject binding (exact)
 
@@ -68,7 +68,7 @@ Basis is live successor/currentness evidence, never the version label. All blobs
 | `references/V48_REGISTRY_ADOPTION_REFERENCE.md`@375ac48e43b5f5588f9e128b318ae0c164262237 | CURRENT_CARRIED_FORWARD | registered carrier + `test_v48_registry_adoption` chaining green on base |
 | `scripts/test_v47_authority_registry.py`@731e3fd4b00145dfe3ebf50f8322016b2d420a0c | CURRENT_CARRIED_FORWARD | enforced resolver semantics reused by this task's focused test |
 | `scripts/test_v47_compatibility_aliases.py`@80d9f4832ad0b81b393216aa7132433e6a06b116 | CURRENT_CARRIED_FORWARD | enforced alias conformance, green on base |
-| `scripts/test_v48_registry_adoption.py`@55f78fd9b88bb0e4efd97790b9586beb78e06206 | CURRENT_CARRIED_FORWARD | enforced frozen-inventory guards (RA-02/RA-05), green on base; **must remain unmodified** |
+| `scripts/test_v48_registry_adoption.py`@55f78fd9b88bb0e4efd97790b9586beb78e06206 | CURRENT_BASELINE_THEN_AUTHORIZED_W13_EVOLUTION | the cited blob is the pre-W13 carried guard baseline; the current candidate consciously evolves this file under #861 W13 (six growth rows + authorized section additions + exact-count guard) while preserving all v4.8 historical invariants and RA-01/RA-02/RA-05 negative protections |
 | `scripts/test_v47_reference_conventions.py`@bf6888bd0171f1d560766120eeeaa9ffc6802c05 | CURRENT_CARRIED_FORWARD | enforced reference conventions, green on base |
 | `standards/GITHUB_WORKFLOW.md`@a96d9c186b21cc20726d9e4f60709ed173e77dac | COMPATIBILITY_ONLY (one-hop alias) | manifest `compatibility_entries`@21730a02 |
 | `standards/VERSION_INTEGRATION_WORKFLOW.md`@60e2bdee7f07c57bee17d792dc9c4e53bae514fb | COMPATIBILITY_ONLY (one-hop alias) | manifest `compatibility_entries`@21730a02 |

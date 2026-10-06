@@ -23,7 +23,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from test_protocol_schemas import assert_supported_schema  # noqa: E402
+from test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
 from v34_rules import (  # noqa: E402
     DEFAULT_COMPATIBILITY_GROUP,
     ENVIRONMENT_PROFILE_CONTRADICTION,
@@ -226,6 +226,8 @@ class MultiActiveProjectionTests(unittest.TestCase):
             [{"repository": "r", "task": "#1", "role": "scheduler", "dispatch_id": "d"}],
             ["not-a-mapping"],
             [{"repository": "r", "task": "#1", "role": "builder"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "execution_environment": "REMOTE"}],
+            [{"repository": "r", "task": "#1", "role": "builder", "dispatch_id": "d", "claimed_by": ""}],
         ):
             with self.subTest(mutant=mutant):
                 with self.assertRaises(ValueError):
@@ -249,6 +251,43 @@ class MultiActiveProjectionTests(unittest.TestCase):
             with self.subTest(mutant=mutant):
                 with self.assertRaises(ValueError):
                     project_active_dispatches(mutant)
+
+    def test_reducer_output_conforms_to_execution_state_row_schema(self) -> None:
+        item = load_schema(EXECUTION_STATE_SCHEMA)["properties"]["active_dispatches"]["items"]
+        assert_supported_schema(item)
+        rows = project_active_dispatches(
+            [
+                {
+                    "repository": "r",
+                    "task": "#861",
+                    "role": "builder",
+                    "dispatch_id": "d-a",
+                    "execution_environment": "LOCAL",
+                    "compatibility_group": " blue ",
+                    "claimed_by": "agent-a",
+                    "issue": "#861",
+                    "pr": "#927",
+                }
+            ]
+        )
+        self.assertEqual(
+            rows,
+            [
+                {
+                    "dispatch_id": "d-a",
+                    "role": "builder",
+                    "execution_environment": "LOCAL",
+                    "compatibility_group": "blue",
+                    "protected_claim_key": "r#861:builder:blue",
+                    "claimed_by": "agent-a",
+                    "issue": "#861",
+                    "pr": "#927",
+                }
+            ],
+        )
+        self.assertEqual(validate_subset(rows[0], item), [])
+        self.assertNotIn("repository", rows[0])
+        self.assertNotIn("task", rows[0])
 
     def test_schema_projection_is_non_authoritative_additive_shape(self) -> None:
         schema = load_schema(EXECUTION_STATE_SCHEMA)

@@ -22,7 +22,7 @@ matrix:
     command: python scripts/test_execution_architecture.py
     status: EXTENDED (W10; R2: vacuous placeholder replaced by a keyed ClaimCell race oracle over the real v34_rules reducers)
     expect: PASS
-    covers: [D1,D2,D3,D4; E3,E4-order-independence; F1,F2 (admission-race model); G3,G8; N1,N5,N7; A8 pre-admission rejection; C6,H3 authorized non-default parallelism; C2 fail-closed gate; existing §11 oracle unbroken]
+    covers: [D1,D2,D3; E3 scheduler-order race; F2 idempotent replay; G3,G8; N1,N5,N7; A8 pre-admission rejection; C2 durable-ref format/fail-closed gate; existing §11 oracle unbroken]
   - id: T-t06b-core-inventory
     command: python scripts/test_v410_t06b_core_inventory.py
     status: NEW (W11 delivered in a dedicated file; see dispositions DISP-W11-PLACEMENT)
@@ -68,13 +68,20 @@ dispositions:
     record: W11 (I1-I6/N13) landed in NEW scripts/test_v410_t06b_core_inventory.py instead of the TEST_MAP-enumerated scripts/test_v34_lifecycle_contracts.py. Not moved post-hoc: the dedicated file is manifest-registered and pinned by the authorized W13 guard set (test_guard_amendment_is_exactly_the_authorized_w13_set); relocating it now would churn a carried v3.4 suite and the registry ledger for zero semantic gain. T-v34-lifecycle is corrected to CARRIED and the delivered placement is pinned by T-t06b-core-inventory.
   - id: DISP-C3-C5-AUTHORITY-RESOLUTION
     finding: P2-3 (partial)
-    record: authorize_non_default enforces the durable #<issue>@<comment-id> format and never downgrades to __default__ (C2 and C7-format, machine-tested). Resolvability/staleness (C3), per-repository+task+role+group authorization (C4) and authority-family fit (C5) require durable GitHub fact resolution owned by the admission controller; no local machine model exists and none is claimed.
+    record: authorize_non_default enforces the durable #<issue>@<comment-id> format and never downgrades to __default__ (C2 and C7-format, machine-tested). Resolvability/staleness (C3), per-repository+task+role+group authorization (C4) and authority-family fit (C5) require durable GitHub fact resolution owned by the admission controller; no local machine model exists and none is claimed. The W10 non-default-group separation case proves distinct keys only after a caller supplies a syntactically durable ref; it does NOT prove that #861@6023707736 authorizes validator/windows+linux, so C6/H3 authorization is not claimed.
   - id: DISP-G1-G2-G7
     finding: P2-3 (partial)
     record: G1/G2 (environment implies authority) are structurally enforced by the byte-stable profile-role couplings (A11, machine-pinned in T-protocol-schemas and T-t06b-focus) plus environment-never-authority prose (A13/hazard-1 test in this suite); G7/FC9 (verifier PASS vs contradictory owner) is an owner-precedence process rule with no local reducer, and inventing a second authority family is forbidden by the J guards. No dedicated tests claimed.
   - id: DISP-H2-SINGULAR-NULL
     finding: P2-3 (partial)
-    record: the legacy-singular null rule (H2, no arbitrary primary while more than one row is active) is documented in execution-state.schema.json active_dispatches description and enforced at the state-surface writer; it is not expressible in the fail-closed SUPPORTED schema subset and is not claimed as machine-tested.
+    record: the legacy-singular null rule (H2, no arbitrary primary while more than one row is active) is documented in execution-state.schema.json active_dispatches description. This candidate contains no state-surface writer that enforces H2; the rule is therefore not claimed as machine-enforced here and remains an owner/integration obligation.
+  - id: DISP-D4-SUCCESSOR-RECONCILIATION
+    finding: P2-1 (R3 truth correction)
+    record: W10 proves terminal transition does not decrement a ClaimCell generation and that stale replay remains stale. It does not model durable reconciliation followed by reservation of a distinct successor dispatch from the latest generation; full D4 successor-reconciliation semantics remain controller/integration evidence and are not claimed by T-execution-architecture.
+  - id: DISP-E4-F1-OWNER-SEMANTICS
+    finding: P2-1 (R3 truth correction)
+    record: W10 proves E3 scheduler-order race determinism plus selected metadata invariance (scheduler_origin/execution_environment/operator/parent/responsibility cannot manufacture a second key). It does not prove the full E4 scheduler-origin-vs-role/capability/authority independence contract, and it does not establish F1 owner semantics. E4/F1 are therefore not claimed by this local test row.
+
   - id: DISP-D6-CARRIED
     finding: P2-3 (partial)
     record: D6 (BLOCKED_UNSAFE_COMPOSITE_ADMISSION via SAFE_ADMISSION_MODES) remains carried by the v4.8 scheduling conformance suite; T06B claims no new D6 regression.

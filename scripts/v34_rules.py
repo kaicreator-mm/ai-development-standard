@@ -669,11 +669,10 @@ def admission_generation_conforms(
 def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[dict]:
     """Project the NON_AUTHORITATIVE active_dispatches rows stably.
 
-    Sorts by (derived protected claim key, dispatch_id). Malformed rows fail
-    closed; the caller enforces the legacy-singular rule on the enclosing
-    state surface when more than one active row exists. Exact subject refs
-    (``issue``/``pr``) are validated and carried through when present (W2 row
-    spec); they are never invented for rows that omit them.
+    Input-only routing fields (repository/task) are used to derive the protected
+    claim key but are never emitted. Every output row is the contracted W2
+    schema projection: normalized compatibility group, derived claim key,
+    nullable environment/claimer, plus exact subject refs when supplied.
     """
     rows: list[tuple[str, str, dict]] = []
     for entry in entries:
@@ -691,12 +690,38 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
             raise ValueError("active dispatch row missing repository")
         if not isinstance(task, str) or not task:
             raise ValueError("active dispatch row missing task")
-        row = dict(entry)
+
+        execution_environment = entry.get("execution_environment")
+        if execution_environment not in {None, "WEB", "LOCAL"}:
+            raise ValueError(
+                f"active dispatch row has invalid execution_environment: {execution_environment!r}"
+            )
+        compatibility_group = normalize_group(entry.get("compatibility_group"))
+        claimed_by = entry.get("claimed_by")
+        if claimed_by is not None and (
+            not isinstance(claimed_by, str) or not claimed_by
+        ):
+            raise ValueError(f"active dispatch row has invalid claimed_by: {claimed_by!r}")
+
+        key = derive_claim_key(repository, task, str(role), compatibility_group)
+        row = {
+            "dispatch_id": dispatch_id,
+            "role": role,
+            "execution_environment": execution_environment,
+            "compatibility_group": compatibility_group,
+            "protected_claim_key": key,
+            "claimed_by": claimed_by,
+        }
         for ref_field in ("issue", "pr"):
-            ref = row.get(ref_field)
-            if ref is not None and (not isinstance(ref, str) or not re.fullmatch(r"#\d+", ref)):
-                raise ValueError(f"active dispatch row has invalid exact subject ref {ref_field}: {ref!r}")
-        key = derive_claim_key(repository, task, str(role), entry.get("compatibility_group"))
+            ref = entry.get(ref_field)
+            if ref is not None and (
+                not isinstance(ref, str) or not re.fullmatch(r"#\d+", ref)
+            ):
+                raise ValueError(
+                    f"active dispatch row has invalid exact subject ref {ref_field}: {ref!r}"
+                )
+            if ref_field in entry:
+                row[ref_field] = ref
         rows.append((key, dispatch_id, row))
     rows.sort(key=lambda item: (item[0], item[1]))
     return [item[2] for item in rows]
