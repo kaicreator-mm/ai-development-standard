@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+import hashlib
 import json
 from pathlib import Path
 import sys
 import unittest
 
+from test_v47_authority_registry import resolve_registry
 from v34_rules import (
     authorize_non_default,
     derive_claim_key,
@@ -14,6 +16,31 @@ from v34_rules import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _git_blob_id(data: bytes) -> str:
+    """Exact git blob identity of byte content (local, deterministic)."""
+    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\0" + data).hexdigest()
+
+
+def authority_readback(root: Path = ROOT) -> dict:
+    """Durable owner/controller readback for the R6 grant-binding contract.
+
+    Reuses the existing verified owner-resolution path — the v4.7 registry
+    resolver over the checked-in ``standard-manifest.json`` (owner paths
+    verified present in the checkout) — and binds it to the exact durable
+    subject: the git blob id of the manifest that was read back. The
+    controller materializes this readback before keyed admission; the machine
+    boundary verifies each grant against it, so a caller-made mapping without
+    the binding manufactures no authority.
+    """
+    root = Path(root)
+    manifest_data = (root / "standard-manifest.json").read_bytes()
+    schema = json.loads(
+        (root / "schemas" / "authority-applicability-entry-v1.schema.json").read_text(encoding="utf-8")
+    )
+    owners = resolve_registry(json.loads(manifest_data.decode("utf-8")), schema, root=root)
+    return {"owners": owners, "subject": _git_blob_id(manifest_data)}
 
 
 @dataclass(frozen=True)
@@ -94,6 +121,7 @@ def keyed_reserve(
     *,
     serialization_available: bool = True,
     authority_grants: dict | None = None,
+    readback: dict | None = None,
 ) -> tuple[str, KeyedAdmissionState]:
     """Keyed serialized-admission oracle (W10, D1/D2/E3/G8 + A8/C2/C3-C5/C7 gates).
 
@@ -103,7 +131,11 @@ def keyed_reserve(
     admitted only when its ``compatibility_authority_ref`` resolves through the
     controller-resolved ``authority_grants`` inventory (the owner/controller
     proof path materialized before keyed admission) to a grant of the owning
-    authority family applicable to the exact repository+task+role+group tuple;
+    authority family applicable to the exact repository+task+role+group tuple
+    and bound to the durable owner/controller ``readback`` (R6: owner_concern
+    resolvable in the readback owners map + readback_subject equal to the
+    current durable subject; a self-referencing grant ref — one of the
+    dispatch's own durable refs — is rejected);
     a syntactically durable ref alone never authorizes — then the claim key is
     derived from the dispatch identity alone, then the per-key CAS applies.
     Metadata (scheduler origin, execution environment, operator/provider,
@@ -119,6 +151,12 @@ def keyed_reserve(
         compatibility_group=group,
         authority_ref=dispatch.get("compatibility_authority_ref"),
         authority_grants=authority_grants,
+        authority_readback=readback,
+        self_refs=tuple(
+            ref
+            for ref in (dispatch.get("source_proposal_ref"), dispatch.get("canonical_admission_ref"))
+            if isinstance(ref, str)
+        ) or None,
     )
     key = derive_claim_key(dispatch["repository"], dispatch["task"], dispatch["role"], group)
     cell = state.cells.get(key, ClaimCell())
@@ -325,9 +363,13 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
     under test. Every variant below flows through the REAL reducer surfaces:
     ``v34_rules.derive_claim_key`` derives keys from full dispatch objects, and
     ``v34_rules.project_dispatch_environment`` / ``authorize_non_default`` /
-    ``resolve_non_default_authority`` gate each keyed admission (R5: a
-    non-default group additionally requires a controller-resolved owning-family
-    grant; syntax-only durable refs no longer pass the C2 gate). Mutation sensitivity: if scheduler origin,
+    ``v34_rules.resolve_non_default_authority`` gate each keyed admission (R5/R6:
+    a non-default group additionally requires a controller-resolved owning-family
+    grant bound to the durable owner/controller readback — owner_concern
+    resolvable in the readback owners map, readback_subject equal to the
+    current durable subject, no self-referencing grant ref — so a test-internal
+    self-made mapping manufactures no authority; syntax-only durable refs no
+    longer pass the C2 gate). Mutation sensitivity: if scheduler origin,
     execution environment, operator/provider identity, parent/responsibility
     metadata ever leaked into key derivation, the invariance assertion fails
     AND the race tests would show two accepted cells instead of
@@ -492,18 +534,28 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
     # is oracle data exercising the C3-C5/C7 resolution mechanics (the
     # owner/controller proof path materialized before keyed admission); it is
     # NOT a claim that any real GitHub comment authorizes
-    # validator/windows+linux on #861 today.
-    VALIDATION_GRANT = {
-        "ref": "#861@6000000000",
-        "authority_family": "VALIDATION",
-        "repository": "kaicreator-mm/ai-development-standard",
-        "task": "#861",
-        "role": "validator",
-        "groups": ["validator/windows", "validator/linux"],
-    }
+    # validator/windows+linux on #861 today. R6: a grant additionally binds to
+    # the durable owner/controller readback — owner_concern resolved through
+    # the checked-in registry readback and readback_subject equal to the
+    # current durable manifest blob id — so a test-internal self-made mapping
+    # without that binding manufactures no authority.
+    def validation_grant(self, **overrides) -> dict:
+        grant = {
+            "ref": "#861@6000000000",
+            "authority_family": "VALIDATION",
+            "owner_concern": "validation.concern_evidence_and_exact_subject",
+            "readback_subject": authority_readback()["subject"],
+            "repository": "kaicreator-mm/ai-development-standard",
+            "task": "#861",
+            "role": "validator",
+            "groups": ["validator/windows", "validator/linux"],
+        }
+        grant.update(overrides)
+        return grant
 
     def test_c6_h3_authorized_non_default_groups_run_parallel(self) -> None:
-        grants = {"#861@6000000000": dict(self.VALIDATION_GRANT)}
+        grants = {"#861@6000000000": self.validation_grant()}
+        readback = authority_readback()
         windows = self._dispatch(
             dispatch_id="D-win",
             role="validator",
@@ -518,11 +570,80 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             compatibility_group="validator/linux",
             compatibility_authority_ref="#861@6000000000",
         )
-        first, after_first = keyed_reserve(KeyedAdmissionState(), windows, authority_grants=grants)
-        second, after_second = keyed_reserve(after_first, linux, authority_grants=grants)
+        first, after_first = keyed_reserve(KeyedAdmissionState(), windows, authority_grants=grants, readback=readback)
+        second, after_second = keyed_reserve(after_first, linux, authority_grants=grants, readback=readback)
         self.assertEqual("ACCEPTED", first)
         self.assertEqual("ACCEPTED", second)
         self.assertEqual(2, len(after_second.cells))
+
+    def test_r6_self_made_grant_without_readback_binding_manufactures_no_authority(self) -> None:
+        # Exact Fresh-Review-R5 P1-1 regression: the R5-era C6/H3 fixture was a
+        # caller-made mapping with a fabricated ref — it passed because the
+        # inventory was caller-asserted. Now the same self-made grant is
+        # rejected: no durable owner/controller readback supplied, and even
+        # with one it names no owner_concern / readback_subject binding.
+        self_made = {
+            "ref": "#861@6000000000",
+            "authority_family": "VALIDATION",
+            "repository": "kaicreator-mm/ai-development-standard",
+            "task": "#861",
+            "role": "validator",
+            "groups": ["validator/windows", "validator/linux"],
+        }
+        grants = {"#861@6000000000": self_made}
+        dispatch = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6000000000",
+        )
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=grants)
+        self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=grants, readback=authority_readback())
+        self.assertIn("AUTHORITY_OWNER_UNRESOLVED", str(caught.exception))
+
+    def test_r6_stale_or_unknown_readback_binding_fails_closed(self) -> None:
+        readback = authority_readback()
+        dispatch = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6000000000",
+        )
+        stale = {"#861@6000000000": self.validation_grant(readback_subject="0" * 40)}
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=stale, readback=readback)
+        self.assertIn("AUTHORITY_CURRENTNESS_MISMATCH", str(caught.exception))
+        unknown_concern = {"#861@6000000000": self.validation_grant(owner_concern="no.such_concern")}
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=unknown_concern, readback=readback)
+        self.assertIn("AUTHORITY_OWNER_UNRESOLVED", str(caught.exception))
+        # The re-read that produces the readback is the controller trust
+        # boundary (per scripts/resolve_standard_read_set.py): the machine
+        # layer verifies the grant against the supplied durable readback, so
+        # producing the readback from the real checkout is what a caller-made
+        # mapping cannot fake without knowing current durable state.
+
+    def test_r6_self_referencing_grant_ref_is_rejected(self) -> None:
+        # A dispatch never authorizes itself: a grant whose durable ref points
+        # back at the dispatch's own admission comment is self-reference.
+        readback = authority_readback()
+        grants = {"#861@6099999999": self.validation_grant(ref="#861@6099999999")}
+        dispatch = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6099999999",
+            canonical_admission_ref="#861@6099999999",
+        )
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=grants, readback=readback)
+        self.assertIn("AUTHORITY_SELF_REFERENCE", str(caught.exception))
 
     def test_c4_c5_c7_unrelated_builder_admission_ref_never_authorizes_validator_parallelism(self) -> None:
         # Exact Fresh-Review-R4 P1-2 regression: the historical R2
@@ -554,11 +675,12 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             }
         }
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), unauthorized, authority_grants=builder_grants)
+            keyed_reserve(KeyedAdmissionState(), unauthorized, authority_grants=builder_grants, readback=authority_readback())
         self.assertIn("AUTHORITY_FAMILY_MISMATCH", str(caught.exception))
 
     def test_c4_grant_applicability_is_tuple_exact(self) -> None:
-        grants = {"#861@6000000000": dict(self.VALIDATION_GRANT)}
+        grants = {"#861@6000000000": self.validation_grant()}
+        readback = authority_readback()
         other_repo = self._dispatch(
             dispatch_id="D-other-repo",
             role="validator",
@@ -568,7 +690,7 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             repository="other/repo",
         )
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), other_repo, authority_grants=grants)
+            keyed_reserve(KeyedAdmissionState(), other_repo, authority_grants=grants, readback=readback)
         self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
         other_group = self._dispatch(
             dispatch_id="D-other-group",
@@ -578,7 +700,7 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             compatibility_authority_ref="#861@6000000000",
         )
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), other_group, authority_grants=grants)
+            keyed_reserve(KeyedAdmissionState(), other_group, authority_grants=grants, readback=readback)
         self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
 
     def test_c3_default_group_needs_no_grant_inventory(self) -> None:

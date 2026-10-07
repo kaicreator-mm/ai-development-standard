@@ -29,6 +29,18 @@ legacy singular null rule and ``execution_state_projection_problems`` adds the
 duplicate-active-key probe (P1-3); the full-state positive fixture uses
 distinct tasks instead of an impossible same-key multi-active validator state
 (P2-1).
+
+R6 (bounded repair after Fresh Review R5 #861@6040083891): P1-1 — the grant
+inventory is bound to the durable owner/controller readback contract (reusing
+the verified v4.7 registry readback path): a grant must name an owner_concern
+resolvable in the readback owners map and carry the readback_subject it was
+resolved against (currentness), and a self-referencing grant ref is rejected;
+a test-internal self-made mapping manufactures no authority. P2-1 — the
+conformance probe re-parses each row's protected claim key and requires the
+derived repository/task to equal the outer execution-state
+repository/work_item (``ACTIVE_DISPATCH_FOREIGN_WORK_ITEM``); the positive
+multi-active fixture is one work item (#861) with distinct roles, and
+cross-task/cross-repository injection negatives are pinned.
 """
 
 from __future__ import annotations
@@ -41,10 +53,12 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from test_execution_architecture import authority_readback  # noqa: E402
 from test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
 from v34_rules import (  # noqa: E402
     DEFAULT_COMPATIBILITY_GROUP,
     ENVIRONMENT_PROFILE_CONTRADICTION,
+    ACTIVE_DISPATCH_FOREIGN_WORK_ITEM,
     admission_generation_conforms,
     authorize_non_default,
     derive_claim_key,
@@ -141,12 +155,18 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
                 )
 
     def test_non_default_requires_resolved_owning_family_grant(self) -> None:
-        # R5 (P1-2): the ref shape alone never authorizes. The controller-
-        # resolved grant inventory is the owned proof path; resolution must be
-        # family-fit and tuple-exact, and every ambiguity fails closed.
+        # R5/R6 (P1-2/P1-1): the ref shape alone never authorizes. The
+        # controller-resolved grant inventory is the owned proof path, bound to
+        # the durable owner/controller readback (the existing verified registry
+        # readback: owner_concern must resolve in the readback owners map and
+        # readback_subject must equal the current durable subject); resolution
+        # must be family-fit and tuple-exact, and every ambiguity fails closed.
+        readback = authority_readback()
         grant = {
             "ref": "#861@6000000000",
             "authority_family": "VALIDATION",
+            "owner_concern": "validation.concern_evidence_and_exact_subject",
+            "readback_subject": readback["subject"],
             "repository": "r",
             "task": "#861",
             "role": "validator",
@@ -161,16 +181,24 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
                 compatibility_group="interop",
                 authority_ref="#861@6000000000",
                 authority_grants=grants,
+                authority_readback=readback,
             )
         )
-        for mutant_grants, token in (
-            (None, "AUTHORITY_UNRESOLVED"),
-            ({}, "AUTHORITY_UNRESOLVED"),
-            ({"#861@6000000000": dict(grant, authority_family="TASK_PACK")}, "AUTHORITY_FAMILY_MISMATCH"),
-            ({"#861@6000000000": dict(grant, task="#999")}, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": dict(grant, role="builder")}, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": dict(grant, groups=["other"])}, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": {"authority_family": "VALIDATION"}}, "AUTHORITY_UNRESOLVED"),
+        for mutant_grants, mutant_readback, token in (
+            (None, None, "AUTHORITY_UNRESOLVED"),
+            ({}, readback, "AUTHORITY_UNRESOLVED"),
+            (grants, None, "AUTHORITY_UNRESOLVED"),
+            ({"#861@6000000000": dict(grant, authority_family="TASK_PACK")}, readback, "AUTHORITY_FAMILY_MISMATCH"),
+            ({"#861@6000000000": dict(grant, task="#999")}, readback, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": dict(grant, role="builder")}, readback, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": dict(grant, groups=["other"])}, readback, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": {"authority_family": "VALIDATION"}}, readback, "AUTHORITY_UNRESOLVED"),
+            # R6 (P1-1): self-made mappings without the durable readback
+            # binding (owner_concern / readback_subject) manufacture no
+            # authority.
+            ({"#861@6000000000": {k: v for k, v in grant.items() if k not in ("owner_concern", "readback_subject")}}, readback, "AUTHORITY_OWNER_UNRESOLVED"),
+            ({"#861@6000000000": dict(grant, owner_concern="no.such_concern")}, readback, "AUTHORITY_OWNER_UNRESOLVED"),
+            ({"#861@6000000000": dict(grant, readback_subject="0" * 40)}, readback, "AUTHORITY_CURRENTNESS_MISMATCH"),
         ):
             with self.subTest(token=token):
                 with self.assertRaises(ValueError) as caught:
@@ -181,8 +209,36 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
                         compatibility_group="interop",
                         authority_ref="#861@6000000000",
                         authority_grants=mutant_grants,
+                        authority_readback=mutant_readback,
                     )
                 self.assertIn(token, str(caught.exception))
+
+    def test_non_default_rejects_self_referencing_grant_ref(self) -> None:
+        # R6 (P1-1): a grant whose durable ref points back at the dispatch's
+        # own admission/claim comment is self-reference, never authority.
+        readback = authority_readback()
+        grant = {
+            "ref": "#861@6099999999",
+            "authority_family": "VALIDATION",
+            "owner_concern": "validation.concern_evidence_and_exact_subject",
+            "readback_subject": readback["subject"],
+            "repository": "r",
+            "task": "#861",
+            "role": "validator",
+            "groups": ["interop"],
+        }
+        with self.assertRaises(ValueError) as caught:
+            resolve_non_default_authority(
+                repository="r",
+                task="#861",
+                role="validator",
+                compatibility_group="interop",
+                authority_ref="#861@6099999999",
+                authority_grants={"#861@6099999999": grant},
+                authority_readback=readback,
+                self_refs=("#861@6099999999",),
+            )
+        self.assertIn("AUTHORITY_SELF_REFERENCE", str(caught.exception))
 
 
 class AdmissionGenerationCasTests(unittest.TestCase):
@@ -439,6 +495,13 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
     """
 
     def _source(self) -> list[dict]:
+        # R6 (P2-1): the positive multi-active fixture is ONE work item (#861,
+        # matching the outer execution-state work_item below) with distinct
+        # roles — builder + validator + reviewer, each independently ready —
+        # so every derived key is same-work-item and mutually distinct
+        # (#861 rule 2). The pre-R6 fixture mixed tasks #860/#862/#864, which
+        # active_dispatches semantics ("this work item's active dispatch
+        # projection") forbid.
         return [
             {
                 # legacy builder profile -> LOCAL; default group; absent claimed_by;
@@ -455,62 +518,30 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
                 "admission_generation": 4,
             },
             {
-                # environment-orthogonal profile with NO explicit environment -> null;
-                # task differs from the other validators: a same-key multi-active
-                # validator state is impossible (#861 rule 2) and must not appear
-                # in a full-state positive fixture (R5 P2-1)
+                # environment-orthogonal profile with NO explicit environment -> null.
                 "repository": "r",
-                "task": "#860",
+                "task": "#861",
                 "role": "validator",
                 "dispatch_id": "d-orthogonal",
                 "execution_profile": "PLATFORM_VALIDATOR",
                 "claimed_by": "val-1",
-                "compatibility_authority_ref": "#861@6023707736",
             },
             {
-                # environment-orthogonal profile WITH explicit environment -> LOCAL
-                # (distinct task again — R5 P2-1)
-                "repository": "r",
-                "task": "#862",
-                "role": "validator",
-                "dispatch_id": "d-orthogonal-local",
-                "execution_profile": "PLATFORM_VALIDATOR",
-                "execution_environment": "LOCAL",
-            },
-            {
-                # legacy reviewer profile -> WEB; null group -> __default__;
+                # legacy reviewer profile -> WEB; blank group -> __default__;
                 # explicit null pr ref is carried as supplied.
                 "repository": "r",
-                "task": "#862",
+                "task": "#861",
                 "role": "reviewer",
                 "dispatch_id": "d-reviewer",
                 "execution_profile": "WEB_REVIEWER",
-                "compatibility_group": None,
-                "pr": None,
-            },
-            {
-                # legacy validator profile -> LOCAL; blank group -> __default__;
-                # no issue/pr fields -> refs stay absent (distinct task — R5 P2-1)
-                "repository": "r",
-                "task": "#864",
-                "role": "validator",
-                "dispatch_id": "d-legacy-validator",
-                "execution_profile": "LOCAL_VALIDATOR",
                 "compatibility_group": "  ",
+                "pr": None,
             },
         ]
 
     def _expected_rows(self) -> list[dict]:
         # stably ordered by (derived protected claim key, dispatch_id)
         return [
-            {
-                "dispatch_id": "d-orthogonal",
-                "role": "validator",
-                "execution_environment": None,
-                "compatibility_group": "__default__",
-                "protected_claim_key": "r#860:validator:__default__",
-                "claimed_by": "val-1",
-            },
             {
                 "dispatch_id": "d-builder",
                 "role": "builder",
@@ -526,25 +557,17 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
                 "role": "reviewer",
                 "execution_environment": "WEB",
                 "compatibility_group": "__default__",
-                "protected_claim_key": "r#862:reviewer:__default__",
+                "protected_claim_key": "r#861:reviewer:__default__",
                 "claimed_by": None,
                 "pr": None,
             },
             {
-                "dispatch_id": "d-orthogonal-local",
+                "dispatch_id": "d-orthogonal",
                 "role": "validator",
-                "execution_environment": "LOCAL",
+                "execution_environment": None,
                 "compatibility_group": "__default__",
-                "protected_claim_key": "r#862:validator:__default__",
-                "claimed_by": None,
-            },
-            {
-                "dispatch_id": "d-legacy-validator",
-                "role": "validator",
-                "execution_environment": "LOCAL",
-                "compatibility_group": "__default__",
-                "protected_claim_key": "r#864:validator:__default__",
-                "claimed_by": None,
+                "protected_claim_key": "r#861:validator:__default__",
+                "claimed_by": "val-1",
             },
         ]
 
@@ -609,15 +632,21 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
 
 
 class ExecutionStateConformanceTests(unittest.TestCase):
-    """H2 + duplicate-active-key machine enforcement (R5, P1-3/P2-1 probe).
+    """H2 + duplicate-key + same-work-item machine enforcement (R5/R6 probes).
 
     The owned execution-state conformance path is the pair of the real
     ``schemas/execution-state.schema.json`` conditional and the
     ``v34_rules.execution_state_projection_problems`` probe; both must fail
-    closed on the same contradictory states.
+    closed on the same contradictory states. R6 adds the same-work-item
+    safety check (Fresh Review R5 P2-1): the probe re-parses each row's
+    protected claim key and requires the derived repository/task to equal the
+    outer execution-state repository/work_item.
     """
 
     def _rows(self) -> list[dict]:
+        # R6 (P2-1): same work item (#861, matching the outer state below)
+        # with distinct roles; cross-task rows are pinned in the dedicated
+        # injection negatives below.
         source = [
             {
                 "repository": "r",
@@ -628,7 +657,7 @@ class ExecutionStateConformanceTests(unittest.TestCase):
             },
             {
                 "repository": "r",
-                "task": "#862",
+                "task": "#861",
                 "role": "reviewer",
                 "dispatch_id": "d-b",
                 "execution_profile": "WEB_REVIEWER",
@@ -702,6 +731,58 @@ class ExecutionStateConformanceTests(unittest.TestCase):
         self.assertEqual(
             execution_state_projection_problems(dict(self._state(self._rows()), active_dispatches="nope")),
             ["ACTIVE_DISPATCH_ROW_MALFORMED"],
+        )
+
+    def test_malformed_protected_claim_key_fails_closed_in_the_probe(self) -> None:
+        state = self._state([{"dispatch_id": "d-x", "protected_claim_key": "not-a-key"}])
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            ["ACTIVE_DISPATCH_ROW_MALFORMED"],
+        )
+
+    def test_cross_task_injection_is_flagged_by_the_conformance_probe(self) -> None:
+        # Exact Fresh-Review-R5 P2-1 regression: active_dispatches is THIS work
+        # item's projection. A row whose derived key carries another task's
+        # identity (#860 injected into the #861 state) — accepted by the
+        # pre-R6 probe because it only compared protected-key strings — must
+        # now be surfaced. The row contract drops the raw task field, so this
+        # probe is the owned detection surface; the schema subset cannot
+        # express the cross-row/outer-state check and stays readable.
+        foreign = project_active_dispatches(
+            [
+                {
+                    "repository": "r",
+                    "task": "#860",
+                    "role": "builder",
+                    "dispatch_id": "d-foreign",
+                    "execution_profile": "LOCAL_BUILDER",
+                }
+            ]
+        )
+        self.assertEqual(foreign[0]["protected_claim_key"], "r#860:builder:__default__")
+        state = self._state(self._rows() + foreign)
+        self.assertEqual(validate_subset(state, load_schema(EXECUTION_STATE_SCHEMA)), [])
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            [ACTIVE_DISPATCH_FOREIGN_WORK_ITEM],
+        )
+
+    def test_cross_repository_injection_is_flagged_by_the_conformance_probe(self) -> None:
+        foreign = project_active_dispatches(
+            [
+                {
+                    "repository": "other/repo",
+                    "task": "#861",
+                    "role": "builder",
+                    "dispatch_id": "d-foreign-repo",
+                    "execution_profile": "LOCAL_BUILDER",
+                }
+            ]
+        )
+        state = self._state(self._rows() + foreign)
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            [ACTIVE_DISPATCH_FOREIGN_WORK_ITEM],
         )
 
 

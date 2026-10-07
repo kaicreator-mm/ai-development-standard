@@ -11,8 +11,8 @@ failures:
     expected: fail closed in W7/W8
   - id: C_SECTION
     class: AUTHORIZED_NON_DEFAULT
-    trigger: non-default compatibility_group without durable higher-authority validation ref (authorize_non_default a-f), or with a ref that does not resolve through the controller-resolved authority_grants inventory to a current grant of the owning authority family applicable to the exact repository+task+role+group tuple (resolve_non_default_authority, R5)
-    expected: fail closed; never downgrades to __default__; syntax-only durable ref shape never authorizes (R5)
+    trigger: non-default compatibility_group without durable higher-authority validation ref (authorize_non_default a-f), or with a ref that does not resolve through the controller-resolved authority_grants inventory to a current grant of the owning authority family applicable to the exact repository+task+role+group tuple (resolve_non_default_authority, R5), or a grant inventory not bound to the durable owner/controller readback contract — grant without an owner_concern resolvable in the readback owners map (AUTHORITY_OWNER_UNRESOLVED), grant readback_subject stale vs the current durable subject (AUTHORITY_CURRENTNESS_MISMATCH), or a self-referencing grant ref pointing back at the dispatch's own durable comment (AUTHORITY_SELF_REFERENCE) (R6, Fresh Review R5 P1-1)
+    expected: fail closed; never downgrades to __default__; syntax-only durable ref shape never authorizes (R5); a caller-made mapping without the durable readback binding manufactures no authority (R6)
   - id: D_SECTION
     class: ADMISSION_GENERATION_CAS
     trigger: reserve/claim/stale/re-claim/terminal violations of monotonic per-key CAS
@@ -20,7 +20,7 @@ failures:
   - id: E_SECTION
     class: MULTI_ACTIVE_PROJECTION
     trigger: multi-active visibility rules; singular field set while >1 active; unstable ordering
-    expected: fail closed in W8/W9 (execution-state schema conditional + execution_state_projection_problems probe, R5) and the W10 keyed CAS unchanged
+    expected: fail closed in W8/W9 (execution-state schema conditional + execution_state_projection_problems probe, R5) and the W10 keyed CAS unchanged; R6: a row whose re-parsed protected claim key derives another repository/task than the outer execution-state repository/work_item is surfaced as ACTIVE_DISPATCH_FOREIGN_WORK_ITEM (cross-work-item injection negative)
   - id: F_SECTION
     class: WRITER_PROVENANCE
     trigger: prose-form proposal refs; missing canonical_admission_ref on current writers; TARGET_ENVIRONMENT/execution_environment disagreement not fail-closed (T3/T4)

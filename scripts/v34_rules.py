@@ -660,6 +660,14 @@ NON_DEFAULT_AUTHORITY_FAMILIES = {
 AUTHORITY_UNRESOLVED = "AUTHORITY_UNRESOLVED"
 AUTHORITY_FAMILY_MISMATCH = "AUTHORITY_FAMILY_MISMATCH"
 AUTHORITY_NOT_APPLICABLE = "AUTHORITY_NOT_APPLICABLE"
+# R6 (Fresh Review R5 P1-1): the grant inventory must be bound to the durable
+# owner/controller readback contract; an arbitrary caller-made mapping without
+# that binding manufactures no authority.
+AUTHORITY_OWNER_UNRESOLVED = "AUTHORITY_OWNER_UNRESOLVED"
+AUTHORITY_CURRENTNESS_MISMATCH = "AUTHORITY_CURRENTNESS_MISMATCH"
+AUTHORITY_SELF_REFERENCE = "AUTHORITY_SELF_REFERENCE"
+
+_SHA40 = re.compile(r"[0-9a-f]{40}")
 
 
 def resolve_non_default_authority(
@@ -670,6 +678,8 @@ def resolve_non_default_authority(
     compatibility_group: object,
     authority_ref: object,
     authority_grants: object,
+    authority_readback: object = None,
+    self_refs: object = None,
 ) -> bool:
     """Deterministically resolve the durable authority behind a non-default group.
 
@@ -679,6 +689,20 @@ def resolve_non_default_authority(
     ``#<issue>@<id>`` ref. The ref shape alone never authorizes: the ref must
     resolve to a grant whose ``authority_family`` is the owning family for the
     role and whose repository/task/role/groups cover the exact dispatch tuple.
+
+    R6 (Fresh Review R5 P1-1): the inventory is additionally bound to the
+    durable owner/controller readback contract — the same checked-in registry
+    readback the owner-resolution path already verifies
+    (``standard-manifest.json#semantic_authorities`` resolved concern -> owner,
+    per ``test_v47_authority_registry.resolve_registry``). Each grant MUST name
+    the semantic owner concern it resolves through (``owner_concern``, present
+    in the supplied readback's owners map) and MUST carry the exact readback
+    subject (``readback_subject``, the durable manifest blob id) it was
+    resolved against; a stale/fabricated binding fails closed with
+    ``AUTHORITY_OWNER_UNRESOLVED``/``AUTHORITY_CURRENTNESS_MISMATCH``. A grant
+    whose durable ref equals one of the dispatch's own refs (``self_refs`` —
+    e.g. the grant points back at this dispatch's own admission/claim comment)
+    is self-reference and fails closed with ``AUTHORITY_SELF_REFERENCE``.
     Default-group dispatches need no authority and short-circuit to True.
     Purely local; no network; every ambiguity fails closed instead of guessing.
     """
@@ -689,10 +713,35 @@ def resolve_non_default_authority(
         raise ValueError(
             "non-default compatibility_group requires a durable #<issue>@<comment-id> authority ref"
         )
+    if self_refs is not None:
+        if isinstance(self_refs, (str, bytes)) or not isinstance(self_refs, Iterable):
+            raise ValueError(f"{AUTHORITY_SELF_REFERENCE}: self_refs must be an iterable of durable refs")
+        if authority_ref in set(self_refs):
+            raise ValueError(
+                f"{AUTHORITY_SELF_REFERENCE}: grant ref {authority_ref} points back at the "
+                "dispatch's own durable comment; a dispatch never authorizes itself"
+            )
     if not isinstance(authority_grants, Mapping):
         raise ValueError(
             f"{AUTHORITY_UNRESOLVED}: no controller-resolved authority grant "
             f"inventory was supplied for {authority_ref}"
+        )
+    if not isinstance(authority_readback, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no durable owner/controller readback was "
+            f"supplied to bind the grant inventory for {authority_ref}"
+        )
+    owners = authority_readback.get("owners")
+    subject = authority_readback.get("subject")
+    if (
+        not isinstance(owners, Mapping)
+        or any(not isinstance(k, str) or not isinstance(v, str) or not k or not v for k, v in owners.items())
+        or not isinstance(subject, str)
+        or not _SHA40.fullmatch(subject)
+    ):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: authority_readback is not a durable "
+            "owner/controller readback (owners mapping + exact 40-hex subject)"
         )
     grant = authority_grants.get(authority_ref)
     if not isinstance(grant, Mapping):
@@ -717,6 +766,19 @@ def resolve_non_default_authority(
         raise ValueError(
             f"{AUTHORITY_NOT_APPLICABLE}: grant {authority_ref} does not list "
             f"compatibility group {group!r}"
+        )
+    owner_concern = grant.get("owner_concern")
+    if not isinstance(owner_concern, str) or owner_concern not in owners:
+        raise ValueError(
+            f"{AUTHORITY_OWNER_UNRESOLVED}: grant {authority_ref} names "
+            f"{owner_concern!r}, which does not resolve through the durable "
+            "owner/controller readback"
+        )
+    if grant.get("readback_subject") != subject:
+        raise ValueError(
+            f"{AUTHORITY_CURRENTNESS_MISMATCH}: grant {authority_ref} was resolved "
+            f"against readback subject {grant.get('readback_subject')!r}, current "
+            f"durable subject is {subject!r}"
         )
     return True
 
@@ -816,18 +878,28 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
 H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE = "H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE"
 DUPLICATE_ACTIVE_CLAIM_KEY = "DUPLICATE_ACTIVE_CLAIM_KEY"
 ACTIVE_DISPATCH_ROW_MALFORMED = "ACTIVE_DISPATCH_ROW_MALFORMED"
+# R6 (Fresh Review R5 P2-1): active_dispatches is the projection of THIS work
+# item's active dispatches; a row whose derived key carries another
+# repository/task is a cross-work-item leak and must be surfaced.
+ACTIVE_DISPATCH_FOREIGN_WORK_ITEM = "ACTIVE_DISPATCH_FOREIGN_WORK_ITEM"
 
 
 def execution_state_projection_problems(state: Mapping[str, object]) -> list[str]:
     """Fail-closed conformance probe for the derived execution-state surface.
 
-    Machine-enforces the two derived-state rules the projection boundary owns:
+    Machine-enforces the derived-state rules the projection boundary owns:
     H2 — when ``active_dispatches`` carries more than one row, the legacy
     singular ``active_dispatch`` / ``active_dispatch_role`` fields MUST be
-    null/omitted (no arbitrary primary is projected); and #861 machine-model
+    null/omitted (no arbitrary primary is projected); #861 machine-model
     rule 2 — two active rows deriving the same protected claim key are
     incompatible and MUST serialize, so canonical active state never presents
-    both. Returns the problem codes found; an empty list means conformant.
+    both; and R6 same-work-item safety (Fresh Review R5 P2-1) — every row's
+    protected claim key is re-parsed and its derived repository/task MUST equal
+    the outer execution-state ``repository``/``work_item``: ``active_dispatches``
+    is the projection of this work item's active dispatches, so a row carrying
+    another task's key is rejected here (the row contract deliberately drops
+    the raw task field, making this probe the owned detection surface).
+    Returns the problem codes found; an empty list means conformant.
     Malformed rows fail closed instead of guessing.
     """
     rows = state.get("active_dispatches") or []
@@ -835,6 +907,7 @@ def execution_state_projection_problems(state: Mapping[str, object]) -> list[str
         return [ACTIVE_DISPATCH_ROW_MALFORMED]
     problems: list[str] = []
     keys: list[str] = []
+    foreign = False
     for row in rows:
         if (
             not isinstance(row, Mapping)
@@ -842,7 +915,19 @@ def execution_state_projection_problems(state: Mapping[str, object]) -> list[str
             or not row["protected_claim_key"]
         ):
             return [ACTIVE_DISPATCH_ROW_MALFORMED]
-        keys.append(row["protected_claim_key"])
+        key = row["protected_claim_key"]
+        try:
+            parsed = parse_claim_key(key)
+        except (TypeError, ValueError):
+            return [ACTIVE_DISPATCH_ROW_MALFORMED]
+        if (
+            parsed["repository"] != state.get("repository")
+            or parsed["task"] != state.get("work_item")
+        ):
+            foreign = True
+        keys.append(key)
+    if foreign:
+        problems.append(ACTIVE_DISPATCH_FOREIGN_WORK_ITEM)
     if len(rows) > 1:
         if any(state.get(field) is not None for field in ("active_dispatch", "active_dispatch_role")):
             problems.append(H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE)
