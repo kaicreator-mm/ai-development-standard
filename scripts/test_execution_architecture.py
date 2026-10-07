@@ -10,6 +10,7 @@ from v34_rules import (
     authorize_non_default,
     derive_claim_key,
     project_dispatch_environment,
+    resolve_non_default_authority,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -92,18 +93,33 @@ def keyed_reserve(
     dispatch: dict,
     *,
     serialization_available: bool = True,
+    authority_grants: dict | None = None,
 ) -> tuple[str, KeyedAdmissionState]:
-    """Keyed serialized-admission oracle (W10, D1/D2/E3/G8 + A8/C2 gates).
+    """Keyed serialized-admission oracle (W10, D1/D2/E3/G8 + A8/C2/C3-C5/C7 gates).
 
     Order is normative: the A8 environment/profile projection verifier fails
-    closed first, then the C2 non-default authority gate (never downgraded),
-    then the claim key is derived from the dispatch identity alone, then the
-    per-key CAS applies. Metadata (scheduler origin, execution environment,
-    operator/provider, parent/responsibility) never reaches the key.
+    closed first, then the C2 non-default authority format gate (never
+    downgraded), then the C3-C5/C7 resolution gate — a non-default group is
+    admitted only when its ``compatibility_authority_ref`` resolves through the
+    controller-resolved ``authority_grants`` inventory (the owner/controller
+    proof path materialized before keyed admission) to a grant of the owning
+    authority family applicable to the exact repository+task+role+group tuple;
+    a syntactically durable ref alone never authorizes — then the claim key is
+    derived from the dispatch identity alone, then the per-key CAS applies.
+    Metadata (scheduler origin, execution environment, operator/provider,
+    parent/responsibility) never reaches the key.
     """
     project_dispatch_environment(dispatch)
     group = dispatch.get("compatibility_group")
     authorize_non_default(group, dispatch.get("compatibility_authority_ref"))
+    resolve_non_default_authority(
+        repository=dispatch["repository"],
+        task=dispatch["task"],
+        role=dispatch["role"],
+        compatibility_group=group,
+        authority_ref=dispatch.get("compatibility_authority_ref"),
+        authority_grants=authority_grants,
+    )
     key = derive_claim_key(dispatch["repository"], dispatch["task"], dispatch["role"], group)
     cell = state.cells.get(key, ClaimCell())
     verdict, updated = reserve_dispatch(
@@ -308,8 +324,10 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
     Replaces the R1 placeholder whose env/origin loop never fed the function
     under test. Every variant below flows through the REAL reducer surfaces:
     ``v34_rules.derive_claim_key`` derives keys from full dispatch objects, and
-    ``v34_rules.project_dispatch_environment`` / ``authorize_non_default`` gate
-    each keyed admission. Mutation sensitivity: if scheduler origin,
+    ``v34_rules.project_dispatch_environment`` / ``authorize_non_default`` /
+    ``resolve_non_default_authority`` gate each keyed admission (R5: a
+    non-default group additionally requires a controller-resolved owning-family
+    grant; syntax-only durable refs no longer pass the C2 gate). Mutation sensitivity: if scheduler origin,
     execution environment, operator/provider identity, parent/responsibility
     metadata ever leaked into key derivation, the invariance assertion fails
     AND the race tests would show two accepted cells instead of
@@ -470,26 +488,104 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
         self.assertEqual("DUPLICATE", second)
         self.assertEqual(1, len(after.cells))
 
+    # Controller-resolved grant inventory modeled for the keyed oracle. This
+    # is oracle data exercising the C3-C5/C7 resolution mechanics (the
+    # owner/controller proof path materialized before keyed admission); it is
+    # NOT a claim that any real GitHub comment authorizes
+    # validator/windows+linux on #861 today.
+    VALIDATION_GRANT = {
+        "ref": "#861@6000000000",
+        "authority_family": "VALIDATION",
+        "repository": "kaicreator-mm/ai-development-standard",
+        "task": "#861",
+        "role": "validator",
+        "groups": ["validator/windows", "validator/linux"],
+    }
+
     def test_c6_h3_authorized_non_default_groups_run_parallel(self) -> None:
+        grants = {"#861@6000000000": dict(self.VALIDATION_GRANT)}
         windows = self._dispatch(
             dispatch_id="D-win",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/windows",
-            compatibility_authority_ref="#861@6023707736",
+            compatibility_authority_ref="#861@6000000000",
         )
         linux = self._dispatch(
             dispatch_id="D-linux",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/linux",
-            compatibility_authority_ref="#861@6023707736",
+            compatibility_authority_ref="#861@6000000000",
         )
-        first, after_first = keyed_reserve(KeyedAdmissionState(), windows)
-        second, after_second = keyed_reserve(after_first, linux)
+        first, after_first = keyed_reserve(KeyedAdmissionState(), windows, authority_grants=grants)
+        second, after_second = keyed_reserve(after_first, linux, authority_grants=grants)
         self.assertEqual("ACCEPTED", first)
         self.assertEqual("ACCEPTED", second)
         self.assertEqual(2, len(after_second.cells))
+
+    def test_c4_c5_c7_unrelated_builder_admission_ref_never_authorizes_validator_parallelism(self) -> None:
+        # Exact Fresh-Review-R4 P1-2 regression: the historical R2
+        # bounded-repair Builder admission #861@6023707736 is a syntactically
+        # durable ref, but it is not a Validation authority for
+        # validator/windows+linux and MUST be rejected at the keyed admission
+        # boundary instead of unlocking duplicate exclusion.
+        builder_ref = "#861@6023707736"
+        unauthorized = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref=builder_ref,
+        )
+        for grants in (None, {}):
+            with self.subTest(grants=grants):
+                with self.assertRaises(ValueError) as caught:
+                    keyed_reserve(KeyedAdmissionState(), unauthorized, authority_grants=grants)
+                self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+        builder_grants = {
+            builder_ref: {
+                "ref": builder_ref,
+                "authority_family": "TASK_PACK",
+                "repository": "kaicreator-mm/ai-development-standard",
+                "task": "#861",
+                "role": "builder",
+                "groups": ["validator/windows", "validator/linux"],
+            }
+        }
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), unauthorized, authority_grants=builder_grants)
+        self.assertIn("AUTHORITY_FAMILY_MISMATCH", str(caught.exception))
+
+    def test_c4_grant_applicability_is_tuple_exact(self) -> None:
+        grants = {"#861@6000000000": dict(self.VALIDATION_GRANT)}
+        other_repo = self._dispatch(
+            dispatch_id="D-other-repo",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6000000000",
+            repository="other/repo",
+        )
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), other_repo, authority_grants=grants)
+        self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
+        other_group = self._dispatch(
+            dispatch_id="D-other-group",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/macos",
+            compatibility_authority_ref="#861@6000000000",
+        )
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(KeyedAdmissionState(), other_group, authority_grants=grants)
+        self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
+
+    def test_c3_default_group_needs_no_grant_inventory(self) -> None:
+        # Default-group dispatches stay readable without any authority data.
+        verdict, state = keyed_reserve(KeyedAdmissionState(), self._dispatch(dispatch_id="D-def"))
+        self.assertEqual("ACCEPTED", verdict)
+        self.assertEqual(1, len(state.cells))
 
     def test_c2_non_default_without_authority_fails_closed_before_cas(self) -> None:
         unauthorized = self._dispatch(

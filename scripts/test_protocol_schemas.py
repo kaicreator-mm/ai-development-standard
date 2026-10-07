@@ -415,7 +415,12 @@ class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
         self.assertNotIn("execution_environment", schema["required"])
         conditional = [c for c in schema["allOf"]
                        if "compatibility_group" in c.get("if", {}).get("properties", {})]
-        self.assertEqual(conditional[0]["then"]["required"], ["compatibility_authority_ref"])
+        self.assertEqual(len(conditional), 1)
+        # R5 (P1-1): the conditional agrees with normalize_group/oracle C1 —
+        # non-default string groups require the ref; the reserved __default__
+        # and blank-only normalized-default groups do not.
+        inner = conditional[0]["then"]["else"]["else"]
+        self.assertEqual(inner["required"], ["compatibility_authority_ref"])
 
     def test_event_schema_lineage_fields_are_additive_optional(self) -> None:
         schema = load_schema("agent-event-v2.schema.json")
@@ -478,6 +483,32 @@ class T06BEnvironmentProfileConformanceTests(unittest.TestCase):
     def test_a5_non_default_group_without_authority_ref_is_invalid(self) -> None:
         errors = self._verdict(_dispatch_fixture(compatibility_group="validator/windows"))
         self.assertTrue(any("compatibility_authority_ref" in error for error in errors), errors)
+
+    def test_a4b_explicit_default_group_needs_no_authority_ref(self) -> None:
+        # R5 (P1-1): the schema no longer requires a ref for the reserved
+        # __default__ group (it normalized to the default key like omission).
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="__default__")),
+            [],
+        )
+
+    def test_a4c_blank_only_group_normalizes_to_default_without_ref(self) -> None:
+        # R5 (P1-1): blank-only strings normalize to __default__ in
+        # normalize_group; the schema must not demand a ref for them either.
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="  ")),
+            [],
+        )
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="\t")),
+            [],
+        )
+
+    def test_a4d_default_group_with_ref_stays_readable(self) -> None:
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="__default__", compatibility_authority_ref="#861@6016591816")),
+            [],
+        )
 
     def test_a6_admission_generation_minimum_is_schema_enforced(self) -> None:
         self.assertEqual(

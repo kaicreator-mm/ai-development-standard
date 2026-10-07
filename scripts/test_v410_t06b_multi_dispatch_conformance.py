@@ -20,6 +20,15 @@ and B5/B6 persisted-key mismatch fail-closed; the integration regression embeds
 and validates it through the real ``schemas/execution-state.schema.json``
 (legacy-profile positives plus leak/missing-field/non-null-group/UNKNOWN and
 mismatch negatives), which replaces the withdrawn trim-expectation assertion.
+
+R5 (bounded repair after Fresh Review R4 #861@6033098161): the C2 gate no
+longer accepts syntax-only durable refs — ``resolve_non_default_authority``
+requires a controller-resolved owning-family grant at the keyed admission
+boundary (P1-2); the execution-state schema conditionally enforces the H2
+legacy singular null rule and ``execution_state_projection_problems`` adds the
+duplicate-active-key probe (P1-3); the full-state positive fixture uses
+distinct tasks instead of an impossible same-key multi-active validator state
+(P2-1).
 """
 
 from __future__ import annotations
@@ -39,12 +48,14 @@ from v34_rules import (  # noqa: E402
     admission_generation_conforms,
     authorize_non_default,
     derive_claim_key,
+    execution_state_projection_problems,
     lineage_refs_present,
     normalize_group,
     parse_claim_key,
     project_active_dispatches,
     project_dispatch_environment,
     protected_claim_key_conforms,
+    resolve_non_default_authority,
     target_environment_agreement,
     terminal_precedence,
 )
@@ -112,6 +123,66 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
             with self.subTest(bad_ref=bad_ref):
                 with self.assertRaises(ValueError):
                     authorize_non_default("interop", bad_ref)
+
+    def test_default_group_resolves_without_any_grant_inventory(self) -> None:
+        # R5 (P1-1): blank-only input normalizes to the reserved default and an
+        # explicit __default__ stays readable — neither needs a ref or grants.
+        for group in ("  ", "__default__", None):
+            with self.subTest(group=group):
+                self.assertTrue(
+                    resolve_non_default_authority(
+                        repository="r",
+                        task="#1",
+                        role="validator",
+                        compatibility_group=group,
+                        authority_ref=None,
+                        authority_grants=None,
+                    )
+                )
+
+    def test_non_default_requires_resolved_owning_family_grant(self) -> None:
+        # R5 (P1-2): the ref shape alone never authorizes. The controller-
+        # resolved grant inventory is the owned proof path; resolution must be
+        # family-fit and tuple-exact, and every ambiguity fails closed.
+        grant = {
+            "ref": "#861@6000000000",
+            "authority_family": "VALIDATION",
+            "repository": "r",
+            "task": "#861",
+            "role": "validator",
+            "groups": ["interop"],
+        }
+        grants = {"#861@6000000000": grant}
+        self.assertTrue(
+            resolve_non_default_authority(
+                repository="r",
+                task="#861",
+                role="validator",
+                compatibility_group="interop",
+                authority_ref="#861@6000000000",
+                authority_grants=grants,
+            )
+        )
+        for mutant_grants, token in (
+            (None, "AUTHORITY_UNRESOLVED"),
+            ({}, "AUTHORITY_UNRESOLVED"),
+            ({"#861@6000000000": dict(grant, authority_family="TASK_PACK")}, "AUTHORITY_FAMILY_MISMATCH"),
+            ({"#861@6000000000": dict(grant, task="#999")}, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": dict(grant, role="builder")}, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": dict(grant, groups=["other"])}, "AUTHORITY_NOT_APPLICABLE"),
+            ({"#861@6000000000": {"authority_family": "VALIDATION"}}, "AUTHORITY_UNRESOLVED"),
+        ):
+            with self.subTest(token=token):
+                with self.assertRaises(ValueError) as caught:
+                    resolve_non_default_authority(
+                        repository="r",
+                        task="#861",
+                        role="validator",
+                        compatibility_group="interop",
+                        authority_ref="#861@6000000000",
+                        authority_grants=mutant_grants,
+                    )
+                self.assertIn(token, str(caught.exception))
 
 
 class AdmissionGenerationCasTests(unittest.TestCase):
@@ -384,9 +455,12 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
                 "admission_generation": 4,
             },
             {
-                # environment-orthogonal profile with NO explicit environment -> null
+                # environment-orthogonal profile with NO explicit environment -> null;
+                # task differs from the other validators: a same-key multi-active
+                # validator state is impossible (#861 rule 2) and must not appear
+                # in a full-state positive fixture (R5 P2-1)
                 "repository": "r",
-                "task": "#861",
+                "task": "#860",
                 "role": "validator",
                 "dispatch_id": "d-orthogonal",
                 "execution_profile": "PLATFORM_VALIDATOR",
@@ -395,8 +469,9 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
             },
             {
                 # environment-orthogonal profile WITH explicit environment -> LOCAL
+                # (distinct task again — R5 P2-1)
                 "repository": "r",
-                "task": "#861",
+                "task": "#862",
                 "role": "validator",
                 "dispatch_id": "d-orthogonal-local",
                 "execution_profile": "PLATFORM_VALIDATOR",
@@ -415,9 +490,9 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
             },
             {
                 # legacy validator profile -> LOCAL; blank group -> __default__;
-                # no issue/pr fields -> refs stay absent.
+                # no issue/pr fields -> refs stay absent (distinct task — R5 P2-1)
                 "repository": "r",
-                "task": "#861",
+                "task": "#864",
                 "role": "validator",
                 "dispatch_id": "d-legacy-validator",
                 "execution_profile": "LOCAL_VALIDATOR",
@@ -426,7 +501,16 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
         ]
 
     def _expected_rows(self) -> list[dict]:
+        # stably ordered by (derived protected claim key, dispatch_id)
         return [
+            {
+                "dispatch_id": "d-orthogonal",
+                "role": "validator",
+                "execution_environment": None,
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#860:validator:__default__",
+                "claimed_by": "val-1",
+            },
             {
                 "dispatch_id": "d-builder",
                 "role": "builder",
@@ -438,30 +522,6 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
                 "pr": "#927",
             },
             {
-                "dispatch_id": "d-legacy-validator",
-                "role": "validator",
-                "execution_environment": "LOCAL",
-                "compatibility_group": "__default__",
-                "protected_claim_key": "r#861:validator:__default__",
-                "claimed_by": None,
-            },
-            {
-                "dispatch_id": "d-orthogonal",
-                "role": "validator",
-                "execution_environment": None,
-                "compatibility_group": "__default__",
-                "protected_claim_key": "r#861:validator:__default__",
-                "claimed_by": "val-1",
-            },
-            {
-                "dispatch_id": "d-orthogonal-local",
-                "role": "validator",
-                "execution_environment": "LOCAL",
-                "compatibility_group": "__default__",
-                "protected_claim_key": "r#861:validator:__default__",
-                "claimed_by": None,
-            },
-            {
                 "dispatch_id": "d-reviewer",
                 "role": "reviewer",
                 "execution_environment": "WEB",
@@ -469,6 +529,22 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
                 "protected_claim_key": "r#862:reviewer:__default__",
                 "claimed_by": None,
                 "pr": None,
+            },
+            {
+                "dispatch_id": "d-orthogonal-local",
+                "role": "validator",
+                "execution_environment": "LOCAL",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#862:validator:__default__",
+                "claimed_by": None,
+            },
+            {
+                "dispatch_id": "d-legacy-validator",
+                "role": "validator",
+                "execution_environment": "LOCAL",
+                "compatibility_group": "__default__",
+                "protected_claim_key": "r#864:validator:__default__",
+                "claimed_by": None,
             },
         ]
 
@@ -530,6 +606,103 @@ class ExecutionStateIntegrationTests(unittest.TestCase):
         ):
             with self.subTest(mutant=name):
                 self.assertNotEqual(validate_subset(mutant, item), [])
+
+
+class ExecutionStateConformanceTests(unittest.TestCase):
+    """H2 + duplicate-active-key machine enforcement (R5, P1-3/P2-1 probe).
+
+    The owned execution-state conformance path is the pair of the real
+    ``schemas/execution-state.schema.json`` conditional and the
+    ``v34_rules.execution_state_projection_problems`` probe; both must fail
+    closed on the same contradictory states.
+    """
+
+    def _rows(self) -> list[dict]:
+        source = [
+            {
+                "repository": "r",
+                "task": "#861",
+                "role": "builder",
+                "dispatch_id": "d-a",
+                "execution_profile": "LOCAL_BUILDER",
+            },
+            {
+                "repository": "r",
+                "task": "#862",
+                "role": "reviewer",
+                "dispatch_id": "d-b",
+                "execution_profile": "WEB_REVIEWER",
+            },
+        ]
+        return project_active_dispatches(source)
+
+    def _state(self, rows: list[dict], **extra) -> dict:
+        state = {
+            "repository": "r",
+            "work_item": "#861",
+            "workflow_state": "implementing",
+            "ready_queues": [],
+            "derived_from": ["test"],
+            "active_dispatches": rows,
+        }
+        state.update(extra)
+        return state
+
+    def test_h2_singular_primary_with_multi_active_fails_closed_everywhere(self) -> None:
+        schema = load_schema(EXECUTION_STATE_SCHEMA)
+        assert_supported_schema(schema)
+        state = self._state(
+            self._rows(),
+            active_dispatch="d-a",
+            active_dispatch_role="builder",
+        )
+        self.assertNotEqual(validate_subset(state, schema), [])
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            ["H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE"],
+        )
+
+    def test_h2_null_singular_fields_with_multi_active_are_conformant(self) -> None:
+        schema = load_schema(EXECUTION_STATE_SCHEMA)
+        state = self._state(
+            self._rows(),
+            active_dispatch=None,
+            active_dispatch_role=None,
+        )
+        self.assertEqual(validate_subset(state, schema), [])
+        self.assertEqual(execution_state_projection_problems(state), [])
+
+    def test_h2_singular_primary_with_single_active_row_stays_readable(self) -> None:
+        schema = load_schema(EXECUTION_STATE_SCHEMA)
+        rows = [self._rows()[0]]
+        state = self._state(rows, active_dispatch="d-a", active_dispatch_role="builder")
+        self.assertEqual(validate_subset(state, schema), [])
+        self.assertEqual(execution_state_projection_problems(state), [])
+
+    def test_duplicate_active_claim_keys_are_flagged_by_the_conformance_probe(self) -> None:
+        # #861 rule 2 / oracle H6: two active rows with the same derived claim
+        # key are an impossible canonical state; the projection boundary must
+        # detect it. The schema subset cannot express cross-row key uniqueness,
+        # so the machine probe is the owned detection surface.
+        rows = self._rows()
+        rows[1]["protected_claim_key"] = rows[0]["protected_claim_key"]
+        state = self._state(rows)
+        self.assertEqual(validate_subset(state, load_schema(EXECUTION_STATE_SCHEMA)), [])
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            ["DUPLICATE_ACTIVE_CLAIM_KEY"],
+        )
+
+    def test_malformed_rows_fail_closed_in_the_probe(self) -> None:
+        state = self._state([{"dispatch_id": "d-x"}])
+        self.assertEqual(
+            execution_state_projection_problems(state),
+            ["ACTIVE_DISPATCH_ROW_MALFORMED"],
+        )
+        self.assertEqual(
+            execution_state_projection_problems(dict(self._state(self._rows()), active_dispatches="nope")),
+            ["ACTIVE_DISPATCH_ROW_MALFORMED"],
+        )
 
 
 class WriterProvenanceTests(unittest.TestCase):
@@ -635,8 +808,11 @@ class FrozenGuardTests(unittest.TestCase):
         self.assertEqual(len(couplings), 3)  # A11: byte-stable profile<->role couplings
         conditional = [c for c in schema["allOf"] if "compatibility_group" in c.get("if", {}).get("properties", {})]
         self.assertEqual(len(conditional), 1)
+        # R5 (P1-1): nested conditional — non-default groups require the ref,
+        # the reserved __default__ and blank-only normalized defaults do not.
         self.assertEqual(
-            conditional[0]["then"]["required"], ["compatibility_authority_ref"]
+            conditional[0]["then"]["else"]["else"]["required"],
+            ["compatibility_authority_ref"],
         )
         self.assertEqual(dispatch_field("execution_environment")["enum"], ["WEB", "LOCAL"])
         self.assertEqual(dispatch_field("scheduler_origin")["enum"], ["WEB", "LOCAL"])

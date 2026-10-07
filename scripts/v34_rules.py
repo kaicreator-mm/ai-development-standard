@@ -647,6 +647,80 @@ def authorize_non_default(compatibility_group: object, authority_ref: object) ->
     return True
 
 
+# Owning authority family per role for non-default compatibility groups
+# (#861 machine-model rules 3/8: builders need Task Pack/DAG authority,
+# validators need Validation-profile authority, reviewers need Review-policy
+# authority; a durable ref of any other family is not authorization).
+NON_DEFAULT_AUTHORITY_FAMILIES = {
+    "builder": "TASK_PACK",
+    "validator": "VALIDATION",
+    "reviewer": "REVIEW_POLICY",
+}
+
+AUTHORITY_UNRESOLVED = "AUTHORITY_UNRESOLVED"
+AUTHORITY_FAMILY_MISMATCH = "AUTHORITY_FAMILY_MISMATCH"
+AUTHORITY_NOT_APPLICABLE = "AUTHORITY_NOT_APPLICABLE"
+
+
+def resolve_non_default_authority(
+    *,
+    repository: object,
+    task: object,
+    role: object,
+    compatibility_group: object,
+    authority_ref: object,
+    authority_grants: object,
+) -> bool:
+    """Deterministically resolve the durable authority behind a non-default group.
+
+    Machine half of the C3-C5/C7 boundary (#861): ``authority_grants`` is the
+    controller-resolved grant inventory — the existing owner/controller proof
+    path materialized before keyed admission — keyed by durable
+    ``#<issue>@<id>`` ref. The ref shape alone never authorizes: the ref must
+    resolve to a grant whose ``authority_family`` is the owning family for the
+    role and whose repository/task/role/groups cover the exact dispatch tuple.
+    Default-group dispatches need no authority and short-circuit to True.
+    Purely local; no network; every ambiguity fails closed instead of guessing.
+    """
+    group = normalize_group(compatibility_group)
+    if group == DEFAULT_COMPATIBILITY_GROUP:
+        return True
+    if not isinstance(authority_ref, str) or not re.fullmatch(r"#\d+@\d+", authority_ref):
+        raise ValueError(
+            "non-default compatibility_group requires a durable #<issue>@<comment-id> authority ref"
+        )
+    if not isinstance(authority_grants, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no controller-resolved authority grant "
+            f"inventory was supplied for {authority_ref}"
+        )
+    grant = authority_grants.get(authority_ref)
+    if not isinstance(grant, Mapping):
+        raise ValueError(f"{AUTHORITY_UNRESOLVED}: {authority_ref} resolves to no durable grant")
+    if grant.get("ref") != authority_ref:
+        raise ValueError(f"{AUTHORITY_UNRESOLVED}: grant identity does not bind {authority_ref}")
+    expected_family = NON_DEFAULT_AUTHORITY_FAMILIES.get(role)
+    if expected_family is None or grant.get("authority_family") != expected_family:
+        raise ValueError(
+            f"{AUTHORITY_FAMILY_MISMATCH}: {authority_ref} carries "
+            f"{grant.get('authority_family')!r}, the owning family for role "
+            f"{role!r} is {expected_family!r}"
+        )
+    for field, value in (("repository", repository), ("task", task), ("role", role)):
+        if grant.get(field) != value:
+            raise ValueError(
+                f"{AUTHORITY_NOT_APPLICABLE}: grant {authority_ref} does not cover "
+                f"{field}={value!r}"
+            )
+    groups = grant.get("groups")
+    if not isinstance(groups, Sequence) or isinstance(groups, str) or group not in groups:
+        raise ValueError(
+            f"{AUTHORITY_NOT_APPLICABLE}: grant {authority_ref} does not list "
+            f"compatibility group {group!r}"
+        )
+    return True
+
+
 def admission_generation_conforms(
     *, reserved_generation: object, claimed_generation: object
 ) -> str:
@@ -737,6 +811,44 @@ def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[d
         rows.append((key, dispatch_id, row))
     rows.sort(key=lambda item: (item[0], item[1]))
     return [item[2] for item in rows]
+
+
+H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE = "H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE"
+DUPLICATE_ACTIVE_CLAIM_KEY = "DUPLICATE_ACTIVE_CLAIM_KEY"
+ACTIVE_DISPATCH_ROW_MALFORMED = "ACTIVE_DISPATCH_ROW_MALFORMED"
+
+
+def execution_state_projection_problems(state: Mapping[str, object]) -> list[str]:
+    """Fail-closed conformance probe for the derived execution-state surface.
+
+    Machine-enforces the two derived-state rules the projection boundary owns:
+    H2 — when ``active_dispatches`` carries more than one row, the legacy
+    singular ``active_dispatch`` / ``active_dispatch_role`` fields MUST be
+    null/omitted (no arbitrary primary is projected); and #861 machine-model
+    rule 2 — two active rows deriving the same protected claim key are
+    incompatible and MUST serialize, so canonical active state never presents
+    both. Returns the problem codes found; an empty list means conformant.
+    Malformed rows fail closed instead of guessing.
+    """
+    rows = state.get("active_dispatches") or []
+    if not isinstance(rows, Sequence) or isinstance(rows, str):
+        return [ACTIVE_DISPATCH_ROW_MALFORMED]
+    problems: list[str] = []
+    keys: list[str] = []
+    for row in rows:
+        if (
+            not isinstance(row, Mapping)
+            or not isinstance(row.get("protected_claim_key"), str)
+            or not row["protected_claim_key"]
+        ):
+            return [ACTIVE_DISPATCH_ROW_MALFORMED]
+        keys.append(row["protected_claim_key"])
+    if len(rows) > 1:
+        if any(state.get(field) is not None for field in ("active_dispatch", "active_dispatch_role")):
+            problems.append(H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE)
+        if len(set(keys)) != len(keys):
+            problems.append(DUPLICATE_ACTIVE_CLAIM_KEY)
+    return problems
 
 
 def lineage_refs_present(event: Mapping[str, object], *, current_writer: bool) -> bool:
