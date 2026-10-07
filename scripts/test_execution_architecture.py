@@ -43,6 +43,51 @@ def authority_readback(root: Path = ROOT) -> dict:
     return {"owners": owners, "subject": _git_blob_id(manifest_data)}
 
 
+# R7 (Fresh Review R6 P1-1): trusted durable-fact readback fixture. The
+# positive authority fixture must be anchored to a real, resolvable durable
+# fact — the former positive ref #861@6000000000 is a verified 404 and is now
+# negative-only. AUTHORITY_FACT_REF is the VALIDATION-family Concern Validation
+# R6 terminal on Issue #861 (a real, durable validator-signed fact). The
+# materialization below is oracle fixture data modeling what the
+# controller/authority-reader adapter materializes from that durable fact for
+# the C6/H3 keyed-oracle scenario; it is NOT a claim that any real durable
+# fact authorizes validator/windows+linux parallelism on #861 today (same
+# oracle status as the modeled VALIDATION grant). ``content_digest`` binds the
+# readback content-addressed to the exact fact content; the verifier derives
+# authorization from this evidence (identity, existence/currentness, digest,
+# owner family, exact tuple, explicit authorization content) and rejects any
+# caller grant drifting from it.
+AUTHORITY_FACT_REF = "#861@6043191203"
+AUTHORITY_FACT_DIGEST = hashlib.sha256(
+    f"ai-dev:event:v2 V410_T06B_CONCERN_VALIDATION_R6 {AUTHORITY_FACT_REF}".encode("utf-8")
+).hexdigest()
+
+
+def authority_fact_readbacks(**overrides) -> dict:
+    """Trusted durable-fact readback inventory keyed by the durable ref.
+
+    Models the controller/authority-reader adapter output at the trust
+    boundary: the adapter live-resolves the durable ref and materializes
+    identity (``ref``), existence/currentness (``exists``), the
+    content-addressed binding (``content_digest``), the owner family, the
+    exact repository/task/role applicability, and the explicit authorization
+    content projected as ``groups``. Purely local; the verifier consumes the
+    evidence without network access.
+    """
+    fact = {
+        "ref": AUTHORITY_FACT_REF,
+        "exists": True,
+        "authority_family": "VALIDATION",
+        "repository": "kaicreator-mm/ai-development-standard",
+        "task": "#861",
+        "role": "validator",
+        "groups": ["validator/windows", "validator/linux"],
+        "content_digest": AUTHORITY_FACT_DIGEST,
+    }
+    fact.update(overrides)
+    return {fact["ref"]: fact}
+
+
 @dataclass(frozen=True)
 class ClaimCell:
     generation: int = 0
@@ -122,20 +167,28 @@ def keyed_reserve(
     serialization_available: bool = True,
     authority_grants: dict | None = None,
     readback: dict | None = None,
+    fact_readbacks: dict | None = None,
 ) -> tuple[str, KeyedAdmissionState]:
     """Keyed serialized-admission oracle (W10, D1/D2/E3/G8 + A8/C2/C3-C5/C7 gates).
 
     Order is normative: the A8 environment/profile projection verifier fails
     closed first, then the C2 non-default authority format gate (never
     downgraded), then the C3-C5/C7 resolution gate — a non-default group is
-    admitted only when its ``compatibility_authority_ref`` resolves through the
-    controller-resolved ``authority_grants`` inventory (the owner/controller
-    proof path materialized before keyed admission) to a grant of the owning
-    authority family applicable to the exact repository+task+role+group tuple
-    and bound to the durable owner/controller ``readback`` (R6: owner_concern
-    resolvable in the readback owners map + readback_subject equal to the
-    current durable subject; a self-referencing grant ref — one of the
-    dispatch's own durable refs — is rejected);
+    admitted only when its ``compatibility_authority_ref`` is bound by the
+    trusted durable-fact readback (R7: the controller/authority-reader
+    adapter-materialized evidence carrying the exact ref identity,
+    existence/currentness, the content-addressed digest of the fact content,
+    the owning authority family, the exact repository+task+role applicability
+    and the explicit authorization content; authorization is derived from
+    that evidence and a caller grant drifting from it is rejected), bound to
+    the controller-resolved ``authority_grants`` inventory projection (the
+    owner/controller proof path materialized before keyed admission) to a
+    grant of the owning authority family applicable to the exact
+    repository+task+role+group tuple, and bound to the durable
+    owner/controller ``readback`` (R6: owner_concern resolvable in the
+    readback owners map + readback_subject equal to the current durable
+    subject; a self-referencing grant ref — one of the dispatch's own durable
+    refs — is rejected);
     a syntactically durable ref alone never authorizes — then the claim key is
     derived from the dispatch identity alone, then the per-key CAS applies.
     Metadata (scheduler origin, execution environment, operator/provider,
@@ -152,6 +205,7 @@ def keyed_reserve(
         authority_ref=dispatch.get("compatibility_authority_ref"),
         authority_grants=authority_grants,
         authority_readback=readback,
+        authority_fact_readbacks=fact_readbacks,
         self_refs=tuple(
             ref
             for ref in (dispatch.get("source_proposal_ref"), dispatch.get("canonical_admission_ref"))
@@ -538,10 +592,15 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
     # the durable owner/controller readback — owner_concern resolved through
     # the checked-in registry readback and readback_subject equal to the
     # current durable manifest blob id — so a test-internal self-made mapping
-    # without that binding manufactures no authority.
+    # without that binding manufactures no authority. R7: the grant is only a
+    # projection of the trusted durable-fact readback — its authorization
+    # fields must equal the fact-readback-derived grant (the ref is the real,
+    # resolvable VALIDATION-family durable fact AUTHORITY_FACT_REF, not a
+    # nonexistent durable-looking ref), and authorization itself is derived
+    # from the fact readback evidence.
     def validation_grant(self, **overrides) -> dict:
         grant = {
-            "ref": "#861@6000000000",
+            "ref": AUTHORITY_FACT_REF,
             "authority_family": "VALIDATION",
             "owner_concern": "validation.concern_evidence_and_exact_subject",
             "readback_subject": authority_readback()["subject"],
@@ -554,24 +613,31 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
         return grant
 
     def test_c6_h3_authorized_non_default_groups_run_parallel(self) -> None:
-        grants = {"#861@6000000000": self.validation_grant()}
+        grants = {AUTHORITY_FACT_REF: self.validation_grant()}
         readback = authority_readback()
+        facts = authority_fact_readbacks()
         windows = self._dispatch(
             dispatch_id="D-win",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/windows",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
         )
         linux = self._dispatch(
             dispatch_id="D-linux",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/linux",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
         )
-        first, after_first = keyed_reserve(KeyedAdmissionState(), windows, authority_grants=grants, readback=readback)
-        second, after_second = keyed_reserve(after_first, linux, authority_grants=grants, readback=readback)
+        first, after_first = keyed_reserve(
+            KeyedAdmissionState(), windows,
+            authority_grants=grants, readback=readback, fact_readbacks=facts,
+        )
+        second, after_second = keyed_reserve(
+            after_first, linux,
+            authority_grants=grants, readback=readback, fact_readbacks=facts,
+        )
         self.assertEqual("ACCEPTED", first)
         self.assertEqual("ACCEPTED", second)
         self.assertEqual(2, len(after_second.cells))
@@ -583,26 +649,30 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
         # rejected: no durable owner/controller readback supplied, and even
         # with one it names no owner_concern / readback_subject binding.
         self_made = {
-            "ref": "#861@6000000000",
+            "ref": AUTHORITY_FACT_REF,
             "authority_family": "VALIDATION",
             "repository": "kaicreator-mm/ai-development-standard",
             "task": "#861",
             "role": "validator",
             "groups": ["validator/windows", "validator/linux"],
         }
-        grants = {"#861@6000000000": self_made}
+        grants = {AUTHORITY_FACT_REF: self_made}
         dispatch = self._dispatch(
             dispatch_id="D-win",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/windows",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
         )
         with self.assertRaises(ValueError) as caught:
             keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=grants)
         self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=grants, readback=authority_readback())
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=authority_readback(),
+                fact_readbacks=authority_fact_readbacks(),
+            )
         self.assertIn("AUTHORITY_OWNER_UNRESOLVED", str(caught.exception))
 
     def test_r6_stale_or_unknown_readback_binding_fails_closed(self) -> None:
@@ -612,21 +682,131 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/windows",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
         )
-        stale = {"#861@6000000000": self.validation_grant(readback_subject="0" * 40)}
+        stale = {AUTHORITY_FACT_REF: self.validation_grant(readback_subject="0" * 40)}
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=stale, readback=readback)
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=stale, readback=readback,
+                fact_readbacks=authority_fact_readbacks(),
+            )
         self.assertIn("AUTHORITY_CURRENTNESS_MISMATCH", str(caught.exception))
-        unknown_concern = {"#861@6000000000": self.validation_grant(owner_concern="no.such_concern")}
+        unknown_concern = {AUTHORITY_FACT_REF: self.validation_grant(owner_concern="no.such_concern")}
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), dispatch, authority_grants=unknown_concern, readback=readback)
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=unknown_concern, readback=readback,
+                fact_readbacks=authority_fact_readbacks(),
+            )
         self.assertIn("AUTHORITY_OWNER_UNRESOLVED", str(caught.exception))
         # The re-read that produces the readback is the controller trust
         # boundary (per scripts/resolve_standard_read_set.py): the machine
         # layer verifies the grant against the supplied durable readback, so
         # producing the readback from the real checkout is what a caller-made
         # mapping cannot fake without knowing current durable state.
+
+    def test_r7_decorated_grant_without_durable_fact_readback_manufactures_no_authority(self) -> None:
+        # Exact Fresh-Review-R6 P1-1 regression (REQUIRED_FIX_2): a caller
+        # grant carrying a valid current registry subject, a valid
+        # owner_concern and the correct tuple still manufactures no authority
+        # when the referenced durable fact is not bound by trusted readback
+        # evidence. #861@6000000000 is the review-verified 404 durable-looking
+        # ref and stays negative-only.
+        nonexistent_ref = "#861@6000000000"
+        decorated = self.validation_grant(ref=nonexistent_ref)
+        grants = {nonexistent_ref: decorated}
+        readback = authority_readback()
+        dispatch = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref=nonexistent_ref,
+        )
+        # No fact-readback inventory at all.
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+            )
+        self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+        # Inventory present but the exact ref was never materialized.
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+                fact_readbacks=authority_fact_readbacks(),
+            )
+        self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+        # The adapter live-read the ref and it does not exist (404).
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+                fact_readbacks=authority_fact_readbacks(
+                    ref=nonexistent_ref, exists=False, content_digest="a" * 64,
+                ),
+            )
+        self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+        # Readback without the content-addressed binding to the fact content.
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+                fact_readbacks=authority_fact_readbacks(
+                    ref=nonexistent_ref, content_digest="not-a-digest",
+                ),
+            )
+        self.assertIn("AUTHORITY_UNRESOLVED", str(caught.exception))
+
+    def test_r7_non_authorizing_or_drifting_durable_fact_fails_closed(self) -> None:
+        # REQUIRED_FIX_2: with the fact bound, a decorated caller grant still
+        # fails when the durable fact does not explicitly authorize the group,
+        # carries the wrong family, or the grant drifts from the
+        # fact-derived authorization.
+        readback = authority_readback()
+        grants = {AUTHORITY_FACT_REF: self.validation_grant()}
+        dispatch = self._dispatch(
+            dispatch_id="D-win",
+            role="validator",
+            execution_profile="LOCAL_VALIDATOR",
+            compatibility_group="validator/windows",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
+        )
+        # Durable fact exists but does not authorize this compatibility group.
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+                fact_readbacks=authority_fact_readbacks(groups=["validator/macos"]),
+            )
+        self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
+        # Durable fact carries the wrong authority family for the role.
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=grants, readback=readback,
+                fact_readbacks=authority_fact_readbacks(authority_family="TASK_PACK"),
+            )
+        self.assertIn("AUTHORITY_FAMILY_MISMATCH", str(caught.exception))
+        # A grant drifting from the fact-derived authorization projects nothing.
+        drifting = {AUTHORITY_FACT_REF: self.validation_grant(groups=["validator/windows", "validator/linux", "validator/macos"])}
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=drifting, readback=readback,
+                fact_readbacks=authority_fact_readbacks(),
+            )
+        self.assertIn("AUTHORITY_GRANT_DRIFT", str(caught.exception))
+        drifting_family = {AUTHORITY_FACT_REF: self.validation_grant(authority_family="REVIEW_POLICY")}
+        with self.assertRaises(ValueError) as caught:
+            keyed_reserve(
+                KeyedAdmissionState(), dispatch,
+                authority_grants=drifting_family, readback=readback,
+                fact_readbacks=authority_fact_readbacks(),
+            )
+        self.assertIn("AUTHORITY_GRANT_DRIFT", str(caught.exception))
 
     def test_r6_self_referencing_grant_ref_is_rejected(self) -> None:
         # A dispatch never authorizes itself: a grant whose durable ref points
@@ -674,33 +854,53 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
                 "groups": ["validator/windows", "validator/linux"],
             }
         }
+        # R7: the trusted fact readback faithfully materializes the real
+        # durable fact — a Builder admission, TASK_PACK family — so the
+        # mismatch is derived from the evidence itself, before any caller
+        # grant is consulted.
+        builder_facts = authority_fact_readbacks(
+            ref=builder_ref,
+            authority_family="TASK_PACK",
+            role="builder",
+        )
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), unauthorized, authority_grants=builder_grants, readback=authority_readback())
+            keyed_reserve(
+                KeyedAdmissionState(), unauthorized,
+                authority_grants=builder_grants, readback=authority_readback(),
+                fact_readbacks=builder_facts,
+            )
         self.assertIn("AUTHORITY_FAMILY_MISMATCH", str(caught.exception))
 
     def test_c4_grant_applicability_is_tuple_exact(self) -> None:
-        grants = {"#861@6000000000": self.validation_grant()}
+        grants = {AUTHORITY_FACT_REF: self.validation_grant()}
         readback = authority_readback()
+        facts = authority_fact_readbacks()
         other_repo = self._dispatch(
             dispatch_id="D-other-repo",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/windows",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
             repository="other/repo",
         )
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), other_repo, authority_grants=grants, readback=readback)
+            keyed_reserve(
+                KeyedAdmissionState(), other_repo,
+                authority_grants=grants, readback=readback, fact_readbacks=facts,
+            )
         self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
         other_group = self._dispatch(
             dispatch_id="D-other-group",
             role="validator",
             execution_profile="LOCAL_VALIDATOR",
             compatibility_group="validator/macos",
-            compatibility_authority_ref="#861@6000000000",
+            compatibility_authority_ref=AUTHORITY_FACT_REF,
         )
         with self.assertRaises(ValueError) as caught:
-            keyed_reserve(KeyedAdmissionState(), other_group, authority_grants=grants, readback=readback)
+            keyed_reserve(
+                KeyedAdmissionState(), other_group,
+                authority_grants=grants, readback=readback, fact_readbacks=facts,
+            )
         self.assertIn("AUTHORITY_NOT_APPLICABLE", str(caught.exception))
 
     def test_c3_default_group_needs_no_grant_inventory(self) -> None:

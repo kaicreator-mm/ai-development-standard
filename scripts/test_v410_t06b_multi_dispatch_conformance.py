@@ -41,6 +41,21 @@ derived repository/task to equal the outer execution-state
 repository/work_item (``ACTIVE_DISPATCH_FOREIGN_WORK_ITEM``); the positive
 multi-active fixture is one work item (#861) with distinct roles, and
 cross-task/cross-repository injection negatives are pinned.
+
+R7 (bounded repair after Fresh Review R6 #861@6044748124): P1-1 — the
+durable compatibility authority is now bound to the referenced durable fact
+itself: ``resolve_non_default_authority`` consumes a trusted per-ref
+durable-fact readback (controller/authority-reader adapter materialized:
+ref identity, existence/currentness, content-addressed digest, owner
+family, exact repository/task/role applicability, explicit authorization
+content) and derives authorization from that evidence; the caller grant
+inventory is a projection that must equal the fact-derived grant
+(``AUTHORITY_GRANT_DRIFT``). The positive fixture is anchored to the real
+VALIDATION-family durable fact #861@6043191203; the review-verified 404
+durable-looking ref #861@6000000000 is negative-only — a decorated grant
+with a valid registry subject, valid owner_concern and correct tuple still
+fails closed when the referenced durable fact is missing, nonexistent,
+content-unbound, mismatched, or does not explicitly authorize the group.
 """
 
 from __future__ import annotations
@@ -53,7 +68,11 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from test_execution_architecture import authority_readback  # noqa: E402
+from test_execution_architecture import (  # noqa: E402
+    AUTHORITY_FACT_REF,
+    authority_fact_readbacks,
+    authority_readback,
+)
 from test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
 from v34_rules import (  # noqa: E402
     DEFAULT_COMPATIBILITY_GROUP,
@@ -155,15 +174,20 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
                 )
 
     def test_non_default_requires_resolved_owning_family_grant(self) -> None:
-        # R5/R6 (P1-2/P1-1): the ref shape alone never authorizes. The
-        # controller-resolved grant inventory is the owned proof path, bound to
-        # the durable owner/controller readback (the existing verified registry
-        # readback: owner_concern must resolve in the readback owners map and
-        # readback_subject must equal the current durable subject); resolution
-        # must be family-fit and tuple-exact, and every ambiguity fails closed.
+        # R5/R6/R7 (P1-2/P1-1): the ref shape alone never authorizes, and
+        # neither does a caller-decorated grant inventory. Authorization is
+        # derived from the trusted durable-fact readback — identity,
+        # existence/currentness, the content-addressed digest, the owner
+        # family, the exact tuple and the explicit authorization content —
+        # the grant inventory is only a projection that must equal the
+        # fact-derived grant, and the whole path is bound to the durable
+        # owner/controller readback (owner_concern resolvable in the owners
+        # map, readback_subject equal to the current durable subject); every
+        # ambiguity fails closed.
         readback = authority_readback()
+        facts = authority_fact_readbacks(repository="r", groups=["interop"])
         grant = {
-            "ref": "#861@6000000000",
+            "ref": AUTHORITY_FACT_REF,
             "authority_family": "VALIDATION",
             "owner_concern": "validation.concern_evidence_and_exact_subject",
             "readback_subject": readback["subject"],
@@ -172,33 +196,52 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
             "role": "validator",
             "groups": ["interop"],
         }
-        grants = {"#861@6000000000": grant}
+        grants = {AUTHORITY_FACT_REF: grant}
         self.assertTrue(
             resolve_non_default_authority(
                 repository="r",
                 task="#861",
                 role="validator",
                 compatibility_group="interop",
-                authority_ref="#861@6000000000",
+                authority_ref=AUTHORITY_FACT_REF,
                 authority_grants=grants,
                 authority_readback=readback,
+                authority_fact_readbacks=facts,
             )
         )
-        for mutant_grants, mutant_readback, token in (
-            (None, None, "AUTHORITY_UNRESOLVED"),
-            ({}, readback, "AUTHORITY_UNRESOLVED"),
-            (grants, None, "AUTHORITY_UNRESOLVED"),
-            ({"#861@6000000000": dict(grant, authority_family="TASK_PACK")}, readback, "AUTHORITY_FAMILY_MISMATCH"),
-            ({"#861@6000000000": dict(grant, task="#999")}, readback, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": dict(grant, role="builder")}, readback, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": dict(grant, groups=["other"])}, readback, "AUTHORITY_NOT_APPLICABLE"),
-            ({"#861@6000000000": {"authority_family": "VALIDATION"}}, readback, "AUTHORITY_UNRESOLVED"),
+        for mutant_grants, mutant_readback, mutant_facts, token in (
+            (None, None, facts, "AUTHORITY_UNRESOLVED"),
+            ({}, readback, facts, "AUTHORITY_UNRESOLVED"),
+            (grants, None, facts, "AUTHORITY_UNRESOLVED"),
+            # R7 (P1-1): the referenced durable fact itself must be bound by
+            # trusted readback evidence. A decorated caller grant (valid
+            # current registry subject, valid owner_concern, correct tuple)
+            # still fails when the fact readback is absent, never materialized
+            # for this ref, negative (the ref does not exist), or carries no
+            # content-addressed binding.
+            (grants, readback, None, "AUTHORITY_UNRESOLVED"),
+            (grants, readback, {}, "AUTHORITY_UNRESOLVED"),
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["interop"], exists=False), "AUTHORITY_UNRESOLVED"),
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["interop"], content_digest="not-a-digest"), "AUTHORITY_UNRESOLVED"),
+            # R7 (P1-1): the authorization content comes from the fact
+            # readback — a fact of the wrong family, outside the tuple, or
+            # not explicitly authorizing the group admits nothing.
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["interop"], authority_family="TASK_PACK"), "AUTHORITY_FAMILY_MISMATCH"),
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["interop"], task="#999"), "AUTHORITY_NOT_APPLICABLE"),
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["interop"], role="builder"), "AUTHORITY_NOT_APPLICABLE"),
+            (grants, readback, authority_fact_readbacks(repository="r", groups=["other"]), "AUTHORITY_NOT_APPLICABLE"),
+            ({AUTHORITY_FACT_REF: {"authority_family": "VALIDATION"}}, readback, facts, "AUTHORITY_UNRESOLVED"),
             # R6 (P1-1): self-made mappings without the durable readback
             # binding (owner_concern / readback_subject) manufacture no
             # authority.
-            ({"#861@6000000000": {k: v for k, v in grant.items() if k not in ("owner_concern", "readback_subject")}}, readback, "AUTHORITY_OWNER_UNRESOLVED"),
-            ({"#861@6000000000": dict(grant, owner_concern="no.such_concern")}, readback, "AUTHORITY_OWNER_UNRESOLVED"),
-            ({"#861@6000000000": dict(grant, readback_subject="0" * 40)}, readback, "AUTHORITY_CURRENTNESS_MISMATCH"),
+            ({AUTHORITY_FACT_REF: {k: v for k, v in grant.items() if k not in ("owner_concern", "readback_subject")}}, readback, facts, "AUTHORITY_OWNER_UNRESOLVED"),
+            ({AUTHORITY_FACT_REF: dict(grant, owner_concern="no.such_concern")}, readback, facts, "AUTHORITY_OWNER_UNRESOLVED"),
+            ({AUTHORITY_FACT_REF: dict(grant, readback_subject="0" * 40)}, readback, facts, "AUTHORITY_CURRENTNESS_MISMATCH"),
+            # R7 (P1-1): a caller grant drifting from the fact-derived
+            # authorization projects nothing (the inventory is a projection,
+            # never the authority source).
+            ({AUTHORITY_FACT_REF: dict(grant, authority_family="TASK_PACK")}, readback, facts, "AUTHORITY_GRANT_DRIFT"),
+            ({AUTHORITY_FACT_REF: dict(grant, groups=["interop", "extra"])}, readback, facts, "AUTHORITY_GRANT_DRIFT"),
         ):
             with self.subTest(token=token):
                 with self.assertRaises(ValueError) as caught:
@@ -207,9 +250,10 @@ class AuthorizedNonDefaultTests(unittest.TestCase):
                         task="#861",
                         role="validator",
                         compatibility_group="interop",
-                        authority_ref="#861@6000000000",
+                        authority_ref=AUTHORITY_FACT_REF,
                         authority_grants=mutant_grants,
                         authority_readback=mutant_readback,
+                        authority_fact_readbacks=mutant_facts,
                     )
                 self.assertIn(token, str(caught.exception))
 

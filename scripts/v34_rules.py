@@ -666,8 +666,15 @@ AUTHORITY_NOT_APPLICABLE = "AUTHORITY_NOT_APPLICABLE"
 AUTHORITY_OWNER_UNRESOLVED = "AUTHORITY_OWNER_UNRESOLVED"
 AUTHORITY_CURRENTNESS_MISMATCH = "AUTHORITY_CURRENTNESS_MISMATCH"
 AUTHORITY_SELF_REFERENCE = "AUTHORITY_SELF_REFERENCE"
+# R7 (Fresh Review R6 P1-1): the referenced durable authority fact itself must
+# be bound by trusted readback evidence (identity, existence/currentness,
+# content-addressed digest, owner family, exact tuple, explicit authorization
+# content); caller-supplied grant fields alone manufacture no authority and a
+# grant drifting from the fact readback is rejected.
+AUTHORITY_GRANT_DRIFT = "AUTHORITY_GRANT_DRIFT"
 
 _SHA40 = re.compile(r"[0-9a-f]{40}")
+_SHA256_HEX = re.compile(r"[0-9a-f]{64}")
 
 
 def resolve_non_default_authority(
@@ -679,16 +686,37 @@ def resolve_non_default_authority(
     authority_ref: object,
     authority_grants: object,
     authority_readback: object = None,
+    authority_fact_readbacks: object = None,
     self_refs: object = None,
 ) -> bool:
     """Deterministically resolve the durable authority behind a non-default group.
 
-    Machine half of the C3-C5/C7 boundary (#861): ``authority_grants`` is the
+    Machine half of the C3-C5/C7 boundary (#861). ``authority_grants`` is the
     controller-resolved grant inventory — the existing owner/controller proof
     path materialized before keyed admission — keyed by durable
-    ``#<issue>@<id>`` ref. The ref shape alone never authorizes: the ref must
-    resolve to a grant whose ``authority_family`` is the owning family for the
-    role and whose repository/task/role/groups cover the exact dispatch tuple.
+    ``#<issue>@<id>`` ref, and ``authority_fact_readbacks`` is the trusted
+    per-ref readback of the referenced durable authority fact itself,
+    materialized by the controller/authority-reader adapter before keyed
+    admission.
+
+    R7 (Fresh Review R6 P1-1): authorization is derived from the trusted
+    durable-fact readback, not from caller-supplied grant fields. Each
+    fact readback MUST carry, for the exact ref: the durable identity
+    (``ref``), existence/currentness (``exists`` — a ref that does not
+    resolve, e.g. a 404 durable-looking ref, fails closed), the
+    content-addressed binding to the exact durable fact content
+    (``content_digest``, 64-hex SHA-256 of the canonical fact content), the
+    owning ``authority_family``, the exact ``repository``/``task``/``role``
+    applicability, and the explicit authorization content projected as
+    ``groups``. A non-default group is admitted only when the fact readback
+    carries the owning family for the role and covers the exact
+    repository+task+role+group tuple. The caller grant inventory is only a
+    projection: every authorization field of
+    ``authority_grants[authority_ref]`` MUST equal the fact-readback-derived
+    grant, otherwise ``AUTHORITY_GRANT_DRIFT`` fails closed — an arbitrarily
+    decorated caller mapping (valid registry subject, valid owner_concern,
+    correct tuple) manufactures no authority when the referenced durable fact
+    is missing, stale, mismatched, or does not authorize the group.
 
     R6 (Fresh Review R5 P1-1): the inventory is additionally bound to the
     durable owner/controller readback contract — the same checked-in registry
@@ -743,30 +771,80 @@ def resolve_non_default_authority(
             f"{AUTHORITY_UNRESOLVED}: authority_readback is not a durable "
             "owner/controller readback (owners mapping + exact 40-hex subject)"
         )
+    if not isinstance(authority_fact_readbacks, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no trusted durable-fact readback inventory "
+            f"was supplied to bind {authority_ref}"
+        )
+    fact = authority_fact_readbacks.get(authority_ref)
+    if not isinstance(fact, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: {authority_ref} has no trusted durable-fact "
+            "readback; a caller-made grant inventory never manufactures the "
+            "referenced authority fact"
+        )
+    if fact.get("ref") != authority_ref:
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: durable-fact readback identity does not "
+            f"bind {authority_ref}"
+        )
+    if fact.get("exists") is not True:
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: {authority_ref} does not resolve to an "
+            "existing durable fact (existence/currentness evidence is missing "
+            "or negative)"
+        )
+    digest = fact.get("content_digest")
+    if not isinstance(digest, str) or not _SHA256_HEX.fullmatch(digest):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: the durable-fact readback for {authority_ref} "
+            "carries no content-addressed binding (64-hex content_digest of the "
+            "canonical fact content required)"
+        )
     grant = authority_grants.get(authority_ref)
     if not isinstance(grant, Mapping):
         raise ValueError(f"{AUTHORITY_UNRESOLVED}: {authority_ref} resolves to no durable grant")
     if grant.get("ref") != authority_ref:
         raise ValueError(f"{AUTHORITY_UNRESOLVED}: grant identity does not bind {authority_ref}")
+    # Authorization is derived from the trusted durable-fact readback only.
     expected_family = NON_DEFAULT_AUTHORITY_FAMILIES.get(role)
-    if expected_family is None or grant.get("authority_family") != expected_family:
+    if expected_family is None or fact.get("authority_family") != expected_family:
         raise ValueError(
-            f"{AUTHORITY_FAMILY_MISMATCH}: {authority_ref} carries "
-            f"{grant.get('authority_family')!r}, the owning family for role "
+            f"{AUTHORITY_FAMILY_MISMATCH}: the durable fact behind {authority_ref} "
+            f"carries {fact.get('authority_family')!r}, the owning family for role "
             f"{role!r} is {expected_family!r}"
         )
     for field, value in (("repository", repository), ("task", task), ("role", role)):
-        if grant.get(field) != value:
+        if fact.get(field) != value:
             raise ValueError(
-                f"{AUTHORITY_NOT_APPLICABLE}: grant {authority_ref} does not cover "
-                f"{field}={value!r}"
+                f"{AUTHORITY_NOT_APPLICABLE}: the durable fact behind {authority_ref} "
+                f"does not cover {field}={value!r}"
             )
-    groups = grant.get("groups")
-    if not isinstance(groups, Sequence) or isinstance(groups, str) or group not in groups:
+    fact_groups = fact.get("groups")
+    if not isinstance(fact_groups, Sequence) or isinstance(fact_groups, str) or group not in fact_groups:
         raise ValueError(
-            f"{AUTHORITY_NOT_APPLICABLE}: grant {authority_ref} does not list "
-            f"compatibility group {group!r}"
+            f"{AUTHORITY_NOT_APPLICABLE}: the durable fact behind {authority_ref} "
+            f"does not explicitly authorize compatibility group {group!r}"
         )
+    # The caller grant inventory is a projection only: it must equal the
+    # fact-readback-derived grant field by field or it manufactures nothing.
+    for field, derived_value in (
+        ("authority_family", fact.get("authority_family")),
+        ("repository", fact.get("repository")),
+        ("task", fact.get("task")),
+        ("role", fact.get("role")),
+        ("groups", list(fact_groups)),
+    ):
+        observed_value = grant.get(field)
+        if isinstance(observed_value, Sequence) and not isinstance(observed_value, str):
+            observed_value = list(observed_value)
+        if observed_value != derived_value:
+            raise ValueError(
+                f"{AUTHORITY_GRANT_DRIFT}: grant {authority_ref} field {field!r} is "
+                f"{observed_value!r}, but the trusted durable-fact readback derives "
+                f"{derived_value!r}; caller-supplied grant fields never manufacture "
+                "authority"
+            )
     owner_concern = grant.get("owner_concern")
     if not isinstance(owner_concern, str) or owner_concern not in owners:
         raise ValueError(
