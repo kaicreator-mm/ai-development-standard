@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import Iterable, Mapping, Sequence
 
+import hashlib
 import re
 
 # ---------------------------------------------------------------------------
@@ -672,9 +673,87 @@ AUTHORITY_SELF_REFERENCE = "AUTHORITY_SELF_REFERENCE"
 # content); caller-supplied grant fields alone manufacture no authority and a
 # grant drifting from the fact readback is rejected.
 AUTHORITY_GRANT_DRIFT = "AUTHORITY_GRANT_DRIFT"
+# R8 (Fresh Review R7 P1-1): the readback binding is mechanical — the digest is
+# RECOMPUTED from the supplied canonical durable-fact content. A shape-only
+# 64-hex digest, a missing canonical content, or a digest that does not match
+# the supplied content never binds authorization to content.
+AUTHORITY_DIGEST_MISMATCH = "AUTHORITY_DIGEST_MISMATCH"
+
+# R8 (Fresh Review R7 P1-1): the fixed-format machine-readable authorization
+# block a durable authority fact must carry in its canonical content. The
+# block is the ONLY authorization source: the verifier derives
+# family/tuple/groups by deterministically parsing it, so projected fields
+# supplied alongside the content can never manufacture authority.
+AUTHORITY_GRANT_BLOCK_START = "ai-dev:authority-grant v1"
+AUTHORITY_GRANT_BLOCK_END = "ai-dev:authority-grant end"
+AUTHORITY_GRANT_BLOCK_FIELDS = (
+    "authority_family",
+    "repository",
+    "task",
+    "role",
+    "groups",
+)
 
 _SHA40 = re.compile(r"[0-9a-f]{40}")
 _SHA256_HEX = re.compile(r"[0-9a-f]{64}")
+
+
+def parse_authority_grant_block(canonical_content: object) -> dict:
+    """Deterministically parse the ``ai-dev:authority-grant v1`` block.
+
+    R8 machine half of the C3-C5/C7 boundary: scans the canonical durable-fact
+    content for the block start marker, reads strict ``key: value`` field
+    lines (known keys only, no duplicates, no free text inside the block),
+    requires the terminator line and all five fields, and splits ``groups`` on
+    commas (order-preserving). Every deviation — missing block, unterminated
+    block, unknown/duplicate/empty field, missing required field, empty
+    groups — fails closed with ``AUTHORITY_NOT_APPLICABLE``: canonical content
+    without a parsable block grants nothing. Purely local string parsing;
+    stdlib only; no network.
+    """
+    def _fail(reason: str) -> None:
+        raise ValueError(
+            f"{AUTHORITY_NOT_APPLICABLE}: the canonical durable-fact content "
+            f"carries no parsable {AUTHORITY_GRANT_BLOCK_START} authorization "
+            f"block ({reason}); content that does not parse grants nothing"
+        )
+
+    if not isinstance(canonical_content, str):
+        _fail("canonical content is not text")
+    derived: dict = {}
+    inside = False
+    terminated = False
+    for raw_line in str(canonical_content).splitlines():
+        line = raw_line.strip()
+        if not inside:
+            if line == AUTHORITY_GRANT_BLOCK_START:
+                inside = True
+            continue
+        if line == AUTHORITY_GRANT_BLOCK_END:
+            terminated = True
+            break
+        if not line:
+            continue
+        key, sep, value = line.partition(":")
+        key = key.strip()
+        if not sep or key not in AUTHORITY_GRANT_BLOCK_FIELDS:
+            _fail(f"line {line!r} is not a known authorization field")
+        if key in derived:
+            _fail(f"duplicate field {key!r}")
+        value = value.strip()
+        if not value:
+            _fail(f"field {key!r} is empty")
+        derived[key] = value
+    if not terminated:
+        _fail("block is missing or not terminated by " + AUTHORITY_GRANT_BLOCK_END)
+    missing = [name for name in AUTHORITY_GRANT_BLOCK_FIELDS if name not in derived]
+    if missing:
+        _fail(f"missing fields {missing}")
+    groups = [item.strip() for item in str(derived["groups"]).split(",") if item.strip()]
+    if not groups:
+        _fail("no compatibility group is granted")
+    derived["groups"] = groups
+    return derived
 
 
 def resolve_non_default_authority(
@@ -699,24 +778,32 @@ def resolve_non_default_authority(
     materialized by the controller/authority-reader adapter before keyed
     admission.
 
-    R7 (Fresh Review R6 P1-1): authorization is derived from the trusted
-    durable-fact readback, not from caller-supplied grant fields. Each
-    fact readback MUST carry, for the exact ref: the durable identity
-    (``ref``), existence/currentness (``exists`` — a ref that does not
-    resolve, e.g. a 404 durable-looking ref, fails closed), the
-    content-addressed binding to the exact durable fact content
-    (``content_digest``, 64-hex SHA-256 of the canonical fact content), the
-    owning ``authority_family``, the exact ``repository``/``task``/``role``
-    applicability, and the explicit authorization content projected as
-    ``groups``. A non-default group is admitted only when the fact readback
-    carries the owning family for the role and covers the exact
-    repository+task+role+group tuple. The caller grant inventory is only a
-    projection: every authorization field of
-    ``authority_grants[authority_ref]`` MUST equal the fact-readback-derived
-    grant, otherwise ``AUTHORITY_GRANT_DRIFT`` fails closed — an arbitrarily
+    R8 (Fresh Review R7 P1-1): the fact readback is mechanically bound to the
+    canonical durable fact CONTENT — trusted-looking projected fields are no
+    longer accepted. Each fact readback MUST carry, for the exact ref: the
+    durable identity (``ref``), existence/currentness (``exists`` — a ref
+    that does not resolve, e.g. a 404 durable-looking ref, fails closed),
+    the canonical fact text itself (``canonical_content``) and the
+    content-addressed binding (``content_digest``). The verifier RECOMPUTES
+    SHA-256 over the supplied canonical content and requires equality with
+    ``content_digest`` — a shape-only 64-hex digest, a readback without
+    canonical content, or a digest that does not match the supplied content
+    fails closed (``AUTHORITY_DIGEST_MISMATCH``). The authorization fields
+    are then DERIVED by deterministically parsing the fixed-format
+    ``ai-dev:authority-grant v1`` machine-readable block out of the canonical
+    content (``parse_authority_grant_block``): content without a parsable
+    block grants nothing (``AUTHORITY_NOT_APPLICABLE``), and no
+    ``authority_family`` / ``repository`` / ``task`` / ``role`` / ``groups``
+    field supplied alongside the content is ever read. A non-default group is
+    admitted only when the content-derived grant carries the owning family
+    for the role and covers the exact repository+task+role+group tuple. The
+    caller grant inventory is only a projection: every authorization field of
+    ``authority_grants[authority_ref]`` MUST equal the content-derived grant,
+    otherwise ``AUTHORITY_GRANT_DRIFT`` fails closed — an arbitrarily
     decorated caller mapping (valid registry subject, valid owner_concern,
     correct tuple) manufactures no authority when the referenced durable fact
-    is missing, stale, mismatched, or does not authorize the group.
+    is missing, stale, content-mismatched, unparseable, or does not authorize
+    the group.
 
     R6 (Fresh Review R5 P1-1): the inventory is additionally bound to the
     durable owner/controller readback contract — the same checked-in registry
@@ -801,39 +888,60 @@ def resolve_non_default_authority(
             "carries no content-addressed binding (64-hex content_digest of the "
             "canonical fact content required)"
         )
+    # R8: the binding is mechanical — the digest is RECOMPUTED from the
+    # supplied canonical content, and every authorization field is DERIVED by
+    # parsing that content. Trusted-looking projected fields on the readback
+    # mapping are never read.
+    content = fact.get("canonical_content")
+    if not isinstance(content, str):
+        raise ValueError(
+            f"{AUTHORITY_DIGEST_MISMATCH}: the durable-fact readback for "
+            f"{authority_ref} supplies no canonical fact content to verify the "
+            "content binding against"
+        )
+    recomputed = hashlib.sha256(content.encode("utf-8")).hexdigest()
+    if recomputed != digest:
+        raise ValueError(
+            f"{AUTHORITY_DIGEST_MISMATCH}: the durable-fact readback for "
+            f"{authority_ref} binds content_digest {digest!r}, but the supplied "
+            f"canonical content hashes to {recomputed!r}; a shape-only or stale "
+            "digest never binds authorization to content"
+        )
+    derived = parse_authority_grant_block(content)
     grant = authority_grants.get(authority_ref)
     if not isinstance(grant, Mapping):
         raise ValueError(f"{AUTHORITY_UNRESOLVED}: {authority_ref} resolves to no durable grant")
     if grant.get("ref") != authority_ref:
         raise ValueError(f"{AUTHORITY_UNRESOLVED}: grant identity does not bind {authority_ref}")
-    # Authorization is derived from the trusted durable-fact readback only.
+    # Authorization is derived from the parsed canonical content only.
     expected_family = NON_DEFAULT_AUTHORITY_FAMILIES.get(role)
-    if expected_family is None or fact.get("authority_family") != expected_family:
+    if expected_family is None or derived["authority_family"] != expected_family:
         raise ValueError(
-            f"{AUTHORITY_FAMILY_MISMATCH}: the durable fact behind {authority_ref} "
-            f"carries {fact.get('authority_family')!r}, the owning family for role "
+            f"{AUTHORITY_FAMILY_MISMATCH}: the canonical content behind "
+            f"{authority_ref} grants authority family "
+            f"{derived['authority_family']!r}, the owning family for role "
             f"{role!r} is {expected_family!r}"
         )
     for field, value in (("repository", repository), ("task", task), ("role", role)):
-        if fact.get(field) != value:
+        if derived[field] != value:
             raise ValueError(
-                f"{AUTHORITY_NOT_APPLICABLE}: the durable fact behind {authority_ref} "
-                f"does not cover {field}={value!r}"
+                f"{AUTHORITY_NOT_APPLICABLE}: the canonical content behind "
+                f"{authority_ref} does not cover {field}={value!r}"
             )
-    fact_groups = fact.get("groups")
-    if not isinstance(fact_groups, Sequence) or isinstance(fact_groups, str) or group not in fact_groups:
+    if group not in derived["groups"]:
         raise ValueError(
-            f"{AUTHORITY_NOT_APPLICABLE}: the durable fact behind {authority_ref} "
-            f"does not explicitly authorize compatibility group {group!r}"
+            f"{AUTHORITY_NOT_APPLICABLE}: the canonical content behind "
+            f"{authority_ref} does not explicitly authorize compatibility group "
+            f"{group!r}"
         )
     # The caller grant inventory is a projection only: it must equal the
-    # fact-readback-derived grant field by field or it manufactures nothing.
+    # content-derived grant field by field or it manufactures nothing.
     for field, derived_value in (
-        ("authority_family", fact.get("authority_family")),
-        ("repository", fact.get("repository")),
-        ("task", fact.get("task")),
-        ("role", fact.get("role")),
-        ("groups", list(fact_groups)),
+        ("authority_family", derived["authority_family"]),
+        ("repository", derived["repository"]),
+        ("task", derived["task"]),
+        ("role", derived["role"]),
+        ("groups", list(derived["groups"])),
     ):
         observed_value = grant.get(field)
         if isinstance(observed_value, Sequence) and not isinstance(observed_value, str):
@@ -841,9 +949,9 @@ def resolve_non_default_authority(
         if observed_value != derived_value:
             raise ValueError(
                 f"{AUTHORITY_GRANT_DRIFT}: grant {authority_ref} field {field!r} is "
-                f"{observed_value!r}, but the trusted durable-fact readback derives "
-                f"{derived_value!r}; caller-supplied grant fields never manufacture "
-                "authority"
+                f"{observed_value!r}, but the canonical content of the referenced "
+                f"durable fact derives {derived_value!r}; caller-supplied grant "
+                "fields never manufacture authority"
             )
     owner_concern = grant.get("owner_concern")
     if not isinstance(owner_concern, str) or owner_concern not in owners:
