@@ -371,6 +371,13 @@ class CandidateShapeTests(unittest.TestCase):
     its OWN registered prefixes via TASK_CANDIDATES, with the active candidate
     measured base -> committed HEAD and failing LOUD when an unregistered
     successor extends the tree. Zero removed tests; no other assertion weakened.
+
+    V410-T07B R2 seam-rebind scoping fold (#863, dispatch
+    V410-T07B-BOUNDED-SEAM-REBIND-R2): the authorized seam write set (the T07A
+    focused suite + the pin-bearing projection/IMPLEMENTATION_MAP/TEST_MATRIX
+    files) is registered into T07B_ALLOWED_PREFIXES exactly as authorized — a
+    registry scoping line with disclosure, zero removed tests; the rebound
+    T07A suite carries the matching successor-aware registry.
     """
 
     T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
@@ -418,6 +425,12 @@ class CandidateShapeTests(unittest.TestCase):
     # itself edits — this guard, with zero removed tests (fast-path handoff
     # #863@6046064159: the successor task registers its own entry; never
     # widen another task's scope).
+    #
+    # R3 seam-rebind scoping fold (dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2,
+    # #863: proposal @6054504547 / admission @6054508480 / claim @6054512382):
+    # the four explicitly authorized seam paths are registered here exactly as
+    # authorized — a registry scoping line only, mirroring the rebound T07A
+    # suite's TASK_CANDIDATES entry; never a widening beyond the disclosure.
     T07B_ALLOWED_PREFIXES = (
         ".agent/execution/V410-T07B-R1/",
         "templates/product-decision-record.md",
@@ -425,6 +438,10 @@ class CandidateShapeTests(unittest.TestCase):
         "checklists/version-closure.md",
         "scripts/test_v410_t07b_decision_record.py",
         "scripts/test_v410_owner_convergence.py",
+        "scripts/test_v410_t07a_acceptance_projection.py",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
     )
 
     # Successor-aware candidate registry (family-style): each task's candidate

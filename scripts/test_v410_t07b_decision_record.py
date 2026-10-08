@@ -52,7 +52,14 @@ REBIND_BASE_SHA = "cea2e0ccd045e8fcebaf110273129b198ed259fd"
 REBIND_BASE_TREE = "cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2"
 
 # Candidate-bound citations (fail closed on drift; rebind required, never edited in place).
-T07A_INDEX_BLOB_AT_BASE = "65baefd3a1d087d3692e6e603dbe098546bc7cb1"
+# Pin-line fold with disclosure — R2 seam rebind (dispatch
+# V410-T07B-BOUNDED-SEAM-REBIND-R2, #863): the T07A index's R2-row
+# owner-convergence producer pin was lawfully rebound
+# (d2347fca -> 6ed1ba86 -> 2e8bd6f9, the last step for the authorized seam-path
+# registry scoping fold in the owner-convergence guard), which changed the index
+# blob itself; was 65baefd3a1d087d3692e6e603dbe098546bc7cb1 at the rebind base
+# cea2e0cc (base-qualified citation preserved in the reference).
+T07A_INDEX_BLOB_AT_BASE = "7f4f4d632dabe9aebb9d642883dc15911139a515"
 PRD_FROZEN_BLOB = "b0b9906035eee253aad4bff0274d3d4c8f90b9db"
 
 SCHEMA = "v410-product-decision-record-v1"
@@ -112,6 +119,12 @@ DECIDED_TOKEN_RE = re.compile(r"\b(YES|NO)\b")
 
 # T07B candidate write set (registered successor candidate; see the disclosed
 # carried-guard rebind of scripts/test_v410_owner_convergence.py).
+#
+# R2 seam-rebind scoping fold (dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2, #863):
+# the four explicitly authorized seam paths are registered here exactly as
+# authorized, mirroring the matching registry lines in
+# scripts/test_v410_owner_convergence.py and the rebound T07A suite — registry
+# scoping lines with disclosure only, never a widening beyond the disclosure.
 T07B_ALLOWED_PREFIXES = (
     ".agent/execution/V410-T07B-R1/",
     "templates/product-decision-record.md",
@@ -119,6 +132,10 @@ T07B_ALLOWED_PREFIXES = (
     "checklists/version-closure.md",
     "scripts/test_v410_t07b_decision_record.py",
     "scripts/test_v410_owner_convergence.py",  # pre-authorized TASK_CANDIDATES registry rebind
+    "scripts/test_v410_t07a_acceptance_projection.py",  # R3 seam rebind (authorized)
+    "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R3 seam rebind (authorized)
+    ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R3 seam rebind (authorized)
+    ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # R3 seam rebind (authorized)
 )
 FORBIDDEN_SURFACES = (
     "schemas/",
@@ -129,8 +146,12 @@ FORBIDDEN_SURFACES = (
     "templates/GOLDEN_INDEX.md",
     "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
     "standard-manifest.json",
-    T07A_INDEX_REL,
-    "scripts/test_v410_t07a_acceptance_projection.py",
+    # R1-scope not-touched entries for the T07A index and its suite were
+    # superseded by the R2 seam-rebind authorization (dispatch
+    # V410-T07B-BOUNDED-SEAM-REBIND-R2): both paths moved to
+    # T07B_ALLOWED_PREFIXES above with the authorization recorded in the T07A
+    # pack TEST_MATRIX r3_seam_rebind — the guard intent (no unauthorized T07A
+    # edits) stays enforced by the registered-prefix closure.
 )
 
 
