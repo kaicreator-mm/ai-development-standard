@@ -554,6 +554,14 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
     ancestry loss, unregistered paths, upstream authority surfaces, or
     unauthorized carried-suite edits (never a silent skip). Zero removed
     tests; no other assertion weakened.
+
+    V410-T08A rebind (#864, dispatch V410-T08A-BUILDER-R1, pre-authorized by
+    the fast-path handoff #864@6046066388 and the positional-registry seam
+    discipline of the T08A admission #864@6055469682): the T08A successor
+    candidate registered its OWN TASK_CANDIDATES entry (base 402bf289 = merged
+    PR #934 tip, T08A's own prefixes) and the active flag moved accordingly.
+    The registry edits are disclosed carried-suite rebinds; zero removed
+    tests; no other assertion weakened.
     """
 
     # Frozen T07A R2 integrated tip (merged PR #933): the frozen subject of the
@@ -615,12 +623,46 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
     # Successor-aware candidate registry (family pattern of
     # scripts/test_v410_owner_convergence.py): each task's candidate delta is
     # scoped to its OWN registered prefixes instead of every successor being
-    # measured against T07A's whole-prefix bans. T07A is frozen at its
-    # integrated tip; the single entry flagged active=True is measured from its
-    # base to the CURRENT committed HEAD and fails LOUD on ancestry loss,
-    # unregistered paths or unauthorized carried-suite edits — never a silent
-    # skip. A successor task rebinds by adding its own entry and moving the
-    # active flag — never by widening another task's prefixes.
+    # measured against T07A's whole-prefix bans. T07A and T07B are frozen at
+    # their integrated tips; the single entry flagged active=True is measured
+    # from its base to the CURRENT committed HEAD and fails LOUD on ancestry
+    # loss, unregistered paths or unauthorized carried-suite edits — never a
+    # silent skip. A successor task rebinds by adding its own entry and moving
+    # the active flag — never by widening another task's prefixes.
+    #
+    # V410-T08A rebind (dispatch V410-T08A-BUILDER-R1): T07B is now frozen at
+    # its integrated tip 402bf289 (merged PR #934) and the T08A successor
+    # candidate is registered with its OWN prefixes (including the disclosed
+    # registry-rebind and pin-convergence paths of that task); the active
+    # flag moved to the T08A entry.
+    T07B_INTEGRATED_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+
+    # Surfaces the V410-T08A candidate may touch (its registered successor
+    # write set), plus the DISCLOSED registry-rebind and pin-convergence paths
+    # of that task. Never a widening of another task's scope.
+    T08A_PREFIXES = (
+        ".agent/execution/V410-T08A-R1/",
+        "scripts/run_v410_integration.py",
+        "scripts/test_v410_t08a_integration_runner.py",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
+    # Carried-suite edits the T08A rebind (dispatch V410-T08A-BUILDER-R1) is
+    # authorized to make: the three positional candidate registries only.
+    AUTHORIZED_T08A_REGISTRY_REBIND = frozenset(
+        {
+            "scripts/test_v410_owner_convergence.py",
+            "scripts/test_v410_t07a_acceptance_projection.py",
+            "scripts/test_v410_t07b_decision_record.py",
+        }
+    )
+
     TASK_CANDIDATES = (
         {
             "task": "V410-T07A",
@@ -632,6 +674,7 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         {
             "task": "V410-T07B",
             "base": T07B_BASE_SHA,
+            "integrated": T07B_INTEGRATED_SHA,
             "prefixes": T07B_PREFIXES,
             "authorized_suite_edits": frozenset(
                 {
@@ -639,6 +682,12 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
                     "scripts/test_v410_t07a_acceptance_projection.py",
                 }
             ),
+        },
+        {
+            "task": "V410-T08A",
+            "base": T07B_INTEGRATED_SHA,
+            "prefixes": T08A_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_T08A_REGISTRY_REBIND,
             "active": True,
         },
     )
@@ -725,7 +774,7 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T07B"],
+            ["V410-T08A"],
             "exactly one active candidate entry is required",
         )
         t07b = self._candidate("V410-T07B")
