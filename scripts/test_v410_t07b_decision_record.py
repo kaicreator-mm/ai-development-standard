@@ -66,7 +66,15 @@ REBIND_BASE_TREE = "cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2"
 # pin line (2e8bd6f9 -> 50e26dc6) inside the index and therefore this
 # HEAD-equality citation fold (7f4f4d63 -> d3a62083); strictly a pin line, no
 # index meaning changed, zero removed tests.
-T07A_INDEX_BLOB_AT_BASE = "d3a62083e6f5f9142dbc7e29a5f6560a8f620767"
+# Third pin-line fold with disclosure — V410-IDENTITY-R1 successor rebind
+# (#779, dispatch V410-IDENTITY-R1, claim #779@6063246782, base d864465a):
+# the V410-IDENTITY successor candidate registered its own TASK_CANDIDATES
+# entry in the owner-convergence guard (base d864465a = merged PR #936 tip),
+# mechanically forcing the same R2-row pin line (50e26dc6 -> 56cf032a) inside
+# the index and therefore this HEAD-equality citation fold
+# (d3a62083 -> 5da87fd6); strictly a pin line, no index meaning changed,
+# zero removed tests.
+T07A_INDEX_BLOB_AT_BASE = "5da87fd63a1aa898f9c00a6220d57547a26a2154"
 PRD_FROZEN_BLOB = "b0b9906035eee253aad4bff0274d3d4c8f90b9db"
 
 SCHEMA = "v410-product-decision-record-v1"
@@ -792,7 +800,16 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
     # deterministic and mutant-catching — and the new active-candidate check
     # scopes every successor candidate to its OWN registered prefixes. Zero
     # removed tests; no other assertion weakened.
+    #
+    # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+    # claim #779@6063246782, base d864465a): disclosed carried-suite rebind,
+    # zero removed tests — T08A is now FROZEN at its integrated tip d864465a
+    # (merged PR #936) and the V410-IDENTITY successor entry carries the
+    # active flag; every frozen historical delta stays asserted.
     T07B_INTEGRATED_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+    # V410-T08A integrated tip (merged PR #936): frozen subject of the T08A
+    # registry entry retained below; V410-IDENTITY's own registered base.
+    T08A_INTEGRATED_SHA = "d864465a08ef873c94a78d1a0d0c19fafce6c617"
 
     # Surfaces the V410-T08A candidate may touch (its registered successor
     # write set), plus the DISCLOSED registry-rebind and pin-convergence paths
@@ -820,6 +837,43 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
         }
     )
 
+    # Surfaces the V410-IDENTITY candidate may touch (its registered successor
+    # write set): the identity triple, its own pack, the three positional
+    # registries + the T08A focused suite + the integration runner (all
+    # disclosed carried-suite rebinds), and the mechanically-forced
+    # blob-pin cascade paths (dispatch V410-IDENTITY-R1, claim
+    # #779@6063246782, base d864465a). Never a widening of another task's
+    # scope.
+    IDENTITY_ALLOWED_PREFIXES = (
+        "VERSION",
+        "README.md",
+        "CHANGELOG.md",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "scripts/test_v410_t08a_integration_runner.py",  # disclosed focused-suite rebind
+        "scripts/run_v410_integration.py",  # disclosed runner subject rebind
+        ".agent/execution/V410-IDENTITY-R1/",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
+    # Carried-suite edits the V410-IDENTITY-R1 rebind (dispatch
+    # V410-IDENTITY-R1, claim #779@6063246782) is authorized to make: the
+    # three positional candidate registries + the T08A focused suite + the
+    # integration runner.
+    AUTHORIZED_IDENTITY_SUITE_REBIND = frozenset(
+        {
+            "scripts/test_v410_owner_convergence.py",
+            "scripts/test_v410_t07a_acceptance_projection.py",
+            "scripts/test_v410_t07b_decision_record.py",
+            "scripts/test_v410_t08a_integration_runner.py",
+            "scripts/run_v410_integration.py",
+        }
+    )
+
     # Historical carried-suite authorizations of the T07B candidate (R2
     # pre-authorized registry rebind, fast-path handoff #863@6046064159; R3
     # seam rebind, dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2) — frozen here so
@@ -835,10 +889,14 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
     )
 
     # Successor-aware candidate registry (family pattern of
-    # scripts/test_v410_owner_convergence.py): T07B frozen at its integrated
-    # tip; the single active entry (V410-T08A) is measured from its base to
-    # the CURRENT committed HEAD and fails LOUD on ancestry loss or
-    # unregistered paths — never a silent skip.
+    # scripts/test_v410_owner_convergence.py): T07B and T08A frozen at their
+    # integrated tips; the single active entry (V410-IDENTITY) is measured
+    # from its base to the CURRENT committed HEAD and fails LOUD on ancestry
+    # loss or unregistered paths — never a silent skip.
+    #
+    # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+    # claim #779@6063246782, base d864465a): disclosed carried-suite rebind,
+    # zero removed tests.
     TASK_CANDIDATES = (
         {
             "task": "V410-T07B",
@@ -851,8 +909,15 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
         {
             "task": "V410-T08A",
             "base": T07B_INTEGRATED_SHA,
+            "integrated": T08A_INTEGRATED_SHA,
             "prefixes": T08A_ALLOWED_PREFIXES,
             "authorized_suite_edits": AUTHORIZED_T08A_REGISTRY_REBIND,
+        },
+        {
+            "task": "V410-IDENTITY",
+            "base": T08A_INTEGRATED_SHA,
+            "prefixes": IDENTITY_ALLOWED_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_IDENTITY_SUITE_REBIND,
             "active": True,
         },
     )
@@ -899,16 +964,30 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
         # moved to the T08A successor entry per the registry's own designed
         # rebind mechanism; the frozen T07B entry (base + prefixes + frozen
         # integrated tip) is retained unchanged.
+        # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+        # claim #779@6063246782, base d864465a): disclosed carried-suite
+        # rebind, zero removed tests — the active flag moved to the
+        # V410-IDENTITY successor entry; the frozen T08A entry (base +
+        # integrated tip d864465a + prefixes) is retained unchanged.
         import test_v410_owner_convergence as oc  # carried suite, import-safe
 
         entries = oc.CandidateShapeTests.TASK_CANDIDATES
         active = [entry["task"] for entry in entries if entry.get("active")]
-        self.assertEqual(active, ["V410-T08A"], "exactly one active candidate: the T08A registry entry")
-        entry = next(e for e in entries if e["task"] == "V410-T08A")
-        self.assertEqual(entry["base"], self.T07B_INTEGRATED_SHA)
-        for prefix in self.T08A_ALLOWED_PREFIXES:
+        self.assertEqual(active, ["V410-IDENTITY"], "exactly one active candidate: the V410-IDENTITY registry entry")
+        entry = next(e for e in entries if e["task"] == "V410-IDENTITY")
+        self.assertEqual(entry["base"], self.T08A_INTEGRATED_SHA)
+        for prefix in self.IDENTITY_ALLOWED_PREFIXES:
             self.assertTrue(
                 any(p.startswith(tuple(entry["prefixes"])) for p in [prefix]),
+                f"V410-IDENTITY registered prefixes must cover {prefix}",
+            )
+        t08a = next(e for e in entries if e["task"] == "V410-T08A")
+        self.assertNotIn("active", t08a)  # flag moved, entry and frozen integrated tip retained
+        self.assertEqual(t08a["base"], self.T07B_INTEGRATED_SHA)
+        self.assertEqual(t08a.get("integrated"), self.T08A_INTEGRATED_SHA)
+        for prefix in self.T08A_ALLOWED_PREFIXES:
+            self.assertTrue(
+                any(p.startswith(tuple(t08a["prefixes"])) for p in [prefix]),
                 f"T08A registered prefixes must cover {prefix}",
             )
         t07b = next(e for e in entries if e["task"] == "V410-T07B")
@@ -967,11 +1046,11 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T08A"],
+            ["V410-IDENTITY"],
             "exactly one active candidate entry is required",
         )
         t07b = self._candidate("V410-T07B")
-        self.assertNotIn("active", t07b)  # flag moved to the T08A successor, entry retained
+        self.assertNotIn("active", t07b)  # flag moved to the V410-IDENTITY successor, entry retained
         self.assertEqual(
             t07b["authorized_suite_edits"],
             self.AUTHORIZED_R2_CARRIED_REBIND

@@ -1,0 +1,43 @@
+pack_id: V410-IDENTITY-R1
+task_id: V410-IDENTITY
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: d864465a08ef873c94a78d1a0d0c19fafce6c617
+base_tree: 10225580bdb4140feaefbee054d852ac5eb978e2
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-IDENTITY
+branch: task/v4.10.0-v410-identity-qualification
+parent_issue: "#779"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+validation_scope: concern
+pinned_standard_revision: d864465a08ef873c94a78d1a0d0c19fafce6c617
+generated_by:
+  - "zcode:k3-256 (V410-IDENTITY-BUILDER-R1, claim #779@6063246782, dispatch V410-IDENTITY-R1)"
+generated_at: "2026-10-08T00:00:00+00:00"
+decision_authority_boundary:
+  - "本关切不制造 Candidate Freeze / Hidden Validation / Release Qualification / main 合并 / tag 任何断言。身份三元组（VERSION/README/CHANGELOG）只声明未发布 version-branch sequential integration candidate 姿态；全部历史谱系声明保留原状。"
+  - "V410-IDENTITY owns ONLY the release identity triple delta (VERSION/README/CHANGELOG) plus the disclosed successor-aware positional-registry rebind with its mechanically forced blob-pin cascade. It repairs no semantic defect; any identity obligation beyond this write set routes to RELEASE_STANDARD / checklists owners."
+dependency_completion:
+  - V410-T08A@d864465a08ef873c94a78d1a0d0c19fafce6c617 INTEGRATED
+  - V410-T07B@402bf2899a7e1cd43eea3e7d78a37c947fe28c46 INTEGRATED
+  - V410-T07A@cea2e0ccd045e8fcebaf110273129b198ed259fd INTEGRATED
+  - V410-T06B@0518202c715dcf91784a694bdf4a8eeeaeb16ab6 INTEGRATED
+dependency_notes:
+  - "Exact base = merged PR #936 tip (V410-T08A INTEGRATED, tree 10225580bdb4140feaefbee054d852ac5eb978e2). The full predecessor merge chain #861@0518202c -> #862@cea2e0cc -> #863@402bf289 -> #864@d864465a is ancestor-intact at this base."
+  - "Claim chain (provenance only, never acceptance): proposal #779@6063217361, admission/claim #779@6063246782 (dispatch V410-IDENTITY-R1)."
+material_paths:
+  - .agent/execution/V410-IDENTITY-R1/EXECUTION_CONTRACT.md
+  - .agent/execution/V410-IDENTITY-R1/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-IDENTITY-R1/IMPLEMENTATION_MAP.md
+  - .agent/execution/V410-IDENTITY-R1/MANIFEST.yaml
+  - .agent/execution/V410-IDENTITY-R1/REVIEW_CHECKLIST.md
+  - .agent/execution/V410-IDENTITY-R1/TEST_MATRIX.yaml
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

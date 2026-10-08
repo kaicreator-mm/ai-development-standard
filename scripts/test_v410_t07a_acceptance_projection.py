@@ -562,6 +562,14 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
     PR #934 tip, T08A's own prefixes) and the active flag moved accordingly.
     The registry edits are disclosed carried-suite rebinds; zero removed
     tests; no other assertion weakened.
+
+    V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1, claim
+    #779@6063246782, base d864465a): the V410-IDENTITY successor candidate
+    registered its OWN TASK_CANDIDATES entry (base d864465a = merged PR #936
+    tip = V410-T08A INTEGRATED, the identity triple + disclosed carried-suite
+    rebind prefixes) and the active flag moved accordingly. The registry
+    edits are disclosed carried-suite rebinds; zero removed tests; no other
+    assertion weakened.
     """
 
     # Frozen T07A R2 integrated tip (merged PR #933): the frozen subject of the
@@ -623,8 +631,9 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
     # Successor-aware candidate registry (family pattern of
     # scripts/test_v410_owner_convergence.py): each task's candidate delta is
     # scoped to its OWN registered prefixes instead of every successor being
-    # measured against T07A's whole-prefix bans. T07A and T07B are frozen at
-    # their integrated tips; the single entry flagged active=True is measured
+    # measured against T07A's whole-prefix bans. T07A, T07B and T08A are
+    # frozen at their integrated tips; the single entry flagged active=True
+    # is measured
     # from its base to the CURRENT committed HEAD and fails LOUD on ancestry
     # loss, unregistered paths or unauthorized carried-suite edits — never a
     # silent skip. A successor task rebinds by adding its own entry and moving
@@ -635,7 +644,16 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
     # candidate is registered with its OWN prefixes (including the disclosed
     # registry-rebind and pin-convergence paths of that task); the active
     # flag moved to the T08A entry.
+    #
+    # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+    # claim #779@6063246782, base d864465a): disclosed carried-suite rebind,
+    # zero removed tests — T08A is now frozen at its integrated tip d864465a
+    # (merged PR #936) and the V410-IDENTITY successor entry carries the
+    # active flag.
     T07B_INTEGRATED_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+    # V410-T08A integrated tip (merged PR #936): frozen subject of the T08A
+    # registry entry retained below; V410-IDENTITY's own registered base.
+    T08A_INTEGRATED_SHA = "d864465a08ef873c94a78d1a0d0c19fafce6c617"
 
     # Surfaces the V410-T08A candidate may touch (its registered successor
     # write set), plus the DISCLOSED registry-rebind and pin-convergence paths
@@ -663,6 +681,43 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         }
     )
 
+    # Surfaces the V410-IDENTITY candidate may touch (its registered successor
+    # write set): the identity triple, its own pack, the three positional
+    # registries + the T08A focused suite + the integration runner (all
+    # disclosed carried-suite rebinds), and the mechanically-forced
+    # blob-pin cascade paths (dispatch V410-IDENTITY-R1, claim
+    # #779@6063246782, base d864465a). Never a widening of another task's
+    # scope.
+    IDENTITY_PREFIXES = (
+        "VERSION",
+        "README.md",
+        "CHANGELOG.md",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "scripts/test_v410_t08a_integration_runner.py",  # disclosed focused-suite rebind
+        "scripts/run_v410_integration.py",  # disclosed runner subject rebind
+        ".agent/execution/V410-IDENTITY-R1/",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
+    # Carried-suite edits the V410-IDENTITY-R1 rebind (dispatch
+    # V410-IDENTITY-R1, claim #779@6063246782) is authorized to make: the
+    # three positional candidate registries + the T08A focused suite + the
+    # integration runner.
+    AUTHORIZED_IDENTITY_SUITE_REBIND = frozenset(
+        {
+            "scripts/test_v410_owner_convergence.py",
+            "scripts/test_v410_t07a_acceptance_projection.py",
+            "scripts/test_v410_t07b_decision_record.py",
+            "scripts/test_v410_t08a_integration_runner.py",
+            "scripts/run_v410_integration.py",
+        }
+    )
+
     TASK_CANDIDATES = (
         {
             "task": "V410-T07A",
@@ -686,8 +741,15 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         {
             "task": "V410-T08A",
             "base": T07B_INTEGRATED_SHA,
+            "integrated": T08A_INTEGRATED_SHA,
             "prefixes": T08A_PREFIXES,
             "authorized_suite_edits": AUTHORIZED_T08A_REGISTRY_REBIND,
+        },
+        {
+            "task": "V410-IDENTITY",
+            "base": T08A_INTEGRATED_SHA,
+            "prefixes": IDENTITY_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_IDENTITY_SUITE_REBIND,
             "active": True,
         },
     )
@@ -774,7 +836,7 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T08A"],
+            ["V410-IDENTITY"],
             "exactly one active candidate entry is required",
         )
         t07b = self._candidate("V410-T07B")

@@ -64,11 +64,12 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNNER_VERSION = "V410-T08A-R1"
 TASK = "V410-T08A"
 DISPATCH_ISSUE = "#864"
-# Generation-2 successor adoption (dispatch V410-T08A-BUILDER-R2): the audited
-# R1 candidate (86830d94, 15 files) is adopted verbatim under the new lawful
-# admission->claim chain, closing the R1 FAIL findings P1-PV2/P1-PV1 (#864@6061280237).
-PROPOSAL_REF = "#864@6061672692"
-ADMISSION_CLAIM_REF = "#864@6061706724"
+# V410-IDENTITY-R1 successor adoption (dispatch V410-IDENTITY-R1, #779, claim
+# #779@6063246782): the runner subject rebinds to the merged PR #936 tip
+# d864465a (V410-T08A INTEGRATED); inventory, predecessor chain and validator
+# logic untouched.
+PROPOSAL_REF = "#779@6063217361"
+ADMISSION_CLAIM_REF = "#779@6063246782"
 DRYRUN_DESIGN_REF = "#864@6040893503"
 FALSE_GREEN_ORACLE_REF = "#864@6043181240"
 IMPACT_INVENTORY_REF = "#864@6037701635"
@@ -77,10 +78,10 @@ RECORD_SCHEMA = "v410-integration-runner-result-v1"
 INVENTORY_SCHEMA = "v410-integration-runner-inventory-v1"
 DISCLAIMER = "VISIBLE INTEGRATION PASS IS NOT HIDDEN VALIDATION OR RELEASE QUALIFICATION PASS"
 
-# Exact rebind subject of this runner (the merged #934 integration tip =
-# V410-T07B INTEGRATED = V410-T08A's own base).
-BASE_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
-BASE_TREE = "2af7450ff8312bd8652742996071252c42abe65e"
+# Exact rebind subject of this runner (the merged #936 integration tip =
+# V410-T08A INTEGRATED = V410-IDENTITY's own base).
+BASE_SHA = "d864465a08ef873c94a78d1a0d0c19fafce6c617"
+BASE_TREE = "10225580bdb4140feaefbee054d852ac5eb978e2"
 
 # Full predecessor merge chain (integration-impact inventory #864@6037701635,
 # rebound: #861@0518202c -> #862@cea2e0cc -> #863@402bf289). Drift anywhere in
@@ -337,7 +338,10 @@ def cross_suite_audit(record: dict) -> tuple[bool, dict, list[dict]]:
     """TIER-3 integration-only conflict audit (no semantic repair, read-only)."""
     findings: list[str] = []
     sys.path.insert(0, str(ROOT / "scripts"))
-    expected_active = TASK
+    # V410-IDENTITY-R1 successor adoption (#779, claim #779@6063246782): the
+    # cross-suite audit expects the single active V410-IDENTITY registry entry
+    # (base d864465a) in all three positional registries.
+    expected_active = "V410-IDENTITY"
     registries = {}
     try:
         import test_v410_owner_convergence as oc  # noqa: E402

@@ -7,8 +7,10 @@ result-record fields + merge-drain/currentness rules from #864@6040893503
 (LOCAL_INTEGRATION_RUNNER_DRYRUN_R1, rebound at the V410-T08A JIT to the
 post-#863 integrated candidate 402bf289 / tree 2af7450f); integration-impact
 inventory + owner routing from #864@6037701635; fast-path handoff from
-#864@6046066388; rebind subject 402bf289 = merged PR #934 tip =
-V410-T07B INTEGRATED, predecessor chain 0518202c -> cea2e0cc -> 402bf289).
+#864@6046066388; V410-IDENTITY-R1 successor adoption (#779, dispatch
+V410-IDENTITY-R1, claim #779@6063246782): rebind subject d864465a = merged
+PR #936 tip = V410-T08A INTEGRATED, predecessor chain 0518202c -> cea2e0cc ->
+402bf289 -> d864465a).
 
 The suite proves the false-green oracle negatives as record-model mutants
 against the runner's own fail-closed validator: a skipped/not-run/zero-collected
@@ -51,9 +53,35 @@ from v34_rules import REQUIRED_CORE_ARTIFACTS, core_artifacts_complete  # noqa: 
 PACK_DIR = ROOT / ".agent" / "execution" / "V410-T08A-R1"
 RUNNER_SCRIPT = ROOT / "scripts" / "run_v410_integration.py"
 
-# Exact rebind subject of this task (merged #934 integration tip; V410-T07B INTEGRATED).
-BASE_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
-BASE_TREE = "2af7450ff8312bd8652742996071252c42abe65e"
+# Exact rebind subject of this task (merged #936 integration tip; V410-T08A
+# INTEGRATED = V410-IDENTITY's own registered base).
+BASE_SHA = "d864465a08ef873c94a78d1a0d0c19fafce6c617"
+BASE_TREE = "10225580bdb4140feaefbee054d852ac5eb978e2"
+
+# Frozen T08A pack subject (the V410-T08A-R1 six-core pack keeps its own
+# base binding; PackSurfaceTests below stay bound to it).
+T08A_BASE_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+T08A_BASE_TREE = "2af7450ff8312bd8652742996071252c42abe65e"
+
+# Surfaces the V410-IDENTITY candidate may touch (its registered successor
+# write set) — the identity triple, its own pack, the disclosed carried-suite
+# rebinds and the pin-convergence paths (dispatch V410-IDENTITY-R1, claim
+# #779@6063246782, base d864465a).
+IDENTITY_ALLOWED_PREFIXES = (
+    "VERSION",
+    "README.md",
+    "CHANGELOG.md",
+    "scripts/test_v410_owner_convergence.py",
+    "scripts/test_v410_t07a_acceptance_projection.py",
+    "scripts/test_v410_t07b_decision_record.py",
+    "scripts/test_v410_t08a_integration_runner.py",
+    "scripts/run_v410_integration.py",
+    ".agent/execution/V410-IDENTITY-R1/",
+    "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+    ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+    ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
+    "references/PRODUCT_DECISION_RECORD_REFERENCE.md",
+)
 
 # Predecessor merge chain (integration-impact inventory #864@6037701635, rebound).
 PREDECESSOR_CHAIN = (
@@ -231,8 +259,12 @@ class InventoryBindingTests(unittest.TestCase):
             [(entry["merge"], entry["task"], entry["sha"]) for entry in runner.PREDECESSOR_CHAIN],
             [tuple(entry) for entry in PREDECESSOR_CHAIN],
         )
-        # The chain is ordered and its last element IS the rebind base.
-        self.assertEqual(runner.PREDECESSOR_CHAIN[-1]["sha"], runner.BASE_SHA)
+        # V410-IDENTITY-R1 successor adoption (#779, dispatch V410-IDENTITY-R1,
+        # claim #779@6063246782): the runner's PREDECESSOR_CHAIN is untouched
+        # by this dispatch — its last element remains the T08A predecessor
+        # integrated tip 402bf289; the rebind base moved to d864465a (the
+        # chain's successor entry is recorded in the registries, not here).
+        self.assertEqual(runner.PREDECESSOR_CHAIN[-1]["sha"], T08A_BASE_SHA)
 
     def test_disclaimer_is_verbatim_and_boundary_verdicts_not_claimed(self) -> None:
         self.assertEqual(runner.DISCLAIMER, DISCLAIMER)
@@ -247,6 +279,10 @@ class RegistryAgreementTests(unittest.TestCase):
     """Cross-suite conflict audit mechanics: the three positional registries agree."""
 
     def test_three_registries_agree_on_the_active_t08a_candidate(self) -> None:
+        # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+        # claim #779@6063246782, base d864465a): disclosed carried-suite
+        # rebind, zero removed tests — the three registries must agree on the
+        # single active V410-IDENTITY successor entry (base d864465a).
         import test_v410_owner_convergence as oc
         import test_v410_t07a_acceptance_projection as t07a
         import test_v410_t07b_decision_record as t07b
@@ -258,24 +294,33 @@ class RegistryAgreementTests(unittest.TestCase):
         }
         for name, candidates in registries.items():
             actives = [entry["task"] for entry in candidates if entry.get("active")]
-            self.assertEqual(actives, ["V410-T08A"], name)
+            self.assertEqual(actives, ["V410-IDENTITY"], name)
             entry = next(e for e in candidates if e.get("active"))
             self.assertEqual(entry["base"], BASE_SHA, name)
             self.assertTrue(entry["prefixes"], name)
 
     def test_t08a_prefix_sets_are_consistent_across_registries(self) -> None:
+        # V410-IDENTITY-R1 successor rebind: the V410-IDENTITY entry's prefix
+        # set must be identical in all three registries and in this suite's
+        # IDENTITY_ALLOWED_PREFIXES; the frozen T08A entries stay retained in
+        # each registry (frozen-entry assertions keep the T08A delta at its
+        # integrated tip d864465a).
         import test_v410_owner_convergence as oc
         import test_v410_t07a_acceptance_projection as t07a
         import test_v410_t07b_decision_record as t07b
 
-        t08a_oc = next(e for e in oc.CandidateShapeTests.TASK_CANDIDATES if e["task"] == "V410-T08A")
-        t08a_t07a = next(e for e in t07a.ProjectionSurfaceConformanceTests.TASK_CANDIDATES if e["task"] == "V410-T08A")
-        t08a_t07b = next(e for e in t07b.PackAndCandidateSurfaceTests.TASK_CANDIDATES if e["task"] == "V410-T08A")
-        self.assertEqual(set(t08a_oc["prefixes"]), set(t08a_t07a["prefixes"]))
-        self.assertEqual(set(t08a_oc["prefixes"]), set(t08a_t07b["prefixes"]))
-        self.assertEqual(set(t08a_oc["prefixes"]), set(t07b.PackAndCandidateSurfaceTests.T08A_ALLOWED_PREFIXES))
+        identity_oc = next(e for e in oc.CandidateShapeTests.TASK_CANDIDATES if e["task"] == "V410-IDENTITY")
+        identity_t07a = next(e for e in t07a.ProjectionSurfaceConformanceTests.TASK_CANDIDATES if e["task"] == "V410-IDENTITY")
+        identity_t07b = next(e for e in t07b.PackAndCandidateSurfaceTests.TASK_CANDIDATES if e["task"] == "V410-IDENTITY")
+        self.assertEqual(set(identity_oc["prefixes"]), set(identity_t07a["prefixes"]))
+        self.assertEqual(set(identity_oc["prefixes"]), set(identity_t07b["prefixes"]))
+        self.assertEqual(set(identity_oc["prefixes"]), set(IDENTITY_ALLOWED_PREFIXES))
+        self.assertEqual(set(identity_oc["prefixes"]), set(t07b.PackAndCandidateSurfaceTests.IDENTITY_ALLOWED_PREFIXES))
 
     def test_this_candidate_diff_stays_inside_the_registered_t08a_prefixes(self) -> None:
+        # V410-IDENTITY-R1 successor rebind: the HEAD-relative active-candidate
+        # scope check is measured against the V410-IDENTITY entry's registered
+        # prefixes (base d864465a -> committed HEAD).
         result = subprocess.run(
             ["git", "diff", "--name-only", f"{BASE_SHA}...HEAD", "--"],
             cwd=ROOT,
@@ -287,9 +332,29 @@ class RegistryAgreementTests(unittest.TestCase):
         changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
         import test_v410_owner_convergence as oc
 
+        identity = next(e for e in oc.CandidateShapeTests.TASK_CANDIDATES if e["task"] == "V410-IDENTITY")
+        outside = sorted(p for p in changed if not p.startswith(identity["prefixes"]))
+        self.assertEqual(outside, [], "V410-IDENTITY candidate paths must stay inside the registered prefixes")
+
+    def test_t08a_frozen_delta_stays_inside_the_registered_t08a_prefixes(self) -> None:
+        # V410-IDENTITY-R1 successor rebind: the frozen T08A integrated delta
+        # (402bf289...d864465a, merged PR #936) keeps its original guard — it
+        # stays inside the T08A entry's registered prefixes, deterministic and
+        # mutant-catching regardless of which successor candidate is active.
+        result = subprocess.run(
+            ["git", "diff", "--name-only", f"{T08A_BASE_SHA}...{BASE_SHA}", "--"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            self.fail(f"cannot diff against {T08A_BASE_SHA}...{BASE_SHA}: {result.stderr.strip()}")
+        changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
+        import test_v410_owner_convergence as oc
+
         t08a = next(e for e in oc.CandidateShapeTests.TASK_CANDIDATES if e["task"] == "V410-T08A")
         outside = sorted(p for p in changed if not p.startswith(t08a["prefixes"]))
-        self.assertEqual(outside, [], "T08A candidate paths must stay inside the registered prefixes")
+        self.assertEqual(outside, [], "frozen T08A delta must stay inside the T08A registered prefixes")
 
 
 class RecordModelPositiveTests(unittest.TestCase):
@@ -659,9 +724,11 @@ class PackSurfaceTests(unittest.TestCase):
         self.assertEqual(set(items), set(REQUIRED_CORE_ARTIFACTS))
 
     def test_pack_manifest_binds_exact_rebind_subject_and_dependency_identity(self) -> None:
+        # The V410-T08A-R1 pack keeps its own frozen subject binding (T08A_BASE_SHA);
+        # the V410-IDENTITY rebind moved the suite/runner subject to BASE_SHA.
         text = (PACK_DIR / "MANIFEST.yaml").read_text(encoding="utf-8")
-        self.assertIn(f"base_sha: {BASE_SHA}", text)
-        self.assertIn(f"base_tree: {BASE_TREE}", text)
+        self.assertIn(f"base_sha: {T08A_BASE_SHA}", text)
+        self.assertIn(f"base_tree: {T08A_BASE_TREE}", text)
         self.assertIn("task_id: V410-T08A", text)
         self.assertIn("V410-T07B@402bf2899a7e1cd43eea3e7d78a37c947fe28c46 INTEGRATED", text)
         for sha in ("0518202c715dcf91784a694bdf4a8eeeaeb16ab6", "cea2e0ccd045e8fcebaf110273129b198ed259fd"):
