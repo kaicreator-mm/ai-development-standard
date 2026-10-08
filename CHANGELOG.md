@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.10.0 — Unreleased candidate
+
+v4.10.0 版本线候选：按冻结 Product #837（PRD v0.4）、L2 #842、REFINED_TASK_DAG_FREEZE_R1 #848 与 TASK_PACKS_R1，T01A–T08A 关切链已在 `version/v4.10.0` 上顺序集成（最近为 V410-T08A 中央集成/可见全项目一致性接线，PR #936 合并于 `d864465a08ef873c94a78d1a0d0c19fafce6c617`）。本条目只记录实际集成事实；不含 Candidate Freeze、Hidden Validation、Release Qualification、main 合并、tag 或发布任何断言；v4.8.0 及以下条目全部保留为历史谱系。
+
 ## v4.8.0 — Unreleased sequential integration candidate
 
 v4.8.0 的顺序集成候选：按 #787@5981213563 的组合授权与 #705 Phase-1 先例，将 #787@5981189207 已完成 Release Qualification（`READY`，仅绑定该 exact SHA/tree）的 `version/v4.8.0` 冻结候选 `0ac1a3d43163271469811c2867ff684f680f7443`（tree `779fde0846ef775c31e8372f969534573aac72f5`）的语义增量忠实重放到 `main`（`f62930bd3512a463358b8b642b1bbc5993566940` / tree `6426f3e691bfc93ce3161c14b89031011fbfffb0`）之上，形成顺序集成 successor（merge-base `94cad2b0487e8a552c66d6bcd1cba36b7779383d`）。本条目只记录实际发生的组合事实，不产生任何 release/integration 断言。

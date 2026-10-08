@@ -387,6 +387,14 @@ class CandidateShapeTests(unittest.TestCase):
     the registry's own designed rebind mechanism. The registry edits are
     disclosed carried-suite rebinds; zero removed tests; no other assertion
     weakened.
+
+    V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1, claim
+    #779@6063246782, base d864465a): the V410-IDENTITY successor candidate
+    registered its OWN TASK_CANDIDATES entry (base d864465a = merged PR #936
+    tip = V410-T08A INTEGRATED, the identity triple + disclosed carried-suite
+    rebind prefixes) and the active flag moved accordingly — the registry's
+    own designed rebind mechanism. The registry edits are disclosed
+    carried-suite rebinds; zero removed tests; no other assertion weakened.
     """
 
     T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
@@ -488,14 +496,42 @@ class CandidateShapeTests(unittest.TestCase):
         "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
     )
 
+    # Surfaces the V410-IDENTITY candidate may touch (its registered successor
+    # write set): the identity triple (VERSION/README/CHANGELOG), its own pack,
+    # the three positional registries + the T08A focused suite + the
+    # integration runner (all disclosed carried-suite rebinds), and the
+    # mechanically-forced blob-pin cascade paths (dispatch V410-IDENTITY-R1,
+    # claim #779@6063246782, base d864465a). Never a widening of another
+    # task's scope — every non-identity path here is a disclosed convergence
+    # line.
+    IDENTITY_ALLOWED_PREFIXES = (
+        "VERSION",
+        "README.md",
+        "CHANGELOG.md",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "scripts/test_v410_t08a_integration_runner.py",  # disclosed focused-suite rebind
+        "scripts/run_v410_integration.py",  # disclosed runner subject rebind
+        ".agent/execution/V410-IDENTITY-R1/",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
     # Successor-aware candidate registry (family-style): each task's candidate
     # delta is scoped to its OWN allowed prefixes instead of every successor
-    # being measured against T06B's whole-repo allowlist. T06B, T07A and T07B
-    # are frozen at their integrated tips; the single entry flagged active=True
-    # is measured from its base to the CURRENT committed HEAD (fail loud on
-    # ancestry loss — never a silent skip). A successor task rebinds by adding
-    # its own entry and moving the active flag — never by widening another
-    # task's prefixes.
+    # being measured against T06B's whole-repo allowlist. T06B, T07A, T07B and
+    # T08A are frozen at their integrated tips; the single entry flagged
+    # active=True is measured from its base to the CURRENT committed HEAD
+    # (fail loud on ancestry loss — never a silent skip). A successor task
+    # rebinds by adding its own entry and moving the active flag — never by
+    # widening another task's prefixes.
+    #
+    # V410-IDENTITY-R1 successor rebind (#779, dispatch V410-IDENTITY-R1,
+    # claim #779@6063246782, base d864465a): disclosed carried-suite rebind,
+    # zero removed tests.
     TASK_CANDIDATES = (
         {
             "task": "V410-T06B",
@@ -519,7 +555,13 @@ class CandidateShapeTests(unittest.TestCase):
         {
             "task": "V410-T08A",
             "base": T07B_INTEGRATED_SHA,
+            "integrated": "d864465a08ef873c94a78d1a0d0c19fafce6c617",
             "prefixes": T08A_ALLOWED_PREFIXES,
+        },
+        {
+            "task": "V410-IDENTITY",
+            "base": "d864465a08ef873c94a78d1a0d0c19fafce6c617",
+            "prefixes": IDENTITY_ALLOWED_PREFIXES,
             "active": True,
         },
     )
@@ -595,7 +637,7 @@ class CandidateShapeTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T08A"],
+            ["V410-IDENTITY"],
             "exactly one active candidate entry is required",
         )
         for entry in self.TASK_CANDIDATES:

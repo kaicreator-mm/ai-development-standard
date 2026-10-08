@@ -1,8 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.8.0`（**未发布 version-branch sequential integration candidate**）
+当前版本：`v4.10.0`（**未发布 version-branch sequential integration candidate**）
 
-> **顺序集成谱系声明（sequential integration composition）**：本仓库当前处于 v4.8.0 顺序集成候选状态，由两条已记录谱系真实组合而成：
+> **顺序集成谱系声明（sequential integration composition）**：本仓库当前处于 v4.10.0 顺序集成候选状态（v4.8 谱系语义已于 version/v4.10.0 候选线内集成，历史谱系声明保留原状），由两条已记录谱系真实组合而成：
 >
 > - **v4.3–sequential 已集成基线**：按 #705 的顺序谱系，历史已冻结候选 `version/v4.3.0`（`124943821848260b135a008dfaca6bc05a31fbac` / tree `bad3acb42a6e68e31f8e2f9178ecdeb5b2e8d2f1`）中经资格验证的 v4.3 语义增量（源区间 `65c978d7..124943821`，T01–T11）被语义重放到已资格化的 v4.2 `main`（`73098dfb576dbcc1252634e14bb3d39b70b94342`，经 PR #703 集成）之上，形成 `version/v4.3.0-sequential` 顺序候选，并经 PR #708 集成 `main`，形成 merge commit `f62930bd3512a463358b8b642b1bbc5993566940`（tree `6426f3e691bfc93ce3161c14b89031011fbfffb0`）；v4.1/v4.2/v4.3 内容、历史与既存门禁证据全部保全（见下方各节），v4.9.0 planning lane 亦已并入 `main`。
 > - **v4.8 candidate 谱系**：前任 exact candidate `33d409d0a7ec92d4f51079dca2c7e32a229eeec9`（tree `302c00bd8534164649ea6d9ee216390027b1cdcf`）曾在其 exact SHA/tree 上完成 visible Stage 1 R2（#772@5977349861 PASS）、Candidate Freeze（#772@5977362955）与 Private Hidden Validation（#773@5977836575 PASS）；随后针对同一冻结候选的 Fresh Version Closeout（#774@5978216909）给出 `CHANGES_REQUESTED`，发现 release-identity P1，Controller 将该前任候选显式 THAWED/INVALIDATED（#774@5978234079）。修复后的 `version/v4.8.0` 候选线推进至 `0ac1a3d43163271469811c2867ff684f680f7443`（tree `779fde0846ef775c31e8372f969534573aac72f5`），Release Qualification #787@5981189207 对该 **exact SHA/tree** 给出 `READY`。
