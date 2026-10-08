@@ -1,0 +1,133 @@
+# V410-T08A R1 test matrix — all commands from repo root on the exact candidate
+#
+# Oracle binding: false-green oracle F1-F12 from #864@6043181240 (implemented as
+# record-model mutants in scripts/test_v410_t08a_integration_runner.py and as
+# structural guards in scripts/run_v410_integration.py); runner order + result
+# record fields + merge-drain/currentness rules from #864@6040893503 (dryrun,
+# rebound at this JIT to base 402bf289 / tree 2af7450f — the #861/#862/#863
+# suites are inserted into TIER-2 by dependency order per the dryrun insertion
+# rule); INT-P/INT-N composition cases from #864@6016404606 and RC/TS/MR checks
+# from #864@6020074080 are validated by the inherited T06B/T07A/T07B suites the
+# runner carries; integration-impact inventory and owner routing from
+# #864@6037701635. The NEW focused suite carries the runner's own conformance
+# and the false-green mutants; carried suites prove the composed candidate.
+
+matrix:
+  - id: T-t08a-focus
+    command: python scripts/test_v410_t08a_integration_runner.py
+    status: NEW (runner inventory binding + false-green record-model mutants + three-registry agreement + pack surface)
+    expect: PASS
+    covers: [inventory exact subject binding (base_sha 402bf2899a7e1cd43eea3e7d78a37c947fe28c46 / base_tree 2af7450ff8312bd8652742996071252c42abe65e) and predecessor chain 0518202c -> cea2e0cc -> 402bf289;
+             F2 missing/duplicate/unregistered suite row rejected (a required suite that disappears can never aggregate green);
+             F4 dirty pre-run tree / tree-mutating command / post-validation source modification rejected;
+             F5 mixed head/tree evidence and row-subject mismatch rejected;
+             F8 missing or altered disclaimer rejected — "VISIBLE INTEGRATION PASS IS NOT HIDDEN VALIDATION OR RELEASE QUALIFICATION PASS" is mandatory verbatim, hidden_validation/release_qualification/candidate_freeze verdicts structurally NOT_CLAIMED;
+             F9 zero-collected / unknown-count / NOT_RUN rows rejected (skipped is never green);
+             F10 tested_head and emission head carried separately, deletion rejected;
+             F11 evidence_reuse != NONE rejected;
+             F7 predecessor-chain drift / unintegrated predecessor rejected;
+             F1 stale base binding (sha and tree) rejected;
+             F6 FAIL row without owner route rejected, PASS with open routes rejected, unknown defect_class/owner rejected;
+             F3 failing cross-suite audit blocks PASS;
+             halt/admission consistency (halted PASS rejected, RECORDED admission on FAIL rejected, pending oracle check blocks PASS);
+             owner routing classifies each predecessor owner (T06B/T07A/T07B/T06A/T04B/T04A/verify_standard -> CONTROLLER_ARBITRATION);
+             three positional registries agree on the single active V410-T08A candidate and the candidate diff stays inside the registered T08A prefixes;
+             pack core inventory exact set via v34_rules.core_artifacts_complete;
+             runner smoke: --print-inventory binds subject, chain, disclaimer, 20 required commands, stdlib-only]
+  - id: T-integration-runner
+    command: python scripts/run_v410_integration.py
+    status: NEW (the visible whole-project integration runner itself — executes the full 20-command inventory on ONE exact committed candidate and emits the machine-readable integration admission record)
+    expect: PASS (exit 0 = VISIBLE_INTEGRATION_PASS record; the record is merge-scoped visible evidence only, never Hidden/RQ)
+    covers: [4-tier deterministic order per #864@6040893503 rebound (TIER-0 verify_standard + test_protocol_schemas fail-fast; TIER-1 stage1/owner_convergence/t01b/t02a; TIER-2 twelve concern suites incl. the integrated T06B x2 / T07A / T07B suites; TIER-3 cross-suite conflict audit + clean-tree proof + integration admission record);
+             clean-tree proof pre-run / per-command / post-run;
+             exact-subject binding tested_head vs head_at_emission;
+             defect routing rows with named owning concerns and TO_BE_ISSUED_BY_CONTROLLER repair refs;
+             F1/F7 refusal on dirty tree, ancestry loss or predecessor-chain drift]
+  - id: T-verify-standard
+    command: python scripts/verify_standard.py
+    status: CARRIED (manifest gate, TIER-0)
+    expect: PASS_UNMODIFIED
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: CARRIED (T06B producer, TIER-0)
+    expect: PASS_UNMODIFIED
+  - id: T-stage1-lifecycle
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+    status: CARRIED (TIER-1)
+    expect: PASS_UNMODIFIED
+  - id: T-owner-convergence
+    command: python scripts/test_v410_owner_convergence.py
+    status: CARRIED — DISCLOSED successor-aware TASK_CANDIDATES registry rebind (T08A entry registered, active flag moved, zero removed tests; T07A-R2/T07B-R2 precedent, authorized by #864@6055469682 + #916@6055817004 ACTION_A)
+    expect: PASS
+  - id: T-t01b
+    command: python scripts/test_v410_t01b_product_projections.py
+    status: CARRIED (TIER-1)
+    expect: PASS_UNMODIFIED
+  - id: T-t02a
+    command: python scripts/test_v410_t02a_collaboration_control.py
+    status: CARRIED (TIER-1)
+    expect: PASS_UNMODIFIED
+  - id: T-t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t03a
+    command: python scripts/test_v410_t03a_implementation_quality.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-v43
+    command: python scripts/test_v43_task_decomposition.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t04a
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t04b
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t05a
+    command: python scripts/test_v410_t05a_shared_code_safety.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t06b-core-inventory
+    command: python scripts/test_v410_t06b_core_inventory.py
+    status: CARRIED from #861 (TIER-2; inherited suite binding the new active candidate without weakening historical delta checks)
+    expect: PASS_UNMODIFIED
+  - id: T-t06b-multi-dispatch
+    command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
+    status: CARRIED from #861 (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-t07a-projection
+    command: python scripts/test_v410_t07a_acceptance_projection.py
+    status: CARRIED from #862 — DISCLOSED successor-aware registry rebind (T08A entry registered, active flag moved; T08A registry rebind added to authorized_suite_edits, zero removed tests)
+    expect: PASS
+  - id: T-t07b-decision-record
+    command: python scripts/test_v410_t07b_decision_record.py
+    status: CARRIED from #863 — DISCLOSED successor-aware registered-prefix guard rebind (positional guard rebound from base...HEAD to the frozen integrated T07B delta; T08A entry + active-candidate check added, zero removed tests; T07A_INDEX_BLOB_AT_BASE pin fold 7f4f4d63 -> d3a62083 with disclosure)
+    expect: PASS
+  - id: T-execution-architecture
+    command: python scripts/test_execution_architecture.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-v34-review-repairs
+    command: python scripts/test_v34_review_repairs.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-verify-event-writer
+    command: python scripts/verify_event_writer_surfaces.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+  - id: T-pointer-only-trigger
+    command: python scripts/test_pointer_only_trigger_contract.py
+    status: CARRIED (TIER-2)
+    expect: PASS_UNMODIFIED
+
+negative_invariants:
+  - no NO_GREEN_BY_DELETION (zero removed tests across the disclosed registry rebinds)
+  - no Hidden/RQ/Candidate-Freeze verdict vocabulary in any emitted record (F8)
+  - no semantic repair inside T08A (every defect routes to a named owning concern)
+  - no evidence reuse (every visible run re-executes the complete inventory, F11)
+  - no manifest/CI authority creation (verify_standard stays the visible gate; the runner references evidence, never duplicates CI)
+  - no merge by Builder; integration admission is merge-scoped evidence only

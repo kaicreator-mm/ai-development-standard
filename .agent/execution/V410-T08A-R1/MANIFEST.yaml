@@ -1,0 +1,64 @@
+pack_id: V410-T08A-R1
+task_id: V410-T08A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 402bf2899a7e1cd43eea3e7d78a37c947fe28c46
+base_tree: 2af7450ff8312bd8652742996071252c42abe65e
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T08A
+branch: task/v4.10.0-v410-t08a-integration-execution
+parent_issue: "#864"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+validation_scope: integration
+pinned_standard_revision: 402bf2899a7e1cd43eea3e7d78a37c947fe28c46
+generated_by:
+  - "claude-code:zcode-glm-5.3-flash (V410-T08A-BUILDER-R1, original worker) + zcode:kimi-for-coding (V410-T08A-BUILDER-R1-SAFE-RESUME-R1 continuation worker, operator-change recorded at the Builder terminal)"
+  - "zcode:k3-256 (V410-T08A-BUILDER-R2 successor adoption worker, claim #864@6061706724)"
+generated_at: "2026-10-08T00:00:00+00:00"
+decision_authority_boundary:
+  - "VISIBLE INTEGRATION PASS IS NOT HIDDEN VALIDATION OR RELEASE QUALIFICATION PASS. This pack and its runner grant no Candidate Freeze, no V01 dispatch authority, no Hidden Validation verdict and no Release Qualification verdict. Integration verdicts emitted by scripts/run_v410_integration.py are VISIBLE_INTEGRATION_PASS | VISIBLE_INTEGRATION_FAIL, recorded as merge-scoped evidence only."
+  - "T08A owns ONLY integration-only residual wiring (the whole-project visible runner, its focused conformance suite, this pack, and the disclosed successor-aware positional-registry rebinds with their mechanically forced blob-pin cascade). It may not hide semantic repairs: any semantic defect discovered during visible assembly routes to its owning concern (T06B #861 / T07A #862 / T07B #863 / T06A #860 / standards owners), never repaired inside T08A."
+dependency_completion:
+  - V410-T07B@402bf2899a7e1cd43eea3e7d78a37c947fe28c46 INTEGRATED
+  - V410-T07A@cea2e0ccd045e8fcebaf110273129b198ed259fd INTEGRATED
+  - V410-T06B@0518202c715dcf91784a694bdf4a8eeeaeb16ab6 INTEGRATED
+dependency_notes:
+  - "Full predecessor chain (rebound at THIS JIT, #864@6037701635 rebind obligation honored): V410-T06B (#861, PR #927) merged at 0518202c715dcf91784a694bdf4a8eeeaeb16ab6 -> V410-T07A (#862, PR #933) merged at cea2e0ccd045e8fcebaf110273129b198ed259fd -> V410-T07B (#863, PR #934) merged at 402bf2899a7e1cd43eea3e7d78a37c947fe28c46 = the exact base of this pack (tree 2af7450ff8312bd8652742996071252c42abe65e, re-read at resume)."
+  - "Earlier chain (T01A..T06A incl. #860 T06A at ab8339f83a6a2308a5aa39009bd126698320ceee) is integrated inside this same base. Dryrun-era facts (#864@6040893503 executed at ab8339f) are design-time only; every candidate-bound fact in this pack is rebound to base 402bf289."
+  - "Native DAG reconciliation: GitHub-native blocked_by readback contradicted the merge terminals (#860-#863 still OPEN). Reconciled 2026-10-08 by the authorized LOCAL controller under the #851-#859 closure precedent: #860/#861/#862/#863 CLOSED with state:done, native blocked_by now resolves to closed issues; #864 natively unblocked; #865 remains blocked by OPEN #864."
+material_paths:
+  - .agent/execution/V410-T08A-R1/EXECUTION_CONTRACT.md
+  - .agent/execution/V410-T08A-R1/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-T08A-R1/IMPLEMENTATION_MAP.md
+  - .agent/execution/V410-T08A-R1/MANIFEST.yaml
+  - .agent/execution/V410-T08A-R1/REVIEW_CHECKLIST.md
+  - .agent/execution/V410-T08A-R1/TEST_MATRIX.yaml
+  - scripts/run_v410_integration.py
+  - scripts/test_v410_t08a_integration_runner.py
+l3_inputs:
+  - "#864@6011933890 (V410_T08A_WEB_PREPLAN_R1: POSITIVE/NEGATIVE tests, INTEGRATION_BOUNDARY, L3_SEED — embedded as the L3 seed of EXECUTION_CONTRACT.md)"
+  - "#864@6016404606 (V410_T08A_WEB_INTEGRATION_DELTA_R2: INT-P1..INT-P5 / INT-N1..INT-N6 dual-scheduler / serialized-admission / compatible-multi-dispatch composition cases)"
+  - "#864@6018269654 (V410_T08A_WEB_MERGE_CURRENTNESS_MATRIX_R1: M1-M6 / R1-R5 / P1-P6 currentness and expected-head merge predicates)"
+  - "#864@6020074080 (V410_T08A_WEB_RESIDUAL_INTEGRATION_ORACLE_R1: RC1-RC5 residual-vs-semantic decision procedure, TS1-TS5 scope, MR1-MR8 merge rules)"
+  - "#864@6040893503 (V410_T08A_LOCAL_INTEGRATION_RUNNER_DRYRUN_R1: 4-tier RUNNER_ORDER, RESULT_RECORD_FIELDS, REGISTRATION_PLAN, DEFECT_ROUTING_FIELDS, CLEAN_TREE_PROOF — the runner's design authority, rebound at this JIT)"
+  - "#864@6043181240 (V410_T08A_WEB_INTEGRATION_FALSE_GREEN_ORACLE_R1: F1-F12 false-green cases — implemented as record-model mutants in the focused suite and structural guards in the runner)"
+  - "#864@6046066388 (CONTROLLER_FASTPATH_HANDOFF: 7-step fast path; DO_NOT_REDISCOVER / MUST_REBIND lists)"
+  - "#864@6055469111 + #864@6055469682 (V410-T08A-BUILDER-R1 proposal + combined admission/embedded claim); #864@6056973981 (SAFE-RESUME-R1 handoff: continuation instructions, disposition block)"
+  - "#916@6055817004 (WEB positional candidate-guard precheck: three predecessor-bound successor-aware guards + claim-provenance anomaly); #916@6056834207 (native DAG reconciliation request)"
+  - "Claim chain (provenance only, never acceptance): proposal #864@6055469111, combined admission+embedded claim #864@6055469682 (claim provenance anomaly disclosed and dispositioned at the Builder terminal — canonical_admission_ref names the proposal; CONTINUED_SAME_CLAIM with operator-change record, no duplicate claim); generation-1 history retained — generation-2 successor adoption chain appended: proposal #864@6061672692, admission #864@6061692961 (post-admission readback performed), claim #864@6061706724 by successor operator zcode:k3-256 (dispatch V410-T08A-BUILDER-R2), closing the R1 FAIL (#864@6061280237) findings P1-PV2/P1-PV1"
+stage0_census:
+  baseline: "402bf2899a7e1cd43eea3e7d78a37c947fe28c46 / tree 2af7450ff8312bd8652742996071252c42abe65e (re-read at resume; the existing dirty worktree of the interrupted original worker was preserved intact — no reset/clean/rebase; HEAD equals the exact merged #934 integration tip)"
+  predecessor_merge_chain: "live-verified via gh pr view: PR #927 MERGED @0518202c (V410-T06B), PR #933 MERGED @cea2e0cc (V410-T07A), PR #934 MERGED @402bf289 (V410-T07B); git first-parent log on origin/version/v4.10.0 confirms the chain; runner binds it as PREDECESSOR_CHAIN and fails closed on any drift (F1/F7)"
+  producer_currentness: "all T06B/T07A/T07B suite and pack surfaces re-verified PRESENT at THIS base (git rev-parse): scripts/test_v410_t06b_core_inventory.py, scripts/test_v410_t06b_multi_dispatch_conformance.py, scripts/test_v410_t07a_acceptance_projection.py, scripts/test_v410_t07b_decision_record.py, scripts/test_v410_owner_convergence.py, docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md (blob d3a62083 line — the T08A registry rebind mechanically forced the R2-row pin fold inside the resumed worktree's disclosed rebind, converging in the SAME commit), references/PRODUCT_DECISION_RECORD_REFERENCE.md. The #861 T06B R8 authority readback the runner depends on is integrated at this base."
+  write_set_collision: "the inherited eight-file diff was audited line-by-line: six disclosed seam rebinds (three positional TASK_CANDIDATES registry scripts + three mechanically forced blob-pin convergence docs, T07A-R2/T07B-R2 precedent, zero removed tests) plus two NEW integration-only files (runner + focused suite). No overlap with T06B-owned semantics (schemas/, v34_rules.py), no T07A/T07B deliverable-content edits beyond the disclosed pin lines, standard-manifest.json untouched (verify_standard.py requires no registration — manifest->disk direction only, same finding as T07A/T07B censuses)."
+  suite_rebind: "per #916@6055817004 ACTION_A: the full inherited battery was executed against the actual committed T08A candidate; V410-T08A is registered as the single active candidate in ALL THREE positional registries (owner-convergence, T07A suite, T07B suite); immutable predecessor frozen-delta checks (T06B ab8339f..0518202c, T07A 0518202c..382c1869/cea2e0cc..382c1869, T07B cea2e0cc..402bf289) stay asserted; unregistered-path negatives stay fail-loud; the blob-pin cascade (owner-convergence 2e8bd6f9->50e26dc6, index 7f4f4d63->d3a62083) converges in-commit with provenance."
+  manifest_registration: "python scripts/verify_standard.py GREEN at base requires no registration of the new runner/suite/pack paths; scripts/test_v48_registry_adoption.py RA-guards enforce exact-set manifest sections — standard-manifest.json is NOT touched by this task (registration DECLINED per T07A/T07B precedent)."
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
