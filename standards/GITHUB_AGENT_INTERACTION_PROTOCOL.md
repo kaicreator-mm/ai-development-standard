@@ -392,6 +392,28 @@ These fields project the responsibility/control semantics settled by `EXECUTION_
 - The fields are optional and additive: historical dispatches/events without them remain valid, exactly as for the claim-provenance precedent (`admission_mode` / `protected_claim_key` / `claim_generation`).
 - They create no authority, no new event type, no workflow/dispatch state, no second lifecycle and no responsibility registry/ledger. A required responsibility fact that is missing, duplicate or unresolvable fails closed: responsibility/causation reconstruction reports UNKNOWN instead of guessing, and a second active `RESPONSIBILITY_HANDOFF` of the same work identity is rejected like any incompatible second claim.
 
+### 8.4.2 Additive serialized-admission projection fields (v4.10)
+
+Current dispatch/admission/claim writers SHOULD project the serialized-admission facts with the additive optional fields below; they consume `EXECUTION_ARCHITECTURE_STANDARD.md` §11.1.1 semantics and never redefine them. Omit all fields for ordinary dispatches; historical events without them remain valid and require no migration.
+
+```yaml
+execution_environment: WEB | LOCAL
+scheduler_origin: WEB | LOCAL
+source_proposal_ref: "#861@6016320778"
+canonical_admission_ref: "#861@6016591816"
+protected_claim_key: "kaicreator-mm/ai-development-standard#861:planning_reference_designer:__default__"
+admission_generation: 3
+compatibility_group: null | "<group>"
+compatibility_authority_ref: null | "#<issue>@<comment-id>"
+```
+
+Writer rules:
+
+- `execution_environment` is the canonical coarse environment (`WEB | LOCAL`). `TARGET_ENVIRONMENT` appears only in historical durable comments as a proposal-era alias; a writer observing disagreement between the alias and the canonical field fails closed (`STALE`) instead of guessing. `execution_environment` on dispatches is distinct from the validation-gate `environment` on `VALIDATION_*` events and from `operator_kind` (provider provenance).
+- `source_proposal_ref` / `canonical_admission_ref` are durable `#<issue>@<comment-id>` references; prose descriptions are not durable and MUST NOT replace them on current admission/claim writers.
+- `protected_claim_key` is audit-only provenance equal to the deterministic serialization `repo#task:role:group`; slot 4 is the normalized compatibility group (`__default__` when omitted) and never a revision/session identifier.
+- A losing proposal is dispositioned `STALE | SUPERSEDED | REJECTED` on its own dispatch record; it never rewrites or deletes canonical facts, and scheduler wake-ups/checkpoints remain `NON_AUTHORITATIVE_DERIVED_STATE` with terminal precedence.
+
 ### 8.5 Accepted Claim as Start Record and ownership visibility
 
 The accepted `DISPATCH_CLAIMED` / current accepted Claim is the durable Start Record for authoritative role execution. A worker MUST NOT begin authoritative role execution or mutate implementation source before its dispatch Claim is accepted (`NO_CLAIM_NO_EXECUTION`). A rejected, stale or duplicate claim means STOP/recompute, not best-effort execution. No label, comment, state card, transport ACK, progress message or heartbeat substitutes for accepted Claim authority.

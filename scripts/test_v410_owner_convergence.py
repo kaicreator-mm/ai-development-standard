@@ -8,14 +8,14 @@ Reuses the carried v4.7 resolver (`test_v47_authority_registry.resolve_registry`
 (`test_v47_compatibility_aliases.validate_current_aliases`) by import, not by
 reimplementation.
 
-R2 resolution encoded here (evidence #860@6013810495): the candidate carries
-**zero `standard-manifest.json` delta**. The seven material v4.10 owner families
-without a discovery row stay recorded as routed gaps in
-`references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md`; the registration
-mechanism is routed to T06B (#861). This suite asserts the zero-delta state
-(manifest blob identity), the truthful gap documentation, and the fail-closed
-boundaries; if a future authorized amendment (guards + manifest together) lands,
-these assertions are the ones that must be consciously updated in that task.
+Historical T06A R2 evidence (#860@6013810495) had zero
+`standard-manifest.json` delta and routed the seven discovery gaps to T06B.
+The current T06B/W13 candidate consciously supersedes that historical premise:
+guard + manifest evolved together, six owner-family rows were added (11 -> 17),
+the convergence reference and three verification files are registered, and the
+reference-convention concern resolves through the explicit composition rule.
+This suite now asserts that authorized evolved state while preserving the
+carried v4.7/v4.8 invariants and fail-closed boundaries.
 
 Purely local; no network, no runtime execution.
 """
@@ -43,7 +43,9 @@ REFERENCE = ROOT / "references" / "V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md
 PACK_R2 = ROOT / ".agent" / "execution" / "V410-T06A-R2"
 
 BASE_SHA = "eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601"
-MANIFEST_BLOB = "21730a0251e35e13591d2c84de1c66d6ab2c2408"
+# Historical pre-W13 manifest blob (T06A-era lineage only; the current candidate
+# manifest moved under the authorized #861 W13 co-evolution — see W13 facts).
+T06A_HISTORICAL_MANIFEST_BLOB = "21730a0251e35e13591d2c84de1c66d6ab2c2408"
 R3_HISTORICAL_HEAD = "e03beedd9d02336407365efa66efc43d34e96954"
 
 V47_ENTRY_IDS = {
@@ -65,8 +67,11 @@ ALIASES = {
     "standards/VERSION_INTEGRATION_WORKFLOW.md": "standards/DEVELOPMENT_WORKFLOW.md",
 }
 
-# Material v4.10 owner families with no current discovery row (routed gaps, §1.2).
-GAP_FAMILIES = (
+# Material v4.10 owner families asserted as the landed W13 state: the first six
+# are registered via the authorized #861 W13 evolution (11 -> 17); the seventh
+# (reference-convention) resolves by explicit composition (§1.2). Historical
+# context: these were the T06A-era discovery rows before that evolution.
+W13_GROWTH_OWNER_FAMILIES = (
     "standards/TASK_DECOMPOSITION_STANDARD.md",
     "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
     "standards/EXECUTION_PACK_STANDARD.md",
@@ -86,22 +91,6 @@ CORE_OWNERS = (
     "standard-manifest.json",
 )
 
-EXPECTED_CANDIDATE_PATHS = {
-    ".agent/execution/V410-T06A-R1/EXECUTION_CONTRACT.md",
-    ".agent/execution/V410-T06A-R1/FAILURE_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R1/IMPLEMENTATION_MAP.md",
-    ".agent/execution/V410-T06A-R1/MANIFEST.yaml",
-    ".agent/execution/V410-T06A-R1/REVIEW_CHECKLIST.md",
-    ".agent/execution/V410-T06A-R1/TEST_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R2/EXECUTION_CONTRACT.md",
-    ".agent/execution/V410-T06A-R2/FAILURE_MATRIX.yaml",
-    ".agent/execution/V410-T06A-R2/IMPLEMENTATION_MAP.md",
-    ".agent/execution/V410-T06A-R2/MANIFEST.yaml",
-    ".agent/execution/V410-T06A-R2/REVIEW_CHECKLIST.md",
-    ".agent/execution/V410-T06A-R2/TEST_MATRIX.yaml",
-    "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
-    "scripts/test_v410_owner_convergence.py",
-}
 
 REQUIREMENT_TOKENS = ("R1 ", "R2 ", "R3 ", "R4 ", "R6 ", "R7 ", "R11 ", "R12 ")
 
@@ -140,14 +129,16 @@ class OwnerResolutionTests(unittest.TestCase):
             reordered["sections"][section] = list(reversed(values))
         self.assertEqual(resolve_registry(reordered, schema, root=ROOT), baseline)
 
-    def test_gap_families_are_documented_and_routed_in_the_reference(self) -> None:
-        for owner in GAP_FAMILIES:
+    def test_growth_owner_families_resolved_in_the_reference(self) -> None:
+        # W13 resolution: six families registered via the authorized evolution;
+        # reference-convention resolves through the explicit L2 §3 composition.
+        for owner in W13_GROWTH_OWNER_FAMILIES[:6]:
             with self.subTest(owner=owner):
                 self.assertIn(owner, self.reference)
-        self.assertIn("STATUS=GAP", self.reference.replace(" ", ""))
-        self.assertIn("STOP_FOR_DISPOSITION", self.reference)
-        self.assertIn("ROUTED_TO=T06B(#861)", self.reference)
-        self.assertIn("DISCOVERY_REGISTRATION=BLOCKED_BY_V48_FROZEN_INVENTORY_GUARD", self.reference)
+        self.assertIn("CURRENT (registry growth, #861 W13)", self.reference)
+        self.assertIn("CURRENT (composition)", self.reference)
+        self.assertIn("RESOLVED_BY_AUTHORIZED_V410_EVOLUTION", self.reference)
+        self.assertIn("guard and the manifest together", self.reference)
 
     def test_referenced_owner_paths_exist_in_checkout(self) -> None:
         owners = set(re.findall(r"`(standards/[A-Za-z0-9_]+\.md)`", self.reference))
@@ -161,41 +152,76 @@ class OwnerResolutionTests(unittest.TestCase):
             with self.subTest(owner=owner):
                 self.assertIn(owner, self.reference)
 
-    def test_no_manifest_rows_added_for_gap_families(self) -> None:
+    def test_growth_family_rows_are_registered_verbatim(self) -> None:
         entries = self.manifest["semantic_authorities"]["entries"]
-        self.assertEqual({entry["entry_id"] for entry in entries}, V47_ENTRY_IDS)
-        claimed_owners = {entry["canonical_owner_ref"] for entry in entries}
-        self.assertEqual(claimed_owners & set(GAP_FAMILIES), set())
+        by_id = {entry["entry_id"]: entry for entry in entries}
+        expected = {
+            "task-decomposition": "standards/TASK_DECOMPOSITION_STANDARD.md",
+            "task-dag-governance": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+            "execution-pack": "standards/EXECUTION_PACK_STANDARD.md",
+            "implementation-quality": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+            "interface-compatibility": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+            "project-adoption": "standards/PROJECT_ADOPTION.md",
+        }
+        for entry_id, owner in expected.items():
+            with self.subTest(entry_id=entry_id):
+                self.assertEqual(by_id[entry_id]["canonical_owner_ref"], owner)
+        # composition family: no registry row, resolves via L2 §3 composition
+        self.assertNotIn("reference-convention", by_id)
 
-    def test_manifest_blob_identity_proves_zero_delta(self) -> None:
-        result = subprocess.run(
-            ["git", "hash-object", "standard-manifest.json"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), MANIFEST_BLOB)
+    def test_manifest_growth_preserves_all_carried_invariants(self) -> None:
+        # W13 consciously superseded the T06A-era zero-delta pin: the manifest
+        # moved under the authorized co-evolution. Invariants that must hold
+        # instead: schema_version=1, the 11 legacy entry ids intact, and the
+        # six growth rows exactly as authorized.
+        manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        entries = manifest["semantic_authorities"]["entries"]
+        self.assertEqual(len(entries), 17)
+        self.assertEqual({e["entry_id"] for e in entries[:11]}, V47_ENTRY_IDS)
+        growth_ids = ("task-decomposition", "task-dag-governance", "execution-pack",
+                      "implementation-quality", "interface-compatibility", "project-adoption")
+        self.assertEqual({e["entry_id"] for e in entries[11:]}, set(growth_ids))
 
     def test_carried_frozen_inventory_guards_pass_on_the_real_manifest(self) -> None:
-        # These are the machine reason the candidate carries zero manifest delta.
+        # Current truth: the carried v4.8 guards accept exactly the authorized
+        # W13 co-evolution while preserving the embedded baseline invariants —
+        # guard and manifest moved together (case-H; RA-01 rewrite impossible).
         self.assertEqual(t48.section_conformance_problems(self.manifest), [])
         self.assertEqual(t48.semantic_registry_problems(self.manifest), [])
 
-    def test_carried_guards_are_not_amended_by_this_task(self) -> None:
+    def test_guard_amendment_is_exactly_the_authorized_w13_set(self) -> None:
+        # W13: the T06B task IS the authorized amender; the amendment must be
+        # exactly the landed set (1 reference + 3 verification files) beyond
+        # the historical v4.8 additions, which remain untouched.
         authorized = t48.AUTHORIZED_SECTION_ADDITIONS
-        for rel in ("references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",):
-            self.assertNotIn(rel, set(authorized.get("references", ())))
-        self.assertNotIn(
-            "scripts/test_v410_owner_convergence.py",
-            set(authorized.get("verification", ())),
+        historical_refs = {
+            "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md",
+            "references/COMPATIBILITY_ALIAS_CONFORMANCE.md",
+            "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
+            "references/REFERENCE_CONVENTION_REFERENCE.md",
+            "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
+            "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
+        }
+        self.assertEqual(
+            authorized.get("references") - historical_refs,
+            {"references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md"},
         )
+        new_ver = authorized.get("verification", set()) & {
+            "scripts/test_v410_owner_convergence.py",
+            "scripts/test_v410_t06b_multi_dispatch_conformance.py",
+            "scripts/test_v410_t06b_core_inventory.py",
+        }
+        self.assertEqual(len(new_ver), 3)
+        self.assertEqual(len(t48.V410_T06A_GROWTH_ENTRIES), 6)
 
-    def test_reference_and_test_are_not_manifest_registered(self) -> None:
-        # R2 resolution: registration is blocked; discoverability is by repo path.
+    def test_reference_and_tests_are_manifest_registered(self) -> None:
+        # W13 resolution: the discovery surfaces are registered through the
+        # authorized evolution (references + verification sections).
         registered = {rel for values in self.manifest["sections"].values() for rel in values}
-        self.assertNotIn("references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md", registered)
-        self.assertNotIn("scripts/test_v410_owner_convergence.py", registered)
+        self.assertIn("references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md", registered)
+        self.assertIn("scripts/test_v410_owner_convergence.py", registered)
+        self.assertIn("scripts/test_v410_t06b_multi_dispatch_conformance.py", registered)
+        self.assertIn("scripts/test_v410_t06b_core_inventory.py", registered)
 
     def test_registry_is_discovery_metadata_not_authority(self) -> None:
         for entry in self.manifest["semantic_authorities"]["entries"]:
@@ -279,13 +305,15 @@ class FailClosedMutantTests(unittest.TestCase):
         self.assertIn("HISTORICAL", reference)
         self.assertIn("never current authority", reference)
 
-    def test_gap_is_recorded_and_never_claimed_closed(self) -> None:
+    def test_registry_growth_is_authorized_and_complete(self) -> None:
         reference = reference_text()
-        self.assertIn("recorded, not guessed", reference)
-        self.assertIn("MUST NOT be claimed as closed", reference)
-        # The gap is real: no registry row exists for any gap family.
+        self.assertIn("RESOLVED by the authorized W13 evolution", reference)
+        self.assertIn("guard and the manifest together", reference)
+        self.assertIn("a builder never amends a guard unilaterally", reference)
+        # The growth is real: exactly six registered rows + one composition.
         entries = self.manifest["semantic_authorities"]["entries"]
-        self.assertEqual(len(entries), len(V47_ENTRY_IDS))
+        self.assertEqual(len(entries), len(V47_ENTRY_IDS) + 6)
+        self.assertNotIn("reference-convention", {e["entry_id"] for e in entries})
 
 
 class NonAuthorityBoundaryTests(unittest.TestCase):
@@ -311,23 +339,85 @@ class NonAuthorityBoundaryTests(unittest.TestCase):
 
     def test_extension_points_are_declared_for_conformance_owners(self) -> None:
         reference = reference_text()
-        self.assertIn("ROUTED_TO=T06B(#861)", reference)
+        self.assertIn("T06B(#861)", reference)
+        self.assertIn("NO_GREEN_BY_DELETION", reference)
 
 
 class CandidateShapeTests(unittest.TestCase):
-    """P9/N9: the candidate diff is exactly the pack + the two source surfaces."""
+    """P9/N9: candidate diffs stay inside owned surfaces; upstream owners untouched.
 
-    def test_candidate_diff_shape_is_exact(self) -> None:
+    T06A-history note: this assertion originally pinned the exact 14-path T06A
+    candidate diff on `task/v4.10.0-v410-t06a-owner-convergence` (merged as PR
+    #925, base eea3e69). V410-T06B (#861, base ab8339f) consciously re-scopes it
+    per the T06A-routed registry-growth disposition: successor candidates assert
+    forbidden-surface exclusion plus an explicit owned-path allowlist instead of
+    an exact closed set, because the T06B candidate intentionally evolves schemas,
+    prose, verifier and (under its W13 authorized co-evolution) the manifest and
+    carried guards.
+    """
+
+    T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
+
+    # Surfaces the T06B candidate may touch (write set of
+    # .agent/execution/V410-T06B-R1/EXECUTION_CONTRACT.md, plus its own pack).
+    T06B_ALLOWED_PREFIXES = (
+        ".agent/execution/V410-T06B-R1/",
+        "schemas/dispatch.schema.json",
+        "schemas/execution-state.schema.json",
+        "schemas/agent-event-v2.schema.json",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "templates/agent-event-comment.md",
+        "scripts/v34_rules.py",
+        "scripts/test_v410_t06b_multi_dispatch_conformance.py",
+        "scripts/test_v410_t06b_core_inventory.py",
+        "scripts/test_protocol_schemas.py",
+        "scripts/test_execution_architecture.py",
+        "scripts/test_v34_lifecycle_contracts.py",
+        "scripts/verify_standard.py",
+        "standard-manifest.json",
+        "scripts/test_v48_registry_adoption.py",
+        "scripts/test_v410_owner_convergence.py",
+        "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
+    )
+
+    # Upstream semantic-owner standards and frozen authorities that must never
+    # appear in ANY successor candidate diff (N9).
+    FORBIDDEN_PATHS = (
+        "standards/DEVELOPMENT_WORKFLOW.md",
+        "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+        "standards/PROJECT_ADOPTION.md",
+        "standards/VALIDATION_STANDARD.md",
+        "standards/RELEASE_STANDARD.md",
+        "docs/implementation/4.10.0/L2_ARCHITECTURE_EVIDENCE.md",
+        "docs/implementation/4.10.0/TASK_PACKS_R1.md",
+    )
+
+    def test_candidate_diff_never_touches_forbidden_surfaces(self) -> None:
+        changed = self._changed_paths()
+        violations = sorted(changed & set(self.FORBIDDEN_PATHS))
+        self.assertEqual(violations, [])
+
+    def test_t06b_candidate_diff_stays_inside_owned_surfaces(self) -> None:
+        changed = self._changed_paths(self.T06B_BASE_SHA)
+        outside = sorted(
+            path for path in changed if not path.startswith(self.T06B_ALLOWED_PREFIXES)
+        )
+        self.assertEqual(outside, [])
+
+    def _changed_paths(self, base: str = BASE_SHA) -> set[str]:
         result = subprocess.run(
-            ["git", "diff", "--name-only", BASE_SHA, "--"],
+            ["git", "diff", "--name-only", base, "--"],
             cwd=ROOT,
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            self.fail(f"cannot diff against {BASE_SHA}: {result.stderr.strip()}")
-        changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
-        self.assertEqual(changed, EXPECTED_CANDIDATE_PATHS)
+            self.fail(f"cannot diff against {base}: {result.stderr.strip()}")
+        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
     def test_pack_r2_core_inventory_is_complete(self) -> None:
         for rel in (

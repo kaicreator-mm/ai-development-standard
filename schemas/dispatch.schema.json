@@ -33,7 +33,12 @@
     "created_at": {"type": "string", "minLength": 1},
     "claimed_by": {"type": ["string", "null"], "minLength": 1},
     "parent_dispatch_ref": {"type": ["string", "null"], "minLength": 1},
-    "responsibility_mode": {"type": "string", "enum": ["DELEGATED_SUBWORK", "RESPONSIBILITY_HANDOFF"]}
+    "responsibility_mode": {"type": "string", "enum": ["DELEGATED_SUBWORK", "RESPONSIBILITY_HANDOFF"]},
+    "execution_environment": {"type": "string", "enum": ["WEB", "LOCAL"], "description": "Coarse execution environment (WEB | LOCAL). Environment never implies authority and never substitutes for role, eligibility, capability, independence, exact-subject currentness or authorization. Provider/model identity is operator/capability provenance only (#861 bounded refinement)."},
+    "compatibility_group": {"type": ["string", "null"], "minLength": 1, "description": "Optional non-default compatibility group participating in the derived protected claim key (slot 4 after normalization). Null/omitted means the __default__ group."},
+    "compatibility_authority_ref": {"type": ["string", "null"], "minLength": 1, "description": "Durable resolvable higher-authority validation reference authorizing the non-default compatibility group. Required whenever compatibility_group is a non-default string (blank-only strings normalize to the reserved __default__ group and need no ref); never downgraded to the __default__ group. The durable ref shape alone never authorizes: the ref must resolve at the admission/conformance boundary to a current controller-resolved grant of the owning authority family applicable to the exact repository+task+role+group tuple."},
+    "admission_generation": {"type": ["integer", "null"], "minimum": 0, "description": "Monotonic per-claim-key admission generation for CAS (non-negative integer, schema-enforced minimum 0). Reserve moves g to g+1; claim requires the current value; a stale value resolves STALE with zero canonical mutation; terminal states never decrement."},
+    "scheduler_origin": {"type": "string", "enum": ["WEB", "LOCAL"], "description": "Request/writer provenance of the scheduling origin only. Never an input to the protected claim key, eligibility, or any authority decision."}
   },
   "allOf": [
     {
@@ -79,6 +84,18 @@
     {
       "if": {"properties": {"responsibility_mode": {"const": "RESPONSIBILITY_HANDOFF"}}, "required": ["responsibility_mode"]},
       "then": {"required": ["created_by"]}
+    },
+    {
+      "if": {"properties": {"compatibility_group": {"type": "string", "minLength": 1}}, "required": ["compatibility_group"]},
+      "then": {
+        "if": {"properties": {"compatibility_group": {"pattern": "^\\s*$"}}},
+        "then": {},
+        "else": {
+          "if": {"properties": {"compatibility_group": {"const": "__default__"}}},
+          "then": {},
+          "else": {"required": ["compatibility_authority_ref"]}
+        }
+      }
     }
   ]
 }

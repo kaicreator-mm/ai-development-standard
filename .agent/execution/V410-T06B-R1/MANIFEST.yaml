@@ -1,0 +1,63 @@
+pack_id: V410-T06B-R1
+task_id: V410-T06B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: ab8339f83a6a2308a5aa39009bd126698320ceee
+base_tree: 4664b02ab36f3181a567c88fc0756079d2397343
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06B
+branch: task/v4.10.0-v410-t06b-machine-projection
+parent_issue: "#861"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: ab8339f83a6a2308a5aa39009bd126698320ceee
+generated_by: claude-code:zcode-glm-local-controller (V410-T06B-LOCAL-FINAL-JIT-R1)
+generated_at: "2026-10-06T13:20:00+00:00"
+dependency_completion:
+  - V410-T01B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T02B@fee097db238b60d97ab2d449dcf210488d03814f
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T04B@eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601
+  - V410-T05A@30334e8c7b90a327f8597b86c88c785b98df07f7
+  - V410-T05B@f1daaffb6ae3469dc0e77e881ed73e17e6586295
+  - V410-T06A@ab8339f83a6a2308a5aa39009bd126698320ceee
+dependency_notes:
+  - "V410-T01B: DONE, integrated by PR #880 merge f1daaffb6ae3469dc0e77e881ed73e17e6586295"
+  - "V410-T02B: DONE, integrated by PR #878 lineage (machine projection); blob fee097db238b60d97ab2d449dcf210488d03814f pinned by earlier packs"
+  - "V410-T04A: DONE, integrated by PR #884 merge 41236cb7250c6854170563d371d7debe7354c936"
+  - "V410-T04B: DONE_MERGED by PR #918 merge eea3e69be5ac3e9c1a78f19e9bdf243ad9c58601 (R4 gates PASS #857@6012480047/#857@6013055900)"
+  - "V410-T05A: DONE_INTEGRATED by PR #902 merge 30334e8c7b90a327f8597b86c88c785b98df07f7"
+  - "V410-T05B: DONE_NO_CHANGE_REQUIRED, closeout exact subject f1daaffb6ae3469dc0e77e881ed73e17e6586295"
+  - "V410-T06A: DONE_MERGED by PR #925 merge ab8339f83a6a2308a5aa39009bd126698320ceee (Validation R1 PASS #860@6014670251 + Fresh Review R1 PASS #860@6016455174 on one unchanged exact subject)"
+material_paths:
+  - schemas/
+  - standards/
+  - templates/
+  - scripts/
+  - standard-manifest.json
+stage0_census:
+  baseline: "ab8339f83a6a2308a5aa39009bd126698320ceee / tree 4664b02ab36f3181a567c88fc0756079d2397343 (re-read at claim; standard-manifest.json@21730a0251e35e13591d2c84de1c66d6ab2c2408)"
+  dispatch_schema: "NO execution_environment field today (additive W1 target; additionalProperties=true); execution_profile enum is exactly [LOCAL_BUILDER,LOCAL_VALIDATOR,WEB_REVIEWER,PLATFORM_VALIDATOR,CLOSURE_VALIDATOR] and profile<->role allOf couplings exist (byte-stable per A11)"
+  handoff_schema: "schemas/local-agent-handoff.schema.json ALREADY carries execution_environment (hazard-1): W5 prose must disposition its pre-existing vocabulary as the validation-gate environment, distinct from dispatch execution_environment (A13)"
+  target_environment: "ZERO occurrences in schemas/standards/templates/scripts at base; TARGET_ENVIRONMENT lives only in durable issue comments (WEB proposals) -> W5 marks it a proposal/history alias with fail-closed disagreement (T4)"
+  owner_map_convergence: "T06A convergence reference + focused suite merged (PR #925); seven discovery families remain STATUS=GAP routed to this task; registry-growth mechanism = W13 authorized guard+manifest evolution (case-H evidence on task/v410-t06a-pack-rebind-r2-proposal@7c684309)"
+  pack_core_inventory_ownership: "v34_rules.REQUIRED_CORE_ARTIFACTS stays the owner; W7 reuses core_artifacts_complete() UNCHANGED; W11 adds I1-I6 exact-set regressions; no repackaging in this task"
+l3_inputs:
+  - "#861@6011974499 (WEB_MACHINE_DESIGN_R2 COMPLETE: write set A-J)"
+  - "#861@6012842432 (WEB_CONFORMANCE_ORACLE_R1 COMPLETE: sections A-J, 65 cases, test placement 1-5)"
+  - "#861@6013355359 (WEB_DOGFOOD_FEEDBACK_L3_R1 COMPLETE: T1-T5, machine surfaces 1-10)"
+  - "#861@6013678847 (WEB_MACHINE_WRITESET_PLAN_R1 COMPLETE: ordered W1-W14, 6 stages, TEST_MAP, migration notes — NORMATIVE IMPLEMENTATION ORDER)"
+  - "#861@6012073521 (LOCAL_IMPACT_INVENTORY_R1 COMPLETE)"
+  - "#861@6012413437 (DUAL_SCHEDULER_DOGFOOD_FEEDBACK_R1 COMPLETE)"
+  - "#861@6015240928 (WEB post-T06A candidate prebind R1 COMPLETE)"
+  - "#861@6016615178 (LOCAL post-T06A impact delta COMPLETE: import edges, suite-coupled assertions, stable-blob ledger, POST_MERGE_RECHECK)"
+  - "#860@6016058693/#860@6016076073 (drift disposition/restoration: claim-before-push rule; advisory NON_BLOCKING semantics inputs)"
+  - "WEB delta V410-T06B-WEB-POST-DRIFT-DOGFOOD-DELTA-R2 (admitted #861@6016591816, NON_BLOCKING advisory): its terminal folds as additive clauses when published; does not block this JIT or the Builder"
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT
