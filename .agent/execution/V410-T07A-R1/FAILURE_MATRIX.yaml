@@ -1,0 +1,52 @@
+# V410-T07A R1 failure matrix — fail-closed classes (oracle N1-N15 #862@6012768804; A1-A12 #862@6043147928; BLOCKER_RULES #862@6013713353)
+
+failures:
+  - id: ACC_MAP_INCOMPLETE
+    class: COMPLETENESS
+    trigger: any active requirement R1/R2/R3/R4/R6/R7/R11/R12 missing, duplicated, or without >=1 durable producer; row schema fields absent; vocabulary drift
+    expected: fail closed in T-t07a-focus; every R-row must map or explicitly block — never silently omitted
+  - id: STALE_BINDING
+    class: AUTOMATIC_TRANSFER
+    trigger: a producer bound to a predecessor base (ab8339f), a non-integrated preview head (a7dc127/41df8e5), or a drifted blob; historical qualification silently rebinding to a successor exact subject
+    expected: fail closed; stale evidence stays reachable-but-non-current; row reopens UNRESOLVED with route_to_owner
+  - id: PARSE_DRIFT
+    class: RECORD_MACHINE_PARSE
+    trigger: the embedded JSON record block absent, malformed, or field vocabulary drifts
+    expected: fail closed (N13-class); no prose-only fallback
+  - id: VERDICT_VOCABULARY
+    class: INDEX_OVERREACH
+    trigger: PASS/READY/ACCEPTED/NOT_APPLICABLE-style verdict tokens in row fields; Release-verdict emission; a second release state machine; a freeze-eligibility verdict field
+    expected: fail closed (N13/N15/A4/A11/A12); the index projects blocker state only
+  - id: CROSS_LAYER_PASS
+    class: PASS_MANUFACTURE
+    trigger: CI/Task/PR PASS, machine-conformance PASS, scheduler dispatch/admission/claim events, multi-lane duplicates, or provider/model votes treated as Product acceptance or as blocker clearance
+    expected: fail closed (N3/N4/N5/N6/N7/N8/N10/N12/N14/A2/A3/A9); such artifacts are provenance-only lanes
+  - id: CONVENIENCE_NA
+    class: GATE_REDUCTION
+    trigger: missing evidence reclassified NOT_APPLICABLE from cost, docs-only label, file count, speed or model confidence; UNKNOWN applicability resolved by guessing
+    expected: fail closed (N11); UNKNOWN routes per RELEASE_STANDARD §11.4 to the stronger legal path or BLOCKED
+  - id: OWNER_AMBIGUOUS
+    class: FAIL_CLOSED_ROUTING
+    trigger: missing/ambiguous owner or evidence without route_to_owner
+    expected: explicit UNRESOLVED blocker row with route_to_owner — never a guess
+  - id: ENVIRONMENT_SUBSTITUTION
+    class: WEB_FOR_LOCAL
+    trigger: WEB-origin evidence substituted for required LOCAL real-host exact-subject validation
+    expected: fail closed (N9); environment truth stays with VALIDATION_STANDARD
+  - id: ADOPTION_PATH_LEAK
+    class: MINIMUM_ADVANCED_DEMOTION
+    trigger: Advanced-only orchestration evidence turned into a Minimum-path requirement, or authority-required evidence dropped on either path
+    expected: fail closed (N13/A6/A7); adoption_path stays a valid vocabulary value on every row
+  - id: DRIFT_AFTER_PROJECTION
+    class: STALE_PROJECTION
+    trigger: producer blob drift at any later checkout vs the pinned identity (A1/A10 — an old projection silently staying current after drift)
+    expected: the focused suite fails at the drifted pin; the projection must be rebound by a successor dispatch, never edited in place
+  - id: PREP_BRANCH_REUSE
+    class: NON_CANDIDATE_REUSE
+    trigger: reuse of the retained prep-branch artifact scripts/test_v410_t07a_evidence_inventory.py (branch task/v4.10.0-v410-t07a-local-evidence-inventory-r1@a248c3a) as a candidate or evidence
+    expected: reference-only; the focused suite asserts its absence from the checkout and its presence in rejected provenance
+stop_conditions:
+  - any P0/P1 review finding
+  - any carried suite red (this task must not edit carried files; zero deletions)
+  - candidate drift vs 0518202c715dcf91784a694bdf4a8eeeaeb16ab6 / tree 75566c464505386fedffde803e05e3e726922434 before gate admission
+  - any need for new authority, a new standard family, or edits to T06B-owned surfaces => STOP and return to Controller for rebind
