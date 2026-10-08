@@ -59,7 +59,14 @@ REBIND_BASE_TREE = "cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2"
 # registry scoping fold in the owner-convergence guard), which changed the index
 # blob itself; was 65baefd3a1d087d3692e6e603dbe098546bc7cb1 at the rebind base
 # cea2e0cc (base-qualified citation preserved in the reference).
-T07A_INDEX_BLOB_AT_BASE = "7f4f4d632dabe9aebb9d642883dc15911139a515"
+# Second pin-line fold with disclosure — T08A positional-registry rebind
+# (dispatch V410-T08A-BUILDER-R1, #864): the T08A successor candidate
+# registered its own TASK_CANDIDATES entry in the owner-convergence guard
+# (base 402bf289 = merged PR #934 tip), mechanically forcing the same R2-row
+# pin line (2e8bd6f9 -> 50e26dc6) inside the index and therefore this
+# HEAD-equality citation fold (7f4f4d63 -> d3a62083); strictly a pin line, no
+# index meaning changed, zero removed tests.
+T07A_INDEX_BLOB_AT_BASE = "d3a62083e6f5f9142dbc7e29a5f6560a8f620767"
 PRD_FROZEN_BLOB = "b0b9906035eee253aad4bff0274d3d4c8f90b9db"
 
 SCHEMA = "v410-product-decision-record-v1"
@@ -773,6 +780,84 @@ class AuthorityNegativeTests(unittest.TestCase):
 class PackAndCandidateSurfaceTests(unittest.TestCase):
     """Pack inventory, subject binding, disclosed registry rebind, write-set guard."""
 
+    # V410-T08A rebind (dispatch V410-T08A-BUILDER-R1, #864; pre-authorized by
+    # the fast-path handoff #864@6046064159 successor-rebind mechanism and the
+    # T08A positional-registry seam discipline #864@6055469682): T07B is now
+    # FROZEN at its integrated tip 402bf289 (merged PR #934) and the T08A
+    # successor candidate is registered with its OWN prefixes via the
+    # TASK_CANDIDATES family registry (mirroring
+    # scripts/test_v410_owner_convergence.py and the rebound T07A suite).
+    # The positional guard below was rebound from base...HEAD (structurally red
+    # on every successor candidate) to the frozen INTEGRATED T07B delta —
+    # deterministic and mutant-catching — and the new active-candidate check
+    # scopes every successor candidate to its OWN registered prefixes. Zero
+    # removed tests; no other assertion weakened.
+    T07B_INTEGRATED_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+
+    # Surfaces the V410-T08A candidate may touch (its registered successor
+    # write set), plus the DISCLOSED registry-rebind and pin-convergence paths
+    # of that task. Never a widening of another task's scope.
+    T08A_ALLOWED_PREFIXES = (
+        ".agent/execution/V410-T08A-R1/",
+        "scripts/run_v410_integration.py",
+        "scripts/test_v410_t08a_integration_runner.py",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
+    # Carried-suite edits the T08A rebind is authorized to make: the three
+    # positional candidate registries only.
+    AUTHORIZED_T08A_REGISTRY_REBIND = frozenset(
+        {
+            "scripts/test_v410_owner_convergence.py",
+            "scripts/test_v410_t07a_acceptance_projection.py",
+            "scripts/test_v410_t07b_decision_record.py",
+        }
+    )
+
+    # Historical carried-suite authorizations of the T07B candidate (R2
+    # pre-authorized registry rebind, fast-path handoff #863@6046064159; R3
+    # seam rebind, dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2) — frozen here so
+    # the integrated T07B registry entry records its own authorized edit set.
+    AUTHORIZED_R2_CARRIED_REBIND = frozenset({"scripts/test_v410_owner_convergence.py"})
+    AUTHORIZED_R3_SEAM_REBIND = frozenset(
+        {
+            "scripts/test_v410_t07a_acceptance_projection.py",
+            "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+            ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+            ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
+        }
+    )
+
+    # Successor-aware candidate registry (family pattern of
+    # scripts/test_v410_owner_convergence.py): T07B frozen at its integrated
+    # tip; the single active entry (V410-T08A) is measured from its base to
+    # the CURRENT committed HEAD and fails LOUD on ancestry loss or
+    # unregistered paths — never a silent skip.
+    TASK_CANDIDATES = (
+        {
+            "task": "V410-T07B",
+            "base": REBIND_BASE_SHA,
+            "integrated": T07B_INTEGRATED_SHA,
+            "prefixes": T07B_ALLOWED_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_R2_CARRIED_REBIND
+            | AUTHORIZED_R3_SEAM_REBIND & {"scripts/test_v410_t07a_acceptance_projection.py"},
+        },
+        {
+            "task": "V410-T08A",
+            "base": T07B_INTEGRATED_SHA,
+            "prefixes": T08A_ALLOWED_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_T08A_REGISTRY_REBIND,
+            "active": True,
+        },
+    )
+
+
     def test_pack_core_inventory_exact_set(self) -> None:
         text = (PACK_DIR / "MANIFEST.yaml").read_text(encoding="utf-8")
         lines = text.splitlines()
@@ -810,36 +895,156 @@ class PackAndCandidateSurfaceTests(unittest.TestCase):
             self.assertIn(phrase, lowered, phrase)
 
     def test_disclosed_carried_guard_rebind_is_registered(self) -> None:
+        # V410-T08A rebind (dispatch V410-T08A-BUILDER-R1): the active flag
+        # moved to the T08A successor entry per the registry's own designed
+        # rebind mechanism; the frozen T07B entry (base + prefixes + frozen
+        # integrated tip) is retained unchanged.
         import test_v410_owner_convergence as oc  # carried suite, import-safe
 
         entries = oc.CandidateShapeTests.TASK_CANDIDATES
         active = [entry["task"] for entry in entries if entry.get("active")]
-        self.assertEqual(active, ["V410-T07B"], "exactly one active candidate: the T07B registry entry")
-        entry = next(e for e in entries if e["task"] == "V410-T07B")
-        self.assertEqual(entry["base"], REBIND_BASE_SHA)
-        for prefix in T07B_ALLOWED_PREFIXES:
+        self.assertEqual(active, ["V410-T08A"], "exactly one active candidate: the T08A registry entry")
+        entry = next(e for e in entries if e["task"] == "V410-T08A")
+        self.assertEqual(entry["base"], self.T07B_INTEGRATED_SHA)
+        for prefix in self.T08A_ALLOWED_PREFIXES:
             self.assertTrue(
                 any(p.startswith(tuple(entry["prefixes"])) for p in [prefix]),
+                f"T08A registered prefixes must cover {prefix}",
+            )
+        t07b = next(e for e in entries if e["task"] == "V410-T07B")
+        self.assertNotIn("active", t07b)  # flag moved, entry and frozen integrated tip retained
+        self.assertEqual(t07b["base"], REBIND_BASE_SHA)
+        self.assertEqual(t07b.get("integrated"), self.T07B_INTEGRATED_SHA)
+        for prefix in T07B_ALLOWED_PREFIXES:
+            self.assertTrue(
+                any(p.startswith(tuple(t07b["prefixes"])) for p in [prefix]),
                 f"T07B registered prefixes must cover {prefix}",
             )
-        t07a = next(e for e in entries if e["task"] == "V410-T07A")
-        self.assertNotIn("active", t07a)  # flag moved, entry and frozen r1_tip retained
-        self.assertIn("r1_tip", t07a)
 
     def test_t07b_candidate_diff_stays_inside_registered_prefixes(self) -> None:
+        # V410-T08A rebind: the ORIGINAL guard intent is preserved on the
+        # frozen INTEGRATED T07B delta (merged PR #934) — deterministic and
+        # mutant-catching regardless of which successor candidate is active;
+        # the active successor is scoped by the registry check below.
+        changed = self._changed_paths(REBIND_BASE_SHA, self.T07B_INTEGRATED_SHA)
+        self.assertTrue(changed, "frozen T07B integrated delta resolved empty — guard subject lost")
+        outside = sorted(p for p in changed if not p.startswith(T07B_ALLOWED_PREFIXES))
+        self.assertEqual(outside, [], "T07B candidate paths must stay inside the registered prefixes")
+        offenders = sorted(set(changed) & set(FORBIDDEN_SURFACES))
+        self.assertEqual(offenders, [], "T06B-owned / T07A deliverable / authority surfaces must stay untouched")
+
+    def test_active_candidate_head_diff_stays_inside_registered_task_prefixes(self) -> None:
+        # HEAD-relative successor scoping, fail loud (no silent skip): every
+        # path committed since the active candidate's base must be inside the
+        # active candidate's own registered prefixes. A successor candidate
+        # that extends the tree without registering its own TASK_CANDIDATES
+        # entry fails here with rebind instructions instead of silently
+        # passing.
+        entry = self._active_candidate()
+        if not self._is_ancestor(entry["base"], "HEAD"):
+            self.fail(
+                f"HEAD does not descend from the active candidate base "
+                f"{entry['base']} ({entry['task']}); the active-candidate scope "
+                "check cannot run — rebind TASK_CANDIDATES for this lineage "
+                "(fail loud, no silent skip)"
+            )
+        changed = self._changed_paths(entry["base"], "HEAD")
+        outside = sorted(p for p in changed if not p.startswith(entry["prefixes"]))
+        self.assertEqual(
+            outside,
+            [],
+            "paths outside the active candidate's registered prefixes; the "
+            "successor task must rebind this guard by registering its own "
+            "TASK_CANDIDATES entry (task/base/prefixes) — never by widening "
+            "another task's scope",
+        )
+        carried = self._carried_suite_offenders(changed, entry["base"], entry["authorized_suite_edits"])
+        self.assertEqual(carried, [], f"carried suite edited without authorization: {carried}")
+
+    def test_candidate_registry_is_wellformed(self) -> None:
+        tasks = [entry["task"] for entry in self.TASK_CANDIDATES]
+        self.assertTrue(tasks, "TASK_CANDIDATES must not be empty")
+        self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
+        self.assertEqual(
+            [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
+            ["V410-T08A"],
+            "exactly one active candidate entry is required",
+        )
+        t07b = self._candidate("V410-T07B")
+        self.assertNotIn("active", t07b)  # flag moved to the T08A successor, entry retained
+        self.assertEqual(
+            t07b["authorized_suite_edits"],
+            self.AUTHORIZED_R2_CARRIED_REBIND
+            | self.AUTHORIZED_R3_SEAM_REBIND & {"scripts/test_v410_t07a_acceptance_projection.py"},
+            "the frozen T07B entry must keep exactly its disclosed R2+R3 authorizations",
+        )
+        for entry in self.TASK_CANDIDATES:
+            with self.subTest(task=entry["task"]):
+                self.assertTrue(entry["prefixes"], f"{entry['task']} has empty prefixes")
+                for key in ("base", "integrated"):
+                    if key in entry:
+                        self.assertTrue(
+                            self._commit_exists(entry[key]),
+                            f"{entry['task']} {key} {entry[key]} does not resolve to a commit",
+                        )
+
+    def _candidate(self, task: str) -> dict:
+        return next(entry for entry in self.TASK_CANDIDATES if entry["task"] == task)
+
+    def _active_candidate(self) -> dict:
+        return next(entry for entry in self.TASK_CANDIDATES if entry.get("active"))
+
+    def _changed_paths(self, base: str, head: str) -> set[str]:
         result = subprocess.run(
-            ["git", "diff", "--name-only", f"{REBIND_BASE_SHA}...HEAD", "--"],
+            ["git", "diff", "--name-only", f"{base}...{head}", "--"],
             cwd=ROOT,
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            self.fail(f"cannot diff against {REBIND_BASE_SHA}...HEAD: {result.stderr.strip()}")
-        changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
-        outside = sorted(p for p in changed if not p.startswith(T07B_ALLOWED_PREFIXES))
-        self.assertEqual(outside, [], "T07B candidate paths must stay inside the registered prefixes")
-        offenders = sorted(set(changed) & set(FORBIDDEN_SURFACES))
-        self.assertEqual(offenders, [], "T06B-owned / T07A deliverable / authority surfaces must stay untouched")
+            self.fail(f"cannot diff against {base}...{head}: {result.stderr.strip()}")
+        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+    def _carried_suite_offenders(self, changed: set[str], base: str, authorized: frozenset) -> list[str]:
+        # Carried = the suite already existed at the candidate's base; a task's
+        # OWN new suite is its own deliverable (scoped by the prefixes check).
+        return sorted(
+            p
+            for p in changed
+            if p.startswith("scripts/test_")
+            and (ROOT / p).is_file()
+            and self._path_exists_at(base, p)
+            and p not in authorized
+        )
+
+    def _path_exists_at(self, ref: str, rel: str) -> bool:
+        result = subprocess.run(
+            ["git", "cat-file", "-e", f"{ref}:{rel}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        return result.returncode == 0
+
+    def _is_ancestor(self, ancestor: str, descendant: str) -> bool:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode not in (0, 1):
+            self.fail(f"cannot test ancestry {ancestor} <- {descendant}: {result.stderr.strip()}")
+        return result.returncode == 0
+
+    def _commit_exists(self, sha: str) -> bool:
+        result = subprocess.run(
+            ["git", "cat-file", "-e", f"{sha}^{{commit}}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        return result.returncode == 0
 
     def test_deliverable_files_present(self) -> None:
         for path in (

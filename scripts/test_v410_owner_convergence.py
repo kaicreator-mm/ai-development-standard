@@ -378,6 +378,15 @@ class CandidateShapeTests(unittest.TestCase):
     files) is registered into T07B_ALLOWED_PREFIXES exactly as authorized — a
     registry scoping line with disclosure, zero removed tests; the rebound
     T07A suite carries the matching successor-aware registry.
+
+    V410-T08A rebind (#864, dispatch V410-T08A-BUILDER-R1, pre-authorized by
+    the fast-path handoff #864@6046066388 and the positional-registry seam
+    discipline of the T08A admission #864@6055469682): the T08A successor
+    candidate registered its OWN TASK_CANDIDATES entry (base 402bf289 = merged
+    PR #934 tip, T08A's own prefixes) and the active flag moved accordingly —
+    the registry's own designed rebind mechanism. The registry edits are
+    disclosed carried-suite rebinds; zero removed tests; no other assertion
+    weakened.
     """
 
     T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
@@ -453,6 +462,40 @@ class CandidateShapeTests(unittest.TestCase):
     # its own entry and moving the active flag — never by widening another
     # task's prefixes.
     T07B_BASE_SHA = "cea2e0ccd045e8fcebaf110273129b198ed259fd"
+    # V410-T08A candidate base (the merged PR #934 integration tip = T07B
+    # INTEGRATED — T08A's own registered base).
+    T07B_INTEGRATED_SHA = "402bf2899a7e1cd43eea3e7d78a37c947fe28c46"
+
+    # Surfaces the V410-T08A candidate may touch (its registered successor
+    # write set): the runner + focused suite + pack, plus the DISCLOSED
+    # registry-rebind and pin-convergence paths of this task
+    # (dispatch V410-T08A-BUILDER-R1): the three positional registries
+    # (this guard, the T07A suite registry, the T07B suite registered-prefix
+    # guard) and the mechanically-forced blob-pin cascade (T07A projection
+    # record row R2 + IMPLEMENTATION_MAP row R2 + the T07B reference citation
+    # + T07A TEST_MATRIX provenance row). Never a widening of another task's
+    # scope — every non-T08A path here is a disclosed convergence line.
+    T08A_ALLOWED_PREFIXES = (
+        ".agent/execution/V410-T08A-R1/",
+        "scripts/run_v410_integration.py",
+        "scripts/test_v410_t08a_integration_runner.py",
+        "scripts/test_v410_owner_convergence.py",  # disclosed TASK_CANDIDATES registry rebind
+        "scripts/test_v410_t07a_acceptance_projection.py",  # disclosed registry rebind
+        "scripts/test_v410_t07b_decision_record.py",  # disclosed registry rebind
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",  # R2-row pin convergence
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",  # rebind provenance record
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",  # index-blob citation convergence
+    )
+
+    # Successor-aware candidate registry (family-style): each task's candidate
+    # delta is scoped to its OWN allowed prefixes instead of every successor
+    # being measured against T06B's whole-repo allowlist. T06B, T07A and T07B
+    # are frozen at their integrated tips; the single entry flagged active=True
+    # is measured from its base to the CURRENT committed HEAD (fail loud on
+    # ancestry loss — never a silent skip). A successor task rebinds by adding
+    # its own entry and moving the active flag — never by widening another
+    # task's prefixes.
     TASK_CANDIDATES = (
         {
             "task": "V410-T06B",
@@ -470,7 +513,13 @@ class CandidateShapeTests(unittest.TestCase):
         {
             "task": "V410-T07B",
             "base": T07B_BASE_SHA,
+            "integrated": T07B_INTEGRATED_SHA,
             "prefixes": T07B_ALLOWED_PREFIXES,
+        },
+        {
+            "task": "V410-T08A",
+            "base": T07B_INTEGRATED_SHA,
+            "prefixes": T08A_ALLOWED_PREFIXES,
             "active": True,
         },
     )
@@ -546,7 +595,7 @@ class CandidateShapeTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T07B"],
+            ["V410-T08A"],
             "exactly one active candidate entry is required",
         )
         for entry in self.TASK_CANDIDATES:
