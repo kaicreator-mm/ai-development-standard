@@ -59,8 +59,8 @@ matrix:
     expect: PASS_UNMODIFIED
   - id: T-owner-convergence
     command: python scripts/test_v410_owner_convergence.py
-    status: CARRIED (R2 producer)
-    expect: PASS_UNMODIFIED
+    status: CARRIED-REBOUND (R2 producer; Concern Validation R1 found the carried candidate-scope guard red on this successor tree — rebound successor-aware by the authorized R2 bounded repair #862 dispatch V410-T07A-BOUNDED-REPAIR-R2: frozen integrated T06B delta assertion preserved, TASK_CANDIDATES per-task prefix scoping added, zero removed def test_, no other assertion weakened)
+    expect: PASS_R2_REBOUND
   - id: T-t06b-core-inventory
     command: python scripts/test_v410_t06b_core_inventory.py
     status: CARRIED (R11 primary producer)
@@ -82,6 +82,14 @@ matrix:
     status: CARRIED
     expect: PASS
 
+r2_repair_record:
+  trigger: "Concern Validation R1 FAIL (#862@6053149179): python scripts/test_v410_owner_convergence.py red 1/23 at the exact candidate head 43edc1f — CandidateShapeTests.test_t06b_candidate_diff_stays_inside_owned_surfaces diffs the tree against the T06B base ab8339f and asserts T06B_ALLOWED_PREFIXES, so the 8 T07A add-paths report as outside. The R1 builder terminal's 15/15 claim was FALSE on the committed head (battery had been executed pre-commit, where untracked new files are invisible to git diff <sha> --)."
+  root_cause: "P2-1 positional carried-assertion design debt: the guard asserted a whole-repo allowlist against a frozen HISTORICAL base, structurally red on every successor candidate tree. The failure says nothing false about T07A content — the 8 paths are exactly the declared deliverables and T07A's own forbidden-surface guard passes."
+  repair: "Successor-aware candidate-scope rebind in scripts/test_v410_owner_convergence.py: (1) the frozen INTEGRATED T06B delta ab8339f...0518202c (merged PR #927, 22 paths) stays asserted against T06B_ALLOWED_PREFIXES — original guard intent preserved, deterministic, mutant-catching (a mutated prefix list or fabricated integrated path still fails); (2) a TASK_CANDIDATES family map scopes each task's candidate delta to its OWN prefixes (T06B pinned at its integrated tip; T07A base 0518202c with frozen R1 tip 43edc1f and the active base->committed-HEAD check); (3) the active-candidate check fails LOUD on ancestry loss or unregistered successor paths (no silent skip); (4) registry integrity asserted (exactly one active entry, unique tasks, recorded shas resolve). Zero removed def test_; zero other assertions weakened."
+  blob_pin_cascade: "Rebinding the carried suite changes its blob, so the projection record's CANDIDATE_BOUND pin ec895815156f9125f88bf7d47a1680658e0a3ec0 (row R2) and the same pin in IMPLEMENTATION_MAP.md were rebound to the post-repair blob (commit 2). test_p2's exact-subject equality machinery is intact — no exception carve-out; the commit-1 battery reproduced the predicted test_p2 red before the rebind."
+  process_correction: "Battery discipline (CRITICAL PROCESS RULE): the full 15-command battery is executed on the COMMITTED head AFTER committing — never pre-commit on a tree where untracked files are invisible. Executed here: commit 1 (4 declared repair files) -> battery -> owner-convergence green 26 tests, T07A suite red 1 (test_p2 stale pin, the predicted cascade) -> commit 2 (blob-pin rebind) -> battery 15/15 green on the final committed head."
+  scope_note: "The single authorized carried-suite edit is scripts/test_v410_owner_convergence.py (zero removed tests), recorded as AUTHORIZED_R2_CARRIED_REBIND in the focused suite and positively re-pinned via the projection record. REVIEW_CHECKLIST items 3 and 9 are R1-scope statements (zero carried-suite edits at the R1 subject); for R2 they are superseded by this record. EXPECTED_WRITE_SET grew from 4 to 6 M paths solely through this mechanically-forced blob-pin cascade."
+
 dispositions:
   - id: DISP-NO-CHECKLIST-MUTATION
     record: The optional single pointer line in checklists/version-closure.md ("Candidate / Visible Closure" naming the projection as a closure-consumable input, #862@6013713353 item 3) is JIT-declined: closure consumption does not materially require it — the projection is discoverable at its durable path and the checklist stays byte-stable (blob 6c5616909c07177d13bdba23a589bead5a4e10a0 unchanged).
@@ -95,5 +103,5 @@ negative_invariants:
   - no Product requirement redefinition (rows carry prd_ref anchors; meaning stays in the Frozen Product)
   - no historical evidence transfer (old-candidate/preview/predecessor-base identities are rejected bindings, recorded as rejected_provenance)
   - scheduler/CI/Task/PR/Review/Validation/conformance results are never Product acceptance by themselves
-  - no NO_GREEN_BY_DELETION: zero carried-suite edits, zero deletions in the diff
+  - no NO_GREEN_BY_DELETION: zero deletions in the diff and zero removed tests; the single carried-suite edit (scripts/test_v410_owner_convergence.py) is the authorized R2 successor-aware rebind recorded in r2_repair_record
   - no merge without fresh Concern Validation + genuinely Fresh Independent Review on one unchanged HEAD/tree

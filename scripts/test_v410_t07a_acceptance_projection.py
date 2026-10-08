@@ -86,6 +86,13 @@ ROW_ID_RE = re.compile(r"^V410-ACC-R[0-9]+$")
 STALE_IDENTITIES = ("a7dc127", "41df8e5")  # non-integrated PR #927 preview heads
 SUPERSEDED_LINEAGE_DOC = "docs/implementation/4.10.0/L1_PRODUCT_EVIDENCE.md"
 PREP_BRANCH_TEST = "scripts/test_v410_t07a_evidence_inventory.py"
+# The R2 bounded repair (dispatch V410-T07A-BOUNDED-REPAIR-R2) is authorized to
+# rebind exactly ONE carried suite — the owner-convergence candidate-scope
+# guard — successor-aware with zero removed tests. Any OTHER carried-suite edit
+# stays rejected below; the rebound suite's exact blob is positively re-pinned
+# in the projection record (test_p2), so this named exception cannot mask any
+# further drift of that file.
+AUTHORIZED_R2_CARRIED_REBIND = frozenset({"scripts/test_v410_owner_convergence.py"})
 
 
 def parse_record() -> dict:
@@ -347,9 +354,24 @@ class NegativeAutomaticTransferTests(unittest.TestCase):
                 break
         else:
             self.fail("fixture error: no CANDIDATE_BOUND producer in R1")
-        # A wrong-but-well-formed blob pin is rejected at resolution time by
-        # test_p2 (git rev-parse comparison); here the validator rejects the
-        # format-level drift:
+        # Resolution-level fail-closed (A10): the well-formed but WRONG pin must
+        # be rejected by the same resolution machinery test_p2 applies — the
+        # producer's real blob at HEAD differs from the mutant pin, so test_p2's
+        # equality checks fail closed on this drift instead of accepting a
+        # merely format-valid value.
+        drifted = [p for p in mutant["evidence_producers"] if p["blob_identity"] == "0" * 40]
+        self.assertEqual(len(drifted), 1)
+        producer = drifted[0]
+        self.assertEqual(producer["exact_subject_binding"], "CANDIDATE_BOUND")
+        actual = git_blob_at_head(producer["durable_ref"])
+        self.assertIsNotNone(actual, f"producer not tracked at HEAD: {producer['durable_ref']}")
+        self.assertNotEqual(
+            actual,
+            producer["blob_identity"],
+            f"well-formed but wrong pin for {producer['durable_ref']} would pass "
+            "resolution — blob drift would not fail closed",
+        )
+        # Format-level drift is rejected by the row validator directly:
         bad_format = self._real_row("R1")
         bad_format["evidence_producers"][0]["blob_identity"] = "deadbeef"
         self.assertTrue(
@@ -532,6 +554,8 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         )
         self.assertEqual(offenders, [], "T06B-owned / authority surfaces must stay untouched")
         for path in changed:
+            if path in AUTHORIZED_R2_CARRIED_REBIND:
+                continue
             self.assertFalse(
                 (ROOT / path).is_file() and path.startswith("scripts/test_")
                 and path != "scripts/test_v410_t07a_acceptance_projection.py",

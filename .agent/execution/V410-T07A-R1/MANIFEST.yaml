@@ -17,6 +17,15 @@ dependency_completion:
 dependency_notes:
   - "V410-T06B: INTEGRATED — the exact base 0518202c715dcf91784a694bdf4a8eeeaeb16ab6 (tree 75566c464505386fedffde803e05e3e726922434) IS the merged #861 integration tip on version/v4.10.0 lineage; T06B six-core pack .agent/execution/V410-T06B-R1/ + suites test_v410_t06b_core_inventory.py / test_v410_t06b_multi_dispatch_conformance.py are carried surfaces at this base (re-verified PRESENT at JIT, see stage0_census)."
   - "Earlier predecessor chain (T01A/T01B/T02A/T02B/T03A/T03B/T04A/T04B/T05A/T05B/T06A) is integrated inside this same base; per-row producer refs are rebound in the projection, not inherited from preview facts."
+material_paths:
+  - .agent/execution/V410-T07A-R1/EXECUTION_CONTRACT.md
+  - .agent/execution/V410-T07A-R1/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md
+  - .agent/execution/V410-T07A-R1/MANIFEST.yaml
+  - .agent/execution/V410-T07A-R1/REVIEW_CHECKLIST.md
+  - .agent/execution/V410-T07A-R1/TEST_MATRIX.yaml
+  - docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md
+  - scripts/test_v410_t07a_acceptance_projection.py
 l3_inputs:
   - "#862@6003300393 (V410_T07A_WEB_PREPLAN_R1 COMPLETE: L3 seed Tests/Contract/Seam/Failure/Refs — embedded as the L3 seed section of EXECUTION_CONTRACT.md)"
   - "#862@6011927853 (WEB DELTA_PREPLAN_R2)"
