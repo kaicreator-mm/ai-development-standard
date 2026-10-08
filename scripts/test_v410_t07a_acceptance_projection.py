@@ -93,6 +93,39 @@ PREP_BRANCH_TEST = "scripts/test_v410_t07a_evidence_inventory.py"
 # in the projection record (test_p2), so this named exception cannot mask any
 # further drift of that file.
 AUTHORIZED_R2_CARRIED_REBIND = frozenset({"scripts/test_v410_owner_convergence.py"})
+# The R3 bounded seam rebind (dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2, #863:
+# seam proposal @6054504547 / admission @6054508480 / claim @6054512382) is
+# authorized to rebind exactly ONE positional guard of this carried suite —
+# test_forbidden_surfaces_untouched_vs_rebind_base — successor-aware with zero
+# removed tests, plus the mechanically forced cascade of its own edits: the
+# blob-pin rebinds (projection record, IMPLEMENTATION_MAP, the T07B citation
+# pin and reference citation, each strictly a pin line with disclosure) and the
+# matching successor-registry scoping folds in the two other guards that
+# register the T07B candidate write set (owner-convergence TASK_CANDIDATES +
+# the T07B suite's own registered-prefix guard). The rebound guard keeps the
+# frozen T07A integrated delta asserted and positively re-registers every
+# active successor candidate, so this named exception cannot mask any further
+# drift: unregistered paths fail loud in the rebound registry below.
+AUTHORIZED_R3_SEAM_REBIND = frozenset(
+    {
+        "scripts/test_v410_t07a_acceptance_projection.py",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
+    }
+)
+# Whole-prefix authority bans preserved verbatim from the original guard: the
+# frozen T07A integrated delta must never touch T06B-owned / authority surfaces.
+T07A_FORBIDDEN_PREFIXES = (
+    "schemas/",
+    "standards/",
+    "templates/",
+    "references/",
+    "checklists/",
+    "registries/",
+    "prompts/",
+    "standard-manifest.json",
+)
 
 
 def parse_record() -> dict:
@@ -499,7 +532,116 @@ class NegativeAutomaticTransferTests(unittest.TestCase):
 
 
 class ProjectionSurfaceConformanceTests(unittest.TestCase):
-    """Pack/manifest/scope guards for this task's own deliverables."""
+    """Pack/manifest/scope guards for this task's own deliverables.
+
+    Scope-guard history (positional-debt class): this guard originally diffed
+    the WORKING TREE against the frozen T07A base 0518202c with WHOLE-PREFIX
+    bans on templates/|references/|checklists/ plus a blanket carried-suite
+    check on every ``scripts/test_`` path except its own — structurally red on
+    every task-pack-legal successor candidate tree, exactly the positional debt
+    the T07A R2 repair documented for the owner-convergence guard.
+
+    V410-T07B R3 seam rebind (#863, dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2;
+    trigger and mechanics recorded in
+    .agent/execution/V410-T07A-R1/TEST_MATRIX.yaml ``r3_seam_rebind``): rebound
+    successor-aware while preserving the original guard intent, mirroring the
+    TASK_CANDIDATES family pattern of scripts/test_v410_owner_convergence.py —
+    the frozen INTEGRATED T07A delta (0518202c...382c1869, merged PR #933) stays
+    asserted against T07A's own prefixes and the T06B-owned/authority forbidden
+    surfaces (deterministic, mutant-catching), and each successor's candidate
+    delta is scoped to its OWN registered prefixes via TASK_CANDIDATES, with
+    the active candidate measured base -> committed HEAD and failing LOUD on
+    ancestry loss, unregistered paths, upstream authority surfaces, or
+    unauthorized carried-suite edits (never a silent skip). Zero removed
+    tests; no other assertion weakened.
+    """
+
+    # Frozen T07A R2 integrated tip (merged PR #933): the frozen subject of the
+    # T07A integrated delta asserted by
+    # test_forbidden_surfaces_untouched_vs_rebind_base — deterministic and
+    # mutant-catching regardless of which successor candidate is active.
+    T07A_INTEGRATED_SHA = "382c1869c79790e22e1e89fdf08c0a23404544c1"
+    # V410-T07B candidate base (the merged PR #933 integration tip on the
+    # version/v4.10.0 lineage — T07B's own registered base).
+    T07B_BASE_SHA = "cea2e0ccd045e8fcebaf110273129b198ed259fd"
+
+    # Surfaces the T07A integrated candidate may touch (its 9 deliverable
+    # paths): the six-path pack, the projection, this suite, and the one
+    # carried-suite path the R2 bounded repair is authorized to rebind.
+    T07A_DELIVERABLE_PREFIXES = (
+        ".agent/execution/V410-T07A-R1/",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+        "scripts/test_v410_t07a_acceptance_projection.py",
+        "scripts/test_v410_owner_convergence.py",
+    )
+
+    # Surfaces the V410-T07B candidate may touch: its own deliverables, plus
+    # the pre-authorized carried-suite registry rebind
+    # (scripts/test_v410_owner_convergence.py, fast-path handoff
+    # #863@6046064159), plus the R3 seam-rebind paths authorized by dispatch
+    # V410-T07B-BOUNDED-SEAM-REBIND-R2 (this suite and the pin-bearing
+    # projection/IMPLEMENTATION_MAP/TEST_MATRIX files). Never a widening of
+    # another task's scope — every T07A-owned line here is explicitly
+    # authorized and positively re-pinned in the same commit.
+    T07B_PREFIXES = (
+        ".agent/execution/V410-T07B-R1/",
+        "templates/product-decision-record.md",
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",
+        "checklists/version-closure.md",
+        "scripts/test_v410_t07b_decision_record.py",
+        "scripts/test_v410_owner_convergence.py",
+        "scripts/test_v410_t07a_acceptance_projection.py",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
+    )
+
+    # Upstream authority surfaces that must never appear in the active T07B
+    # candidate diff (T07B EXECUTION_CONTRACT "Do NOT touch" list, minus the
+    # seam paths this dispatch explicitly authorizes).
+    T07B_FORBIDDEN_SURFACES = (
+        "schemas/",
+        "standards/",
+        "registries/",
+        "prompts/",
+        "standard-manifest.json",
+        "scripts/v34_rules.py",
+        "scripts/verify_standard.py",
+        "templates/agent-event-comment.md",
+        "templates/GOLDEN_INDEX.md",
+        "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
+    )
+
+    # Successor-aware candidate registry (family pattern of
+    # scripts/test_v410_owner_convergence.py): each task's candidate delta is
+    # scoped to its OWN registered prefixes instead of every successor being
+    # measured against T07A's whole-prefix bans. T07A is frozen at its
+    # integrated tip; the single entry flagged active=True is measured from its
+    # base to the CURRENT committed HEAD and fails LOUD on ancestry loss,
+    # unregistered paths or unauthorized carried-suite edits — never a silent
+    # skip. A successor task rebinds by adding its own entry and moving the
+    # active flag — never by widening another task's prefixes.
+    TASK_CANDIDATES = (
+        {
+            "task": "V410-T07A",
+            "base": REBIND_BASE_SHA,
+            "integrated": T07A_INTEGRATED_SHA,
+            "prefixes": T07A_DELIVERABLE_PREFIXES,
+            "authorized_suite_edits": AUTHORIZED_R2_CARRIED_REBIND,
+        },
+        {
+            "task": "V410-T07B",
+            "base": T07B_BASE_SHA,
+            "prefixes": T07B_PREFIXES,
+            "authorized_suite_edits": frozenset(
+                {
+                    "scripts/test_v410_owner_convergence.py",
+                    "scripts/test_v410_t07a_acceptance_projection.py",
+                }
+            ),
+            "active": True,
+        },
+    )
 
     def test_pack_core_inventory_exact_set(self) -> None:
         text = (PACK_DIR / "MANIFEST.yaml").read_text(encoding="utf-8")
@@ -528,39 +670,138 @@ class ProjectionSurfaceConformanceTests(unittest.TestCase):
         del blob
 
     def test_forbidden_surfaces_untouched_vs_rebind_base(self) -> None:
+        # R3 seam rebind: the ORIGINAL guard intent is preserved on the frozen
+        # INTEGRATED T07A delta (merged PR #933) — deterministic regardless of
+        # which successor candidate is active, so a mutated prefix list, a
+        # fabricated integrated path, or an authority-surface edit still fails
+        # here.
+        entry = self._candidate("V410-T07A")
+        changed = self._changed_paths(entry["base"], entry["integrated"])
+        self.assertTrue(changed, "frozen T07A integrated delta resolved empty — guard subject lost")
+        offenders = sorted(
+            p
+            for p in changed
+            if p.startswith(T07A_FORBIDDEN_PREFIXES) or p == "standard-manifest.json"
+        )
+        self.assertEqual(offenders, [], "T06B-owned / authority surfaces must stay untouched")
+        outside = sorted(p for p in changed if not p.startswith(entry["prefixes"]))
+        self.assertEqual(outside, [], "T07A deliverables must stay inside T07A's own registered prefixes")
+        carried = self._carried_suite_offenders(changed, entry["base"], entry["authorized_suite_edits"])
+        self.assertEqual(carried, [], f"carried suite edited outside the authorized R2 rebind: {carried}")
+
+    def test_active_candidate_head_diff_stays_inside_registered_task_prefixes(self) -> None:
+        # HEAD-relative successor scoping, fail loud (no silent skip): every
+        # path committed since the active candidate's base must be inside the
+        # active candidate's own registered prefixes. A successor candidate
+        # that extends the tree without registering its own TASK_CANDIDATES
+        # entry fails here with rebind instructions instead of silently
+        # passing.
+        entry = self._active_candidate()
+        if not self._is_ancestor(entry["base"], "HEAD"):
+            self.fail(
+                f"HEAD does not descend from the active candidate base "
+                f"{entry['base']} ({entry['task']}); the active-candidate scope "
+                "check cannot run — rebind TASK_CANDIDATES for this lineage "
+                "(fail loud, no silent skip)"
+            )
+        changed = self._changed_paths(entry["base"], "HEAD")
+        outside = sorted(p for p in changed if not p.startswith(entry["prefixes"]))
+        self.assertEqual(
+            outside,
+            [],
+            "paths outside the active candidate's registered prefixes; the "
+            "successor task must rebind this guard by registering its own "
+            "TASK_CANDIDATES entry (task/base/prefixes) — never by widening "
+            "another task's scope",
+        )
+        authority = sorted(p for p in changed if p.startswith(self.T07B_FORBIDDEN_SURFACES))
+        self.assertEqual(authority, [], "upstream authority surfaces must stay untouched by the active candidate")
+        carried = self._carried_suite_offenders(changed, entry["base"], entry["authorized_suite_edits"])
+        self.assertEqual(carried, [], f"carried suite edited without authorization: {carried}")
+
+    def test_candidate_registry_is_wellformed(self) -> None:
+        tasks = [entry["task"] for entry in self.TASK_CANDIDATES]
+        self.assertTrue(tasks, "TASK_CANDIDATES must not be empty")
+        self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
+        self.assertEqual(
+            [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
+            ["V410-T07B"],
+            "exactly one active candidate entry is required",
+        )
+        t07b = self._candidate("V410-T07B")
+        self.assertEqual(
+            t07b["authorized_suite_edits"],
+            AUTHORIZED_R2_CARRIED_REBIND | AUTHORIZED_R3_SEAM_REBIND & {"scripts/test_v410_t07a_acceptance_projection.py"},
+            "the active candidate's carried-suite authorization must be exactly "
+            "the disclosed R2 registry rebind + R3 seam rebind",
+        )
+        for entry in self.TASK_CANDIDATES:
+            with self.subTest(task=entry["task"]):
+                self.assertTrue(entry["prefixes"], f"{entry['task']} has empty prefixes")
+                for key in ("base", "integrated"):
+                    if key in entry:
+                        self.assertTrue(
+                            self._commit_exists(entry[key]),
+                            f"{entry['task']} {key} {entry[key]} does not resolve to a commit",
+                        )
+
+    def _candidate(self, task: str) -> dict:
+        return next(entry for entry in self.TASK_CANDIDATES if entry["task"] == task)
+
+    def _active_candidate(self) -> dict:
+        return next(entry for entry in self.TASK_CANDIDATES if entry.get("active"))
+
+    def _changed_paths(self, base: str, head: str) -> set[str]:
         result = subprocess.run(
-            ["git", "diff", "--name-only", REBIND_BASE_SHA, "--"],
+            ["git", "diff", "--name-only", f"{base}...{head}", "--"],
             cwd=ROOT,
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            self.fail(f"cannot diff against {REBIND_BASE_SHA}: {result.stderr.strip()}")
-        changed = {line.strip() for line in result.stdout.splitlines() if line.strip()}
-        forbidden_prefixes = (
-            "schemas/",
-            "standards/",
-            "templates/",
-            "references/",
-            "checklists/",
-            "registries/",
-            "prompts/",
-            "standard-manifest.json",
-        )
-        offenders = sorted(
+            self.fail(f"cannot diff against {base}...{head}: {result.stderr.strip()}")
+        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
+
+    def _carried_suite_offenders(self, changed: set[str], base: str, authorized: frozenset) -> list[str]:
+        # Carried = the suite already existed at the candidate's base; a task's
+        # OWN new suite is its own deliverable (scoped by the prefixes check).
+        return sorted(
             p
             for p in changed
-            if p.startswith(forbidden_prefixes) or p == "standard-manifest.json"
+            if p.startswith("scripts/test_")
+            and (ROOT / p).is_file()
+            and self._path_exists_at(base, p)
+            and p not in authorized
         )
-        self.assertEqual(offenders, [], "T06B-owned / authority surfaces must stay untouched")
-        for path in changed:
-            if path in AUTHORIZED_R2_CARRIED_REBIND:
-                continue
-            self.assertFalse(
-                (ROOT / path).is_file() and path.startswith("scripts/test_")
-                and path != "scripts/test_v410_t07a_acceptance_projection.py",
-                f"carried suite edited: {path}",
-            )
+
+    def _path_exists_at(self, ref: str, rel: str) -> bool:
+        result = subprocess.run(
+            ["git", "cat-file", "-e", f"{ref}:{rel}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        return result.returncode == 0
+
+    def _is_ancestor(self, ancestor: str, descendant: str) -> bool:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode not in (0, 1):
+            self.fail(f"cannot test ancestry {ancestor} <- {descendant}: {result.stderr.strip()}")
+        return result.returncode == 0
+
+    def _commit_exists(self, sha: str) -> bool:
+        result = subprocess.run(
+            ["git", "cat-file", "-e", f"{sha}^{{commit}}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        return result.returncode == 0
 
 
 if __name__ == "__main__":

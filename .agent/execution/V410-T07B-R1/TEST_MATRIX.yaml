@@ -1,0 +1,120 @@
+# V410-T07B R1 test matrix — all commands from repo root on the exact candidate
+#
+# Oracle binding: positives P1-P6 from #863@6013682453; AUTHORITY_NEGATIVES 1-7
+# from #863@6040872034 (cross-checked against N1-N11 of #863@6013682453);
+# DECISION_RECORD_SEAM 8-field design + recording rule from #863@6040872034;
+# L3 seed from #863@6003305569. The NEW focused suite carries the
+# decision-record conformance positives and the no-auto-affirmative authority
+# negatives; carried suites prove the producers the record path binds to
+# actually exist and pass on the exact candidate.
+
+matrix:
+  - id: T-t07b-focus
+    command: python scripts/test_v410_t07b_decision_record.py
+    status: NEW (decision-record conformance + no-auto-affirmative authority oracle)
+    expect: PASS
+    covers: [P1 validly-shaped affirmative record (actor=human Product authority owner, authority_act_ref present) parses/completes with all 8 field groups;
+             P2 evidence-backed negative outcome with blocking_evidence_refs is legal and complete and carries no delivery-failure semantics;
+             P3 delegated actor with durable delegation fact (grantor=Product authority owner, bounded scope named) is valid;
+             P4 fresh-observer reconstruction — every record element reconstructible from the record alone (identity/subject/actor/authority basis/evidence refs+currentness/value/rationale/decided_at/publication/supersession);
+             P5 supersession chain appends without rewriting history — successor references and supersedes prior, prior stays historical, erase/rewrite semantics rejected;
+             P6 evidence_inputs are ref-shaped, never embedded copies (content/body-embedding rejected; durable_ref + currentness required);
+             AN1 Release READY / Candidate Freeze state as authority/value source rejected;
+             AN2 V01/Validation PASS as authority/value source rejected;
+             AN3 CI/Review/machine-conformance/model-majority/scheduler activity as authority/value source rejected;
+             AN4 missing evidence defaulting to affirmative rejected (fails closed to evidence-backed negative or BLOCKED_TO_PRODUCT_AUTHORITY; no default value exists anywhere);
+             AN5 stale decision binding a materially changed successor subject rejected (subject-equality + explicit supersession required);
+             AN6 Builder/Validator/Reviewer/Controller self-authorization rejected (role vocabulary + delegation-laundering checks);
+             AN7 #861 machinery facts (environment/scheduler/compatibility_group/admission) widening/selecting authority rejected (evidence inputs only);
+             RR recording rule — a record without a durable authority-act ref is invalid;
+             template surface — exactly one fenced JSON skeleton, 8 field groups present, to-be-filled-by-authority slots, no decided value anywhere in the template;
+             reference/checklist surfaces present with binding authority-header tokens;
+             pack core inventory exact-set via owner helper v34_rules.core_artifacts_complete;
+             T07B candidate write set stays inside its own registered prefixes; forbidden surfaces untouched vs rebind base cea2e0cc]
+  - id: T-stage1-lifecycle
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+    status: CARRIED (Stage-1/Product-Freeze authority semantics producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t01b
+    command: python scripts/test_v410_t01b_product_projections.py
+    status: CARRIED (R1 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t02a
+    command: python scripts/test_v410_t02a_collaboration_control.py
+    status: CARRIED (R3 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+    status: CARRIED (R3/R11 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t03a
+    command: python scripts/test_v410_t03a_implementation_quality.py
+    status: CARRIED (R4 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t04a
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+    status: CARRIED (R6 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t04b
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED (R6 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t05a
+    command: python scripts/test_v410_t05a_shared_code_safety.py
+    status: CARRIED (R6 proportionality producer)
+    expect: PASS_UNMODIFIED
+  - id: T-owner-convergence
+    command: python scripts/test_v410_owner_convergence.py
+    status: CARRIED-REBOUND-T07B (R2 producer; the T07A R2 successor-aware candidate registry has no T07B entry, so the active-candidate guard fails loud on T07B's legal paths by design; the pre-authorized fast-path rebind adds the V410-T07B TASK_CANDIDATES entry with T07B's own prefixes and moves the active flag — zero removed tests, no other assertion weakened; DISCLOSED as the single carried-suite edit of this task)
+    expect: PASS_T07B_REGISTRY_REBIND
+  - id: T-t06b-core-inventory
+    command: python scripts/test_v410_t06b_core_inventory.py
+    status: CARRIED (R11 primary producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t06b-multi-dispatch
+    command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
+    status: CARRIED (R7/R11 producer; Dispatch-level machinery — provenance only, never acceptance by itself)
+    expect: PASS_UNMODIFIED
+  - id: T-t07a-acceptance-projection
+    command: python scripts/test_v410_t07a_acceptance_projection.py
+    status: CARRIED (T07A deliverable — NOT touched by this task; see KNOWN_SEAM_CONFLICT below)
+    expect: SEE_KNOWN_SEAM_CONFLICT
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: CARRIED-UNTOUCHED (registration of new T07B paths not required; manifest not modified)
+    expect: PASS_UNMODIFIED
+  - id: T-event-writer-surfaces
+    command: python scripts/verify_event_writer_surfaces.py
+    status: CARRIED-UNTOUCHED
+    expect: PASS_UNMODIFIED
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED (no package.json in this repo -> auto-skip -> green)
+    expect: PASS
+
+known_seam_conflict:
+  id: SEAM-T07A-FORBIDDEN-SURFACES-GUARD
+  trigger: "scripts/test_v410_t07a_acceptance_projection.py::ProjectionSurfaceConformanceTests.test_forbidden_surfaces_untouched_vs_rebind_base diffs the working tree against the frozen T07A base 0518202c with WHOLE-PREFIX bans on templates/, references/, checklists/ plus a carried-suite check on every scripts/test_* path except its own — positional debt of the same class the T07A R2 repair documented for the owner-convergence guard ('structurally red on every successor candidate tree'). T07B's REQUIRED, task-pack-legal deliverables (templates/product-decision-record.md, references/PRODUCT_DECISION_RECORD_REFERENCE.md, checklists/version-closure.md row, scripts/test_v410_t07b_decision_record.py) trip it on any committed T07B candidate."
+  second_order: "the pre-authorized TASK_CANDIDATES registry rebind changes the blob of scripts/test_v410_owner_convergence.py, which the T07A projection record pins CANDIDATE_BOUND in row R2 (d2347fca...) — the exact blob-pin cascade the T07A R2 repair record predicted; the pin rebind lives in the T07A projection doc + IMPLEMENTATION_MAP.md, both inside this task's explicit not-touched set."
+  builder_resolution: "NOT resolvable inside the T07B write set: every fix requires editing T07A deliverable content (the T07A suite guard, the projection record pin, the IMPLEMENTATION_MAP pin), which the T07B dispatch forbids. Per the dispatch stop-protocol this is recorded as the blocked-seam candidate; the authorized repair shape is the T07A-R2 precedent (a Controller-issued bounded-repair dispatch rebinding the T07A guard successor-aware + the R2-row pin), foldable into one commit by a successor."
+  not_green_by_deletion: "this task performs ZERO deletions and ZERO carried-suite edits beyond the pre-authorized registry entry; no carried assertion is weakened; the conflict is disclosed, not silenced."
+
+dispositions:
+  - id: DISP-NO-GOLDEN-INDEX-REGISTRATION
+    record: templates/GOLDEN_INDEX.md surface set is exact-pinned by the carried verifier scripts/test_work_item_contract_and_golden_templates.py (GOLDEN_INDEX_REQUIRED_SURFACES exact-set assert; test_manifest_inventory also pins template inventory). Registering templates/product-decision-record.md would fail that carried guard and require a W13-class authorized guard+index co-evolution outside this task's write set. Registration declined; discoverability is provided by references/PRODUCT_DECISION_RECORD_REFERENCE.md, the checklists/version-closure.md row and this pack.
+  - id: DISP-NO-MANIFEST-MUTATION
+    record: verify_standard.py requires no registration of template/reference/focused-test paths (manifest->disk direction only; same finding as T07A's census); test_v48_registry_adoption.py RA exact-set guards fail on any unlisted manifest section addition. standard-manifest.json stays untouched.
+  - id: DISP-NO-PLANNING-STATUS-MUTATION
+    record: docs/implementation/4.10.0/PLANNING_STATUS.md (blob 116e564d0f49b9b3f311f53a33c830566d534a9d at this base) is the frozen-planning durable-state record (CURRENT_STATE=HOLD_AT_FROZEN_TASK_DAG), NOT an implementation-doc index; no index file listing implementation docs exists under docs/implementation/4.10.0/. The conditional index-row deliverable is therefore inapplicable; no row added. Discoverability: pack + reference + checklist row.
+  - id: DISP-NO-DECISION-INSTANCE
+    record: no record instance carrying an actual decided value for ADS_CORE_FEATURE_FREEZE_ELIGIBLE is created anywhere in this change; the only value tokens in shipped surfaces are the template's to-be-filled-by-authority slot enumeration, rule/vocabulary statements quoting Frozen PRD semantics, and synthetic mutant data inside the focused suite (grep receipt recorded in the builder terminal).
+
+negative_invariants:
+  - no new execution/release state dimension, event family, lifecycle or release verdict
+  - no record instance with a decided value; template ships empty (to-be-filled-by-authority slots only)
+  - no automatic affirmative from CI/Review/Release/Validation/Controller/model votes anywhere in the plumbing
+  - evidence inputs are refs with currentness, never embedded copies
+  - delegation chains cannot launder authority (grantor must be the Product authority owner)
+  - supersession is append-only; prior records stay historical; no rewrite/erase semantics
+  - no NO_GREEN_BY_DELETION: zero deletions; the single carried-suite edit (scripts/test_v410_owner_convergence.py) is the pre-authorized T07B registry rebind recorded in the fast-path handoff
+  - no merge without fresh Concern Validation + genuinely Fresh Independent Review on one unchanged HEAD/tree

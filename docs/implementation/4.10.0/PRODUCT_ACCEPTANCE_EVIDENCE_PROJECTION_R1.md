@@ -58,7 +58,7 @@ This artifact is an **acceptance-evidence index/projection**. It maps each activ
       "canonical_owner": "composition: DEVELOPMENT_WORKFLOW owns lifecycle routing; RELEASE_STANDARD owns closure; references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md (integrated T06A) is the owner-discovery projection",
       "evidence_producers": [
         {"producer_kind": "DOC", "durable_ref": "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md", "exact_subject_binding": "CANDIDATE_BOUND", "blob_identity": "b5d0b09a4a3cef999745536e587925b871fd73c3"},
-        {"producer_kind": "CONFORMANCE_SUITE", "durable_ref": "scripts/test_v410_owner_convergence.py", "exact_subject_binding": "CANDIDATE_BOUND", "blob_identity": "d2347fca36e9aba4bad83c7ce9e35c5772ce158c"},
+        {"producer_kind": "CONFORMANCE_SUITE", "durable_ref": "scripts/test_v410_owner_convergence.py", "exact_subject_binding": "CANDIDATE_BOUND", "blob_identity": "2e8bd6f9f12c5eee10f93684e1992faae181475e"},
         {"producer_kind": "DOC", "durable_ref": "docs/implementation/4.10.0/PRODUCT_FREEZE.md", "exact_subject_binding": "DURABLE_STATIC", "blob_identity": "6b5bbd348a7dc3647e67fddac973edb1779c37c6"}
       ],
       "current_exact_subject": "UNBOUND_UNTIL_T08A_INTEGRATION",

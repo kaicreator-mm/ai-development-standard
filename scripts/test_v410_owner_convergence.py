@@ -355,6 +355,12 @@ class CandidateShapeTests(unittest.TestCase):
     prose, verifier and (under its W13 authorized co-evolution) the manifest and
     carried guards.
 
+    V410-T07B rebind (#863, dispatch V410-T07B-BUILDER-R1, pre-authorized by the
+    fast-path handoff #863@6046064159): the T07B successor candidate registered
+    its OWN TASK_CANDIDATES entry (base cea2e0cc = merged PR #933 tip, T07B's
+    own prefixes) and the active flag moved accordingly — the registry's own
+    designed rebind mechanism. Zero removed tests; no other assertion weakened.
+
     V410-T07A R2 rebind (#862, dispatch V410-T07A-BOUNDED-REPAIR-R2): measuring
     every successor tree against the frozen T06B base with T06B's whole-repo
     allowlist was positional — it structurally failed on the T07A candidate
@@ -365,6 +371,13 @@ class CandidateShapeTests(unittest.TestCase):
     its OWN registered prefixes via TASK_CANDIDATES, with the active candidate
     measured base -> committed HEAD and failing LOUD when an unregistered
     successor extends the tree. Zero removed tests; no other assertion weakened.
+
+    V410-T07B R2 seam-rebind scoping fold (#863, dispatch
+    V410-T07B-BOUNDED-SEAM-REBIND-R2): the authorized seam write set (the T07A
+    focused suite + the pin-bearing projection/IMPLEMENTATION_MAP/TEST_MATRIX
+    files) is registered into T07B_ALLOWED_PREFIXES exactly as authorized — a
+    registry scoping line with disclosure, zero removed tests; the rebound
+    T07A suite carries the matching successor-aware registry.
     """
 
     T06B_BASE_SHA = "ab8339f83a6a2308a5aa39009bd126698320ceee"
@@ -407,13 +420,39 @@ class CandidateShapeTests(unittest.TestCase):
         "scripts/test_v410_owner_convergence.py",
     )
 
+    # Surfaces the V410-T07B candidate may touch (its registered successor
+    # write set), plus the ONE carried-suite path this pre-authorized rebind
+    # itself edits — this guard, with zero removed tests (fast-path handoff
+    # #863@6046064159: the successor task registers its own entry; never
+    # widen another task's scope).
+    #
+    # R3 seam-rebind scoping fold (dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2,
+    # #863: proposal @6054504547 / admission @6054508480 / claim @6054512382):
+    # the four explicitly authorized seam paths are registered here exactly as
+    # authorized — a registry scoping line only, mirroring the rebound T07A
+    # suite's TASK_CANDIDATES entry; never a widening beyond the disclosure.
+    T07B_ALLOWED_PREFIXES = (
+        ".agent/execution/V410-T07B-R1/",
+        "templates/product-decision-record.md",
+        "references/PRODUCT_DECISION_RECORD_REFERENCE.md",
+        "checklists/version-closure.md",
+        "scripts/test_v410_t07b_decision_record.py",
+        "scripts/test_v410_owner_convergence.py",
+        "scripts/test_v410_t07a_acceptance_projection.py",
+        "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md",
+        ".agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md",
+        ".agent/execution/V410-T07A-R1/TEST_MATRIX.yaml",
+    )
+
     # Successor-aware candidate registry (family-style): each task's candidate
     # delta is scoped to its OWN allowed prefixes instead of every successor
-    # being measured against T06B's whole-repo allowlist. T06B is frozen at its
-    # integrated tip; the single entry flagged active=True is measured from its
-    # base to the CURRENT committed HEAD (fail loud on ancestry loss — never a
-    # silent skip). A successor task rebinds by adding its own entry and moving
-    # the active flag — never by widening another task's prefixes.
+    # being measured against T06B's whole-repo allowlist. T06B and T07A are
+    # frozen at their integrated tips; the single entry flagged active=True is
+    # measured from its base to the CURRENT committed HEAD (fail loud on
+    # ancestry loss — never a silent skip). A successor task rebinds by adding
+    # its own entry and moving the active flag — never by widening another
+    # task's prefixes.
+    T07B_BASE_SHA = "cea2e0ccd045e8fcebaf110273129b198ed259fd"
     TASK_CANDIDATES = (
         {
             "task": "V410-T06B",
@@ -424,8 +463,14 @@ class CandidateShapeTests(unittest.TestCase):
         {
             "task": "V410-T07A",
             "base": T06B_INTEGRATED_SHA,
+            "integrated": T07B_BASE_SHA,
             "r1_tip": "43edc1f325b04977b37c77d3ae5e82a96c75c398",
             "prefixes": T07A_ALLOWED_PREFIXES,
+        },
+        {
+            "task": "V410-T07B",
+            "base": T07B_BASE_SHA,
+            "prefixes": T07B_ALLOWED_PREFIXES,
             "active": True,
         },
     )
@@ -501,7 +546,7 @@ class CandidateShapeTests(unittest.TestCase):
         self.assertEqual(len(tasks), len(set(tasks)), "duplicate task entries in TASK_CANDIDATES")
         self.assertEqual(
             [entry["task"] for entry in self.TASK_CANDIDATES if entry.get("active")],
-            ["V410-T07A"],
+            ["V410-T07B"],
             "exactly one active candidate entry is required",
         )
         for entry in self.TASK_CANDIDATES:
