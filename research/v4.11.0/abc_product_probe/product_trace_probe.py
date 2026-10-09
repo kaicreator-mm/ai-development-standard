@@ -31,6 +31,18 @@ def evaluate(trace: dict[str, Any]) -> dict[str, Any]:
 
     # Actual risk facts have authority in applicability even if a job label is
     # absent. Adoption A0..A4 never weakens this union of hard requirements.
+    # A limited Product trace model must not silently omit other supported
+    # engineering work, including incident/retirement obligations.
+    if "J01" in jobs:
+        required.add("product_evidence_trace")
+    if "J03" in jobs:
+        required.add("bugfix_regression_evidence")
+    if "J04" in jobs:
+        required.add("feature_contract_acceptance")
+    if "J10" in jobs:
+        required.add("incident_recovery_evidence")
+    if "J11" in jobs:
+        required.add("retirement_compatibility_evidence")
     if "J07" in jobs or observed.get("security_sensitive"):
         required.add("independent_security_review")
     if "J06" in jobs or observed.get("persistent_migration"):
