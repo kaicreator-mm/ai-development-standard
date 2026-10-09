@@ -9,8 +9,9 @@
 - PRE-FREEZE Product evidence parent: `#945`; Product authority decision remains `#943` **awaiting explicit act**.
 - Independent Product R3 `#941@6067535335 PASS` and Git transposition `#942@6068127988 PASS` validate the **PRD**, not this probe.
 - Source base: `34df09a2433aec5523ab80c90e885f6d9fc78803`; experimental branch `research/v4.11.0-abc-product-probe`.
-- Executed Python source blob `2eeed141f8cc7f93f1c3a322132baee59e6bfc79` (SHA256 `cab4347b4daa8f76797b9cb3a5705eba69868a0253e81ce179799896678e1e0f`).
-- Executed unittest blob `feeec9499ced9ecc87200d59ab0e355da7df661e` (SHA256 `b7733133de517afbd438d476d06624e560e5bd10b7df39f2afe5f9195e1f77c3`).
+- Executed Python source blob `5fcd8e1a8408233f5694fa3c39994357b617ca8a` (SHA256 `3076bbefbbb50bba0681efe335b1be032a2363567178a12b32a47185d4b10bd8`).
+- Original 28-test unittest blob (updated) `9fce01fc0fe5470b64de52919b9e8f2f794a1ee2` (SHA256 `6b6edb36f8d25badaae3cb27bc6cf10c26ebc774b56a93b6385510d4290a8c58`).
+- Metamorphic unittest blob `319e44dcfc16d6954b27b7650c67f136dd101c86` (SHA256 `495f19181ee80cfd58452d3ec3be56c01fad92c11a3c22d1154260a26579e657`).
 - Environment actually executed: Python 3.13.5 / Linux x86_64 container; no real user LOCAL Build Host, real private Hidden, GitHub credential actions or actual external writes.
 
 ## Reproduce
@@ -18,10 +19,10 @@
 In this directory, with Python 3.10+ and no dependencies:
 
 ```bash
-python3 -m unittest -v test_product_trace_probe
+python3 -m unittest discover -p 'test_product_trace*.py' -v
 ```
 
-Observed on the two exact blobs above: **28 tests, all OK**, exit 0; no external systems touched. A successful synthetic suite is a reproducible *Product oracle model observation*, not evidence that ADS production software implements these rules.
+Observed on the exact three blobs above: **42 tests, all OK**, exit 0; no external systems touched. An additional 14-case metamorphic suite covers 4,096 synthetic job subsets and 20,480 adoption profile samples. The earlier #945@6081926269 28/28 terminal remains historical and is not overwritten. A successful synthetic suite is a reproducible *Product oracle model observation*, not evidence that ADS production software implements these rules.
 
 ## Behavioral probes represented
 
@@ -38,6 +39,17 @@ Observed on the two exact blobs above: **28 tests, all OK**, exit 0; no external
 
 `DEMO_ALLOW`, `DEMO_DENY`, `DEMO_UNVERIFIED` are **local output labels**, **not** real ADS Gate states. Input `verified_evidence` and `owner_authorized` booleans are **hypothetical trusted ground truths supplied by controlled unit tests**; the probe **DOES NOT authenticate or verify** these facts. For instance, a caller can lie about `real_host_evidence_verified` — actual ADS must independently bind evidence to authoritative exact SHA/actor/host metadata.
 
+## R2 Product-model counterexamples found and repaired
+
+A new **author-side** red-team probe found three semantic bugs in this non-normative model:
+1. A conflicting Review on another HEAD improperly blocked merge of an unrelated current target. Now synthetic merge decision binds `action.head` and filters accepted/current decisions by that exact head.
+2. A CLAIMED event without `key` raised `KeyError`. Now it emits `CLAIM_PROTECTED_KEY_MISSING` and `DEMO_UNVERIFIED`.
+3. Completely empty/unclassified trace returned `DEMO_ALLOW`. Now it emits `UNCLASSIFIED_EMPTY_TRACE`.
+
+The model now also treats missing merge target identity as `UNVERIFIED`, and a required independent Review with no current PASS as `UNVERIFIED`. These defects are evidenced **only in the experimental model**, not the real ADS owners.
+
+**Metamorphic scope:** all 4096 subsets of the declared 12 job labels are compared against singleton obligation union in this synthetic model; all 20480 subset×A0–A4 combinations preserve the same synthetic hard requirements. This does **not** establish actual software completeness, prove arbitrary context combinations, or bind external evidence sources.
+
 ## Explicit limitations and follow-up
 
 1. This module **models only a bounded subset** of mandatory S01–S18 and X01–X08 and never asserts comprehensive P1/P2/P3 PASS or dynamic coverage closure. Every `J01–J12` domain, actor credential and evidence production path requires actual canonical owner/proof treatment later.
@@ -49,7 +61,7 @@ Observed on the two exact blobs above: **28 tests, all OK**, exit 0; no external
 ## Interpretation
 
 ```ini
-ACTUAL_TESTS=28/28_PASS (synthetic Product probe only)
+ACTUAL_TESTS=42/42_PASS (synthetic Product probe only)
 NORMALIZED_BEHAVIORAL_PROBE=PASS_WITH_CLEAR_LIMITS
 PRODUCTION_ADS_BEHAVIOR_VERIFICATION=NOT_RUN
 REAL_HOST_VALIDATION=NOT_RUN
