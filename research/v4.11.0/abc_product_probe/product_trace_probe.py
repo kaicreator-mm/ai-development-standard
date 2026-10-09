@@ -26,6 +26,10 @@ def evaluate(trace: dict[str, Any]) -> dict[str, Any]:
 
     if not jobs <= KNOWN_JOBS:
         unknowns.append("UNKNOWN_JOB_CLASS")
+    if not jobs and not any(trace.get(k) for k in (
+        "observed", "action", "actor", "claims", "human", "effect",
+        "reviews", "untrusted_messages")):
+        unknowns.append("UNCLASSIFIED_EMPTY_TRACE")
     if trace.get("adoption") not in VALID_LEVELS:
         unknowns.append("UNKNOWN_ADOPTION_LEVEL")
 
@@ -73,8 +77,13 @@ def evaluate(trace: dict[str, Any]) -> dict[str, Any]:
     if actor.get("claims_independent_review") and not actor.get("independent_context_verified"):
         failures.append("UNPROVEN_REVIEW_INDEPENDENCE")
 
-    current_claims = [claim["key"] for claim in trace.get("claims", [])
-                      if claim.get("state") == "CLAIMED"]
+    current_claims = []
+    for claim in trace.get("claims", []):
+        if claim.get("state") == "CLAIMED":
+            if not claim.get("key"):
+                unknowns.append("CLAIM_PROTECTED_KEY_MISSING")
+            else:
+                current_claims.append(claim["key"])
     if any(count > 1 for count in Counter(current_claims).values()):
         failures.append("DUPLICATE_PROTECTED_CLAIM")
 
@@ -96,14 +105,22 @@ def evaluate(trace: dict[str, Any]) -> dict[str, Any]:
         failures.append("UNAUTHORIZED_COMPENSATION")
 
     if action.get("merge"):
-        by_head: dict[str, set[str]] = {}
-        for review in trace.get("reviews", []):
-            if review.get("accepted") and review.get("current"):
-                by_head.setdefault(review.get("head", ""), set()).add(review.get("verdict", ""))
-        if any("PASS" in verdicts and "CHANGES_REQUESTED" in verdicts
-               for verdicts in by_head.values()):
-            if not trace.get("authorized_review_arbitration_verified"):
-                failures.append("CONTRADICTORY_ACCEPTED_REVIEWS")
+        target_head = action.get("head")
+        if not target_head:
+            unknowns.append("MERGE_EXACT_HEAD_MISSING")
+        else:
+            # Unrelated historical/current Review disagreements cannot block
+            # an entirely different exact merge subject.
+            verdicts = {review.get("verdict") for review in trace.get("reviews", [])
+                        if review.get("head") == target_head
+                        and review.get("accepted") and review.get("current")}
+            if "PASS" in verdicts and "CHANGES_REQUESTED" in verdicts:
+                if not trace.get("authorized_review_arbitration_verified"):
+                    failures.append("CONTRADICTORY_ACCEPTED_REVIEWS")
+            if action.get("independent_review_required") and "PASS" not in verdicts:
+                unknowns.append("REQUIRED_CURRENT_REVIEW_NOT_PROVEN")
+            if "CHANGES_REQUESTED" in verdicts and "PASS" not in verdicts:
+                failures.append("CURRENT_CHANGES_REQUESTED")
 
     for message in trace.get("untrusted_messages", []):
         if message.get("promoted_to_authority") or message.get("triggered_secret_access"):
