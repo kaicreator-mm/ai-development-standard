@@ -25,14 +25,14 @@ class ProductAcceptanceProbe(unittest.TestCase):
         a4 = evaluate(t(adoption="A4", **facts))
         self.assertEqual(a0["required"], a4["required"])
         self.assertEqual(a0["verdict"], "DEMO_UNVERIFIED")
-        self.assertEqual(len(a0["required"]), 5)
+        self.assertEqual(len(a0["required"]), 6)
 
     def test_compound_all_real_requirements_given(self):
         trace = t(jobs=["J03", "J06", "J07", "J08"],
                   observed={"interrupted_migration": True, "human_approval_required": True},
                   verified_evidence=["independent_security_review", "migration_validation",
                                      "interrupted_recovery_validation", "authorized_external_effect",
-                                     "authorized_human_decision"])
+                                     "authorized_human_decision", "bugfix_regression_evidence"])
         self.assertEqual(evaluate(trace)["verdict"], "DEMO_ALLOW")
 
     def test_missing_security_job_label_does_not_skip_security(self):
@@ -145,6 +145,29 @@ class ProductAcceptanceProbe(unittest.TestCase):
                             verified_evidence=["visible_validation", "candidate_bound"]))
         self.assertIn("release_qualification", result["missing"])
         self.assertIn("hidden_if_required", result["missing"])
+
+    def test_incident_retirement_reuse_release_intersection_fail_closed(self):
+        result = evaluate(t(jobs=["J09", "J10", "J11", "J12"],
+            verified_evidence=["candidate_bound", "visible_validation",
+                               "hidden_if_required", "release_qualification",
+                               "source_and_license_bound"]))
+        self.assertEqual(result["verdict"], "DEMO_UNVERIFIED")
+        self.assertIn("incident_recovery_evidence", result["missing"])
+        self.assertIn("retirement_compatibility_evidence", result["missing"])
+
+    def test_bugfix_regression_cannot_be_lost_in_compound_jobs(self):
+        result = evaluate(t(jobs=["J03", "J07"],
+                            verified_evidence=["independent_security_review"]))
+        self.assertIn("bugfix_regression_evidence", result["missing"])
+
+    def test_feature_contract_obligation_survives_public_api_change(self):
+        result = evaluate(t(jobs=["J04", "J05"], verified_evidence=[
+            "accepted_spec_reconciled", "contract_behavior_verified"]))
+        self.assertIn("feature_contract_acceptance", result["missing"])
+
+    def test_product_evidence_job_not_automatically_complete(self):
+        result = evaluate(t(jobs=["J01"]))
+        self.assertEqual(result["verdict"], "DEMO_UNVERIFIED")
 
 
 if __name__ == "__main__":
