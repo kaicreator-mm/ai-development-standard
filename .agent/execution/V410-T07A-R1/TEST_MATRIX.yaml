@@ -1,0 +1,125 @@
+# V410-T07A R1 test matrix — all commands from repo root on the exact candidate
+#
+# Oracle binding: positive P1-P5 from #862@6003300393; negatives N1-N15 from
+# #862@6012768804 plus adversarial attack cases A1-A12 from #862@6043147928;
+# ROW_SCHEMA/BLOCKER_RULES from #862@6013713353. The NEW focused suite carries
+# the acceptance-map completeness cases and the automatic-transfer negatives;
+# carried suites prove the producers the projection binds to actually exist and
+# pass on the exact candidate.
+
+matrix:
+  - id: T-t07a-focus
+    command: python scripts/test_v410_t07a_acceptance_projection.py
+    status: NEW (acceptance-map completeness + negative automatic-transfer oracle)
+    expect: PASS
+    covers: [P1 every active R-row (R1,R2,R3,R4,R6,R7,R11,R12) present exactly once with >=1 durable producer and valid binding class;
+             P2 exact candidate/currentness identity — rebind subject 0518202c/75566c46 pinned, every CANDIDATE_BOUND/DURABLE_STATIC producer resolves at the checkout with matching blob, rows carry UNBOUND_UNTIL_T08A_INTEGRATION not an inherited candidate;
+             P3 blocker list reconstructible — every row carries blocker_projection in {UNRESOLVED,EVIDENCE_CURRENT}, UNRESOLVED carries missing_evidence_description + route_to_owner, closure_blocker_inputs distinct from requirement rows;
+             P4 Minimum/Advanced paths both legal — adoption_path vocabulary, every row constructible with >=1 non-EVENT_BOUND producer (zero scheduler/runtime dependence), no Advanced-only orchestration demoted onto Minimum;
+             P5 Release owner external — PROJECTION_ONLY header, no verdict vocabulary, no second release state machine field;
+             N1/N2/A1/A5/A10 old-candidate/wrong-subject binding rejected (stale SHA mutant, drifted blob mutant, historical L1 lineage never a current producer, preview heads never candidate identity);
+             N3/N5/N10/A2/A3/A9 cross-layer PASS cannot clear blockers (scheduler/conformance PASS producer class cannot yield EVIDENCE_CURRENT on an unbound subject; evidence-ref existence never equals acceptance);
+             N8 double-count — duplicate-lane durable_ref dedup enforced;
+             N11 missing evidence never NOT_APPLICABLE (empty-producer mutant fails closed);
+             N13/A4/A12 verdict vocabulary + index-overreach rejected (PASS/READY/ACCEPTED/NOT_APPLICABLE forbidden in row fields; no freeze-decision field path);
+             N15 ADS_CORE_FEATURE_FREEZE_ELIGIBLE unreachable from the index;
+             pack core inventory exact-set via owner helper v34_rules.core_artifacts_complete;
+             retained prep-branch test file confirmed NOT a candidate (absent at checkout, named in rejected provenance)]
+  - id: T-stage1-lifecycle
+    command: python scripts/test_v410_stage1_lifecycle_contracts.py
+    status: CARRIED (R-row producer; suite passes on the exact candidate)
+    expect: PASS_UNMODIFIED
+  - id: T-t01b
+    command: python scripts/test_v410_t01b_product_projections.py
+    status: CARRIED (R1 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t02a
+    command: python scripts/test_v410_t02a_collaboration_control.py
+    status: CARRIED (R3 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+    status: CARRIED (R3/R11 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t03a
+    command: python scripts/test_v410_t03a_implementation_quality.py
+    status: CARRIED (R4 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t04a
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+    status: CARRIED (R6 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t04b
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED (R6 producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t05a
+    command: python scripts/test_v410_t05a_shared_code_safety.py
+    status: CARRIED (R6 proportionality producer)
+    expect: PASS_UNMODIFIED
+  - id: T-owner-convergence
+    command: python scripts/test_v410_owner_convergence.py
+    status: CARRIED-REBOUND (R2 producer; Concern Validation R1 found the carried candidate-scope guard red on this successor tree — rebound successor-aware by the authorized R2 bounded repair #862 dispatch V410-T07A-BOUNDED-REPAIR-R2: frozen integrated T06B delta assertion preserved, TASK_CANDIDATES per-task prefix scoping added, zero removed def test_, no other assertion weakened)
+    expect: PASS_R2_REBOUND
+  - id: T-t06b-core-inventory
+    command: python scripts/test_v410_t06b_core_inventory.py
+    status: CARRIED (R11 primary producer)
+    expect: PASS_UNMODIFIED
+  - id: T-t06b-multi-dispatch
+    command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
+    status: CARRIED (R7/R11 producer; Dispatch-level machinery — provenance only, never R7 acceptance by itself)
+    expect: PASS_UNMODIFIED
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: CARRIED-UNTOUCHED (registration of new T07A paths not required; manifest not modified)
+    expect: PASS_UNMODIFIED
+  - id: T-event-writer-surfaces
+    command: python scripts/verify_event_writer_surfaces.py
+    status: CARRIED-UNTOUCHED
+    expect: PASS_UNMODIFIED
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED
+    expect: PASS
+
+r2_repair_record:
+  trigger: "Concern Validation R1 FAIL (#862@6053149179): python scripts/test_v410_owner_convergence.py red 1/23 at the exact candidate head 43edc1f — CandidateShapeTests.test_t06b_candidate_diff_stays_inside_owned_surfaces diffs the tree against the T06B base ab8339f and asserts T06B_ALLOWED_PREFIXES, so the 8 T07A add-paths report as outside. The R1 builder terminal's 15/15 claim was FALSE on the committed head (battery had been executed pre-commit, where untracked new files are invisible to git diff <sha> --)."
+  root_cause: "P2-1 positional carried-assertion design debt: the guard asserted a whole-repo allowlist against a frozen HISTORICAL base, structurally red on every successor candidate tree. The failure says nothing false about T07A content — the 8 paths are exactly the declared deliverables and T07A's own forbidden-surface guard passes."
+  repair: "Successor-aware candidate-scope rebind in scripts/test_v410_owner_convergence.py: (1) the frozen INTEGRATED T06B delta ab8339f...0518202c (merged PR #927, 22 paths) stays asserted against T06B_ALLOWED_PREFIXES — original guard intent preserved, deterministic, mutant-catching (a mutated prefix list or fabricated integrated path still fails); (2) a TASK_CANDIDATES family map scopes each task's candidate delta to its OWN prefixes (T06B pinned at its integrated tip; T07A base 0518202c with frozen R1 tip 43edc1f and the active base->committed-HEAD check); (3) the active-candidate check fails LOUD on ancestry loss or unregistered successor paths (no silent skip); (4) registry integrity asserted (exactly one active entry, unique tasks, recorded shas resolve). Zero removed def test_; zero other assertions weakened."
+  blob_pin_cascade: "Rebinding the carried suite changes its blob, so the projection record's CANDIDATE_BOUND pin ec895815156f9125f88bf7d47a1680658e0a3ec0 (row R2) and the same pin in IMPLEMENTATION_MAP.md were rebound to the post-repair blob (commit 2). test_p2's exact-subject equality machinery is intact — no exception carve-out; the commit-1 battery reproduced the predicted test_p2 red before the rebind."
+  process_correction: "Battery discipline (CRITICAL PROCESS RULE): the full 15-command battery is executed on the COMMITTED head AFTER committing — never pre-commit on a tree where untracked files are invisible. Executed here: commit 1 (4 declared repair files) -> battery -> owner-convergence green 26 tests, T07A suite red 1 (test_p2 stale pin, the predicted cascade) -> commit 2 (blob-pin rebind) -> battery 15/15 green on the final committed head."
+  scope_note: "The single authorized carried-suite edit is scripts/test_v410_owner_convergence.py (zero removed tests), recorded as AUTHORIZED_R2_CARRIED_REBIND in the focused suite and positively re-pinned via the projection record. REVIEW_CHECKLIST items 3 and 9 are R1-scope statements (zero carried-suite edits at the R1 subject); for R2 they are superseded by this record. EXPECTED_WRITE_SET grew from 4 to 6 M paths solely through this mechanically-forced blob-pin cascade."
+
+r3_seam_rebind:
+  trigger: "T07B R1 builder correctly stopped BLOCKED: both positional guards of this carried suite fail on T07B's task-pack-legal paths. (1) test_forbidden_surfaces_untouched_vs_rebind_base diffed the WORKING TREE against the frozen T07A base 0518202c with WHOLE-PREFIX bans on templates/|references/|checklists/ plus a blanket carried-suite check — T07B's REQUIRED deliverables (templates/product-decision-record.md, references/PRODUCT_DECISION_RECORD_REFERENCE.md, checklists/version-closure.md row, scripts/test_v410_t07b_decision_record.py) trip it on any committed T07B candidate (positional debt of the same class the R2 repair documented for the owner-convergence guard); (2) test_p2 pins the R2-era owner-convergence blob d2347fca..., which the pre-authorized T07B TASK_CANDIDATES registry rebind changed to 6ed1ba86... — the exact second-order cascade the T07B pack TEST_MATRIX second_order field predicted."
+  authorization: "Controller dispatch V410-T07B-BOUNDED-SEAM-REBIND-R2 (#863: seam proposal @6054504547, admission @6054508480, claim @6054512382) — expanded write set limited to exactly the four disclosed files (this suite, the projection record, this pack's IMPLEMENTATION_MAP and TEST_MATRIX) plus pin-line folds with disclosure where a pin points at a changed blob (T07B suite citation pin + reference citation). No decision values created; zero decided YES/NO instances for ADS_CORE_FEATURE_FREEZE_ELIGIBLE; r2_repair_record kept intact."
+  repair: "Successor-aware seam rebind in scripts/test_v410_t07a_acceptance_projection.py mirroring the TASK_CANDIDATES family pattern of the owner-convergence guard: (1) the frozen INTEGRATED T07A delta 0518202c...382c1869 (merged PR #933, 9 paths) stays asserted against T07A's own prefixes + the verbatim whole-prefix authority bans + the R2 authorized carried-suite set — original guard intent preserved, deterministic, mutant-catching; (2) a TASK_CANDIDATES registry scopes each candidate to its OWN prefixes (T07A frozen at its integrated tip; V410-T07B active at base cea2e0cc with this dispatch's authorized seam paths registered explicitly, never a widening of another task's scope); (3) the active-candidate check fails LOUD on ancestry loss, unregistered paths, upstream authority surfaces (T07B EXECUTION_CONTRACT do-not-touch list), or unauthorized carried-suite edits (carried = existed at the candidate base; a task's own new suite is its own deliverable); (4) registry integrity asserted (exactly one active entry, unique tasks, recorded shas resolve, authorized-suite sets equal the disclosed authorizations). Zero removed def test_ (26 -> 28, two added); no other assertion weakened; AUTHORIZED_R2_CARRIED_REBIND preserved and load-bearing; the seam authorization disclosed as AUTHORIZED_R3_SEAM_REBIND."
+  registry_folds: "The battery-on-committed-head discipline surfaced a THIRD positional surface beyond the two reproduced failures: two other guards also register the T07B candidate write set and went red on the committed head (owner-convergence TASK_CANDIDATES active-candidate check; the T07B suite's own test_t07b_candidate_diff_stays_inside_registered_prefixes, whose FORBIDDEN_SURFACES also carried the two R1-scope not-touched entries this dispatch explicitly authorizes). Both were folded in the SAME commit strictly as registry scoping lines with disclosure: the 4 authorized seam paths added to T07B_ALLOWED_PREFIXES in scripts/test_v410_owner_convergence.py (CandidateShapeTests docstring discloses the fold) and in the T07B suite's T07B_ALLOWED_PREFIXES (whose cross-check test_disclosed_carried_guard_rebind_is_registered keeps the two registries consistent); the 2 superseded FORBIDDEN_SURFACES entries were removed with a disclosure comment, guard intent kept by the registered-prefix closure. Zero removed tests in both suites."
+  blob_pin_cascade: "Every pin touching a file the seam fix edits was rebound in the SAME commit so the cascade CONVERGES (every pin equals git rev-parse HEAD:<path> at the committed head): owner-convergence blob d2347fca... -> 6ed1ba86 (T07B R1 registry rebind) -> 2e8bd6f9... (the R3 registry scoping fold above), rebinded in projection record row R2 + IMPLEMENTATION_MAP row R2 (provenance: was d2347fca at cea2e0cc, ec895815 at 0518202c); the index blob 65baefd... -> 7f4f4d63... forces two pin-line folds with disclosure — the T07B suite's HEAD-equality citation pin (T07A_INDEX_BLOB_AT_BASE) and the reference section-2 citation (base-qualified citation preserved as historical anchor). The T07A suite, IMPLEMENTATION_MAP and TEST_MATRIX blobs and the reference/template/checklist/T07B-suite blobs are pinned nowhere — the cascade terminates there."
+  battery: "Full 16-command battery executed ON THE COMMITTED HEAD after the seam commit (R2 process rule kept). Round 1 on the first seam commit: 13 python suites + owner-convergence red (its registry did not yet know the authorized seam paths — the predicted-then-undiscovered third surface) + T07B suite red (same class) -> registry folds above in the SAME amended commit -> final battery all green on the final committed head. Mutation self-check on the rebound guard re-demonstrated fail-loud (unregistered-prefix, unauthorized carried-suite, off-lineage-base and fabricated-frozen-tip mutants all fail; restored tree green)."
+
+t08a_registry_rebind:
+  trigger: "V410-T08A (#864, dispatch V410-T08A-BUILDER-R1) delivers the whole-project integration runner; the positional-registry seam discipline of its admission (#864@6055469682, fast-path handoff #864@6046066388) requires the T08A successor candidate to register its OWN TASK_CANDIDATES entry (base 402bf289 = merged PR #934 tip) in ALL THREE positional registries (owner-convergence TASK_CANDIDATES; this suite's registry; the T07B suite's registered-prefix guard, now registry-shaped) — the checks fail loud by design on any unregistered successor."
+  authorization: "Disclosed carried-suite registry rebinds (T07A-R2/T07B-R2 precedent): registry scoping lines + active-flag move only; zero removed tests; no assertion weakened; every guard's frozen historical delta stays asserted (T06B ab8339f...0518202c, T07A 0518202c...382c1869, T07B cea2e0cc...402bf289 — the last newly frozen at its integrated tip)."
+  blob_pin_cascade: "Owner-convergence blob 2e8bd6f9... -> 50e26dc6... forces the R2-row pin fold in the projection record + this pack's IMPLEMENTATION_MAP (strictly pin lines, provenance kept); the projection blob 7f4f4d63... -> d3a62083... forces the two citation folds (T07B suite T07A_INDEX_BLOB_AT_BASE HEAD-equality pin + the reference section-2 citation, historical anchors preserved). The T08A pack/suite/runner blobs, this TEST_MATRIX blob, the T07A suite blob and the reference blob are pinned nowhere — the cascade terminates there (verified by repo grep at the committed head)."
+
+identity_registry_rebind:
+  trigger: "V410-IDENTITY (#779, dispatch V410-IDENTITY-R1, claim #779@6063246782) qualifies the release identity triple (VERSION/README/CHANGELOG at v4.10.0 unreleased-candidate posture) and rebinds ALL THREE positional registries to the V410-IDENTITY successor entry (base d864465a = merged PR #936 tip = V410-T08A INTEGRATED) — the checks fail loud by design on any unregistered successor."
+  authorization: "Disclosed carried-suite registry rebinds (T07A-R2/T07B-R2/T08A precedent): registry scoping lines + active-flag move only; zero removed tests; no assertion weakened; every guard's frozen historical delta stays asserted (T06B ab8339f...0518202c, T07A 0518202c...382c1869, T07B cea2e0cc...402bf289, T08A 402bf289...d864465a — the last newly frozen at its integrated tip)."
+  blob_pin_cascade: "Owner-convergence blob 50e26dc6... -> 56cf032a... forces the R2-row pin fold in the projection record + this pack's IMPLEMENTATION_MAP (strictly pin lines, provenance kept); the projection blob d3a62083... -> 5da87fd6... forces the two citation folds (T07B suite T07A_INDEX_BLOB_AT_BASE HEAD-equality pin + the reference section-2 citation, historical anchors preserved). The T08A pack/suite/runner blobs, the identity pack/suite/runner blobs, this TEST_MATRIX blob, the T07A suite blob and the reference blob are pinned nowhere — the cascade terminates there (verified by repo grep at the committed head)."
+
+dispositions:
+  - id: DISP-NO-CHECKLIST-MUTATION
+    record: The optional single pointer line in checklists/version-closure.md ("Candidate / Visible Closure" naming the projection as a closure-consumable input, #862@6013713353 item 3) is JIT-declined: closure consumption does not materially require it — the projection is discoverable at its durable path and the checklist stays byte-stable (blob 6c5616909c07177d13bdba23a589bead5a4e10a0 unchanged).
+  - id: DISP-NO-MANIFEST-MUTATION
+    record: verify_standard.py requires no registration of docs/implementation or focused-test paths; test_v48_registry_adoption.py RA-guards fail on any unlisted manifest section addition and guard evolution is T06B's authorized W13 mechanism, not this task's. standard-manifest.json stays untouched; the new suite intentionally remains unregistered.
+  - id: DISP-SHARED-PRODUCERS
+    record: A single fact may support several requirement rows (e.g. test_v410_t06b_multi_dispatch_conformance.py appears under R3/R7/R11 and test_v410_t02b_machine_projection.py under R3/R11), but it is one execution, never counted as multiple independent falsification cases; distinct-case obligations per §19.1 remain owned by the falsification contract and stay UNRESOLVED pending the end-to-end owners (V410-T08A / V410-V01).
+
+negative_invariants:
+  - no second Release verdict/state machine (no release-state fields in the record block)
+  - no Product requirement redefinition (rows carry prd_ref anchors; meaning stays in the Frozen Product)
+  - no historical evidence transfer (old-candidate/preview/predecessor-base identities are rejected bindings, recorded as rejected_provenance)
+  - scheduler/CI/Task/PR/Review/Validation/conformance results are never Product acceptance by themselves
+  - no NO_GREEN_BY_DELETION: zero deletions in the diff and zero removed tests; the carried-suite edits (scripts/test_v410_owner_convergence.py by the pre-authorized T07B registry rebind; scripts/test_v410_t07a_acceptance_projection.py by the authorized R3 seam rebind; both plus scripts/test_v410_t07b_decision_record.py by the disclosed T08A registry rebind, see t08a_registry_rebind; all five carried suites by the disclosed V410-IDENTITY-R1 registry rebind, see identity_registry_rebind) are recorded in r2_repair_record, r3_seam_rebind, t08a_registry_rebind and identity_registry_rebind
+  - no merge without fresh Concern Validation + genuinely Fresh Independent Review on one unchanged HEAD/tree

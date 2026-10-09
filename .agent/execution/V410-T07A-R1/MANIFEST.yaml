@@ -1,0 +1,54 @@
+pack_id: V410-T07A-R1
+task_id: V410-T07A
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 0518202c715dcf91784a694bdf4a8eeeaeb16ab6
+base_tree: 75566c464505386fedffde803e05e3e726922434
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T07A
+branch: task/v4.10.0-v410-t07a-product-acceptance-evidence
+parent_issue: "#862"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+validation_scope: concern
+pinned_standard_revision: 0518202c715dcf91784a694bdf4a8eeeaeb16ab6
+generated_by: claude-code:zcode-glm-local-builder (V410-T07A-BUILDER-R1)
+generated_at: "2026-10-08T00:00:00+00:00"
+dependency_completion:
+  - V410-T06B@0518202c715dcf91784a694bdf4a8eeeaeb16ab6
+dependency_notes:
+  - "V410-T06B: INTEGRATED — the exact base 0518202c715dcf91784a694bdf4a8eeeaeb16ab6 (tree 75566c464505386fedffde803e05e3e726922434) IS the merged #861 integration tip on version/v4.10.0 lineage; T06B six-core pack .agent/execution/V410-T06B-R1/ + suites test_v410_t06b_core_inventory.py / test_v410_t06b_multi_dispatch_conformance.py are carried surfaces at this base (re-verified PRESENT at JIT, see stage0_census)."
+  - "Earlier predecessor chain (T01A/T01B/T02A/T02B/T03A/T03B/T04A/T04B/T05A/T05B/T06A) is integrated inside this same base; per-row producer refs are rebound in the projection, not inherited from preview facts."
+material_paths:
+  - .agent/execution/V410-T07A-R1/EXECUTION_CONTRACT.md
+  - .agent/execution/V410-T07A-R1/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-T07A-R1/IMPLEMENTATION_MAP.md
+  - .agent/execution/V410-T07A-R1/MANIFEST.yaml
+  - .agent/execution/V410-T07A-R1/REVIEW_CHECKLIST.md
+  - .agent/execution/V410-T07A-R1/TEST_MATRIX.yaml
+  - docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md
+  - scripts/test_v410_t07a_acceptance_projection.py
+l3_inputs:
+  - "#862@6003300393 (V410_T07A_WEB_PREPLAN_R1 COMPLETE: L3 seed Tests/Contract/Seam/Failure/Refs — embedded as the L3 seed section of EXECUTION_CONTRACT.md)"
+  - "#862@6011927853 (WEB DELTA_PREPLAN_R2)"
+  - "#862@6012768804 (WEB NEGATIVE_ACCEPTANCE_ORACLE_R1: 15 cases N1-N15 — bound into TEST_MATRIX.yaml and the focused suite)"
+  - "#862@6013713353 (WEB ACCEPTANCE_PROJECTION_WRITESET_R1: ROW_SCHEMA + BLOCKER_RULES — normative for docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md)"
+  - "#862@6034650781 (LOCAL EVIDENCE_INVENTORY_R1: 26 CURRENT producer rows — re-verified current at THIS base, see stage0_census; NOT inherited wholesale)"
+  - "#862@6040863477 (LOCAL POST861 JIT DRYRUN_R1: rebind readset, write-set collision map, PACK_FIELD_PLAN, TEST_SET)"
+  - "#862@6043147928 (WEB POST861 JIT ADVERSARIAL_R1: attack cases A1-A12, REQUIRED_GUARDS, WRITESET_RISKS)"
+  - "#862@6046061801 (CONTROLLER_FASTPATH_HANDOFF: 9-step local fast path; DO_NOT_REDISCOVER/MUST_REBIND lists)"
+  - "Claim chain (provenance only, never acceptance): proposal #862@6052647951, admission #862@6052650587, claim #862@6052653911"
+stage0_census:
+  baseline: "0518202c715dcf91784a694bdf4a8eeeaeb16ab6 / tree 75566c464505386fedffde803e05e3e726922434 (re-read at claim; clean worktree, exact merged #861 integration tip)"
+  producer_currentness: "all referenced durable producer paths re-verified PRESENT via git rev-parse <base>:<path> at THIS base (not at the dryrun's ab8339f): 12 authority docs (PRD.md blob b0b9906035eee253aad4bff0274d3d4c8f90b9db unchanged = Frozen Product v0.4 subject; TASK_PACKS_R1.md blob 3300f8494ecb2120d96fff520cd09270b538344b unchanged; V410_V01_VALIDATION_CONTRACT.md blob 8df051f49573ee3784cbc97e0be7a87b8e8f7c90 unchanged), 11 focused suites, 7 pack inventories (4 legacy TASK/PLAN/CONTEXT/COMMANDS/DOD/HANDOFF + V410-T06A-R1/R2 + V410-T06B-R1 six-core), references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md (blob b5d0b09a4a3cef999745536e587925b871fd73c3), checklists/version-closure.md (blob 6c5616909c07177d13bdba23a589bead5a4e10a0). No CURRENT producer path missing at the rebind subject."
+  write_set_collision: "docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md verified ABSENT at base (git ls-tree empty); no scripts/test_v410_t07a_*.py at base; NO collision with the T06B-owned surfaces (schemas/, templates/agent-event-comment.md, references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md untouched by this task)"
+  manifest_registration: "python scripts/verify_standard.py GREEN at base requires NO registration of new docs/implementation or new focused-test paths (manifest->disk direction only); scripts/test_v48_registry_adoption.py RA-guards enforce exact-set manifest sections where ANY unlisted addition fails — manifest registration is therefore NOT required and standard-manifest.json is NOT touched by this task"
+  event_refs_live: "issue #900 (provenance remediation campaign, state OPEN) and issue #865 (V410-V01, state OPEN) live-verified via gh api at JIT; the 9 precompute comment refs listed under l3_inputs live-fetched at JIT"
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

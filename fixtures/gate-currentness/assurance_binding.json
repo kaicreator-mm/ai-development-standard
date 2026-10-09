@@ -1,6 +1,6 @@
 {
   "fixture_id": "gate-currentness/assurance_binding",
-  "description": "M01 consumption wiring — authority-bearing transition admissions consume the T-002 Assurance Plan currentness contract (standards/ASSURANCE_PLAN_STANDARD.md §12/§13; schemas/assurance-plan-v2.schema.json currentness_binding) per standards/EXECUTION_ARCHITECTURE_STANDARD.md §28.1/§28.6: transitions proceed only on CURRENT; STALE routes to recompute; UNKNOWN fails closed; a new adverse finding between Dispatch and Claim fails Claim admission. Currentness never mints PASS (registry F13-F16).",
+  "description": "M01 consumption wiring — authority-bearing transition admissions consume the T-002 Assurance Plan currentness contract (standards/ASSURANCE_PLAN_STANDARD.md §12/§13; schemas/assurance-plan-v2.schema.json currentness_binding) per standards/EXECUTION_ARCHITECTURE_STANDARD.md §29.1/§29.6: transitions proceed only on CURRENT; STALE routes to recompute; UNKNOWN fails closed; a new adverse finding between Dispatch and Claim fails Claim admission. Currentness never mints PASS (registry F13-F16).",
   "transition_checkpoints": [
     "dispatch_materialization",
     "claim_admission",
@@ -61,7 +61,7 @@
       },
       "unresolved_findings": ["F-ADV-2", "F-ADV-9"],
       "transition_under_check": "claim_admission",
-      "expect": { "recomputed_state": "STALE", "transitions_admitted": [], "routing": "RECOMPUTE_REQUIRED", "reason": "unresolved-finding digest drifted after Dispatch; Claim admission must fail/recompute (§28.1)" }
+      "expect": { "recomputed_state": "STALE", "transitions_admitted": [], "routing": "RECOMPUTE_REQUIRED", "reason": "unresolved-finding digest drifted after Dispatch; Claim admission must fail/recompute (§29.1)" }
     },
     {
       "scenario_id": "T06_AB4_missing_component_is_unknown_fail_closed",

@@ -1,6 +1,6 @@
 {
   "fixture_id": "dogfood-audit-contract/owner_surfaces",
-  "description": "TEST_MATRIX D08 — owner surfaces consumed read-only by the T-014 contract. Every ref resolves in-repository at the candidate and is cited line-verbatim in references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md; owner surfaces are cited, not copied, and must remain unmutated since the lane base (T-005->T-010->T-014 serialization; NO Release surface edits).",
+  "description": "TEST_MATRIX D08 — owner surfaces consumed read-only by the T-014 contract. Every ref resolves in-repository at the candidate and is cited line-verbatim in references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md; owner surfaces are cited, not copied, and must remain unmutated since the lane base (T-005->T-010->T-014 serialization; NO Release surface edits). v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge commit e0315b2a): the disclosed composition rebind renumbered the v4.9 standard section §28 -> §29 and composed the v4.10 additions into the integrated standard; the four surfaces moved to rebounded_since_base carry that integrated content at the merged tree and are pinned to their exact integrated blobs (pin constants only; any further mutation still fails).",
   "contract_doc": "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md",
   "consumed_authority_refs": [
     "docs/implementation/4.9.0/PRD.md#16-downstream-dogfood-and-measurement-contract",
@@ -38,16 +38,12 @@
   ],
   "unmutated_since_base": [
     "standards/RELEASE_STANDARD.md",
-    "standards/VALIDATION_STANDARD.md",
     "standards/CI_EVIDENCE_STANDARD.md",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
     "standards/ASSURANCE_PLAN_STANDARD.md",
-    "standards/DEVELOPMENT_WORKFLOW.md",
     "references/RELEASE_APPLICABILITY_REFERENCE.md",
     "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
     "references/AGENT_CAPABILITY_EVIDENCE_REFERENCE.md",
     "references/AGENT_CAPABILITY_PROFILE_REFERENCE.md",
-    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
     "scripts/test_v49_release_applicability.py",
     "registries/state-dimensions-v1.json",
     "docs/implementation/4.9.0/PRD.md",
@@ -57,8 +53,12 @@
     "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md"
   ],
   "rebounded_since_base": {
-    "scripts/test_v49_gate_currentness.py": "32519ca9d63bea335a6f71a89297ae2b25351751",
-    "scripts/test_v49_execution_core.py": "5ed17b4144fab88e3ce6ca88a70b23288c87b9a9"
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
+    "standards/VALIDATION_STANDARD.md": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+    "standards/DEVELOPMENT_WORKFLOW.md": "a7fef842927e58a93b671fe9869b9395559845ac",
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "0c2538db15784ac0f7200ee4537eecec3e43b27f",
+    "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
+    "scripts/test_v49_execution_core.py": "ed01a3f56b7f7727954ab7688ea44007b99fbbe1"
   },
   "owner_sentences_must_not_be_copied": [
     "The independent auditor cannot be the orchestrator/Builder principal for the tested decisions.",

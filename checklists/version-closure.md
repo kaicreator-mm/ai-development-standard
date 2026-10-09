@@ -24,6 +24,7 @@ Version Closure evaluates one dependency-complete candidate. PR PASS is not Rele
 
 ## Freeze Integrity
 
+- [ ] Core-feature-freeze eligibility (`ADS_CORE_FEATURE_FREEZE_ELIGIBLE`), when recorded at closure, uses `templates/product-decision-record.md` per `references/PRODUCT_DECISION_RECORD_REFERENCE.md`: explicit Product-authority decision only (PRD §1.1/§19.4) — Version Closure, Release READY and CI/Review/Validation/Controller/model votes never imply the affirmative outcome; no record may exist before the authorized Product-authority act is a durable fact.
 - [ ] Freeze record includes SHA/tree/ref/visible evidence/pinned standard.
 - [ ] Declared candidate ref still equals frozen SHA and tree before Hidden Validation.
 - [ ] No post-freeze candidate mutation occurred; if it did, freeze was explicitly thawed/invalidated and successor evidence rebuilt.

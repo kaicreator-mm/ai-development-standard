@@ -18,11 +18,11 @@ standards/EXECUTION_ARCHITECTURE_STANDARD.md#5-separate-state-dimensions
 standards/EXECUTION_ARCHITECTURE_STANDARD.md#8-pointer-only-agent-invocation
 standards/EXECUTION_ARCHITECTURE_STANDARD.md#11-dispatch-lifecycle-atomic-claim-and-staleness
 standards/EXECUTION_ARCHITECTURE_STANDARD.md#111-required-claim-serialization-capability
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed
 standards/EXECUTION_ARCHITECTURE_STANDARD.md#26-non-goals
 standards/ISSUE_FIRST_TASK_TRIGGER.md#canonical-rule
 standards/ISSUE_FIRST_TASK_TRIGGER.md#durable-contract-precondition
@@ -87,7 +87,7 @@ The distinction is owned by the execution architecture standard
   `READY` verdict or a `WAITING_LINEAGE` posture). It is non-authoritative, must never be
   persisted as a canonical Issue state or a competing source of truth, and is recomputed
   from facts at every recompute point
-  (standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed).
+  (standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed).
 
 Verdict-shaped inferences from currentness or wait posture remain forbidden by the
 authority/state registry (`registries/state-dimensions-v1.json`, rules F11-F19): a
@@ -131,7 +131,7 @@ comment and `.agent/execution/T-013/**` at the pack head — not from the trigge
 
 ## 5. Walkthrough W-A — manual currentness check before an authority-bearing transition
 
-Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions
+Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions
 and standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding. Before Dispatch
 materialization, Claim admission, merge/merge-ready, Candidate Freeze, or Release
 Qualification, the operator re-reads the governing Assurance Plan's `currentness_binding`
@@ -163,10 +163,10 @@ gh api repos/OWNER/REPO/pulls/792 --jq '.merge_commit_sha'
 
 ## 6. Walkthrough W-B — manual deterministic recompute of the JIT verdict
 
-Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate.
+Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate.
 The verdict is a pure function of current durable facts; identical facts always produce
 the identical outcome, so any operator can recompute it at any time
-(standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed):
+(standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed):
 
 1. P1 — dependencies: read the native blocked-by edges of the work item from GitHub
    (native Issue Dependencies; body text and Markdown tables never substitute,
@@ -206,7 +206,7 @@ worthless after a crash.
 
 ## 8. Walkthrough W-D — adverse-finding carry-forward without review shopping
 
-Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing,
+Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing,
 standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward, and Frozen L2 §9
 (docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects).
 
@@ -227,7 +227,7 @@ references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md (rows M01/M04).
 
 ## 9. Walkthrough W-E — JIT phase admission, worked on this Task
 
-Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate; the
+Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate; the
 deterministic classification of runtime/JIT proposals is wired in
 references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md.
 
@@ -255,7 +255,7 @@ a JIT phase.
 
 ## 10. WAITING_LINEAGE — the wait posture stays derived
 
-Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection.
+Owner: standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection.
 When W-B step 2 fails (a required predecessor surface is not integrated/current), the
 work item is held in the `WAITING_LINEAGE` projection instead of dispatching work whose
 only possible result is a guaranteed-`BLOCKED` sequence block. The projection is

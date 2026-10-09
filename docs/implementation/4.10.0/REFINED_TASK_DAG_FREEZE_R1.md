@@ -1,0 +1,88 @@
+# v4.10.0 Refined Task DAG Freeze R1
+
+Status: **FROZEN EXECUTION-PREPARATION DAG AUTHORITY**
+
+Parent planning: `#779`
+Historical coarse DAG Freeze: `#843`
+Execution-preparation amendment: `#844`
+Self-dogfood findings: `#845`
+Refined DAG build checkpoint: `#846`
+Fresh Independent Refined DAG Review: `#847@5995337711` — `PASS`, `INDEPENDENCE=PASS`, `P0=0`, `P1=0`, `P2=0`, `P3=0`, `FINDINGS=NONE`.
+Freeze record: `#848`
+
+## Frozen subject
+
+```text
+REFINEMENT_PATH=docs/implementation/4.10.0/TASK_DAG_REFINEMENT_R1.md
+REFINEMENT_REVISION=R1
+REFINEMENT_BLOB=2e11382ffab32c2fed7345b623c1971bf6831311
+REVIEWED_HEAD=4af7a5a310d6d9abc3df483384a550bb1bab6d84
+REVIEWED_TREE=700b8420dc9a95d3f09b3e1711fd182ddb5e1774
+MAIN_AT_REVIEW=92e4f764a2630a131d3f156b39f0f09064c9849e
+FROZEN_PRD_BLOB=b0b9906035eee253aad4bff0274d3d4c8f90b9db
+FROZEN_L2_BLOB=b03f12700153e128f4a4c02b7e8d7adf960fd7d3
+REFINED_DAG_AUTHORITY=FROZEN_R1
+```
+
+The historical `#843` coarse DAG remains immutable planning/coverage history. This R1 freeze is the successor executable-leaf topology for execution preparation.
+
+## Frozen nodes
+
+Implementation leaves:
+
+```text
+V410-T01A V410-T01B
+V410-T02A V410-T02B
+V410-T03A V410-T03B
+V410-T04A V410-T04B
+V410-T05A V410-T05B
+V410-T06A V410-T06B
+V410-T07A V410-T07B
+V410-T08A
+```
+
+Independent Validation node:
+
+```text
+V410-V01
+```
+
+## Frozen edges
+
+```text
+V410-T01A -> V410-T01B
+V410-T01A -> V410-T04A
+V410-T02A -> V410-T02B
+V410-T02A -> V410-T05B
+V410-T03A -> V410-T05A
+V410-T03B -> V410-T05A
+V410-T04A -> V410-T04B
+V410-T02B -> V410-T04B
+V410-T01B -> V410-T06A
+V410-T04B -> V410-T06A
+V410-T05A -> V410-T06A
+V410-T05B -> V410-T06A
+V410-T06A -> V410-T06B
+V410-T06B -> V410-T07A
+V410-T07A -> V410-T07B
+V410-T07B -> V410-T08A
+V410-T08A -> V410-V01
+```
+
+No edge may be added/removed merely for convenience. Later live-DAG mutations follow `TASK_DAG_GOVERNANCE_STANDARD.md` and must preserve exact mutation evidence.
+
+## Execution-preparation authority
+
+```text
+TASK_PACK_BUILD=AUTHORIZED
+EXECUTION_ISSUE_MATERIALIZATION=AUTHORIZED_AFTER_DURABLE_CONTRACTS_EXIST
+NATIVE_ISSUE_DEPENDENCIES=REQUIRED_CANONICAL_LIVE_DAG
+VERSION_INTEGRATION_BRANCH=AUTHORIZED_AS_EXECUTION_PREP
+TASK_BRANCHES=JIT_ONLY_AFTER_REAL_DEPENDENCIES_COMPLETE
+EXECUTION_PACKS=JIT_ONLY_AFTER_TASK_EXECUTABLE
+DISPATCH_CLAIM=AFTER_CONTRACT+DEPENDENCY+CURRENTNESS_ADMISSION
+SOURCE_IMPLEMENTATION_AUTHORITY=NOT_GRANTED_BY_FREEZE_ALONE
+RELEASE_AUTHORITY=NO
+```
+
+Task Pack authority contains stable **WHAT** only. Exact-base **HOW** belongs to the JIT Execution Pack. User-visible task triggers remain pointer-only.

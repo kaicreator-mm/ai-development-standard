@@ -1,0 +1,32 @@
+# V410-IDENTITY-R1 test matrix — battery executed ON THE COMMITTED HEAD after the bounded commit
+
+process_rule: "The battery below executes on the COMMITTED head/tree AFTER the single bounded commit (T07A-R2 precedent) — never pre-commit on a tree where uncommitted files are invisible to HEAD-blob pins. git status --porcelain must be 0 after all runs."
+
+identity_pin_cascade:
+  disclosure: "Mechanically forced by the owner-convergence blob change (dispatch V410-IDENTITY-R1, claim #779@6063246782): owner-convergence blob 50e26dc6... -> 56cf032a... forces the R2-row pin fold in the projection record + the T07A IMPLEMENTATION_MAP row R2; the projection blob d3a62083... -> 5da87fd6... forces the two citation folds (T07B suite T07A_INDEX_BLOB_AT_BASE HEAD-equality pin + the reference section-2 citation). Strictly pin lines with provenance, no index meaning changed, zero removed tests. Pre-commit runs of the pin-bearing suites are EXPECTED red on the two HEAD-equality pins; they converge in-commit."
+
+suites:
+  - id: verify_standard
+    command: python scripts/verify_standard.py
+    expect: PASS
+    note: "Validates the identity triple: VERSION=4.10.0 SemVer, README 当前版本 line match, CHANGELOG ## v4.10.0 entry present."
+  - id: test_v410_owner_convergence
+    command: python scripts/test_v410_owner_convergence.py
+    expect: PASS
+    note: "26 tests; single active candidate = V410-IDENTITY; T08A frozen at integrated tip d864465a; identity write set inside registered prefixes."
+  - id: test_v410_t07a_acceptance_projection
+    command: python scripts/test_v410_t07a_acceptance_projection.py
+    expect: PASS
+    note: "28 tests; R2-row pinned producer blob converges in-commit (pre-commit red on the HEAD-equality pin is the predicted cascade)."
+  - id: test_v410_t07b_decision_record
+    command: python scripts/test_v410_t07b_decision_record.py
+    expect: PASS
+    note: "36 tests; T07A_INDEX_BLOB_AT_BASE HEAD-equality pin converges in-commit; frozen T08A registry entry assertions retained."
+  - id: test_v410_t08a_integration_runner
+    command: python scripts/test_v410_t08a_integration_runner.py
+    expect: PASS
+    note: "61 tests (60 + 1 added frozen-T08A delta guard); three registries agree on active=V410-IDENTITY, base d864465a."
+  - id: run_v410_integration
+    command: python scripts/run_v410_integration.py
+    expect: PASS
+    note: "Whole-project visible runner on the committed head: 20/20 suites, cross-suite audit PASS with active=V410-IDENTITY agreement; VISIBLE INTEGRATION PASS IS NOT HIDDEN VALIDATION OR RELEASE QUALIFICATION PASS."

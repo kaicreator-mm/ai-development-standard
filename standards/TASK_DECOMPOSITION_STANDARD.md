@@ -36,6 +36,8 @@ failure / escalation handling
 
 Issue text may point to a Frozen Task Pack rather than duplicate the whole contract. The durable authority must still exist and be current.
 
+A Task is **Agent-dispatchable** only when a qualified Agent can resolve identity, allowed scope, required gates and completion from these durable facts plus the frozen authority they reference, without hidden conversation or chat context. A decomposition that depends on undocumented side-channel context to execute, validate or review correctly is not a valid Task boundary.
+
 ## 3. Primary concern boundary
 
 One Task SHOULD have one primary concern that can be described without joining unrelated authority domains with “and also”.
@@ -44,7 +46,7 @@ A concern may span multiple files when those files jointly implement one invaria
 
 Conversely, one file may legitimately be touched by multiple sequential Tasks when different concerns own different changes and conflict is explicitly controlled.
 
-File count, line count or estimated token count alone MUST NOT define Task boundaries.
+File count, line count or estimated token count alone MUST NOT define Task boundaries. Time or effort estimates carry the same prohibition and MUST NOT define Task boundaries alone.
 
 ## 4. Safe parallelism
 
@@ -78,6 +80,8 @@ A Task dependency exists when one Task genuinely requires another Task's **compl
 Do not add dependencies merely because work is conceptually related or expected to happen earlier in conversation order.
 
 Do not remove a dependency merely to make a Task appear READY.
+
+Dependency removal after materialization is a material DAG mutation owned by `TASK_DAG_GOVERNANCE_STANDARD.md`, not a Task-side planning convenience.
 
 After materialization, GitHub Issue Dependencies are the canonical live Task DAG. Body text, labels or chat descriptions are not substitutes for native dependency truth.
 
@@ -158,6 +162,7 @@ Before freezing a Task, ask:
 6. Are central wiring/shared mutable surfaces isolated?
 7. Would splitting create partial-invalid states or circular dependencies?
 8. Is a stacked PR really required by code-baseline dependency?
+9. Could a qualified Agent dispatch, execute and validate this Task from the durable facts alone?
 
 ## 14. Failure handling
 

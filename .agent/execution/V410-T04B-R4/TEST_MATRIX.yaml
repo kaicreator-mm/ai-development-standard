@@ -1,0 +1,30 @@
+task_id: V410-T04B
+repair_round: R4
+repair_base_sha: e03beedd9d02336407365efa66efc43d34e96954
+required:
+  - id: focused
+    command: python scripts/test_v410_t04b_review_currentness.py
+  - id: protocol_schemas
+    command: python scripts/test_protocol_schemas.py
+  - id: event_writer_surfaces
+    command: python scripts/verify_event_writer_surfaces.py
+  - id: execution_architecture
+    command: python scripts/test_execution_architecture.py
+  - id: t02a
+    command: python scripts/test_v410_t02a_collaboration_control.py
+  - id: t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+  - id: t04a
+    command: python scripts/test_v410_t04a_gate_repair_routing.py
+  - id: standard
+    command: python scripts/verify_standard.py
+r4_positive:
+  - template bucket counts exactly reconstruct from records
+  - independently emitted unlinked duplicate can later reconcile through durable same-subject DUPLICATE disposition
+  - duplicate reconciliation preserves all originating review provenance
+  - transport ordering does not change canonical equivalence result
+r4_negative:
+  - positive bucket omitted from records fails current new-writer conformance
+  - stale or cross-subject duplicate disposition cannot reconcile current findings
+  - competing duplicate dispositions fail closed
+  - heuristic similarity/root-class/model-count cannot establish duplicate equivalence

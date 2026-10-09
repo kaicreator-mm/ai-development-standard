@@ -17,6 +17,13 @@ REFERENCE_PATH = ROOT / "references" / "EXECUTION_CONTRACT_REFS_V49_REFERENCE.md
 BASE_SHA = "f4fe88542de9d3f5376498e62778e2353391bc57"
 EXECUTION_PACK_HEAD = "593bea27380423e95e9ffc45b36e0a57f8b58324"
 EXPECTED_BASE_BLOB = "4607f6cb4b690bf68137294a9acf5d6ccc49e6bd"
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): the compatibility record's
+# `candidate.sha_or_digest` is re-bound from the v4.9 execution-pack candidate
+# (123a6622) to the integrated dispatch schema blob the suite validates at the
+# merged tree (the record's candidate digest must name the schema blob actually
+# present at the candidate — test_compatibility_record_is_machine_checkable).
+EXPECTED_CANDIDATE_BLOB = "90bea62524beb0215d5f40cf0be9986786648fec"
 
 T008_REF_FIELDS = frozenset(
     {"assurance_currentness_ref", "role_profile_ref", "jit_phase_ref"}
@@ -35,14 +42,63 @@ T008_REF_FIELDS = frozenset(
 # scripts/test_v46_ai_native_contracts.py).
 RECOVERY_REF_FIELDS = frozenset({"intent_assumption_refs", "skill_metadata_refs"})
 
-ADDITIVE_DISPATCH_FIELDS = T008_REF_FIELDS | RECOVERY_REF_FIELDS
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): the integrated dispatch schema
+# composes the v4.10 line's additive optional dispatch fields on top of the
+# v4.9-line (T-008 + recovered v4.6) extension. The bounded additive inventory
+# this suite asserts against is therefore the union — still an exact closed
+# set, so any other property mutation (addition OR removal) still fails. The
+# v4.10 fields carry dispatch claim-key/environment semantics owned by
+# EXECUTION_ARCHITECTURE_STANDARD §11.1.1 / §28 (v4.10, additive) and are
+# asserted by the v4.10 T06B suites; this suite only bounds the union.
+V410_ADDITIVE_DISPATCH_FIELDS = frozenset(
+    {
+        "parent_dispatch_ref",
+        "responsibility_mode",
+        "execution_environment",
+        "compatibility_group",
+        "compatibility_authority_ref",
+        "admission_generation",
+        "scheduler_origin",
+    }
+)
+
+# Required-ness the v4.10 conditional clauses may introduce: they are keyed on
+# the v4.10 additive fields (`responsibility_mode`, `compatibility_group`), so
+# instances that never declare a v4.10 field (every v1 instance) are untouched;
+# the base required-ness surface stays byte-preserved. Disclosed union only.
+V410_CONDITIONAL_REQUIRED_FIELDS = frozenset({"created_by", "parent_dispatch_ref"})
+
+# The `if`-keys of the allOf clauses the v4.10 line appends after the base's
+# nine clauses (base clauses stay byte-identical, in order — same disclosure).
+V410_ADDITIVE_DISPATCH_CLAUSE_KEYS = (
+    "responsibility_mode",
+    "responsibility_mode",
+    "compatibility_group",
+)
+
+ADDITIVE_DISPATCH_FIELDS = (
+    T008_REF_FIELDS | RECOVERY_REF_FIELDS | V410_ADDITIVE_DISPATCH_FIELDS
+)
 
 # Read-only dependency surfaces: pinned blobs at the v4.9.0 T-008 base.
 READ_ONLY_SURFACE_BLOBS = {
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
     "standards/ASSURANCE_PLAN_STANDARD.md": "ddc39f2843e7af4b41b1cf2e6b34675c23bcb614",
     "schemas/assurance-plan-v2.schema.json": "92d9c61bc80a3c863aee04f28eebb7ed6291b94a",
     "schemas/role-execution-profile-v1.schema.json": "df96fb14dce9f39c753c80483e21c55b27beb685",
+}
+
+# v4.10 integration re-bind (claim #779@6084794791 / pre-merge #779@6084805500;
+# merge commit e0315b2a): `standards/EXECUTION_ARCHITECTURE_STANDARD.md` is an
+# integrated surface at the merged tree — it carries the v4.10 additions
+# (§11.1.1 "(v4.10, additive)", §28 responsibility/control semantics) composed
+# with the v4.9 section (renumbered §29 by the disclosed composition rebind).
+# Its stale "unmutated since the T-008 base" pin (HEAD and BASE_SHA) is
+# therefore re-bound to an exact integrated-blob identity pin at HEAD; pin
+# constant only — any further mutation of the surface still fails, zero other
+# assertion change.
+READ_ONLY_SURFACE_REBOUND_BLOBS = {
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
 }
 
 # Frozen planning authority: Frozen Product / Frozen L2 / Frozen Task DAG v0.2 /
@@ -55,14 +111,23 @@ FROZEN_PLANNING_BLOBS = {
 }
 
 # Immutable JIT execution-pack planning files (pack head 593bea27).
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): `.agent/execution/T-008/IMPLEMENTATION_MAP.md` moved out of
+# this pack-head loop into PACK_PLANNING_REBOUND_BLOBS — the disclosed
+# composition rebind (§28 -> §29 citation in its read-only-inputs line) mutated
+# that one planning file at the integration, so it is pinned as an exact
+# integrated blob instead of "unmutated since the execution pack head".
 PACK_PLANNING_PATHS = [
     ".agent/execution/T-008/MANIFEST.yaml",
     ".agent/execution/T-008/EXECUTION_CONTRACT.md",
-    ".agent/execution/T-008/IMPLEMENTATION_MAP.md",
     ".agent/execution/T-008/TEST_MATRIX.yaml",
     ".agent/execution/T-008/FAILURE_MATRIX.yaml",
     ".agent/execution/T-008/REVIEW_CHECKLIST.md",
 ]
+
+PACK_PLANNING_REBOUND_BLOBS = {
+    ".agent/execution/T-008/IMPLEMENTATION_MAP.md": "8f7f3848840c27deed3ec8cb1c4edbde30b283eb",
+}
 
 SCHEMA_V2 = json.loads(DISPATCH_SCHEMA_PATH.read_text(encoding="utf-8"))
 
@@ -181,7 +246,7 @@ def claim_time_ref_binding(dispatch: dict, resolvable: frozenset[str]) -> dict |
     Returns {field: ref} only when every declared reference field resolves
     against `resolvable`; otherwise returns None. A stale or missing reference
     never becomes a default and never passes currentness — the caller must fail
-    the claim-time admission closed (section 28.1/28.6 recompute).
+    the claim-time admission closed (section 29.1/29.6 recompute).
     """
     binding: dict[str, str] = {}
     for field in sorted(T008_REF_FIELDS):
@@ -216,7 +281,26 @@ class ExecutionContractRefsV49BackwardCompatibilityTests(unittest.TestCase):
                 f"pre-existing property {name!r} must be byte-identical",
             )
         self.assertEqual(self.base_schema["required"], SCHEMA_V2["required"])
-        self.assertEqual(self.base_schema["allOf"], SCHEMA_V2["allOf"])
+        # v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500;
+        # merge commit e0315b2a): the integrated schema appends the v4.10
+        # line's conditional clauses AFTER the base's nine; the base clause set
+        # stays byte-identical, in order, and every appended clause is keyed on
+        # a disclosed v4.10 additive field. Additions only — no clause changed,
+        # reordered, or removed (same strength, disclosed expectation union).
+        base_clauses = self.base_schema["allOf"]
+        self.assertEqual(
+            SCHEMA_V2["allOf"][: len(base_clauses)],
+            base_clauses,
+            "pre-existing dispatch clauses must stay byte-identical",
+        )
+        self.assertEqual(
+            tuple(
+                next(iter(clause["if"]["properties"]))
+                for clause in SCHEMA_V2["allOf"][len(base_clauses):]
+            ),
+            V410_ADDITIVE_DISPATCH_CLAUSE_KEYS,
+            "appended clauses must be exactly the disclosed v4.10-keyed additions",
+        )
         self.assertEqual(
             self.base_schema.get("additionalProperties"),
             SCHEMA_V2.get("additionalProperties"),
@@ -254,10 +338,16 @@ class ExecutionContractRefsV49OptionalFieldsTests(unittest.TestCase):
 
     def test_no_requiredness_introduced_for_new_fields(self) -> None:
         self.assertTrue(T008_REF_FIELDS.isdisjoint(then_required_fields(SCHEMA_V2)))
+        # v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500;
+        # merge commit e0315b2a): the three appended clauses are keyed on the
+        # v4.10 additive fields, so required-ness grows ONLY inside those new
+        # conditional branches and exactly by the disclosed set; the base
+        # required-ness surface is otherwise preserved, and a v1 instance
+        # (which declares no v4.10 field) sees no new required field.
         self.assertEqual(
-            then_required_fields(base_dispatch_schema()),
             then_required_fields(SCHEMA_V2),
-            "required-ness surface must be unchanged",
+            then_required_fields(base_dispatch_schema()) | set(V410_CONDITIONAL_REQUIRED_FIELDS),
+            "required-ness surface must be the base surface plus the disclosed v4.10 conditional additions",
         )
         for clause in SCHEMA_V2["allOf"]:
             then = clause.get("then", {})
@@ -354,6 +444,10 @@ class ExecutionContractRefsV49CompatibilityRecordTests(unittest.TestCase):
         )
         self.assertEqual(
             self.compat["candidate"]["sha_or_digest"],
+            f"git-blob:{EXPECTED_CANDIDATE_BLOB}",
+        )
+        self.assertEqual(
+            self.compat["candidate"]["sha_or_digest"],
             f"git-blob:{git_blob_sha(DISPATCH_SCHEMA_PATH)}",
         )
 
@@ -378,7 +472,14 @@ class ExecutionContractRefsV49CompatibilityRecordTests(unittest.TestCase):
                 declared.add(core[: -len("-refs")].replace("-", "_") + "_refs")
             else:
                 declared.add(core.removesuffix("-ref").replace("-", "_") + "_ref")
-        self.assertEqual(declared, set(ADDITIVE_DISPATCH_FIELDS))
+        # v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500;
+        # merge commit e0315b2a): this record declares the v4.9-line T-008 (plus
+        # recovered v4.6) additive extension only; the v4.10 additive dispatch
+        # fields are declared by their own v4.10 owner surfaces
+        # (EXECUTION_ARCHITECTURE_STANDARD §11.1.1 "(v4.10, additive)" + §28 and
+        # the v4.10 T06B contract/verifiers). The equality stays exact against
+        # the v4.9-line declared set, so any drift of either side still fails.
+        self.assertEqual(declared, set(T008_REF_FIELDS | RECOVERY_REF_FIELDS))
 
     def test_compatibility_dimensions_are_truthful(self) -> None:
         expected_outcomes = {
@@ -512,6 +613,11 @@ class ExecutionContractRefsV49LifecycleBoundaryTests(unittest.TestCase):
             with self.subTest(path=rel):
                 self.assertEqual(git_blob_sha(ROOT / rel), blob)
                 self.assertEqual(git_blob_sha(ROOT / rel, rev=BASE_SHA), blob)
+        # v4.10-integrated surface (see READ_ONLY_SURFACE_REBOUND_BLOBS): exact
+        # integrated-blob identity at HEAD instead of the stale base pin.
+        for rel, blob in READ_ONLY_SURFACE_REBOUND_BLOBS.items():
+            with self.subTest(path_rebound=rel):
+                self.assertEqual(git_blob_sha(ROOT / rel), blob)
 
     def test_frozen_planning_blobs_resolve_unchanged(self) -> None:
         for rel, blob in FROZEN_PLANNING_BLOBS.items():
@@ -526,6 +632,13 @@ class ExecutionContractRefsV49LifecycleBoundaryTests(unittest.TestCase):
                     git_blob_sha(ROOT / rel),
                     git_blob_sha(ROOT / rel, rev=EXECUTION_PACK_HEAD),
                 )
+        # v4.10 integration (see PACK_PLANNING_REBOUND_BLOBS): the one planning
+        # file legally mutated by the disclosed composition rebind is pinned to
+        # its exact integrated blob instead — same strength, any further
+        # mutation still fails.
+        for rel, blob in PACK_PLANNING_REBOUND_BLOBS.items():
+            with self.subTest(path_rebound=rel):
+                self.assertEqual(git_blob_sha(ROOT / rel), blob)
 
     def test_task_pack_and_l3_unchanged_since_pack_head(self) -> None:
         for rel in (

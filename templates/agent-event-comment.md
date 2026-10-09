@@ -178,9 +178,28 @@ findings:
   p1: 1
   p2: 2
   p3: 0
+  records:
+    - finding_id: "RV-1"
+      severity: P1
+      root_defect_class: IMPLEMENTATION_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+    - finding_id: "RV-2"
+      severity: P2
+      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+    - finding_id: "RV-3"
+      severity: P2
+      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+      evidence_refs:
+        - "<PR comment / file:line / evidence ref>"
+      duplicate_of: "RV-2"
 local_validation_required: false
 next_state: changes-requested
 ```
+
+`findings.records` is the machine projection for material findings in newly emitted `REVIEW_RESULT` events and is REQUIRED for new material findings (`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.2): stable `finding_id`, `severity` (`P0`–`P3`), `root_defect_class` (the `DEVELOPMENT_WORKFLOW.md` §4 projection), `evidence_refs`, and `duplicate_of` linkage when the same logical defect was already reported under a different finding id. The bucket counts of a newly emitted event MUST equal the per-severity record counts (`p1: 1` + `p2: 2` ⇔ exactly one `P1` record and two `P2` records above); duplicate records count in the emitting event's buckets. A later reconciliation of independently emitted findings uses the existing `review-finding-v1` durable `DUPLICATE` disposition, not a rewritten event. Historical payloads without `records` remain valid history but never satisfy the new-writer contract.
 
 Human-readable finding details SHOULD follow the payload:
 
@@ -302,6 +321,54 @@ requested_head_sha: "<requested-head-sha>"
 ```
 
 Duplicate claims from a different logical operator are rejected; the same operator re-claiming is idempotent.
+
+### Serialized-admission projection on admission/claim events (v4.10, additive/optional)
+
+Current admission/claim writers MAY project the serialized-admission facts with the additive optional fields `execution_environment: WEB | LOCAL`, `scheduler_origin: WEB | LOCAL`, `source_proposal_ref` / `canonical_admission_ref` (durable `#<issue>@<comment-id>` forms) and `protected_claim_key` (deterministic `repo#task:role:group`, slot 4 = the normalized compatibility group, `__default__` when omitted). Omit all of them for ordinary dispatches; historical events without them remain valid. These fields are provenance/visibility only: the environment and the scheduling origin never create authority, never substitute for role/independence/currentness, and a stale-generation or losing-proposal writer resolves `STALE | SUPERSEDED | REJECTED` with zero canonical mutation (`EXECUTION_ARCHITECTURE_STANDARD.md` §11.1.1, `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §8.4.2).
+
+### Responsibility projection on dispatch events (v4.10, additive/optional)
+
+When a dispatch carries delegated subwork or a responsibility handoff (`EXECUTION_ARCHITECTURE_STANDARD.md` section 28), the dispatch events name the causal parent and responsibility mode with the additive optional fields `parent_dispatch_ref` / `responsibility_mode`. Omit both fields entirely for ordinary dispatches; historical events without them remain valid.
+
+Delegated child dispatch (`DELEGATED_SUBWORK` — delegator retains responsibility):
+
+```yaml
+schema: ai-dev/event-v2
+event: DISPATCH_CLAIMED
+actor_role: builder
+operator_kind: claude-code
+operator_id: "claude-code:windows-01"
+session_ref: "builder-child-20261006"
+transport_actor: "github:kaicreator-mm"
+task: "#31"
+dispatch_id: "<child-dispatch-id>"
+dispatch_state: CLAIMED
+execution_profile: LOCAL_BUILDER
+sha: "<requested-head-sha>"
+parent_dispatch_ref: "<parent-dispatch-id>"
+responsibility_mode: DELEGATED_SUBWORK
+```
+
+Responsibility handoff claim (`RESPONSIBILITY_HANDOFF` — active responsibility/control transfers; the dispatch object durably names transferor `created_by` and receiver `claimed_by`):
+
+```yaml
+schema: ai-dev/event-v2
+event: DISPATCH_CLAIMED
+actor_role: builder
+operator_kind: codex
+operator_id: "codex:ubuntu-build-01"
+session_ref: "codex-run-20261006-01"
+transport_actor: "github:kaicreator-mm"
+task: "#31"
+dispatch_id: "<handoff-dispatch-id>"
+dispatch_state: CLAIMED
+execution_profile: LOCAL_BUILDER
+sha: "<requested-head-sha>"
+parent_dispatch_ref: "<transferor-dispatch-id>"
+responsibility_mode: RESPONSIBILITY_HANDOFF
+```
+
+A `RESPONSIBILITY_HANDOFF` without transferor, receiver, scope and exact work identity durably named is invalid and fails closed; a second active handoff of the same work identity is rejected like any incompatible second claim. These fields create no authority.
 
 ## EXECUTION_PACK_STATE_CHANGED example (v3.4)
 

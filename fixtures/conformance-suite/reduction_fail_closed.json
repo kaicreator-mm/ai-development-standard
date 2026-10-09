@@ -6,7 +6,7 @@
     "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings"
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#297-acceptance-bindings"
   ],
   "scenarios": [
     {
@@ -103,7 +103,7 @@
     {
       "scenario_id": "C02_S9_ambiguous_predicate_model_reasoning_cannot_authorize",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#297-acceptance-bindings",
         "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate"
       ],
       "frozen_scenario": "M",

@@ -32,7 +32,7 @@ READ_ONLY_OWNER_PATHS = (
 
 # T-011 re-binds (CF-V49-02 #745@5992918366; classification #831@5994177360):
 # - standards/EXECUTION_ARCHITECTURE_STANDARD.md: pre-existing stale pin — the
-#   surface carries the T-007 section 28 append (blob 019d4df7@df94641e ->
+#   surface carries the T-007 section 29 append (blob 019d4df7@df94641e ->
 #   ffe4788b, unchanged through BASE/pack/HEAD; absent from the T-008 write set);
 # - schemas/dispatch.schema.json: the T-008 DAG-owned surface, legally mutated
 #   after BASE_SHA (optional assurance_currentness_ref / role_profile_ref /
@@ -41,15 +41,24 @@ READ_ONLY_OWNER_PATHS = (
 # Both stale "unchanged since BASE_SHA" pins are re-bound to exact
 # current-blob identity pins; pin constants only — any further mutation of
 # either surface still fails, zero other assertion change.
+#
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): at the integrated tree the standard
+# carries the v4.10 additions composed with the v4.9 section (renumbered §29 by
+# the disclosed composition rebind), and the dispatch schema composes the v4.10
+# additive optional fields (EXECUTION_ARCHITECTURE_STANDARD §11.1.1 "(v4.10,
+# additive)" / §28) on top of the v4.9-line extension. Both pins are re-bound to
+# their exact integrated blobs; pin constants only — any further mutation of
+# either surface still fails, zero other assertion change.
 READ_ONLY_OWNER_PATHS_REBOUND_BLOBS = {
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
     # Post-recovery recompose re-bind (#805 POST_RECOVERY_EXACT_RECOMPOSE,
     # #745): the recovery-integrated main merge (4c632256) legally carries the
     # recovered v4.6 dispatch wiring (+2 optional array fields) composed into
-    # the same DAG-owned dispatch surface; pin re-bound to the exact composed
-    # blob 123a6622. Pin constant only — any further mutation still fails,
-    # zero other assertion change.
-    "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
+    # the same DAG-owned dispatch surface; the pin now names the exact
+    # integrated blob (see the v4.10 re-bind above). Pin constant only — any
+    # further mutation still fails, zero other assertion change.
+    "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
 }
 
 PLANNING_PATHS = tuple(

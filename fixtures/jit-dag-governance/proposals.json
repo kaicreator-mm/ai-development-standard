@@ -181,7 +181,7 @@
         "classification": "BLOCKED",
         "route": "BLOCKED_OUT_OF_TASK_ENVELOPE"
       },
-      "binding": "Frozen Product L; EXECUTION_ARCHITECTURE_STANDARD.md 28.7 L [K02/K09]",
+      "binding": "Frozen Product L; EXECUTION_ARCHITECTURE_STANDARD.md 29.7 L [K02/K09]",
       "bound_topology_digest": "dag-digest-t008-merged-5f21"
     },
     {
@@ -235,7 +235,7 @@
         "classification": "FAIL_CLOSED",
         "route": "FAIL_CLOSED_PRESERVE_PRIOR_LIVE_DAG"
       },
-      "binding": "EXECUTION_ARCHITECTURE_STANDARD.md 28.2: material topology change is not a JIT phase",
+      "binding": "EXECUTION_ARCHITECTURE_STANDARD.md 29.2: material topology change is not a JIT phase",
       "bound_topology_digest": "dag-digest-t008-merged-5f21"
     },
     {

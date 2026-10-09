@@ -122,6 +122,19 @@ V49_NEW_AUTHORITY_ENTRIES = [
     {"schema_version": 1, "entry_id": "release-applicability", "semantic_concern": "release.per_gate_subject_applicability", "canonical_owner_ref": "standards/RELEASE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN", "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"},
 ]
 
+# v4.10 T06A authorized registry growth (V410-T06A, #860): the six
+# task/standard-family entries registered by the owner co-evolution lane
+# (EXECUTION_ARCHITECTURE_STANDARD section 5 registry growth); pinned
+# exact-set below alongside the carried v4.8 and v4.9 inventories.
+V410_T06A_GROWTH_ENTRIES = [
+    {"schema_version": 1, "entry_id": "task-decomposition", "semantic_concern": "task.decomposition_and_granularity", "canonical_owner_ref": "standards/TASK_DECOMPOSITION_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "task-dag-governance", "semantic_concern": "task.dag_mutation_and_currentness", "canonical_owner_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "execution-pack", "semantic_concern": "execution.pack_contract_and_classification", "canonical_owner_ref": "standards/EXECUTION_PACK_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "implementation-quality", "semantic_concern": "implementation.quality_and_maintainability", "canonical_owner_ref": "standards/IMPLEMENTATION_QUALITY_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "interface-compatibility", "semantic_concern": "interface.public_contract_compatibility", "canonical_owner_ref": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+    {"schema_version": 1, "entry_id": "project-adoption", "semantic_concern": "project.adoption_routing", "canonical_owner_ref": "standards/PROJECT_ADOPTION.md", "applicability_posture": "MATERIALITY_DRIVEN"},
+]
+
 AUTHORIZED_SECTION_ADDITIONS = {
     "discovery_standards": {"standards/REFERENCE_CONVENTION_STANDARD.md"},
     "machine_contracts": set(V48_MACHINE_FAMILIES) | {
@@ -135,6 +148,7 @@ AUTHORIZED_SECTION_ADDITIONS = {
         "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
         "references/REFERENCE_CONVENTION_REFERENCE.md",
         "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
+        "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
         "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
     },
     "verification": {
@@ -146,6 +160,9 @@ AUTHORIZED_SECTION_ADDITIONS = {
         "scripts/test_v47_reference_conventions.py",
         "scripts/test_v47_state_dimension_registry.py",
         "scripts/test_v48_registry_adoption.py",
+        "scripts/test_v410_owner_convergence.py",
+        "scripts/test_v410_t06b_multi_dispatch_conformance.py",
+        "scripts/test_v410_t06b_core_inventory.py",
     },
 }
 
@@ -676,8 +693,14 @@ def semantic_registry_problems(candidate: dict) -> list[str]:
         got = by_id.get(expected["entry_id"])
         if got != expected:
             problems.append(f"missing or altered v4.9 registry entry: {expected['entry_id']}")
-    if len(entries) != len(V47_SEMANTIC_AUTHORITY_ENTRIES) + len(V48_NEW_AUTHORITY_ENTRIES) + len(V49_NEW_AUTHORITY_ENTRIES):
-        problems.append("semantic registry entry count deviates from carried + exactly three v4.8 new + exactly three v4.9 new")
+    v410_growth = [e for e in entries if e.get("entry_id") in {g["entry_id"] for g in V410_T06A_GROWTH_ENTRIES}]
+    expected_growth = {g["entry_id"]: g for g in V410_T06A_GROWTH_ENTRIES}
+    if any(e != expected_growth.get(e.get("entry_id")) for e in v410_growth):
+        problems.append("v4.10 growth entries deviate from the authorized T06A evolution")
+    if len(v410_growth) != len(V410_T06A_GROWTH_ENTRIES):
+        problems.append("authorized v4.10 growth entries missing or extra")
+    if len(entries) != len(V47_SEMANTIC_AUTHORITY_ENTRIES) + len(V48_NEW_AUTHORITY_ENTRIES) + len(V49_NEW_AUTHORITY_ENTRIES) + len(V410_T06A_GROWTH_ENTRIES):
+        problems.append("semantic registry entry count deviates from carried + v4.8 + v4.9 + authorized v4.10 growth")
     return problems
 
 

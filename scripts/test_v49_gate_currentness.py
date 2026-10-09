@@ -40,12 +40,17 @@ WRITE_SET = (
     "fixtures/gate-currentness/",
 )
 
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): `.agent/execution/T-010/IMPLEMENTATION_MAP.md` moved out of
+# this pack-head loop into T010_MERGED_BLOBS — the disclosed composition rebind
+# (§28 -> §29 citation) legally mutated that one T-010 planning file at the
+# integration, so it is pinned as an exact merged output instead of "unmutated
+# since the execution pack head". The remaining five files stay pack-head-frozen.
 PLANNING_PATHS = tuple(
     f".agent/execution/T-010/{name}"
     for name in (
         "MANIFEST.yaml",
         "EXECUTION_CONTRACT.md",
-        "IMPLEMENTATION_MAP.md",
         "TEST_MATRIX.yaml",
         "FAILURE_MATRIX.yaml",
         "REVIEW_CHECKLIST.md",
@@ -58,16 +63,31 @@ PLANNING_PATHS = tuple(
 # controller_authorizations[0]): the merged T-010 outputs at this base
 # (version/v4.9.0@d53e943e), blob-pinned. Any further mutation of any T-010
 # output still fails; zero assertion-logic change.
+#
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): the disclosed composition rebind
+# renumbered the v4.9 standard section §28 -> §29 and mechanically rebound its
+# §28 citations, which moved the merged blobs of three T-010 outputs
+# (`references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md`,
+# `fixtures/gate-currentness/assurance_binding.json`,
+# `fixtures/gate-currentness/successor_chain.json`) and of
+# `.agent/execution/T-010/IMPLEMENTATION_MAP.md` (moved here out of the
+# pack-head loop above: it is an integrated output now). It also moved
+# `fixtures/gate-currentness/owner_map.json`, whose M01 owner ref is realigned
+# to the renumbered §29.1 anchor (the identical string is cited line-verbatim
+# in the matrix doc, whose M01/M04 code blocks were realigned in the same
+# step). Pin constants only — zero removed tests, no intent weakened.
 T010_MERGED_BLOBS = {
-    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "c98b5eeb6e8afda2dc896e4e67edd0383b8a861b",
-    "fixtures/gate-currentness/assurance_binding.json": "19d0b1d58046897ca7c81cc320c2a92bb40e337a",
+    "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "0c2538db15784ac0f7200ee4537eecec3e43b27f",
+    ".agent/execution/T-010/IMPLEMENTATION_MAP.md": "596fe50d7f6fef868f4f37cc94f1ce34fb6b51aa",
+    "fixtures/gate-currentness/assurance_binding.json": "2942252e4ea5af99eadafda49c6e0f65b65d6ae9",
     "fixtures/gate-currentness/dogfood_binding.json": "e5589bdefcba50c4a156c8c05618ddf49439bc61",
     "fixtures/gate-currentness/frozen_candidates.json": "00a36fdb62493d53104f1ac6c6bfd79b6480f6c2",
     "fixtures/gate-currentness/impact_decisions.json": "ff0b0cdbe5984ea0305d39c278777997f3a88fa8",
-    "fixtures/gate-currentness/owner_map.json": "1b72e5cdd06d8139cd724374dc3298c7435ddfee",
+    "fixtures/gate-currentness/owner_map.json": "5342314960621c5a4d157c42a4d60d1253cef2ec",
     "fixtures/gate-currentness/release_applicability.json": "4fb525df247ba39367a0105f3f1de8844f686b0b",
     "fixtures/gate-currentness/stale_pass.json": "f6b4addc27e7b591e55027e1509042c4be99005b",
-    "fixtures/gate-currentness/successor_chain.json": "b4d33cb073e0e2f338bd7ca83f7678e99ff3e98b",
+    "fixtures/gate-currentness/successor_chain.json": "51338b2ab39a1e145976dda55e4d1b61715746c7",
 }
 
 # The T-010 oracle identity of this kernel itself: the only lawful edit on top
@@ -116,6 +136,22 @@ READ_ONLY_DEPS = (
     "docs/implementation/4.9.0/PRD.md",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
 )
+
+# v4.10 integration re-bind (claim #779@6084794791 / pre-merge #779@6084805500;
+# merge commit e0315b2a): three of the read-only owner surfaces above legally
+# carry the v4.10 line's integrated content at the merged tree (the v4.10
+# standard additions compose into `standards/EXECUTION_ARCHITECTURE_STANDARD.md`;
+# `standards/VALIDATION_STANDARD.md` and `standards/DEVELOPMENT_WORKFLOW.md` are
+# byte-identical to the v4.10 candidate side of this merge). The stale
+# "unmutated since BASE_SHA" pin is re-bound to an exact integrated-blob identity
+# pin — pin constants only, any further mutation of these surfaces still fails,
+# zero other assertion change. Same idiom as READ_ONLY_DEPS_REBOUND_BLOBS in
+# scripts/test_v49_execution_core.py.
+READ_ONLY_DEPS_REBOUND_BLOBS = {
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
+    "standards/VALIDATION_STANDARD.md": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+    "standards/DEVELOPMENT_WORKFLOW.md": "a7fef842927e58a93b671fe9869b9395559845ac",
+}
 
 # The routing vocabulary of this wiring engine. It deliberately contains no
 # verdict: routing dispositions only decide whether an owner-issued record may
@@ -229,7 +265,7 @@ def plan_binding_state(plan_binding: dict, current_dimensions: dict, unresolved_
     """Recompute the M01 binding state from facts (ASSURANCE_PLAN §12 all-components-exact-current).
 
     The stored `state` is never trusted: the unresolved-finding digest and every
-    bound component are recomputed (no stale latch, EXECUTION_ARCHITECTURE §28.6).
+    bound component are recomputed (no stale latch, EXECUTION_ARCHITECTURE §29.6).
     """
     bound_keys = (
         "subject_identity_ref",
@@ -250,7 +286,7 @@ def plan_binding_state(plan_binding: dict, current_dimensions: dict, unresolved_
 
 
 def transition_admissions(binding_state: str, checkpoints: list[str]) -> list[str]:
-    """M01 wiring: authority-bearing transitions proceed only on CURRENT (§28.1)."""
+    """M01 wiring: authority-bearing transitions proceed only on CURRENT (§29.1)."""
     if binding_state == "CURRENT":
         return list(checkpoints)
     return []
@@ -894,10 +930,17 @@ class GateCurrentnessKernel(unittest.TestCase):
             with self.subTest(planning_path=rel_path):
                 self.assertEqual(git_blob_sha(PACK_HEAD_SHA, rel_path), git_blob_sha("HEAD", rel_path))
         # Read-only owner surfaces (incl. all Release surfaces — T-005 serialization)
-        # are unmutated since the base.
+        # are unmutated since the base, except the three v4.10-integrated surfaces
+        # pinned to their exact integrated blobs below (READ_ONLY_DEPS_REBOUND_BLOBS
+        # disclosure).
         for rel_path in READ_ONLY_DEPS:
+            if rel_path in READ_ONLY_DEPS_REBOUND_BLOBS:
+                continue
             with self.subTest(read_only=rel_path):
                 self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
+        for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
+            with self.subTest(read_only_rebound=rel_path):
+                self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST
         # controller_authorizations[0]). The original T-010 lane guard

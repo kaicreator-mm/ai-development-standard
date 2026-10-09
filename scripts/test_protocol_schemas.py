@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 import re
 import unittest
@@ -23,6 +24,7 @@ SUPPORTED_KEYWORDS = {
     "pattern",
     "minLength",
     "minItems",
+    "minimum",
     "items",
     "allOf",
     "if",
@@ -71,6 +73,11 @@ def assert_supported_schema(schema: dict, path: str = "$") -> None:
     if "items" in schema:
         assert_supported_schema(schema["items"], f"{path}.items")
 
+    if "minimum" in schema:
+        minimum = schema["minimum"]
+        if not isinstance(minimum, int) or isinstance(minimum, bool):
+            raise ValueError(f"{path}: minimum must be a non-boolean integer")
+
     if "allOf" in schema:
         all_of = schema["allOf"]
         if not isinstance(all_of, list) or not all_of:
@@ -116,6 +123,10 @@ def validate_subset(value, schema: dict, path: str = "$") -> list[str]:
             errors.append(f"{path}: string shorter than minLength")
         if "pattern" in schema and not re.fullmatch(schema["pattern"], value):
             errors.append(f"{path}: string does not match pattern {schema['pattern']!r}")
+
+    if isinstance(value, int) and not isinstance(value, bool):
+        if "minimum" in schema and value < schema["minimum"]:
+            errors.append(f"{path}: integer {value} below minimum {schema['minimum']}")
 
     if isinstance(value, list):
         if "minItems" in schema and len(value) < schema["minItems"]:
@@ -370,8 +381,193 @@ class ProtocolSchemaTests(unittest.TestCase):
         self.assertTrue(any("state" in error for error in errors), errors)
 
 
+class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
+    """W9 extension: A11 byte-stable couplings + additive dispatch/state/event fields."""
+
+    def test_a11_profile_enum_and_role_couplings_are_byte_stable(self) -> None:
+        schema = load_schema("dispatch.schema.json")
+        assert_supported_schema(schema)
+        self.assertEqual(
+            schema["properties"]["execution_profile"]["enum"],
+            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"],
+        )
+        couplings = sorted(
+            json.dumps(c, sort_keys=True)
+            for c in schema["allOf"]
+            if "execution_profile" in c.get("if", {}).get("properties", {})
+        )
+        # 3 profile->role couplings, unchanged shape from the pre-T06B schema
+        self.assertEqual(len(couplings), 3)
+
+    def test_a12_handoff_environment_stays_the_validation_gate_field(self) -> None:
+        handoff = load_schema("local-agent-handoff.schema.json")
+        assert_supported_schema(handoff)
+        self.assertIn("execution_environment", handoff["properties"])
+        dispatch = load_schema("dispatch.schema.json")
+        self.assertEqual(dispatch["properties"]["execution_environment"]["enum"], ["WEB", "LOCAL"])
+
+    def test_new_dispatch_fields_are_additive_and_subset_conformant(self) -> None:
+        schema = load_schema("dispatch.schema.json")
+        assert_supported_schema(schema)
+        for name in ("execution_environment", "compatibility_group",
+                     "compatibility_authority_ref", "admission_generation", "scheduler_origin"):
+            self.assertIn(name, schema["properties"])
+        self.assertNotIn("execution_environment", schema["required"])
+        conditional = [c for c in schema["allOf"]
+                       if "compatibility_group" in c.get("if", {}).get("properties", {})]
+        self.assertEqual(len(conditional), 1)
+        # R5 (P1-1): the conditional agrees with normalize_group/oracle C1 —
+        # non-default string groups require the ref; the reserved __default__
+        # and blank-only normalized-default groups do not.
+        inner = conditional[0]["then"]["else"]["else"]
+        self.assertEqual(inner["required"], ["compatibility_authority_ref"])
+
+    def test_event_schema_lineage_fields_are_additive_optional(self) -> None:
+        schema = load_schema("agent-event-v2.schema.json")
+        assert_supported_schema(schema)
+        for name in ("source_proposal_ref", "canonical_admission_ref", "scheduler_origin"):
+            self.assertIn(name, schema["properties"])
+            self.assertNotIn(name, schema.get("required", []))
+
+
+def _dispatch_fixture(**overrides):
+    value = {
+        "dispatch_id": "D-A",
+        "repository": "kaicreator-mm/ai-development-standard",
+        "version": "v4.10.0",
+        "task": "#861",
+        "role": "builder",
+        "execution_profile": "LOCAL_BUILDER",
+        "branch": "task/v4.10.0-v410-t06b-machine-projection",
+        "expected_base_sha": "ab8339f83a6a2308a5aa39009bd126698320ceee",
+        "pinned_standard_revision": "ab8339f83a6a2308a5aa39009bd126698320ceee",
+        "agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+        "dispatch_state": "READY",
+        "task_pack_ref": "docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T06B",
+    }
+    value.update(overrides)
+    return value
+
+
+from v34_rules import project_dispatch_environment  # noqa: E402
+
+
+class T06BEnvironmentProfileConformanceTests(unittest.TestCase):
+    """W9 section A conformance (R2 repair): schema verdicts A1-A10 plus the A8
+    projection-verifier rejection. A11/A12 live in the byte-stable couplings
+    tests above; A13 is pinned by the multi-dispatch conformance suite."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.schema = load_schema("dispatch.schema.json")
+
+    def _verdict(self, value) -> list:
+        return validate_subset(value, self.schema)
+
+    def test_a1_a2_explicit_environment_is_valid_and_additive(self) -> None:
+        for env in ("WEB", "LOCAL"):
+            with self.subTest(env=env):
+                self.assertEqual(self._verdict(_dispatch_fixture(execution_environment=env)), [])
+
+    def test_a3_non_enum_environment_is_schema_invalid(self) -> None:
+        errors = self._verdict(_dispatch_fixture(execution_environment="BROWSER"))
+        self.assertTrue(any("execution_environment" in error for error in errors), errors)
+
+    def test_a4_authorized_non_default_group_is_valid(self) -> None:
+        value = _dispatch_fixture(
+            compatibility_group="validator/windows",
+            compatibility_authority_ref="#861@6023707736",
+        )
+        self.assertEqual(self._verdict(value), [])
+
+    def test_a5_non_default_group_without_authority_ref_is_invalid(self) -> None:
+        errors = self._verdict(_dispatch_fixture(compatibility_group="validator/windows"))
+        self.assertTrue(any("compatibility_authority_ref" in error for error in errors), errors)
+
+    def test_a4b_explicit_default_group_needs_no_authority_ref(self) -> None:
+        # R5 (P1-1): the schema no longer requires a ref for the reserved
+        # __default__ group (it normalized to the default key like omission).
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="__default__")),
+            [],
+        )
+
+    def test_a4c_blank_only_group_normalizes_to_default_without_ref(self) -> None:
+        # R5 (P1-1): blank-only strings normalize to __default__ in
+        # normalize_group; the schema must not demand a ref for them either.
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="  ")),
+            [],
+        )
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="\t")),
+            [],
+        )
+
+    def test_a4d_default_group_with_ref_stays_readable(self) -> None:
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(compatibility_group="__default__", compatibility_authority_ref="#861@6016591816")),
+            [],
+        )
+
+    def test_a6_admission_generation_minimum_is_schema_enforced(self) -> None:
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(admission_generation=0)),
+            [],
+        )
+        self.assertEqual(
+            self._verdict(_dispatch_fixture(admission_generation=None)),
+            [],
+        )
+        errors = self._verdict(_dispatch_fixture(admission_generation=-1))
+        self.assertTrue(any("minimum" in error for error in errors), errors)
+
+    def test_a7_historical_profile_without_new_fields_projects_local(self) -> None:
+        historical = _dispatch_fixture()
+        for additive in ("execution_environment", "compatibility_group", "admission_generation", "scheduler_origin"):
+            self.assertNotIn(additive, historical)
+        self.assertEqual(self._verdict(historical), [])
+        self.assertEqual(project_dispatch_environment(historical), "LOCAL")
+
+    def test_a8_contradiction_is_schema_valid_but_verifier_rejected(self) -> None:
+        contradicted = _dispatch_fixture(execution_profile="LOCAL_BUILDER", execution_environment="WEB")
+        self.assertEqual(self._verdict(contradicted), [])
+        with self.assertRaises(ValueError) as caught:
+            project_dispatch_environment(contradicted)
+        self.assertIn("ENVIRONMENT_PROFILE_CONTRADICTION", str(caught.exception))
+
+    def _validator_dispatch(self, **overrides) -> dict:
+        value = _dispatch_fixture(
+            role="validator",
+            execution_profile="PLATFORM_VALIDATOR",
+            requested_head_sha="e4dee733068e91e4a3e07f0b0e7a56129c2779bf",
+            validation_profile="concern",
+        )
+        value.update(overrides)
+        return value
+
+    def test_a9_orthogonal_profile_with_local_environment_is_routable(self) -> None:
+        value = self._validator_dispatch(execution_environment="LOCAL")
+        self.assertEqual(self._verdict(value), [])
+        self.assertEqual(project_dispatch_environment(value), "LOCAL")
+
+    def test_a10_orthogonal_profiles_without_environment_stay_unknown(self) -> None:
+        for profile in ("PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"):
+            value = self._validator_dispatch(execution_profile=profile)
+            self.assertNotIn("execution_environment", value)
+            with self.subTest(profile=profile):
+                self.assertEqual(self._verdict(value), [])
+                self.assertEqual(project_dispatch_environment(value), "UNKNOWN")
+
+    def test_a8_verifier_fails_closed_on_malformed_input(self) -> None:
+        for mutant in ({}, {"execution_profile": ""}, {"execution_profile": "LOCAL_BUILDER", "execution_environment": "BROWSER"}):
+            with self.subTest(mutant=mutant):
+                with self.assertRaises(ValueError):
+                    project_dispatch_environment(mutant)
+
+
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(
-        unittest.defaultTestLoader.loadTestsFromTestCase(ProtocolSchemaTests)
+        unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     )
     raise SystemExit(0 if result.wasSuccessful() else 1)

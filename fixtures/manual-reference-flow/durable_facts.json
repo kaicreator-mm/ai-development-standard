@@ -12,7 +12,7 @@
       "used_by_walkthroughs": ["W-A", "W-E"],
       "owner_refs": [
         "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
       ]
     },
     {
@@ -47,7 +47,7 @@
       "used_by_walkthroughs": ["W-B", "W-E"],
       "owner_refs": [
         "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"
       ]
     },
     {
@@ -70,7 +70,7 @@
       "used_by_walkthroughs": ["W-C"],
       "owner_refs": [
         "standards/EXECUTION_ARCHITECTURE_STANDARD.md#111-required-claim-serialization-capability",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
       ]
     },
     {
@@ -82,7 +82,7 @@
       "used_by_walkthroughs": ["W-D"],
       "owner_refs": [
         "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects"
       ]
     },
@@ -95,7 +95,7 @@
       "used_by_walkthroughs": ["W-B", "W-E"],
       "owner_refs": [
         "docs/implementation/4.9.0/task-packs/T13_manual_reference_flow.md",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"
       ]
     }
   ]

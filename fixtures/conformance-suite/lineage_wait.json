@@ -1,8 +1,8 @@
 {
   "fixture_id": "v4.9.0-T-012-C09-predecessor-lineage-wait",
   "owner_refs": [
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection",
     "registries/state-dimensions-v1.json",
     "docs/implementation/4.9.0/PRD.md#k-known-sequence-block",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
@@ -31,7 +31,7 @@
   "scenarios": [
     {
       "scenario_id": "C09_S1_all_lineage_current_ready",
-      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"],
       "frozen_scenario": "K",
       "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / jit_verdict",
       "facts": {
@@ -59,7 +59,7 @@
     {
       "scenario_id": "C09_S2_stale_predecessor_surface_waits_not_dispatches",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection",
         "docs/implementation/4.9.0/PRD.md#k-known-sequence-block"
       ],
       "frozen_scenario": "K",
@@ -84,7 +84,7 @@
     {
       "scenario_id": "C09_S3_predecessor_done_does_not_inherit_lineage_currentness",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection",
         "registries/state-dimensions-v1.json"
       ],
       "frozen_scenario": "K",
@@ -106,7 +106,7 @@
     {
       "scenario_id": "C09_S4_wait_projection_is_never_a_workflow_or_gate_verdict",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection",
         "registries/state-dimensions-v1.json"
       ],
       "frozen_scenario": "K",
@@ -119,7 +119,7 @@
     },
     {
       "scenario_id": "C09_S5_failed_lineage_is_blocked",
-      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"],
       "frozen_scenario": "K",
       "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / jit_verdict",
       "facts": {
@@ -135,7 +135,7 @@
     },
     {
       "scenario_id": "C09_S6_pending_dependency_blocked_before_lineage",
-      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"],
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"],
       "frozen_scenario": "K",
       "kernel_binding": "scripts/test_v49_execution_core.py jit_verdict",
       "facts": {
@@ -149,7 +149,7 @@
     },
     {
       "scenario_id": "C09_S7_surface_integrated_recompute_drops_projection",
-      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection"],
+      "exact_refs": ["standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection"],
       "frozen_scenario": "K",
       "kernel_binding": "scripts/test_v49_execution_core.py lineage_posture / waiting_lineage_projection / jit_verdict",
       "before_facts": {

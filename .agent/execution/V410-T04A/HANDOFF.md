@@ -1,0 +1,2 @@
+# Handoff
+Return exact PR HEAD/tree, bounded changed paths, actual commands/results, UNKNOWN/BLOCKED facts and Task Learning disposition. Product contradiction routes upward; Review aggregation/currentness routes to T04B. No Release PASS claim.

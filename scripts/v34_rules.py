@@ -10,6 +10,9 @@ from __future__ import annotations
 
 from typing import Iterable, Mapping, Sequence
 
+import hashlib
+import re
+
 # ---------------------------------------------------------------------------
 # Vocabularies
 # ---------------------------------------------------------------------------
@@ -496,3 +499,688 @@ def baseline_refresh_priority(*, blocking: Mapping[str, Sequence[str]]) -> list[
 
 def package_leaks(packaged_paths: Iterable[str], roots: Sequence[str] = EXECUTION_PACK_ROOTS) -> list[str]:
     return [path for path in packaged_paths if any(path.startswith(root) for root in roots)]
+
+
+# ---------------------------------------------------------------------------
+# v4.10 T06B — serialized-admission helpers (additive; EXECUTION_ARCHITECTURE
+# §11.1.1, GITHUB_AGENT_INTERACTION_PROTOCOL §8.4.2). Pure functions; fail
+# closed on malformed input; never grant authority.
+# ---------------------------------------------------------------------------
+
+DEFAULT_COMPATIBILITY_GROUP = "__default__"
+
+ENVIRONMENT_PROFILE_CONTRADICTION = "ENVIRONMENT_PROFILE_CONTRADICTION"
+
+# A7: the historical profiles whose unambiguous legacy mapping projects the
+# coarse execution environment. PLATFORM_VALIDATOR/CLOSURE_VALIDATOR are
+# environment-orthogonal (A9/A10) and map through the explicit field only.
+EXECUTION_PROFILE_ENVIRONMENTS = {
+    "LOCAL_BUILDER": "LOCAL",
+    "LOCAL_VALIDATOR": "LOCAL",
+    "WEB_REVIEWER": "WEB",
+}
+
+ENVIRONMENT_ORTHOGONAL_PROFILES = ("PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR")
+
+
+def project_dispatch_environment(dispatch: Mapping[str, object]) -> str:
+    """A7/A8/A9/A10/FC1 projection verifier for one dispatch record.
+
+    Returns the routable execution environment: ``"LOCAL"``/``"WEB"`` for an
+    unambiguous profile (A7), the explicit environment for an
+    environment-orthogonal profile (A9), or ``"UNKNOWN"`` when the record is
+    not routable by environment (A10/FC1; never guessed). A current writer
+    whose explicit environment contradicts the unambiguous legacy mapping is
+    rejected with ``ENVIRONMENT_PROFILE_CONTRADICTION`` (A8) instead of being
+    silently reinterpreted. Malformed input fails closed.
+    """
+    profile = dispatch.get("execution_profile")
+    if not isinstance(profile, str) or not profile:
+        raise ValueError("execution_profile is required and must be a non-empty string")
+    environment = dispatch.get("execution_environment")
+    if environment is not None and environment not in ("WEB", "LOCAL"):
+        raise ValueError(f"invalid execution_environment: {environment!r}")
+    mapped = EXECUTION_PROFILE_ENVIRONMENTS.get(profile)
+    if mapped is not None:
+        if environment is not None and environment != mapped:
+            raise ValueError(
+                f"{ENVIRONMENT_PROFILE_CONTRADICTION}: execution_profile={profile!r} "
+                f"maps to execution_environment={mapped!r} but the writer supplied "
+                f"execution_environment={environment!r}; no silent reinterpretation"
+            )
+        return mapped
+    if profile in ENVIRONMENT_ORTHOGONAL_PROFILES:
+        return environment if environment is not None else "UNKNOWN"
+    return "UNKNOWN"
+
+
+def protected_claim_key_conforms(dispatch: Mapping[str, object]) -> bool:
+    """B5/B6: the persisted protected claim key is audit provenance, never trusted.
+
+    Returns True only when the dispatch carries no scheduler/user-supplied
+    ``claim_key`` authority field (B6: the key is reducer-derived only) and any
+    persisted ``protected_claim_key`` equals the deterministic re-derivation
+    from the dispatch identity (B5). Malformed identities fail closed to False.
+    """
+    if "claim_key" in dispatch:
+        return False
+    persisted = dispatch.get("protected_claim_key")
+    if persisted is None:
+        return True
+    try:
+        derived = derive_claim_key(
+            dispatch.get("repository"),
+            dispatch.get("task"),
+            dispatch.get("role"),
+            dispatch.get("compatibility_group"),
+        )
+    except (TypeError, ValueError):
+        return False
+    return persisted == derived
+
+
+def normalize_group(compatibility_group: object) -> str:
+    """Normalize an omitted/null/empty compatibility group to ``__default__``.
+
+    Non-string non-null values fail closed (TypeError) rather than guessing.
+    """
+    if compatibility_group is None:
+        return DEFAULT_COMPATIBILITY_GROUP
+    if not isinstance(compatibility_group, str):
+        raise TypeError("compatibility_group must be a string or null")
+    if not compatibility_group.strip():
+        return DEFAULT_COMPATIBILITY_GROUP
+    return compatibility_group
+
+
+def derive_claim_key(
+    repository: str, task: str, role: str, compatibility_group: object = None
+) -> str:
+    """Serialize the deterministic protected claim key ``repo#task:role:group``.
+
+    Slot 4 is the normalized compatibility group; revision/session identifiers
+    are never valid there. Any malformed input fails closed.
+    """
+    for name, value in (("repository", repository), ("role", role)):
+        if not isinstance(value, str) or not value or any(ch in value for ch in "#:"):
+            raise ValueError(f"invalid claim-key segment {name}: {value!r}")
+    if not isinstance(task, str) or not task or not task.startswith("#") or ":" in task:
+        raise ValueError(f"task must be '#<id>': {task!r}")
+    group = normalize_group(compatibility_group)
+    if any(ch in group for ch in "#:"):
+        raise ValueError(f"invalid compatibility_group: {group!r}")
+    return f"{repository}{task}:{role}:{group}"
+
+
+def parse_claim_key(key: object) -> dict:
+    """Reparse a serialized claim key; fails closed unless it roundtrips."""
+    if not isinstance(key, str) or not key:
+        raise ValueError("claim key must be a non-empty string")
+    head, _, rest = key.partition("#")
+    if not head or ":" not in rest:
+        raise ValueError(f"malformed claim key: {key!r}")
+    task, role_group = rest.split(":", 1)
+    if ":" not in role_group:
+        raise ValueError(f"malformed claim key (missing group slot): {key!r}")
+    role, group = role_group.rsplit(":", 1)
+    rebuilt = derive_claim_key(head, f"#{task}", role, group)
+    if rebuilt != key:
+        raise ValueError(f"claim key does not roundtrip: {key!r}")
+    return {"repository": head, "task": f"#{task}", "role": role, "group": group}
+
+
+def authorize_non_default(compatibility_group: object, authority_ref: object) -> bool:
+    """Check the durable explicit-authorization input for a non-default group.
+
+    Returns True only for a non-default group with a durable ``#<issue>@<id>``
+    authority reference. Never downgrades to ``__default__``; malformed inputs
+    fail closed instead of guessing.
+    """
+    group = normalize_group(compatibility_group)
+    if group == DEFAULT_COMPATIBILITY_GROUP:
+        return authority_ref is None or (
+            isinstance(authority_ref, str) and bool(authority_ref)
+        )
+    if not isinstance(authority_ref, str) or not re.fullmatch(r"#\d+@\d+", authority_ref):
+        raise ValueError(
+            "non-default compatibility_group requires a durable #<issue>@<comment-id> authority ref"
+        )
+    return True
+
+
+# Owning authority family per role for non-default compatibility groups
+# (#861 machine-model rules 3/8: builders need Task Pack/DAG authority,
+# validators need Validation-profile authority, reviewers need Review-policy
+# authority; a durable ref of any other family is not authorization).
+NON_DEFAULT_AUTHORITY_FAMILIES = {
+    "builder": "TASK_PACK",
+    "validator": "VALIDATION",
+    "reviewer": "REVIEW_POLICY",
+}
+
+AUTHORITY_UNRESOLVED = "AUTHORITY_UNRESOLVED"
+AUTHORITY_FAMILY_MISMATCH = "AUTHORITY_FAMILY_MISMATCH"
+AUTHORITY_NOT_APPLICABLE = "AUTHORITY_NOT_APPLICABLE"
+# R6 (Fresh Review R5 P1-1): the grant inventory must be bound to the durable
+# owner/controller readback contract; an arbitrary caller-made mapping without
+# that binding manufactures no authority.
+AUTHORITY_OWNER_UNRESOLVED = "AUTHORITY_OWNER_UNRESOLVED"
+AUTHORITY_CURRENTNESS_MISMATCH = "AUTHORITY_CURRENTNESS_MISMATCH"
+AUTHORITY_SELF_REFERENCE = "AUTHORITY_SELF_REFERENCE"
+# R7 (Fresh Review R6 P1-1): the referenced durable authority fact itself must
+# be bound by trusted readback evidence (identity, existence/currentness,
+# content-addressed digest, owner family, exact tuple, explicit authorization
+# content); caller-supplied grant fields alone manufacture no authority and a
+# grant drifting from the fact readback is rejected.
+AUTHORITY_GRANT_DRIFT = "AUTHORITY_GRANT_DRIFT"
+# R8 (Fresh Review R7 P1-1): the readback binding is mechanical — the digest is
+# RECOMPUTED from the supplied canonical durable-fact content. A shape-only
+# 64-hex digest, a missing canonical content, or a digest that does not match
+# the supplied content never binds authorization to content.
+AUTHORITY_DIGEST_MISMATCH = "AUTHORITY_DIGEST_MISMATCH"
+
+# R8 (Fresh Review R7 P1-1): the fixed-format machine-readable authorization
+# block a durable authority fact must carry in its canonical content. The
+# block is the ONLY authorization source: the verifier derives
+# family/tuple/groups by deterministically parsing it, so projected fields
+# supplied alongside the content can never manufacture authority.
+AUTHORITY_GRANT_BLOCK_START = "ai-dev:authority-grant v1"
+AUTHORITY_GRANT_BLOCK_END = "ai-dev:authority-grant end"
+AUTHORITY_GRANT_BLOCK_FIELDS = (
+    "authority_family",
+    "repository",
+    "task",
+    "role",
+    "groups",
+)
+
+_SHA40 = re.compile(r"[0-9a-f]{40}")
+_SHA256_HEX = re.compile(r"[0-9a-f]{64}")
+
+
+def parse_authority_grant_block(canonical_content: object) -> dict:
+    """Deterministically parse the ``ai-dev:authority-grant v1`` block.
+
+    R8 machine half of the C3-C5/C7 boundary: scans the canonical durable-fact
+    content for the block start marker, reads strict ``key: value`` field
+    lines (known keys only, no duplicates, no free text inside the block),
+    requires the terminator line and all five fields, and splits ``groups`` on
+    commas (order-preserving). Every deviation — missing block, unterminated
+    block, unknown/duplicate/empty field, missing required field, empty
+    groups — fails closed with ``AUTHORITY_NOT_APPLICABLE``: canonical content
+    without a parsable block grants nothing. Purely local string parsing;
+    stdlib only; no network.
+    """
+    def _fail(reason: str) -> None:
+        raise ValueError(
+            f"{AUTHORITY_NOT_APPLICABLE}: the canonical durable-fact content "
+            f"carries no parsable {AUTHORITY_GRANT_BLOCK_START} authorization "
+            f"block ({reason}); content that does not parse grants nothing"
+        )
+
+    if not isinstance(canonical_content, str):
+        _fail("canonical content is not text")
+    derived: dict = {}
+    inside = False
+    terminated = False
+    for raw_line in str(canonical_content).splitlines():
+        line = raw_line.strip()
+        if not inside:
+            if line == AUTHORITY_GRANT_BLOCK_START:
+                inside = True
+            continue
+        if line == AUTHORITY_GRANT_BLOCK_END:
+            terminated = True
+            break
+        if not line:
+            continue
+        key, sep, value = line.partition(":")
+        key = key.strip()
+        if not sep or key not in AUTHORITY_GRANT_BLOCK_FIELDS:
+            _fail(f"line {line!r} is not a known authorization field")
+        if key in derived:
+            _fail(f"duplicate field {key!r}")
+        value = value.strip()
+        if not value:
+            _fail(f"field {key!r} is empty")
+        derived[key] = value
+    if not terminated:
+        _fail("block is missing or not terminated by " + AUTHORITY_GRANT_BLOCK_END)
+    missing = [name for name in AUTHORITY_GRANT_BLOCK_FIELDS if name not in derived]
+    if missing:
+        _fail(f"missing fields {missing}")
+    groups = [item.strip() for item in str(derived["groups"]).split(",") if item.strip()]
+    if not groups:
+        _fail("no compatibility group is granted")
+    derived["groups"] = groups
+    return derived
+
+
+def resolve_non_default_authority(
+    *,
+    repository: object,
+    task: object,
+    role: object,
+    compatibility_group: object,
+    authority_ref: object,
+    authority_grants: object,
+    authority_readback: object = None,
+    authority_fact_readbacks: object = None,
+    self_refs: object = None,
+) -> bool:
+    """Deterministically resolve the durable authority behind a non-default group.
+
+    Machine half of the C3-C5/C7 boundary (#861). ``authority_grants`` is the
+    controller-resolved grant inventory — the existing owner/controller proof
+    path materialized before keyed admission — keyed by durable
+    ``#<issue>@<id>`` ref, and ``authority_fact_readbacks`` is the trusted
+    per-ref readback of the referenced durable authority fact itself,
+    materialized by the controller/authority-reader adapter before keyed
+    admission.
+
+    R8 (Fresh Review R7 P1-1): the fact readback is mechanically bound to the
+    canonical durable fact CONTENT — trusted-looking projected fields are no
+    longer accepted. Each fact readback MUST carry, for the exact ref: the
+    durable identity (``ref``), existence/currentness (``exists`` — a ref
+    that does not resolve, e.g. a 404 durable-looking ref, fails closed),
+    the canonical fact text itself (``canonical_content``) and the
+    content-addressed binding (``content_digest``). The verifier RECOMPUTES
+    SHA-256 over the supplied canonical content and requires equality with
+    ``content_digest`` — a shape-only 64-hex digest, a readback without
+    canonical content, or a digest that does not match the supplied content
+    fails closed (``AUTHORITY_DIGEST_MISMATCH``). The authorization fields
+    are then DERIVED by deterministically parsing the fixed-format
+    ``ai-dev:authority-grant v1`` machine-readable block out of the canonical
+    content (``parse_authority_grant_block``): content without a parsable
+    block grants nothing (``AUTHORITY_NOT_APPLICABLE``), and no
+    ``authority_family`` / ``repository`` / ``task`` / ``role`` / ``groups``
+    field supplied alongside the content is ever read. A non-default group is
+    admitted only when the content-derived grant carries the owning family
+    for the role and covers the exact repository+task+role+group tuple. The
+    caller grant inventory is only a projection: every authorization field of
+    ``authority_grants[authority_ref]`` MUST equal the content-derived grant,
+    otherwise ``AUTHORITY_GRANT_DRIFT`` fails closed — an arbitrarily
+    decorated caller mapping (valid registry subject, valid owner_concern,
+    correct tuple) manufactures no authority when the referenced durable fact
+    is missing, stale, content-mismatched, unparseable, or does not authorize
+    the group.
+
+    R6 (Fresh Review R5 P1-1): the inventory is additionally bound to the
+    durable owner/controller readback contract — the same checked-in registry
+    readback the owner-resolution path already verifies
+    (``standard-manifest.json#semantic_authorities`` resolved concern -> owner,
+    per ``test_v47_authority_registry.resolve_registry``). Each grant MUST name
+    the semantic owner concern it resolves through (``owner_concern``, present
+    in the supplied readback's owners map) and MUST carry the exact readback
+    subject (``readback_subject``, the durable manifest blob id) it was
+    resolved against; a stale/fabricated binding fails closed with
+    ``AUTHORITY_OWNER_UNRESOLVED``/``AUTHORITY_CURRENTNESS_MISMATCH``. A grant
+    whose durable ref equals one of the dispatch's own refs (``self_refs`` —
+    e.g. the grant points back at this dispatch's own admission/claim comment)
+    is self-reference and fails closed with ``AUTHORITY_SELF_REFERENCE``.
+    Default-group dispatches need no authority and short-circuit to True.
+    Purely local; no network; every ambiguity fails closed instead of guessing.
+    """
+    group = normalize_group(compatibility_group)
+    if group == DEFAULT_COMPATIBILITY_GROUP:
+        return True
+    if not isinstance(authority_ref, str) or not re.fullmatch(r"#\d+@\d+", authority_ref):
+        raise ValueError(
+            "non-default compatibility_group requires a durable #<issue>@<comment-id> authority ref"
+        )
+    if self_refs is not None:
+        if isinstance(self_refs, (str, bytes)) or not isinstance(self_refs, Iterable):
+            raise ValueError(f"{AUTHORITY_SELF_REFERENCE}: self_refs must be an iterable of durable refs")
+        if authority_ref in set(self_refs):
+            raise ValueError(
+                f"{AUTHORITY_SELF_REFERENCE}: grant ref {authority_ref} points back at the "
+                "dispatch's own durable comment; a dispatch never authorizes itself"
+            )
+    if not isinstance(authority_grants, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no controller-resolved authority grant "
+            f"inventory was supplied for {authority_ref}"
+        )
+    if not isinstance(authority_readback, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no durable owner/controller readback was "
+            f"supplied to bind the grant inventory for {authority_ref}"
+        )
+    owners = authority_readback.get("owners")
+    subject = authority_readback.get("subject")
+    if (
+        not isinstance(owners, Mapping)
+        or any(not isinstance(k, str) or not isinstance(v, str) or not k or not v for k, v in owners.items())
+        or not isinstance(subject, str)
+        or not _SHA40.fullmatch(subject)
+    ):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: authority_readback is not a durable "
+            "owner/controller readback (owners mapping + exact 40-hex subject)"
+        )
+    if not isinstance(authority_fact_readbacks, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: no trusted durable-fact readback inventory "
+            f"was supplied to bind {authority_ref}"
+        )
+    fact = authority_fact_readbacks.get(authority_ref)
+    if not isinstance(fact, Mapping):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: {authority_ref} has no trusted durable-fact "
+            "readback; a caller-made grant inventory never manufactures the "
+            "referenced authority fact"
+        )
+    if fact.get("ref") != authority_ref:
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: durable-fact readback identity does not "
+            f"bind {authority_ref}"
+        )
+    if fact.get("exists") is not True:
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: {authority_ref} does not resolve to an "
+            "existing durable fact (existence/currentness evidence is missing "
+            "or negative)"
+        )
+    digest = fact.get("content_digest")
+    if not isinstance(digest, str) or not _SHA256_HEX.fullmatch(digest):
+        raise ValueError(
+            f"{AUTHORITY_UNRESOLVED}: the durable-fact readback for {authority_ref} "
+            "carries no content-addressed binding (64-hex content_digest of the "
+            "canonical fact content required)"
+        )
+    # R8: the binding is mechanical — the digest is RECOMPUTED from the
+    # supplied canonical content, and every authorization field is DERIVED by
+    # parsing that content. Trusted-looking projected fields on the readback
+    # mapping are never read.
+    content = fact.get("canonical_content")
+    if not isinstance(content, str):
+        raise ValueError(
+            f"{AUTHORITY_DIGEST_MISMATCH}: the durable-fact readback for "
+            f"{authority_ref} supplies no canonical fact content to verify the "
+            "content binding against"
+        )
+    recomputed = hashlib.sha256(content.encode("utf-8")).hexdigest()
+    if recomputed != digest:
+        raise ValueError(
+            f"{AUTHORITY_DIGEST_MISMATCH}: the durable-fact readback for "
+            f"{authority_ref} binds content_digest {digest!r}, but the supplied "
+            f"canonical content hashes to {recomputed!r}; a shape-only or stale "
+            "digest never binds authorization to content"
+        )
+    derived = parse_authority_grant_block(content)
+    grant = authority_grants.get(authority_ref)
+    if not isinstance(grant, Mapping):
+        raise ValueError(f"{AUTHORITY_UNRESOLVED}: {authority_ref} resolves to no durable grant")
+    if grant.get("ref") != authority_ref:
+        raise ValueError(f"{AUTHORITY_UNRESOLVED}: grant identity does not bind {authority_ref}")
+    # Authorization is derived from the parsed canonical content only.
+    expected_family = NON_DEFAULT_AUTHORITY_FAMILIES.get(role)
+    if expected_family is None or derived["authority_family"] != expected_family:
+        raise ValueError(
+            f"{AUTHORITY_FAMILY_MISMATCH}: the canonical content behind "
+            f"{authority_ref} grants authority family "
+            f"{derived['authority_family']!r}, the owning family for role "
+            f"{role!r} is {expected_family!r}"
+        )
+    for field, value in (("repository", repository), ("task", task), ("role", role)):
+        if derived[field] != value:
+            raise ValueError(
+                f"{AUTHORITY_NOT_APPLICABLE}: the canonical content behind "
+                f"{authority_ref} does not cover {field}={value!r}"
+            )
+    if group not in derived["groups"]:
+        raise ValueError(
+            f"{AUTHORITY_NOT_APPLICABLE}: the canonical content behind "
+            f"{authority_ref} does not explicitly authorize compatibility group "
+            f"{group!r}"
+        )
+    # The caller grant inventory is a projection only: it must equal the
+    # content-derived grant field by field or it manufactures nothing.
+    for field, derived_value in (
+        ("authority_family", derived["authority_family"]),
+        ("repository", derived["repository"]),
+        ("task", derived["task"]),
+        ("role", derived["role"]),
+        ("groups", list(derived["groups"])),
+    ):
+        observed_value = grant.get(field)
+        if isinstance(observed_value, Sequence) and not isinstance(observed_value, str):
+            observed_value = list(observed_value)
+        if observed_value != derived_value:
+            raise ValueError(
+                f"{AUTHORITY_GRANT_DRIFT}: grant {authority_ref} field {field!r} is "
+                f"{observed_value!r}, but the canonical content of the referenced "
+                f"durable fact derives {derived_value!r}; caller-supplied grant "
+                "fields never manufacture authority"
+            )
+    owner_concern = grant.get("owner_concern")
+    if not isinstance(owner_concern, str) or owner_concern not in owners:
+        raise ValueError(
+            f"{AUTHORITY_OWNER_UNRESOLVED}: grant {authority_ref} names "
+            f"{owner_concern!r}, which does not resolve through the durable "
+            "owner/controller readback"
+        )
+    if grant.get("readback_subject") != subject:
+        raise ValueError(
+            f"{AUTHORITY_CURRENTNESS_MISMATCH}: grant {authority_ref} was resolved "
+            f"against readback subject {grant.get('readback_subject')!r}, current "
+            f"durable subject is {subject!r}"
+        )
+    return True
+
+
+def admission_generation_conforms(
+    *, reserved_generation: object, claimed_generation: object
+) -> str:
+    """CAS semantics: reserve g -> g+1, claim requires current, stale fails.
+
+    Returns ``"IDEMPOTENT"`` for a re-presented current generation,
+    ``"CLAIMED"`` for the reserved next generation, ``"STALE"`` for a stale
+    writer (zero canonical mutation). Malformed/non-integer input raises.
+    """
+    for value in (reserved_generation, claimed_generation):
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError("admission generations must be non-negative integers")
+    if claimed_generation == reserved_generation:
+        return "IDEMPOTENT"
+    if claimed_generation == reserved_generation + 1:
+        return "CLAIMED"
+    return "STALE"
+
+
+def project_active_dispatches(entries: Sequence[Mapping[str, object]]) -> list[dict]:
+    """Project the NON_AUTHORITATIVE active_dispatches rows stably.
+
+    Input-only routing fields (repository/task/execution_profile) are used to
+    derive the protected claim key and the projected environment but are never
+    emitted. Every output row is the contracted W2 schema projection: the
+    profile-aware environment (A7/A9; legacy LOCAL_BUILDER/LOCAL_VALIDATOR/
+    WEB_REVIEWER project through ``project_dispatch_environment``), the
+    normalized compatibility group, the deterministically re-derived claim key,
+    nullable claimer, plus exact subject refs when supplied. A persisted
+    ``protected_claim_key`` (or scheduler-supplied ``claim_key``) that does not
+    match the re-derivation fails closed (B5/B6) instead of being copied.
+    """
+    rows: list[tuple[str, str, dict]] = []
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            raise ValueError("active dispatch rows must be mappings")
+        dispatch_id = entry.get("dispatch_id")
+        role = entry.get("role")
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            raise ValueError("active dispatch row missing dispatch_id")
+        if role not in {"builder", "validator", "reviewer"}:
+            raise ValueError(f"active dispatch row has invalid role: {role!r}")
+        repository = entry.get("repository")
+        task = entry.get("task")
+        if not isinstance(repository, str) or not repository:
+            raise ValueError("active dispatch row missing repository")
+        if not isinstance(task, str) or not task:
+            raise ValueError("active dispatch row missing task")
+
+        # A7/A9: the emitted environment always comes from the profile-aware
+        # projection, never from the raw field. The helper-internal UNKNOWN
+        # sentinel is emitted as null: the row contract permits WEB|LOCAL|null.
+        environment = project_dispatch_environment(entry)
+        compatibility_group = normalize_group(entry.get("compatibility_group"))
+        claimed_by = entry.get("claimed_by")
+        if claimed_by is not None and (
+            not isinstance(claimed_by, str) or not claimed_by
+        ):
+            raise ValueError(f"active dispatch row has invalid claimed_by: {claimed_by!r}")
+
+        key = derive_claim_key(repository, task, str(role), compatibility_group)
+        # B5/B6: a persisted key is audit provenance only; it must equal the
+        # deterministic re-derivation or the reducer fails closed (a supplied
+        # claim_key authority field is rejected outright by the helper).
+        if not protected_claim_key_conforms(entry):
+            raise ValueError(
+                f"active dispatch row {dispatch_id!r} carries a stale, mismatched "
+                "or scheduler-supplied protected_claim_key; fail closed (B5/B6)"
+            )
+        row = {
+            "dispatch_id": dispatch_id,
+            "role": role,
+            "execution_environment": None if environment == "UNKNOWN" else environment,
+            "compatibility_group": compatibility_group,
+            "protected_claim_key": key,
+            "claimed_by": claimed_by,
+        }
+        for ref_field in ("issue", "pr"):
+            ref = entry.get(ref_field)
+            if ref is not None and (
+                not isinstance(ref, str) or not re.fullmatch(r"#\d+", ref)
+            ):
+                raise ValueError(
+                    f"active dispatch row has invalid exact subject ref {ref_field}: {ref!r}"
+                )
+            if ref_field in entry:
+                row[ref_field] = ref
+        rows.append((key, dispatch_id, row))
+    rows.sort(key=lambda item: (item[0], item[1]))
+    return [item[2] for item in rows]
+
+
+H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE = "H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE"
+DUPLICATE_ACTIVE_CLAIM_KEY = "DUPLICATE_ACTIVE_CLAIM_KEY"
+ACTIVE_DISPATCH_ROW_MALFORMED = "ACTIVE_DISPATCH_ROW_MALFORMED"
+# R6 (Fresh Review R5 P2-1): active_dispatches is the projection of THIS work
+# item's active dispatches; a row whose derived key carries another
+# repository/task is a cross-work-item leak and must be surfaced.
+ACTIVE_DISPATCH_FOREIGN_WORK_ITEM = "ACTIVE_DISPATCH_FOREIGN_WORK_ITEM"
+
+
+def execution_state_projection_problems(state: Mapping[str, object]) -> list[str]:
+    """Fail-closed conformance probe for the derived execution-state surface.
+
+    Machine-enforces the derived-state rules the projection boundary owns:
+    H2 — when ``active_dispatches`` carries more than one row, the legacy
+    singular ``active_dispatch`` / ``active_dispatch_role`` fields MUST be
+    null/omitted (no arbitrary primary is projected); #861 machine-model
+    rule 2 — two active rows deriving the same protected claim key are
+    incompatible and MUST serialize, so canonical active state never presents
+    both; and R6 same-work-item safety (Fresh Review R5 P2-1) — every row's
+    protected claim key is re-parsed and its derived repository/task MUST equal
+    the outer execution-state ``repository``/``work_item``: ``active_dispatches``
+    is the projection of this work item's active dispatches, so a row carrying
+    another task's key is rejected here (the row contract deliberately drops
+    the raw task field, making this probe the owned detection surface).
+    Returns the problem codes found; an empty list means conformant.
+    Malformed rows fail closed instead of guessing.
+    """
+    rows = state.get("active_dispatches") or []
+    if not isinstance(rows, Sequence) or isinstance(rows, str):
+        return [ACTIVE_DISPATCH_ROW_MALFORMED]
+    problems: list[str] = []
+    keys: list[str] = []
+    foreign = False
+    for row in rows:
+        if (
+            not isinstance(row, Mapping)
+            or not isinstance(row.get("protected_claim_key"), str)
+            or not row["protected_claim_key"]
+        ):
+            return [ACTIVE_DISPATCH_ROW_MALFORMED]
+        key = row["protected_claim_key"]
+        try:
+            parsed = parse_claim_key(key)
+        except (TypeError, ValueError):
+            return [ACTIVE_DISPATCH_ROW_MALFORMED]
+        if (
+            parsed["repository"] != state.get("repository")
+            or parsed["task"] != state.get("work_item")
+        ):
+            foreign = True
+        keys.append(key)
+    if foreign:
+        problems.append(ACTIVE_DISPATCH_FOREIGN_WORK_ITEM)
+    if len(rows) > 1:
+        if any(state.get(field) is not None for field in ("active_dispatch", "active_dispatch_role")):
+            problems.append(H2_SINGULAR_PRIMARY_WITH_MULTI_ACTIVE)
+        if len(set(keys)) != len(keys):
+            problems.append(DUPLICATE_ACTIVE_CLAIM_KEY)
+    return problems
+
+
+def lineage_refs_present(event: Mapping[str, object], *, current_writer: bool) -> bool:
+    """T3: current admission/claim writers carry durable proposal+admission refs.
+
+    ``source_proposal_ref``/``canonical_admission_ref`` must be durable
+    ``#<issue>@<comment-id>`` forms; prose references are not durable.
+    Historical events (``current_writer=False``) are exempt.
+    """
+    if not current_writer:
+        return True
+    for field in ("source_proposal_ref", "canonical_admission_ref"):
+        value = event.get(field)
+        if not isinstance(value, str) or not re.fullmatch(r"#\d+@\d+", value):
+            return False
+    return True
+
+
+def target_environment_agreement(
+    *, execution_environment: object, target_environment: object
+) -> str:
+    """T4: TARGET_ENVIRONMENT is a proposal-era alias; disagreement fails closed.
+
+    Returns the canonical environment. A present-but-disagreeing alias raises
+    ValueError instead of guessing.
+    """
+    canonical = execution_environment if execution_environment in {"WEB", "LOCAL"} else None
+    if target_environment is None:
+        if canonical is None:
+            raise ValueError("execution_environment must be WEB or LOCAL")
+        return canonical
+    if target_environment not in {"WEB", "LOCAL"}:
+        raise ValueError(f"unknown TARGET_ENVIRONMENT alias: {target_environment!r}")
+    if canonical is None:
+        return target_environment
+    if canonical != target_environment:
+        raise ValueError(
+            f"TARGET_ENVIRONMENT {target_environment!r} disagrees with "
+            f"execution_environment {canonical!r}"
+        )
+    return canonical
+
+
+def terminal_precedence(actions: Sequence[Mapping[str, object]]) -> dict:
+    """T5: accepted canonical terminal facts take precedence over proposals.
+
+    ``actions`` are coordination records with ``kind`` in {"proposal",
+    "admission", "claim", "checkpoint", "terminal"} and a ``dispatch_id``.
+    The reducer returns the authoritative action: a terminal beats everything
+    for its dispatch; canonical admission/claim facts beat proposals and
+    checkpoints. Ties resolve deterministically by (kind rank, sequence
+    position) — never by count, recency-of-proposal or brand.
+    """
+    if not actions:
+        raise ValueError("no coordination actions to reduce")
+    rank = {"terminal": 0, "claim": 1, "admission": 2, "checkpoint": 3, "proposal": 4}
+    for index, action in enumerate(actions):
+        if not isinstance(action, Mapping) or action.get("kind") not in rank:
+            raise ValueError(f"malformed coordination action at {index}")
+    best = min(
+        enumerate(actions),
+        key=lambda pair: (rank[pair[1]["kind"]], pair[0]),
+    )
+    return dict(best[1])

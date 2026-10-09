@@ -1,8 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.9.0`（**未发布 version-branch candidate**）
+当前版本：`v4.10.0`（**未发布 version-branch sequential integration candidate**）
 
-> **v4.9.0 谱系组合声明（lineage composition）**：本仓库当前处于 v4.9.0 working line（`version/v4.9.0` 候选线）的谱系组合状态，由两条已记录谱系真实组合而成：
+> **顺序集成谱系声明（sequential integration composition）**：本仓库当前处于 v4.10.0 顺序集成候选状态（v4.8 谱系语义已于 version/v4.10.0 候选线内集成，历史谱系声明保留原状），由两条已记录谱系真实组合而成：
 >
 > - **v4.9 working line**：`version/v4.9.0@916dcb66850e33cc2a77a7ef75b0968d5c150ccf`（tree `296878a84c2b2f97f1b6ac6f20edb9a7210435bc`），携带 v4.9 planning baseline 与 v4.9 任务内容（T001/T002 执行记录已并入；该线亦携带已在 v4.9 线完成的 T-005 执行记录）。
 > - **integrated current main**：`main@92e4f764a2630a131d3f156b39f0f09064c9849e`（tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`），携带 v4.1–v4.8 全部集成内容（含 v4.3-sequential、v4.8 执行/能力/资格/Dispatch-Claim/Task Learning owner surfaces 与 LG47 registry surfaces）及已并入 `main` 的 v4.9 planning lane。

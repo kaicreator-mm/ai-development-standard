@@ -175,6 +175,9 @@
     "references": [
       "references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md",
       "references/ARCHITECTURE_DECISION_REFERENCE.md",
+      "references/ASSURANCE_PLAN_OWNER_REFERENCE.md",
+      "references/ASSURANCE_PLAN_V2_COMPATIBILITY.json",
+      "references/ASSURANCE_PLAN_V2_REFERENCE.md",
       "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md",
       "references/BUILD_ARTIFACT_REFERENCE.md",
       "references/CI_EVIDENCE_REFERENCE_VALIDATION.md",
@@ -185,7 +188,10 @@
       "references/DEPENDENCY_TOOLCHAIN_REFERENCE.md",
       "references/DEPLOYMENT_REFERENCE.md",
       "references/DISTRIBUTION_REFERENCE.md",
+      "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json",
+      "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md",
       "references/EXTERNAL_SYSTEM_EXECUTION_REFERENCE.md",
+      "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
       "references/GITHUB_ENGINEERING_REFERENCES.md",
       "references/GIT_EXECUTION_REFERENCE.md",
       "references/IMPLEMENTATION_PROFILE_ADOPTION_REFERENCE.md",
@@ -193,32 +199,27 @@
       "references/INCIDENT_RECOVERY_REFERENCE.md",
       "references/INTENT_ASSUMPTION_REFERENCE.md",
       "references/INTERFACE_COMPATIBILITY_REFERENCE.md",
+      "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
       "references/MAINTENANCE_EOL_HOTFIX_REFERENCE.md",
       "references/OBSERVABILITY_RUNTIME_REFERENCE.md",
       "references/PROGRESSIVE_DISCLOSURE_ROUTING.md",
+      "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md",
       "references/REFERENCE_CONVENTION_REFERENCE.md",
+      "references/REGISTRY_ADOPTION_V49_REFERENCE.md",
+      "references/RELEASE_APPLICABILITY_REFERENCE.md",
+      "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
       "references/SKILL_PROCEDURE_REFERENCE.md",
       "references/STATE_DIMENSION_REGISTRY_REFERENCE.md",
       "references/TASK_DAG_GOVERNANCE_REFERENCE.md",
       "references/TASK_DECOMPOSITION_REFERENCE.md",
+      "references/TASK_LEARNING_V2_COMPATIBILITY.json",
+      "references/TASK_LEARNING_V2_REFERENCE.md",
       "references/TEST_DATA_ENGINEERING_REFERENCES.md",
+      "references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md",
       "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml",
-      "references/WORKSPACE_ARTIFACT_REFERENCE.md",
-      "references/ASSURANCE_PLAN_OWNER_REFERENCE.md",
-      "references/ASSURANCE_PLAN_V2_COMPATIBILITY.json",
-      "references/ASSURANCE_PLAN_V2_REFERENCE.md",
-      "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json",
-      "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md",
-      "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md",
-      "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
-      "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md",
-      "references/REGISTRY_ADOPTION_V49_REFERENCE.md",
-      "references/RELEASE_APPLICABILITY_REFERENCE.md",
-      "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
-      "references/TASK_LEARNING_V2_COMPATIBILITY.json",
-      "references/TASK_LEARNING_V2_REFERENCE.md"
+      "references/WORKSPACE_ARTIFACT_REFERENCE.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -242,6 +243,9 @@
       "scripts/test_v40_t010_canonical_surface.py",
       "scripts/test_v40_t010_successor_hardening.py",
       "scripts/test_v40_t012_pre_release_hardening.py",
+      "scripts/test_v410_owner_convergence.py",
+      "scripts/test_v410_t06b_core_inventory.py",
+      "scripts/test_v410_t06b_multi_dispatch_conformance.py",
       "scripts/test_v41_adoption_wiring.py",
       "scripts/test_v41_configuration_secrets.py",
       "scripts/test_v41_dependency_toolchain.py",
@@ -298,6 +302,16 @@
       "scripts/test_v47_semantic_conformance.py",
       "scripts/test_v47_state_dimension_registry.py",
       "scripts/test_v48_registry_adoption.py",
+      "scripts/test_v49_assurance_owner.py",
+      "scripts/test_v49_assurance_plan_v2.py",
+      "scripts/test_v49_authority_state_registry.py",
+      "scripts/test_v49_execution_contract_refs.py",
+      "scripts/test_v49_execution_core.py",
+      "scripts/test_v49_gate_currentness.py",
+      "scripts/test_v49_jit_dag_governance.py",
+      "scripts/test_v49_release_applicability.py",
+      "scripts/test_v49_role_execution_profile.py",
+      "scripts/test_v49_task_learning_v2.py",
       "scripts/test_verify_project_standard.py",
       "scripts/test_verify_standard.py",
       "scripts/test_work_item_contract_and_golden_templates.py",
@@ -313,17 +327,7 @@
       "scripts/verify_project_execution_profile.py",
       "scripts/verify_project_standard.py",
       "scripts/verify_runner_capability_reference.py",
-      "scripts/verify_standard.py",
-      "scripts/test_v49_assurance_owner.py",
-      "scripts/test_v49_assurance_plan_v2.py",
-      "scripts/test_v49_authority_state_registry.py",
-      "scripts/test_v49_execution_contract_refs.py",
-      "scripts/test_v49_execution_core.py",
-      "scripts/test_v49_gate_currentness.py",
-      "scripts/test_v49_jit_dag_governance.py",
-      "scripts/test_v49_release_applicability.py",
-      "scripts/test_v49_role_execution_profile.py",
-      "scripts/test_v49_task_learning_v2.py"
+      "scripts/verify_standard.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
@@ -440,6 +444,48 @@
         "canonical_owner_ref": "standards/RELEASE_STANDARD.md",
         "applicability_posture": "MATERIALITY_DRIVEN",
         "notes_ref": "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "task-decomposition",
+        "semantic_concern": "task.decomposition_and_granularity",
+        "canonical_owner_ref": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "task-dag-governance",
+        "semantic_concern": "task.dag_mutation_and_currentness",
+        "canonical_owner_ref": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "execution-pack",
+        "semantic_concern": "execution.pack_contract_and_classification",
+        "canonical_owner_ref": "standards/EXECUTION_PACK_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "implementation-quality",
+        "semantic_concern": "implementation.quality_and_maintainability",
+        "canonical_owner_ref": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "interface-compatibility",
+        "semantic_concern": "interface.public_contract_compatibility",
+        "canonical_owner_ref": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
+      },
+      {
+        "schema_version": 1,
+        "entry_id": "project-adoption",
+        "semantic_concern": "project.adoption_routing",
+        "canonical_owner_ref": "standards/PROJECT_ADOPTION.md",
+        "applicability_posture": "MATERIALITY_DRIVEN"
       }
     ]
   }

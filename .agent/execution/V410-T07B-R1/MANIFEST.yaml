@@ -1,0 +1,58 @@
+pack_id: V410-T07B-R1
+task_id: V410-T07B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: cea2e0ccd045e8fcebaf110273129b198ed259fd
+base_tree: cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T07B
+branch: task/v4.10.0-v410-t07b-core-freeze-decision-support
+parent_issue: "#863"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+validation_scope: concern
+pinned_standard_revision: cea2e0ccd045e8fcebaf110273129b198ed259fd
+generated_by: claude-code:zcode-glm-local-builder (V410-T07B-BUILDER-R1)
+generated_at: "2026-10-08T00:00:00+00:00"
+decision_authority_boundary:
+  - "This task SUPPORTS but NEVER MAKES the ADS_CORE_FEATURE_FREEZE_ELIGIBLE decision. PRODUCT_DECISION=NONE. ELIGIBILITY_VERDICT=NONE for this entire chain. The deliverable is the empty fill-in record template + validator + tests; no record instance with an actual value is created by this task."
+  - "Recording rule (verbatim): a controller/actor may RECORD a decision only after the authorized Product-authority act exists as durable fact — never pre-fill, default, or infer the value."
+dependency_completion:
+  - V410-T07A@cea2e0ccd045e8fcebaf110273129b198ed259fd INTEGRATED
+dependency_notes:
+  - "V410-T07A: INTEGRATED — the exact base cea2e0ccd045e8fcebaf110273129b198ed259fd (tree cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2) IS the merged #933 integration tip on version/v4.10.0 lineage (T07A R1 + the authorized R2 successor-aware carried-guard rebind); the acceptance-evidence projection docs/implementation/4.10.0/PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md (blob 65baefd3a1d087d3692e6e603dbe098546bc7cb1 at this base) is T07B's primary evidence-input anchor (re-verified PRESENT at JIT, see stage0_census)."
+  - "Earlier predecessor chain (T01A..T06B incl. T06B #861 at 0518202c) is integrated inside this same base; per-input evidence refs are rebound to this base's exact blobs, not inherited from dryrun facts (dryrun was executed against ab8339f, where the T07A index did not yet exist)."
+material_paths:
+  - .agent/execution/V410-T07B-R1/EXECUTION_CONTRACT.md
+  - .agent/execution/V410-T07B-R1/FAILURE_MATRIX.yaml
+  - .agent/execution/V410-T07B-R1/IMPLEMENTATION_MAP.md
+  - .agent/execution/V410-T07B-R1/MANIFEST.yaml
+  - .agent/execution/V410-T07B-R1/REVIEW_CHECKLIST.md
+  - .agent/execution/V410-T07B-R1/TEST_MATRIX.yaml
+  - templates/product-decision-record.md
+  - references/PRODUCT_DECISION_RECORD_REFERENCE.md
+  - checklists/version-closure.md
+  - scripts/test_v410_t07b_decision_record.py
+  - scripts/test_v410_owner_convergence.py
+l3_inputs:
+  - "#863@6003305569 (V410_T07B_WEB_PREPLAN_R1 COMPLETE: L3 seed Tests/Contract/Seam/Failure/Refs — embedded as the L3 seed section of EXECUTION_CONTRACT.md)"
+  - "#863@6013682453 (WEB PRODUCT_DECISION_CONFORMANCE_R1: 8 minimum fields + positives P1-P6 + negatives N1-N11 — bound into the template, TEST_MATRIX.yaml and the focused suite)"
+  - "#863@6037701246 (LOCAL EVIDENCE_INPUT_INVENTORY_R1: 6 PRODUCT_INPUTS + TECHNICAL_ONLY classification — re-verified current at THIS base, NOT inherited wholesale)"
+  - "#863@6040872034 (LOCAL POST862 JIT DRYRUN_R1: DECISION_RECORD_SEAM 8-field design incl. the recording rule; WRITESET_CANDIDATES; AUTHORITY_NEGATIVES 1-7; TEST_SET — rebinding obligation honored: every candidate-bound fact rebound from ab8339f to cea2e0cc)"
+  - "#863@6046064159 (CONTROLLER_FASTPATH_HANDOFF: 7-step fast path; DO_NOT_REDISCOVER/MUST_REBIND lists)"
+  - "Claim chain (provenance only, never acceptance): proposal #863@6053940415, admission #863@6053945850, claim #863@6053950918"
+stage0_census:
+  baseline: "cea2e0ccd045e8fcebaf110273129b198ed259fd / tree cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2 (re-read at claim; clean worktree, exact merged #933 integration tip)"
+  producer_currentness: "all referenced durable producer paths re-verified PRESENT via git rev-parse <base>:<path> at THIS base (not at the dryrun's ab8339f): T07A acceptance-evidence projection PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md (blob 65baefd3a1d087d3692e6e603dbe098546bc7cb1 — the dryrun-era anchor was ABSENT pending #862; now bound), PRD.md (blob b0b9906035eee253aad4bff0274d3d4c8f90b9db unchanged = Frozen Product v0.4 subject), PRODUCT_FREEZE.md (blob 6b5bbd348a7dc3647e67fddac973edb1779c37c6), TASK_PACKS_R1.md (blob 3300f8494ecb2120d96fff520cd09270b538344b unchanged), L2_FREEZE.md, REFINED_TASK_DAG_FREEZE_R1.md, V410_V01_VALIDATION_CONTRACT.md (blob 8df051f49573ee3784cbc97e0be7a87b8e8f7c90 unchanged), references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md (blob b5d0b09a4a3cef999745536e587925b871fd73c3), checklists/version-closure.md (blob 6c5616909c07177d13bdba23a589bead5a4e10a0), DEVELOPMENT_WORKFLOW.md (blob a7fef842927e58a93b671fe9869b9395559845ac, Stage-1 Product-Freeze recording semantics), EXECUTION_ARCHITECTURE_STANDARD.md (blob 0bb9e30481c2a37b5596ee940091597552435eed, section 19 + section 28.2-28.4). No CURRENT producer path missing at the rebind subject."
+  write_set_collision: "templates/product-decision-record.md, references/PRODUCT_DECISION_RECORD_REFERENCE.md and scripts/test_v410_t07b_decision_record.py verified ABSENT at base (git ls-tree empty); .agent/execution/V410-T07B-R1/ absent at base; no overlap with T06B-owned surfaces (schemas/, scripts/v34_rules.py, scripts/verify_standard.py, templates/agent-event-comment.md, references/V410_OWNER_AUTHORITY_CONVERGENCE_REFERENCE.md) nor with T07A deliverable content (PRODUCT_ACCEPTANCE_EVIDENCE_PROJECTION_R1.md, scripts/test_v410_t07a_acceptance_projection.py) — the ONLY shared surfaces are checklists/version-closure.md (a row-add the T07A JIT explicitly left optional/declined) and the pre-authorized single carried-guard rebind of scripts/test_v410_owner_convergence.py (TASK_CANDIDATES registry entry, disclosed per fast-path handoff)"
+  manifest_registration: "python scripts/verify_standard.py GREEN at base requires no registration of new template/reference/focused-test paths (manifest->disk direction only), same finding as T07A's census; scripts/test_v48_registry_adoption.py RA-guards enforce exact-set manifest sections where ANY unlisted addition fails — standard-manifest.json is NOT touched by this task"
+  golden_index_registration: "templates/GOLDEN_INDEX.md surface set is pinned EXACT by the carried verifier scripts/test_work_item_contract_and_golden_templates.py (GOLDEN_INDEX_REQUIRED_SURFACES exact-set assert) — registering the new decision-record template there would fail that carried guard and require a W13-class authorized guard+index co-evolution outside this task's write set; registration DECLINED (see IMPLEMENTATION_MAP.md JIT decisions). The template is discoverable via the decision-path reference, the version-closure checklist row and this pack."
+  event_refs_live: "the 5 precompute comment refs listed under l3_inputs live-fetched via gh api at JIT; Frozen Product #837 / re-review #833 lineage re-read from PRODUCT_FREEZE.md at this base"
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

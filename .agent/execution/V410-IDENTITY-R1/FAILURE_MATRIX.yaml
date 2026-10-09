@@ -1,0 +1,15 @@
+# V410-IDENTITY-R1 failure matrix — every failure class fails closed with an owner route
+
+fail_closed_classes:
+  - id: IDENTITY_TRIPLE_MISMATCH
+    detector: python scripts/verify_standard.py (non-zero exit)
+    meaning: "VERSION is not SemVer, README 当前版本 line does not match VERSION, or CHANGELOG lacks the current-version entry."
+    route_to_owner: "V410-IDENTITY builder re-run on the exact base; if the triple intent itself is wrong, route to RELEASE_STANDARD identity-obligation owner."
+  - id: UNREGISTERED_PATH
+    detector: "Active-candidate scope guards in the three positional registries (test_active_candidate_head_diff_stays_inside_registered_task_prefixes)"
+    meaning: "A path committed since base d864465a is outside the V410-IDENTITY registered prefixes, HEAD lost ancestry of the base, or an upstream authority surface was touched."
+    route_to_owner: "CONTROLLER_ARBITRATION — the successor candidate must register its own TASK_CANDIDATES entry; never widen another task's scope."
+  - id: OVERCLAIM
+    detector: "Any affirmative Candidate Freeze / Hidden Validation / Release Qualification / main-merge / tag statement in the delta, the pack, or emitted records"
+    meaning: "The identity qualification manufactures a freeze/Hidden/RQ/merge/tag assertion it has no authority to make."
+    route_to_owner: "REJECTED outright — only the owning authorities (RELEASE_STANDARD §11 / Product authority) may make such assertions; repair dispatch TO_BE_ISSUED_BY_CONTROLLER."

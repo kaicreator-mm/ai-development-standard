@@ -1,0 +1,29 @@
+pack_id: V410-T04B-R4
+task_id: V410-T04B
+repository: kaicreator-mm/ai-development-standard
+version: v4.10.0
+base_sha: 30334e8c7b90a327f8597b86c88c785b98df07f7
+repair_base_sha: e03beedd9d02336407365efa66efc43d34e96954
+task_pack_ref: docs/implementation/4.10.0/TASK_PACKS_R1.md#V410-T04B
+branch: task/v4.10.0-v410-t04b-review-currentness-r3
+parent_issue: "#857"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 30334e8c7b90a327f8597b86c88c785b98df07f7
+generated_by: chatgpt-web:V410-DUAL-WEB-SCHEDULER-R2
+generated_at: "2026-10-06T14:19:00+06:30"
+dependency_completion:
+  - V410-T04A@41236cb7250c6854170563d371d7debe7354c936
+  - V410-T02B@fee097db238b60d97ab2d449dcf210488d03814f
+historical_candidates:
+  - PR901@82ac1e909875bea1b4838cf010f768e601802ca8
+  - PR918-R3@e03beedd9d02336407365efa66efc43d34e96954
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+package_excluded: true
+pack_state_at_generation: PACK_CURRENT

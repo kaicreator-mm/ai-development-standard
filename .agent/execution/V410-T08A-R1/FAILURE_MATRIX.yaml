@@ -1,0 +1,56 @@
+# V410-T08A R1 failure matrix — fail-closed defect classes and owner routing
+#
+# Authority: false-green oracle F1-F12 (#864@6043181240); residual oracle
+# OWNER_ROUTE OR1-OR7 (#864@6020074080); integration-impact inventory
+# OWNER_ROUTING + DEFECT_ROUTING_FIELDS (#864@6037701635); runner dryrun
+# rules (#864@6040893503). The runner's defect_routes rows use exactly these
+# classes; `repair_dispatch_ref: TO_BE_ISSUED_BY_CONTROLLER` on every route —
+# the runner never self-repairs and never fabricates a PASS under
+# infrastructure inability (BLOCKED/NOT_RUN instead).
+
+failures:
+  - id: SUITE_FAILURE
+    class: CONCERN_SUITE_FAILURE
+    trigger: a carried concern suite (TIER-1/TIER-2) exits non-zero on the exact candidate
+    expected: fail closed — owner-routed defect row (owning_concern = the suite's registered owner), tier continues (TIER-1/2 continue-within-tier), HALT before TIER-3 integration admission; repair by the owning concern on a successor candidate, never inside T08A
+    example_owners: [V410-T06B (#861), V410-T07A (#862), V410-T07B (#863), V410-T06A (#860), V410-T04B (#857), V410-T04A (#854), v4.3 TASK_DECOMPOSITION_STANDARD owner, v3.4 lifecycle/review-repair owner, V410-T02B (event-v2 machine projection)]
+  - id: ZERO_TESTS_COLLECTED
+    class: FALSE_GREEN_SUITE (F9)
+    trigger: a required unittest-style suite exits 0 but reports zero (or no determinable) collected tests
+    expected: FAIL, never green — NOT_APPLICABLE would require owning authority this runner never holds; routed as P1
+  - id: TREE_MUTATION
+    class: FALSE_GREEN_TREE (F4/F6)
+    trigger: git status --porcelain is non-empty pre-run, any command mutates the tree mid-run, or the tree is dirty post-run
+    expected: PRE_RUN refusal (nothing executes) or P0 route to CONTROLLER_ARBITRATION; VISIBLE_INTEGRATION_PASS requires pre-run + per-command + post-run clean proof and 0 porcelain lines
+  - id: CANDIDATE_DRIFT
+    class: EXACT_SUBJECT_DRIFT (F1/F5/F10)
+    trigger: tested head/tree differs from the emission head/tree, a suite row binds a different subject, or HEAD lost the rebind base ancestry
+    expected: P0 route to CONTROLLER_ARBITRATION; the record carries tested_head_sha and head_at_emission_sha separately and any drift fails closed
+  - id: PREDECESSOR_CHAIN_DRIFT
+    class: EXACT_SUBJECT_DRIFT (F7)
+    trigger: any of #861@0518202c / #862@cea2e0cc / #863@402bf289 is not an ancestor of the tested head, or the chain recorded in the record differs from the pinned chain
+    expected: PRE_RUN refusal / P0 route to CONTROLLER_ARBITRATION — a changed predecessor chain means a changed candidate subject
+  - id: CROSS_SUITE_CONTRADICTION
+    class: CROSS_OWNER_COMPOSITION (F3)
+    trigger: TIER-3 audit finds the three positional candidate registries disagree on the active candidate, registry base != the rebind base, inventory incomplete, or the record model itself is non-conformant
+    expected: P1 route to the registry's owning concern (or CONTROLLER_ARBITRATION for record-model violations); T08A performs NO semantic repair — the defect routes back to its owner per OR1-OR7
+  - id: PRE_RUN_REFUSAL
+    class: ADMISSION_BLOCK
+    trigger: dirty validation tree, lost base ancestry, or predecessor chain drift detected before any suite executes
+    expected: nothing executes; record = VISIBLE_INTEGRATION_FAIL + REFUSED admission with refusal routes; a dirty-tree run is never evidence (F4)
+  - id: INVENTORY_MISSING
+    class: FALSE_GREEN_INVENTORY (F2)
+    trigger: a required suite is absent from disk, unexecuted, duplicated, or replaced by an unregistered command
+    expected: FAIL — a required suite that disappears while the rest pass is not satisfied; missing suites in a PASS aggregate are model violations
+  - id: SEMANTIC_DEFECT_ROUTED
+    class: UPSTREAM_OWNER_ROUTING (RC1-RC5 oracle — never repaired in T08A)
+    trigger: a defect observed during visible assembly contradicts a single owning authority's settled contract (schema vs accepted #861 refinement; claim_key derivation vs EXECUTION_ARCHITECTURE_STANDARD §11.1; gate/tuple meaning vs VALIDATION_STANDARD; Pack inventory vs EXECUTION_PACK_STANDARD; DAG vs TASK_DAG_GOVERNANCE_STANDARD; decision-support surface vs #863/#862; Product/L2/DAG contradiction vs #837/#842/#848)
+    expected: classify SEMANTIC (never residual by default — any unknown RC => semantic), route to the owning concern via the published repair class, invalidate affected exact-subject evidence, rebind to the successor candidate; absolutely never repaired inside T08A
+  - id: RUNNER_INFRASTRUCTURE_INABILITY
+    class: BLOCKED_EVIDENCE
+    trigger: python/git environment failure, suite spawn failure, or any provider-side inability during the visible run
+    expected: BLOCKED / NOT_RUN record, never PASS fabrication and never a product FAIL; executor_identity + per-command exit/state/timestamp preserved
+  - id: HIDDEN_RQ_OVERCLAIM
+    class: AUTHORITY_MANUFACTURE (F8)
+    trigger: any record, summary or downstream consumer presenting visible integration PASS as Hidden Validation PASS, Release Qualification PASS or Candidate Freeze eligibility
+    expected: structurally impossible in the record model (verdict vocabulary is VISIBLE_INTEGRATION_* only; hidden/release/freeze fields are NOT_CLAIMED; v01_dispatch_gate is NOT_DISPATCHABLE_BY_THIS_RUNNER); any downstream overclaim routes to CONTROLLER_ARBITRATION

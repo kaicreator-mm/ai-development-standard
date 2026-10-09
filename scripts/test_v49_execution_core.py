@@ -1,7 +1,7 @@
 """v4.9 T007 execution architecture proportional orchestration core kernel.
 
 Deterministic stdlib-unittest semantic kernel for
-`standards/EXECUTION_ARCHITECTURE_STANDARD.md` section 28 (v4.9 proportional
+`standards/EXECUTION_ARCHITECTURE_STANDARD.md` section 29 (v4.9 proportional
 orchestration core). It implements the reference reducer/predicate/finding
 semantics over `fixtures/execution-core-v49/` and binds TEST_MATRIX oracles
 K01-K10, Frozen Product acceptance items E/F/G/K/L/M/N and the Frozen L2
@@ -67,8 +67,17 @@ READ_ONLY_DEPS = (
 # skill_metadata_refs, composed as a field union with the T-008 ref fields).
 # The pin is re-bound to the exact current composed blob; pin constant only —
 # any further mutation of the surface still fails, zero other assertion change.
+#
+# v4.10 integration re-bind (claim #779@6084794791 / pre-merge #779@6084805500;
+# merge commit e0315b2a): the integrated dispatch schema composes the v4.10
+# line's additive optional fields (parent_dispatch_ref, responsibility_mode,
+# execution_environment, compatibility_group, compatibility_authority_ref,
+# admission_generation, scheduler_origin per EXECUTION_ARCHITECTURE_STANDARD
+# §11.1.1 "(v4.10, additive)" / §28) on top of the v4.9-line extension. The pin
+# is re-bound to the exact integrated blob; pin constant only — any further
+# mutation of the surface still fails, zero other assertion change.
 READ_ONLY_DEPS_REBOUND_BLOBS = {
-    "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
+    "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
 }
 
 PLANNING_PATHS = tuple(
@@ -150,7 +159,7 @@ def github_anchors(text: str) -> set[str]:
 
 
 # ---------------------------------------------------------------------------
-# reference engine: deterministic reducer / predicate semantics (standard §28)
+# reference engine: deterministic reducer / predicate semantics (standard §29)
 # ---------------------------------------------------------------------------
 
 def findings_digest(findings: list[dict]) -> str:
@@ -160,7 +169,7 @@ def findings_digest(findings: list[dict]) -> str:
 
 
 def plan_currentness(facts: dict) -> tuple[str, list[str]]:
-    """Recompute the assurance-plan binding state from current durable facts (§28.1).
+    """Recompute the assurance-plan binding state from current durable facts (§29.1).
 
     Returns (CURRENT|STALE|UNKNOWN, drift keys). The unresolved-finding digest is
     always recomputed from the facts' unresolved set; a stored value is never
@@ -188,7 +197,7 @@ def plan_currentness(facts: dict) -> tuple[str, list[str]]:
 
 
 def lineage_posture(facts: dict) -> tuple[str, list[str]]:
-    """P2 lineage currentness over required predecessor-owned surfaces (§28.2)."""
+    """P2 lineage currentness over required predecessor-owned surfaces (§29.2)."""
     stale: list[str] = []
     unknown: list[str] = []
     failed: list[str] = []
@@ -209,7 +218,7 @@ def lineage_posture(facts: dict) -> tuple[str, list[str]]:
 
 
 def waiting_lineage_projection(facts: dict) -> dict | None:
-    """Derived non-dispatch projection (§28.3). None when lineage is current."""
+    """Derived non-dispatch projection (§29.3). None when lineage is current."""
     posture, reasons = lineage_posture(facts)
     if posture != "WAITING_LINEAGE":
         return None
@@ -224,7 +233,7 @@ def waiting_lineage_projection(facts: dict) -> dict | None:
 
 
 def jit_verdict(phase: dict, facts: dict) -> str:
-    """Legal JIT phase predicate in fixed evaluation order (§28.2, reference §3)."""
+    """Legal JIT phase predicate in fixed evaluation order (§29.2, reference §3)."""
     deps = phase["dependency_state"]
     if deps == "PENDING":
         return "BLOCKED"
@@ -249,7 +258,7 @@ def jit_verdict(phase: dict, facts: dict) -> str:
 
 
 def resolve_eligibility(candidate: dict) -> str:
-    """§27.2 tri-state hard filters with §28.4 Role Profile hard predicates wired in."""
+    """§27.2 tri-state hard filters with §29.4 Role Profile hard predicates wired in."""
     hard = candidate["hard_predicates"]
     if any(value is False for value in hard.values()):
         return "INELIGIBLE"
@@ -274,7 +283,7 @@ def rank_eligible(candidates: list[dict]) -> list[str]:
 
 
 def reduce(facts: dict) -> dict:
-    """Deterministic pure projection over one fact plane (§28.6). No latch."""
+    """Deterministic pure projection over one fact plane (§29.6). No latch."""
     plan_state, plan_drift = plan_currentness(facts)
     waiting = waiting_lineage_projection(facts)
     phases = facts.get("phases", {})
@@ -297,7 +306,7 @@ def reduce(facts: dict) -> dict:
 
 
 def dispatch_materialize(facts: dict) -> dict:
-    """Dispatch reservation transition: consumes §28.1 currentness before acting."""
+    """Dispatch reservation transition: consumes §29.1 currentness before acting."""
     projection = reduce(facts)
     if projection["plan_currentness"] != "CURRENT":
         return {
@@ -344,7 +353,7 @@ def claim_attempt(
     state: ClaimState, facts: dict, operator: str, expected_generation: int
 ) -> tuple[str, ClaimState]:
     """One serialized claim admission; re-reads current facts immediately before CAS."""
-    projection = reduce(facts)  # §28.1/§28.6: recompute, never a cached latch
+    projection = reduce(facts)  # §29.1/§29.6: recompute, never a cached latch
     if projection["plan_currentness"] != "CURRENT":
         return "STALE_PLAN_BINDING_RECOMPUTE", state
     if projection["waiting_lineage"] is not None:
@@ -371,7 +380,7 @@ def run_race(ordering: dict, protected_key: tuple[str, ...]) -> tuple[list[tuple
 
 
 def merge_ready(facts: dict, state: ClaimState, operator: str) -> tuple[bool, str]:
-    """Merge/merge-ready transition: §28.1 recheck + §11 canonical claim + §28.5 blockers."""
+    """Merge/merge-ready transition: §29.1 recheck + §11 canonical claim + §29.5 blockers."""
     projection = reduce(facts)
     if projection["plan_currentness"] != "CURRENT":
         return False, f"PLAN_BINDING_{projection['plan_currentness']}"
@@ -383,7 +392,7 @@ def merge_ready(facts: dict, state: ClaimState, operator: str) -> tuple[bool, st
 
 
 def reduce_unresolved(findings: list[dict]) -> list[str]:
-    """§28.5 carry-forward: findings leave the set only via sufficient dispositions."""
+    """§29.5 carry-forward: findings leave the set only via sufficient dispositions."""
     surviving = []
     for finding in findings:
         disposition = finding.get("disposition")
@@ -405,7 +414,7 @@ def apply_chronology(findings: list[dict], chronology: list[dict]) -> list[str]:
 
 
 def route_re_review(request: dict) -> str:
-    """§28.5 no-review-shopping routing. Fail-closed."""
+    """§29.5 no-review-shopping routing. Fail-closed."""
     successor = request.get("successor_subject_ref")
     authorized_by = request.get("authorized_repair_path")
     disposition = request.get("owning_authority_disposition")
@@ -424,7 +433,7 @@ def transfer_pass(old_pass: dict, successor_subject: str) -> str:
 
 
 def classify_topology_change(proposal: dict) -> str:
-    """§28.2: material topology change routes to v4.3 governance, never a JIT phase."""
+    """§29.2: material topology change routes to v4.3 governance, never a JIT phase."""
     if proposal["action"] == "new_task":
         return "V43_MUTATION_ADD"
     if proposal["action"] == "add_dependency":
@@ -727,13 +736,45 @@ class ExecutionCoreKernel(unittest.TestCase):
     # ---------- K08: additive composition; no second scheduler ----------
 
     def test_k08_standard_composes_additively_and_keeps_single_lifecycle(self) -> None:
-        # Historical sections §1-§27 are byte-identical to the base; §28 is appended.
+        # v4.10 integration re-bind (claim #779@6084794791 / pre-merge
+        # #779@6084805500; merge commit e0315b2a): the integrated standard is the
+        # composition of this lane's section with the v4.10 line, and the
+        # disclosed composition rebind renumbered the v4.9 section §28 -> §29
+        # (## 29. / ### 29.x) with its self-citations mechanically rebound. The
+        # original prefix assertion ("base text is a prefix because the v4.9
+        # section is appended last") is structurally red at any integrated tree:
+        # the v4.10 line composes its own additions BEFORE the v4.9 section
+        # (§11.1.1 clause; §28 responsibility/control semantics). Re-bound to the
+        # same-strength additive statement: every base line still survives
+        # verbatim and in order (insertion-only composition — no v4.0-v4.8 line
+        # removed or rewritten), the v4.9 section is present under its renumbered
+        # heading with no stale §28 self-citation left inside it, and every owner
+        # anchor resolves. No intent weakened, no test removed.
         base_text = git_blob_text(BASE_SHA, "standards/EXECUTION_ARCHITECTURE_STANDARD.md")
-        self.assertTrue(
-            self.standard_text.startswith(base_text),
-            "v4.0-v4.8 standard content was rewritten; v4.9 sections must be additive",
+        merged_lines = self.standard_text.splitlines()
+        cursor = 0
+        missing = []
+        for line in base_text.splitlines():
+            if line in merged_lines[cursor:]:
+                cursor = merged_lines.index(line, cursor) + 1
+            else:
+                missing.append(line)
+        self.assertEqual(
+            [],
+            missing,
+            "v4.0-v4.8 standard content was removed or rewritten; the v4.10 "
+            "integration must compose the standard additively (insertions only)",
         )
-        self.assertIn("\n## 28. v4.9 proportional orchestration core\n", self.standard_text)
+        self.assertIn("\n## 29. v4.9 proportional orchestration core\n", self.standard_text)
+        self.assertNotIn("\n## 28. v4.9 proportional orchestration core\n", self.standard_text)
+        v49_section = self.standard_text.split(
+            "\n## 29. v4.9 proportional orchestration core\n", 1
+        )[1]
+        self.assertNotIn(
+            "§28",
+            v49_section,
+            "the v4.9 section must carry the rebound §29 citations only",
+        )
         for anchor in self.owner_refs["standard_sections"].values():
             self.assertIn(anchor.rsplit("#", 1)[1], github_anchors(self.standard_text), anchor)
         # Canonical vocabularies and the only Claim lifecycle are untouched.
@@ -750,7 +791,7 @@ class ExecutionCoreKernel(unittest.TestCase):
             "currentness recheck points",
             "WAITING_LINEAGE projection rules",
             "no-review-shopping routing",
-            "Normative owner: `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §28",
+            "Normative owner: `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §29",
         ):
             self.assertIn(token, self.reference_text)
 
@@ -988,7 +1029,7 @@ class StandardBindingTests(unittest.TestCase):
             "Deterministic recompute on currentness drift; race/drift fail-closed",
             "Acceptance bindings",
             "all of P1-P3 (with E1 or E2, and no envelope violation)  => READY",
-            "any input missing/unknown, or P2 lineage not current      => WAITING_LINEAGE (derived, §28.3)",
+            "any input missing/unknown, or P2 lineage not current      => WAITING_LINEAGE (derived, §29.3)",
             "NON_DISPATCHABLE   no Dispatch is materialized from it; no Claim can be admitted from it",
             "same-subject re-dispatch/re-review merely to obtain PASS        => rejected",
             "no rule below creates a second scheduler, second claim lifecycle, runtime authority store",

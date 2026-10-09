@@ -1,0 +1,53 @@
+# V410-T07B R1 failure matrix — fail-closed classes (AUTHORITY_NEGATIVES 1-7 #863@6040872034; N1-N11 #863@6013682453; recording rule #863@6040872034 / DEVELOPMENT_WORKFLOW Stage-1)
+
+failures:
+  - id: AUTO_YES_MANUFACTURE
+    class: AUTHORITY_MANUFACTURE
+    trigger: Release READY / Version Closure / Candidate Freeze state, V01 or any Validation PASS, CI/Task/PR PASS, machine-conformance PASS, Reviewer PASS, Controller derived state, provider/model vote majority, or scheduler activity used as the authority basis, value source, or default of the core-feature-freeze decision
+    expected: fail closed (AN1/AN2/AN3; N1/N2/N3/N8); such facts are evidence inputs only and can never populate the value; the machine layer checks record conformance and never produces a value (N11)
+  - id: MISSING_EVIDENCE_DEFAULT
+    class: FAIL_CLOSED_DEFAULT
+    trigger: missing, stale, ambiguous or contradictory evidence silently treated as satisfying a minimum input, or any default/derived value path existing anywhere in template/validator/CI plumbing
+    expected: fail closed (AN4; N4) — routes to the evidence-backed negative outcome with named blocking evidence refs, or BLOCKED_TO_PRODUCT_AUTHORITY routing; never an inferred affirmative; no default value exists in any shipped surface
+  - id: AUTHORITY_LAUNDERING
+    class: DELEGATION_CHAIN
+    trigger: a Builder/Validator/Reviewer/Controller/scheduler actor recorded as deciding authority; a delegation whose grantor is not the human Product authority owner; a delegated actor exceeding the bounded delegated scope; capability/credentials/model identity treated as authorization
+    expected: fail closed (AN6; N5/N7) — only the human Product authority owner (Frozen Product #837 §1.1) or an explicitly delegated actor with a durable §28.3-bounded delegation fact may be recorded as actor_authority; delegation chains cannot launder authority
+  - id: MACHINERY_AUTHORITY_WIDENING
+    class: PROVENANCE_AS_AUTHORITY
+    trigger: #861 machinery facts (execution environment, scheduler origin, compatibility_group, admission_generation, dispatch lane count) widening, selecting, or substituting for Product authority, or the same logical evidence double-counted across lanes as independent Product evidence
+    expected: fail closed (AN7; N8) — evidence inputs only, counted once, scope-pinned
+  - id: STALE_SUBJECT_BINDING
+    class: EXACT_SUBJECT_DRIFT
+    trigger: a record bound to one exact candidate reused against a materially changed successor candidate/subject; historical qualification silently rebinding to a successor; evidence input subjects not equal to the record subject
+    expected: fail closed (AN5; N6) — a successor subject requires a successor record through explicit supersession; prior records stay historical
+  - id: SUPERSESSION_HISTORY_REWRITE
+    class: APPEND_ONLY_VIOLATION
+    trigger: a successor record erasing, rewriting, or replacing (rather than referencing and superseding) a prior record; supersession chain broken or missing prior refs
+    expected: fail closed (N7-conformance) — history is append-only; prior decisions remain reachable as historical records
+  - id: RECORDING_RULE_VIOLATION
+    class: PREMATURE_RECORD
+    trigger: a record existing without the authorized Product-authority act as durable fact; a pre-filled, defaulted, or inferred value; a record missing the authority-act ref
+    expected: fail closed (recording rule, mirroring DEVELOPMENT_WORKFLOW Stage-1) — a controller/actor may record only after the authorized act exists as durable fact
+  - id: EVIDENCE_COPY_EMBEDDING
+    class: REF_SHAPE_VIOLATION
+    trigger: evidence input embedding content bodies instead of exact durable refs with currentness; missing currentness-at-decided_at; evidence meaning manufactured inside the record
+    expected: fail closed (P6/N10-conformance) — exact refs, NEVER copies; evidence meaning stays with VALIDATION_STANDARD and the T07A index
+  - id: REQUIRED_FIELD_MISSING
+    class: NONCONFORMANT_RECORD
+    trigger: any of the 8 minimum field groups absent or empty (decision_identity incl. exact subject, actor_authority, evidence_inputs, decision_value, rationale_and_limitations, decided_at + publication, supersession, recording_rule)
+    expected: fail closed (N10) — the record is non-conformant and carries no decision effect
+  - id: WEB_FOR_LOCAL_SUBSTITUTION
+    class: ENVIRONMENT_SUBSTITUTION
+    trigger: WEB-origin or scheduler-environment capability evidence substituted for required LOCAL real-host exact-subject evidence inside decision inputs
+    expected: fail closed (N9) — environment truth stays with VALIDATION_STANDARD
+  - id: POSITIONAL_CARRIED_GUARD_RED
+    class: SUCCESSOR_SEAM_DEBT
+    trigger: a carried positional guard (T07A forbidden-surfaces guard; T07A R2-pinned producer blobs) red on a legal T07B successor path
+    expected: STOP and return to Controller for an authorized bounded rebind (T07A R2 precedent) — never weaken a carried assertion unilaterally, never green-by-deletion; disclosed in TEST_MATRIX.yaml known_seam_conflict
+stop_conditions:
+  - any P0/P1 review finding
+  - any carried suite red for reasons OTHER than the disclosed positional seam debt
+  - candidate drift vs cea2e0ccd045e8fcebaf110273129b198ed259fd / tree cef6ce2e91cc62f4e1afe53b4a048f3fa4812fa2 before gate admission
+  - any need for new authority, a new state dimension/event family, or edits to T06B-owned or T07A deliverable surfaces => STOP and return to Controller for rebind
+  - any occurrence of a decided value for ADS_CORE_FEATURE_FREEZE_ELIGIBLE entering any shipped file

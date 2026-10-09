@@ -1,0 +1,48 @@
+# V410-T06A R1 failure matrix — every class MUST fail closed (oracle N1-N10, #860@6013406812)
+
+failures:
+  - id: N1
+    class: COMPETING_OWNER
+    trigger: second semantic_authorities entry claiming an already-indexed semantic_concern with a competing owner, or duplicate entry_id
+    expected: fail closed under forward AND reversed entry order; no fallback winner
+  - id: N2
+    class: BROKEN_TARGETS
+    trigger: missing/non-normative canonical_owner_ref; alias not in compatibility inventory; alias==owner; alias chain/cycle; alias claimed by two entries; absolute/path-escaping/backslash refs
+    expected: fail closed, no fallback winner
+  - id: N3
+    class: STALE_NOT_CURRENT
+    trigger: historical/superseded/version-labelled provenance surface winning current owner resolution via file order, discoverability, recency, or a historical PASS
+    expected: focused test contains an explicit stale-owner rejection mutant; MUST fail closed
+  - id: N4
+    class: GAP_CONFLICT_STOPS
+    trigger: material v4.10 concern without uniquely reconstructible owner/composition
+    expected: STATUS=GAP|CONFLICT + ACTION=STOP_FOR_DISPOSITION blocks completion; guessing/ordering/nearest-owner/latest-PASS fallback = FAIL
+  - id: N5
+    class: REGISTRY_NOT_AUTHORITY
+    trigger: any manifest/reference row carrying or implying mutation/merge/side-effect/verdict-transfer/gate-waiver/Product-Freeze/Release-READY authority
+    expected: fail closed; reference must carry authority_effect=NONE, gate_effect=NONE, mutation_authorized=false equivalents; entry_id is discovery identity, not an authorization principal
+  - id: N6
+    class: NO_SECOND_REGISTRY
+    trigger: convergence reference defining a resolver, runtime contract, precedence layer, lifecycle, or service, or claiming to supersede semantic_authorities or owner standards
+    expected: FAIL
+  - id: N7
+    class: NO_GREEN_BY_DELETION
+    trigger: conformance attempted by removing a committed stable compatibility path from both inventories, deleting a gap row, or weakening a negative case
+    expected: FAIL; unindexed legacy compatibility path = ambiguity = fail closed, never a guessed target
+  - id: N8
+    class: PROJECTION_NEVER_OVERRIDES_OWNER
+    trigger: stale passing schema/template/verifier/CI projection contradicting a current owner
+    expected: recorded in matrix with ACTION=REWIRE_PROJECTION and routed (T06B/owning concern); never treated as authority, never silently repaired inside T06A
+  - id: N9
+    class: NO_UPSTREAM_REWRITE
+    trigger: any semantic hunk in an upstream owner standard or excluded surface
+    expected: write-set violation = FAIL
+  - id: N10
+    class: DRIFT_REBIND
+    trigger: integration head/tree, manifest blob, or any bound owner blob drifts before/during execution against the eea3e69 binding
+    expected: STALE_SUBJECT = FAIL; mandatory currentness re-read at claim time; STOP_FOR_DISPOSITION
+stop_conditions:
+  - any P0/P1 review finding
+  - any fail-closed class triggering on the real candidate
+  - unexplained manifest delta vs blob 21730a0251e35e13591d2c84de1c66d6ab2c2408
+  - integration head moving past eea3e69 before merge admission

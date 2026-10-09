@@ -1,7 +1,7 @@
 {
   "fixture_id": "v4.9.0-T-012-C11-manual-compatible-state-reconstruction",
   "owner_refs": [
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md#21-runtime-portability-and-reconstruction",
     "docs/implementation/4.9.0/PRD.md#p-downstream-manualgithub-native-dogfood",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
@@ -138,7 +138,7 @@
     {
       "scenario_id": "C11_S1_reconstruction_from_github_facts_converges",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
       ],
       "frozen_scenario": "P",
       "expect": {
@@ -154,7 +154,7 @@
     {
       "scenario_id": "C11_S2_derived_state_deletion_loses_nothing",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection"
       ],
       "frozen_scenario": "P",
       "expect": {

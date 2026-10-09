@@ -6,7 +6,7 @@
       "walkthrough_id": "W-A",
       "title": "manual currentness check before an authority-bearing transition",
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
         "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
       ],
       "steps": [
@@ -20,8 +20,8 @@
       "walkthrough_id": "W-B",
       "title": "manual deterministic recompute of the JIT verdict",
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
       ],
       "steps": [
         {"action": "P1 read native blocked-by dependency states", "reads": ["F-NATIVE-DEPENDENCY"]},
@@ -36,7 +36,7 @@
       "owner_refs": [
         "standards/EXECUTION_ARCHITECTURE_STANDARD.md#11-dispatch-lifecycle-atomic-claim-and-staleness",
         "standards/EXECUTION_ARCHITECTURE_STANDARD.md#111-required-claim-serialization-capability",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
       ],
       "steps": [
         {"action": "re-read the dispatch record on the Issue", "reads": ["F-DISPATCH-RECORD"]},
@@ -49,7 +49,7 @@
       "walkthrough_id": "W-D",
       "title": "adverse-finding carry-forward without review shopping",
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects"
       ],
@@ -64,7 +64,7 @@
       "walkthrough_id": "W-E",
       "title": "JIT phase admission worked on this Task (T-013)",
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
         "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
         "standards/TASK_DAG_GOVERNANCE_STANDARD.md"
       ],

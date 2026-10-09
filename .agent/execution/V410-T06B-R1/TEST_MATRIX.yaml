@@ -1,0 +1,98 @@
+# V410-T06B R1 test matrix — all commands from repo root on the exact candidate
+#
+# R2 (V410-T06B-BOUNDED-REPAIR-R2, Fresh Review R1 #861@6019318714): the R1
+# `covers` lists overstated delivery (finding P2-3). They are restated here to
+# match machine evidence exactly; every previously overstated row is either now
+# backed by a real regression (P1-1/P1-2/P2-1/P2-2/P2-4/P3-1 repairs) or moved
+# to `dispositions` with its truthful owner. Oracle case ids reference
+# #861@6012842432 (sections A-J) and #861@6013355359 (T1-T5).
+
+matrix:
+  - id: T-t06b-focus
+    command: python scripts/test_v410_t06b_multi_dispatch_conformance.py
+    status: NEW (W8; R2 extended: B5/B6 persisted-key conformance, FC1 unknown-profile projection, active_dispatches exact subject refs; R4: reducer emits the contracted row only, with profile-aware environment projection (LOCAL_BUILDER/LOCAL_VALIDATOR/WEB_REVIEWER) and persisted-key mismatch fail-closed; integration regression validates reducer output inside a complete execution-state through schemas/execution-state.schema.json; the withdrawn R3 trim-expectation assertion is replaced by an explicit no-trim pin; R5: H2 legacy-singular null machine-enforced (schema conditional + execution_state_projection_problems) plus duplicate-active-key probe; R6 (Fresh Review R5 P2-1, #861@6040083891): the same-work-item probe re-parses each row's protected claim key and requires the derived repository/task to equal the outer execution-state repository/work_item; the full-state positive fixture is one work item (#861) with distinct roles (builder+validator+reviewer); cross-task/cross-repository injection negatives are pinned; R7 (Fresh Review R6 P1-1, #861@6044748124): the resolver-level matrix now pins the trusted durable-fact readback contract — authorization derived from adapter-materialized fact evidence (identity, existence/currentness, content-addressed digest, owner family, exact tuple, explicit authorization content), grant-inventory drift rejected (AUTHORITY_GRANT_DRIFT), and decorated caller grants failing closed when the referenced durable fact is absent/nonexistent/content-unbound/mismatched/non-authorizing; R8 (Fresh Review R7 P1-1, #861@6046779826): the readback is mechanically bound to canonical durable-fact CONTENT — the verifier recomputes the content digest from the supplied canonical_content (AUTHORITY_DIGEST_MISMATCH on a shape-only/foreign digest or missing content) and derives family/tuple/groups by deterministically parsing the ai-dev:authority-grant v1 block out of that content (AUTHORITY_NOT_APPLICABLE when the content carries no parsable block); projected trusted-looking readback fields are never read)
+    expect: PASS
+    covers: [B1-B4,B6,B5; C1,C2 (durable-format, never-downgrade); C4,C5 (controller-resolved grant applicability, resolver level); D2,D3,D5; F3,F4; H1,H2 (machine-enforced),H4,H5,H6 (duplicate-key probe) (incl. full execution-state schema integration); terminal precedence T5 with stale-loser disposition; J1 negative guard; dogfood T1-T5 worked negatives FC-T1a..FC-T5; FC1,FC2,FC3,FC4,FC5,FC11,FC12; R6 same-work-item projection probe (ACTIVE_DISPATCH_FOREIGN_WORK_ITEM) with cross-task/cross-repository injection negatives; R7 durable-fact readback binding negatives (AUTHORITY_UNRESOLVED absent/negative fact, AUTHORITY_FAMILY_MISMATCH, AUTHORITY_NOT_APPLICABLE non-authorizing fact, AUTHORITY_GRANT_DRIFT); R8 content-binding negatives (AUTHORITY_DIGEST_MISMATCH unbound 64-hex digest / missing canonical content, AUTHORITY_NOT_APPLICABLE canonical content without a parsable grant block)]
+  - id: T-protocol-schemas
+    command: python scripts/test_protocol_schemas.py
+    status: EXTENDED (W9; R2 extended: A1-A10 schema verdicts, A8 projection-verifier rejection, A6 minimum-0 subset support; R5: A4b/A4c/A4d default-group schema semantics agree with normalize_group/oracle C1)
+    expect: PASS
+    covers: [A1-A10; A8 via schema-VALID + verifier REJECT; A4b,A4c,A4d default/normalized-default schema semantics (R5 P1-1); A11,A12 byte-stable guards; J4 assert_supported_schema; FC8]
+  - id: T-execution-architecture
+    command: python scripts/test_execution_architecture.py
+    status: EXTENDED (W10; R2: vacuous placeholder replaced by a keyed ClaimCell race oracle over the real v34_rules reducers; R5: keyed_reserve C2/C3-C5/C7 — non-default groups additionally require a controller-resolved owning-family grant via authority_grants; unrelated Builder-admission ref #861@6023707736 rejection regression; R6 (Fresh Review R5 P1-1): the grant inventory is bound to the durable owner/controller readback contract (the verified v4.7 registry readback re-used via test_execution_architecture.authority_readback) — a grant must name an owner_concern resolvable in the readback owners map and carry the readback_subject it was resolved against, self-referencing grant refs are rejected, and a test-internal self-made mapping without that binding manufactures no authority; R7 (Fresh Review R6 P1-1, #861@6044748124): keyed_reserve additionally requires the trusted durable-fact readback (authority_fact_readbacks) for the exact compatibility_authority_ref — identity, existence/currentness, 64-hex content_digest, owner family, exact tuple and explicit authorization content — derives authorization from that evidence, and rejects caller grants drifting from it (AUTHORITY_GRANT_DRIFT); the review-verified 404 ref #861@6000000000 is negative-only; R8 (Fresh Review R7 P1-1, #861@6046779826): the fact readback is mechanically bound to canonical durable-fact CONTENT — the positive C6/H3 fixture cites the synthetic oracle grant record #861@6000000001 whose canonical content explicitly carries the ai-dev:authority-grant v1 block for the exact tuple (fixture/oracle data standing in for an adapter-materialized durable fact), the verifier recomputes sha256(canonical_content) and derives family/tuple/groups by deterministically parsing that content (no projected readback field is read), and the REAL durable comment #861@6043191203 — verbatim content embedded, digest-bound — grants no compatibility group and is the invented-groups negative: a real ref decorated with R7-style trusted-looking fields the content never carries fails closed)
+    expect: PASS
+    covers: [D1,D2,D3; E3 scheduler-order race; F2 idempotent replay; G3,G8; N1,N5,N7; A8 pre-admission rejection; C2 durable-ref format/fail-closed gate; C3,C4,C5,C7 (controller-resolved grant boundary, R5 P1-2); C6/H3 authorized-parallel positive with readback-bound resolved grant + unrelated-ref negative; R6 negatives: self-made grant without readback binding (AUTHORITY_OWNER_UNRESOLVED), stale readback_subject (AUTHORITY_CURRENTNESS_MISMATCH), unknown owner_concern (AUTHORITY_OWNER_UNRESOLVED), self-referencing grant ref (AUTHORITY_SELF_REFERENCE); R7 negatives: decorated grant without durable-fact readback / nonexistent ref (#861@6000000000) / content-unbound readback (AUTHORITY_UNRESOLVED), non-authorizing fact (AUTHORITY_NOT_APPLICABLE), wrong-family fact (AUTHORITY_FAMILY_MISMATCH), grant drift vs fact-derived authorization (AUTHORITY_GRANT_DRIFT); R8 negatives: exact real ref #861@6043191203 + verbatim content + digest + invented groups/grant (AUTHORITY_NOT_APPLICABLE, parser pin + keyed end-to-end), content digest mismatch or missing canonical content (AUTHORITY_DIGEST_MISMATCH, honest recomputed binding accepted), malformed-or-missing grant block (AUTHORITY_NOT_APPLICABLE at parser and resolver level); existing §11 oracle unbroken]
+  - id: T-t06b-core-inventory
+    command: python scripts/test_v410_t06b_core_inventory.py
+    status: NEW (W11 delivered in a dedicated file; see dispositions DISP-W11-PLACEMENT)
+    expect: PASS
+    covers: [I1-I6 core-inventory exact-set; N13 pack-level duplicates and manifest-level no-duplicates; FC10]
+  - id: T-v34-rules
+    command: python -c "import sys;sys.path.insert(0,'scripts');import v34_rules" (smoke; full coverage via W8/W10/W11)
+    status: EXTENDED (W7; R2: project_dispatch_environment + protected_claim_key_conforms)
+    expect: PASS
+  - id: T-registry-adoption
+    command: python scripts/test_v48_registry_adoption.py
+    status: CARRIED-UNDER-AUTHORIZED-EVOLUTION (W13 Stage 5)
+    expect: PASS after the authorized guard+manifest co-evolution (case-H mode); historical invariants/negatives preserved; baseline-rewrite remains impossible
+  - id: T-owner-convergence
+    command: python scripts/test_v410_owner_convergence.py
+    status: CONSCIOUS-UPDATE (W13 Stage 5; R4 currentness sync: historical T06A zero-delta premise explicitly labeled, W13_GROWTH_OWNER_FAMILIES naming, guards documented as accepting exactly the authorized co-evolution)
+    expect: PASS (assertions describe the landed W13 17-entry state)
+  - id: T-t04b-focus
+    command: python scripts/test_v410_t04b_review_currentness.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+  - id: T-v47-family
+    command: python scripts/test_v47_authority_registry.py && python scripts/test_v47_compatibility_aliases.py && python scripts/test_v47_reference_conventions.py
+    status: CARRIED
+    expect: PASS_UNMODIFIED
+  - id: T-t02b
+    command: python scripts/test_v410_t02b_machine_projection.py
+    status: CARRIED (W12: NOT edited; FROZEN_* guards stay green; J2/J3 byte-stability carried here)
+    expect: PASS_UNMODIFIED
+  - id: T-manifest
+    command: python scripts/verify_standard.py
+    status: EXTENDED (W13; R2 extended: drift-check tokens for the five new dispatch fields incl. admission_generation minimum 0, event lineage provenance, active_dispatches projection with exact subject refs, Pack exact-set writer/template examples)
+    expect: PASS
+    covers: [registration of W8; drift tokens; hazard-7 negative preserved]
+  - id: T-task-check
+    command: tools/task-check.sh
+    status: CARRIED
+    expect: PASS
+
+dispositions:
+  - id: DISP-W11-PLACEMENT
+    finding: P3-3
+    record: W11 (I1-I6/N13) landed in NEW scripts/test_v410_t06b_core_inventory.py instead of the TEST_MAP-enumerated scripts/test_v34_lifecycle_contracts.py. Not moved post-hoc: the dedicated file is manifest-registered and pinned by the authorized W13 guard set (test_guard_amendment_is_exactly_the_authorized_w13_set); relocating it now would churn a carried v3.4 suite and the registry ledger for zero semantic gain. T-v34-lifecycle is corrected to CARRIED and the delivered placement is pinned by T-t06b-core-inventory.
+  - id: DISP-C3-C5-AUTHORITY-RESOLUTION
+    finding: P2-3 (partial)
+    record: R1-R4 (historical): authorize_non_default enforced only the durable #<issue>@<comment-id> format (C2/C7-format); C3-C5 required durable GitHub fact resolution owned by the admission controller and no local machine model was claimed; the W10 non-default case proved distinct keys only after a syntactically durable ref. R5 (Fresh Review R4 P1-2, #861@6033098161) supersedes the syntax-only acceptance: v34_rules.resolve_non_default_authority makes the W10 keyed admission fail closed unless the ref resolves through the controller-resolved authority_grants inventory (the owner/controller proof path materialized before keyed admission) to a grant of the owning authority family (builder=TASK_PACK, validator=VALIDATION, reviewer=REVIEW_POLICY) applicable to the exact repository+task+role+group tuple. The unrelated Builder-admission ref #861@6023707736 is regression-rejected for validator/windows+linux (AUTHORITY_UNRESOLVED without inventory; AUTHORITY_FAMILY_MISMATCH against a TASK_PACK grant). C3 currentness remains established at the controller boundary that produces the grant inventory; the modeled VALIDATION grant inside the tests is oracle data, not a claim that any real comment authorizes validator/windows+linux on #861 today. R6 (Fresh Review R5 P1-1, #861@6040083891) supersedes the caller-asserted inventory: resolve_non_default_authority now requires the durable owner/controller readback (authority_readback: the owners map from the verified v4.7 registry resolution plus the exact manifest blob subject) and each grant must name an owner_concern resolvable in that readback and carry the matching readback_subject (currentness); self-referencing grant refs fail closed (AUTHORITY_SELF_REFERENCE); a test-internal self-made mapping without the binding manufactures no authority (regression-pinned: AUTHORITY_UNRESOLVED / AUTHORITY_OWNER_UNRESOLVED / AUTHORITY_CURRENTNESS_MISMATCH). The readback re-read remains the controller trust boundary, consistent with scripts/resolve_standard_read_set.py. R7 (Fresh Review R6 P1-1, #861@6044748124) supersedes the grant-content-as-evidence residual: the live GitHub read of #861@6000000000 returned 404, yet the R6 positive C6/H3 oracle still accepted a caller-made grant citing it — the inventory fields alone never proved the referenced durable fact. resolve_non_default_authority now additionally requires the trusted per-ref durable-fact readback (authority_fact_readbacks, materialized by the controller/authority-reader adapter before keyed admission) binding ref identity, existence/currentness (exists; a 404 durable-looking ref fails AUTHORITY_UNRESOLVED), the content-addressed digest of the exact fact content (64-hex content_digest), the owner family, the exact repository/task/role applicability and the explicit authorization content (groups); authorization is derived from that evidence, and authority_grants is demoted to a projection that must equal the fact-derived grant field-by-field (AUTHORITY_GRANT_DRIFT). The positive C6/H3 fixture is anchored to the real resolvable VALIDATION-family durable fact #861@6043191203; #861@6000000000 remains negative-only. The verifier stays purely local — the adapter materialization is the trust boundary, matching TRUST_BOUNDARY in the admitted R7 proposal #861@6044830239. R8 (Fresh Review R7 P1-1, #861@6046779826) supersedes the trusted-projected-fields residual: the R7 positive anchored the real ref #861@6043191203 to a synthetic digest and injected groups its content never granted, so a caller able to supply readback mappings could still manufacture authorization (exists=true + any 64-hex digest + invented groups). resolve_non_default_authority now requires the readback to carry the canonical fact content itself (canonical_content) and RECOMPUTES sha256 over it (mismatch or missing content ⇒ AUTHORITY_DIGEST_MISMATCH — a shape-only 64-hex digest is forbidden), then DERIVES authority_family/repository/task/role/groups by deterministically parsing the fixed-format ai-dev:authority-grant v1 block from that content (v34_rules.parse_authority_grant_block; missing/unterminated/unknown/duplicate/empty-field block ⇒ AUTHORITY_NOT_APPLICABLE fail closed) — no projected field on the readback mapping is ever read. The positive C6/H3 fixture now cites the synthetic oracle grant record #861@6000000001 whose canonical content EXPLICITLY carries the grant block for validator/windows+linux on the exact tuple, honestly labeled fixture/oracle data standing in for an adapter-materialized durable fact; the REAL comment #861@6043191203 is embedded verbatim (byte-exact; sha256 27fe9b90aa26e16b98c3db9d223de685b96324d4733ffd3c6430125760c8151d) as the invented-groups negative: real ref + true content + true digest + R7-style invented groups/grant ⇒ AUTHORITY_NOT_APPLICABLE. All R5/R6/R7 closures, same-work-item projection, default-group short-circuit, H2 multi-active, duplicate-key and CAS invariants are carried unchanged; zero test deletions.
+  - id: DISP-G1-G2-G7
+    finding: P2-3 (partial)
+    record: G1/G2 (environment implies authority) are structurally enforced by the byte-stable profile-role couplings (A11, machine-pinned in T-protocol-schemas and T-t06b-focus) plus environment-never-authority prose (A13/hazard-1 test in this suite); G7/FC9 (verifier PASS vs contradictory owner) is an owner-precedence process rule with no local reducer, and inventing a second authority family is forbidden by the J guards. No dedicated tests claimed.
+  - id: DISP-H2-SINGULAR-NULL
+    finding: P2-3 (partial)
+    record: R1-R4 (historical): H2 was documented-only in the execution-state schema description with no enforcing writer and remained an owner/integration obligation. R5 (Fresh Review R4 P1-3, #861@6033098161) machine-enforces it: a fail-closed allOf conditional in schemas/execution-state.schema.json (active_dispatches minItems 2 => active_dispatch/active_dispatch_role null-or-omitted) plus the v34_rules.execution_state_projection_problems probe with W8 negatives on both surfaces; the same probe adds the #861 rule-2 duplicate-active-key detection (H6) that the schema subset cannot express.
+  - id: DISP-SAME-WORK-ITEM-PROJECTION
+    finding: P2-1 (R6)
+    record: R1-R5 (historical): active_dispatches was documented as this work item's projection, but the positive full-state fixture mixed tasks (#860/#862/#864) and execution_state_projection_problems only compared protected-key strings, so cross-task rows were accepted. R6 (Fresh Review R5 P2-1) machine-enforces same-work-item safety: the probe re-parses each row's protected claim key (v34_rules.parse_claim_key) and requires the derived repository/task to equal the outer execution-state repository/work_item, surfacing ACTIVE_DISPATCH_FOREIGN_WORK_ITEM; the positive fixture is one work item (#861) with distinct roles and cross-task/cross-repository injection negatives are pinned. The schema subset cannot express the row-vs-outer-state check, so the probe is the owned detection surface.
+  - id: DISP-D4-SUCCESSOR-RECONCILIATION
+    finding: P2-1 (R3 truth correction)
+    record: W10 proves terminal transition does not decrement a ClaimCell generation and that stale replay remains stale. It does not model durable reconciliation followed by reservation of a distinct successor dispatch from the latest generation; full D4 successor-reconciliation semantics remain controller/integration evidence and are not claimed by T-execution-architecture.
+  - id: DISP-E4-F1-OWNER-SEMANTICS
+    finding: P2-1 (R3 truth correction)
+    record: W10 proves E3 scheduler-order race determinism plus selected metadata invariance (scheduler_origin/execution_environment/operator/parent/responsibility cannot manufacture a second key). It does not prove the full E4 scheduler-origin-vs-role/capability/authority independence contract, and it does not establish F1 owner semantics. E4/F1 are therefore not claimed by this local test row.
+
+  - id: DISP-D6-CARRIED
+    finding: P2-3 (partial)
+    record: D6 (BLOCKED_UNSAFE_COMPOSITE_ADMISSION via SAFE_ADMISSION_MODES) remains carried by the v4.8 scheduling conformance suite; T06B claims no new D6 regression.
+
+negative_invariants:
+  - no silent weakening of execution_profile enum/couplings (A11 byte-stable)
+  - no brand/model/authority coupling to execution_environment (A13; semantics 3-8 of #861 refinement)
+  - no second registry/lifecycle/scheduler/claim family (J1-J3 frozen guards)
+  - no NO_GREEN_BY_DELETION: guard evolution preserves v4.8 historical invariants and negatives (case-H/RA-01 evidence)
+  - no unauthorized manifest mutation outside the W13 authorized co-evolution
+  - no merge without fresh Validation + genuinely Fresh Independent Review on one unchanged HEAD/tree

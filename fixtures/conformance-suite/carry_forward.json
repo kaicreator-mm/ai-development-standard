@@ -3,7 +3,7 @@
   "owner_refs": [
     "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
     "standards/ASSURANCE_PLAN_STANDARD.md#3-existing-aggregation-authority-is-preserved",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
     "docs/implementation/4.9.0/PRD.md#n-adverse-review-cannot-be-shopped-around",
     "docs/implementation/4.9.0/PRD.md#j-hiddenrelease-high-risk-finding",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#91-carry-forward-rule",
@@ -27,7 +27,7 @@
     {
       "scenario_id": "C04_S1_new_reviewer_pass_never_erases_unresolved_blocker",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "docs/implementation/4.9.0/PRD.md#n-adverse-review-cannot-be-shopped-around"
       ],
       "frozen_scenario": "N",
@@ -41,7 +41,7 @@
     {
       "scenario_id": "C04_S2_same_subject_redispatch_for_pass_rejected",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
       ],
       "frozen_scenario": "N",
@@ -72,7 +72,7 @@
     {
       "scenario_id": "C04_S4_not_applicable_without_owning_rule_basis_fails_closed",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing"
       ],
       "frozen_scenario": "N",
       "carried_findings": ["F-BLK-1"],
@@ -87,7 +87,7 @@
     {
       "scenario_id": "C04_S5_new_sha_alone_carries_finding_forward",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles"
       ],
       "frozen_scenario": "N",
@@ -101,7 +101,7 @@
     {
       "scenario_id": "C04_S6_new_adverse_finding_between_dispatch_and_claim_fails_claim",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing"
       ],
       "frozen_scenario": "J",
       "carried_findings": ["F-BLK-1"],

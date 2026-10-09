@@ -1,7 +1,7 @@
 {
   "fixture_id": "manual-reference-flow/derived_projections",
   "description": "Derived-state examples used by references/MANUAL_REFERENCE_FLOW_V49.md. Each entry is a recomputable projection over the durable facts of fixtures/manual-reference-flow/durable_facts.json. Every projection is non-authoritative, is recomputed at its owner-declared recompute points, is never persisted as a canonical Issue state or a competing source of truth, and never mints a verdict (registries/state-dimensions-v1.json F11-F19).",
-  "recompute_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+  "recompute_owner_ref": "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
   "projections": [
     {
       "projection_id": "D-PLAN-CURRENTNESS-POSTURE",
@@ -12,7 +12,7 @@
       "never_canonical_issue_state": true,
       "derived_from": ["F-SUBJECT-SHA", "F-PLAN-BINDING"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
         "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding"
       ],
       "forbidden_inference_avoided": [
@@ -32,7 +32,7 @@
       "never_canonical_issue_state": true,
       "derived_from": ["F-NATIVE-DEPENDENCY", "F-FROZEN-BLOB", "F-TASK-PACK"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"
       ],
       "forbidden_inference_avoided": [
         "F11_TASK_DONE_NOT_LINEAGE_CURRENT",
@@ -49,7 +49,7 @@
       "never_canonical_issue_state": true,
       "derived_from": ["D-JIT-VERDICT", "F-NATIVE-DEPENDENCY", "F-FROZEN-BLOB"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection"
       ],
       "forbidden_inference_avoided": [
         "F17_WAITING_LINEAGE_NOT_WORKFLOW_BLOCKED",
@@ -67,7 +67,7 @@
       "never_canonical_issue_state": true,
       "derived_from": ["F-UNRESOLVED-FINDING"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing"
       ],
       "forbidden_inference_avoided": [
         "F02_REVIEW_PASS_NOT_VALIDATION_PASS"

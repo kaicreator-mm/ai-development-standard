@@ -1,6 +1,6 @@
 {
   "fixture_id": "execution-core-v49/phase_table",
-  "description": "JIT phase predicate truth-table inputs (standard section 28.2): dependency, lineage, envelope-proof and admission dimensions with the exact expected verdict for every combination.",
+  "description": "JIT phase predicate truth-table inputs (standard section 29.2): dependency, lineage, envelope-proof and admission dimensions with the exact expected verdict for every combination.",
   "dependency_states": ["DONE", "PENDING", "UNKNOWN"],
   "lineage_states": ["CURRENT", "STALE", "UNKNOWN"],
   "envelope_proofs": [

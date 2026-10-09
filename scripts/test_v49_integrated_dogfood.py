@@ -12,7 +12,7 @@ I01-I06 over the merged v4.9 surfaces:
        exact base with exact blob refs; frozen Product/L2/DAG blobs and the
        immutable DAG v0.1 resolve unchanged.
   I02  representative positive/negative orchestration journeys executed
-       deterministically from the T-007 kernel (§28) + T-012 conformance
+       deterministically from the T-007 kernel (§29) + T-012 conformance
        surfaces; the extended integrated regression (recovered v4.4-v4.7
        kernels + v4.8/T-013/T-014 lane kernels) re-executed at the candidate.
   I03  normative docs/contracts/tests/registry reconciliation at the
@@ -112,6 +112,17 @@ PLANNING_PATHS = tuple(
 
 # Merged v4.9 task outputs (T-002..T-014), pinned to their exact blobs at the
 # integrated candidate. Any mutation of any predecessor output fails I01.
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): the pins of 40 predecessor outputs
+# whose bytes the v4.10 integration moved are re-bound to their exact integrated
+# blobs — the disclosed composition rebind (§28 -> §29 renumber + mechanical
+# citation rebind across the v4.9 lane surfaces), the composed v4.10 additions
+# (EXECUTION_ARCHITECTURE_STANDARD §11.1.1/§28, schemas/dispatch.schema.json,
+# standard-manifest.json + its adoption verifier) and the disclosed in-lane
+# re-binds carrying this integration's pin values. Every path this lane does not
+# itself edit remains pinned exactly; any further mutation of any predecessor
+# output still fails. Pin constants only — zero removed tests, no intent
+# weakened.
 V49_TASK_OUTPUT_BLOBS = {
     "T-002": {
         "references/ASSURANCE_PLAN_V2_COMPATIBILITY.json": "dc68304fb09e0d7e436a2a301117a1d9cc935031",
@@ -124,7 +135,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "references/AUTHORITY_APPLICABILITY_REGISTRY_REFERENCE.md": "17d178e579177d93f9641d4e1c4d998459e98b3b",
         "references/STATE_DIMENSION_REGISTRY_REFERENCE.md": "a879afe48f3ca3d1752fa2ea390d91dbe63b6359",
         "registries/state-dimensions-v1.json": "ac92b744f0c751916f226f4d4b60e3ecbb50dd7a",
-        "scripts/test_v49_authority_state_registry.py": "228abe554113dd00a84925caa0316fcc5be644ed",
+        "scripts/test_v49_authority_state_registry.py": "e721d65125c8a7aa00333c32de836a313382e07e",
     },
     "T-004": {
         "fixtures/role-execution-profile-v1/capability_profile_as_role_profile.json": "01ac3cdb34c0f2e726c0d45af9040d26f8e93df6",
@@ -142,7 +153,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/role-execution-profile-v1/valid_validator_profile.json": "7806102a312a6cbc73c80652ae0165fc133fca9f",
         "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md": "cd16860e72ad26cdcd29f9d26b3c27f787367142",
         "schemas/role-execution-profile-v1.schema.json": "df96fb14dce9f39c753c80483e21c55b27beb685",
-        "scripts/test_v49_role_execution_profile.py": "10ed80538bf79f7386f191b5003c34350c079bb4",
+        "scripts/test_v49_role_execution_profile.py": "dc80f645686c45174ff085f0bdc0ee2409889146",
     },
     "T-005": {
         "references/RELEASE_APPLICABILITY_REFERENCE.md": "4411d25300542f9d311b0dd4df6be346a0bbda0a",
@@ -156,92 +167,98 @@ V49_TASK_OUTPUT_BLOBS = {
         "scripts/test_v49_task_learning_v2.py": "2cb452ea90838b0660271152637b735048dcc39c",
     },
     "T-007": {
-        "fixtures/execution-core-v49/candidates.json": "bbfdf81225164b80302078119e680e2668a5d3d9",
+        "fixtures/execution-core-v49/candidates.json": "b99206c14a97011781831d17b06532aab79bd2f6",
         "fixtures/execution-core-v49/claim_races.json": "ba7c437d541022a040e05bd2b94332ef3ff10241",
         "fixtures/execution-core-v49/facts_current.json": "0327987f0b3bafeaa57d71eb75f2932796e16abc",
         "fixtures/execution-core-v49/facts_lineage_stale.json": "b08cb9ace40a93c9565edce403221a500e18002a",
         "fixtures/execution-core-v49/facts_plan_drift.json": "c36a03004df6a656389541d5912d1ddcbd1ccd92",
         "fixtures/execution-core-v49/facts_successor.json": "62aa1ac8a7b928fb72c693db9903500d75cd461e",
-        "fixtures/execution-core-v49/owner_refs.json": "2a9507a8230ca143328ffd742c3b9a692828796b",
-        "fixtures/execution-core-v49/phase_table.json": "98b7c5a7dc9323c438ed42f30c723818488da889",
-        "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md": "ccb080d33afcac51b242014b4cafa2a6863df652",
-        "scripts/test_v49_execution_core.py": "5ed17b4144fab88e3ce6ca88a70b23288c87b9a9",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "ffe4788beaa342931ddf7c713523fb6f8a53d4c0",
+        "fixtures/execution-core-v49/owner_refs.json": "faa28f2c5c635bbc19ccc39ba5482b5b12404598",
+        "fixtures/execution-core-v49/phase_table.json": "b6667f503775c7aacff7330535c793eb70057019",
+        "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md": "388c2cbf92e1249f3baa04ae61a8f71989aa0bb9",
+        "scripts/test_v49_execution_core.py": "ed01a3f56b7f7727954ab7688ea44007b99fbbe1",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
     },
     "T-008": {
-        "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json": "c05897cb90a8af8aed254ae76addee494f71aa6b",
-        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md": "cf8a28880cd50e6cd6191921187edf2f4c0aa1d8",
-        "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
-        "scripts/test_v49_execution_contract_refs.py": "1380174f333de9660957698a6d59f88c020b9476",
+        "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json": "3ac43ea6a6a1ee35a60542c81209e6dffbd1b6cd",
+        "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md": "df8374d07c4415a519e8fd546c0965c9291e1977",
+        "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
+        "scripts/test_v49_execution_contract_refs.py": "54146c83317be22d6557911b4853ca83f0cb9b85",
     },
     "T-009": {
         "fixtures/jit-dag-governance/classification_table.json": "2706f81915cfc8df73d13be06e84b193237d837e",
         "fixtures/jit-dag-governance/currentness_facts.json": "a7d709665e7447fdd8ffb18c351b5cc43dfd5ebb",
-        "fixtures/jit-dag-governance/owner_refs.json": "686dec152ca847cb8694e3fca8267b442f10459d",
-        "fixtures/jit-dag-governance/proposals.json": "6ef6ddbc37c2375e09075b9cd974224d0d677e0c",
-        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md": "a4d58c3610c0e524ae1a2a5ff8018119a254f3e9",
-        "scripts/test_v49_jit_dag_governance.py": "e6c3ff4e7156e38abb70302b8e8b3146983a51fd",
+        "fixtures/jit-dag-governance/owner_refs.json": "d257ed70b6077672e18cc95f323b467808c4592d",
+        "fixtures/jit-dag-governance/proposals.json": "2b85377870932028a040a62c4532802d8a572bf4",
+        "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md": "f0d5b6e1d6346f1c6352ae9eb01dc9bce49ccce0",
+        "scripts/test_v49_jit_dag_governance.py": "2c37122adb4a6add095d1d090db90a6a597f5fb3",
     },
     "T-010": {
-        "fixtures/gate-currentness/assurance_binding.json": "19d0b1d58046897ca7c81cc320c2a92bb40e337a",
+        "fixtures/gate-currentness/assurance_binding.json": "2942252e4ea5af99eadafda49c6e0f65b65d6ae9",
         "fixtures/gate-currentness/dogfood_binding.json": "e5589bdefcba50c4a156c8c05618ddf49439bc61",
         "fixtures/gate-currentness/frozen_candidates.json": "00a36fdb62493d53104f1ac6c6bfd79b6480f6c2",
         "fixtures/gate-currentness/impact_decisions.json": "ff0b0cdbe5984ea0305d39c278777997f3a88fa8",
-        "fixtures/gate-currentness/owner_map.json": "1b72e5cdd06d8139cd724374dc3298c7435ddfee",
+        "fixtures/gate-currentness/owner_map.json": "5342314960621c5a4d157c42a4d60d1253cef2ec",
         "fixtures/gate-currentness/release_applicability.json": "4fb525df247ba39367a0105f3f1de8844f686b0b",
         "fixtures/gate-currentness/stale_pass.json": "f6b4addc27e7b591e55027e1509042c4be99005b",
-        "fixtures/gate-currentness/successor_chain.json": "b4d33cb073e0e2f338bd7ca83f7678e99ff3e98b",
-        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "c98b5eeb6e8afda2dc896e4e67edd0383b8a861b",
-        "scripts/test_v49_gate_currentness.py": "32519ca9d63bea335a6f71a89297ae2b25351751",
+        "fixtures/gate-currentness/successor_chain.json": "51338b2ab39a1e145976dda55e4d1b61715746c7",
+        "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "0c2538db15784ac0f7200ee4537eecec3e43b27f",
+        "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
     },
     "T-011": {
         ".github/workflows/verify-standard.yml": "6e81b4d0b767cabb7c06440633a029cd94b17817",
         "docs/implementation/4.9.0/MIGRATION_ADOPTION.md": "467e5e14e88f4acd34649880ea7e8af002df6c8b",
-        "references/REGISTRY_ADOPTION_V49_REFERENCE.md": "de303febbc014a35617b00db3ab2d679378eed92",
-        "scripts/test_v48_registry_adoption.py": "d947c4e66fea260a1a1ba7b562562e4a4703d1e1",
-        "standard-manifest.json": "dc8075c88a155be0e9641ec2aa80bf1c4aff139c",
+        "references/REGISTRY_ADOPTION_V49_REFERENCE.md": "ca59bab9c2ceae9ebffc2aa6fc5f4c5732540430",
+        "scripts/test_v48_registry_adoption.py": "baf91bd8ed43dc91cac1d22d66e5ef3866cf018d",
+        "standard-manifest.json": "971ebcb65c19f68e8d634d75d8ea96ee30957edf",
     },
     "T-012": {
-        "fixtures/conformance-suite/carry_forward.json": "f11ce58886dfe1f645050507f550928c5be52807",
-        "fixtures/conformance-suite/coverage_manifest.json": "5164a0c647f74082b41bc1c432109a226aac7b5d",
-        "fixtures/conformance-suite/currentness_toctou.json": "91cdc3382f611c581beb4809bb23fede444d75be",
+        "fixtures/conformance-suite/carry_forward.json": "918d3165b67a1d48da1ef990cd2a21a140dc3a6a",
+        "fixtures/conformance-suite/coverage_manifest.json": "2f336082c4fd46b1018120b243572296b7eb3a19",
+        "fixtures/conformance-suite/currentness_toctou.json": "75c25d4fe5a639619e26bc8433849b6dc6564111",
         "fixtures/conformance-suite/gate_transfer_currentness.json": "f5176eb773dd99bc9a045f3f2a518a25164f8639",
-        "fixtures/conformance-suite/jit_envelope_dag_mutation.json": "a8927180f633ff5b6f907199a7aafe98b2d8ce55",
-        "fixtures/conformance-suite/lineage_wait.json": "65b7311f89ee5c5302f50eb160cb27f54b7be873",
-        "fixtures/conformance-suite/manual_reconstruction.json": "be2de80338912cb5955e5e8a3112db2fef82cabe",
+        "fixtures/conformance-suite/jit_envelope_dag_mutation.json": "b1808fa91ba497a4570db8ba657346997c2410a3",
+        "fixtures/conformance-suite/lineage_wait.json": "724a89caa62d220d18f747472932c8d41f3c0fe3",
+        "fixtures/conformance-suite/manual_reconstruction.json": "7ba7cc3d6084a6eb1b0cbaab0cf7fd5c9a2e2823",
         "fixtures/conformance-suite/precedence_conjunction.json": "88f102040735341951e91a8f26c33efdd706e681",
-        "fixtures/conformance-suite/reduction_fail_closed.json": "971747535753abf8203eaa3bbef486ac0e93d6ed",
+        "fixtures/conformance-suite/reduction_fail_closed.json": "e06d395cf8405197957985bbe7a69e09e5a46bfc",
         "fixtures/conformance-suite/release_applicability.json": "35a98af0f3101d135e583fe9d3c64e0c62dbdb44",
-        "fixtures/conformance-suite/selector_independence.json": "61c15bb08e8d3164dab54bab06aea6cfa3dfb787",
+        "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
         "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
         "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
-        "scripts/test_v49_conformance_suite.py": "cc3e29255159233adc0c6e6954c398bad34f80e7",
+        "scripts/test_v49_conformance_suite.py": "5d375c574809569df8490c1832d2d993edb8a20c",
     },
     "T-013": {
-        "fixtures/manual-reference-flow/derived_projections.json": "ec0799d755bbae98a9c8cf75a60ae93aff466096",
-        "fixtures/manual-reference-flow/durable_facts.json": "1bf8254c836a3f789f0903498143af9fb486a87e",
+        "fixtures/manual-reference-flow/derived_projections.json": "b47170194258a74bc72fac9b7e04da974a7506f4",
+        "fixtures/manual-reference-flow/durable_facts.json": "dbe8655dbadc90fbbd9fb3843e809ac0742a74b9",
         "fixtures/manual-reference-flow/pointer_triggers.json": "478a8c49e0d445810490836af8e051b120971862",
-        "fixtures/manual-reference-flow/walkthroughs.json": "8010a113db7e1078f4fa641be035dfd0083aa66a",
-        "references/MANUAL_REFERENCE_FLOW_V49.md": "247673d89a4b9b998e15a50222611c3a5a7f3427",
-        "scripts/test_v49_manual_reference_flow.py": "fac72340060cc26b51071c4a26ec80aefb159d27",
+        "fixtures/manual-reference-flow/walkthroughs.json": "24fa00c86ed8d2961ae6acd722bc5aa0bca41324",
+        "references/MANUAL_REFERENCE_FLOW_V49.md": "bce172aaf3bba5b9a8ee9a53bb1bf46cd624a7d0",
+        "scripts/test_v49_manual_reference_flow.py": "af3506ab8e83f8f4e10a82c77dd18ca338a2807c",
     },
     "T-014": {
         "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
         "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
-        "fixtures/dogfood-audit-contract/owner_surfaces.json": "b15a7b7ef355b6757fddb1025898e4a7c994b76a",
+        "fixtures/dogfood-audit-contract/owner_surfaces.json": "d5fa073283b59bdfebd7cbcd8261286aa5a0a630",
         "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
         "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
-        "scripts/test_v49_dogfood_audit_contract.py": "9c818022c6054fa3905d325627f617abd37de578",
+        "scripts/test_v49_dogfood_audit_contract.py": "9d4dd62a0ecb91d02781a0bf27ffab5da6f2a768",
     },
 }
 
 # Recovered v4.4-v4.7 family surfaces byte-identical since the recovery composition
 # 4c632256 (recovery side 56137d88): pinned to that exact blob at HEAD.
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): one surface, `checklists/version-closure.md`, is no longer
+# byte-identical since the recovery composition — the v4.10 line legally added
+# the core-feature-freeze eligibility checklist row — so it moved out of this
+# dict into RECOVERED_FAMILY_REBOUND_BLOBS (exact integrated-blob identity pin;
+# any further mutation still fails). Every other recovered family surface is
+# byte-identical both since the recovery composition and at the integrated tree.
 RECOVERED_FAMILY_BLOBS = {
     ".gitattributes": "d76983514ae4be23efac3aa9da919f0cfcd2c010",
     "checklists/pr-review.md": "0ae314bca5395d5ecbc31c880d346c893debd944",
     "checklists/project-init.md": "7256f8654c881f135fcd881615005eef35d56e5a",
-    "checklists/version-closure.md": "7b736fe51f8534362c0b098191f2326e18dc326e",
     "docs/implementation/4.4.0/MIGRATION_ADOPTION.md": "55a1c6ef7d8cadfe8e706f3c2d7a2b9d25072c1a",
     "docs/implementation/4.4.0/closure-inputs/T08_INPUTS.json": "ffde7529d35dc4778eac5c733f738697357f94ff",
     "docs/implementation/4.4.0/dogfood/build-package/README.md": "da8a6900a0239a9448ae1c3b4dfa124d65b363ea",
@@ -337,15 +354,31 @@ RECOVERED_FAMILY_BLOBS = {
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md": "0d934401badd1bbdb4f8eb387adbf493a279e8c4",
 }
 
-# Shared surfaces composed as unions by the post-recovery recompose (current blobs):
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): recovered family surfaces that are no longer byte-identical
+# since the recovery composition because the v4.10 line legally extended them.
+# Re-bound to exact integrated-blob identity pins at HEAD; any further mutation
+# still fails (same strength as the byte-identical-since-recovery pins).
+RECOVERED_FAMILY_REBOUND_BLOBS = {
+    "checklists/version-closure.md": "2483856a53fbc0127378c45915ad2518819de996",
+}
+
+# Shared surfaces composed as unions by the post-recovery recompose (current
+# blobs). v4.10 integration value re-bind (same claim/pre-merge refs; merge
+# commit e0315b2a): every pin below is re-bound to the integrated blob — the
+# v4.10 line composed the identity triple (VERSION/README/CHANGELOG), the
+# additive dispatch fields (schemas/dispatch.schema.json), the v4.10 T06A
+# registry growth (standard-manifest.json + scripts/test_v48_registry_adoption.py)
+# and the §28 -> §29 rebind. The recovery-commit blob still deliberately differs
+# in every case, so the assertNotEqual strength is preserved.
 RECOVERED_COMPOSED_SHARED_BLOBS = {
-    "CHANGELOG.md": "1c36737f35e7ca2b08f94d79e4ee8873efddea1b",
-    "README.md": "d2ee8b0a54cc30357979ad31fe36090b18a154b4",
-    "VERSION": "6ed7776bf321979a606a12b2ebfb6a9b6c51ac37",
-    "schemas/dispatch.schema.json": "123a66223f6dea42966c4a181dae3cc0776c3ba3",
+    "CHANGELOG.md": "340636ba499b3576e1f7eb200050c493333d1745",
+    "README.md": "bd8fcb3933fa4329816a691c0c3195f1dc2478a0",
+    "VERSION": "2da4316236a12b429b6903fb663fe4fec257756c",
+    "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
-    "scripts/test_v48_registry_adoption.py": "d947c4e66fea260a1a1ba7b562562e4a4703d1e1",
-    "standard-manifest.json": "dc8075c88a155be0e9641ec2aa80bf1c4aff139c",
+    "scripts/test_v48_registry_adoption.py": "baf91bd8ed43dc91cac1d22d66e5ef3866cf018d",
+    "standard-manifest.json": "971ebcb65c19f68e8d634d75d8ea96ee30957edf",
     "templates/golden/STANDARD_COVERAGE.json": "5149d74063433fba6c867bd4bfed015fe0d321c4",
 }
 
@@ -637,6 +670,13 @@ class I01PredecessorLineageIdentity(unittest.TestCase):
             with self.subTest(recovered=rel_path):
                 self.assertEqual(blob, git_blob_sha("HEAD", rel_path))
                 self.assertEqual(blob, git_blob_sha(RECOVERY_COMPOSITION_SHA, rel_path))
+        # v4.10 integration (see RECOVERED_FAMILY_REBOUND_BLOBS): the one
+        # recovered family surface the v4.10 line legally extended is pinned to
+        # its exact integrated blob instead — same strength as the pins above,
+        # any further mutation still fails.
+        for rel_path, blob in RECOVERED_FAMILY_REBOUND_BLOBS.items():
+            with self.subTest(recovered_rebound=rel_path):
+                self.assertEqual(blob, git_blob_sha("HEAD", rel_path))
         # Shared surfaces recomposed as unions: pinned to the exact current
         # composed blob; the recovery-commit blob deliberately differs.
         for rel_path in RECOVERED_COMPOSED_SHARED_PATHS:
@@ -677,7 +717,7 @@ class I02OrchestrationJourneys(unittest.TestCase):
         cls.races = core_kernel.load_fixture("claim_races.json")
         cls.phase_table = core_kernel.load_fixture("phase_table.json")
 
-    # ---------- positive journey: legal dispatch -> claim -> merge (§28.1/§11) ----------
+    # ---------- positive journey: legal dispatch -> claim -> merge (§29.1/§11) ----------
 
     def test_i02_positive_journey_dispatch_claim_merge_ready(self) -> None:
         facts = copy.deepcopy(self.facts_current)

@@ -20,9 +20,9 @@
   ],
   "jit_predicate_owner": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
   "jit_predicate_sections": {
-    "legal_jit_phase_predicate": "28.2",
-    "waiting_lineage_projection": "28.3",
-    "acceptance_bindings": "28.7"
+    "legal_jit_phase_predicate": "29.2",
+    "waiting_lineage_projection": "29.3",
+    "acceptance_bindings": "29.7"
   },
   "wiring_reference": "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
   "frozen_product_item_L": "docs/implementation/4.9.0/PRD.md",

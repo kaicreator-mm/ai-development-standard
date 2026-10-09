@@ -376,6 +376,44 @@ REPOSITORY_INTEGRATION_RESULT
 
 `TASK_CLAIMED` is retained for compatibility; cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
+### 8.4.1 Additive responsibility projection fields
+
+`DISPATCH_REQUEST` / `DISPATCH_CLAIMED` events and the dispatch objects they reference MAY carry the additive same-family responsibility projection when work is executed across operators:
+
+```text
+parent_dispatch_ref: <dispatch_id of the causal parent/transferor dispatch>
+responsibility_mode: DELEGATED_SUBWORK | RESPONSIBILITY_HANDOFF
+```
+
+These fields project the responsibility/control semantics settled by `EXECUTION_ARCHITECTURE_STANDARD.md` section 28 onto the existing dispatch/event family; they consume those semantics and never redefine or replace them.
+
+- `DELEGATED_SUBWORK` names the delegating parent dispatch, so requester/delegator, causal parent, executor/operator and bounded scope reconstruct deterministically from durable facts.
+- `RESPONSIBILITY_HANDOFF` is valid only when the transferring operator (`created_by` on the dispatch; the parent dispatch owner on the event), the receiving operator (`claimed_by` on the dispatch; `operator_id` on the claim event), the scope and the exact work identity are all durably named. A handoff must then be distinguishable from an ordinary supersession.
+- The fields are optional and additive: historical dispatches/events without them remain valid, exactly as for the claim-provenance precedent (`admission_mode` / `protected_claim_key` / `claim_generation`).
+- They create no authority, no new event type, no workflow/dispatch state, no second lifecycle and no responsibility registry/ledger. A required responsibility fact that is missing, duplicate or unresolvable fails closed: responsibility/causation reconstruction reports UNKNOWN instead of guessing, and a second active `RESPONSIBILITY_HANDOFF` of the same work identity is rejected like any incompatible second claim.
+
+### 8.4.2 Additive serialized-admission projection fields (v4.10)
+
+Current dispatch/admission/claim writers SHOULD project the serialized-admission facts with the additive optional fields below; they consume `EXECUTION_ARCHITECTURE_STANDARD.md` §11.1.1 semantics and never redefine them. Omit all fields for ordinary dispatches; historical events without them remain valid and require no migration.
+
+```yaml
+execution_environment: WEB | LOCAL
+scheduler_origin: WEB | LOCAL
+source_proposal_ref: "#861@6016320778"
+canonical_admission_ref: "#861@6016591816"
+protected_claim_key: "kaicreator-mm/ai-development-standard#861:planning_reference_designer:__default__"
+admission_generation: 3
+compatibility_group: null | "<group>"
+compatibility_authority_ref: null | "#<issue>@<comment-id>"
+```
+
+Writer rules:
+
+- `execution_environment` is the canonical coarse environment (`WEB | LOCAL`). `TARGET_ENVIRONMENT` appears only in historical durable comments as a proposal-era alias; a writer observing disagreement between the alias and the canonical field fails closed (`STALE`) instead of guessing. `execution_environment` on dispatches is distinct from the validation-gate `environment` on `VALIDATION_*` events and from `operator_kind` (provider provenance).
+- `source_proposal_ref` / `canonical_admission_ref` are durable `#<issue>@<comment-id>` references; prose descriptions are not durable and MUST NOT replace them on current admission/claim writers.
+- `protected_claim_key` is audit-only provenance equal to the deterministic serialization `repo#task:role:group`; slot 4 is the normalized compatibility group (`__default__` when omitted) and never a revision/session identifier.
+- A losing proposal is dispositioned `STALE | SUPERSEDED | REJECTED` on its own dispatch record; it never rewrites or deletes canonical facts, and scheduler wake-ups/checkpoints remain `NON_AUTHORITATIVE_DERIVED_STATE` with terminal precedence.
+
 ### 8.5 Accepted Claim as Start Record and ownership visibility
 
 The accepted `DISPATCH_CLAIMED` / current accepted Claim is the durable Start Record for authoritative role execution. A worker MUST NOT begin authoritative role execution or mutate implementation source before its dispatch Claim is accepted (`NO_CLAIM_NO_EXECUTION`). A rejected, stale or duplicate claim means STOP/recompute, not best-effort execution. No label, comment, state card, transport ACK, progress message or heartbeat substitutes for accepted Claim authority.
@@ -392,6 +430,7 @@ execution_profile
 sha / expected_base_sha / requested_head_sha as applicable
 task_pack_ref / execution_pack_ref as applicable
 admission_mode / protected_claim_key / claim_generation as additive provenance when supported
+parent_dispatch_ref / responsibility_mode as the additive responsibility projection when the dispatch carries delegated subwork or a responsibility handoff (EXECUTION_ARCHITECTURE_STANDARD.md section 28)
 transport_actor when useful
 ```
 
@@ -419,6 +458,70 @@ not-required  + not-applicable + NOT_APPLICABLE → merge-ready
 A `required` review cannot be skipped or routed directly to merge-ready. A `recommended` direct merge requires an explicit skip decision rather than an ambiguous policy-only event.
 
 `REVIEW_RESULT` must bind to the reviewed SHA and policy. Review `PASS` is not Release PASS.
+
+### 9.1 Review subject and exact-subject currentness
+
+Every Review fact is bound to exactly one subject: the event-level exact `sha` it was published for (the reviewed PR HEAD / candidate commit). For one work item:
+
+```text
+current facts = accepted Review facts whose exact subject == the live current
+                candidate subject
+stale facts   = Review facts bound to any other subject
+```
+
+- Only current facts may satisfy the Review condition or feed the current finding aggregate.
+- Stale facts remain immutable historical evidence: queryable as history, but never counted, re-bound or transferred as current. A previous subject's `PASS` never satisfies a successor subject, and a previous subject's findings are never silently carried into a successor aggregate.
+- Successor/delta review is legal only under the existing owner rules (§7, `prompts/independent-review-bootstrap.md`): a narrow delta may use a delta review, cross-module/architecture/test-semantic change requires full re-review, and either result binds to the new exact subject.
+- When the current subject or a fact's subject association is missing or ambiguous, currentness fails closed: the Review condition stays unsatisfied rather than being guessed.
+
+### 9.2 Machine finding records
+
+Newly emitted `REVIEW_RESULT` events that report material findings MUST be machine-reconstructible from the existing `REVIEW_RESULT.findings` surface without human interpretation: every material finding MUST be projected into `findings.records` with stable identity, severity, root-defect class and evidence. Historical payloads without `records` remain readable immutable history; they never satisfy this new-writer contract and are never promoted into a current judgment.
+
+A newly emitted event that reports severity bucket counts MUST be exactly reconstructible from its own `records`: bucket `pN` MUST equal the number of `records` entries with `severity: PN`. A positive bucket without a matching record is an opaque material finding, and a record missing from its reported bucket is an unaccounted finding: either violation fails the current new-writer/aggregate conformance path instead of producing a judgment. Duplicate records count in the emitting event's bucket counts — the event reports them, linked to their canonical identity by `duplicate_of`. Historical bucket-only payloads remain readable history.
+
+```yaml
+findings:
+  records:
+    - finding_id: <stable identity of the logical finding>
+      severity: P0 | P1 | P2 | P3
+      root_defect_class: <root defect class projection id>
+      evidence_refs:
+        - <durable evidence reference>
+      duplicate_of: <canonical finding_id, only on an explicit duplicate record>
+```
+
+- `finding_id` / `severity` / `evidence_refs` reuse the existing Review finding family (`schemas/review-finding-v1.schema.json` and its validators `scripts/v40_rules.py`, `scripts/v40_semantics.py`: `validate_finding_disposition`, `validate_review_aggregation`); `severity` stays in the existing `P0–P3` family. A record inlines the material finding's identity/severity/evidence block; the Review subject is inherited from the event `sha`, and `status` / `blocking` / disposition continue to belong to the existing finding/disposition flow.
+- `finding_id` is stable for one logical defect across re-emission on the same subject and MUST NOT be renumbered by appearance order. Independent reviewers are not assumed to coordinate identities: two records represent the same logical defect only when they share one `finding_id`, or when one record durably declares the existing finding-family duplicate relation `duplicate_of: <canonical finding_id>` (the `schemas/review-finding-v1.schema.json` `status: DUPLICATE` + `duplicate_of` semantics, inlined). Root-defect-class equality is classification evidence, never logical-defect identity; similarity, ordering and count never establish equivalence.
+- Duplicate equivalence is deterministic and fails closed. A `duplicate_of` link is valid only when the target `finding_id` exists in the same current aggregate, the target is itself canonical (not `duplicate_of`-linked: no chains or cycles), and the linked records agree on `severity` and `root_defect_class`. A missing target, a chain or cycle, or a materially conflicting linked record MUST NOT be guessed, majority-resolved or silently merged: the current aggregate fails closed instead.
+- Emission and reconciliation are separate durable facts. A reviewer MAY emit a genuinely independent unlinked record; a later durable `review-finding-v1` finding fact with `status: DUPLICATE`, `resolution_code: DUPLICATE` and `duplicate_of: <canonical finding_id>` — the existing disposition family, not a new one — reconciles the two into one logical finding for the current aggregate. The disposition binds the same exact review subject (`subject_identity_ref` = the reviewed SHA); a disposition bound to another subject is stale history and is never consumed. Competing dispositions (one finding id linked to different targets), a disposition contradicting an in-emission `duplicate_of` link, an unknown finding id or target, chains or cycles across the union of emission and disposition links, and materially conflicting severity or root-defect class across a reconciled pair all fail closed — never by latest-wins, ordering, majority or count. Reconciliation never rewrites the original reviewer facts: both provenance records stay in the converged finding.
+- `root_defect_class` is a projection of the root defect classes owned by `DEVELOPMENT_WORKFLOW.md` §4. It adds, removes and redefines no class, and it owns no repair routing or escalation:
+
+```text
+PRODUCT_SEMANTICS_AUTHORITY_CONTRADICTION   product semantics / authority contradiction
+ARCHITECTURE_PUBLIC_CONTRACT                architecture / public contract
+IMPLEMENTATION_DEFECT                       implementation defect
+TEST_FIXTURE_EVIDENCE_DEFECT                test / fixture / evidence defect
+ENVIRONMENT_TOOLCHAIN_EXTERNAL_BOUNDARY     environment / toolchain / external boundary
+EXECUTION_ATTRIBUTION_DEFECT                execution / attribution defect
+GATE_APPLICABILITY_AUTHORITY_AMBIGUITY      gate applicability 或 authority ambiguity
+```
+
+- A finding whose identity, severity, root-defect class or evidence is missing or ambiguous is not machine-reconstructible: it MUST NOT be guessed, defaulted, silently dropped or converted into a current `PASS`.
+- Findings are evidence and judgment. `Evidence != Verdict != Authority`: a record supports a judgment, `REVIEW_RESULT` is a verdict fact, and merge/release authority remains with the existing Gate Authority chain. Routing a finding's root defect class to repair/escalation stays owned by `DEVELOPMENT_WORKFLOW.md` §4.
+
+### 9.3 Deterministic aggregation
+
+The current finding aggregate is a derived projection over durable Review facts:
+
+- it consumes only current-subject accepted facts (§9.1); stale facts stay historical;
+- a current `REVIEW_RESULT` that reports material findings without the structured §9.2 projection is not machine-reconstructible: the aggregate fails closed for that subject instead of deriving a judgment from an opaque payload;
+- findings converge by stable identity or by an explicit durable `duplicate_of` equivalence (§9.2) into one logical finding while preserving every originating reviewer's provenance (`operator_id` / `session_ref` / event reference); independent IDs without that relation remain distinct findings;
+- reconciliation may also arrive after emission as a durable same-subject `DUPLICATE` disposition from the existing `review-finding-v1` family (§9.2): the aggregate consumes it without rewriting the original reviewer facts, preserving both provenance records and failing closed on competing, ambiguous, stale or cross-subject dispositions;
+- the result is deterministic and invariant to event order or transport arrival order;
+- materially conflicting current facts fail closed: a conflicting verdict on the same subject, the same identity classified with materially conflicting severity or root-defect class, or an ambiguous or materially conflicting duplicate equivalence MUST NOT be resolved by majority, latest-wins, reviewer/model count, provider or model reputation, cost, turnaround or file count;
+- reviewer/model count is coverage evidence only, never verdict authority; and
+- aggregation reuses the existing aggregation contract (`schemas/review-aggregation-v1.schema.json`: `judgment` / `finding_refs` / `unresolved_blocker_refs` / `conflict_refs` under `aggregation_policy: finding-union-blocker-dominance`, with `scripts/v40_rules.py` semantics). It introduces no new event family, status dimension, lifecycle, scheduler, registry, Validation authority or Release authority.
 
 ## 10. Builder / Reviewer / Validator routing
 

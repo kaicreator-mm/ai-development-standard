@@ -119,6 +119,22 @@ V49_SEMANTIC_ENTRIES = [
     ("release-applicability", "release.per_gate_subject_applicability", "standards/RELEASE_STANDARD.md", "MATERIALITY_DRIVEN"),
 ]
 
+# v4.10 integration re-bind (claim #779@6084794791 / pre-merge #779@6084805500;
+# merge commit e0315b2a): the integrated manifest appends the six v4.10 T06A
+# semantic-authority entries additively AFTER the inherited + v4.9 inventories.
+# Every v4.9 concern still resolves to exactly one canonical entry (the R01
+# per-concern uniqueness loop is unchanged); the closed-set entry-count
+# expectation grows by exactly these six disclosed entries. Same tuple shape as
+# the inherited/v4.9 constants, so any inventory mutation still fails exactly.
+V410_SEMANTIC_ENTRIES = [
+    ("task-decomposition", "task.decomposition_and_granularity", "standards/TASK_DECOMPOSITION_STANDARD.md", "MATERIALITY_DRIVEN"),
+    ("task-dag-governance", "task.dag_mutation_and_currentness", "standards/TASK_DAG_GOVERNANCE_STANDARD.md", "MATERIALITY_DRIVEN"),
+    ("execution-pack", "execution.pack_contract_and_classification", "standards/EXECUTION_PACK_STANDARD.md", "MATERIALITY_DRIVEN"),
+    ("implementation-quality", "implementation.quality_and_maintainability", "standards/IMPLEMENTATION_QUALITY_STANDARD.md", "MATERIALITY_DRIVEN"),
+    ("interface-compatibility", "interface.public_contract_compatibility", "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md", "MATERIALITY_DRIVEN"),
+    ("project-adoption", "project.adoption_routing", "standards/PROJECT_ADOPTION.md", "MATERIALITY_DRIVEN"),
+]
+
 INHERITED_DIMENSIONS = [
     ("work_item_workflow", "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md", "CLOSED"),
     ("dispatch_lifecycle", "standards/EXECUTION_ARCHITECTURE_STANDARD.md", "CLOSED"),
@@ -297,7 +313,14 @@ class V49AuthorityStateRegistryTests(unittest.TestCase):
             self.assertEqual(entry["canonical_owner_ref"], owner)
             self.assertEqual(entry["applicability_posture"], posture)
             self.assertEqual(entry["schema_version"], 1)
-        self.assertEqual(len(self.entries), len(INHERITED_SEMANTIC_ENTRIES) + len(V49_SEMANTIC_ENTRIES))
+        self.assertEqual(len(self.entries), len(INHERITED_SEMANTIC_ENTRIES) + len(V49_SEMANTIC_ENTRIES) + len(V410_SEMANTIC_ENTRIES))
+        # v4.10 integration (see V410_SEMANTIC_ENTRIES): the v4.10 T06A entries
+        # are an additive append — the trailing inventory is exactly the
+        # disclosed six, so the doc-anchored sections below stay in force.
+        self.assertEqual(
+            semantic_entry_tuples(self.entries[len(INHERITED_SEMANTIC_ENTRIES) + len(V49_SEMANTIC_ENTRIES):]),
+            V410_SEMANTIC_ENTRIES,
+        )
         resolved = resolve_registry(self.manifest, self.entry_schema)
         for _, concern, owner, _ in V49_SEMANTIC_ENTRIES:
             self.assertEqual(resolved[concern], owner)

@@ -27,7 +27,7 @@ Frozen L2 #714             docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md
 Frozen Task DAG v0.2       docs/implementation/4.9.0/TASK_DAG.md (blob b9fe0cc7089f64929b4bcf45f7230d950e864db2)
 T-002 contract             standards/ASSURANCE_PLAN_STANDARD.md §12/§13 + schemas/assurance-plan-v2.schema.json
 T-005 owner                standards/RELEASE_STANDARD.md §11 + references/RELEASE_APPLICABILITY_REFERENCE.md + scripts/test_v49_release_applicability.py
-T-007 consumer contract    standards/EXECUTION_ARCHITECTURE_STANDARD.md §28 (28.1/28.5/28.6) + scripts/test_v49_execution_core.py
+T-007 consumer contract    standards/EXECUTION_ARCHITECTURE_STANDARD.md §29 (29.1/29.5/29.6) + scripts/test_v49_execution_core.py
 ```
 
 ## 2. Executable wiring vocabulary (routing only)
@@ -90,7 +90,7 @@ standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding
 standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward
 schemas/assurance-plan-v2.schema.json#currentness_binding
 schemas/assurance-plan-v2.schema.json#finding_carry_forward_policy
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions
 ```
 
 - Owner meaning: currentness binding (`standards/ASSURANCE_PLAN_STANDARD.md`
@@ -107,9 +107,9 @@ standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-cons
   `UNKNOWN`; `STALE`/`UNKNOWN` never authorize a lower assurance path.
 - Wiring: authority-bearing consumers recheck `currentness_binding.state` immediately
   before Dispatch materialization, Claim admission, merge/merge-ready, Candidate Freeze,
-  Release Qualification (`standards/EXECUTION_ARCHITECTURE_STANDARD.md` §28.1) —
+  Release Qualification (`standards/EXECUTION_ARCHITECTURE_STANDARD.md` §29.1) —
   transition proceeds only on `CURRENT`; otherwise `RECOMPUTE_REQUIRED`/`BLOCKED`. A new
-  adverse finding between Dispatch and Claim fails Claim admission (§28.1/§28.6). The
+  adverse finding between Dispatch and Claim fails Claim admission (§29.1/§29.6). The
   plan proves derivation only; it creates no Gate PASS, scope, Release applicability, or
   finding disposition.
 
@@ -166,7 +166,7 @@ standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md#6-review-policy-and-risk
 schemas/review-aggregation-v1.schema.json#aggregation_policy
 schemas/review-finding-v1.schema.json
 docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects
-standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing
+standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing
 ```
 
 - Owner meanings: `standards/DEVELOPMENT_WORKFLOW.md` Stage 2.6 (Review Policy Selection) + §4.4
@@ -182,7 +182,7 @@ standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-a
   the unresolved set only through per-finding verification — `RESOLVED` /
   `STILL_PRESENT` / `NOT_APPLICABLE_TO_SUCCESSOR`, each with evidence refs and, for
   not-applicable, an owning-rule basis — or an explicit owning-authority finding
-  disposition (L2 §9.1; `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §28.5). Re-review
+  disposition (L2 §9.1; `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §29.5). Re-review
   only via authorized mutable repair path; same-subject re-dispatch to obtain PASS is
   rejected; a new reviewer PASS over an unresolved blocker does not remove the blocker.
 - Wiring: carries the finding set, evaluates per-finding successor outcomes, and holds a
@@ -359,7 +359,7 @@ impact_decisions.json      T03 scenarios: VALIDATION_IMPACT_DECISION reuse/deny 
 frozen_candidates.json     T04 scenarios: Hidden/Closeout/RQ fresh-only, §4 thaw chain, strengthened pack
 release_applicability.json T05 scenarios: concern-vs-version non-aggregation, stale applicability fail-closed, fresh Release-owned decision
 dogfood_binding.json       T06 scenarios: exact ADS candidate binding, thaw/drift historical-only, zero-delta boundary
-assurance_binding.json     M01 consumption: §28.1 transition admissions on CURRENT/STALE/UNKNOWN + adverse finding between Dispatch and Claim
+assurance_binding.json     M01 consumption: §29.1 transition admissions on CURRENT/STALE/UNKNOWN + adverse finding between Dispatch and Claim
 ```
 
 Test kernel: `scripts/test_v49_gate_currentness.py` (TEST_MATRIX T01–T07). The kernel is

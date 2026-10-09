@@ -7,4 +7,4 @@ Builder writes only:
 4. `scripts/test_v48_integration_closure.py` — F2 C01/C08 re-binds (pin constants + provenance only).
 5. `.github/workflows/verify-standard.yml` — append `python scripts/test_v49_conformance_suite.py` in established style.
 
-Read-only inputs: the DAG v0.1 `### T-012` coverage list; Frozen PRD scenarios A–Q; Frozen L2 positive/negative oracles; the merged owner surfaces (assurance plan standard/schema; role profile schema; release applicability owner; task learning v2; execution core §28; dispatch refs; DAG governance reference; gate currentness matrix).
+Read-only inputs: the DAG v0.1 `### T-012` coverage list; Frozen PRD scenarios A–Q; Frozen L2 positive/negative oracles; the merged owner surfaces (assurance plan standard/schema; role profile schema; release applicability owner; task learning v2; execution core §29; dispatch refs; DAG governance reference; gate currentness matrix).

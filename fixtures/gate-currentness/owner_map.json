@@ -16,7 +16,7 @@
         "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
         "schemas/assurance-plan-v2.schema.json#currentness_binding",
         "schemas/assurance-plan-v2.schema.json#finding_carry_forward_policy",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
       ],
       "binding_keys": [
         "subject_identity_ref",
@@ -73,7 +73,7 @@
         "schemas/review-aggregation-v1.schema.json#aggregation_policy",
         "schemas/review-finding-v1.schema.json",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#9-adverse-findings-and-successor-subjects",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing"
       ],
       "binding_keys": [
         "exact_subject_diff",

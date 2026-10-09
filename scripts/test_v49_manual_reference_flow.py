@@ -40,6 +40,18 @@ FROZEN_BLOBS_AT_HEAD = {
 }
 DAG_V01_BLOB = "4f358ba2b32e01ae17ddcdf970151cf28e44bb3f"
 
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): the disclosed composition rebind renumbered the v4.9
+# standard section §28 -> §29 in standards/EXECUTION_ARCHITECTURE_STANDARD.md.
+# The anchor-form citations this lane resolves (flow doc + fixtures) were
+# realigned to the renumbered headings `#291-` .. `#296-` in the same step:
+# references/MANUAL_REFERENCE_FLOW_V49.md (12), fixtures/manual-reference-flow/
+# durable_facts.json (5), derived_projections.json (5), walkthroughs.json (6) —
+# 28 citation strings, zero semantic change (every M01/M02/M05 resolution
+# assertion is unchanged and re-verified in this run). The frozen authority
+# pins above are untouched: the Frozen Product/L2/DAG v0.2 blobs and immutable
+# DAG v0.1 are byte-identical at the integrated tree.
+
 REGISTRY_PATH = ROOT / "registries" / "state-dimensions-v1.json"
 
 # M03: physical surfaces the manual flow must never imply. A token occurrence is

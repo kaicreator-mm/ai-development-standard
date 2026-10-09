@@ -56,7 +56,12 @@ T014_MERGED_BLOBS = {
     "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
     "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
     "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
-    "fixtures/dogfood-audit-contract/owner_surfaces.json": "b15a7b7ef355b6757fddb1025898e4a7c994b76a",
+    # v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+    # #779@6084805500; merge commit e0315b2a): the owner-surfaces fixture moved
+    # because four owner surfaces it consumed read-only were re-bound from the
+    # stale "unmutated since base" pin to exact integrated blobs (see
+    # rebounded_since_base and the D08 disclosure below).
+    "fixtures/dogfood-audit-contract/owner_surfaces.json": "d5fa073283b59bdfebd7cbcd8261286aa5a0a630",
     "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
 }
 
@@ -632,6 +637,15 @@ class DogfoodAuditContractKernel(unittest.TestCase):
         # rebounded_since_base map): stale "unchanged since base" pins are
         # re-bound to exact current-blob identity pins; pin constants only —
         # any further mutation of a rebound surface still fails.
+        # v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500;
+        # merge commit e0315b2a): four surfaces moved into the fixture's
+        # rebounded_since_base map with the same treatment — the integrated
+        # standard (v4.10 additions composed with the v4.9 section renumbered
+        # §29 by the disclosed composition rebind), VALIDATION_STANDARD and
+        # DEVELOPMENT_WORKFLOW (the v4.10 line's content), and the gate matrix
+        # reference (its §28 citations mechanically rebound to §29). The two
+        # rebound kernels carry this integration's disclosed re-binds. Pin
+        # constants only — zero removed tests, no intent weakened.
         for rel_path, pinned_blob in self.owner_surfaces.get("rebounded_since_base", {}).items():
             with self.subTest(read_only_rebound=rel_path):
                 self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))

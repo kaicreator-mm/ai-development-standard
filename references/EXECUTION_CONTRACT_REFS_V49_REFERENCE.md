@@ -8,28 +8,28 @@ The wiring is additive and backward-compatible: three OPTIONAL reference fields 
 
 | Field | Meaning |
 |---|---|
-| `assurance_currentness_ref` | Identity of the governing Assurance Plan currentness binding (`ASSURANCE_PLAN_STANDARD.md` §12 `currentness_binding`) consumed at the §28.1 architecture-owned transitions of this dispatch (Dispatch reservation, Claim admission, and any other owner-declared transition). |
-| `role_profile_ref` | Identity of the Role Execution Profile v1 instance (`schemas/role-execution-profile-v1.schema.json`) feeding the §27.2/§28.4 hard-eligibility predicates for this dispatch. |
-| `jit_phase_ref` | Identity of the JIT phase inside the current Task envelope (§28.2 P1–P3 with E1/E2) that this dispatch materializes, including its selector-independence/currentness identity. |
+| `assurance_currentness_ref` | Identity of the governing Assurance Plan currentness binding (`ASSURANCE_PLAN_STANDARD.md` §12 `currentness_binding`) consumed at the §29.1 architecture-owned transitions of this dispatch (Dispatch reservation, Claim admission, and any other owner-declared transition). |
+| `role_profile_ref` | Identity of the Role Execution Profile v1 instance (`schemas/role-execution-profile-v1.schema.json`) feeding the §27.2/§29.4 hard-eligibility predicates for this dispatch. |
+| `jit_phase_ref` | Identity of the JIT phase inside the current Task envelope (§29.2 P1–P3 with E1/E2) that this dispatch materializes, including its selector-independence/currentness identity. |
 
 All three fields are typed `["string", "null"]` with `minLength: 1` — the schema's established optional-reference style (`task_pack_ref`, `execution_pack_ref`, `execution_context_requirements_ref`, `dependency_toolchain_profile_ref`). The supported JSON-Schema subset of this repository forbids `$ref`/`definitions`; the fields are plain reference-identity strings and their targets are resolved by consumers against the owning surfaces, never inlined or copied.
 
-The fields are references, not state: a dispatch instance that omits them stays a complete, valid v1 dispatch. Populating a field declares which currentness/identity artifact governs THIS dispatch, so that claim-time recompute (§28.6) has an exact pointer to re-read.
+The fields are references, not state: a dispatch instance that omits them stays a complete, valid v1 dispatch. Populating a field declares which currentness/identity artifact governs THIS dispatch, so that claim-time recompute (§29.6) has an exact pointer to re-read.
 
 ## Claim-time and currentness consistency
 
-- A declared reference is bound at the §28.1 recompute points: Dispatch reservation, Claim admission (section 11 re-read), merge/merge-ready, Candidate Freeze, Release Qualification. The ref is a pointer, not a cache — every transition re-reads the binding from facts; there is no hidden mutable latch.
+- A declared reference is bound at the §29.1 recompute points: Dispatch reservation, Claim admission (section 11 re-read), merge/merge-ready, Candidate Freeze, Release Qualification. The ref is a pointer, not a cache — every transition re-reads the binding from facts; there is no hidden mutable latch.
 - All three fields are **resolve-or-fail-closed**: a consumer must resolve each declared reference against its owning surface at claim time or fail that admission closed. A stale or missing reference never becomes a default, never silently narrows an obligation, and never passes currentness.
-- A dispatch whose `assurance_currentness_ref` resolves to a binding whose `currentness_binding.state` is `STALE` or `UNKNOWN` MUST NOT authorize Dispatch, Claim, merge or Freeze (§28.1): it routes to deterministic recomputation/rebinding, a stronger legal path, or `BLOCKED`. A transition that proceeded on a plan later shown `STALE`/`UNKNOWN` is re-evaluated at the next recompute point and never ratified retroactively.
-- Currentness drift between Dispatch reservation and Claim admission resolves fail-closed under sections 11/11.1/27.3 (§28.6): at most one claim linearizes against still-current predicates; a drifted admission publishes no canonical claim and recomputes or blocks.
+- A dispatch whose `assurance_currentness_ref` resolves to a binding whose `currentness_binding.state` is `STALE` or `UNKNOWN` MUST NOT authorize Dispatch, Claim, merge or Freeze (§29.1): it routes to deterministic recomputation/rebinding, a stronger legal path, or `BLOCKED`. A transition that proceeded on a plan later shown `STALE`/`UNKNOWN` is re-evaluated at the next recompute point and never ratified retroactively.
+- Currentness drift between Dispatch reservation and Claim admission resolves fail-closed under sections 11/11.1/27.3 (§29.6): at most one claim linearizes against still-current predicates; a drifted admission publishes no canonical claim and recomputes or blocks.
 
 ## Authority and gate boundaries
 
 The three fields carry identity only. They never duplicate Task scope, Claim authority or gate truth, and they never create, replace or re-define an owner verdict:
 
 - `assurance_currentness_ref` — the currentness verdict stays owned by `ASSURANCE_PLAN_STANDARD.md` §12 (`CURRENT`/`STALE`/`UNKNOWN`). A resolvable ref is not a verdict: `CURRENT -> PASS/READY/state:ready` remains a forbidden inference (registry F13–F16), and the ref creates no Gate PASS, Task scope, Release applicability or finding disposition.
-- `role_profile_ref` — the profile instance stays owned by `schemas/role-execution-profile-v1.schema.json` and §28.4: a ref never grants role actions, terminal authority, executor capability or a claim-policy switch, and a profile-blocked candidate is never promoted by priority, cost, latency or provider strength.
-- `jit_phase_ref` — phase identity stays owned by the §28.2 predicate: the ref never widens the Task envelope, never changes Task ownership or dependency semantics, and a material topology change is never carried as a phase ref — it routes to v4.3 Task DAG mutation governance.
+- `role_profile_ref` — the profile instance stays owned by `schemas/role-execution-profile-v1.schema.json` and §29.4: a ref never grants role actions, terminal authority, executor capability or a claim-policy switch, and a profile-blocked candidate is never promoted by priority, cost, latency or provider strength.
+- `jit_phase_ref` — phase identity stays owned by the §29.2 predicate: the ref never widens the Task envelope, never changes Task ownership or dependency semantics, and a material topology change is never carried as a phase ref — it routes to v4.3 Task DAG mutation governance.
 
 No dispatch field gained decision authority: `dispatch_state`, `result`, `role`, `execution_profile`, `agent_freedom` keep their exact base vocabulary.
 

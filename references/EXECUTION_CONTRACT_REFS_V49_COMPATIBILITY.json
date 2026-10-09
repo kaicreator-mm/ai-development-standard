@@ -11,7 +11,7 @@
   },
   "candidate": {
     "version_ref": "ai-dev/dispatch-v1",
-    "sha_or_digest": "git-blob:123a66223f6dea42966c4a181dae3cc0776c3ba3"
+    "sha_or_digest": "git-blob:90bea62524beb0215d5f40cf0be9986786648fec"
   },
   "change_operations": [
     "add-optional-assurance-currentness-ref",

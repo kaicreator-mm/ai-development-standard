@@ -41,7 +41,7 @@ for every merged task output and recovered family surface; (c) the frozen author
 | T-004 (#723) role execution profile v1 | 16 outputs, exact blobs | identity holds |
 | T-005 (#724) release applicability | 3 outputs, exact blobs | identity holds |
 | T-006 (#725) task learning v2 | 4 outputs, exact blobs | identity holds |
-| T-007 (#726) §28 proportional orchestration core | 11 outputs, exact blobs | identity holds |
+| T-007 (#726) §29 proportional orchestration core | 11 outputs, exact blobs | identity holds |
 | T-008 (#727) execution contract refs | 4 outputs, exact blobs | identity holds |
 | T-009 (#728) JIT DAG mutation governance | 6 outputs, exact blobs | identity holds |
 | T-010 (#729) gate evidence currentness matrix | 10 outputs, exact blobs | identity holds |
@@ -60,20 +60,20 @@ validation verdict is restated as this lane's result.
 
 ## 3. Representative orchestration journeys (oracle I02)
 
-All journeys execute deterministically through the merged T-007 §28 owner kernel
+All journeys execute deterministically through the merged T-007 §29 owner kernel
 (`test_v49_execution_core.py`, imported — never redefined) over its frozen fixtures, plus the
 T-012 conformance surface executed green in the same run.
 
-| Journey | PRD §15 scenario | T-007 §28 binding | Expected = observed outcome |
+| Journey | PRD §15 scenario | T-007 §29 binding | Expected = observed outcome |
 |---|---|---|---|
-| J-POS-01 dispatch → claim → merge | baseline legal path | §28.1/§11 (K01) | `MATERIALIZED` → `ACCEPTED` → `MERGE_READY`; in-envelope JIT phase `READY` |
-| J-NEG-01 duplicate claim race | F | §28.6/§11 (K07/K09) | exactly one canonical claim; every ordering replays deterministically |
-| J-NEG-02 wrong-role / independence | G | §28.4/§27.2 (K04/K09) | `INELIGIBLE` before ranking; ranking inputs cannot rescue |
-| J-NEG-03 known sequence block | K | §28.3 (K03/K09) | `WAITING_LINEAGE_NO_DISPATCH`, 0 dispatches; claim `NOT_DISPATCHABLE_WAITING_LINEAGE`; no workflow state, no gate verdict |
-| J-NEG-04 out-of-envelope / topology | L | §28.2 (K02/K09) | undeclared/violated phase `BLOCKED`; topology routes `V43_MUTATION_*` |
-| J-NEG-05 ambiguous reduction predicate | M | §28.1/§28.4 (K01/K09) | unproven predicate → `STRONGER_EXISTING_PATH_OR_BLOCKED`; proven → `REDUCED_PER_OWNER_RULE` |
-| J-NEG-06 adverse finding shopping | N | §28.5 (K05/K09) | `REJECTED_REVIEW_SHOPPING`; R2 chronology cannot close F-101; unresolved blocker blocks merge |
-| J-NEG-07 stale binding / stale PASS | I | §28.1/§10 (K01/K10) | `BLOCKED_PLAN_BINDING_STALE` / `STALE_PLAN_BINDING_RECOMPUTE` / `PLAN_BINDING_STALE`; stale PASS `REJECTED_HISTORICAL_ONLY_NO_TRANSFER_RULE` |
+| J-POS-01 dispatch → claim → merge | baseline legal path | §29.1/§11 (K01) | `MATERIALIZED` → `ACCEPTED` → `MERGE_READY`; in-envelope JIT phase `READY` |
+| J-NEG-01 duplicate claim race | F | §29.6/§11 (K07/K09) | exactly one canonical claim; every ordering replays deterministically |
+| J-NEG-02 wrong-role / independence | G | §29.4/§27.2 (K04/K09) | `INELIGIBLE` before ranking; ranking inputs cannot rescue |
+| J-NEG-03 known sequence block | K | §29.3 (K03/K09) | `WAITING_LINEAGE_NO_DISPATCH`, 0 dispatches; claim `NOT_DISPATCHABLE_WAITING_LINEAGE`; no workflow state, no gate verdict |
+| J-NEG-04 out-of-envelope / topology | L | §29.2 (K02/K09) | undeclared/violated phase `BLOCKED`; topology routes `V43_MUTATION_*` |
+| J-NEG-05 ambiguous reduction predicate | M | §29.1/§29.4 (K01/K09) | unproven predicate → `STRONGER_EXISTING_PATH_OR_BLOCKED`; proven → `REDUCED_PER_OWNER_RULE` |
+| J-NEG-06 adverse finding shopping | N | §29.5 (K05/K09) | `REJECTED_REVIEW_SHOPPING`; R2 chronology cannot close F-101; unresolved blocker blocks merge |
+| J-NEG-07 stale binding / stale PASS | I | §29.1/§10 (K01/K10) | `BLOCKED_PLAN_BINDING_STALE` / `STALE_PLAN_BINDING_RECOMPUTE` / `PLAN_BINDING_STALE`; stale PASS `REJECTED_HISTORICAL_ONLY_NO_TRANSFER_RULE` |
 
 Integrated surface execution at the candidate:
 
@@ -160,11 +160,11 @@ in the same run (oracle I05):
 
 | Counter | Kernel guard demonstrated |
 |---|---|
-| `UNAUTHORIZED_GATE_OMISSION` = 0 | undeclared/out-of-envelope JIT phase is `BLOCKED`; transitions consume plan currentness (§28.1/§28.2) |
+| `UNAUTHORIZED_GATE_OMISSION` = 0 | undeclared/out-of-envelope JIT phase is `BLOCKED`; transitions consume plan currentness (§29.1/§29.2) |
 | `STALE_PASS_TRANSFER` = 0 | stale binding rejected at Dispatch/Claim/merge; stale PASS never transfers (K01/K10) |
-| `INDEPENDENCE_LOSS` = 0 | independence-failed candidate `INELIGIBLE` before ranking (§28.4/§27.2) |
-| `CROSS_OWNER_REQUIREMENT_CANCELLATION` = 0 | unproven reduction predicate fails closed; conjunctive floors hold (§28.1, ASSURANCE §9/§10 via C01/C02) |
-| `ADVERSE_TERMINAL_SUPPRESSION` = 0 | unresolved adverse finding survives chronology and blocks merge; re-review shopping rejected (§28.5) |
+| `INDEPENDENCE_LOSS` = 0 | independence-failed candidate `INELIGIBLE` before ranking (§29.4/§27.2) |
+| `CROSS_OWNER_REQUIREMENT_CANCELLATION` = 0 | unproven reduction predicate fails closed; conjunctive floors hold (§29.1, ASSURANCE §9/§10 via C01/C02) |
+| `ADVERSE_TERMINAL_SUPPRESSION` = 0 | unresolved adverse finding survives chronology and blocks merge; re-review shopping rejected (§29.5) |
 
 The independent safety AUDIT required by PRD §16.7 for downstream generality evidence is
 `NOT_RUN` (missing capability §5.4). The in-repo zero counters above are journey-event
@@ -197,7 +197,7 @@ lineage_recompute: SELF_RECOMPUTED_AT_CANDIDATE
 inrepo_kernel_conformance_mechanism_matrix:
   - mechanism: OWNER_PERMITTED_REDUCTION
     state: EXERCISED
-    proof_refs: standards/EXECUTION_ARCHITECTURE_STANDARD.md#28-v49-proportional-orchestration-core, scripts/test_v49_execution_core.py, scripts/test_v49_conformance_suite.py
+    proof_refs: standards/EXECUTION_ARCHITECTURE_STANDARD.md#29-v49-proportional-orchestration-core, scripts/test_v49_execution_core.py, scripts/test_v49_conformance_suite.py
   - mechanism: CROSS_OWNER_FLOOR_COMPOSITION
     state: EXERCISED
     proof_refs: standards/ASSURANCE_PLAN_STANDARD.md, scripts/test_v49_conformance_suite.py, scripts/test_v49_execution_core.py

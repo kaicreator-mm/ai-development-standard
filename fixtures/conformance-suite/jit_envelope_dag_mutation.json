@@ -1,8 +1,8 @@
 {
   "fixture_id": "v4.9.0-T-012-C06-jit-envelope-vs-dag-mutation",
   "owner_refs": [
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#297-acceptance-bindings",
     "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
     "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
     "schemas/dag-mutation-record-v1.schema.json",
@@ -69,7 +69,7 @@
     {
       "scenario_id": "C06_S1_in_envelope_jit_phase_is_bookkeeping_not_mutation",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
         "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md"
       ],
       "frozen_scenario": "L",
@@ -101,7 +101,7 @@
     {
       "scenario_id": "C06_S2_phase_not_proven_in_envelope_is_blocked_never_auto_admitted",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
         "docs/implementation/4.9.0/PRD.md#l-task-dag-scope-protection"
       ],
       "frozen_scenario": "L",
@@ -281,7 +281,7 @@
     {
       "scenario_id": "C06_S8_core_classifier_routes_topology_change_away_from_jit",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate"
       ],
       "frozen_scenario": "L",
       "kernel_binding": "scripts/test_v49_execution_core.py classify_topology_change",

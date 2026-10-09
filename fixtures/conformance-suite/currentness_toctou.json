@@ -3,8 +3,8 @@
   "owner_refs": [
     "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
     "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
     "docs/implementation/4.9.0/PRD.md#f-duplicate-claim-race",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#18-positive-conformance-scenarios",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#17-conformance--negative-oracles",
@@ -37,8 +37,8 @@
     {
       "scenario_id": "C03_S1_consume_current_then_adverse_finding_before_claim_fails_claim",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed"
       ],
       "frozen_scenario": "F",
       "plan_binding": {
@@ -59,7 +59,7 @@
     {
       "scenario_id": "C03_S2_competing_claim_linearizes_against_still_current_predicates",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
         "docs/implementation/4.9.0/PRD.md#f-duplicate-claim-race"
       ],
       "frozen_scenario": "F",
@@ -87,7 +87,7 @@
     {
       "scenario_id": "C03_S3_stale_plan_at_later_checkpoints_recomputes_never_ratifies",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions"
       ],
       "frozen_scenario": "F",
       "plan_binding": {
@@ -134,7 +134,7 @@
     {
       "scenario_id": "C03_S6_currentness_never_mints_pass",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
         "registries/state-dimensions-v1.json"
       ],
       "frozen_scenario": "F",

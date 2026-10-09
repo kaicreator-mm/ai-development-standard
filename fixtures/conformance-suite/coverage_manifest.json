@@ -38,7 +38,7 @@
       "l2_negative_oracle_lines": ["risk:low/docs-only/model judgment -> reduction PROVEN_TRUE without owner proof", "recommended+skip -> legal solely because reviewer chose skip", "missing owner/applicability -> assume not applicable"],
       "owner_refs": [
         "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#287-acceptance-bindings",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#297-acceptance-bindings",
         "docs/implementation/4.9.0/PRD.md#m-single-owner-ambiguous-reduction-predicate"
       ]
     },
@@ -52,8 +52,8 @@
       "l2_negative_oracle_lines": ["Assurance Plan stale on new finding/proof/authority -> Claim/merge continues"],
       "owner_refs": [
         "standards/ASSURANCE_PLAN_STANDARD.md#12-currentness-binding",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#281-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#291-assurance-plan-currentness-consumption-at-architecture-owned-transitions",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
         "scripts/test_v49_gate_currentness.py"
       ]
     },
@@ -67,7 +67,7 @@
       "l2_negative_oracle_lines": ["R1 FAIL -> R2 PASS erases R1 blocker", "same-subject reviewer redispatch -> PASS-shopping", "successor SHA -> predecessor P1 finding dropped without per-finding disposition"],
       "owner_refs": [
         "standards/ASSURANCE_PLAN_STANDARD.md#13-adverse-finding-carry-forward",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#285-adverse-finding-carry-forward-and-no-review-shopping-routing",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#295-adverse-finding-carry-forward-and-no-review-shopping-routing",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#91-carry-forward-rule",
         "scripts/test_v49_gate_currentness.py"
       ]
@@ -81,7 +81,7 @@
       "l2_positive_scenario_numbers": [10],
       "l2_negative_oracle_lines": ["Role Profile claim switch -> bypass existing Claim rule", "provider/model name -> Role authority"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#294-role-profile-hard-predicates-in-v48-eligibility",
         "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
         "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md",
         "scripts/test_v48_integration_closure.py",
@@ -97,7 +97,7 @@
       "l2_positive_scenario_numbers": [11, 12],
       "l2_negative_oracle_lines": ["new blocked-by edge -> no v4.3 DAG mutation evidence", "JIT phase not in Assurance Plan/Task Pack -> treated as in-envelope"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
         "references/JIT_DAG_MUTATION_GOVERNANCE_V49_REFERENCE.md",
         "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
         "schemas/dag-mutation-record-v1.schema.json",
@@ -146,8 +146,8 @@
       "l2_positive_scenario_numbers": [15],
       "l2_negative_oracle_lines": ["WAITING_LINEAGE -> canonical Issue state invented", "predecessor not integrated -> generic compatibility rebind starts dependent execution"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#282-legal-jit-phase-predicate",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#283-waiting_lineage-derived-non-dispatch-projection",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#292-legal-jit-phase-predicate",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#293-waiting_lineage-derived-non-dispatch-projection",
         "registries/state-dimensions-v1.json",
         "scripts/test_v49_execution_core.py"
       ]
@@ -177,7 +177,7 @@
       "l2_positive_scenario_numbers": [17, 18],
       "l2_negative_oracle_lines": ["baseline=selected dogfood -> downstream generality satisfied", "orchestrator/Builder self-audit -> independent dogfood audit", "transport ACK/cache/state card -> gate/project authority"],
       "owner_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#286-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#296-deterministic-recompute-on-currentness-drift-racedrift-fail-closed",
         "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md#14-downstream-dogfood-evidence-architecture",
         "scripts/test_v49_execution_core.py",
         "scripts/test_v49_gate_currentness.py"

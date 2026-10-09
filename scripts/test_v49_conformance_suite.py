@@ -90,20 +90,34 @@ WRITE_SET = (
 # is pinned to its exact composed blob; the remaining surfaces are unmutated by
 # the recovery and pin to their T-012 candidate blobs at 4322a8cc. Any further
 # mutation of any T-012 output still fails; zero assertion-logic change.
+#
+# v4.10 integration value re-bind (claim #779@6084794791 / pre-merge
+# #779@6084805500; merge commit e0315b2a): the disclosed composition rebind
+# renumbered the v4.9 standard section §28 -> §29. Eight conformance fixtures
+# carried the old anchor-form citations to that section in their exact-ref rows
+# (`#281-` .. `#287-` -> `#291-` .. `#297-`; the identical strings were rebound
+# in the owner kernels' fixtures in the same step), so their merged blobs moved
+# and are pinned to their new exact blobs here. `.agent/execution/T-012/
+# IMPLEMENTATION_MAP.md` moved out of the pack-head loop below into this dict
+# for the same reason (its read-only-inputs line cites the renumbered section).
+# `scripts/test_v49_gate_currentness.py` is pinned to the exact blob of the
+# T-010 kernel carrying this integration's disclosed re-binds. Pin constants
+# only — zero removed tests, no intent weakened.
 T012_MERGED_BLOBS = {
-    "fixtures/conformance-suite/carry_forward.json": "f11ce58886dfe1f645050507f550928c5be52807",
-    "fixtures/conformance-suite/coverage_manifest.json": "5164a0c647f74082b41bc1c432109a226aac7b5d",
-    "fixtures/conformance-suite/currentness_toctou.json": "91cdc3382f611c581beb4809bb23fede444d75be",
+    "fixtures/conformance-suite/carry_forward.json": "918d3165b67a1d48da1ef990cd2a21a140dc3a6a",
+    "fixtures/conformance-suite/coverage_manifest.json": "2f336082c4fd46b1018120b243572296b7eb3a19",
+    "fixtures/conformance-suite/currentness_toctou.json": "75c25d4fe5a639619e26bc8433849b6dc6564111",
     "fixtures/conformance-suite/gate_transfer_currentness.json": "f5176eb773dd99bc9a045f3f2a518a25164f8639",
-    "fixtures/conformance-suite/jit_envelope_dag_mutation.json": "a8927180f633ff5b6f907199a7aafe98b2d8ce55",
-    "fixtures/conformance-suite/lineage_wait.json": "65b7311f89ee5c5302f50eb160cb27f54b7be873",
-    "fixtures/conformance-suite/manual_reconstruction.json": "be2de80338912cb5955e5e8a3112db2fef82cabe",
+    "fixtures/conformance-suite/jit_envelope_dag_mutation.json": "b1808fa91ba497a4570db8ba657346997c2410a3",
+    "fixtures/conformance-suite/lineage_wait.json": "724a89caa62d220d18f747472932c8d41f3c0fe3",
+    "fixtures/conformance-suite/manual_reconstruction.json": "7ba7cc3d6084a6eb1b0cbaab0cf7fd5c9a2e2823",
     "fixtures/conformance-suite/precedence_conjunction.json": "88f102040735341951e91a8f26c33efdd706e681",
-    "fixtures/conformance-suite/reduction_fail_closed.json": "971747535753abf8203eaa3bbef486ac0e93d6ed",
+    "fixtures/conformance-suite/reduction_fail_closed.json": "e06d395cf8405197957985bbe7a69e09e5a46bfc",
     "fixtures/conformance-suite/release_applicability.json": "35a98af0f3101d135e583fe9d3c64e0c62dbdb44",
-    "fixtures/conformance-suite/selector_independence.json": "61c15bb08e8d3164dab54bab06aea6cfa3dfb787",
+    "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
     "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
-    "scripts/test_v49_gate_currentness.py": "32519ca9d63bea335a6f71a89297ae2b25351751",
+    ".agent/execution/T-012/IMPLEMENTATION_MAP.md": "8dc93553a7e7b23d55495662b1ad31fe461fe368",
+    "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
     ".github/workflows/verify-standard.yml": "6e81b4d0b767cabb7c06440633a029cd94b17817",
 }
@@ -120,12 +134,18 @@ T012_KERNEL_ORACLE_MARKERS = (
     "T012_KERNEL_ORACLE_MARKERS",
 )
 
+# v4.10 integration (claim #779@6084794791 / pre-merge #779@6084805500; merge
+# commit e0315b2a): `.agent/execution/T-012/IMPLEMENTATION_MAP.md` moved out of
+# this pack-head loop into T012_MERGED_BLOBS — the disclosed composition rebind
+# (§28 -> §29 citation in its read-only-inputs line) legally mutated that one
+# planning file at the integration, so it is pinned as an exact merged output
+# instead of "unmutated since the execution pack head". The remaining five
+# files stay pack-head-frozen.
 PLANNING_PATHS = tuple(
     f".agent/execution/T-012/{name}"
     for name in (
         "MANIFEST.yaml",
         "EXECUTION_CONTRACT.md",
-        "IMPLEMENTATION_MAP.md",
         "TEST_MATRIX.yaml",
         "FAILURE_MATRIX.yaml",
         "REVIEW_CHECKLIST.md",
@@ -442,7 +462,7 @@ class C02ReductionProofFailClosed(ConformanceSuiteBase):
                 self.assertEqual(s["expect"]["resolution_outcome"], outcome)
 
         # Merged T-007 kernel oracle: model reasoning never authorizes an
-        # unproven reduction (core reduction_decision, Product M / §28.7 [K01/K09]).
+        # unproven reduction (core reduction_decision, Product M / §29.7 [K01/K09]).
         s = scenarios["C02_S9_ambiguous_predicate_model_reasoning_cannot_authorize"]
         for case in s["proof_states"]:
             with self.subTest(proof_state=case["proof_state"]):
@@ -595,7 +615,7 @@ class C04AdverseFindingCarryForward(ConformanceSuiteBase):
 # ---------------------------------------------------------------------------
 
 class C05SelectorIndependenceConflicts(ConformanceSuiteBase):
-    """DAG v0.1 T-012 item 5. Frozen PRD G; L2 positive 10; §27.2/§28.4."""
+    """DAG v0.1 T-012 item 5. Frozen PRD G; L2 positive 10; §27.2/§29.4."""
 
     def test_c05_selector_independence_conflicts(self) -> None:
         fixture = load_fixture("selector_independence.json")
@@ -625,7 +645,7 @@ class C05SelectorIndependenceConflicts(ConformanceSuiteBase):
         s = scenarios["C05_S2_profile_block_cannot_be_promoted_by_ranking_inputs"]
         eligible = []
         for candidate in s["candidates"]:
-            # §28.4: a BLOCKED_* profile projection is a hard INELIGIBLE before ranking.
+            # §29.4: a BLOCKED_* profile projection is a hard INELIGIBLE before ranking.
             predicates = {
                 "ready": True, "current": True, "capability": True, "resources": True,
                 "security": True, "independence": candidate["profile_projection"] == "PROJECTED",
@@ -668,7 +688,7 @@ class C05SelectorIndependenceConflicts(ConformanceSuiteBase):
 # ---------------------------------------------------------------------------
 
 class C06JitEnvelopeVsDagMutation(ConformanceSuiteBase):
-    """DAG v0.1 T-012 item 6. Frozen PRD L; L2 positives 11/12; §28.2 + JIT ref."""
+    """DAG v0.1 T-012 item 6. Frozen PRD L; L2 positives 11/12; §29.2 + JIT ref."""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -722,7 +742,7 @@ class C06JitEnvelopeVsDagMutation(ConformanceSuiteBase):
             routes.append(decision["route"])
         self.assertEqual(s["expect"]["routes"], routes)
         # A phase with NO envelope declaration is never auto-admitted either
-        # (core §28.2 kernel: declared_in None => BLOCKED).
+        # (core §29.2 kernel: declared_in None => BLOCKED).
         core_facts = {
             "plan_binding": {"bound_components": {}},
             "current_dimensions": {},
@@ -907,7 +927,7 @@ class C08ReleasePerGateApplicability(ConformanceSuiteBase):
 # ---------------------------------------------------------------------------
 
 class C09PredecessorLineageWait(ConformanceSuiteBase):
-    """DAG v0.1 T-012 item 9. Frozen PRD K; L2 positive 15; §28.2/§28.3 + F11-F19."""
+    """DAG v0.1 T-012 item 9. Frozen PRD K; L2 positive 15; §29.2/§29.3 + F11-F19."""
 
     def test_c09_lineage_wait(self) -> None:
         fixture = load_fixture("lineage_wait.json")
@@ -1082,7 +1102,7 @@ class C10TaskLearningSameFamilyCompat(ConformanceSuiteBase):
 # ---------------------------------------------------------------------------
 
 class C11ManualCompatibleStateReconstruction(ConformanceSuiteBase):
-    """DAG v0.1 T-012 item 11. Frozen PRD P; L2 positives 17/18; §28.6 replay."""
+    """DAG v0.1 T-012 item 11. Frozen PRD P; L2 positives 17/18; §29.6 replay."""
 
     def test_c11_manual_reconstruction(self) -> None:
         fixture = load_fixture("manual_reconstruction.json")
@@ -1106,7 +1126,7 @@ class C11ManualCompatibleStateReconstruction(ConformanceSuiteBase):
                 f["finding_id"] for f in ordered_facts if f.get("state") == "UNRESOLVED"
             )
             # The bound digest (E10) is a durable fact; the CURRENT digest is
-            # recomputed from the unresolved findings at replay time (§28.6).
+            # recomputed from the unresolved findings at replay time (§29.6).
             current_dimensions = {
                 key: value for key, value in binding.items()
                 if key != "unresolved_finding_digest"

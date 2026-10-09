@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.10.0 — Unreleased candidate
+
+v4.10.0 版本线候选：按冻结 Product #837（PRD v0.4）、L2 #842、REFINED_TASK_DAG_FREEZE_R1 #848 与 TASK_PACKS_R1，T01A–T08A 关切链已在 `version/v4.10.0` 上顺序集成（最近为 V410-T08A 中央集成/可见全项目一致性接线，PR #936 合并于 `d864465a08ef873c94a78d1a0d0c19fafce6c617`）。本条目只记录实际集成事实；不含 Candidate Freeze、Hidden Validation、Release Qualification、main 合并、tag 或发布任何断言；v4.8.0 及以下条目全部保留为历史谱系。
+
 ## v4.9.0 — Unreleased version-branch candidate
 
 v4.9.0 的谱系组合候选：将 integrated current `main`（`92e4f764a2630a131d3f156b39f0f09064c9849e` / tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`，携带 v4.1–v4.8 集成内容与 v4.9 planning lane）整体并入 v4.9 working line `version/v4.9.0@916dcb66850e33cc2a77a7ef75b0968d5c150ccf`（tree `296878a84c2b2f97f1b6ac6f20edb9a7210435bc`，携带 v4.9 planning baseline 与 T001/T002 执行记录，及该线已完成的 T-005 执行记录）之上。本条目只记录实际发生的组合事实，不产生任何 release/integration 断言。

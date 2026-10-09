@@ -1,6 +1,6 @@
 {
   "fixture_id": "gate-currentness/successor_chain",
-  "description": "TEST_MATRIX T02 — successor/full/complete-delta Review semantics and carried findings (owners: DEVELOPMENT_WORKFLOW Stage 2.6/§4.4 + review-aggregation-v1 finding-union-blocker-dominance + L2 §9 + EXECUTION_ARCHITECTURE §28.5). Unresolved findings carry forward; only per-finding successor verification or owning-authority disposition empties the set; same-subject re-dispatch for PASS and fresh-reviewer PASS over an unresolved blocker are rejected.",
+  "description": "TEST_MATRIX T02 — successor/full/complete-delta Review semantics and carried findings (owners: DEVELOPMENT_WORKFLOW Stage 2.6/§4.4 + review-aggregation-v1 finding-union-blocker-dominance + L2 §9 + EXECUTION_ARCHITECTURE §29.5). Unresolved findings carry forward; only per-finding successor verification or owning-authority disposition empties the set; same-subject re-dispatch for PASS and fresh-reviewer PASS over an unresolved blocker are rejected.",
   "findings": [
     { "finding_id": "F-ADV-1", "state": "UNRESOLVED", "severity": "BLOCKER", "origin_subject": "sha:1111111111111111111111111111111111111111" },
     { "finding_id": "F-ADV-2", "state": "UNRESOLVED", "severity": "MAJOR", "origin_subject": "sha:1111111111111111111111111111111111111111" }

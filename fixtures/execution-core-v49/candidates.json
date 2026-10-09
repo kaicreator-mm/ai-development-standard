@@ -1,6 +1,6 @@
 {
   "fixture_id": "execution-core-v49/candidates",
-  "description": "Section 27.2 + 28.4 eligibility candidates. Hard filters (including Role Profile hard predicates) evaluate BEFORE ranking; profile-blocked or UNKNOWN candidates can never rank into dispatch.",
+  "description": "Section 27.2 + 29.4 eligibility candidates. Hard filters (including Role Profile hard predicates) evaluate BEFORE ranking; profile-blocked or UNKNOWN candidates can never rank into dispatch.",
   "candidates": [
     {
       "candidate_id": "c-eligible-low-rank",

@@ -180,8 +180,8 @@ def classify_and_route(
 
     # 3. bookkeeping: execution-container operations only (reference §2.1)
     if action == PHASE_ACTION:
-        # §28.2 envelope predicate first: a phase not proven in-envelope is BLOCKED,
-        # never auto-admitted (Frozen Product L; §28.7 binding L)
+        # §29.2 envelope predicate first: a phase not proven in-envelope is BLOCKED,
+        # never auto-admitted (Frozen Product L; §29.7 binding L)
         conditions = proposal["envelope_conditions"]
         if any(value is True or value is None for value in conditions.values()):
             return decision(
@@ -428,7 +428,7 @@ class JitDagGovernanceClassification(unittest.TestCase):
             "governance with the corresponding mutation evidence.",
             self.execution_standard,
         )
-        self.assertIn("changes route to v4.3 governance (§28.2). [K02/K09]",
+        self.assertIn("changes route to v4.3 governance (§29.2). [K02/K09]",
                       self.execution_standard)
 
     def test_g05_l2_negatives_exact_refs(self) -> None:
@@ -538,7 +538,7 @@ class JitDagGovernanceClassification(unittest.TestCase):
             "scripts/test_v43_task_dag_governance.py",
             "scripts/test_v43_dag_mutation_contract.py",
             "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
-            "§28.2",
+            "§29.2",
             "b9fe0cc7089f64929b4bcf45f7230d950e864db2",
             "4f358ba2b32e01ae17ddcdf970151cf28e44bb3f",
         ):

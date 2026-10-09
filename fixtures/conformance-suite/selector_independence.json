@@ -1,7 +1,7 @@
 {
   "fixture_id": "v4.9.0-T-012-C05-selector-independence-conflicts",
   "owner_refs": [
-    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility",
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md#294-role-profile-hard-predicates-in-v48-eligibility",
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md#272-hard-filters-before-ranking",
     "standards/ASSURANCE_PLAN_STANDARD.md#9-gate-authority-precedence-before-reduction-or-composition",
     "docs/implementation/4.9.0/PRD.md#g-wrong-role--independence-rejection",
@@ -37,7 +37,7 @@
     {
       "scenario_id": "C05_S2_profile_block_cannot_be_promoted_by_ranking_inputs",
       "exact_refs": [
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#284-role-profile-hard-predicates-in-v48-eligibility"
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md#294-role-profile-hard-predicates-in-v48-eligibility"
       ],
       "frozen_scenario": "G",
       "candidates": [

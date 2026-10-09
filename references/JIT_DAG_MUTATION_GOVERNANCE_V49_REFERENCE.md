@@ -21,11 +21,11 @@ Owner guidance (non-normative)        references/TASK_DAG_GOVERNANCE_REFERENCE.m
 Owner test suites (execution ref)     scripts/test_v43_task_dag_governance.py
                                       scripts/test_v43_dag_mutation_contract.py
 JIT predicate this wires into         standards/EXECUTION_ARCHITECTURE_STANDARD.md
-                                      §28.2 legal JIT phase predicate (envelope conditions;
+                                      §29.2 legal JIT phase predicate (envelope conditions;
                                       "A material topology change ... is not a JIT phase:
                                       it routes to v4.3 Task DAG mutation governance")
-                                      §28.3 WAITING_LINEAGE derived non-dispatch projection
-                                      §28.7 acceptance binding L -> [K02/K09] + L2 negatives
+                                      §29.3 WAITING_LINEAGE derived non-dispatch projection
+                                      §29.7 acceptance binding L -> [K02/K09] + L2 negatives
 Frozen Product item L                 docs/implementation/4.9.0/PRD.md "### L. Task-DAG scope
                                       protection" — adaptive orchestration cannot invent new
                                       semantic implementation work/dependencies outside Frozen
@@ -61,9 +61,9 @@ Bookkeeping action vocabulary (execution-container operations only):
 ```json
 {
   "bookkeeping_actions": {
-    "jit_phase_dispatch_same_issue": "Just-in-time phase materialized on the SAME native Issue inside the §28.2 Task envelope (E1-E4 hold); one Dispatch/Claim lifecycle; per-phase admission",
+    "jit_phase_dispatch_same_issue": "Just-in-time phase materialized on the SAME native Issue inside the §29.2 Task envelope (E1-E4 hold); one Dispatch/Claim lifecycle; per-phase admission",
     "claim_or_dispatch_record": "Claim/dispatch state records for an existing Task; the section 11 lifecycle only",
-    "derived_state_projection": "Derived recomputable projections such as §28.3 WAITING_LINEAGE; non-dispatchable, non-authoritative, never a canonical Issue state",
+    "derived_state_projection": "Derived recomputable projections such as §29.3 WAITING_LINEAGE; non-dispatchable, non-authoritative, never a canonical Issue state",
     "branch_or_worktree_creation": "JIT branch/worktree creation per DEVELOPMENT_WORKFLOW JIT branch rules; code ancestry is not DAG authority (owner §8)",
     "pr_stack_creation": "Stacked PRs for a real code-baseline dependency only; they never replace Task DAG dependencies (owner §8)",
     "status_label_or_annotation_update": "Labels, comments, body status tables, checklists; body text MUST NOT substitute for native live dependency edges (owner §2)"
@@ -75,11 +75,11 @@ Bookkeeping NEVER silently changes semantic topology: zero native edge changes, 
 
 ### 2.2 Semantic mutation — routes to the v4.3 owner
 
-A proposal is a **semantic mutation** when its action is a material mutation class in owner §3 (`ADD`, `SPLIT`, `MERGE`, `SUPERSEDE`, `ADD_DEPENDENCY`, `REMOVE_DEPENDENCY`, `CHANGE_LANE`, `CHANGE_INTEGRATION_OWNER`, `DEFER`, or a later owner extension of that vocabulary). Every semantic mutation — including runtime-originated ones — routes through the v4.3 governance: `dag-mutation-record-v1` evidence (owner §4), authorized native mutation execution (owner §7), and read-back of the exact resulting graph. Per EXECUTION_ARCHITECTURE_STANDARD §28.2: a material topology change is not a JIT phase.
+A proposal is a **semantic mutation** when its action is a material mutation class in owner §3 (`ADD`, `SPLIT`, `MERGE`, `SUPERSEDE`, `ADD_DEPENDENCY`, `REMOVE_DEPENDENCY`, `CHANGE_LANE`, `CHANGE_INTEGRATION_OWNER`, `DEFER`, or a later owner extension of that vocabulary). Every semantic mutation — including runtime-originated ones — routes through the v4.3 governance: `dag-mutation-record-v1` evidence (owner §4), authorized native mutation execution (owner §7), and read-back of the exact resulting graph. Per EXECUTION_ARCHITECTURE_STANDARD §29.2: a material topology change is not a JIT phase.
 
 ### 2.3 Ambiguous — fail closed
 
-Unknown actions, unprovable (`unknown`) conditions/effects, or bookkeeping actions carrying topology effects classify as ambiguous. Ambiguous semantic impact routes to the material mutation path or `BLOCKED`; it is **never** silently materialized as new topology and never downgraded to bookkeeping (owner §10; §28.2 fail-closed posture).
+Unknown actions, unprovable (`unknown`) conditions/effects, or bookkeeping actions carrying topology effects classify as ambiguous. Ambiguous semantic impact routes to the material mutation path or `BLOCKED`; it is **never** silently materialized as new topology and never downgraded to bookkeeping (owner §10; §29.2 fail-closed posture).
 
 ## 3. Routing table (machine-readable)
 
@@ -129,9 +129,9 @@ R4 CURRENTNESS      the record binds the exact subject it reviewed (topology dig
                     native mutation (owner §9); stale or unprovable currentness fails closed
                     (owner §10) and preserves the prior live DAG
 R5 ENVELOPE         a runtime proposal that would create a new semantic concern, change
-                    ownership/dependency semantics, or widen scope is out of the §28.2 JIT
+                    ownership/dependency semantics, or widen scope is out of the §29.2 JIT
                     envelope by definition and must go through R1-R4; it is never auto-admitted
-                    as a JIT phase (Frozen Product L; §28.7 binding L)
+                    as a JIT phase (Frozen Product L; §29.7 binding L)
 R6 SINGLE OWNER     runtime classification adds no mutation authority: no second DAG service,
                     no new state vocabulary, no automatic native dependency mutation inside
                     the schema (owner §11); the v4.3 owner stays canonical

@@ -79,7 +79,29 @@ required evidence
 
 ### Stage 1 — Product / Scope
 
-按需执行 L1 Product Evidence，并冻结 PRD / Scope。
+Stage 1 把 Idea/Intent 与 Stage 0 Intake/Baseline 的结果收敛为被 Product authority 冻结的产品语义。对 material / new normative Product scope，canonical Stage-1 序列 MUST 可按顺序重构：
+
+```text
+Idea/Intent
+→ Intake/Baseline（Stage 0）
+→ semantic L1 Product Evidence
+→ Product Research（as needed）
+→ Draft PRD / Scope
+→ selected Product Review
+→ Product Freeze
+```
+
+语义与权威边界：
+
+- **semantic L1 Product Evidence** 是语义框架/证据步骤，回答“解决什么问题、为谁解决、成功标准是什么”。L1 不要求独立成文件，不得被坍缩为强制外部研究。
+- **Product Research** 仅当现有/静态证据不足以做出 PRD 决策时按比例选择（as needed），范围与所需决策成比例；它对产品 UNKNOWN 给出 disposition 并综合证据。Product Research 生产 evidence，不持有 Product authority，不构成第二产品权威；其结论由 Product authority 采纳或拒绝。
+- **selected Product Review** 是对 Draft PRD / Scope 这一确切 Product subject 的独立 evidence/judgment，不是 universal Product Review gate。它不同于 Stage 2.6 面向 implementation Task/PR 的 Review Policy，也不替代后者。选择规则由 applicable Product/project policy 与风险决定，与 Frozen Product / L2 一致：
+  - Product scope 为新/实质变更的 normative、semantic、compatibility-sensitive 或 authority-sensitive 内容，或其它 applicable policy 要求时，Product Review MUST 执行；
+  - 低风险/已在既有范围内的 Product Freeze，当无任何 owner 要求时，Product Review 可选择或省略；
+  - 适用性 UNKNOWN 或相互矛盾时 fail closed，交给 authority/risk disposition，不得静默降级。
+  - 低风险/证据充分的工作在无任何更高权威 owner 要求时，不得被强制加入独立 Product Research 或独立 Product Review，可以保持 compact/inline（与 §7 快速路径一致）；applicable policy 要求的语义权威/证据不得因 compact/inline 而被跳过。
+- **Product Freeze** 是 Product authority 的显式冻结行为，把一个确切 Product subject 绑定为冻结记录；与本文 “PRD / Scope Freeze” 是同一事件，不是新增 gate。Reviewer 可以推荐 Freeze，但 Product Review PASS、研究结论或 Execution Agent 的意见都只是 evidence/judgment，本身不产生冻结效力，不能替代或自动产生 Product Freeze；只有 Product authority（或其授权的 routing rule）授权该 transition 时，Controller 才能确定性地记录 Freeze。
+- **Architecture Research / Research Demo 属于 Stage 2**，不得前移到 Product Freeze 之前充当产品发现（product discovery）的替代品。Product Freeze 后若 Architecture Research 发现产品范围不可行/矛盾，走既有 Product thaw/contradiction 路径。
 
 PRD / Scope Freeze 应明确：
 
@@ -94,7 +116,7 @@ PRD / Scope Freeze 应明确：
 
 #### Stage 1 Checkpoint
 
-PRD Freeze 和最终被下游依赖的 L1 Evidence MUST 形成远端 checkpoint。
+PRD Freeze（Product Freeze）和最终被下游依赖的 L1 Evidence MUST 形成远端 checkpoint。
 
 在 Version Branch Mode，默认直接形成 `version/vX.Y.Z` 上的稳定 commit/checkpoint。不要为了每个 Evidence 文件机械创建独立 branch。
 
@@ -607,6 +629,69 @@ Review Policy 使用同一 authority chain。Standard default 不再为所有 Ve
 若要新增 mandatory release gate 或强制 Review，必须有相应 authority。
 
 Architecture Research Demo 本身也不是默认 mandatory release gate；它只在 Stage 2 的 material UNKNOWN 需要 executable evidence 时成为 L2 Freeze 的前置证据。
+
+### Gate applicability 与合法来源
+
+Required gate 的 applicability 由同一 authority chain 决定，并针对确切 subject（Task / PR / candidate / validation tuple）解析。
+
+下列依据 MUST NOT 收窄、豁免、跳过或降级 required gate，也 MUST NOT 使其被记为 `NOT_APPLICABLE`：
+
+```text
+cost / 预算 / 资源紧张
+effort、turnaround / 交付速度 / 计划或发布压力
+变更文件数、行数、diff 大小或“看起来很小”
+docs-only / 机械生成 / 非代码外观
+Agent 或模型自评的 confidence / “看起来没问题”
+历史惯例 / 旧脚本先例 / 无人反对 / 沉默
+```
+
+- 这些依据 MAY 参与排序、调度与成本分配；MUST NOT 改变 gate applicability 或 gate 状态。
+- “docs-only / 机械生成 / 低风险”等类别只有在 authority 自身声明该类别为 `not-required` 时才产生 `NOT_APPLICABLE`（例如 Stage 2.6 的 Review Policy 选择）；executor MUST NOT 从变更外观反推 applicability。
+- 已经执行的 required gate，MUST NOT 因其结果不便而被追认为 `NOT_APPLICABLE`。
+- 降低 authority 已声明的 `required`（Review Policy 或其它 required gate）需要同级或更高 authority；lower-authority 的静默降级始终无效，只有 owning authority 的显式 disposition 才可改变 applicability。
+
+### Applicability UNKNOWN 或矛盾：fail closed
+
+当 required gate 的 applicability 为 UNKNOWN、证据不足、证据冲突，或 authority 之间相互矛盾时，MUST fail closed：
+
+```text
+MUST NOT 以 Builder/Controller/Validator 偏好裁决
+MUST NOT 以文件/发现顺序或先到先得裁决
+MUST NOT 以沉默、无人反对或历史先例裁决
+MUST NOT 记为 NOT_APPLICABLE
+MUST NOT 记为 PASS
+```
+
+- 该 gate 保持未满足（`NOT_RUN` / `BLOCKED`），直到 owning authority 给出 disposition。
+- disposition 路由到拥有该 gate 的 authority（Frozen PRD/Contract、Frozen Architecture、`PROJECT_OVERRIDES`、Task acceptance），并记录为可追溯事实。
+- fail closed 只影响该 gate 与真实依赖它的下游；与其无依赖关系的独立工作继续推进（§5）。
+
+### Repair routing：root defect class
+
+Required gate 出现 `FAIL`、finding 或 blocker 后，repair 必须归因到 root defect class，而不是只处理被引用的表象/症状：
+
+```text
+product semantics / authority contradiction
+architecture / public contract
+implementation defect
+test / fixture / evidence defect
+environment / toolchain / external boundary
+execution / attribution defect
+gate applicability 或 authority ambiguity（→ 上一节）
+```
+
+- 每个 repair MUST 声明它处理的 root class，并给出可证伪的收敛证据：该 root class 不再复现，而不只是表象消失。
+- 让表象消失但不处理 root class 的动作不构成 repair，也不是收敛证据，例如：放宽/删除/跳过检查或断言、把 required gate 改判为 `NOT_APPLICABLE`、重写或重新解释既有 evidence、只改文档/注释措辞、只把 finding 标记为已处理。
+- 若 root class 属于当前 Task write set 之外的所有者（产品语义、架构、公共 contract、其它组件、环境/工具链），MUST 把 repair 路由到该 owner 的既有路径（Product thaw/contradiction、Architecture Amendment、Interface Compatibility、环境 owner 等）；MUST NOT 在同一 PR 内静默扩大 scope，MUST NOT 就地重定义更高 authority。
+- repair 沿用既有 routing 与状态（Stage 4 的 Reviewer route 与 validation repair 路径）；本节不新增 route、workflow state 或 gate state。
+
+### Non-converging repair：escalation，而非 universal retry cap
+
+- 当同一 root class 反复复现，或新的 repair attempt 未带来新的 root-class 归因、新的可证伪证据或新的 disposition 时，即构成 non-converging；MUST escalation/adjudication，MUST NOT 无界循环。
+- escalation 指把事实与证据交回 owning authority 做 disposition：重新归因 root class、修订 authority/contract、在 authority 明确授权下做有界例外、或保持 `BLOCKED`。能否继续由 disposition 决定，MUST NOT 由重试计数决定。
+- 不存在 universal retry cap：任何固定次数/时间上限本身不是 gate authority，MUST NOT 独立地把 non-convergence 转成 `PASS`、`FAIL`、closeout 或 waiver；数值/计数只能作为触发路由与升级的 operational guard，与 `EXTERNAL_SYSTEM_EXECUTION_STANDARD.md`、`VALIDATION_STANDARD.md` 一致。
+- 反向同样成立：无限重试与无限等待被禁止；一旦没有新的收敛证据，就必须 escalation，而不是反复重跑同一 subject 期待不同结果。
+- 没有新的收敛证据时，重复的 repair attempt MUST NOT 产生新的 `IMPLEMENTATION_READY`、`state:merge-ready`、Review PASS 或 Validation PASS 结论。
 
 ## 5. Blocker Propagation
 

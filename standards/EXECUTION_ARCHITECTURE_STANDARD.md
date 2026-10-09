@@ -374,6 +374,12 @@ LINEARIZABLE_CONDITIONAL_WRITE
 
 `LINEARIZABLE_CONDITIONAL_WRITE` means the adapter/storage layer provides a real conditional mutation with one serialization point for a claim key, using an expected revision/generation or equivalent compare-and-set token. A stale expected revision MUST fail the write rather than allow two accepted dispatches/claims. The protected key is at least `(repository, work item, role)` and MAY include a higher-authority compatibility/concurrency group when explicitly authorized parallelism exists.
 
+#### 11.1.1 Derived protected claim key, compatibility groups, and admission generations (v4.10, additive)
+
+The coarse `(work item, role)` protected key derives to the four-tuple `(repository, task, role, normalize_group(compatibility_group))`. An omitted/null `compatibility_group` normalizes to the reserved `__default__` group; the derived key serialization is `repo#task:role:group` and is deterministic — reordering, extra segments, or a non-group identifier (revision/session id) in slot 4 fails closed. A non-default `compatibility_group` is legal only with a durable, resolvable higher-authority validation reference (`compatibility_authority_ref`) explicitly authorizing the parallelism; authorization never downgrades to `__default__` by inference. The execution environment (`execution_environment = WEB | LOCAL`) and the scheduling origin (`scheduler_origin`) are request/provenance projections: they are never inputs to the protected key, to eligibility, or to any authority decision, and provider/model identity remains operator provenance only.
+
+Per claim key, `admission_generation` is a monotonic compare-and-set counter: a reservation moves the current generation `g` to `g+1`; a claim MUST reference the current generation; a writer presenting a stale generation resolves `STALE` with zero canonical mutation (a losing proposal/claim MAY be dispositioned `STALE | SUPERSEDED | REJECTED` as derived state and never rewrites canonical facts); an identical operator re-claiming the same dispatch at the current generation is idempotent; terminal states never decrement a generation. Where more than one active dispatch legitimately exists under authorized compatible groups, the derived-state projection (`active_dispatches`) exposes all of them stably ordered by derived key then dispatch id; legacy singular active-dispatch fields remain readable and MUST be null/omitted when more than one entry exists. Scheduler checkpoints, proposals, and admission wake-ups are coordination requests with `NON_AUTHORITATIVE_DERIVED_STATE` semantics: accepted canonical dispatch/claim facts and their terminal states take precedence over any proposal, and a terminal never revives from a stale proposal.
+
 The same serialization mode MUST protect the earlier dispatch-reservation step. Two schedulers that both observed no active dispatch MUST NOT be able to publish two incompatible READY/QUEUED dispatch identities for the same protected key. Dispatch reservation and later worker claim may be separate lifecycle transitions, but each must advance the same serialized claim key/generation or pass through the same single writer.
 
 A transient mutex/lease MAY implement the serialization mechanism, but it is coordination only and MUST NOT become unrecoverable project authority. Accepted canonical dispatch/claim facts still have to be published to GitHub and reconstructible after runtime loss. If a crash leaves publication outcome ambiguous, the controller MUST fail closed, re-read/reconcile durable facts, and MUST NOT issue another incompatible dispatch until the ambiguity is resolved.
@@ -775,7 +781,77 @@ Until reconciliation determines the durable outcome, replacement admission for t
 
 These rules reuse the existing GitHub/repository fact plane, section 11 Claim lifecycle, existing runner/resource owners, and existing Interchange family. They create no second scheduler/state database, durable Availability owner, or new Exchange family.
 
-## 28. v4.9 proportional orchestration core
+## 28. Responsibility and control semantics for delegated execution
+
+This section settles responsibility, authority and human-control semantics when work is executed across operators (human or agent, in chains or in parallel). It is additive and composes with the existing `Work Item → Dispatch → Claim → result/evidence` architecture (section 11), the Human Decision Queue (section 19), closed-loop orchestration (section 25) and composite admission (section 27). It creates no nested authority, no second Claim lifecycle, no second Human approval workflow, no new workflow/dispatch/candidate/release state, no scheduler, and no event family. Delegation and handoff are durable attribution over existing Claim/Dispatch facts, not a parallel lifecycle.
+
+### 28.1 Delegated subwork and responsibility handoff
+
+Two responsibility relations cover cross-operator execution:
+
+```text
+DELEGATED_SUBWORK
+  delegator retains active responsibility;
+  child performs bounded work and returns result/evidence
+
+RESPONSIBILITY_HANDOFF
+  active responsibility/control transfers explicitly
+  within bounded delegatable authority
+```
+
+- `DELEGATED_SUBWORK` is the default for decomposition (subtasks, child dispatches, nested Execution Packs). The delegator remains the responsibility owner toward the project; the child owes a bounded result and faithful evidence to the delegating operator. A returned result/evidence reference closes the child's obligation; it does not move responsibility.
+- `RESPONSIBILITY_HANDOFF` exists only as an explicit durable handoff fact naming the transferring operator, the receiving operator, the transferred scope and the exact work identity. A handoff is valid only within the transferring operator's legally delegatable authority (section 28.3). Silence, chat transport, capability use, dispatch delivery or a child beginning work never transfers responsibility by itself.
+
+For a given work identity, exactly one operator owns active responsibility at any material point. Parallel `DELEGATED_SUBWORK` to several children is legal and keeps one owner (the delegator); a second `RESPONSIBILITY_HANDOFF` of the same work while one is active is a duplicate and MUST be rejected like any incompatible second claim.
+
+### 28.2 Reconstructible responsibility and causation
+
+For material authority-bearing work, durable facts MUST be sufficient to reconstruct:
+
+```text
+requester/delegator
+responsibility owner at each material point
+executor/operator
+parent/causal work or dispatch reference
+subject/authority scope
+result/evidence return reference
+handoff/delegation mode
+```
+
+These are semantic facts, not a requirement that each listed name become a new schema field. Existing Dispatch/Claim/Event/Issue references are reused first; additive machine fields are justified only where deterministic reconstruction is otherwise impossible, and such projection MUST consume the semantics settled here rather than redefine them (route to the GitHub/event/schema projection concern). Attribution composes with section 11.2 active-ownership visibility. Where a required fact is ambiguous or missing, responsibility/causation reconstruction fails closed to the owning authority instead of being guessed.
+
+### 28.3 Authority attenuation
+
+Effective authority of a child operator is bounded by the intersection:
+
+```text
+EFFECTIVE_CHILD_AUTHORITY
+<= legally delegatable authority of the transferring/delegating operator
+∩ current Task/Work authority (frozen scope, allowed write set, acceptance)
+∩ role authority
+∩ project/external authorization
+```
+
+- A child operator MUST NOT exercise authority beyond this intersection, regardless of capability.
+- Capability, credentials, tool access, environment access, model capability or dispatch delivery NEVER create or expand authority; they are execution means, not authorization.
+- Delegation chains cannot launder authority: no composition of delegations or handoffs confers authority that no participant holds from its canonical owner.
+- Security or external-authorization ambiguity fails closed to the owning authority.
+
+### 28.4 Human control points
+
+Human controllability uses the existing Human Decision Queue (section 19), the dispatch terminal/`CANCELLED`/`TIMEOUT`/`STALE` transitions (section 11) and the normal higher-authority decision chain. No second control workflow is created.
+
+Required behavior:
+
+- humans are not woken merely to relay prompts, poll CI, or compute deterministic ready sets; routine deterministic relay/polling work runs without human intervention by default;
+- authority-sensitive Product/Architecture/security/public-contract/gate/limitation/destructive decisions route to the appropriate human/Product authority unless explicitly delegated;
+- an authorized human can inspect current authority/evidence/claim state and, where policy permits, pause/stop/cancel/redirect future automated transitions;
+- causation for authority-bearing decisions is durably reconstructible (section 28.2).
+
+Human controllability is a hard product behavior. Human line-by-line code reading is not.
+
+> Numbering note: this section was authored and released as `§28` in the v4.9 line on `main`. At the v4.10 integration it is renumbered `§29` because `§28` is the v4.10 responsibility/human-control section above (added by V410-T02A). Historical v4.9 references to `§28.x` resolve to `§29.x` in this tree; the v4.9 release artifacts at their own revisions retain the original numbering, and all v4.9-side citations in this tree were mechanically rebound to `§29` in the same integration merge.
+## 29. v4.9 proportional orchestration core
 
 This section composes the v4.9 proportional-orchestration semantics additively on top of sections 1-27. **READY, Dispatch, and Claim remain canonical**; the one Dispatch/Claim lifecycle of section 11 (with 11.1 serialization and 27.3 composite admission) remains the only admission path, and no rule below creates a second scheduler, second claim lifecycle, runtime authority store, workflow state, or parallel owner/family.
 
@@ -794,7 +870,7 @@ Release applicability             standards/RELEASE_STANDARD.md §11 (gate × su
 
 A consumed contract disagrees with the wiring below, or a consumed ref is missing/stale at the candidate => stop as `BLOCKED`; never last-writer-wins, never silent re-interpretation, never inline-copying owner content.
 
-### 28.1 Assurance Plan currentness consumption at architecture-owned transitions
+### 29.1 Assurance Plan currentness consumption at architecture-owned transitions
 
 An authority-bearing transition owned by this architecture MUST verify the governing Assurance Plan's `currentness_binding.state` immediately before acting:
 
@@ -820,7 +896,7 @@ UNKNOWN     missing, ambiguous, or unprovable currentness
 
 Currentness consumption creates no new authority: the plan proves derivation only (it creates no Gate PASS, Task scope, Release applicability, or finding disposition), and verdict inferences `CURRENT -> PASS/READY/state:ready` remain forbidden per registry F13-F16.
 
-### 28.2 Legal JIT phase predicate
+### 29.2 Legal JIT phase predicate
 
 A just-in-time role/gate phase (section 6 "Just-in-time task branches") is dispatchable only when all of the following evaluate true against current durable facts:
 
@@ -852,16 +928,16 @@ Verdict is a pure function of those inputs:
 
 ```text
 all of P1-P3 (with E1 or E2, and no envelope violation)  => READY
-any input missing/unknown, or P2 lineage not current      => WAITING_LINEAGE (derived, §28.3)
+any input missing/unknown, or P2 lineage not current      => WAITING_LINEAGE (derived, §29.3)
 any input failed, or envelope violation, or admission
 unavailable/failed                                        => BLOCKED
 ```
 
 `READY` requires everything to pass; there is no permissive default. A phase that cannot be proven in-envelope is never treated as in-envelope. A material topology change (new semantic Task, added/removed blocked-by edge, split/merge/supersede) is not a JIT phase: it routes to v4.3 Task DAG mutation governance with the corresponding mutation evidence.
 
-### 28.3 WAITING_LINEAGE derived non-dispatch projection
+### 29.3 WAITING_LINEAGE derived non-dispatch projection
 
-`WAITING_LINEAGE` is a derived projection over current durable facts, registered as the `waiting_lineage` state dimension in `registries/state-dimensions-v1.json` (`OWNER_DEFINED`, canonical owner = this standard). It applies when §28.2 P2 (or any required predecessor-owned surface) is not integrated/current for dependent execution.
+`WAITING_LINEAGE` is a derived projection over current durable facts, registered as the `waiting_lineage` state dimension in `registries/state-dimensions-v1.json` (`OWNER_DEFINED`, canonical owner = this standard). It applies when §29.2 P2 (or any required predecessor-owned surface) is not integrated/current for dependent execution.
 
 `WAITING_LINEAGE` is:
 
@@ -873,9 +949,9 @@ NON_AUTHORITATIVE  it is recomputable cache/projection (section 4.2); deleting i
 REASON_BOUND       each instance carries its unresolved lineage/ref reason, recomputed from facts
 ```
 
-Known-not-ready work stays in the wait projection instead of dispatching work whose only legal result is a guaranteed-BLOCKED sequence block, and no guaranteed-BLOCKED Builder dispatch is created merely to confirm a known lineage absence. The forbidden inferences F11 (`state:done -> LINEAGE_CURRENT`), F17 (`WAITING_LINEAGE -> state:blocked`), F18/F19 (`WAITING_LINEAGE -> gate PASS/FAIL`) hold: a predecessor's completion never inherits lineage currentness, and the wait posture never becomes a workflow/gate verdict. When the required predecessor surface becomes integrated/current, recompute drops the projection and normal §28.2 evaluation resumes.
+Known-not-ready work stays in the wait projection instead of dispatching work whose only legal result is a guaranteed-BLOCKED sequence block, and no guaranteed-BLOCKED Builder dispatch is created merely to confirm a known lineage absence. The forbidden inferences F11 (`state:done -> LINEAGE_CURRENT`), F17 (`WAITING_LINEAGE -> state:blocked`), F18/F19 (`WAITING_LINEAGE -> gate PASS/FAIL`) hold: a predecessor's completion never inherits lineage currentness, and the wait posture never becomes a workflow/gate verdict. When the required predecessor surface becomes integrated/current, recompute drops the projection and normal §29.2 evaluation resumes.
 
-### 28.4 Role Profile hard predicates in v4.8 eligibility
+### 29.4 Role Profile hard predicates in v4.8 eligibility
 
 Role Execution Profile v1 instances feed the section 27.2 hard-eligibility resolver as additional hard predicates; they are not a second eligibility engine and never replace the frozen v4.8 filter set. For every `(work item, role, candidate)` choice:
 
@@ -891,9 +967,9 @@ profile source refs stale/missing, or profile claim_policy_ref/terminal_authorit
 
 Only `ELIGIBLE` candidates enter optional ranking (§27.2); priority, cost, latency, availability, or model/provider strength MUST NOT promote a profile-blocked candidate into dispatch. A profile never grants role actions, terminal authority, executor capability, or a claim-policy switch: `claim_policy_ref` either resolves into the existing section 11 Claim rules or the profile is rejected; provider/model identity is provenance and authority-inert.
 
-### 28.5 Adverse-finding carry-forward and no-review-shopping routing
+### 29.5 Adverse-finding carry-forward and no-review-shopping routing
 
-Finding aggregation stays owned by the existing Assurance Plan / Adversarial Review semantics (ASSURANCE_PLAN_STANDARD.md §3/§13). The reducer keeps a durable unresolved-finding set — with its `unresolved_finding_digest` bound into plan currentness (§28.1) — separate from latest-verdict chronology:
+Finding aggregation stays owned by the existing Assurance Plan / Adversarial Review semantics (ASSURANCE_PLAN_STANDARD.md §3/§13). The reducer keeps a durable unresolved-finding set — with its `unresolved_finding_digest` bound into plan currentness (§29.1) — separate from latest-verdict chronology:
 
 ```text
 a new reviewer, a new model, a new route, a new SHA, or an unrelated PASS
@@ -914,14 +990,14 @@ new reviewer PASS over an unresolved blocker                    => blocker stand
 re-review after an adverse terminal ONLY with                    =>
     a successor subject from an authorized repair path, or
     an owning-authority disposition explicitly authorizing re-review
-new adverse finding between Dispatch and Claim                   => Claim admission fails/recomputes (§28.1)
+new adverse finding between Dispatch and Claim                   => Claim admission fails/recomputes (§29.1)
 ```
 
 The orchestrator/worker cannot supersede, ignore, or re-dispatch around an adverse independent terminal; verdict authority stays with the Review/Validation owners, and carry-forward creates no new finding-equivalence, severity, or aggregation authority.
 
-### 28.6 Deterministic recompute on currentness drift; race/drift fail-closed
+### 29.6 Deterministic recompute on currentness drift; race/drift fail-closed
 
-The reducer is a deterministic pure function of current durable facts: identical fact planes produce identical derived state (ready sets, plan-currentness posture, JIT verdicts, WAITING_LINEAGE projections, unresolved-finding sets). There is no hidden mutable latch: any cached derived value — including a previously `CURRENT` plan binding, a previously `READY` JIT verdict, or a previously accepted claim-admission precondition — is recomputed at every §28.1 recompute point from facts alone. Drift therefore can only cause recompute, never stale-latch continuation, and crash/restart reconstruction replays to the same state from GitHub/repository/evidence facts alone.
+The reducer is a deterministic pure function of current durable facts: identical fact planes produce identical derived state (ready sets, plan-currentness posture, JIT verdicts, WAITING_LINEAGE projections, unresolved-finding sets). There is no hidden mutable latch: any cached derived value — including a previously `CURRENT` plan binding, a previously `READY` JIT verdict, or a previously accepted claim-admission precondition — is recomputed at every §29.1 recompute point from facts alone. Drift therefore can only cause recompute, never stale-latch continuation, and crash/restart reconstruction replays to the same state from GitHub/repository/evidence facts alone.
 
 When currentness drifts between a Dispatch reservation and its Claim admission (or between Claim and merge), the race resolves fail-closed under the existing section 11/11.1/27.3 rules:
 
@@ -935,31 +1011,31 @@ outcomes never include "both claims accepted" or "accepted claim silently lost".
 
 A rejected or recomputed admission MUST NOT publish a canonical accepted claim, enter RUNNING, mutate implementation source, or partially mutate workflow state. Deterministic simulation of concurrent claims versus drift MUST converge to one of: single accepted claim, or no accepted claim with `BLOCKED`/recompute — and the same interleaving always yields the same outcome.
 
-### 28.7 Acceptance bindings
+### 29.7 Acceptance bindings
 
 The following Frozen Product acceptance scenarios bind to machine-checkable oracles in `scripts/test_v49_execution_core.py` (K01-K10) against `fixtures/execution-core-v49/`:
 
 ```text
 E same durable container, multiple independent phases
     -> distinct phases share one Issue only with distinguishable independence dimensions and
-       terminals; phase admission stays per-phase (§28.2), claims stay per-dispatch (§11). [K04/K09]
+       terminals; phase admission stays per-phase (§29.2), claims stay per-dispatch (§11). [K04/K09]
 F duplicate Claim race
-    -> only the accepted Claim starts authoritative incompatible work (§28.6/§11). [K07/K09]
+    -> only the accepted Claim starts authoritative incompatible work (§29.6/§11). [K07/K09]
 G wrong-role / independence rejection
     -> an otherwise capable agent is ineligible when independence/selector-conflict predicates
-       fail, regardless of ranking inputs (§28.4/§27.2). [K04/K09]
+       fail, regardless of ranking inputs (§29.4/§27.2). [K04/K09]
 K known sequence block
     -> work stays in the WAITING_LINEAGE non-dispatch projection instead of a guaranteed-BLOCKED
-       dispatch (§28.3). [K03/K09]
+       dispatch (§29.3). [K03/K09]
 L Task-DAG scope protection
     -> a JIT phase outside the Task envelope is BLOCKED, never auto-admitted; material topology
-       changes route to v4.3 governance (§28.2). [K02/K09]
+       changes route to v4.3 governance (§29.2). [K02/K09]
 M single-owner ambiguous reduction predicate
     -> ambiguous/unproven predicate yields UNKNOWN fail-closed => stronger path or BLOCKED,
-       never model-authorized reduction (§28.1/§28.4). [K01/K09]
+       never model-authorized reduction (§29.1/§29.4). [K01/K09]
 N adverse Review cannot be shopped around
     -> R1 blocking finding stands against any R2 PASS; re-review only via successor subject or
-       owning-authority disposition (§28.5). [K05/K09]
+       owning-authority disposition (§29.5). [K05/K09]
 ```
 
 The L2 currentness/JIT/adverse negatives bind to the same kernel: stale plan at Claim/merge continues => reject [K01]; `stale PASS -> successor PASS` without owner transfer => reject [K10]; `R1 FAIL -> R2 PASS` erasure and same-subject reviewer shopping => reject [K05/K10]; JIT phase not in Assurance Plan/Task Pack treated as in-envelope => reject [K02/K10]; `WAITING_LINEAGE` invented as canonical Issue state => reject [K03/K10]; predecessor not integrated but dependent execution started via generic rebind => reject [K03/K10].

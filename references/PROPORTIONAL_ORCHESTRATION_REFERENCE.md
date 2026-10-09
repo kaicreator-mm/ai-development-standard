@@ -1,17 +1,17 @@
 # Proportional Orchestration Reference
 
-Normative owner: `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §28 (v4.9 proportional orchestration core). This reference is implementation guidance only. It creates no authority, no lifecycle, no scheduler, and no state store; every semantic rule lives in the owner standard or the consumed contracts it cites.
+Normative owner: `standards/EXECUTION_ARCHITECTURE_STANDARD.md` §29 (v4.9 proportional orchestration core). This reference is implementation guidance only. It creates no authority, no lifecycle, no scheduler, and no state store; every semantic rule lives in the owner standard or the consumed contracts it cites.
 
 ## 1. What this reference covers
 
 ```text
 reducer state model                 deterministic projection over durable facts
-JIT phase predicate evaluation      fixed input order and verdict mapping (§28.2)
-currentness recheck points          Dispatch / Claim / merge / Freeze / RQ (§28.1)
-drift and recompute model           pure-function recompute, no stale latch (§28.6)
-WAITING_LINEAGE projection rules    derived, non-dispatch, reason-bound (§28.3)
-carry-forward reducer behavior      durable unresolved-finding set (§28.5)
-no-review-shopping routing          fail-closed re-review preconditions (§28.5)
+JIT phase predicate evaluation      fixed input order and verdict mapping (§29.2)
+currentness recheck points          Dispatch / Claim / merge / Freeze / RQ (§29.1)
+drift and recompute model           pure-function recompute, no stale latch (§29.6)
+WAITING_LINEAGE projection rules    derived, non-dispatch, reason-bound (§29.3)
+carry-forward reducer behavior      durable unresolved-finding set (§29.5)
+no-review-shopping routing          fail-closed re-review preconditions (§29.5)
 owner boundaries                    consumed contracts and forbidden over-claims
 ```
 
@@ -31,8 +31,8 @@ facts (durable, GitHub/repository/evidence)
 
 projection (derived, recomputable, NON_AUTHORITATIVE)
   ready_sets       builder/reviewer/validator/merge ready choices (§6, §27.2)
-  jit_verdicts     per phase: READY | WAITING_LINEAGE | BLOCKED (§28.2)
-  waiting_lineage  reason-bound derived wait posture (§28.3)
+  jit_verdicts     per phase: READY | WAITING_LINEAGE | BLOCKED (§29.2)
+  waiting_lineage  reason-bound derived wait posture (§29.3)
   plan_currentness CURRENT | STALE | UNKNOWN (owner: ASSURANCE_PLAN_STANDARD §12)
   unresolved_set   carried adverse findings (owner: Adversarial Review aggregation)
   claim_decisions  accepted/rejected canonical claims under §11/§11.1/§27.3 serialization
@@ -42,7 +42,7 @@ Same facts in, same projection out — at any time, on any host, after any crash
 
 ## 3. JIT phase predicate evaluation order
 
-Evaluate in fixed order; first non-passing gate decides the verdict (§28.2):
+Evaluate in fixed order; first non-passing gate decides the verdict (§29.2):
 
 ```text
 1. P1 dependencies       any native dependency not DONE            -> BLOCKED (known-illegal now)
@@ -64,7 +64,7 @@ Material topology change is never a phase: new semantic Task => `ADD`; new/remov
 
 ## 4. Currentness recheck points
 
-Every architecture-owned authority transition re-verifies `currentness_binding.state` immediately before acting (§28.1):
+Every architecture-owned authority transition re-verifies `currentness_binding.state` immediately before acting (§29.1):
 
 ```text
 Dispatch reservation/materialization   STALE/UNKNOWN => no dispatch; recompute or BLOCKED
@@ -87,12 +87,12 @@ drift detected at a recompute point
      crash/restart reaches the identical state
 ```
 
-Concurrent claim versus drift (§28.6): under §11.1 serialization, at most one admission linearizes against still-current predicates; competitors observing drifted/claimed state are atomically rejected as duplicate/stale; an admission racing a drift publishes no canonical claim and no partial state. Legal outcomes are exactly: one accepted claim, or zero accepted claims with recompute/`BLOCKED`. Never both-claim; never silently lost claim.
+Concurrent claim versus drift (§29.6): under §11.1 serialization, at most one admission linearizes against still-current predicates; competitors observing drifted/claimed state are atomically rejected as duplicate/stale; an admission racing a drift publishes no canonical claim and no partial state. Legal outcomes are exactly: one accepted claim, or zero accepted claims with recompute/`BLOCKED`. Never both-claim; never silently lost claim.
 
 ## 6. WAITING_LINEAGE projection rules
 
 ```text
-applies when      a required predecessor-owned surface (or §28.2 P2 input) is not
+applies when      a required predecessor-owned surface (or §29.2 P2 input) is not
                   integrated/current for dependent execution
 shape             derived posture + reason refs; NOT a workflow routing state, NOT a
                   canonical Issue state, NOT a gate verdict
@@ -103,14 +103,14 @@ inferences        F17  WAITING_LINEAGE     -> state:blocked
                   F18  WAITING_LINEAGE     -> gate PASS
                   F19  WAITING_LINEAGE     -> gate FAIL
 exit              predecessor surface becomes integrated/current -> recompute drops the
-                  posture; §28.2 evaluation resumes from current facts
+                  posture; §29.2 evaluation resumes from current facts
 ```
 
 Registered in `registries/state-dimensions-v1.json` as `waiting_lineage` (`OWNER_DEFINED`, canonical owner = `EXECUTION_ARCHITECTURE_STANDARD.md`).
 
 ## 7. Carry-forward reducer behavior
 
-The reducer maintains the unresolved-finding set as durable state consumed by currentness (its digest is part of the plan binding) and separated from verdict chronology (§28.5):
+The reducer maintains the unresolved-finding set as durable state consumed by currentness (its digest is part of the plan binding) and separated from verdict chronology (§29.5):
 
 ```text
 ingest    an adverse terminal adds its findings to the unresolved set; nothing else removes them
@@ -134,7 +134,7 @@ R1 returns a blocking finding
      blocker, discard-and-retry, supersede-and-redisplay around the terminal
 ```
 
-A new adverse finding arriving between Dispatch and Claim blocks Claim until the plan/currentness is refreshed (§28.1). The orchestrator cannot shop validators either: the same fail-closed preconditions apply to any independent verdict owner.
+A new adverse finding arriving between Dispatch and Claim blocks Claim until the plan/currentness is refreshed (§29.1). The orchestrator cannot shop validators either: the same fail-closed preconditions apply to any independent verdict owner.
 
 ## 9. Owner boundaries (consumed contracts)
 
