@@ -176,7 +176,9 @@ The rows below are **L2 candidate decisions**, subject to independent challenge.
 
 ### U02 R1 execution disposition — bounded exact research subject, not release proof
 
-Author-side #949 terminal `#949@6085049416` reports E1–E8 PASS on an actual *local Git fact plane*, separately launched actors and a real append-only persistent effect sink; external write commits and an ACK is deliberately lost through a hard process kill. Readback #951 / `docs/experiments/v4.11-u02/CLOSEOUT.md@8c58680c6dffc9d861011ffab2f2d40790e42b45` records two fresh-run passes, real effect counts (E2 blocked successor stays 1; E3 initially 0 then one lawful mutation; E4 one accepted claim), negative human DENY/stale tenant/forged event/broken sink, tested toolchain Python 3.14.6 + git 2.52.0 Windows. **This is LOCAL E2 with an E3 process-death subclaim, not live GitHub API or remote cross-host E2; independent #950 R1 predates the terminal, and its CHANGES_REQUESTED remains binding history.**
+Author-side #949 terminal `#949@6085049416` reports E1–E8 PASS on an actual *local Git fact plane*, separately launched actors and a real append-only persistent effect sink; external write commits and an ACK is deliberately lost through a hard process kill. Readback #951 / `docs/experiments/v4.11-u02/CLOSEOUT.md@8c58680c6dffc9d861011ffab2f2d40790e42b45` records two fresh-run passes, real effect counts (E2 blocked successor stays 1; E3 initially 0 then one lawful mutation; E4 one accepted claim), synthetic test-authored `REVIEW_DECISION status=FAIL` controlling only **successor B resume** in E5, plus stale tenant/forged event/broken sink; tested toolchain Python 3.14.6 + git 2.52.0 Windows. E5's `human:owner` record is schema-valid *test data*, NOT authenticated human Product/operation authority. The research `phase_effect` checks an active matching Claim but does **not** independently re-evaluate `facts.human_denial` immediately before `sink.mutate`; therefore `A already CLAIMED → synthetic DENY → A effect` and other already-admitted post-DENY effect-phase paths remain **NOT_RUN / NOT_PROVEN**. In particular, E5 PASS is NOT an assertion of complete human-veto enforcement or authority provenance, and the unmerged research harness must never be treated as normative production code. **This is LOCAL E2 with an E3 process-death subclaim, not live GitHub API or remote cross-host E2; independent #950 R1 predates the terminal, and its CHANGES_REQUESTED remains binding history.**
+
+**Mandatory subsequent negative conformance for F06:** verify *actual authorized human/delegation and exact-subject decision provenance* through the existing Workflow/Interaction owner (not transport username or schema-valid text); exercise `A CLAIMED → verified DENY → A attempts effect` and `B successor READY → DENY remains binding`, with fresh authority readback at the irreversible effect boundary, rejection of forged/wrong-subject/stale approval, and scoped owner-authorized supersession. An actor with prior legal Claim has **no right to execute** after a newer effective DENY. Required result is no unauthorized sink mutation and a truthful BLOCKED terminal. Carry this as a **mandatory implementation/conformance/release proof obligation**, not as a new architecture engine or a claim of existing E2 E5 coverage.
 
 Decided candidate architecture is **conditional**: the existing external-effect/Execution/Interaction owners must default to BLOCKED/HOLD on missing ACK; a successor may reconcile only by *actual external-effect boundary readback* to exact effect/operation/tenant, proven adapter idempotency/dedup with stable ID, or authorized exact compensation. Timeout, Git commit, event writer validation, `READY` and a local E2 PASS alone confer no new effect authority. Remote GitHub API durability, partial network partition, multi-host claim linearizability and arbitrary provider behavior remain `UNVERIFIED`; if a task depends on them for automatic recovery, block or require later real-boundary conformance before feature/release qualification. A manually authorized hold/reconciliation remains a supported safe behavior without importing the demo harness as a runtime.
 
@@ -238,11 +240,18 @@ An independent L2 Reviewer must inspect exact L2 candidate HEAD/tree/blob, Froze
 
 ```ini
 L2_ARCHITECTURE_EVIDENCE=PREPARED_SOURCE_BASED_CANDIDATE
-L2_FRESH_REVIEW=NOT_RUN
+L2_FRESH_REVIEW_R1=#950@6084789257_CHANGES_REQUESTED_F01_F04
+L2_FRESH_REVIEW_R2=#952@6086595641_CHANGES_REQUESTED_F05_F06(P1=0,P2=2)
+L2_SUCCESSOR_REVIEW=REQUIRED_FOR_THIS_NEW_EXACT_SUBJECT;NOT_RUN
 L2_FREEZE=NO
-U02_REAL_EXPERIMENT=NOT_RUN
+U02_LOCAL_GIT_RESEARCH_E2=#949@6085049416_PASS_AUTHOR_REPORTED_SOURCE_BOUND;REVIEWED_BY_#952
+U02_HARD_KILL_PERSISTENT_REOPEN=TESTED_IN_LOCAL_RESEARCH_E2
+U02_HUMAN_E5_SCOPE=TEST_AUTHORED_SCHEMA_VALID_DENY_SUCCESSOR_RESUME_ONLY
+U02_HUMAN_AUTHENTICATION_AND_POST_DENY_EFFECT_PHASE=NOT_RUN
+U02_REMOTE_GITHUB_API_NETWORK_MULTIHOST_E2=NOT_RUN
 TASK_DAG=NOT_AUTHORIZED
 STAGE3_IMPLEMENTATION=NOT_AUTHORIZED
 FULL_A_B_C_VALIDATION=NOT_RUN
-PREDECESSOR_RELEASE_INTEGRATION_CURRENTNESS=UNVERIFIED
+PREDECESSOR_RELEASE_INTEGRATION_CURRENTNESS=VERIFIED_V410_FINAL_MAIN_#779@6086103081;#779@6086126555_ON_main@b9461d48d902a2c7c00adff6746afc7a02a0ac3e
+V411_IMPLEMENTATION_BRANCH=NOT_AUTHORIZED_UNTIL_L2_FREEZE_AND_FRESH_REBIND
 ```
