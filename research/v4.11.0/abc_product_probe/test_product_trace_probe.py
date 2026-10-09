@@ -101,13 +101,13 @@ class ProductAcceptanceProbe(unittest.TestCase):
         self.assertEqual(result["verdict"], "DEMO_DENY")
 
     def test_same_head_conflicting_reviews_prevent_merge(self):
-        result = evaluate(t(action={"merge": True}, reviews=[
+        result = evaluate(t(action={"merge": True, "head": "sha1"}, reviews=[
             {"head": "sha1", "verdict": "PASS", "current": True, "accepted": True},
             {"head": "sha1", "verdict": "CHANGES_REQUESTED", "current": True, "accepted": True}]))
         self.assertIn("CONTRADICTORY_ACCEPTED_REVIEWS", result["failures"])
 
     def test_contradictory_reviews_with_bounded_authorized_arbitration(self):
-        result = evaluate(t(action={"merge": True}, authorized_review_arbitration_verified=True,
+        result = evaluate(t(action={"merge": True, "head": "sha1"}, authorized_review_arbitration_verified=True,
                             reviews=[{"head": "sha1", "verdict": "PASS", "current": True,
                                       "accepted": True},
                                      {"head": "sha1", "verdict": "CHANGES_REQUESTED",
