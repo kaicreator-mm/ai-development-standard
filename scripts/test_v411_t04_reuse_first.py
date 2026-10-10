@@ -8,12 +8,21 @@ routing) and `standards/ARCHITECTURE_DESIGN_STANDARD.md` (§15 reuse-first
 adoption and BUILD_NEW), and (b) fixture-driven deterministic decisions over
 the J12 H1/H2/H3/BUILD_NEW contract including license drift, revision staleness
 and fail-closed routing. Purely textual/offline; no network, no runtime.
+
+Acceptance boundary (NOT_RUN): T04 is an owner-local documentation deliverable
+and has no production decision hook. Central wiring of the reuse floors into
+shared prompts/schemas/manifest is T11, binding reuse dispositions to executed
+validation evidence is T12, and real upstream read-back of pinned identities is
+out of scope for this offline task (fixtures use synthetic local identities).
+Those obligations stay recorded in `NOT_RUN_OBLIGATIONS` as NOT_RUN and are not
+claimed as verified by this suite.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 import re
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,6 +49,15 @@ FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 # visibility, docs and arbitrary checkers do not (task-pack N05/N07).
 OWNER_EVIDENCE_SOURCES = {"owner_decision", "inspected_upstream", "recorded_disposition"}
 UNTRUSTED_EVIDENCE_SOURCES = {"README", "unpinned_latest", "arbitrary_checker"}
+
+# F05: obligations this documentation-only task cannot execute are recorded as
+# NOT_RUN, never claimed as verified. T11/T12 are the owner-assigned successor
+# tasks; upstream read-back is deferred because this suite is offline.
+NOT_RUN_OBLIGATIONS = {
+    "T11": "wire the reuse decision floors into shared L1/L2/L3 prompts, schemas and the manifest (central wiring task)",
+    "T12": "bind reuse dispositions to executed validation evidence at the owning gate (Validation owner)",
+    "upstream_readback": "dereference pinned upstream identities against the real upstream; fixtures carry synthetic local identities only",
+}
 
 
 def read(rel: str) -> str:
@@ -80,9 +98,10 @@ def evaluate_reuse(case: dict) -> dict:
     """Deterministic J12 disposition per the V411-T04 contract (§4).
 
     Modes have distinct evidence floors; labels never erase materiality;
-    revision/path drift is stale; missing license/NOTICE/rights facts fail
-    closed to the project license/security authority. The model never emits
-    gate-state mutations or release permission.
+    revision/path/behavior drift and observed license/NOTICE changes are
+    stale or fail closed; missing license/NOTICE/rights facts fail closed to
+    the project license/security authority. The model never emits gate-state
+    mutations or release permission.
     """
     missing: list[str] = []
     obligations: set[str] = set()
@@ -90,21 +109,33 @@ def evaluate_reuse(case: dict) -> dict:
     notes: dict = {}
     mode = MODE_ALIASES[case["claimed_mode"]]
 
-    # N06: an actual vendored-source or license delta overrides docs-only/A0/
-    # Fast-Path labels; the material mode's full floor still applies.
-    if case.get("label_only_claim") and case.get("material_upstream_delta"):
+    # N06: material source/code facts reclassify the change regardless of any
+    # optional label; docs-only/Fast-Path labels never erase materiality and
+    # the material mode is derived from observed facts rather than the claim.
+    material_copy = bool(case.get("copied_source")) or bool(case.get("upstream_artifact_parity"))
+    if case.get("material_upstream_delta") or material_copy:
         obligations.add("validation_impact")
-        notes["fast_path_refused"] = True
-        mode = MODE_ALIASES[case["actual_mode"]]
+        if case.get("claimed_mode") == "FAST_PATH":
+            notes["fast_path_refused"] = True
+        if mode == "FAST_PATH":
+            # An actual vendored-source or license/NOTICE delta keeps the full
+            # material-mode obligations (ADS §15): observed reused material is
+            # direct code reuse whatever the work was labelled.
+            mode = "DIRECT_CODE_REUSE"
 
-    # N07: untrusted evidence never substitutes an owner decision or real
-    # current validation.
-    untrusted = [
-        source
-        for source in case.get("evidence_sources", [])
-        if source in UNTRUSTED_EVIDENCE_SOURCES
-    ]
-    for source in untrusted:
+    # N04: physical copying or artifact parity with the upstream is material
+    # direct source adoption in every mode; it must meet the H3 floor instead
+    # of laundering provenance through H1/H2/BUILD_NEW.
+    if material_copy and mode != "DIRECT_CODE_REUSE":
+        mode = "DIRECT_CODE_REUSE"
+
+    # N07: evidence authority is explicit — only owner decisions, direct
+    # upstream inspection or a recorded disposition are authoritative; any
+    # other provider, named untrusted or merely unknown, is non-authoritative
+    # and cannot substitute an owner decision or real current validation.
+    evidence_sources = set(case.get("evidence_sources", []))
+    non_authoritative = sorted(evidence_sources - OWNER_EVIDENCE_SOURCES)
+    for source in non_authoritative:
         missing.append(f"owner_or_inspected_evidence:{source}")
 
     decision: str
@@ -113,16 +144,12 @@ def evaluate_reuse(case: dict) -> dict:
         decision = "FAST_PATH_ALLOWED"
 
     elif mode == "PATTERN_HARVEST":
-        if case.get("copied_source"):
-            # P01: H1 cannot carry copied source; it fails closed at the H3 floor.
-            mode = "DIRECT_CODE_REUSE"
-        else:
-            if not case.get("upstream_pattern_ref"):
-                missing.append("upstream_pattern_ref")
-            if not case.get("local_design_owned"):
-                missing.append("local_design_owned")
-            decision = "BLOCKED" if missing else "ALLOWED"
-            grants = frozenset()  # no direct-copy or behavior-equivalence right
+        if not case.get("upstream_pattern_ref"):
+            missing.append("upstream_pattern_ref")
+        if not case.get("local_design_owned"):
+            missing.append("local_design_owned")
+        decision = "BLOCKED" if missing else "ALLOWED"
+        grants = frozenset()  # no direct-copy or behavior-equivalence right
 
     if mode == "SPEC_MODULE_RECONSTRUCTION":
         for field, name in (
@@ -139,10 +166,11 @@ def evaluate_reuse(case: dict) -> dict:
     elif mode == "DIRECT_CODE_REUSE":
         sha = case.get("upstream_full_sha") or ""
         identity_unknown = (
-            bool(untrusted)
+            bool(non_authoritative)
             or not case.get("upstream_repo")
             or not FULL_SHA_RE.match(sha)
             or not case.get("material_paths")
+            or not evidence_sources.intersection(OWNER_EVIDENCE_SOURCES)
         )
         if not case.get("upstream_repo"):
             missing.append("upstream_repo")
@@ -150,6 +178,8 @@ def evaluate_reuse(case: dict) -> dict:
             missing.append("pinned_full_sha")
         if not case.get("material_paths"):
             missing.append("material_paths")
+        if not evidence_sources.intersection(OWNER_EVIDENCE_SOURCES):
+            missing.append("authoritative_evidence_source")
 
         # N01: reliance on a new revision never inherits the historic permission.
         historic = case.get("historic_permission_revision")
@@ -160,15 +190,22 @@ def evaluate_reuse(case: dict) -> dict:
                 "inheritable": False,
             }
             obligations.update({"license_authority_disposition", "validation_impact"})
-            if case.get("upstream_license_changed") or case.get("upstream_notice_changed"):
-                missing.append("license_notice_observation_at_current_revision")
+        # An explicitly observed license/NOTICE change is material drift on its
+        # own; it never needs a historic/current pair to fail closed (§§6/9/13).
+        if case.get("upstream_license_changed") or case.get("upstream_notice_changed"):
+            missing.append("license_notice_observation_at_current_revision")
+            obligations.update({"license_authority_disposition", "validation_impact"})
 
-        # N02: cited-vs-used revision mismatch or path drift is stale.
+        # N02: cited-vs-used or relied-vs-pinned revision mismatch, or any
+        # upstream path/behavior drift, makes the prior permission stale (§13).
         stale = (
-            bool(case.get("l2_cited_revision")) and bool(sha) and case["l2_cited_revision"] != sha
-        ) or bool(case.get("upstream_path_drift"))
+            (bool(case.get("l2_cited_revision")) and bool(sha) and case["l2_cited_revision"] != sha)
+            or (bool(current) and bool(sha) and current != sha)
+            or bool(case.get("upstream_path_drift"))
+            or bool(case.get("upstream_behavior_drift"))
+        )
         if stale:
-            obligations.add("fresh_equivalence_source_check")
+            obligations.update({"fresh_equivalence_source_check", "validation_impact"})
 
         if case.get("license_observation") != "inspected_authorized":
             missing.append("inspected_license_observation_at_relied_revision")
@@ -242,6 +279,9 @@ def h2_case(**overrides: object) -> dict:
 
 
 def h3_case(**overrides: object) -> dict:
+    # NOTE: `upstream_full_sha` below is a synthetic 40-hex fixture identity.
+    # It is never dereferenced against a real upstream; real read-back stays
+    # recorded in NOT_RUN_OBLIGATIONS and is not claimed as observed.
     case = {
         "subject": "H3 fixture",
         "claimed_mode": "H3",
@@ -516,6 +556,81 @@ class ReuseDecisionNegativeTests(unittest.TestCase):
         self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
         self.assertEqual(verdict["gate_mutations"], ())
 
+    def test_n02_behavior_drift_is_stale_even_without_revision_mismatch(self) -> None:
+        # F03: behavior drift behind already-relied-on reuse is material drift
+        # on its own; it cannot stay allowed without fresh equivalence.
+        verdict = evaluate_reuse(
+            h3_case(subject="N02 upstream behavior drift", upstream_behavior_drift=True)
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n02_relied_revision_diverging_from_pinned_identity_is_stale(self) -> None:
+        # F03: the revision actually relied on must match the pinned source
+        # identity; a divergence is stale even when the L2 citation matches.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="N02 relied C, pinned B",
+                upstream_full_sha="b" * 40,
+                current_reliance_revision="c" * 40,
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n01_license_change_alone_fails_closed_without_historic_pair(self) -> None:
+        # F03: an explicitly observed license change is material drift by
+        # itself and never needs a historic/current revision pair to matter.
+        verdict = evaluate_reuse(
+            h3_case(subject="N01 license changed, no historic pair", upstream_license_changed=True)
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("license_notice_observation_at_current_revision", verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n01_notice_change_alone_fails_closed_without_historic_pair(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(subject="N01 NOTICE changed, no historic pair", upstream_notice_changed=True)
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("license_notice_observation_at_current_revision", verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n02_license_change_behind_drift_is_stale_with_owner_disposition(self) -> None:
+        # Combined drift: any material drift wins over green-looking static
+        # facts and routes to stale with owner disposition plus Validation
+        # Impact before further reliance.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="N02 license change behind behavior drift",
+                upstream_behavior_drift=True,
+                upstream_license_changed=True,
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("license_notice_observation_at_current_revision", verdict["missing"])
+        for obligation in (
+            "fresh_equivalence_source_check",
+            "license_authority_disposition",
+            "validation_impact",
+        ):
+            with self.subTest(obligation=obligation):
+                self.assertIn(obligation, verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
     def test_n03_build_new_without_comparators_or_owner_is_blocked(self) -> None:
         verdict = evaluate_reuse(
             build_new_case(
@@ -555,6 +670,42 @@ class ReuseDecisionNegativeTests(unittest.TestCase):
             with self.subTest(missing=missing):
                 self.assertIn(missing, verdict["missing"])
         self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n04_copied_source_under_h2_claim_meets_the_h3_floor(self) -> None:
+        # F02: physical copying under an H2 claim is material direct adoption;
+        # it must meet the H3 floor instead of staying a local spec module.
+        verdict = evaluate_reuse(
+            h2_case(subject="N04 H2 claimed over copied source", copied_source=True)
+        )
+        self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+        self.assertNotEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertIn("pinned_full_sha", verdict["missing"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n04_artifact_parity_with_upstream_is_not_local_re_specification(self) -> None:
+        # F02: an H2 output at artifact parity with the upstream is physically
+        # equivalent to copying and cannot pass as local re-specification.
+        verdict = evaluate_reuse(
+            h2_case(subject="N04 H2 artifact parity", upstream_artifact_parity=True)
+        )
+        self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+        self.assertNotEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n04_copied_source_under_build_new_claim_meets_the_h3_floor(self) -> None:
+        # F02: no claimed mode exempts physical copying from the H3 floor.
+        verdict = evaluate_reuse(
+            build_new_case(subject="N04 BUILD_NEW claimed over copied source", copied_source=True)
+        )
+        self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+        self.assertNotEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertIn("validation_impact", verdict["obligations"])
         self.assertEqual(verdict["gate_mutations"], ())
 
     def test_n05_public_repository_does_not_create_reuse_rights(self) -> None:
@@ -600,6 +751,86 @@ class ReuseDecisionNegativeTests(unittest.TestCase):
         self.assertIn("license_policy_disposition", verdict["missing"])
         self.assertEqual(verdict["gate_mutations"], ())
 
+    def test_n06_material_delta_without_any_label_flag_refuses_fast_path(self) -> None:
+        # F01 counterexample: the material delta alone — with no label-only
+        # claim and no claimed actual mode — must still refuse the Fast Path
+        # and apply the H3 floor.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="N06 material delta, no label flags",
+                claimed_mode="FAST_PATH",
+                material_upstream_delta=True,
+                upstream_full_sha=None,
+                license_observation=None,
+                notice_observation=None,
+                license_policy_authorized=False,
+                attribution=False,
+                local_behavior_tests=False,
+            )
+        )
+        self.assertNotEqual(verdict["decision"], "FAST_PATH_ALLOWED")
+        self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+        self.assertTrue(verdict["notes"]["fast_path_refused"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n06_removing_or_flipping_each_label_flag_keeps_the_material_floor(self) -> None:
+        # Labels are optional claims: removing or flipping any of them must
+        # leave the material floor untouched.
+        stripped = {
+            "upstream_full_sha": None,
+            "license_observation": None,
+            "notice_observation": None,
+            "license_policy_authorized": False,
+            "attribution": False,
+            "local_behavior_tests": False,
+        }
+        label_variants = (
+            {"label_only_claim": True, "actual_mode": "H3"},
+            {"actual_mode": "H3"},  # label_only_claim removed
+            {"label_only_claim": False, "actual_mode": "H3"},
+            {"label_only_claim": True},  # actual_mode removed
+            {"label_only_claim": True, "actual_mode": "H1"},  # misleading label
+            {},  # every label flag removed
+        )
+        baseline = None
+        for index, variant in enumerate(label_variants):
+            verdict = evaluate_reuse(
+                h3_case(
+                    subject=f"N06 label variant {index}",
+                    claimed_mode="FAST_PATH",
+                    material_upstream_delta=True,
+                    **stripped,
+                    **variant,
+                )
+            )
+            with self.subTest(variant=variant):
+                self.assertNotEqual(verdict["decision"], "FAST_PATH_ALLOWED")
+                self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+                self.assertIn("validation_impact", verdict["obligations"])
+            if baseline is None:
+                baseline = verdict
+            else:
+                self.assertEqual(verdict["mode"], baseline["mode"])
+                self.assertEqual(verdict["decision"], baseline["decision"])
+                self.assertEqual(verdict["missing"], baseline["missing"])
+                self.assertEqual(verdict["obligations"], baseline["obligations"])
+
+    def test_n06_label_only_claim_without_material_delta_is_immaterial(self) -> None:
+        # The inverse direction: a label flag alone, with no observed material
+        # delta, does not invent materiality.
+        verdict = evaluate_reuse(
+            h1_case(
+                subject="N06 label-only, immaterial",
+                claimed_mode="FAST_PATH",
+                label_only_claim=True,
+            )
+        )
+        self.assertEqual(verdict["decision"], "FAST_PATH_ALLOWED")
+        self.assertEqual(verdict["obligations"], set())
+        self.assertEqual(verdict["gate_mutations"], ())
+
     def test_n07_readme_and_unpinned_claims_are_not_owner_evidence(self) -> None:
         verdict = evaluate_reuse(
             h3_case(
@@ -616,6 +847,41 @@ class ReuseDecisionNegativeTests(unittest.TestCase):
         self.assertNotEqual(verdict["decision"], "ALLOWED")
         self.assertEqual(verdict["grants"], frozenset())
         self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n07_unknown_checker_with_green_facts_is_not_authoritative(self) -> None:
+        # F06 counterexample: an unknown evidence provider plus synthetic
+        # green lights never mints an allowed reuse right.
+        verdict = evaluate_reuse(
+            h3_case(subject="N07 unknown checker", evidence_sources=["unknown_checker"])
+        )
+        self.assertEqual(verdict["decision"], "UNKNOWN")
+        self.assertNotEqual(verdict["decision"], "ALLOWED")
+        self.assertIn("owner_or_inspected_evidence:unknown_checker", verdict["missing"])
+        self.assertIn("authoritative_evidence_source", verdict["missing"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n07_absent_or_non_owner_evidence_fails_closed(self) -> None:
+        for evidence in ([], ["docs_page"], ["owner_friend_summary"]):
+            verdict = evaluate_reuse(
+                h3_case(subject="N07 evidence admission", evidence_sources=evidence)
+            )
+            with self.subTest(evidence=evidence):
+                self.assertEqual(verdict["decision"], "UNKNOWN")
+                self.assertIn("authoritative_evidence_source", verdict["missing"])
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_n07_named_untrusted_sources_are_never_owner_authoritative(self) -> None:
+        self.assertFalse(UNTRUSTED_EVIDENCE_SOURCES & OWNER_EVIDENCE_SOURCES)
+        for source in sorted(UNTRUSTED_EVIDENCE_SOURCES):
+            verdict = evaluate_reuse(
+                h3_case(subject=f"N07 {source}", evidence_sources=[source])
+            )
+            with self.subTest(source=source):
+                self.assertEqual(verdict["decision"], "UNKNOWN")
+                self.assertIn(f"owner_or_inspected_evidence:{source}", verdict["missing"])
+                self.assertEqual(verdict["gate_mutations"], ())
 
 
 class OwnerBoundaryNegativeTests(unittest.TestCase):
@@ -668,9 +934,201 @@ class OwnerBoundaryNegativeTests(unittest.TestCase):
                 self.assertEqual(verdict["gate_mutations"], ())
 
 
-if __name__ == "__main__":
-    import sys
+class CrossOwnerScopeReconciliationTests(unittest.TestCase):
+    """F04: Dependency §9 and ADS §15 must agree at their clause intersection.
 
+    The full artifact/license floor is scoped to reuse-right-bearing material
+    (physically copied source or artifacts, especially H3); H1/H2 carry the
+    mode-matched provenance floors of ADS §15. Neither side may claim the
+    unrestricted three-mode binding again, and the decision model must agree
+    with the reconciled scoping.
+    """
+
+    def test_dependency_floor_is_scoped_to_reuse_right_bearing_material(self) -> None:
+        section_text = dependency_provenance_license()
+        # The unrestricted binding of pattern/re-specification/direct reuse to
+        # the full floor is gone.
+        self.assertNotIn(
+            "an upstream pattern, a re-specified module or directly reused source — is additionally bound",
+            section_text,
+        )
+        self.assertIn("reuse-right-bearing material", section_text)
+        self.assertIn("physically copied upstream source or artifacts", section_text)
+        self.assertIn("mode-matched", section_text)
+        self.assertIn("ARCHITECTURE_DESIGN_STANDARD.md", section_text)
+        # The direct-copy escape hatch stays closed on the Dependency side too.
+        self.assertIn("never lowers the direct-copy rule", section_text)
+
+    def test_architecture_section_mirrors_the_scoping_without_lowering_direct_copy(self) -> None:
+        section_text = architecture_reuse_section()
+        self.assertIn("mode-matched", section_text)
+        self.assertIn("DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md", section_text)
+        self.assertIn("reuse-right-bearing material", section_text)
+        self.assertIn("physically copied upstream source or artifacts", section_text)
+        self.assertIn("artifact parity with upstream", section_text)
+        self.assertIn("never lowers the direct-copy rule", section_text)
+
+    def test_decision_model_agrees_with_reconciled_floor_scoping(self) -> None:
+        # Text/model intersection: pattern-only H1 needs no pinned SHA, while
+        # the same cases with physical copying or artifact parity demand the
+        # full H3 floor.
+        clean = evaluate_reuse(h1_case(subject="reconciled H1, no copy"))
+        self.assertEqual(clean["decision"], "ALLOWED")
+        self.assertNotIn("pinned_full_sha", clean["missing"])
+        copied_h1 = evaluate_reuse(
+            h1_case(subject="reconciled H1 with copy", copied_source=True)
+        )
+        self.assertEqual(copied_h1["mode"], "DIRECT_CODE_REUSE")
+        self.assertIn("pinned_full_sha", copied_h1["missing"])
+        copied_h2 = evaluate_reuse(
+            h2_case(subject="reconciled H2 with copy", copied_source=True)
+        )
+        self.assertEqual(copied_h2["mode"], "DIRECT_CODE_REUSE")
+        self.assertNotEqual(copied_h2["decision"], "ALLOWED")
+        parity_h2 = evaluate_reuse(
+            h2_case(subject="reconciled H2 at parity", upstream_artifact_parity=True)
+        )
+        self.assertEqual(parity_h2["mode"], "DIRECT_CODE_REUSE")
+        self.assertNotEqual(parity_h2["decision"], "ALLOWED")
+
+
+class ContractBoundDecisionTraceTests(unittest.TestCase):
+    """F05: verdicts are traced to the owner clauses that require them.
+
+    Keyword-only self-attestation is not acceptance: each refusal is checked
+    against the §13 routing clause that mandates it, each allowance against
+    the floor clauses that define it, and material facts must converge on the
+    same floor across every claimed label. Losing the owner clause or
+    loosening the model makes these tests fail in either direction.
+    """
+
+    def test_every_refusal_is_backed_by_the_owner_failure_routing_clause(self) -> None:
+        routing = dependency_failure_handling()
+        refusal_clause = {
+            "BLOCKED": "keep the reuse disposition non-authoritative (`BLOCKED`/unknown)",
+            "STALE": "the prior permission is stale",
+            "UNKNOWN": "keep the reuse disposition non-authoritative (`BLOCKED`/unknown)",
+        }
+        refusal_matrix = [
+            h3_case(subject="trace unknown identity", upstream_full_sha=None),
+            h3_case(subject="trace no owner evidence", evidence_sources=["unknown_checker"]),
+            h3_case(subject="trace stale citation", l2_cited_revision="a" * 40),
+            h3_case(subject="trace stale path", upstream_path_drift=True),
+            h3_case(subject="trace stale behavior", upstream_behavior_drift=True),
+            h3_case(subject="trace stale reliance", current_reliance_revision="c" * 40),
+            h3_case(subject="trace license drift", upstream_license_changed=True),
+            h3_case(subject="trace notice drift", upstream_notice_changed=True),
+            h3_case(subject="trace conflicting license", license_observation="conflicting"),
+            h3_case(subject="trace no policy", license_policy_authorized=False),
+            h2_case(subject="trace laundering", origin_disclosed=False),
+            h2_case(subject="trace copied under H2", copied_source=True),
+            h1_case(subject="trace copied under H1", copied_source=True),
+            build_new_case(subject="trace silent build-new", decision_owner=None),
+        ]
+        for case in refusal_matrix:
+            verdict = evaluate_reuse(case)
+            with self.subTest(subject=case["subject"], decision=verdict["decision"]):
+                self.assertIn(verdict["decision"], refusal_clause)
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+                self.assertIn(refusal_clause[verdict["decision"]], routing)
+
+    def test_every_allowance_is_backed_by_the_owner_floor_clauses(self) -> None:
+        dep9 = dependency_provenance_license()
+        arch15 = architecture_reuse_section()
+        allowance_matrix = [
+            (
+                h1_case(subject="trace allowed H1"),
+                arch15,
+                ("Pattern harvest (H1)", "mode-matched"),
+            ),
+            (
+                h2_case(subject="trace allowed H2"),
+                arch15,
+                ("Source-inspired re-specification (H2)", "differential/behavior/failure tests"),
+            ),
+            (
+                h3_case(subject="trace allowed H3"),
+                dep9,
+                (
+                    "the upstream repository, the full commit SHA relied on",
+                    "the license file and NOTICE content as observed at that revision",
+                    "the project license-policy disposition authorizing the specific reuse mode",
+                ),
+            ),
+            (
+                build_new_case(subject="trace allowed BUILD_NEW"),
+                arch15,
+                ("BUILD_NEW", "It is not a silent default"),
+            ),
+        ]
+        for case, clause_text, backing_phrases in allowance_matrix:
+            verdict = evaluate_reuse(case)
+            with self.subTest(subject=case["subject"]):
+                self.assertEqual(verdict["decision"], "ALLOWED")
+                self.assertEqual(verdict["gate_mutations"], ())
+                for phrase in backing_phrases:
+                    self.assertIn(phrase, clause_text)
+
+    def test_material_facts_force_the_same_floor_across_all_claimed_labels(self) -> None:
+        # Cross-mode invariant: the same physically-copied material labelled
+        # four different ways converges on one H3-floor verdict, and an honest
+        # H3 claim over the same missing facts is refused just as hard.
+        stripped = {
+            "upstream_repo": None,
+            "upstream_full_sha": None,
+            "material_paths": None,
+            "license_observation": None,
+            "notice_observation": None,
+            "license_policy_authorized": False,
+            "attribution": False,
+            "local_behavior_tests": False,
+            "evidence_sources": ["inspected_upstream"],
+        }
+        label_variants = (
+            {"claimed_mode": "FAST_PATH", "material_upstream_delta": True},
+            {"claimed_mode": "FAST_PATH", "copied_source": True},
+            {"claimed_mode": "H1", "copied_source": True},
+            {"claimed_mode": "H2", "copied_source": True},
+        )
+        baseline = None
+        for variant in label_variants:
+            verdict = evaluate_reuse(
+                {**stripped, "subject": "material invariance", **variant}
+            )
+            with self.subTest(claimed=variant["claimed_mode"]):
+                self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+                self.assertNotIn(verdict["decision"], {"ALLOWED", "FAST_PATH_ALLOWED"})
+                self.assertIn("validation_impact", verdict["obligations"])
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+            if baseline is None:
+                baseline = verdict
+            else:
+                self.assertEqual(verdict["decision"], baseline["decision"])
+                self.assertEqual(verdict["missing"], baseline["missing"])
+        honest_h3 = evaluate_reuse(
+            {**stripped, "subject": "material invariance", "claimed_mode": "H3"}
+        )
+        self.assertEqual(honest_h3["decision"], baseline["decision"])
+        self.assertEqual(honest_h3["missing"], baseline["missing"])
+
+    def test_acceptance_limitations_are_recorded_as_not_run(self) -> None:
+        self.assertEqual(set(NOT_RUN_OBLIGATIONS), {"T11", "T12", "upstream_readback"})
+        for obligation, note in NOT_RUN_OBLIGATIONS.items():
+            with self.subTest(obligation=obligation):
+                self.assertTrue(note.strip())
+        # The module docstring states the boundary honestly: this suite cannot
+        # claim acceptance completeness for central wiring, executed evidence
+        # or real upstream observation.
+        doc = sys.modules[__name__].__doc__ or ""
+        self.assertIn("Acceptance boundary (NOT_RUN)", doc)
+        self.assertIn("T11", doc)
+        self.assertIn("T12", doc)
+        self.assertIn("NOT_RUN_OBLIGATIONS", doc)
+
+
+if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(
         unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     )

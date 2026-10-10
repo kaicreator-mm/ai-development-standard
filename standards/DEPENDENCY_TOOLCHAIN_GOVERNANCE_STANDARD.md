@@ -86,7 +86,7 @@ Registry/source restrictions, provenance verification, license policy and SBOM r
 
 Changing an authoritative source/registry or provenance policy is itself a material execution fact and may require Validation Impact review.
 
-Reuse of outside work — an upstream pattern, a re-specified module or directly reused source — is additionally bound to exact provenance facts observed at a named upstream revision:
+Reuse of outside work is additionally bound to exact provenance facts observed at a named upstream revision. The full identity floor below binds reuse-right-bearing material: directly reused or physically copied upstream source or artifacts — the H3 mode of `ARCHITECTURE_DESIGN_STANDARD.md` §15 — and any reliance on a changed upstream revision or drifted source path behind material already relied on. A cited upstream pattern (H1) and a disclosed re-specification (H2) carry the mode-matched provenance floors defined there: the cited upstream reference with a locally owned design for H1, and disclosed origin/derivation with a local contract plus differential tests for H2. This scoping never lowers the direct-copy rule: the moment upstream source or artifacts are physically taken into the tree in any claimed mode, the full floor below applies.
 
 - the upstream repository, the full commit SHA relied on, and the material paths taken from it;
 - the license file and NOTICE content as observed at that revision, not as remembered or as currently advertised;

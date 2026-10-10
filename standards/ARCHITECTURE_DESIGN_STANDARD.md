@@ -168,4 +168,6 @@ When a material design decision adopts outside work, the reuse mode is an explic
 
 Architecture owns the mode selection, alternatives and local contracts; `DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` owns upstream identity, license/NOTICE currentness and reuse invalidation; Validation alone owns executed proof. No mode auto-promotes across L1→L2→L3 and no reuse disposition mints a gate or release state.
 
+These floors are mode-matched with `DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` §9: its full upstream-identity, license/NOTICE and policy-disposition floor binds reuse-right-bearing material — directly reused or physically copied upstream source or artifacts, especially H3 — while H1 and H2 carry exactly the lighter provenance stated above. The split never lowers the direct-copy rule: physically copied upstream source or artifacts taken into the tree, or artifact parity with upstream, make the work H3 with that full floor regardless of the claimed mode.
+
 Fast Path stays proportional: a low-risk, immaterial change with no material upstream dependency and no higher gate requires no mandatory external research or reuse catalog. The label does not erase material obligations — an actual vendored-source or license/NOTICE change keeps the obligations above regardless of how the work was labelled.
