@@ -60,7 +60,7 @@ Every case is future work of the owning Hidden Validator on a real isolated host
 | Positive | Grounded scenario | Required oracle |
 | --- | --- | --- |
 | P01 | Declared candidate ref/SHA/tree re-read and matched against V02 freeze record before execution on isolated host | Terminal records exact frozen identity equality; run proceeds only on match |
-| P02 | Private pack prepared with NEW identity/revision/checksum; scenarios target failure families unavailable to implementation context | Private record binds pack checksum to run; terminal publishes identity/checksum only |
+| P02 | Private pack prepared with NEW identity/revision/checksum; scenarios target failure families unavailable to implementation context | Private record binds pack checksum to run and records actor/context plus storage/run isolation evidence; terminal publishes identity/checksum and a non-sensitive isolation attestation only |
 | P03 | All private cases execute clean with captured commands/exit codes | Public-safe terminal `DISPOSITION=PASS`, per-family outcome counts, zero vector payloads |
 | P04 | A scenario exposes a candidate defect or a pack/scenario defect | Exactly one RELEASE §5 classification recorded; truthful `FAIL` or defect disposition; leak-free publication |
 | P05 | Some required environment/toolchain dimension unavailable or insufficiently isolated | Terminal declares `NOT_RUN`/`BLOCKED` per affected family with reason; never simulated results |
@@ -73,12 +73,14 @@ Every case is future work of the owning Hidden Validator on a real isolated host
 | N04 | Any Hidden vector or pack bytes discovered on a public GitHub surface | Leak ⇒ recorded defect (`PACK_DEFECT` class), affected evidence invalidated, verdict corrected, re-issuance under new private identity; zero-leak assertion becomes `LEAK_DETECTED` |
 | N05 | Pressure to convert `NOT_RUN/BLOCKED` into PASS, or to reuse v4.10 Hidden evidence | Forbidden; old Hidden evidence stays historical for its old candidate/pack identity only |
 | N06 | Builder/V01/V02/V04/R01 actor authors, edits or influences the private pack or verdict | Actor-separation violation ⇒ `BLOCKED` + escalation; verdict authored by any other actor is void |
+| N07 | Public Git tree scan clean while a single copied private case sits in a public Issue/PR comment, uploaded attachment or CI workflow log/artifact | Unqualified `ZERO_LEAK_ASSERTION=ASSERTED` and Hidden PASS rejected; leak routed per N04 (`LEAK_DETECTED`, affected evidence invalidated, re-issuance under a new private identity) without reproducing the private case in public; any materially uninspected surface keeps the assertion `UNKNOWN` |
+| N08 | Builder gains read-only access to the correct checksummed private pack via shared runner workspace, storage ACL, emitted logs or reused Agent context, with no edit or authorship | Access-isolation failure ⇒ `BLOCKED`; distinct-actor and checksum checks do not excuse it; Hidden evidence/pack identity deemed compromised and re-issued under a new private identity; the isolated-run PASS does not survive |
 
-**Acceptance threshold:** the public terminal is complete and self-sufficient for V04/R01 consumption without revealing any vector; all executed families have private command/exit/log evidence; every unexecuted or blocked family is explicitly `NOT_RUN/BLOCKED`; the zero-leak assertion is positive (scan performed) and its negative evidence (leak ⇒ defect) is stated.
+**Acceptance threshold:** the public terminal is complete and self-sufficient for V04/R01 consumption without revealing any vector; all executed families have private command/exit/log evidence; every unexecuted or blocked family is explicitly `NOT_RUN/BLOCKED`; the zero-leak assertion is positive per vector over an inventoried set of authorized/public output surfaces — any materially uninspected surface is `UNKNOWN` and cannot support an unqualified `ZERO_LEAK_ASSERTION=ASSERTED` or Hidden PASS — and its negative evidence (leak ⇒ defect) is stated; isolated-run admission rests on private-side actor/context and storage/run isolation evidence, distinct-actor and checksum checks alone being no isolation proof.
 
 ### 4. Contract — existing authority with bounded new semantics
 
-Private record (non-public): pack bytes + identity/revision/checksum, per-case scenario family, exact commands, exit codes, key logs, host class, environment/toolchain identity, run start/end, operator identity. Public-safe terminal (exact fields, no payloads):
+Private record (non-public): pack bytes + identity/revision/checksum, per-case scenario family, exact commands, exit codes, key logs, host class, environment/toolchain identity, run start/end, operator identity, and storage/run isolation evidence (private-side read-access/ACL boundary, absence of shared Builder-visible mounts/artifacts/logs, no propagation into implementation contexts). Public-safe terminal (exact fields, no payloads):
 
 ```text
 VALIDATION_ID=V411-V03
@@ -86,11 +88,13 @@ CANDIDATE_SHA / CANDIDATE_TREE / CANDIDATE_REF   (must equal V02 freeze record)
 FREEZE_RECORD_REF
 HIDDEN_PACK_ID / HIDDEN_PACK_REVISION / HIDDEN_PACK_CHECKSUM
 ISOLATED_RUN_HOST_CLASS (no private host secrets)
+ISOLATION_ATTESTATION (non-sensitive actor/context and storage/run isolation evidence only)
 PER_FAMILY_OUTCOME_COUNTS (public-safe aggregates only)
 BLIND_SPOT_OR_PACK_DEFECT_CLASSIFICATION (RELEASE §5 vocabulary or NONE)
 DISPOSITION=PASS|FAIL|BLOCKED|NOT_RUN
 NOT_RUN_OR_BLOCKED_DECLARATIONS (per unavailable family, with reason)
-ZERO_LEAK_ASSERTION=ASSERTED|LEAK_DETECTED(+defect ref)
+ZERO_LEAK_ASSERTION=ASSERTED|LEAK_DETECTED(+defect ref)|UNKNOWN(materially uninspected public surface)
+ZERO_LEAK_SURFACE_COVERAGE (inspected public surface identities, scan method, omissions; no vector patterns/payloads)
 PRIVATE_RECORD_REF (identity/reference of private record only)
 EVIDENCE_REFS
 ```
@@ -99,7 +103,7 @@ States use `VALIDATION_STANDARD.md` §1 exactly; `NOT_RUN/BLOCKED` are never con
 
 ### 5. Implementation — minimum owner-local delta
 
-Owning-actor procedure only: re-verify freeze identity → JIT-prepare private pack (new identity/revision/checksum per RELEASE §5 strengthening rules; scenario quality per `TEST_DATA_AND_SCENARIO_STANDARD.md`) → isolated clean run on exact frozen SHA/tree → private record capture → public-safe verdict authored from the fixed §4 field list → positive zero-leak scan of the public tree → publish the one artifact. No exact-base patches, no line maps, no transient-HEAD commands; the terminal targets the authorized v4.11 version integration branch, one concern/one PR, never `main`.
+Owning-actor procedure only: re-verify freeze identity → JIT-prepare private pack (new identity/revision/checksum per RELEASE §5 strengthening rules; scenario quality per `TEST_DATA_AND_SCENARIO_STANDARD.md`) → verify private-side storage/run isolation (read-access/ACL boundary; no shared Builder-visible mounts, artifacts or logs; no propagation into implementation contexts) → isolated clean run on exact frozen SHA/tree → private record capture (including the isolation evidence) → public-safe verdict authored from the fixed §4 field list → coverage-inventoried positive per-vector zero-leak scan over every authorized/public output surface (Git tree, Issue/PR text, attachments, CI/action logs/artifacts where used), inspected identities/method/omissions recorded public-safe only → publish the one artifact. No exact-base patches, no line maps, no transient-HEAD commands; the terminal targets the authorized v4.11 version integration branch, one concern/one PR, never `main`.
 
 **L3 Required handoff, ordered:** §3 oracles → §4 contract → this procedure → §6 failure routing → §9 references. Builder/validator/reviewer remain distinct attributed actors; the draft author ran nothing.
 
@@ -109,7 +113,7 @@ Drift/ref/pre-freeze/checksum faults → `BLOCKED`/`NOT_RUN` with the exact miss
 
 ### 7. Validation, Review and merge admission
 
-- **Commands evaluated and run later by the owning actor on real hosts, NOT_RUN by this author:** freeze readback (`git rev-parse`/`git cat-file` against the V02 freeze record), checksum verification of private pack bytes, isolated-run execution per private TEST_MATRIX, public-tree leak scan for pack bytes/vectors before publication. Execution proof records real host role, OS/toolchain identity, exact frozen SHA/tree, per-family outcome/state and any `NOT_RUN/BLOCKED` declaration per `VALIDATION_STANDARD.md` §12 (§7 tested-SHA vs evidence-only-head respected); private detail stays private, only public-safe aggregates publish.
+- **Commands evaluated and run later by the owning actor on real hosts, NOT_RUN by this author:** freeze readback (`git rev-parse`/`git cat-file` against the V02 freeze record), checksum verification of private pack bytes, private-side storage/run isolation verification (read-access/ACL boundary, no shared Builder-visible mounts/artifacts/logs, no propagation into implementation contexts), isolated-run execution per private TEST_MATRIX, coverage-inventoried per-vector leak scan of every authorized/public output surface (Git tree, Issue/PR text, attachments, CI/action logs/artifacts where used) before publication, with inspected surface identities/method/omissions recorded public-safe. Execution proof records real host role, OS/toolchain identity, exact frozen SHA/tree, per-family outcome/state and any `NOT_RUN/BLOCKED` declaration per `VALIDATION_STANDARD.md` §12 (§7 tested-SHA vs evidence-only-head respected); private detail stays private, only public-safe aggregates publish.
 - **Review:** `risk:critical`, `review:required`; a genuinely fresh independent Reviewer, distinct from the Hidden Validator, every Builder, and the V02 actor, binds findings and verdict to the exact terminal blob and frozen candidate identity. Review PASS is not release permission and never substitutes for the executed private run.
 - **Merge gate:** the terminal merges only to the authorized v4.11 version integration branch after admitted V02, this reviewed Pack, canonical native blocked-by edges and a protected accepted Claim; no direct `main` write; no self-freeze. **Later consumption:** V04 re-derives version gate truth from this terminal as input (not inherited truth); R01 owns the release verdict; R02 owns integration — none authorized or marked PASS by this Pack.
 
@@ -129,7 +133,7 @@ CANDIDATE_FREEZE_IDENTITY=UNKNOWN_UNTIL_V02
 V04_V01_R01_R02=NOT_RUN
 ```
 
-Epistemic ledger: V02 freeze record, private pack identity/checksum, isolated-host admission and coverage, per-family outcomes, leak-scan result, and the terminal blob itself remain `UNKNOWN/NOT_RUN` until the owning Hidden Validator supplies real evidence. This draft asserts no Hidden PASS, no pack completeness, and no release qualification.
+Epistemic ledger: V02 freeze record, private pack identity/checksum, isolated-host admission and coverage, per-family outcomes, leak-scan surface coverage, storage/run isolation attestation, and the terminal blob itself remain `UNKNOWN/NOT_RUN` until the owning Hidden Validator supplies real evidence. This draft asserts no Hidden PASS, no pack completeness, and no release qualification.
 
 ### 9. Durable References and next owner
 

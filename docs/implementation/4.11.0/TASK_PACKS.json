@@ -1,6 +1,6 @@
 {
   "kind": "ADS_V411_TASK_PACK_INDEX_CANDIDATE",
-  "status": "DRAFT_20_PACK_INTEGRATION_REVIEWS_PENDING_NOT_FROZEN",
+  "status": "DRAFT_20_PACK_INTEGRATION_R2_REVIEWS_PENDING_NOT_FROZEN",
   "repository": "kaicreator-mm/ai-development-standard",
   "version": "4.11.0",
   "source_baseline": {
@@ -18,8 +18,8 @@
     "Pack file blobs are exact at creation, subject to independent source-currentness and semantic Review.",
     "Only an independent review and distinct Freeze can authorize Task Pack materialization; no Builder claims, no source implementation, no merge.",
     "8 other source Pack blobs unchanged after T12-only repair; each old independent verdict is exact-file-bound but PR HEAD changed and a separate currentness rebind is required before Pack Freeze.",
-    "20 candidate Pack files are present and exact-blobs indexed; 11 Batch B packs require independent reviews #990–#995; nine Batch A packs have separately source-bound PASS including #987 and #988.",
-    "This consolidation changes repository candidate HEAD; source-only reviewer conclusions at prior PR Heads require an explicit unchanged-blob and authority-currentness rebind before formal Pack Freeze."
+    "Batch B R1 #990-#995: 3 exact unchanged PASS; 8 repaired new blobs now need genuinely fresh R2 verdicts. No earlier CHANGES_REQUESTED is promoted.",
+    "Integration candidate has eight changed Batch B Pack blobs; previously accepted unchanged-blob findings require exact-SHA currentness rebind, and the new index/head require structural recheck. No automatic Freeze."
   ],
   "packs": [
     {
@@ -107,33 +107,42 @@
     },
     {
       "task_id": "V411-T07",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 999,
+      "source_comment": 6097904275,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-T07_merge_controller_admission.md",
-      "git_blob": "86fffea8b5f16d56dc9e5bb03d3652a56c34395a",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "4604bb8dc1a2bb3ff682e6a3ddc9577fd823120c",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-T11",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770638,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-T11_central_wiring_convergence.md",
-      "git_blob": "3df2e71fbdbb2f6500a429cbf38e2a54336e1919",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "8445f39a79e68a41972b0ffa99da624234fb7cc2",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-T13",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770638,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-T13_role_conduct_boundaries.md",
-      "git_blob": "6cd9e872300733741aecb74b370e8b31e1d99fd2",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "d487e016ae1efd551808b498c09d0f52253ec1f8",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-T14",
@@ -147,43 +156,55 @@
     },
     {
       "task_id": "V411-V01",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770638,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-V01_independent_validation_closure.md",
-      "git_blob": "1cfdff89eccb3e50a800a683a6944c5da5161d83",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "8885201ac2501f3a6e3a3d31123a63c2546986d2",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-V02",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770948,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-V02_candidate_freeze.md",
-      "git_blob": "1e935a37951f766a9261009e2110324af1742100",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "c8fcba7f98c04f974186823894c9a9d05b39f197",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-V03",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770948,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-V03_hidden_validation.md",
-      "git_blob": "d3ff83c35edb859180d54f93f54d8bf4f7330d3f",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "bd5658163a803d45ff818898ad764801dd7a251a",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-V04",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097770948,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-V04_fresh_final_closeout.md",
-      "git_blob": "142211b29c83d6fdb3d9854fe69b8d167dcef568",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "236ed914484bfda6a9d6c2483fff53245f8a35cc",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     },
     {
       "task_id": "V411-R01",
@@ -197,20 +218,23 @@
     },
     {
       "task_id": "V411-R02",
-      "source_issue": 984,
-      "source_comment": 6095967993,
+      "source_issue": 1000,
+      "source_comment": 6097771176,
       "source_pr": 989,
-      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
       "path": "docs/implementation/4.11.0/task-packs/V411-R02_repository_integration.md",
-      "git_blob": "e5af95885b200a23a69481a6eea254e08c630482",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "70758b74f4aa9fe3d35b46ab57239bab2854d8c4",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
     }
   ],
   "unpacked_task_ids": [],
   "integration": {
     "candidate_source_heads": [
       "6f3e4e0d8fc3b00b7853982379231a93a096e0ed",
-      "6cd01bd52c5a987e636458fd6470cf80ee94b45b"
+      "335483a5e68ee8a0fd3b4350056776bbe5312668"
     ],
     "source_prs": [
       978,
@@ -228,6 +252,8 @@
     ],
     "authority": "NO_PACK_FREEZE_NO_TASK_ADMISSION",
     "native_execution_issues": 0,
-    "native_blocked_by_edges": 0
+    "native_blocked_by_edges": 0,
+    "batch_b_r1_completed": "R1_TERMINALS_#990_#991_#992_#993_#994_#995_3_PASS_8_REPAIRED",
+    "batch_b_r2": "NOT_YET_REVIEWED"
   }
 }
