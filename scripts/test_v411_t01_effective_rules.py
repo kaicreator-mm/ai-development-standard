@@ -14,6 +14,14 @@ offline checks in two layers:
    the minimal `EFFECTIVE_RULE_TRACE` projection.
 
 Purely textual + in-memory; no network, no runtime, no shared verifier.
+
+Review #1032 repairs (fail-closed hardening): positive aggregate admission
+requires every applicable required gate to be satisfied by current trusted
+owner proof (missing/FAIL/stale proofs yield UNVERIFIED_GATES / REJECTED_GATES,
+never a false-green ADMITTED); every covered job class resolves through an
+explicit owner-obligation mapping while unknown labels fail closed as
+UNVERIFIED_COVERAGE; each trace binds the real owning proof ref/currentness so
+the projection stays falsifiable.
 """
 
 from __future__ import annotations
@@ -47,6 +55,10 @@ RESOLUTION_VOCABULARY = {
     "UNKNOWN_EPISTEMIC",
     "REJECTED_CURRENTNESS",
     "UNVERIFIED_COVERAGE",
+    # Review #1032 R01: positive aggregate admission additionally requires
+    # every applicable required gate to be satisfied by current trusted proof.
+    "UNVERIFIED_GATES",
+    "REJECTED_GATES",
 }
 MATERIAL_DIMENSIONS = ("permission", "security", "migration", "deploy", "external_effect")
 WEAKENING_VALUES = {"not-required", "skip", "not_applicable"}
@@ -62,6 +74,7 @@ TRACE_FIELDS = {
     "actor_role",
     "declared_jobs",
     "observed_fact_ref",
+    "owner_proof_ref",
     "applicability_reason",
     "obligation",
     "required_evidence_currentness",
@@ -72,6 +85,11 @@ TRACE_FIELDS = {
 JOB_OBLIGATIONS = {
     "J02_DOCS_LOW_RISK": "affected docs checks",
     "J03_BUG_FIX": "baseline repair verification",
+    # Review #1032 R02: job classes declared as covered (X02/X05) MUST carry an
+    # owner-obligation mapping; a declared-but-unmapped job is a fail-closed
+    # UNVERIFIED_COVERAGE route, never a KeyError.
+    "J04_FEATURE_CONTRACT": "feature contract conformance evidence",
+    "J05_PUBLIC_API_CHANGE": "public API change compatibility evidence",
     "J06_PERSISTENT_DATA_MIGRATION": "migration baseline/target state and interrupted recovery evidence",
     "J07_SECURITY_VULNERABILITY": "independent security review",
     "J08_EXTERNAL_WRITE_DEPLOY": "deployment side-effect authorization and idempotency reconciliation",
@@ -105,6 +123,8 @@ OBLIGATION_OWNERS = {
         "FROZEN_ARCHITECTURE",
     ),
     "authorized actor/permission evidence": ("project ownership authority", "PROJECT_OVERRIDES"),
+    "feature contract conformance evidence": ("interface compatibility owner", "FROZEN_ARCHITECTURE"),
+    "public API change compatibility evidence": ("interface compatibility owner", "FROZEN_ARCHITECTURE"),
     "external-effect reconciliation evidence": ("integration owner", "FROZEN_ARCHITECTURE"),
     "exact release candidate with visible/hidden/release-qualification evidence": (
         "release/integration controller",
@@ -202,8 +222,13 @@ def proof(verdict: str = "PASS", ref: str = "", fresh: bool = True) -> dict:
 
 
 def all_pass_proofs() -> dict:
+    # Review #1032 R03: proof refs are contract-derived and per-obligation, so a
+    # trace can be falsified back to the exact owning evidence it claims.
     obligations = set(DIMENSION_OBLIGATIONS.values()) | set(JOB_OBLIGATIONS.values())
-    return {obligation: proof(ref=f"proof:{index}@707f") for index, obligation in enumerate(sorted(obligations))}
+    return {
+        obligation: proof(ref=f"proof:{re.sub(r'[^a-z0-9]+', '-', obligation).strip('-')}@707f")
+        for obligation in sorted(obligations)
+    }
 
 
 def service_x01_fixture(**overrides) -> dict:
@@ -289,8 +314,14 @@ def resolve_effective_rules(fixture: dict) -> dict:
                 "actor_role": fixture["actor_role"],
                 "declared_jobs": declared_jobs,
                 "observed_fact_ref": observed_ref,
+                # Review #1032 R03: the owning proof identity is bound by the
+                # proof-resolution pass below, never inferred from epistemic
+                # state alone; "NONE" until a real current proof is found.
+                "owner_proof_ref": "NONE",
                 "applicability_reason": reason,
                 "obligation": obligation,
+                # Provisional only; step 4 re-binds this from the actual owner
+                # proof so a missing proof can never project CURRENT.
                 "required_evidence_currentness": evidence_currentness,
                 "resolution": "",
                 "decision_owner_ref": f"{owner}@{fixture['authority_refs'].get(tier, 'unresolved')}",
@@ -350,30 +381,46 @@ def resolve_effective_rules(fixture: dict) -> dict:
             )
 
     # 3. Declared job-label set closure (labels are aids, never waivers).
+    # Review #1032 R02: a declared job label with no owner-obligation mapping
+    # fails closed as UNVERIFIED_COVERAGE routing, never a bare KeyError.
+    unknown_job_labels = [job for job in declared_jobs if job not in JOB_OBLIGATIONS]
     for job in declared_jobs:
-        emit(JOB_OBLIGATIONS[job], "PRESENT", "NONE", "obligation derived from declared job-label set")
+        obligation = JOB_OBLIGATIONS.get(job)
+        if obligation is None:
+            continue
+        emit(obligation, "PRESENT", "NONE", "obligation derived from declared job-label set")
 
     # 4. Owner proofs; UNKNOWN epistemic state can never become PASS.
+    # Review #1032 R03: currentness is bound to the real owning proof here —
+    # a missing or stale proof projects UNKNOWN with owner_proof_ref "NONE",
+    # never CURRENT, and only a fresh PASS proof binds CURRENT + the proof ref.
     for rule in rules:
         state = rule["epistemic"]
         if state == "ABSENT_WITH_INSPECTED_SCOPE":
             rule["gate_state"] = "NOT_APPLICABLE"
+            rule["trace"]["required_evidence_currentness"] = "NOT_REQUIRED"
             continue
         owner_proof = fixture["owner_proofs"].get(rule["obligation"])
         if state == "UNKNOWN" or owner_proof is None or not owner_proof["fresh"]:
             rule["gate_state"] = "NOT_RUN"
+            rule["trace"]["owner_proof_ref"] = "NONE" if owner_proof is None else owner_proof["ref"]
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
             if owner_proof is not None and not owner_proof["fresh"]:
-                rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
                 rule["trace"]["applicability_reason"] += "; earlier assessment is from a stale HEAD and stays UNKNOWN"
             continue
+        rule["trace"]["owner_proof_ref"] = owner_proof["ref"]
         if owner_proof["verdict"] == "PASS":
             rule["gate_state"] = "PASS"
+            rule["trace"]["required_evidence_currentness"] = "CURRENT"
         elif owner_proof["verdict"] in {"FAIL", "CHANGES_REQUESTED"}:
             rule["gate_state"] = "FAIL"
+            rule["trace"]["required_evidence_currentness"] = "CURRENT"
         elif owner_proof["verdict"] == "NOT_APPLICABLE":
             rule["gate_state"] = "NOT_APPLICABLE"
+            rule["trace"]["required_evidence_currentness"] = "NOT_REQUIRED"
         else:
             rule["gate_state"] = "BLOCKED"
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
 
     # 5. Precedence within concern: lower authority cannot weaken a higher
     #    owner's gate; contradiction is a CONFLICT, never a silent downgrade.
@@ -392,24 +439,42 @@ def resolve_effective_rules(fixture: dict) -> dict:
             rule["gate_state"] = "NOT_APPLICABLE"
 
     # 6. Finite coverage denominator: compound job sets without an equivalent
-    #    covered class stay UNVERIFIED with a repair route, never blanket PASS.
-    coverage_unverified = len(declared_jobs) >= 2 and frozenset(declared_jobs) not in COVERED_JOB_CLASSES
+    #    covered class stay UNVERIFIED with a repair route, never blanket PASS;
+    #    declared labels with no owner-obligation mapping fail closed the same way.
+    coverage_unverified = bool(unknown_job_labels) or (
+        len(declared_jobs) >= 2 and frozenset(declared_jobs) not in COVERED_JOB_CLASSES
+    )
     if coverage_unverified:
         for rule in rules:
             if rule["epistemic"] != "ABSENT_WITH_INSPECTED_SCOPE":
                 rule["gate_state"] = "BLOCKED"
-                rule["trace"]["applicability_reason"] += (
-                    "; uncovered job conjunction: route to owning authority for an "
-                    "equivalence class or an authorized scope exclusion"
-                )
+                if unknown_job_labels:
+                    rule["trace"]["applicability_reason"] += (
+                        "; unknown job label(s) "
+                        + ", ".join(sorted(unknown_job_labels))
+                        + ": route to owning authority for an owner-obligation mapping, "
+                        "an equivalence class, or an authorized scope exclusion"
+                    )
+                else:
+                    rule["trace"]["applicability_reason"] += (
+                        "; uncovered job conjunction: route to owning authority for an "
+                        "equivalence class or an authorized scope exclusion"
+                    )
 
     # 7. Cross-owner AND: overall admission requires every owner rule satisfied.
+    # Review #1032 R01: ADMITTED only when every applicable required gate is
+    # explicitly satisfied (PASS or NOT_APPLICABLE) by current trusted proof;
+    # missing/stale proofs (NOT_RUN) and FAIL proofs block the aggregate.
     if conflict:
         resolution = "CONFLICT"
     elif any(rule["epistemic"] == "UNKNOWN" for rule in rules):
         resolution = "UNKNOWN_EPISTEMIC"
     elif coverage_unverified:
         resolution = "UNVERIFIED_COVERAGE"
+    elif any(rule["gate_state"] == "FAIL" for rule in rules):
+        resolution = "REJECTED_GATES"
+    elif any(rule["gate_state"] not in {"PASS", "NOT_APPLICABLE"} for rule in rules):
+        resolution = "UNVERIFIED_GATES"
     else:
         resolution = "ADMITTED"
     for rule in rules:
@@ -605,7 +670,11 @@ class AdoptionNonWeakeningTests(unittest.TestCase):
         # Dropping J06/J08 labels cannot drop their inspected obligations either.
         self.assertIn("migration baseline/target state and interrupted recovery evidence", gate_map(result))
         self.assertIn("deployment side-effect authorization and idempotency reconciliation", gate_map(result))
-        self.assertEqual(result["resolution"], "ADMITTED")
+        # Review #1032 R01: a required gate left NOT_RUN by missing owner proof
+        # blocks the aggregate; label removal can never yield a false-green
+        # ADMITTED.
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
 
     def test_n02_lower_authority_override_cannot_weaken_frozen_review(self) -> None:
         """Pack N02: CONFLICT; affected gate BLOCKED, lower authority never weakens."""
@@ -730,6 +799,142 @@ class ObligationConjunctionTests(unittest.TestCase):
                 self.assertEqual(state, "BLOCKED")
                 self.assertIn("equivalence class", rule_for(result, obligation)["trace"]["applicability_reason"])
         self.assertNotIn("PASS", set(material.values()))
+
+
+class AggregateAdmissionFailClosedTests(unittest.TestCase):
+    """Review #1032 R01: positive admission requires every applicable required
+    gate to be satisfied by current trusted owner proof; the aggregate is
+    blocked (not merely gate-mapped) on missing/FAIL/stale proof."""
+
+    def test_n07_missing_owner_proofs_block_admission_even_when_job_class_covered(self) -> None:
+        """X01 is a covered class with all facts PRESENT, yet no owner proof
+        satisfies any required gate: the aggregate must be UNVERIFIED_GATES."""
+        result = resolve_effective_rules(service_x01_fixture())
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertNotIn("ADMITTED", {rule["trace"]["resolution"] for rule in result["rules"]})
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertEqual(rule["trace"]["owner_proof_ref"], "NONE")
+                self.assertEqual(rule["trace"]["required_evidence_currentness"], "UNKNOWN")
+
+    def test_n08_fail_owner_proof_blocks_admission(self) -> None:
+        """A current FAIL review verdict blocks the aggregate as REJECTED_GATES."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = proof("FAIL", ref="review:sec-fail@707c")
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertEqual(result["resolution"], "REJECTED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "FAIL")
+        self.assertEqual(security["trace"]["owner_proof_ref"], "review:sec-fail@707c")
+
+    def test_n09_stale_owner_proof_blocks_admission(self) -> None:
+        """A stale-HEAD proof never satisfies its gate and blocks the aggregate."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = proof(ref="review:sec@stale-head", fresh=False)
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "NOT_RUN")
+        self.assertEqual(security["trace"]["required_evidence_currentness"], "UNKNOWN")
+        self.assertEqual(security["trace"]["owner_proof_ref"], "review:sec@stale-head")
+
+    def test_n10_removed_label_with_unproven_fact_blocks_admission(self) -> None:
+        """Even with every other owner proof current, removing the J07 label
+        cannot admit: the label-independent security obligation stays NOT_RUN
+        and the aggregate is blocked."""
+        proofs = all_pass_proofs()
+        del proofs["independent security review"]
+        result = resolve_effective_rules(
+            service_x01_fixture(declared_jobs={"J03_BUG_FIX"}, owner_proofs=proofs)
+        )
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["epistemic"], "PRESENT")
+        self.assertEqual(security["gate_state"], "NOT_RUN")
+        self.assertEqual(security["trace"]["owner_proof_ref"], "NONE")
+
+
+class SupportedJobClassObligationTests(unittest.TestCase):
+    """Review #1032 R02: every declared-covered job class resolves through an
+    explicit owner-obligation mapping; unknown labels fail closed."""
+
+    X02_JOBS = frozenset({"J05_PUBLIC_API_CHANGE", "J12_UPSTREAM_REUSE"})
+    X05_JOBS = frozenset({"J04_FEATURE_CONTRACT", "J05_PUBLIC_API_CHANGE"})
+
+    def test_x02_public_api_upstream_reuse_obligations_admit_when_proven(self) -> None:
+        """Covered class X02 binds both job obligations to a real owner."""
+        result = resolve_effective_rules(
+            service_x01_fixture(declared_jobs=set(self.X02_JOBS), owner_proofs=all_pass_proofs())
+        )
+        self.assertEqual(result["resolution"], "ADMITTED")
+        for obligation in (
+            "public API change compatibility evidence",
+            "upstream license/provenance/currentness evidence",
+        ):
+            with self.subTest(obligation=obligation):
+                self.assertEqual(gate_map(result)[obligation], "PASS")
+                rule = rule_for(result, obligation)
+                self.assertTrue(rule["trace"]["owner_proof_ref"].startswith("proof:"))
+                self.assertEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+
+    def test_x05_feature_contract_public_api_obligations_admit_when_proven(self) -> None:
+        """Covered class X05 binds both job obligations to a real owner."""
+        result = resolve_effective_rules(
+            service_x01_fixture(declared_jobs=set(self.X05_JOBS), owner_proofs=all_pass_proofs())
+        )
+        self.assertEqual(result["resolution"], "ADMITTED")
+        for obligation in (
+            "feature contract conformance evidence",
+            "public API change compatibility evidence",
+        ):
+            with self.subTest(obligation=obligation):
+                self.assertEqual(gate_map(result)[obligation], "PASS")
+        self.assertEqual(
+            rule_for(result, "feature contract conformance evidence")["owner"],
+            "interface compatibility owner",
+        )
+
+    def test_unknown_job_label_fails_closed_as_unverified_coverage(self) -> None:
+        """A declared job with no owner-obligation mapping is UNVERIFIED_COVERAGE
+        with a repair route, never a KeyError and never an admission."""
+        result = resolve_effective_rules(
+            service_x01_fixture(
+                declared_jobs={"J13_UNKNOWN_JOB"},
+                owner_proofs=all_pass_proofs(),
+            )
+        )
+        self.assertEqual(result["resolution"], "UNVERIFIED_COVERAGE")
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertEqual(rule["gate_state"], "BLOCKED")
+                self.assertIn("unknown job label", rule["trace"]["applicability_reason"])
+
+
+class TraceProofBindingTests(unittest.TestCase):
+    """Review #1032 R03: required_evidence_currentness and owner_proof_ref are
+    bound to the real owning proof; an unfalsifiable CURRENT projection is a bug."""
+
+    def test_missing_proof_never_projects_current_in_trace(self) -> None:
+        result = resolve_effective_rules(service_x01_fixture(declared_jobs={"J03_BUG_FIX"}))
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertNotEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+                self.assertEqual(rule["trace"]["owner_proof_ref"], "NONE")
+
+    def test_current_trace_binds_exact_owner_proof_ref(self) -> None:
+        """Every admitted trace names the exact proof that satisfied its gate."""
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=all_pass_proofs()))
+        self.assertEqual(result["resolution"], "ADMITTED")
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+                expected = all_pass_proofs()[rule["obligation"]]["ref"]
+                self.assertEqual(rule["trace"]["owner_proof_ref"], expected)
 
 
 class ProportionalityTests(unittest.TestCase):
