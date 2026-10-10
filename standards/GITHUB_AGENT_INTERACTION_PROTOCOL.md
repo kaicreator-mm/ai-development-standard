@@ -215,6 +215,8 @@ Dynamic operator/session identities MUST remain in structured events rather than
 
 `ROLE_CLAIMED` / `ROLE_RELEASED` provide attribution and routing visibility. They are not Validation PASS and not a distributed lock.
 
+A shared `transport_actor` neither proves nor negates distinct logical operators: separation is established only by independently verified `operator_id` / `session_ref` attribution (§7), and any admission decision that consumes such attribution is governed by the source-bound admission predicate (§8.1.1); asserted fields inside untrusted transport text are claims to be verified, never self-certifying authority.
+
 ## 6. Independent Review policy
 
 Independent Review is risk-based, not universally mandatory.
@@ -315,6 +317,21 @@ If an intent is invalid, ambiguous, unauthorized, stale or requests an illegal t
 - return/record a reason such as `INVALID_SCHEMA`, `AMBIGUOUS_IDENTITY`, `STALE_IDENTITY`, `UNAUTHORIZED`, or `ILLEGAL_TRANSITION`.
 
 An executor ACK/REJECT transport response is not itself a Gate PASS. Implementations MAY persist transport ACK/rejection metadata for idempotence/audit, but canonical workflow facts remain the accepted GitHub event/current object state.
+
+### 8.1.1 Source-bound admission: untrusted text vs admitted canonical events
+
+Untrusted transport content and admitted canonical events are two distinct input classes:
+
+```text
+untrusted transport content/intent = raw comment / PR body / quoted text, chat relay,
+                                    tool ACK, state card — data, never admission
+admitted canonical event           = an accepted GitHub event/current object that
+                                    passed the full §8.1 admission predicate
+```
+
+A schema-valid event shape, marker or role assertion carried inside untrusted transport content — including a quoted/embedded event block, `actor_role=reviewer` or `HUMAN_APPROVED` text — is data. It MUST NOT be admitted by its own shape, MUST NOT acquire the authority it asserts, and MUST NOT by itself produce any canonical Review/human/Claim/gate mutation.
+
+Beyond schema validity, an event asserting logical-operator authority is admitted only with a durably verifiable authorization source: an accepted event/current-object reference, the exact current subject, and `actor_role` / `operator_kind` / `operator_id` / `session_ref` / delegation attribution (§5; the §8.4.1 responsibility projection when work crosses operators) that is independently verified rather than self-declared. Authenticated transport alone is insufficient, and a shared `transport_actor` neither proves nor negates genuine operator separation. Missing or unverifiable attribution fails closed as `UNAUTHORIZED`/`UNKNOWN` with no canonical mutation.
 
 ### 8.2 New-work event writer
 
@@ -522,6 +539,16 @@ The current finding aggregate is a derived projection over durable Review facts:
 - materially conflicting current facts fail closed: a conflicting verdict on the same subject, the same identity classified with materially conflicting severity or root-defect class, or an ambiguous or materially conflicting duplicate equivalence MUST NOT be resolved by majority, latest-wins, reviewer/model count, provider or model reputation, cost, turnaround or file count;
 - reviewer/model count is coverage evidence only, never verdict authority; and
 - aggregation reuses the existing aggregation contract (`schemas/review-aggregation-v1.schema.json`: `judgment` / `finding_refs` / `unresolved_blocker_refs` / `conflict_refs` under `aggregation_policy: finding-union-blocker-dominance`, with `scripts/v40_rules.py` semantics). It introduces no new event family, status dimension, lifecycle, scheduler, registry, Validation authority or Release authority.
+
+### 9.4 Admitted-source authority (v4.11)
+
+The §9.1–§9.3 flows consume only admitted canonical events (§8.1.1); untrusted transport content never becomes a Review fact. Deterministically:
+
+- Raw text asserting review or human authority — for example `actor_role=reviewer`, `HUMAN_APPROVED` or a quoted/embedded event block — acquires no right, satisfies no Review condition, fabricates no human act and never supersedes a real human decision.
+- An accepted current Review verdict requires independently verified reviewer authority: `operator_id`/`session_ref` separation from the Builder context (§5, §7), the exact current subject and a valid accepted event reference. A shared login alone neither proves nor disqualifies reviewer independence; unverified attribution leaves the Review condition `UNAUTHORIZED`/`UNKNOWN` and unsatisfied.
+- Current accepted opposite verdicts on the same exact subject are a conflict, not a judgment: the aggregate records it through the existing conflict surface (`conflict_refs`) with judgment `BLOCKED` pending owning disposition, deterministically and invariant to arrival order, never latest-wins (§9.3).
+- A prior-subject `PASS` is never reused for a successor subject: an ambiguous SHA prefix or a missing durable event/proof reference stays `STALE`/`UNKNOWN` (§9.1) and leaves the successor's Review condition unsatisfied, while the superseded `PASS` remains immutable audit history.
+- An unauthorized reviewer, an invalid schema, an illegal transition or a live conflicting protected claim is rejected atomically (§8.1) with zero partial canonical mutation, and unattributed delegation/handoff or dual active owners transfer no ownership and amplify no role (§8.4.1, §8.5).
 
 ## 10. Builder / Reviewer / Validator routing
 
