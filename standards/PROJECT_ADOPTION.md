@@ -96,6 +96,8 @@ A0→A4 能力单调增加，但每一级都共享同一 non-weakening floor：
 
 因此：项目可以长期停留在 A0/A1，而无需部署 reducer/controller；但不能以“我们只是 A0”为理由跳过 required Validation、required Review、Candidate Freeze 或 Release Qualification。
 
+Effective-rule 解析与 adoption level 解耦（v4.11）：对同一 exact subject 的同一组 independently inspected material facts（permission / security / migration / deploy / external-effect），A0–A4 任一级 MUST 解析出同一组 required gate 与 hard predicates；adoption level 只选择 evidence 的收集与记录机制（A0 手工 durable facts、A4 machine record），不改变义务本身。任何 profile、job label 或更低 authority 的 override MUST NOT 削弱其它 owner 已要求的 gate；observation 缺失或来自过期 HEAD 时事实为 `UNKNOWN`，按 fail-closed 处理，不得记为已检视的 `ABSENT_WITH_INSPECTED_SCOPE`。
+
 ### 2.3 v3.4 → v4 Compatibility
 
 v4 不要求把 v3.4 durable history 重写成新协议：
@@ -256,6 +258,8 @@ PROJECT_OVERRIDES 可以增加项目真实需要的 gate，但不得因为历史
 
 对于 v4 adoption，PROJECT_OVERRIDES 只能在自身 authority 层选择 default/implementation surface；若 Frozen PRD、Frozen Architecture 或 Task 已要求更强 Assurance/Validation/Review/Release gate，override MUST NOT downgrade。
 
+Effective rule 在 exact subject 上解析时（v4.11），先在同一 concern 内按上述 precedence 解析 strengthening/narrowing，再跨所有 applicable owner/concern 取逻辑 AND：任一 owner 的 required gate 保持 required，一个 owner 内合法的 `NOT_APPLICABLE` 不解除其它 owner 的 gate。observation 缺失、过期或 owner 之间相互矛盾时 fail closed（gate 保持 `NOT_RUN` / `BLOCKED`，见 `DEVELOPMENT_WORKFLOW.md` §4），不得静默取最低公分母，也不得以风险 label 单独豁免。
+
 ### 3.5 Required-but-unestablished command / runner
 
 命令字段必须描述真实可执行能力，不得为满足 checklist 编造 shell command。
@@ -312,6 +316,9 @@ v4.fast_path
 8. override MUST NOT 把 Candidate Freeze、Release Qualification 与 Repository Integration 合并成单状态。
 9. override MUST NOT 用 branch/latest/chat identity 替代 exact subject identity。
 10. override MUST NOT 通过把 `BLOCKED/NOT_RUN` 改写成 `NOT_APPLICABLE` 获得 green state。
+11. 声明的 job label 是 multi-label set，只是识别义务的辅助证据：obligation closure 由 declared job set 与 independently observed material facts（permission / security / migration / deploy / external-effect，含 observation ref 与时效）共同推导；MUST NOT 因删除某个 label 而解除已检视事实对应的义务。
+12. override MUST NOT 以风险 label、profile、adoption level 或更低 authority 削弱其它 owner 已要求的 gate；跨 owner 合取中一个 owner 的合法 `NOT_APPLICABLE` 不解除其它 owner 的 required gate；与更高 authority 矛盾时为 `CONFLICT`，受影响 gate 保持 `BLOCKED`。
+13. 事实维度只有 `PRESENT` / `ABSENT_WITH_INSPECTED_SCOPE` / `UNKNOWN` 三种 epistemic 状态：observation 缺失或来自过期 HEAD 为 `UNKNOWN`，fail closed，MUST NOT 记为 `PASS`；这三种状态不是新增 gate 枚举。
 
 ### 3.8 v4.5 独立适用性：runtime / incident / maintenance
 

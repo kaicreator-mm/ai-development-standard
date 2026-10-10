@@ -150,7 +150,7 @@ READ_ONLY_DEPS = (
 READ_ONLY_DEPS_REBOUND_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
     "standards/VALIDATION_STANDARD.md": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
-    "standards/DEVELOPMENT_WORKFLOW.md": "a7fef842927e58a93b671fe9869b9395559845ac",
+    "standards/DEVELOPMENT_WORKFLOW.md": "57902fbcb56ffec9a461365ace472fb03e3520db",  # re-bound (#1007/#1032): T-01 effective-rule section additions on this branch
 }
 
 # The routing vocabulary of this wiring engine. It deliberately contains no
