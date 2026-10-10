@@ -62,6 +62,8 @@ Dependency/toolchain changes MUST be classified by material effect, not merely f
 
 Material dependency, lock, registry/source or toolchain deltas MUST participate in the existing `VALIDATION_IMPACT_DECISION` discipline from `VALIDATION_STANDARD.md`. Evidence reuse is forbidden when impact is affected or unknown.
 
+Reuse-sourced deltas follow the same materiality rule. Vendored or copied upstream source, a changed upstream revision or source path behind material already relied on, and an upstream license/NOTICE change are material deltas whenever the reused material remains in the tree or dependency chain. A docs-only/chore label or a Fast Path claim does not change this classification.
+
 ## 7. Vulnerability applicability and disposition
 
 A vulnerability finding MUST retain advisory identity, package/version, dependency class, path when relevant, exposure/applicability, severity, evidence references and disposition authority.
@@ -83,6 +85,18 @@ An exception SHOULD include owner/authority, reason, mitigation when any, review
 Registry/source restrictions, provenance verification, license policy and SBOM requirements are project/risk-authoritative controls. They MAY be mandatory when frozen authority requires them, but this standard does not make every project adopt one registry, SLSA level, license allow-list or SBOM format.
 
 Changing an authoritative source/registry or provenance policy is itself a material execution fact and may require Validation Impact review.
+
+Reuse of outside work — an upstream pattern, a re-specified module or directly reused source — is additionally bound to exact provenance facts observed at a named upstream revision:
+
+- the upstream repository, the full commit SHA relied on, and the material paths taken from it;
+- the license file and NOTICE content as observed at that revision, not as remembered or as currently advertised;
+- the project license-policy disposition authorizing the specific reuse mode.
+
+These observations are revision-bound. Reliance on a different revision or a drifted source path is a new fact: it does not inherit the earlier license/NOTICE observation, and the earlier observation stays valid only as history. Re-observation and, where material, Validation Impact review are required before continued reliance.
+
+Public availability of an upstream repository is not by itself evidence of a reuse right. Unknown rights, a conflicting license or a missing NOTICE keep the reuse disposition fail-closed with the project license/security authority; an Agent MUST NOT assume a lawful reuse basis from visibility, popularity or a README claim.
+
+Wiring these reuse facts into shared L1/L2/L3 prompts, schemas or the manifest is central-surface work owned by the central wiring task (T11); this section records only owner-local duties and does not edit those surfaces.
 
 ## 10. EOL, abandonment and support lifecycle
 
@@ -119,6 +133,9 @@ Minimal/Fast-Path work need not materialize a full Dependency & Toolchain Profil
 - Lock/manifest contradiction with unclear authority → `BLOCKED` pending authority resolution.
 - Vulnerability applicability unknown → retain `unknown`; do not fabricate not-applicable.
 - Required provenance/registry/license/SBOM evidence unavailable → preserve the owning gate as non-PASS according to its authority.
+- Missing full upstream identity, license/NOTICE observation or license-policy disposition for reused material → keep the reuse disposition non-authoritative (`BLOCKED`/unknown) with the project license/security authority; upstream visibility does not resolve it.
+- Upstream source, path or behavior drift behind already-relied-on reuse → the prior permission is stale; fresh source/equivalence tests plus Validation Impact precede further reliance.
+- A reuse record is provenance/currentness input only; it MUST NOT be promoted to Validation PASS, license legality or release permission.
 
 ## 14. Boundary with other owners
 
