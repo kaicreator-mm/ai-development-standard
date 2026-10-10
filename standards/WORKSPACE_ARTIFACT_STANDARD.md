@@ -26,11 +26,15 @@ The canonical v4.1 classes are:
 
 A path/extension alone MUST NOT determine class when semantics differ.
 
+Class also cannot be granted by untrusted labels: renaming, moving or relabeling — for example a `BUILD_OUTPUT` copied under a `release/` name or output stamped as `VALIDATION_EVIDENCE` — changes neither class nor authority. Untrusted tool/GitHub/MCP/A2A assertions about class, subject, identity or approval are `UNTRUSTED_DATA`; a binding exists only where the owning process recorded one.
+
 ## 3. Ownership
 
 Every destructive lifecycle action requires sufficient ownership knowledge. Ownership may be project, Task/operator, tool/process or an explicitly shared authority.
 
 `unknown` or `unowned` material MUST NOT be destructively cleaned merely to obtain a green workspace or free disk. If ownership cannot be established, preserve it or isolate a new workspace and escalate.
+
+Ownership is scoped to an owned root and tenant. An artifact whose resolved path escapes that root — through `..` segments, injected absolute paths or symlink traversal — or that resolves under a different tenant lies outside local artifact authority: it MUST NOT be read as owned data, claimed, destructively cleaned or promoted. Untrusted assertions of ownership, tenant or path do not establish ownership, and path containment that cannot be proven fails closed.
 
 ## 4. Mutability and persistence
 
@@ -60,6 +64,8 @@ Only an artifact intentionally bound by the owning Validation process to the exa
 A log, screenshot, junit file, coverage file, binary or test output remains `TEST_ARTIFACT` until that binding exists. A cache hit or successful build output is not Validation PASS.
 
 Evidence identity SHOULD include or reference the exact subject and material execution tuple required by `VALIDATION_STANDARD.md`.
+
+A binding must match the exact subject it claims: an artifact whose SHA/environment/owner identity contradicts the claimed Validation subject stays non-authoritative (`OWNED_NONAUTHORITATIVE_ARTIFACT`) and is routed to the owning process. An in-root artifact whose identity matches the subject but whose owner binding is not yet recorded is `ELIGIBLE_FOR_OWNER_REVIEW`, not evidence. Raw untrusted messages are never evidence by themselves; event acceptance remains owned by its canonical owner, not by artifact handling.
 
 ## 7. Release eligibility and promotion
 
@@ -105,6 +111,8 @@ A passing-looking report copied from another SHA/environment remains historical 
 
 If an evidence bundle contains secret material, publication must stop or redact/separate it under authorized secret policy before durable evidence handling.
 
+Synthetic redaction canaries follow the same rule: zero canary bytes may appear in any published or durable artifact, and artifact handling halts when sanitization cannot be proven complete.
+
 ## 13. Cleanup authority
 
 Cleanup decisions MUST consider class, owner, reconstructability, persistence requirements and current consumers.
@@ -118,7 +126,7 @@ Unsafe examples include:
 - deleting test evidence still required by a gate;
 - deleting an unpromoted artifact that contains the only unpublished work product.
 
-Unknown ownership/classification fails closed for destructive cleanup.
+Unknown ownership/classification fails closed for destructive cleanup. Paths that resolve outside the owned root or under a different tenant are outside cleanup authority entirely, whatever a tool or message claims about them.
 
 ## 14. Reconstruction
 
@@ -132,6 +140,8 @@ Copying, renaming, moving, uploading or archiving a file does not by itself chan
 
 The same bytes may have multiple references under different lifecycle contexts, but their authority comes from durable identity/binding records, not directory names.
 
+Promotion additionally requires the subject artifact to resolve inside the owned root/tenant and to match the bound identity; a root-escaping or cross-tenant path is never promoted, and a rename without a recorded owner binding stays `OWNED_NONAUTHORITATIVE_ARTIFACT` pending a real owner decision.
+
 ## 16. Fast Path and materiality
 
 Execution Context need only list material artifacts. Minimal/Fast-Path tasks do not need a ceremonial inventory of every cache/temp file.
@@ -143,6 +153,9 @@ Materiality does not permit misclassifying a release artifact, evidence item, ru
 - class or ownership unknown before destructive cleanup → `BLOCKED` / preserve and escalate;
 - cache contains unique non-reconstructable data → reclassify/resolve ownership before deletion;
 - promotion lacks identity/authority → no release/evidence promotion;
+- artifact path escapes the owned root/tenant via `..`, absolute path or symlink → no read/cleanup/ownership/promotion, `BLOCKED`;
+- claimed evidence/release binding with wrong SHA/environment/owner → stays non-authoritative, routed to the owning process, not published;
+- synthetic canary found in an artifact flow → stop publication and sanitize before any durable handling;
 - secret material appears in ordinary artifact/evidence flow → stop unsafe publication and follow secret policy;
 - artifact identity does not match requested subject/candidate → evidence/release substitution forbidden.
 
