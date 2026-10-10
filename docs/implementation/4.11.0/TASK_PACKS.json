@@ -1,0 +1,109 @@
+{
+  "kind": "ADS_V411_TASK_PACK_INDEX_CANDIDATE",
+  "status": "DRAFT_UNREVIEWED_NOT_FROZEN",
+  "repository": "kaicreator-mm/ai-development-standard",
+  "version": "4.11.0",
+  "source_baseline": {
+    "version_branch_seed": "5f224dd662f12fc57fb1bb270ed30e6eb1d83413",
+    "qualified_main": "b9461d48d902a2c7c00adff6746afc7a02a0ac3e"
+  },
+  "authority": {
+    "product_freeze_issue": 943,
+    "l2_freeze_issue": 954,
+    "dag_freeze_issue": 966,
+    "frozen_dag_commit": "26fc83911185675bdea3c540df6df15c0241402b",
+    "frozen_dag_blob": "9866d35ae1512b156cfdc94cc01aec2fa897f3e6"
+  },
+  "notes": [
+    "Index records 9 candidate Task Packs only; 11 frozen-DAG nodes remain UNPACKED; not canonical executable Task Issues or native dependencies.",
+    "Pack file blobs are exact at creation, subject to independent source-currentness and semantic Review.",
+    "Only an independent review and distinct Freeze can authorize Task Pack materialization; no Builder claims, no source implementation, no merge."
+  ],
+  "packs": [
+    {
+      "task_id": "V411-T01",
+      "source_issue": 968,
+      "source_comment": 6094571852,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T01_pinned_effective_rules.md",
+      "git_blob": "5c6cd176587049ad5069f0d2da3dfee06b45887d",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T03",
+      "source_issue": 969,
+      "source_comment": 6094572317,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T03_accepted_spec_implementation_currentness.md",
+      "git_blob": "bbbba7b382337c3b4213878fcd86349422c020fd",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T04",
+      "source_issue": 970,
+      "source_comment": 6094572750,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T04_reuse_first_source_license.md",
+      "git_blob": "a86d165d856c4d82cac99314556b34c64ceb7771",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T05",
+      "source_issue": 971,
+      "source_comment": 6094573228,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T05_canonical_event_authority.md",
+      "git_blob": "c5b408720a5f62c6e578a8572646714f7b0f7788",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T10",
+      "source_issue": 972,
+      "source_comment": 6094573680,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T10_untrusted_secret_artifact_boundary.md",
+      "git_blob": "e1a316c468a9b8243c7afa95816c687467ff4b2a",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T06",
+      "source_issue": 974,
+      "source_comment": 6094568983,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T06_protected_claim_reroute.md",
+      "git_blob": "c1fe5dcb0e2cbfdbf1f2b619259010b8697b974b",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T08",
+      "source_issue": 975,
+      "source_comment": 6094569513,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T08_human_denial_authority.md",
+      "git_blob": "7999e5b294a56d051218832705b5e9279b4be3ee",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T09",
+      "source_issue": 976,
+      "source_comment": 6094587423,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T09_irreversible_effect_reconciliation.md",
+      "git_blob": "3b338da726db0ab053609d6b6c557d9670d13951",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T12",
+      "source_issue": 977,
+      "source_comment": 6094587813,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T12_abc_conformance.md",
+      "git_blob": "35d1be5ca0fdc5b2a9cc45b89d28494bc0b0d216",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    }
+  ],
+  "unpacked_task_ids": [
+    "V411-T02",
+    "V411-T07",
+    "V411-T11",
+    "V411-T13",
+    "V411-T14",
+    "V411-V01",
+    "V411-V02",
+    "V411-V03",
+    "V411-V04",
+    "V411-R01",
+    "V411-R02"
+  ]
+}
