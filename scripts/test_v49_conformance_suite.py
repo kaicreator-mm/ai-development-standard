@@ -119,7 +119,10 @@ T012_MERGED_BLOBS = {
     ".agent/execution/T-012/IMPLEMENTATION_MAP.md": "8dc93553a7e7b23d55495662b1ad31fe461fe368",
     "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
-    ".github/workflows/verify-standard.yml": "6e81b4d0b767cabb7c06440633a029cd94b17817",
+    # F1-style re-bind (#1038): the CI-repair lane itself edits this T-012
+    # output (checkout fetch-depth: 0), so the pin moves to the repaired
+    # blob; every other T-012 output stays pinned to its exact composed blob.
+    ".github/workflows/verify-standard.yml": "9fa6099f867b4ce68c0963fbd012f8970753c4d6",
 }
 
 # The T-012 oracle identity of this kernel itself: the only lawful edit on top
