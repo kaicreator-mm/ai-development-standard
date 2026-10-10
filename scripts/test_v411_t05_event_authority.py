@@ -71,6 +71,15 @@ AMBIGUOUS_PREFIX = "ab"
 
 SEVERITY_BLOCKING = {"P0", "P1"}
 
+# §8.1.1 event-type authority: the event type, not the self-declared role,
+# constrains who may publish it. Review verdicts may only be minted by an
+# independently verified reviewer operator (§9.4).
+REVIEW_EVENTS = frozenset({"REVIEW_DECISION", "REVIEW_RESULT"})
+EVENT_ROLE_AUTHORITY = {
+    "REVIEW_DECISION": frozenset({"reviewer"}),
+    "REVIEW_RESULT": frozenset({"reviewer"}),
+}
+
 
 def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
@@ -206,6 +215,11 @@ class AdmissionBoundary:
     active_handoffs: dict = field(default_factory=dict)  # work identity -> owning operator
     human_acts: list = field(default_factory=list)
     verified_source_refs: set = field(default_factory=lambda: set(VERIFIED_SOURCES))
+    # Durable proof/source reference -> the exact admitted fact it grounds
+    # (event, subject, operator_id, verdict). A verified source is bound to
+    # the one fact it was verified for; re-binding it to a contradictory
+    # fact pattern is a stale-identity rejection, never a second authority.
+    source_bindings: dict = field(default_factory=dict)
     _next_ref: int = 0
 
     def snapshot(self) -> tuple:
@@ -216,6 +230,7 @@ class AdmissionBoundary:
             tuple(sorted(self.active_handoffs.items())),
             tuple(self.human_acts),
             tuple(sorted(self.verified_source_refs)),
+            tuple(sorted(self.source_bindings.items())),
             self._next_ref,
         )
 
@@ -237,6 +252,10 @@ class AdmissionBoundary:
             return Decision("REJECTED", "INVALID_SCHEMA")
         if intent.actor_role not in ACTOR_ROLES:
             return Decision("REJECTED", "INVALID_SCHEMA")
+        if intent.event in REVIEW_EVENTS and intent.verdict not in REVIEW_JUDGMENTS:
+            # Canonical verdict enumeration is enforced at the boundary; a
+            # verdict outside `REVIEW_JUDGMENTS` never reaches the reducer.
+            return Decision("REJECTED", "INVALID_SCHEMA")
         verified = VERIFIED_OPERATORS.get(
             (intent.transport_actor, intent.operator_id, intent.session_ref)
         )
@@ -249,6 +268,12 @@ class AdmissionBoundary:
             return Decision("REJECTED", "UNAUTHORIZED")
         if intent.actor_role not in allowed_roles:
             return Decision("REJECTED", "UNAUTHORIZED")
+        required_roles = EVENT_ROLE_AUTHORITY.get(intent.event)
+        if required_roles is not None and intent.actor_role not in required_roles:
+            # The event type constrains authority: a verified operator acting
+            # in another allowed role (e.g. a Builder) cannot mint a Review
+            # verdict by self-declaring one (§9.4).
+            return Decision("REJECTED", "UNAUTHORIZED")
         if not intent.proof_ref or intent.proof_ref not in self.verified_source_refs:
             return Decision("REJECTED", "UNKNOWN")
         subject, reason = self.resolve_subject(intent.subject)
@@ -258,9 +283,18 @@ class AdmissionBoundary:
             if fact.event_ref == intent.proof_ref and fact.subject != subject:
                 # A prior-subject decision is never re-bound to a successor.
                 return Decision("REJECTED", "STALE_IDENTITY")
+        binding = (intent.event, subject, intent.operator_id, intent.verdict)
+        prior_binding = self.source_bindings.get(intent.proof_ref)
+        if prior_binding is not None and prior_binding != binding:
+            # A durably verified source grounds exactly one admitted fact;
+            # reusing it to admit a contradictory verdict/event/operator
+            # mints authority out of thin air and is rejected (§8.1.1, §9.4).
+            return Decision("REJECTED", "STALE_IDENTITY")
+        if intent.event in REVIEW_EVENTS and subject != self.live_subject:
+            # Exact current-subject check applies to every Review event shape,
+            # with or without a transition (§9.1).
+            return Decision("REJECTED", "STALE_IDENTITY")
         if intent.transition is not None:
-            if intent.event in ("REVIEW_DECISION", "REVIEW_RESULT") and subject != self.live_subject:
-                return Decision("REJECTED", "STALE_IDENTITY")
             if (intent.actor_role,) + intent.transition not in LEGAL_TRANSITIONS:
                 return Decision("REJECTED", "ILLEGAL_TRANSITION")
         if intent.requests_protected_claim:
@@ -279,12 +313,22 @@ class AdmissionBoundary:
                     # A second active handoff is rejected like any incompatible
                     # second claim (§8.4.1).
                     return Decision("REJECTED", "BLOCKED")
+                if owner is None and intent.operator_id != parent["claimed_by"]:
+                    # Ownership transfer must be initiated by the dispatch's
+                    # proven owner: an unattributed handoff from any other
+                    # verified operator transfers nothing (§8.4.1, §8.5).
+                    return Decision("REJECTED", "UNAUTHORIZED")
         if any(prior == intent for prior in self.admitted_intents):
             return Decision("ACCEPTED", "", idempotent=True)
         self.admitted_intents.append(intent)
         self._next_ref += 1
         event_ref = f"evt-{self._next_ref}"
         blocking = any(sev in SEVERITY_BLOCKING for sev in intent.finding_severities)
+        if intent.event in REVIEW_EVENTS and intent.verdict in ("CHANGES_REQUESTED", "BLOCKED"):
+            # Fail-closed: an accepted opposite Review judgment blocks even
+            # when its finding severities are missing or non-blocking; the
+            # conflict computation never depends on severity opacity.
+            blocking = True
         self.admitted.append(
             AdmittedFact(
                 event_ref=event_ref,
@@ -299,6 +343,7 @@ class AdmissionBoundary:
             )
         )
         self.verified_source_refs.add(event_ref)
+        self.source_bindings[intent.proof_ref] = binding
         if intent.operator_kind == "human":
             self.human_acts.append((event_ref, intent.operator_id))
         if intent.responsibility_mode == "RESPONSIBILITY_HANDOFF":
@@ -324,12 +369,17 @@ class AdmissionBoundary:
             seen.add(fact.event_ref)
             facts.append(fact)
         passes = [fact for fact in facts if fact.verdict == "PASS"]
+        changes = [fact for fact in facts if fact.verdict == "CHANGES_REQUESTED"]
         blockers = [fact for fact in facts if fact.blocking]
-        if passes and blockers:
+        if passes and (changes or blockers):
+            # Opposite accepted verdicts on the same exact subject are a
+            # conflict, not a judgment — computed from the verdicts alone,
+            # independent of severity and arrival order, never latest-wins
+            # (§9.3, §9.4).
             return ReviewOutcome("BLOCKED", tuple(sorted(fact.event_ref for fact in facts)))
         if passes:
             return ReviewOutcome("PASS")
-        if blockers:
+        if changes or blockers:
             return ReviewOutcome("CHANGES_REQUESTED")
         return ReviewOutcome("NOT_RUN")
 
@@ -621,12 +671,38 @@ class ForgedSourceNegativeTests(unittest.TestCase):
         self.assertEqual(before, boundary.snapshot())
         self.assertEqual([], boundary.human_acts)
 
+    def test_n02b_verified_non_reviewer_cannot_mint_a_review_pass(self) -> None:
+        # P1-01: a fully verified Builder operator (alice-shared /
+        # builder-op-1 / sess-b1) self-presenting `actor_role=builder` on a
+        # REVIEW_RESULT cannot mint Review authority — the event type, not the
+        # self-declared role, constrains authority (§9.4). Rejected
+        # UNAUTHORIZED with zero canonical mutation.
+        boundary = make_boundary()
+        before = boundary.snapshot()
+        builder_minted_pass = EventIntent(
+            event="REVIEW_RESULT",
+            actor_role="builder",
+            operator_kind="codex",
+            operator_id="builder-op-1",
+            session_ref="sess-b1",
+            transport_actor="alice-shared",
+            subject=H,
+            proof_ref="src-review-1",
+            verdict="PASS",
+            transition=None,
+        )
+        decision = boundary.admit(builder_minted_pass)
+        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), decision)
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
+        self.assertEqual([], boundary.facts_for(H))
+
 
 class ConflictAndCurrentnessTests(unittest.TestCase):
     """Task Pack N03–N04: order-invariant same-subject conflict; no PASS reuse."""
 
     PASS_INTENT = review_pass(H, "src-review-1", operator=("alice-shared", "reviewer-op-1", "sess-r1"))
-    FAIL_INTENT = EventIntent(
+    CHANGES_INTENT = EventIntent(
         event="REVIEW_RESULT",
         actor_role="reviewer",
         operator_kind="codex",
@@ -635,7 +711,7 @@ class ConflictAndCurrentnessTests(unittest.TestCase):
         transport_actor="alice-shared",
         subject=H,
         proof_ref="src-review-2",
-        verdict="FAIL",
+        verdict="CHANGES_REQUESTED",
         finding_severities=("P1",),
         transition=("review-ready", "merge-ready"),
     )
@@ -647,12 +723,39 @@ class ConflictAndCurrentnessTests(unittest.TestCase):
         return boundary.current_review(H)
 
     def test_n03_same_subject_opposite_verdicts_block_regardless_of_arrival(self) -> None:
-        # N03: accepted PASS(H) + accepted FAIL/P1(H) is a deterministic
-        # CONFLICT/BLOCKED in both arrival orders — never latest-wins.
-        pass_first = self._run_both_orders(self.PASS_INTENT, self.FAIL_INTENT)
-        fail_first = self._run_both_orders(self.FAIL_INTENT, self.PASS_INTENT)
+        # N03: accepted PASS(H) + accepted CHANGES_REQUESTED/P1(H) is a
+        # deterministic CONFLICT/BLOCKED in both arrival orders — never
+        # latest-wins.
+        pass_first = self._run_both_orders(self.PASS_INTENT, self.CHANGES_INTENT)
+        changes_first = self._run_both_orders(self.CHANGES_INTENT, self.PASS_INTENT)
         self.assertEqual(ReviewOutcome("BLOCKED", ("evt-1", "evt-2")), pass_first)
-        self.assertEqual(pass_first, fail_first)
+        self.assertEqual(pass_first, changes_first)
+
+    def test_n03b_opposite_verdict_without_findings_fails_closed_in_both_orders(self) -> None:
+        # P1-02: an accepted CHANGES_REQUESTED(H) whose finding severities are
+        # missing/opaque still deterministically conflicts with an accepted
+        # PASS(H) — the conflict is computed from the verdicts alone, never
+        # from severity or arrival order.
+        def changes_without_findings() -> EventIntent:
+            return replace(self.CHANGES_INTENT, finding_severities=())
+
+        pass_first = self._run_both_orders(self.PASS_INTENT, changes_without_findings())
+        changes_first = self._run_both_orders(changes_without_findings(), self.PASS_INTENT)
+        self.assertEqual(ReviewOutcome("BLOCKED", ("evt-1", "evt-2")), pass_first)
+        self.assertEqual(pass_first, changes_first)
+
+    def test_n03c_verdict_outside_canonical_enumeration_is_invalid_schema(self) -> None:
+        # P1-02: a Review verdict outside `REVIEW_JUDGMENTS` (e.g. the legacy
+        # "FAIL") never reaches the reducer; admission fails closed with zero
+        # canonical mutation.
+        boundary = make_boundary()
+        before = boundary.snapshot()
+        forged_verdict = replace(self.CHANGES_INTENT, verdict="FAIL")
+        decision = boundary.admit(forged_verdict)
+        self.assertEqual(Decision("REJECTED", "INVALID_SCHEMA"), decision)
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
+        self.assertEqual([], boundary.facts_for(H))
 
     def test_n04_pass_is_never_reused_for_a_successor_subject(self) -> None:
         # N04: PASS(H) cannot satisfy H2 — a proof ref bound to the H event is
@@ -684,6 +787,48 @@ class ConflictAndCurrentnessTests(unittest.TestCase):
         self.assertEqual(Decision("REJECTED", "UNKNOWN"), boundary.admit(review_pass(H2, "")))
         self.assertEqual(before, boundary.snapshot())
         self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H2))
+        self.assertEqual(1, len(boundary.facts_for(H)))
+
+    def test_n04b_review_without_transition_is_still_checked_for_subject_currentness(self) -> None:
+        # P1-03: the exact live-subject check applies to every Review event
+        # shape. With live_subject=H2, an independently verified reviewer's
+        # REVIEW_RESULT on H — even with transition=None — is STALE_IDENTITY,
+        # not ACCEPTED. Zero mutation.
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        boundary.live_subject = H2
+        before = boundary.snapshot()
+        stale = review_pass(
+            H,
+            "src-review-2",
+            operator=("alice-shared", "reviewer-op-2", "sess-r2"),
+            kind="codex",
+        )
+        stale = replace(stale, transition=None)
+        decision = boundary.admit(stale)
+        self.assertEqual(Decision("REJECTED", "STALE_IDENTITY"), decision)
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H2))
+        self.assertEqual(1, len(boundary.facts_for(H)))
+
+    def test_n04c_verified_proof_ref_is_bound_to_its_admitted_fact(self) -> None:
+        # P2-01: a durably verified source reference grounds exactly one
+        # admitted fact. After src-review-1 admits PASS(H) from reviewer-op-1,
+        # the same proof ref cannot admit a contradictory CHANGES_REQUESTED(H)
+        # from reviewer-op-2 — the re-binding is rejected and the current
+        # judgment stays PASS with zero mutation.
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        before = boundary.snapshot()
+        contradictory = replace(
+            self.CHANGES_INTENT,
+            proof_ref="src-review-1",
+            finding_severities=("P1",),
+        )
+        decision = boundary.admit(contradictory)
+        self.assertEqual(Decision("REJECTED", "STALE_IDENTITY"), decision)
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
         self.assertEqual(1, len(boundary.facts_for(H)))
 
 
@@ -771,11 +916,12 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
                 self.assertEqual({}, boundary.active_handoffs)
                 self.assertEqual(before, boundary.snapshot())
 
-    def test_n06b_dual_active_handoffs_are_rejected_and_legal_handoff_transfers_once(self) -> None:
-        # N06 contrast: a fully attributed RESPONSIBILITY_HANDOFF transfers
+    def test_n06b_legal_handoff_transfers_once_and_dual_active_handoffs_are_rejected(self) -> None:
+        # N06 contrast: a fully attributed RESPONSIBILITY_HANDOFF initiated by
+        # the dispatch's proven owner (disp-2's claimed_by) transfers
         # ownership exactly once; a second active handoff of the same work is
         # rejected like any incompatible second claim.
-        def handoff(operator: tuple[str, str, str]) -> EventIntent:
+        def handoff(operator: tuple[str, str, str], proof: str) -> EventIntent:
             transport, operator_id, session = operator
             return EventIntent(
                 event="DISPATCH_CLAIMED",
@@ -785,22 +931,49 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
                 session_ref=session,
                 transport_actor=transport,
                 subject=H,
-                proof_ref="src-review-1",
+                proof_ref=proof,
                 transition=("claimed", "implementing"),
                 responsibility_mode="RESPONSIBILITY_HANDOFF",
                 parent_dispatch_ref="disp-2",
             )
 
         boundary = make_boundary()
+        # P1-04: only the proven owner (builder-op-1, disp-2's claimed_by) can
+        # initiate the handoff; another verified builder cannot grab it.
         self.assertEqual(
-            Decision("ACCEPTED", ""), boundary.admit(handoff(("frank-shared", "builder-op-2", "sess-b2")))
+            Decision("ACCEPTED", ""), boundary.admit(handoff(("alice-shared", "builder-op-1", "sess-b1"), "src-review-1"))
         )
-        self.assertEqual("builder-op-2", boundary.active_handoffs["issue-202"])
+        self.assertEqual("builder-op-1", boundary.active_handoffs["issue-202"])
         after_transfer = boundary.snapshot()
-        second = boundary.admit(handoff(("gina-shared", "builder-op-3", "sess-b3")))
+        second = boundary.admit(handoff(("gina-shared", "builder-op-3", "sess-b3"), "src-review-2"))
         self.assertEqual(Decision("REJECTED", "BLOCKED"), second)
-        self.assertEqual("builder-op-2", boundary.active_handoffs["issue-202"])
+        self.assertEqual("builder-op-1", boundary.active_handoffs["issue-202"])
         self.assertEqual(after_transfer, boundary.snapshot())
+
+    def test_n06c_handoff_initiated_by_non_owner_is_unauthorized_and_transfers_nothing(self) -> None:
+        # P1-04: disp-2 is created/claimed by builder-op-1 with no active
+        # handoff; builder-op-2's fully verified handoff event is still
+        # UNAUTHORIZED because an ownership transfer must be initiated by the
+        # proven current owner. Zero mutation.
+        boundary = make_boundary()
+        before = boundary.snapshot()
+        grab = EventIntent(
+            event="DISPATCH_CLAIMED",
+            actor_role="builder",
+            operator_kind="codex",
+            operator_id="builder-op-2",
+            session_ref="sess-b2",
+            transport_actor="frank-shared",
+            subject=H,
+            proof_ref="src-review-1",
+            transition=("claimed", "implementing"),
+            responsibility_mode="RESPONSIBILITY_HANDOFF",
+            parent_dispatch_ref="disp-2",
+        )
+        decision = boundary.admit(grab)
+        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), decision)
+        self.assertEqual({}, boundary.active_handoffs)
+        self.assertEqual(before, boundary.snapshot())
 
 
 class ReducerPurityTests(unittest.TestCase):
