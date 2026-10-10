@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Pinned-SHA conformance tests (e.g. test_v49_execution_core.py) read
+          # historical objects via `git show <sha>:<path>`; the default shallow
+          # checkout (fetch-depth: 1) breaks them. Issue #1038.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
