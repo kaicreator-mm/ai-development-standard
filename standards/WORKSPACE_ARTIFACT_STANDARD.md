@@ -140,7 +140,7 @@ Copying, renaming, moving, uploading or archiving a file does not by itself chan
 
 The same bytes may have multiple references under different lifecycle contexts, but their authority comes from durable identity/binding records, not directory names.
 
-Promotion additionally requires the subject artifact to resolve inside the owned root/tenant and to match the bound identity; a root-escaping or cross-tenant path is never promoted, and a rename without a recorded owner binding stays `OWNED_NONAUTHORITATIVE_ARTIFACT` pending a real owner decision.
+Promotion additionally requires the subject artifact to resolve inside the owned root/tenant and to match the bound identity; a root-escaping or cross-tenant path is never promoted, and a rename without a recorded owner binding stays `OWNED_NONAUTHORITATIVE_ARTIFACT` pending a real owner decision. `ELIGIBLE_FOR_OWNER_REVIEW` (§6) is the intake state for an in-root artifact whose identity already matches the requested subject while the owner binding is not yet recorded; it carries no evidence authority until the owning process records the binding and decides. A rename, copy or move without any recorded binding establishes no such identity match, so it stays `OWNED_NONAUTHORITATIVE_ARTIFACT` rather than entering intake eligibility.
 
 ## 16. Fast Path and materiality
 

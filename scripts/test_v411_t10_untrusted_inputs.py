@@ -15,6 +15,15 @@ Encodes the V411-T10 task-pack cases P01-P03 / N01-N08 as:
 Purely offline, standard library only: fake providers/tool payloads, a
 controlled temporary directory (with symlink when the host permits) and
 a deterministic synthetic canary. No network, no real credentials.
+
+Review #1036 repairs (F01-F04): cleanup now requires an ownership/disposability
+floor, tenant scope is verified from the filesystem layout independently of
+untrusted labels, owner/gate inputs must be checkable attestation evidence
+(not bare booleans), and unrecorded-binding transitions follow §6/§15.
+
+Scope note: T11 (shared schema/validation) and T12 (integration) remain
+explicitly DEFERRED — this focused suite models the decision contract only;
+it is not real admission, proof, or a substitute for either deferred pack.
 """
 
 from __future__ import annotations
@@ -230,11 +239,41 @@ def publish(ledger: Ledger, name: str, text: str) -> str | None:
 
 @dataclass(frozen=True)
 class ArtifactBinding:
+    """Binding record as recorded by the owning process (not an untrusted label)."""
+
     sha: str
     env: str
     owner: str
     tenant: str
     recorded: bool
+
+
+@dataclass(frozen=True)
+class Attestation:
+    """Accepted owner/Validator decision evidence (review #1036 F04).
+
+    A bare boolean cannot promote: the actor must be the bound owner identity,
+    the subject must be the exact requested subject, and `ref` must be a
+    checkable decision record of the form `<kind>:<actor>/<sha>`.
+    """
+
+    actor: str
+    subject: tuple[str, str, str]
+    ref: str
+
+
+# Classes §13 treats as safely disposable by default; anything else
+# (evidence, release, runtime state, source, secrets, test artifacts under
+# retention policy) is preserved pending ownership/authority.
+DISPOSABLE_ARTIFACT_CLASSES = frozenset({"BUILD_OUTPUT", "CACHE"})
+
+
+def make_tenant_scope(tmp: str) -> tuple[Path, Path]:
+    """Shared-root layout: the workspace root plus the authoritative tenant-A scope."""
+    workspace = Path(tmp) / "workspace"
+    scope = workspace / "tenant-A"
+    scope.mkdir(parents=True)
+    return workspace, scope
 
 
 def resolve_within_root(raw_path: str, *, owned_root: Path) -> Path | None:
@@ -247,6 +286,33 @@ def resolve_within_root(raw_path: str, *, owned_root: Path) -> Path | None:
     return resolved if resolved.is_relative_to(root_real) else None
 
 
+def resolve_within_tenant_scope(raw_path: str, *, owned_root: Path, tenant: str) -> Path | None:
+    """Authoritative tenant scope: the realpath must resolve under `owned_root/tenant`.
+
+    Established from the filesystem layout, independently of any untrusted
+    path text or `binding.tenant` label (review #1036 F02): a shared root
+    never lets one tenant reach another tenant's files, including via
+    symlinks that realpath into the other tenant's scope.
+    """
+    resolved = resolve_within_root(raw_path, owned_root=owned_root)
+    if resolved is None:
+        return None
+    scope_real = Path(os.path.realpath(str(owned_root / tenant)))
+    return resolved if resolved.is_relative_to(scope_real) else None
+
+
+def _attestation_valid(
+    attestation: Attestation | None, *, kind: str, subject: tuple[str, str, str]
+) -> bool:
+    """Decision evidence must carry the accepted identity and a checkable ref."""
+    if attestation is None:
+        return False
+    if attestation.subject != subject:
+        return False
+    sha, _env, owner = subject
+    return attestation.actor == owner and attestation.ref == f"{kind}:{attestation.actor}/{sha}"
+
+
 def review_artifact(
     *,
     raw_path: str,
@@ -255,25 +321,61 @@ def review_artifact(
     claimed_class: str,
     binding: ArtifactBinding | None,
     subject: tuple[str, str, str],
-    owner_decision: bool,
-    gate_prerequisites: bool,
+    measured_identity: tuple[str, str, str] | None = None,
+    owner_decision: Attestation | None = None,
+    gate_prerequisites: Attestation | None = None,
 ) -> tuple[str, tuple[tuple[str, str], ...]]:
-    """Path/tenant containment and binding identity gate promotion."""
-    if resolve_within_root(raw_path, owned_root=owned_root) is None:
+    """Tenant-scoped containment, binding identity and decision evidence gate promotion.
+
+    `measured_identity` is the identity the owning process established for the
+    artifact itself. Per §6 an in-root artifact whose identity matches the
+    subject while no owner binding is recorded is `ELIGIBLE_FOR_OWNER_REVIEW`
+    (intake state); a rename without a recorded binding and without proven
+    identity stays `OWNED_NONAUTHORITATIVE_ARTIFACT` (§15; review #1036 F03).
+    """
+    if resolve_within_tenant_scope(raw_path, owned_root=owned_root, tenant=tenant) is None:
         return BLOCKED, ()
     if binding is None or not binding.recorded:
+        if measured_identity is not None and measured_identity == subject:
+            return ELIGIBLE_FOR_OWNER_REVIEW, ()
         return OWNED_NONAUTHORITATIVE_ARTIFACT, ()
     if binding.tenant != tenant:
         return BLOCKED, ()
     if (binding.sha, binding.env, binding.owner) != subject:
         return OWNED_NONAUTHORITATIVE_ARTIFACT, ()
-    if owner_decision and gate_prerequisites:
+    if _attestation_valid(owner_decision, kind="owner", subject=subject) and _attestation_valid(
+        gate_prerequisites, kind="gate", subject=subject
+    ):
         return ELIGIBLE_FOR_OWNER_REVIEW, (("promote", claimed_class),)
     return ELIGIBLE_FOR_OWNER_REVIEW, ()
 
 
-def destructive_cleanup(raw_path: str, *, owned_root: Path, ledger: Ledger) -> str:
-    if resolve_within_root(raw_path, owned_root=owned_root) is None:
+def destructive_cleanup(
+    raw_path: str,
+    *,
+    owned_root: Path,
+    tenant: str,
+    ledger: Ledger,
+    owner_known: bool,
+    artifact_class: str | None,
+    reconstructable: bool,
+    protected_consumers: tuple = (),
+) -> str:
+    """§13/§17 floor: delete requires proven ownership, a disposable class,
+    reconstructability and no protected consumer (review #1036 F01).
+
+    Anything less is `BLOCKED` with zero side effects: nothing is recorded in
+    the ledger, so an unowned, in-use or unique artifact is preserved.
+    """
+    if resolve_within_tenant_scope(raw_path, owned_root=owned_root, tenant=tenant) is None:
+        return BLOCKED
+    if not owner_known:
+        return BLOCKED
+    if artifact_class not in DISPOSABLE_ARTIFACT_CLASSES:
+        return BLOCKED
+    if not reconstructable:
+        return BLOCKED
+    if protected_consumers:
         return BLOCKED
     ledger.record("delete", raw_path)
     return "CLEANED"
@@ -577,14 +679,13 @@ class ArtifactPathBoundaryTests(unittest.TestCase):
     def test_escape_paths_are_never_read_cleaned_or_promoted(self) -> None:
         """Pack case N05: ../, absolute and symlink escapes are fully refused."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "ws-tenant-A"
-            root.mkdir()
+            workspace, scope = make_tenant_scope(tmp)
             outside = Path(tmp) / "outside"
             outside.mkdir()
             outside_file = outside / "secret.txt"
             outside_file.write_text("outside", encoding="utf-8")
-            (root / "candidate.bin").write_bytes(b"candidate")
-            link = root / "escape.lnk"
+            (scope / "candidate.bin").write_bytes(b"candidate")
+            link = scope / "escape.lnk"
             try:
                 os.symlink(str(outside_file), str(link))
             except OSError:
@@ -597,36 +698,50 @@ class ArtifactPathBoundaryTests(unittest.TestCase):
                 with self.subTest(path=raw):
                     decision, effects = review_artifact(
                         raw_path=raw,
-                        owned_root=root,
+                        owned_root=workspace,
                         tenant="tenant-A",
                         claimed_class="VALIDATION_EVIDENCE",
                         binding=None,
                         subject=("sha-a", "env-a", "owner-a"),
-                        owner_decision=True,
-                        gate_prerequisites=True,
+                        owner_decision=None,
+                        gate_prerequisites=None,
                     )
                     self.assertEqual(decision, BLOCKED)
                     self.assertEqual(effects, ())
-                    self.assertEqual(destructive_cleanup(raw, owned_root=root, ledger=ledger), BLOCKED)
+                    self.assertEqual(
+                        destructive_cleanup(
+                            raw,
+                            owned_root=workspace,
+                            tenant="tenant-A",
+                            ledger=ledger,
+                            owner_known=True,
+                            artifact_class="CACHE",
+                            reconstructable=True,
+                        ),
+                        BLOCKED,
+                    )
             self.assertEqual(ledger.entries, [])
             self.assertTrue(outside_file.exists())
             if link is None:
-                self.skipTest("symlink creation not permitted on this host")
+                self.skipTest(
+                    "symlink creation not permitted on this host; "
+                    "symlink-escape coverage needs a POSIX run"
+                )
 
     def test_wrong_tenant_binding_is_blocked_even_inside_root(self) -> None:
         """Pack case N05: in-root artifact bound to another tenant is refused."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            (root / "candidate.bin").write_bytes(b"candidate")
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "candidate.bin").write_bytes(b"candidate")
             decision, effects = review_artifact(
-                raw_path="candidate.bin",
-                owned_root=root,
+                raw_path="tenant-A/candidate.bin",
+                owned_root=workspace,
                 tenant="tenant-A",
                 claimed_class="VALIDATION_EVIDENCE",
                 binding=ArtifactBinding(sha="sha-a", env="env-a", owner="owner-a", tenant="tenant-B", recorded=True),
                 subject=("sha-a", "env-a", "owner-a"),
-                owner_decision=True,
-                gate_prerequisites=True,
+                owner_decision=None,
+                gate_prerequisites=None,
             )
             self.assertEqual(decision, BLOCKED)
             self.assertEqual(effects, ())
@@ -651,6 +766,8 @@ class ArtifactPromotionAuthorityTests(unittest.TestCase):
         self.assertIn("Promotion additionally requires the subject artifact to resolve inside the owned root/tenant and to match the bound identity", promotion)
         self.assertIn("a root-escaping or cross-tenant path is never promoted", promotion)
         self.assertIn("stays `OWNED_NONAUTHORITATIVE_ARTIFACT` pending a real owner decision", promotion)
+        self.assertIn("intake state", promotion)
+        self.assertIn("stays `OWNED_NONAUTHORITATIVE_ARTIFACT` rather than entering intake eligibility", promotion)
         failure = artifact_section("## 17. Failure handling")
         self.assertIn(
             "claimed evidence/release binding with wrong SHA/environment/owner → stays non-authoritative, routed to the owning process, not published",
@@ -667,32 +784,33 @@ class ArtifactPromotionAuthorityTests(unittest.TestCase):
     def test_owned_candidate_promotes_only_with_owner_decision_and_gates(self) -> None:
         """Pack case P02: promotion follows actual owner/gate prerequisites, not filename."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "ws-tenant-A"
-            root.mkdir()
-            (root / "report.bin").write_bytes(b"report")
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "report.bin").write_bytes(b"report")
             subject = ("sha-111", "env-ci", "validator-1")
             binding = ArtifactBinding(sha="sha-111", env="env-ci", owner="validator-1", tenant="tenant-A", recorded=True)
+            gate_attestation = Attestation(actor="validator-1", subject=subject, ref="gate:validator-1/sha-111")
+            owner_attestation = Attestation(actor="validator-1", subject=subject, ref="owner:validator-1/sha-111")
             pending, pending_effects = review_artifact(
-                raw_path="report.bin",
-                owned_root=root,
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
                 tenant="tenant-A",
                 claimed_class="VALIDATION_EVIDENCE",
                 binding=binding,
                 subject=subject,
-                owner_decision=False,
-                gate_prerequisites=True,
+                owner_decision=None,
+                gate_prerequisites=gate_attestation,
             )
             self.assertEqual(pending, ELIGIBLE_FOR_OWNER_REVIEW)
             self.assertEqual(pending_effects, ())
             approved, effects = review_artifact(
-                raw_path="report.bin",
-                owned_root=root,
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
                 tenant="tenant-A",
                 claimed_class="VALIDATION_EVIDENCE",
                 binding=binding,
                 subject=subject,
-                owner_decision=True,
-                gate_prerequisites=True,
+                owner_decision=owner_attestation,
+                gate_prerequisites=gate_attestation,
             )
             self.assertEqual(approved, ELIGIBLE_FOR_OWNER_REVIEW)
             self.assertEqual(effects, (("promote", "VALIDATION_EVIDENCE"),))
@@ -700,21 +818,23 @@ class ArtifactPromotionAuthorityTests(unittest.TestCase):
     def test_rename_and_forged_evidence_stay_non_authoritative(self) -> None:
         """Pack case N06: renamed BUILD_OUTPUT and wrong SHA/env/owner bindings."""
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp) / "ws-tenant-A"
-            root.mkdir()
-            (root / "app.bin").write_bytes(b"build")
-            (root / "dist").mkdir()
-            (root / "dist" / "release").mkdir()
-            (root / "dist" / "release" / "app.bin").write_bytes(b"build")
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "app.bin").write_bytes(b"build")
+            (scope / "dist").mkdir()
+            (scope / "dist" / "release").mkdir()
+            (scope / "dist" / "release" / "app.bin").write_bytes(b"build")
+            subject = ("sha-1", "env-1", "owner-1")
+            decision_evidence = Attestation(actor="owner-1", subject=subject, ref="owner:owner-1/sha-1")
+            gate_evidence = Attestation(actor="owner-1", subject=subject, ref="gate:owner-1/sha-1")
             renamed, rename_effects = review_artifact(
-                raw_path="dist/release/app.bin",
-                owned_root=root,
+                raw_path="tenant-A/dist/release/app.bin",
+                owned_root=workspace,
                 tenant="tenant-A",
                 claimed_class="RELEASE_ARTIFACT",
                 binding=None,
-                subject=("sha-1", "env-1", "owner-1"),
-                owner_decision=True,
-                gate_prerequisites=True,
+                subject=subject,
+                owner_decision=decision_evidence,
+                gate_prerequisites=gate_evidence,
             )
             self.assertEqual(renamed, OWNED_NONAUTHORITATIVE_ARTIFACT)
             self.assertEqual(rename_effects, ())
@@ -724,18 +844,369 @@ class ArtifactPromotionAuthorityTests(unittest.TestCase):
                 ArtifactBinding(sha="sha-1", env="env-1", owner="someone-else", tenant="tenant-A", recorded=True),
             ):
                 forged, forged_effects = review_artifact(
-                    raw_path="dist/release/app.bin",
-                    owned_root=root,
+                    raw_path="tenant-A/dist/release/app.bin",
+                    owned_root=workspace,
                     tenant="tenant-A",
                     claimed_class="VALIDATION_EVIDENCE",
                     binding=wrong,
-                    subject=("sha-1", "env-1", "owner-1"),
-                    owner_decision=True,
-                    gate_prerequisites=True,
+                    subject=subject,
+                    owner_decision=decision_evidence,
+                    gate_prerequisites=gate_evidence,
                 )
                 with self.subTest(binding=wrong):
                     self.assertEqual(forged, OWNED_NONAUTHORITATIVE_ARTIFACT)
                     self.assertEqual(forged_effects, ())
+
+    def test_unrecorded_binding_transitions_distinguished(self) -> None:
+        """Review #1036 F03: §6 intake eligibility vs §15 rename non-authority."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "report.bin").write_bytes(b"report")
+            subject = ("sha-9", "env-ci", "validator-9")
+            # §6: in-root, identity proven, owner binding not yet recorded → intake state.
+            eligible, eligible_effects = review_artifact(
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="VALIDATION_EVIDENCE",
+                binding=None,
+                measured_identity=subject,
+                subject=subject,
+                owner_decision=None,
+                gate_prerequisites=None,
+            )
+            self.assertEqual(eligible, ELIGIBLE_FOR_OWNER_REVIEW)
+            self.assertEqual(eligible_effects, ())
+            # §15: rename without a recorded binding and without proven identity → non-authoritative.
+            renamed, renamed_effects = review_artifact(
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="RELEASE_ARTIFACT",
+                binding=None,
+                measured_identity=None,
+                subject=subject,
+                owner_decision=None,
+                gate_prerequisites=None,
+            )
+            self.assertEqual(renamed, OWNED_NONAUTHORITATIVE_ARTIFACT)
+            self.assertEqual(renamed_effects, ())
+            # A measured identity that contradicts the requested subject is not eligibility.
+            mismatched, mismatched_effects = review_artifact(
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="VALIDATION_EVIDENCE",
+                binding=None,
+                measured_identity=("sha-OTHER", "env-ci", "validator-9"),
+                subject=subject,
+                owner_decision=None,
+                gate_prerequisites=None,
+            )
+            self.assertEqual(mismatched, OWNED_NONAUTHORITATIVE_ARTIFACT)
+            self.assertEqual(mismatched_effects, ())
+
+
+class TenantScopeBoundaryTests(unittest.TestCase):
+    """Shared owned roots never let one tenant reach another tenant's files (N05, review #1036 F02)."""
+
+    def test_shared_root_cross_tenant_review_and_cleanup_are_refused(self) -> None:
+        """Review #1036 F02: a tenant-A-labelled binding cannot reach tenant-B bytes."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            scope_a = workspace / "tenant-A"
+            scope_b = workspace / "tenant-B"
+            scope_a.mkdir(parents=True)
+            scope_b.mkdir(parents=True)
+            (scope_b / "report.bin").write_bytes(b"tenant-B report")
+            subject = ("sha-b", "env-ci", "validator-b")
+            labelled_binding = ArtifactBinding(
+                sha="sha-b", env="env-ci", owner="validator-b", tenant="tenant-A", recorded=True
+            )
+            owner_attestation = Attestation(actor="validator-b", subject=subject, ref="owner:validator-b/sha-b")
+            gate_attestation = Attestation(actor="validator-b", subject=subject, ref="gate:validator-b/sha-b")
+            decision, effects = review_artifact(
+                raw_path="tenant-B/report.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="VALIDATION_EVIDENCE",
+                binding=labelled_binding,
+                subject=subject,
+                owner_decision=owner_attestation,
+                gate_prerequisites=gate_attestation,
+            )
+            self.assertEqual(decision, BLOCKED)
+            self.assertEqual(effects, ())
+            ledger = Ledger()
+            self.assertEqual(
+                destructive_cleanup(
+                    "tenant-B/report.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    ledger=ledger,
+                    owner_known=True,
+                    artifact_class="CACHE",
+                    reconstructable=True,
+                ),
+                BLOCKED,
+            )
+            self.assertEqual(ledger.entries, [])
+            self.assertTrue((scope_b / "report.bin").exists())
+
+    def test_symlink_into_other_tenant_scope_is_refused(self) -> None:
+        """Review #1036 F02: the realpath scope check refuses cross-tenant symlinks."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            scope_a = workspace / "tenant-A"
+            scope_b = workspace / "tenant-B"
+            scope_a.mkdir(parents=True)
+            scope_b.mkdir(parents=True)
+            target = scope_b / "report.bin"
+            target.write_bytes(b"tenant-B report")
+            link = scope_a / "linked.bin"
+            try:
+                os.symlink(str(target), str(link))
+            except OSError:
+                self.skipTest(
+                    "symlink creation not permitted on this host; "
+                    "cross-tenant symlink coverage needs a POSIX run"
+                )
+            subject = ("sha-b", "env-ci", "validator-b")
+            binding = ArtifactBinding(
+                sha="sha-b", env="env-ci", owner="validator-b", tenant="tenant-A", recorded=True
+            )
+            owner_attestation = Attestation(actor="validator-b", subject=subject, ref="owner:validator-b/sha-b")
+            gate_attestation = Attestation(actor="validator-b", subject=subject, ref="gate:validator-b/sha-b")
+            decision, effects = review_artifact(
+                raw_path="tenant-A/linked.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="VALIDATION_EVIDENCE",
+                binding=binding,
+                subject=subject,
+                owner_decision=owner_attestation,
+                gate_prerequisites=gate_attestation,
+            )
+            self.assertEqual(decision, BLOCKED)
+            self.assertEqual(effects, ())
+            ledger = Ledger()
+            self.assertEqual(
+                destructive_cleanup(
+                    "tenant-A/linked.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    ledger=ledger,
+                    owner_known=True,
+                    artifact_class="CACHE",
+                    reconstructable=True,
+                ),
+                BLOCKED,
+            )
+            self.assertEqual(ledger.entries, [])
+            self.assertTrue(target.exists())
+
+    def test_own_tenant_candidate_still_promotes_in_shared_root(self) -> None:
+        """Positive control: same shared-root layout, own scope, valid evidence."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp) / "workspace"
+            scope_a = workspace / "tenant-A"
+            scope_b = workspace / "tenant-B"
+            scope_a.mkdir(parents=True)
+            scope_b.mkdir(parents=True)
+            (scope_a / "report.bin").write_bytes(b"tenant-A report")
+            subject = ("sha-a", "env-ci", "validator-a")
+            binding = ArtifactBinding(
+                sha="sha-a", env="env-ci", owner="validator-a", tenant="tenant-A", recorded=True
+            )
+            owner_attestation = Attestation(actor="validator-a", subject=subject, ref="owner:validator-a/sha-a")
+            gate_attestation = Attestation(actor="validator-a", subject=subject, ref="gate:validator-a/sha-a")
+            decision, effects = review_artifact(
+                raw_path="tenant-A/report.bin",
+                owned_root=workspace,
+                tenant="tenant-A",
+                claimed_class="VALIDATION_EVIDENCE",
+                binding=binding,
+                subject=subject,
+                owner_decision=owner_attestation,
+                gate_prerequisites=gate_attestation,
+            )
+            self.assertEqual(decision, ELIGIBLE_FOR_OWNER_REVIEW)
+            self.assertEqual(effects, (("promote", "VALIDATION_EVIDENCE"),))
+
+
+class CleanupAuthorityFloorTests(unittest.TestCase):
+    """§13/§17 floor: delete needs ownership, disposable class, reconstructability and no protected consumer (N05/N06, review #1036 F01)."""
+
+    def test_owned_reconstructable_disposable_cleanup_proceeds(self) -> None:
+        """Positive control: an owned, reconstructable CACHE is the cleanup floor case."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            target = scope / "cache.bin"
+            target.write_bytes(b"cache")
+            ledger = Ledger()
+            self.assertEqual(
+                destructive_cleanup(
+                    "tenant-A/cache.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    ledger=ledger,
+                    owner_known=True,
+                    artifact_class="CACHE",
+                    reconstructable=True,
+                ),
+                "CLEANED",
+            )
+            self.assertEqual(ledger.entries, [("delete", "tenant-A/cache.bin")])
+
+    def test_unowned_in_root_artifact_is_preserved_with_zero_side_effects(self) -> None:
+        """Review #1036 F01: in-root but unowned material is preserved, not cleaned."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            target = scope / "report.bin"
+            target.write_bytes(b"report")
+            ledger = Ledger()
+            self.assertEqual(
+                destructive_cleanup(
+                    "tenant-A/report.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    ledger=ledger,
+                    owner_known=False,
+                    artifact_class="CACHE",
+                    reconstructable=True,
+                ),
+                BLOCKED,
+            )
+            self.assertEqual(ledger.entries, [])
+            self.assertTrue(target.exists())
+
+    def test_active_gate_evidence_is_preserved_with_zero_side_effects(self) -> None:
+        """Review #1036 F01: evidence still required by a gate is never deleted."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            target = scope / "report.bin"
+            target.write_bytes(b"report")
+            ledger = Ledger()
+            self.assertEqual(
+                destructive_cleanup(
+                    "tenant-A/report.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    ledger=ledger,
+                    owner_known=True,
+                    artifact_class="VALIDATION_EVIDENCE",
+                    reconstructable=True,
+                    protected_consumers=("ci-validation-gate",),
+                ),
+                BLOCKED,
+            )
+            self.assertEqual(ledger.entries, [])
+            self.assertTrue(target.exists())
+
+    def test_unique_nonreconstructable_state_is_preserved_with_zero_side_effects(self) -> None:
+        """Review #1036 F01: unique/unreconstructable state fails closed (§13/§14/§17)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            state = scope / "runtime.db"
+            state.write_bytes(b"state")
+            ledger = Ledger()
+            for kwargs in (
+                dict(artifact_class="BUILD_OUTPUT", reconstructable=False),
+                dict(artifact_class="RUNTIME_STATE", reconstructable=True),
+                dict(artifact_class=None, reconstructable=True),
+            ):
+                with self.subTest(**kwargs):
+                    self.assertEqual(
+                        destructive_cleanup(
+                            "tenant-A/runtime.db",
+                            owned_root=workspace,
+                            tenant="tenant-A",
+                            ledger=ledger,
+                            owner_known=True,
+                            **kwargs,
+                        ),
+                        BLOCKED,
+                    )
+            self.assertEqual(ledger.entries, [])
+            self.assertTrue(state.exists())
+
+
+class AttestationEvidenceTests(unittest.TestCase):
+    """Owner/gate inputs must be checkable attestation evidence, not bare booleans (N06, review #1036 F04)."""
+
+    def test_forged_attestation_reference_cannot_promote(self) -> None:
+        """Review #1036 F04: a decision ref that does not check out promotes nothing."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "report.bin").write_bytes(b"report")
+            subject = ("sha-111", "env-ci", "validator-1")
+            binding = ArtifactBinding(sha="sha-111", env="env-ci", owner="validator-1", tenant="tenant-A", recorded=True)
+            gate_attestation = Attestation(actor="validator-1", subject=subject, ref="gate:validator-1/sha-111")
+            forgeries = (
+                Attestation(actor="validator-1", subject=subject, ref="owner:validator-1/sha-OTHER"),
+                Attestation(actor="validator-1", subject=subject, ref="owner:validator-1/"),
+                Attestation(actor="validator-1", subject=subject, ref="owner:intruder/sha-111"),
+                Attestation(actor="validator-1", subject=subject, ref="HUMAN_APPROVED"),
+            )
+            for forged in forgeries:
+                decision, effects = review_artifact(
+                    raw_path="tenant-A/report.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    claimed_class="VALIDATION_EVIDENCE",
+                    binding=binding,
+                    subject=subject,
+                    owner_decision=forged,
+                    gate_prerequisites=gate_attestation,
+                )
+                with self.subTest(ref=forged.ref):
+                    self.assertEqual(decision, ELIGIBLE_FOR_OWNER_REVIEW)
+                    self.assertEqual(effects, ())
+
+    def test_attestation_actor_and_subject_must_match_binding_identity(self) -> None:
+        """Review #1036 F04: decision evidence for another actor/subject promotes nothing."""
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace, scope = make_tenant_scope(tmp)
+            (scope / "report.bin").write_bytes(b"report")
+            subject = ("sha-111", "env-ci", "validator-1")
+            binding = ArtifactBinding(sha="sha-111", env="env-ci", owner="validator-1", tenant="tenant-A", recorded=True)
+            other_subject = ("sha-OTHER", "env-ci", "validator-1")
+            cases = (
+                # right-shaped ref but actor is not the bound owner identity
+                dict(
+                    owner_decision=Attestation(actor="someone-else", subject=subject, ref="owner:someone-else/sha-111"),
+                    gate_prerequisites=Attestation(actor="validator-1", subject=subject, ref="gate:validator-1/sha-111"),
+                ),
+                # self-consistent evidence, but attested for a different subject
+                dict(
+                    owner_decision=Attestation(actor="validator-1", subject=other_subject, ref="owner:validator-1/sha-OTHER"),
+                    gate_prerequisites=Attestation(actor="validator-1", subject=subject, ref="gate:validator-1/sha-111"),
+                ),
+                # only the gate attested; the owner decision is missing
+                dict(
+                    owner_decision=None,
+                    gate_prerequisites=Attestation(actor="validator-1", subject=subject, ref="gate:validator-1/sha-111"),
+                ),
+                # only the owner attested; gate prerequisites are missing
+                dict(
+                    owner_decision=Attestation(actor="validator-1", subject=subject, ref="owner:validator-1/sha-111"),
+                    gate_prerequisites=None,
+                ),
+            )
+            for evidence in cases:
+                decision, effects = review_artifact(
+                    raw_path="tenant-A/report.bin",
+                    owned_root=workspace,
+                    tenant="tenant-A",
+                    claimed_class="VALIDATION_EVIDENCE",
+                    binding=binding,
+                    subject=subject,
+                    owner_decision=evidence["owner_decision"],
+                    gate_prerequisites=evidence["gate_prerequisites"],
+                )
+                with self.subTest(owner=getattr(evidence["owner_decision"], "ref", None)):
+                    self.assertEqual(decision, ELIGIBLE_FOR_OWNER_REVIEW)
+                    self.assertEqual(effects, ())
 
 
 class FailClosedAvailabilityTests(unittest.TestCase):
