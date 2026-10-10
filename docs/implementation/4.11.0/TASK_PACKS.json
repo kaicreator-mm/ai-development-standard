@@ -1,0 +1,259 @@
+{
+  "kind": "ADS_V411_TASK_PACK_INDEX_CANDIDATE",
+  "status": "DRAFT_20_PACK_INTEGRATION_R2_REVIEWS_PENDING_NOT_FROZEN",
+  "repository": "kaicreator-mm/ai-development-standard",
+  "version": "4.11.0",
+  "source_baseline": {
+    "version_branch_seed": "5f224dd662f12fc57fb1bb270ed30e6eb1d83413",
+    "qualified_main": "b9461d48d902a2c7c00adff6746afc7a02a0ac3e"
+  },
+  "authority": {
+    "product_freeze_issue": 943,
+    "l2_freeze_issue": 954,
+    "dag_freeze_issue": 966,
+    "frozen_dag_commit": "26fc83911185675bdea3c540df6df15c0241402b",
+    "frozen_dag_blob": "9866d35ae1512b156cfdc94cc01aec2fa897f3e6"
+  },
+  "notes": [
+    "Pack file blobs are exact at creation, subject to independent source-currentness and semantic Review.",
+    "Only an independent review and distinct Freeze can authorize Task Pack materialization; no Builder claims, no source implementation, no merge.",
+    "8 other source Pack blobs unchanged after T12-only repair; each old independent verdict is exact-file-bound but PR HEAD changed and a separate currentness rebind is required before Pack Freeze.",
+    "Batch B R1 #990-#995: 3 exact unchanged PASS; 8 repaired new blobs now need genuinely fresh R2 verdicts. No earlier CHANGES_REQUESTED is promoted.",
+    "Integration candidate has eight changed Batch B Pack blobs; previously accepted unchanged-blob findings require exact-SHA currentness rebind, and the new index/head require structural recheck. No automatic Freeze."
+  ],
+  "packs": [
+    {
+      "task_id": "V411-T01",
+      "source_issue": 968,
+      "source_comment": 6094571852,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T01_pinned_effective_rules.md",
+      "git_blob": "5c6cd176587049ad5069f0d2da3dfee06b45887d",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T03",
+      "source_issue": 969,
+      "source_comment": 6094572317,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T03_accepted_spec_implementation_currentness.md",
+      "git_blob": "bbbba7b382337c3b4213878fcd86349422c020fd",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T04",
+      "source_issue": 970,
+      "source_comment": 6094572750,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T04_reuse_first_source_license.md",
+      "git_blob": "a86d165d856c4d82cac99314556b34c64ceb7771",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T05",
+      "source_issue": 971,
+      "source_comment": 6094573228,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T05_canonical_event_authority.md",
+      "git_blob": "c5b408720a5f62c6e578a8572646714f7b0f7788",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T10",
+      "source_issue": 972,
+      "source_comment": 6094573680,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T10_untrusted_secret_artifact_boundary.md",
+      "git_blob": "e1a316c468a9b8243c7afa95816c687467ff4b2a",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T06",
+      "source_issue": 974,
+      "source_comment": 6094568983,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T06_protected_claim_reroute.md",
+      "git_blob": "c1fe5dcb0e2cbfdbf1f2b619259010b8697b974b",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T08",
+      "source_issue": 975,
+      "source_comment": 6094569513,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T08_human_denial_authority.md",
+      "git_blob": "7999e5b294a56d051218832705b5e9279b4be3ee",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T09",
+      "source_issue": 976,
+      "source_comment": 6094587423,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T09_irreversible_effect_reconciliation.md",
+      "git_blob": "3b338da726db0ab053609d6b6c557d9670d13951",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T12",
+      "source_issue": 977,
+      "source_comment": 6094587813,
+      "path": "docs/implementation/4.11.0/task-packs/V411-T12_abc_conformance.md",
+      "git_blob": "a2af3ef49c852ff36cbb0a4eaac7d13e817b7890",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "review_note": "R1 F01/P1 temporal Release gate contradiction repaired; requires fresh T12-specific review; old #986 T12 CHANGES_REQUESTED remains historical"
+    },
+    {
+      "task_id": "V411-T02",
+      "source_issue": 984,
+      "source_comment": 6095967993,
+      "source_pr": 989,
+      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "path": "docs/implementation/4.11.0/task-packs/V411-T02_source_materiality_inventory.md",
+      "git_blob": "1c4282038e749199862e339b2a574179e54acb93",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-T07",
+      "source_issue": 999,
+      "source_comment": 6097904275,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-T07_merge_controller_admission.md",
+      "git_blob": "4604bb8dc1a2bb3ff682e6a3ddc9577fd823120c",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-T11",
+      "source_issue": 1000,
+      "source_comment": 6097770638,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-T11_central_wiring_convergence.md",
+      "git_blob": "8445f39a79e68a41972b0ffa99da624234fb7cc2",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-T13",
+      "source_issue": 1000,
+      "source_comment": 6097770638,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-T13_role_conduct_boundaries.md",
+      "git_blob": "d487e016ae1efd551808b498c09d0f52253ec1f8",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-T14",
+      "source_issue": 984,
+      "source_comment": 6095967993,
+      "source_pr": 989,
+      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "path": "docs/implementation/4.11.0/task-packs/V411-T14_task_learning_evidence.md",
+      "git_blob": "32be1322c045a7e1fc971265af53eb5fa0815f6d",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-V01",
+      "source_issue": 1000,
+      "source_comment": 6097770638,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-V01_independent_validation_closure.md",
+      "git_blob": "8885201ac2501f3a6e3a3d31123a63c2546986d2",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-V02",
+      "source_issue": 1000,
+      "source_comment": 6097770948,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-V02_candidate_freeze.md",
+      "git_blob": "c8fcba7f98c04f974186823894c9a9d05b39f197",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-V03",
+      "source_issue": 1000,
+      "source_comment": 6097770948,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-V03_hidden_validation.md",
+      "git_blob": "bd5658163a803d45ff818898ad764801dd7a251a",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-V04",
+      "source_issue": 1000,
+      "source_comment": 6097770948,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-V04_fresh_final_closeout.md",
+      "git_blob": "236ed914484bfda6a9d6c2483fff53245f8a35cc",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    },
+    {
+      "task_id": "V411-R01",
+      "source_issue": 984,
+      "source_comment": 6095967993,
+      "source_pr": 989,
+      "source_head": "6cd01bd52c5a987e636458fd6470cf80ee94b45b",
+      "path": "docs/implementation/4.11.0/task-packs/V411-R01_release_qualification.md",
+      "git_blob": "4a7554b010d321a228660d36d63bed386710f04c",
+      "state": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "task_id": "V411-R02",
+      "source_issue": 1000,
+      "source_comment": 6097771176,
+      "source_pr": 989,
+      "source_head": "335483a5e68ee8a0fd3b4350056776bbe5312668",
+      "path": "docs/implementation/4.11.0/task-packs/V411-R02_repository_integration.md",
+      "git_blob": "70758b74f4aa9fe3d35b46ab57239bab2854d8c4",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "original_source_issue": 984,
+      "original_source_comment": 6095967993,
+      "repair_from_r1": "CHANGES_REQUESTED_FIXED_CANDIDATE_AWAITING_FRESH_R2"
+    }
+  ],
+  "unpacked_task_ids": [],
+  "integration": {
+    "candidate_source_heads": [
+      "6f3e4e0d8fc3b00b7853982379231a93a096e0ed",
+      "335483a5e68ee8a0fd3b4350056776bbe5312668"
+    ],
+    "source_prs": [
+      978,
+      989
+    ],
+    "zero_dep_pack_currentness_review": "#988@6095970659_PASS",
+    "repaired_t12_review": "#987@6094864910_PASS",
+    "batch_b_fresh_review_issues": [
+      990,
+      991,
+      992,
+      993,
+      994,
+      995
+    ],
+    "authority": "NO_PACK_FREEZE_NO_TASK_ADMISSION",
+    "native_execution_issues": 0,
+    "native_blocked_by_edges": 0,
+    "batch_b_r1_completed": "R1_TERMINALS_#990_#991_#992_#993_#994_#995_3_PASS_8_REPAIRED",
+    "batch_b_r2": "NOT_YET_REVIEWED"
+  }
+}
