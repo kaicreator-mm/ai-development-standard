@@ -23,7 +23,6 @@ FROZEN_L2_BLOB = "bd41ea0175b459a6a490fd37ad579e429a58a1c3"
 READ_ONLY_OWNER_PATHS = (
     "schemas/agent-capability-profile-v1.schema.json",
     "schemas/agent-capability-evidence-v1.schema.json",
-    "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
     "docs/implementation/4.9.0/PRD.md",
     "docs/implementation/4.9.0/L3_REFERENCE_PACKS.md",
     "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md",
@@ -59,6 +58,11 @@ READ_ONLY_OWNER_PATHS_REBOUND_BLOBS = {
     # integrated blob (see the v4.10 re-bind above). Pin constant only — any
     # further mutation still fails, zero other assertion change.
     "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
+    # T-03 re-bind (#1008/#1033): the owner-local acceptance/currentness
+    # clauses on this branch legally extend the ICGS surface; the stale
+    # "unmutated since BASE_SHA" pin moves to this exact integrated-blob
+    # identity pin — pin constants only, any further mutation still fails.
+    "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md": "15e355f6ec86370599f2dda7b61963d93fead66f",
 }
 
 PLANNING_PATHS = tuple(
