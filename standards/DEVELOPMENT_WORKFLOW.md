@@ -693,6 +693,30 @@ gate applicability 或 authority ambiguity（→ 上一节）
 - 反向同样成立：无限重试与无限等待被禁止；一旦没有新的收敛证据，就必须 escalation，而不是反复重跑同一 subject 期待不同结果。
 - 没有新的收敛证据时，重复的 repair attempt MUST NOT 产生新的 `IMPLEMENTATION_READY`、`state:merge-ready`、Review PASS 或 Validation PASS 结论。
 
+### Effective-rule trace：pinned revision、跨 owner 合取与 provenance
+
+Required gate 的 effective rule 在 exact subject 上解析时，MUST 产生可审计的最小 `EFFECTIVE_RULE_TRACE` 投影，至少绑定：
+
+```text
+standard_revision（immutable pin）
+owner_ref/blob（义务所属 canonical owner 与 authority tier/ref）
+exact_subject
+adoption / archetype / actor_role
+declared_jobs（multi-label set）
+observed_fact / observation ref / freshness
+applicability_reason
+obligation / required_evidence / freshness
+resolution
+decision_owner / ref
+```
+
+解析规则：
+
+- 先在同一 concern 内按本节 authority chain 解析 precedence（允许合法 strengthening，禁止削弱），再跨所有 applicable owner/concern 取逻辑 AND；任一 owner 的 required gate 在合取中保持 required，一个 owner 内合法的 `NOT_APPLICABLE` 不解除其它 owner 的 gate。
+- job label、profile、adoption level 或更低 authority 的 override 只是 applicability 的辅助证据；由 independently inspected material fact（permission/security/migration/deploy/external-effect）导出的义务不因删除 label 而消失。适用性 UNKNOWN 或矛盾时按上一节 fail closed。
+- observation 缺失、来自过期 HEAD 或与 authority 矛盾时，事实记为 `UNKNOWN`，MUST NOT 记为已检视的 `ABSENT_WITH_INSPECTED_SCOPE`，MUST NOT 产生 `PASS`；`PRESENT` / `ABSENT_WITH_INSPECTED_SCOPE` / `UNKNOWN` 是 epistemic fact，不是新增 gate state，gate 状态仍使用既有枚举，未满足时保持 `NOT_RUN` / `BLOCKED`。
+- 本节不新增 gate state、workflow state、共享 schema、模板或第二套方法论；集中式 trace schema / manifest / verifier 投影归其既有 canonical owner，该投影缺失时相关集成保持 `NOT_RUN` / `BLOCKED` 并按既有路由升级。
+
 ## 5. Blocker Propagation
 
 Blocker 只沿依赖边传播。
