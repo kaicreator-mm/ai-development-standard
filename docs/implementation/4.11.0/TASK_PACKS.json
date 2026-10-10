@@ -17,7 +17,8 @@
   "notes": [
     "Index records 9 candidate Task Packs only; 11 frozen-DAG nodes remain UNPACKED; not canonical executable Task Issues or native dependencies.",
     "Pack file blobs are exact at creation, subject to independent source-currentness and semantic Review.",
-    "Only an independent review and distinct Freeze can authorize Task Pack materialization; no Builder claims, no source implementation, no merge."
+    "Only an independent review and distinct Freeze can authorize Task Pack materialization; no Builder claims, no source implementation, no merge.",
+    "8 other source Pack blobs unchanged after T12-only repair; each old independent verdict is exact-file-bound but PR HEAD changed and a separate currentness rebind is required before Pack Freeze."
   ],
   "packs": [
     {
@@ -89,8 +90,9 @@
       "source_issue": 977,
       "source_comment": 6094587813,
       "path": "docs/implementation/4.11.0/task-packs/V411-T12_abc_conformance.md",
-      "git_blob": "35d1be5ca0fdc5b2a9cc45b89d28494bc0b0d216",
-      "state": "CANDIDATE_REVIEW_REQUIRED"
+      "git_blob": "a2af3ef49c852ff36cbb0a4eaac7d13e817b7890",
+      "state": "CANDIDATE_REVIEW_REQUIRED",
+      "review_note": "R1 F01/P1 temporal Release gate contradiction repaired; requires fresh T12-specific review; old #986 T12 CHANGES_REQUESTED remains historical"
     }
   ],
   "unpacked_task_ids": [
