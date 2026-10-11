@@ -101,6 +101,27 @@ READ_ONLY_SURFACE_REBOUND_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
 }
 
+# v4.11 shared-pin convergence (issue #967; dispatch #967@6111990453, builder
+# claim #967@6112283672): PR #1066 (T06) lawfully mutates
+# `standards/EXECUTION_ARCHITECTURE_STANDARD.md` inside its approved owner
+# pack, so the historical v4.10-integrated pin above is RED at the v4.11
+# integrated candidate. Exact dual-pin admission, same idiom as the
+# READ_ONLY_DEPS_REBOUND_BLOBS / V411_OWNER_BLOBS bridge in
+# scripts/test_v49_gate_currentness.py (issue #1064 F1 precedent): the
+# historical pin stays authoritative everywhere and gains a tamper anchor (it
+# must stay re-derivable from the immutable v4.11 version base object); the
+# ONE exact qualified T06 execution blob below is admitted ONLY under the
+# exact v4.11 context gate (`_v411_context_verified`), never as an
+# allowed-any waiver. Pin constants only: any third blob still fails; the
+# version base (old blob) keeps passing on the historical pin alone; zero
+# tests removed, no intent weakened.
+VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
+V411_OWNER_BLOBS = {
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": (
+        "048690864ff2bb3445780ba2ac5ed2e07b272485",
+    ),
+}
+
 # Frozen planning authority: Frozen Product / Frozen L2 / Frozen Task DAG v0.2 /
 # immutable Task DAG v0.1 (normative concern for T-008).
 FROZEN_PLANNING_BLOBS = {
@@ -156,6 +177,35 @@ def git_json_at(rev: str, rel: str) -> dict:
         text=True,
     )
     return json.loads(result.stdout)
+
+
+def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
+    """Exact v4.11 context gate, keyed on verifiable repository facts only
+    (no environment variables, no CI event context — both are spoofable or
+    absent in local runs). Same fail-closed gate as
+    scripts/test_v49_gate_currentness.py. Open iff BOTH hold:
+
+    (1) HEAD descends from the exact v4.11 version base commit, and
+    (2) that base still carries the historical pinned blob for ``rel_path`` —
+        i.e. the recorded v4.9/v4.10 pin evidence is untampered.
+
+    Every other tree (rebased lineage, wrong base, tampered pin constant,
+    shallow checkout lacking the base object) fails closed to the historical
+    pin alone.
+    """
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", VERSION_BASE_SHA, "HEAD"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if ancestor.returncode != 0:
+        return False
+    try:
+        return git_blob_sha(ROOT / rel_path, rev=VERSION_BASE_SHA) == historical_blob
+    except subprocess.CalledProcessError:
+        return False
 
 
 def base_dispatch_schema() -> dict:
@@ -615,9 +665,23 @@ class ExecutionContractRefsV49LifecycleBoundaryTests(unittest.TestCase):
                 self.assertEqual(git_blob_sha(ROOT / rel, rev=BASE_SHA), blob)
         # v4.10-integrated surface (see READ_ONLY_SURFACE_REBOUND_BLOBS): exact
         # integrated-blob identity at HEAD instead of the stale base pin.
+        # v4.11 tamper anchor (issue #967, dispatch #967@6111990453): each
+        # recorded rebound pin must stay re-derivable from the immutable v4.11
+        # version base object — a hand-edited pin constant can never
+        # self-certify.
+        for rel, blob in READ_ONLY_SURFACE_REBOUND_BLOBS.items():
+            with self.subTest(path_rebound_pin_anchor=rel):
+                self.assertEqual(git_blob_sha(ROOT / rel, rev=VERSION_BASE_SHA), blob)
+        # v4.11 shared-pin convergence (issue #967): the historical pin governs
+        # everywhere; the exact qualified T06 execution blob is admitted ONLY
+        # under the exact v4.11 context gate. Any third blob still fails.
         for rel, blob in READ_ONLY_SURFACE_REBOUND_BLOBS.items():
             with self.subTest(path_rebound=rel):
-                self.assertEqual(git_blob_sha(ROOT / rel), blob)
+                admitted = {blob}
+                for v411_blob in V411_OWNER_BLOBS.get(rel, ()):
+                    if _v411_context_verified(rel, blob):
+                        admitted.add(v411_blob)
+                self.assertIn(git_blob_sha(ROOT / rel), admitted)
 
     def test_frozen_planning_blobs_resolve_unchanged(self) -> None:
         for rel, blob in FROZEN_PLANNING_BLOBS.items():

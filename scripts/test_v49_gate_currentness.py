@@ -160,14 +160,32 @@ READ_ONLY_DEPS_REBOUND_BLOBS = {
 # historical v4.10-integrated pin above is RED at the v4.11 integrated
 # candidate. Exact dual-pin admission: the historical pin stays authoritative
 # everywhere and gains a tamper anchor (it must stay re-derivable from the
-# immutable v4.11 version base object); the ONE exact approved v4.11 blob
-# below is admitted ONLY under the exact v4.11 context gate
+# immutable v4.11 version base object); the exact approved v4.11 blobs below
+# are admitted ONLY under the exact v4.11 context gate
 # (`_v411_context_verified`), never as an allowed-any waiver. Any third blob
 # still fails; the version base (old blobs) keeps passing on the historical
 # pin alone; zero tests removed, no intent weakened.
+#
+# v4.11 shared-pin convergence (issue #967; dispatch #967@6111990453, builder
+# claim #967@6112283672): the admitted-set extension is exactly the two lawful
+# successor blobs — the qualified T02 workflow blob `a12fc755…`
+# (DEVELOPMENT_WORKFLOW.md at the qualified T02 head 9495351a, PR #1067),
+# admitted after the already-admitted T01 blob on the same version-lineage
+# chain, and the exact qualified T06 execution blob `04869086…`
+# (EXECUTION_ARCHITECTURE_STANDARD.md at the qualified T06 head ca0a5230,
+# PR #1066). Pin constants only: every admitted value stays gated by the same
+# repository-fact context gate (version-base ancestry + historical pin
+# identity at that base — no env/label/caller admission), any third blob
+# still fails, and every other surface keeps its exact historical pin.
 VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
 V411_OWNER_BLOBS = {
-    "standards/DEVELOPMENT_WORKFLOW.md": "57902fbcb56ffec9a461365ace472fb03e3520db",
+    "standards/DEVELOPMENT_WORKFLOW.md": (
+        "57902fbcb56ffec9a461365ace472fb03e3520db",
+        "a12fc755cf994180aeaea25055a8a24ac0bf6c9f",
+    ),
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": (
+        "048690864ff2bb3445780ba2ac5ed2e07b272485",
+    ),
 }
 
 # The routing vocabulary of this wiring engine. It deliberately contains no
@@ -986,15 +1004,16 @@ class GateCurrentnessKernel(unittest.TestCase):
         for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
             with self.subTest(read_only_rebound_pin_anchor=rel_path):
                 self.assertEqual(pinned_blob, git_blob_sha(VERSION_BASE_SHA, rel_path))
-        # v4.11 F1 shared-pin bridge (issue #1064): the historical pin governs
-        # everywhere; the exact approved v4.11 owner blob is admitted ONLY
+        # v4.11 F1 shared-pin bridge (issue #1064) + shared-pin convergence
+        # (issue #967, dispatch #967@6111990453): the historical pin governs
+        # everywhere; the exact approved v4.11 owner blobs are admitted ONLY
         # under the exact v4.11 context gate. Any third blob still fails.
         for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
             with self.subTest(read_only_rebound=rel_path):
                 admitted = {pinned_blob}
-                v411_blob = V411_OWNER_BLOBS.get(rel_path)
-                if v411_blob is not None and _v411_context_verified(rel_path, pinned_blob):
-                    admitted.add(v411_blob)
+                for v411_blob in V411_OWNER_BLOBS.get(rel_path, ()):
+                    if _v411_context_verified(rel_path, pinned_blob):
+                        admitted.add(v411_blob)
                 self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST
