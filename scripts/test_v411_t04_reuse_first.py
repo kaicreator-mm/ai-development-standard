@@ -21,6 +21,20 @@ floors are additionally derived by an in-file oracle that reads the required
 facts out of the owner clauses and never calls the decision model, so the
 model and the clauses falsify together instead of self-attesting.
 
+R3 bounded repair (review #1050 R3-F01..F03): observed drift facts refuse
+label bypasses — a FAST_PATH claim over an upstream license/NOTICE/path/
+behavior delta is routed by fact into the material evaluation and carries
+non-empty Validation Impact / stale obligations; a refreshed non-copying
+verdict needs a refreshed material-currentness evidence identity (a new
+upstream revision marker plus a new mode-matched evidence reference over
+the drifted surface, distinct from the superseded evidence and attributable
+to an authoritative source), not a bare boolean; and each evidence role
+needs its own attributable reference — an identified inspector observation
+record and an accountable policy-owner disposition record — that cannot
+collapse into one shared identifier. The role references are synthetic
+attribution shapes only (DEFERRED_TO_T11 wires the attribution floor into
+the central surfaces).
+
 Acceptance boundary (NOT_RUN): T04 is an owner-local documentation deliverable
 and has no production decision hook. This suite is owner-local offline
 acceptance only; the in-file evaluator is not an online production contract
@@ -28,9 +42,10 @@ proof and no agreement with one is claimed. Central wiring of the reuse floors
 into shared prompts/schemas/manifest is T11, binding reuse dispositions to
 executed validation evidence is T12, and real upstream read-back of pinned
 identities and executed builds on a real build host are out of scope for this
-offline task (fixtures use synthetic local identities and synthetic
-observation content). Those obligations stay recorded in
-`NOT_RUN_OBLIGATIONS` as NOT_RUN and are not claimed as verified by this
+offline task (fixtures use synthetic local identities, synthetic observation
+content and synthetic role references; the role references verify attribution
+shape only and prove no real upstream right). Those obligations stay recorded
+in `NOT_RUN_OBLIGATIONS` as NOT_RUN and are not claimed as verified by this
 suite.
 """
 
@@ -84,8 +99,9 @@ NOT_RUN_OBLIGATIONS = {
     ),
     "upstream_readback": (
         "dereference pinned upstream identities against the real upstream; "
-        "fixtures carry synthetic local identities and synthetic observation "
-        "content only and claim no real upstream right"
+        "fixtures carry synthetic local identities, synthetic observation "
+        "content and synthetic inspector/policy-owner role references only "
+        "and claim no real upstream right"
     ),
     "production_contract": (
         "the in-file evaluator is an owner-local offline acceptance oracle for "
@@ -133,6 +149,36 @@ def architecture_reuse_section() -> str:
     return section(architecture_standard(), "## 15. Reuse-first adoption", "")
 
 
+def refreshed_currentness_identity(case: dict) -> bool:
+    """Review #1050 F02: a refreshed verdict rests on an evidence identity.
+
+    `refreshed_mode_matched_evidence` as a bare boolean authorizes nothing.
+    A valid refresh names the drifted material state it supersedes (prior
+    revision + superseded evidence reference) and carries the replacement
+    identity: a new upstream revision marker, a new mode-matched test/
+    evidence reference over the drifted surface (distinct from the
+    superseded reference) and an authoritative, attributable evidence
+    source. Offline fixtures carry synthetic identity strings only; the
+    executed re-validation itself stays NOT_RUN (T12).
+    """
+    if not case.get("refreshed_mode_matched_evidence"):
+        return False
+    drifted_revision = case.get("drifted_material_revision") or ""
+    superseded_ref = case.get("superseded_evidence_ref") or ""
+    new_revision = case.get("refreshed_upstream_revision") or ""
+    new_ref = case.get("refreshed_evidence_ref") or ""
+    source = case.get("refreshed_evidence_source") or ""
+    return (
+        bool(drifted_revision)
+        and bool(superseded_ref)
+        and bool(new_revision)
+        and bool(new_ref)
+        and new_revision != drifted_revision
+        and new_ref != superseded_ref
+        and source in OWNER_EVIDENCE_SOURCES
+    )
+
+
 def evaluate_reuse(case: dict) -> dict:
     """Deterministic J12 disposition per the V411-T04 contract (§4).
 
@@ -151,15 +197,29 @@ def evaluate_reuse(case: dict) -> dict:
     # N06: material source/code facts reclassify the change regardless of any
     # optional label; docs-only/Fast-Path labels never erase materiality and
     # the material mode is derived from observed facts rather than the claim.
+    # Review #1050 F01: the material fact set is not only the synthetic
+    # `material_upstream_delta` flag — §6 treats upstream license/NOTICE
+    # changes behind reused material as material regardless of the Fast Path
+    # label, §13 treats upstream path/behavior drift as stale, and ADS §15
+    # forbids bypassing a floor by a label. Any of these observed facts
+    # refuses the Fast Path and routes the case into the material evaluation.
     material_copy = bool(case.get("copied_source")) or bool(case.get("upstream_artifact_parity"))
-    if case.get("material_upstream_delta") or material_copy:
+    material_drift = (
+        bool(case.get("material_upstream_delta"))
+        or material_copy
+        or bool(case.get("upstream_license_changed"))
+        or bool(case.get("upstream_notice_changed"))
+        or bool(case.get("upstream_path_drift"))
+        or bool(case.get("upstream_behavior_drift"))
+    )
+    if material_drift:
         obligations.add("validation_impact")
         if case.get("claimed_mode") == "FAST_PATH":
             notes["fast_path_refused"] = True
         if mode == "FAST_PATH":
-            # An actual vendored-source or license/NOTICE delta keeps the full
-            # material-mode obligations (ADS §15): observed reused material is
-            # direct code reuse whatever the work was labelled.
+            # Drift is a fact about reused material: route by the fact, not
+            # by the claim — the material mode is direct code reuse with the
+            # full H3 floor whatever the work was labelled (ADS §15).
             mode = "DIRECT_CODE_REUSE"
 
     # N04: physical copying or artifact parity with the upstream is material
@@ -235,6 +295,26 @@ def evaluate_reuse(case: dict) -> dict:
             missing.append("current_upstream_inspection_evidence")
         if not has_policy_authority:
             missing.append("independent_license_policy_authority")
+
+        # Review #1050 F03: role labels are not independently attributable
+        # evidence identities on their own. The inspection needs an
+        # attributable inspector observation reference (identified inspector
+        # + observation record) and the policy ruling needs an accountable
+        # policy-owner disposition record; the two references are distinct,
+        # non-interchangeable identities and one shared record cannot fill
+        # both roles. Offline fixtures carry synthetic reference strings
+        # only: they verify attribution shape and never prove that a real
+        # inspector observed the real upstream or that a real accountable
+        # owner issued the disposition, and they claim no real upstream
+        # right (NOT_RUN; central wiring of the attribution floor is T11).
+        inspector_ref = case.get("inspector_observation_ref") or ""
+        policy_owner_ref = case.get("policy_owner_disposition_ref") or ""
+        if not inspector_ref:
+            missing.append("attributable_inspector_observation_ref")
+        if not policy_owner_ref:
+            missing.append("attributable_policy_owner_disposition_ref")
+        if inspector_ref and policy_owner_ref and inspector_ref == policy_owner_ref:
+            missing.append("independent_role_evidence_refs")
 
         # N01: reliance on a new revision never inherits the historic permission.
         historic = case.get("historic_permission_revision")
@@ -354,16 +434,29 @@ def evaluate_reuse(case: dict) -> dict:
     # evidence at the new material state; an allowed verdict resting on a
     # stale self-description is downgraded to STALE and loses every grant
     # (§13: drift behind already-relied-on reuse is stale until re-checked).
+    # Review #1050 F02: the trigger is the observed drift facts themselves —
+    # real upstream path/behavior drift and license/NOTICE changes, not only
+    # the synthetic `material_upstream_delta` flag — and
+    # `refreshed_mode_matched_evidence` is no bare bypass boolean: restoring
+    # the verdict requires the refreshed material-currentness evidence
+    # identity (new upstream revision marker + new mode-matched evidence
+    # reference, distinct from the superseded evidence and attributable).
     if (
         decision == "ALLOWED"
-        and case.get("material_upstream_delta")
+        and material_drift
         and mode in ("PATTERN_HARVEST", "SPEC_MODULE_RECONSTRUCTION", "BUILD_NEW")
-        and not case.get("refreshed_mode_matched_evidence")
     ):
-        decision = "STALE"
-        grants = frozenset()
-        obligations.update({"fresh_equivalence_source_check", "validation_impact"})
-        notes["stale_material_self_description"] = True
+        if refreshed_currentness_identity(case):
+            # The refresh carries a full evidence identity: the mode's own
+            # verdict stands and the drift still keeps Validation Impact on
+            # the record.
+            obligations.add("validation_impact")
+            notes["material_currentness_refreshed"] = True
+        else:
+            decision = "STALE"
+            grants = frozenset()
+            obligations.update({"fresh_equivalence_source_check", "validation_impact"})
+            notes["stale_material_self_description"] = True
 
     return {
         "subject": case["subject"],
@@ -425,6 +518,13 @@ def h3_case(**overrides: object) -> dict:
         "license_policy_authorized": True,
         "license_policy_authority": "owner_decision",
         "license_policy_revision": "b" * 40,
+        # Review #1050 F03: synthetic, distinct role references — an
+        # identified inspector observation record and an accountable
+        # policy-owner disposition record. Offline fixture strings only;
+        # no real inspector, owner decision or upstream right is claimed
+        # (NOT_RUN_OBLIGATIONS keeps that boundary).
+        "inspector_observation_ref": "inspector:fixture-inspector@observation:src/example.rs@b",
+        "policy_owner_disposition_ref": "policy-owner:fixture-license-board@disposition:b",
         "attribution": True,
         "local_behavior_tests": True,
         "evidence_sources": ["inspected_upstream", "owner_decision"],
@@ -1538,13 +1638,38 @@ class MaterialDriftNonCopyModeTests(unittest.TestCase):
         self.assertEqual(verdict["gate_mutations"], ())
 
     def test_f03_refreshed_mode_matched_evidence_restores_the_mode_verdict(self) -> None:
-        # Positive controls: with refreshed mode-matched evidence the mode's
-        # own verdict stands (minus the grant-erasing downgrade); the material
-        # delta still keeps the Validation Impact obligation.
+        # Review #1050 F02: "refreshed" is an evidence identity, not a
+        # boolean — each positive control names the drifted state it
+        # supersedes and carries the new upstream revision marker, a new
+        # mode-matched evidence reference over the drifted surface and an
+        # attributable source. The mode's own verdict stands (no blanket H3
+        # floor) and the material delta still keeps Validation Impact.
+        identity = {
+            "refreshed_mode_matched_evidence": True,
+            "drifted_material_revision": "c" * 40,
+            "refreshed_upstream_revision": "d" * 40,
+            "superseded_evidence_ref": "mode-evidence@baseline",
+            "refreshed_evidence_source": "inspected_upstream",
+        }
         cases = [
-            h1_case(subject="F03 H1 refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
-            h2_case(subject="F03 H2 refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
-            build_new_case(subject="F03 BUILD_NEW refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
+            h1_case(
+                subject="F03 H1 refreshed",
+                material_upstream_delta=True,
+                refreshed_evidence_ref="pattern-reharvest@drifted-surface@d",
+                **identity,
+            ),
+            h2_case(
+                subject="F03 H2 refreshed",
+                material_upstream_delta=True,
+                refreshed_evidence_ref="differential@drifted-surface@d",
+                **identity,
+            ),
+            build_new_case(
+                subject="F03 BUILD_NEW refreshed",
+                material_upstream_delta=True,
+                refreshed_evidence_ref="build-compare@drifted-surface@d",
+                **identity,
+            ),
         ]
         for case in cases:
             verdict = evaluate_reuse(case)
@@ -1552,6 +1677,7 @@ class MaterialDriftNonCopyModeTests(unittest.TestCase):
                 self.assertEqual(verdict["decision"], "ALLOWED")
                 self.assertIn("validation_impact", verdict["obligations"])
                 self.assertNotIn("stale_material_self_description", verdict["notes"])
+                self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
                 self.assertEqual(verdict["gate_mutations"], ())
         self.assertEqual(
             evaluate_reuse(cases[1])["grants"],
@@ -1759,6 +1885,267 @@ class IndependentOracleFalsificationTests(unittest.TestCase):
         self.assertEqual(verdict["decision"], "ALLOWED")
         self.assertEqual(verdict["mode"], "PATTERN_HARVEST")
         self.assertNotIn("pinned_full_sha", verdict["missing"])
+
+
+class FastPathDriftNonBypassTests(unittest.TestCase):
+    """Review #1050 R3-F01: observed drift facts refuse the Fast Path label.
+
+    Dependency §6 treats upstream license/NOTICE changes behind reused
+    material as material regardless of the Fast Path label, §13 treats
+    upstream path/behavior drift as stale, and ADS §15 forbids bypassing a
+    floor by a label. Each single observed drift fact therefore routes a
+    FAST_PATH claim — with no `material_upstream_delta` and no copying
+    boolean at all — into the material evaluation (direct code reuse by
+    fact) with non-empty Validation Impact / stale obligations, instead of
+    an unconditional FAST_PATH_ALLOWED.
+    """
+
+    def _assert_refused(self, verdict: dict, signal: str) -> None:
+        self.assertNotEqual(verdict["decision"], "FAST_PATH_ALLOWED")
+        self.assertEqual(verdict["mode"], "DIRECT_CODE_REUSE")
+        self.assertTrue(verdict["notes"]["fast_path_refused"])
+        self.assertTrue(verdict["obligations"], f"{signal}: obligations must be non-empty")
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f01_fast_path_with_upstream_notice_changed_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="R3-F01 FAST_PATH notice changed",
+                claimed_mode="FAST_PATH",
+                upstream_notice_changed=True,
+            )
+        )
+        self._assert_refused(verdict, "upstream_notice_changed")
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("license_notice_observation_at_current_revision", verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+
+    def test_r3_f01_fast_path_with_upstream_license_changed_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="R3-F01 FAST_PATH license changed",
+                claimed_mode="FAST_PATH",
+                upstream_license_changed=True,
+            )
+        )
+        self._assert_refused(verdict, "upstream_license_changed")
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("license_notice_observation_at_current_revision", verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+
+    def test_r3_f01_fast_path_with_upstream_behavior_drift_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="R3-F01 FAST_PATH behavior drift",
+                claimed_mode="FAST_PATH",
+                upstream_behavior_drift=True,
+            )
+        )
+        self._assert_refused(verdict, "upstream_behavior_drift")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+
+    def test_r3_f01_fast_path_with_upstream_path_drift_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="R3-F01 FAST_PATH path drift",
+                claimed_mode="FAST_PATH",
+                upstream_path_drift=True,
+            )
+        )
+        self._assert_refused(verdict, "upstream_path_drift")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+
+    def test_r3_f01_clean_fast_path_stays_proportional(self) -> None:
+        # Control: the refusal is fact-gated, not claim-gated. The same
+        # FAST_PATH claim without any observed drift fact keeps the
+        # proportional P05 verdict.
+        verdict = evaluate_reuse(
+            h1_case(subject="R3-F01 control", claimed_mode="FAST_PATH")
+        )
+        self.assertEqual(verdict["decision"], "FAST_PATH_ALLOWED")
+        self.assertEqual(verdict["obligations"], set())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+
+class ModeMatchedCurrentnessEvidenceTests(unittest.TestCase):
+    """Review #1050 R3-F02: non-copying modes gate on real drift + refresh identity.
+
+    The non-copying drift guard fires on the observed facts — actual
+    upstream behavior/path drift and license/NOTICE changes — not only on
+    the synthetic `material_upstream_delta` flag. A bare
+    `refreshed_mode_matched_evidence` boolean never restores ALLOWED: the
+    refresh must be a mode-matched material-currentness evidence identity
+    (new upstream revision marker + new evidence reference over the drifted
+    surface, distinct from the superseded evidence, attributable), while the
+    mode keeps its shape and floor — no blanket H3 demotion.
+    """
+
+    def _h2_refreshed(self, **overrides: object) -> dict:
+        identity = {
+            "refreshed_mode_matched_evidence": True,
+            "drifted_material_revision": "c" * 40,
+            "refreshed_upstream_revision": "d" * 40,
+            "superseded_evidence_ref": "differential@baseline",
+            "refreshed_evidence_source": "inspected_upstream",
+            "refreshed_evidence_ref": "differential@drifted-surface@d",
+        }
+        identity.update(overrides)
+        return h2_case(subject="R3-F02 H2 drift + refresh", upstream_behavior_drift=True, **identity)
+
+    def test_r3_f02_h2_behavior_drift_is_stale_without_refresh(self) -> None:
+        # The exact R3 finding: an actual behavior drift behind H2 must not
+        # stay ALLOWED/local_spec_module without fresh equivalence.
+        verdict = evaluate_reuse(
+            h2_case(subject="R3-F02 H2 behavior drift", upstream_behavior_drift=True)
+        )
+        self.assertEqual(verdict["mode"], "SPEC_MODULE_RECONSTRUCTION")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
+        for obligation in ("fresh_equivalence_source_check", "validation_impact"):
+            with self.subTest(obligation=obligation):
+                self.assertIn(obligation, verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f02_h2_path_and_license_drift_trigger_the_guard(self) -> None:
+        for signal in ("upstream_path_drift", "upstream_license_changed", "upstream_notice_changed"):
+            verdict = evaluate_reuse(
+                h2_case(subject=f"R3-F02 H2 {signal}", **{signal: True})
+            )
+            with self.subTest(signal=signal, decision=verdict["decision"]):
+                self.assertEqual(verdict["decision"], "STALE")
+                self.assertIn("validation_impact", verdict["obligations"])
+                self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f02_bare_refreshed_boolean_does_not_restore_allowed(self) -> None:
+        verdict = evaluate_reuse(
+            h2_case(
+                subject="R3-F02 bare refreshed boolean",
+                upstream_behavior_drift=True,
+                refreshed_mode_matched_evidence=True,
+            )
+        )
+        self.assertNotEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f02_refresh_identity_must_be_new_distinct_and_attributable(self) -> None:
+        # Each identity half matters: re-claiming the drifted revision,
+        # re-using the superseded evidence reference, or attributing the
+        # refresh to a non-authoritative source all fail closed.
+        broken_variants = (
+            {"refreshed_upstream_revision": "c" * 40},  # same revision as the drifted state
+            {"refreshed_evidence_ref": "differential@baseline"},  # superseded reference reused
+            {"refreshed_evidence_source": "README"},  # non-authoritative source
+        )
+        for variant in broken_variants:
+            verdict = evaluate_reuse(self._h2_refreshed(**variant))
+            with self.subTest(variant=variant, decision=verdict["decision"]):
+                self.assertNotEqual(verdict["decision"], "ALLOWED")
+                self.assertEqual(verdict["decision"], "STALE")
+                self.assertTrue(verdict["notes"]["stale_material_self_description"])
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f02_full_refreshed_identity_restores_the_mode_not_h3(self) -> None:
+        # Positive control: a complete refreshed identity restores the mode's
+        # own ALLOWED verdict and grant — the floor is identity-gated, not a
+        # universal H3 demotion — while the drift keeps Validation Impact.
+        verdict = evaluate_reuse(self._h2_refreshed())
+        self.assertEqual(verdict["mode"], "SPEC_MODULE_RECONSTRUCTION")
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset({"local_spec_module"}))
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertTrue(verdict["notes"]["material_currentness_refreshed"])
+        self.assertNotIn("pinned_full_sha", verdict["missing"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+
+class AttributableRoleEvidenceTests(unittest.TestCase):
+    """Review #1050 R3-F03: role labels must be attributable evidence identities.
+
+    The `inspected_upstream` + `owner_decision` labels alone can be filled by
+    one unsupported synthetic assertion. An authoritative bounded-reuse
+    verdict therefore also needs two distinct, non-interchangeable
+    references: an inspector observation reference (identified inspector +
+    observation record) and a policy-owner disposition reference (accountable
+    owner decision record). One shared reference cannot fill both roles and
+    a missing role reference refuses.
+
+    Honest limit (NOT_RUN / DEFERRED_TO_T11): offline fixtures carry
+    synthetic reference strings only. They verify that the model demands
+    attribution-shaped, role-distinct evidence; they cannot prove that a
+    real inspector observed the real upstream or that a real accountable
+    owner issued a real disposition, and they claim no real upstream right.
+    Real read-back stays in `NOT_RUN_OBLIGATIONS` (upstream_readback) and
+    central wiring of the attribution floor is T11.
+    """
+
+    def test_r3_f03_same_reference_cannot_fill_both_roles(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="R3-F03 shared role record",
+                inspector_observation_ref="record:synthetic-shared-ref",
+                policy_owner_disposition_ref="record:synthetic-shared-ref",
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("independent_role_evidence_refs", verdict["missing"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f03_missing_inspector_reference_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(subject="R3-F03 no inspector ref", inspector_observation_ref=None)
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("attributable_inspector_observation_ref", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f03_missing_policy_owner_reference_is_refused(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(subject="R3-F03 no policy-owner ref", policy_owner_disposition_ref=None)
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("attributable_policy_owner_disposition_ref", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f03_distinct_role_references_keep_bounded_reuse_allowed(self) -> None:
+        # Control: the split does not over-block. The default fixture carries
+        # two distinct, role-shaped references (an identified inspector
+        # observation and an accountable policy-owner disposition) and the
+        # bounded grant survives.
+        case = h3_case(subject="R3-F03 control")
+        self.assertNotEqual(
+            case["inspector_observation_ref"],
+            case["policy_owner_disposition_ref"],
+        )
+        verdict = evaluate_reuse(case)
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset({"bounded_code_reuse"}))
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r3_f03_role_attribution_cannot_prove_real_upstream_rights(self) -> None:
+        # Honest-boundary oracle: the synthetic references prove attribution
+        # shape only; real upstream read-back and the central wiring stay
+        # NOT_RUN/deferred and are never claimed as verified here.
+        self.assertIn("upstream_readback", NOT_RUN_OBLIGATIONS)
+        doc = sys.modules[__name__].__doc__ or ""
+        self.assertIn("synthetic role references", doc)
+        self.assertIn("prove no real upstream right", doc)
+        self.assertIn("DEFERRED_TO_T11", doc)
+        self.assertIn("NOT_RUN", doc)
 
 
 if __name__ == "__main__":
