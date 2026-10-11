@@ -35,6 +35,17 @@ collapse into one shared identifier. The role references are synthetic
 attribution shapes only (DEFERRED_TO_T11 wires the attribution floor into
 the central surfaces).
 
+R5 bounded repair (review #1058 F01): the refresh path no longer accepts
+caller-invented refresh identities. A refreshed material-currentness claim
+resolves only against the script's trusted registry record for the drifted
+upstream revision and subject (revision → inspector → material surface/
+content → subject, `TRUSTED_REFRESH_RECORDS`); a well-shaped but invented
+or unregistered revision/evidence identity fails closed to STALE, and only
+a trusted-record read-back (same subject, surface/content and revision
+continuity) legitimately restores the mode's own verdict. The registry
+entries stay synthetic offline fixtures and claim no real upstream right;
+real read-back stays recorded in `NOT_RUN_OBLIGATIONS`.
+
 Acceptance boundary (NOT_RUN): T04 is an owner-local documentation deliverable
 and has no production decision hook. This suite is owner-local offline
 acceptance only; the in-file evaluator is not an online production contract
@@ -80,6 +91,71 @@ FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 # visibility, docs and arbitrary checkers do not (task-pack N05/N07).
 OWNER_EVIDENCE_SOURCES = {"owner_decision", "inspected_upstream", "recorded_disposition"}
 UNTRUSTED_EVIDENCE_SOURCES = {"README", "unpinned_latest", "arbitrary_checker"}
+
+# Review #1058 F01 (R5): trusted refresh-record registry — this script's
+# fixture authority for refreshed material-currentness evidence. Keyed by
+# (drifted upstream revision, relying subject); each value is the trusted
+# inspector observation over the drifted material: the identified inspector,
+# the material surface, the observed content at the refreshed state, the
+# trusted replacement revision (revision continuity) and the trusted
+# mode-matched evidence identity. The refresh path resolves its verdict
+# inputs ONLY here (see `trusted_refresh_record`): caller-supplied
+# revision/evidence strings authorize nothing unless they match this
+# registered record, and an unregistered or mismatching refresh fails
+# closed to STALE. Records stay synthetic offline fixture identities (see
+# NOT_RUN_OBLIGATIONS: upstream_readback) and claim no real upstream right.
+TRUSTED_REFRESH_RECORDS: dict[tuple[str, str], dict] = {
+    ("c" * 40, "F03 H1 refreshed"): {
+        "subject": "F03 H1 refreshed",
+        "inspector": "fixture-inspector",
+        "material_surface": "drifted-surface",
+        "observed_content": "pattern-reharvest-observation@d",
+        "refreshed_revision": "d" * 40,
+        "superseded_evidence_ref": "mode-evidence@baseline",
+        "refreshed_evidence_ref": "pattern-reharvest@drifted-surface@d",
+        "evidence_source": "inspected_upstream",
+    },
+    ("c" * 40, "F03 H2 refreshed"): {
+        "subject": "F03 H2 refreshed",
+        "inspector": "fixture-inspector",
+        "material_surface": "drifted-surface",
+        "observed_content": "differential-observation@d",
+        "refreshed_revision": "d" * 40,
+        "superseded_evidence_ref": "mode-evidence@baseline",
+        "refreshed_evidence_ref": "differential@drifted-surface@d",
+        "evidence_source": "inspected_upstream",
+    },
+    ("c" * 40, "F03 BUILD_NEW refreshed"): {
+        "subject": "F03 BUILD_NEW refreshed",
+        "inspector": "fixture-inspector",
+        "material_surface": "drifted-surface",
+        "observed_content": "build-compare-observation@d",
+        "refreshed_revision": "d" * 40,
+        "superseded_evidence_ref": "mode-evidence@baseline",
+        "refreshed_evidence_ref": "build-compare@drifted-surface@d",
+        "evidence_source": "inspected_upstream",
+    },
+    ("c" * 40, "R3-F02 H2 drift + refresh"): {
+        "subject": "R3-F02 H2 drift + refresh",
+        "inspector": "fixture-inspector",
+        "material_surface": "drifted-surface",
+        "observed_content": "differential-observation@d",
+        "refreshed_revision": "d" * 40,
+        "superseded_evidence_ref": "differential@baseline",
+        "refreshed_evidence_ref": "differential@drifted-surface@d",
+        "evidence_source": "inspected_upstream",
+    },
+    ("c" * 40, "R5-F01 trusted readback refresh"): {
+        "subject": "R5-F01 trusted readback refresh",
+        "inspector": "fixture-inspector",
+        "material_surface": "src/reused/module.rs",
+        "observed_content": "observed:src/reused/module.rs@d:content",
+        "refreshed_revision": "d" * 40,
+        "superseded_evidence_ref": "differential@baseline",
+        "refreshed_evidence_ref": "differential@src/reused/module.rs@d",
+        "evidence_source": "inspected_upstream",
+    },
+}
 
 # F05/F04: obligations this documentation-only task cannot execute are
 # recorded as NOT_RUN, never claimed as verified. T11/T12 are the
@@ -149,8 +225,42 @@ def architecture_reuse_section() -> str:
     return section(architecture_standard(), "## 15. Reuse-first adoption", "")
 
 
-def refreshed_currentness_identity(case: dict) -> bool:
-    """Review #1050 F02: a refreshed verdict rests on an evidence identity.
+def trusted_refresh_record(case: dict) -> dict | None:
+    """Review #1058 F01: resolve the trusted refresh record, or fail closed.
+
+    The refresh path's only authority is the registered trusted record for
+    the drifted upstream revision and subject (revision → inspector →
+    material surface/content → subject). A claim whose key is unregistered,
+    or whose presented revision/evidence identity does not match the trusted
+    record read-back, resolves to nothing: caller-invented well-formed
+    strings never authorize a refresh.
+    """
+    subject = case.get("subject") or ""
+    drifted_revision = case.get("drifted_material_revision") or ""
+    record = TRUSTED_REFRESH_RECORDS.get((drifted_revision, subject))
+    if record is None:
+        return None
+    if record["subject"] != subject:
+        return None
+    presented = (
+        case.get("superseded_evidence_ref") or "",
+        case.get("refreshed_upstream_revision") or "",
+        case.get("refreshed_evidence_ref") or "",
+        case.get("refreshed_evidence_source") or "",
+    )
+    trusted = (
+        record["superseded_evidence_ref"],
+        record["refreshed_revision"],
+        record["refreshed_evidence_ref"],
+        record["evidence_source"],
+    )
+    if presented != trusted:
+        return None
+    return record
+
+
+def refreshed_currentness_identity(case: dict) -> dict | None:
+    """Review #1050 F02 / #1058 F01: a refresh rests on a trusted record.
 
     `refreshed_mode_matched_evidence` as a bare boolean authorizes nothing.
     A valid refresh names the drifted material state it supersedes (prior
@@ -158,17 +268,22 @@ def refreshed_currentness_identity(case: dict) -> bool:
     identity: a new upstream revision marker, a new mode-matched test/
     evidence reference over the drifted surface (distinct from the
     superseded reference) and an authoritative, attributable evidence
-    source. Offline fixtures carry synthetic identity strings only; the
-    executed re-validation itself stays NOT_RUN (T12).
+    source — and the whole identity must resolve against the trusted
+    registry record for the drifted revision and subject
+    (`trusted_refresh_record`). Returns that trusted record on success so
+    the verdict can cite the read-back; returns `None` — fail closed to
+    STALE — when the identity is malformed, invented or unregistered.
+    Offline fixtures carry synthetic identity strings only; the executed
+    re-validation itself stays NOT_RUN (T12).
     """
     if not case.get("refreshed_mode_matched_evidence"):
-        return False
+        return None
     drifted_revision = case.get("drifted_material_revision") or ""
     superseded_ref = case.get("superseded_evidence_ref") or ""
     new_revision = case.get("refreshed_upstream_revision") or ""
     new_ref = case.get("refreshed_evidence_ref") or ""
     source = case.get("refreshed_evidence_source") or ""
-    return (
+    if not (
         bool(drifted_revision)
         and bool(superseded_ref)
         and bool(new_revision)
@@ -176,7 +291,9 @@ def refreshed_currentness_identity(case: dict) -> bool:
         and new_revision != drifted_revision
         and new_ref != superseded_ref
         and source in OWNER_EVIDENCE_SOURCES
-    )
+    ):
+        return None
+    return trusted_refresh_record(case)
 
 
 def evaluate_reuse(case: dict) -> dict:
@@ -441,17 +558,31 @@ def evaluate_reuse(case: dict) -> dict:
     # the verdict requires the refreshed material-currentness evidence
     # identity (new upstream revision marker + new mode-matched evidence
     # reference, distinct from the superseded evidence and attributable).
+    # Review #1058 F01: that identity must further resolve to the trusted
+    # registry record for the drifted revision and subject — invented or
+    # unregistered revision/evidence strings have no power and keep the
+    # verdict stale.
     if (
         decision == "ALLOWED"
         and material_drift
         and mode in ("PATTERN_HARVEST", "SPEC_MODULE_RECONSTRUCTION", "BUILD_NEW")
     ):
-        if refreshed_currentness_identity(case):
-            # The refresh carries a full evidence identity: the mode's own
-            # verdict stands and the drift still keeps Validation Impact on
-            # the record.
+        trusted = refreshed_currentness_identity(case)
+        if trusted is not None:
+            # The refresh carries a full evidence identity resolved from the
+            # trusted record: the mode's own verdict stands and the drift
+            # still keeps Validation Impact on the record.
             obligations.add("validation_impact")
             notes["material_currentness_refreshed"] = True
+            notes["refreshed_identity_readback"] = {
+                "subject": trusted["subject"],
+                "inspector": trusted["inspector"],
+                "material_surface": trusted["material_surface"],
+                "observed_content": trusted["observed_content"],
+                "superseded_evidence_ref": trusted["superseded_evidence_ref"],
+                "refreshed_revision": trusted["refreshed_revision"],
+                "refreshed_evidence_ref": trusted["refreshed_evidence_ref"],
+            }
         else:
             decision = "STALE"
             grants = frozenset()
@@ -2068,6 +2199,124 @@ class ModeMatchedCurrentnessEvidenceTests(unittest.TestCase):
         self.assertTrue(verdict["notes"]["material_currentness_refreshed"])
         self.assertNotIn("pinned_full_sha", verdict["missing"])
         self.assertEqual(verdict["gate_mutations"], ())
+
+
+class TrustedRefreshReadbackTests(unittest.TestCase):
+    """Review #1058 F01 (R5): the refresh path reads a trusted record, not invented strings.
+
+    A refreshed material-currentness claim resolves only against the
+    registered trusted revision→inspector→material surface/content/subject
+    record. Caller-supplied revision/evidence strings authorize nothing by
+    themselves: a well-shaped but invented or unregistered identity fails
+    closed to STALE, and only a record whose read-back matches the trusted
+    entry (same subject, surface/content and revision continuity)
+    legitimately restores the mode's own verdict.
+    """
+
+    def test_r5_f01_trusted_record_readback_legitimately_restores_allowed(self) -> None:
+        # Positive oracle: the refresh identity is read back from the trusted
+        # registry record (same subject, material surface/content, revision
+        # continuity) and legitimately restores the mode's own ALLOWED
+        # verdict, with the verdict citing the trusted read-back.
+        key = ("c" * 40, "R5-F01 trusted readback refresh")
+        self.assertIn(key, TRUSTED_REFRESH_RECORDS)
+        trusted = TRUSTED_REFRESH_RECORDS[key]
+        self.assertNotEqual(trusted["refreshed_revision"], key[0])  # revision continuity
+        verdict = evaluate_reuse(
+            h2_case(
+                subject=key[1],
+                upstream_behavior_drift=True,
+                refreshed_mode_matched_evidence=True,
+                drifted_material_revision=key[0],
+                superseded_evidence_ref=trusted["superseded_evidence_ref"],
+                refreshed_upstream_revision=trusted["refreshed_revision"],
+                refreshed_evidence_ref=trusted["refreshed_evidence_ref"],
+                refreshed_evidence_source=trusted["evidence_source"],
+            )
+        )
+        self.assertEqual(verdict["mode"], "SPEC_MODULE_RECONSTRUCTION")
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset({"local_spec_module"}))
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertTrue(verdict["notes"]["material_currentness_refreshed"])
+        self.assertEqual(
+            verdict["notes"]["refreshed_identity_readback"],
+            {
+                "subject": trusted["subject"],
+                "inspector": trusted["inspector"],
+                "material_surface": trusted["material_surface"],
+                "observed_content": trusted["observed_content"],
+                "superseded_evidence_ref": trusted["superseded_evidence_ref"],
+                "refreshed_revision": trusted["refreshed_revision"],
+                "refreshed_evidence_ref": trusted["refreshed_evidence_ref"],
+            },
+        )
+        self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_r5_f01_invented_refresh_strings_cannot_restore_allowed(self) -> None:
+        # Fail-closed oracle (the exact audit #1058 F01 counterexample): a
+        # materially drifted H2 record plus refreshed_mode_matched_evidence
+        # and well-shaped INVENTED old/new revision and evidence strings must
+        # stay STALE — invented strings have no power.
+        verdict = evaluate_reuse(
+            h2_case(
+                subject="R5-F01 invented refresh identity",
+                upstream_behavior_drift=True,
+                refreshed_mode_matched_evidence=True,
+                drifted_material_revision="c" * 40,
+                superseded_evidence_ref="old",
+                refreshed_upstream_revision="d" * 40,
+                refreshed_evidence_ref="never-registered",
+                refreshed_evidence_source="inspected_upstream",
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertNotIn("material_currentness_refreshed", verdict["notes"])
+        self.assertNotIn("refreshed_identity_readback", verdict["notes"])
+        self.assertIn("fresh_equivalence_source_check", verdict["obligations"])
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+        # H3 variant: invented refresh strings cannot lift the H3 stale either.
+        h3_verdict = evaluate_reuse(
+            h3_case(
+                subject="R5-F01 H3 invented refresh identity",
+                upstream_behavior_drift=True,
+                refreshed_mode_matched_evidence=True,
+                drifted_material_revision="c" * 40,
+                superseded_evidence_ref="old",
+                refreshed_upstream_revision="d" * 40,
+                refreshed_evidence_ref="never-registered",
+                refreshed_evidence_source="inspected_upstream",
+            )
+        )
+        self.assertEqual(h3_verdict["decision"], "STALE")
+        self.assertNotIn("material_currentness_refreshed", h3_verdict["notes"])
+        self.assertEqual(h3_verdict["grants"], frozenset())
+        # Even a registered drifted revision/subject key is not enough when
+        # the presented replacement identity is invented: the forged revision
+        # and evidence ref fail the trusted read-back and the record stays
+        # stale.
+        trusted = TRUSTED_REFRESH_RECORDS[("c" * 40, "R5-F01 trusted readback refresh")]
+        forged = evaluate_reuse(
+            h2_case(
+                subject="R5-F01 trusted readback refresh",
+                upstream_behavior_drift=True,
+                refreshed_mode_matched_evidence=True,
+                drifted_material_revision="c" * 40,
+                superseded_evidence_ref=trusted["superseded_evidence_ref"],
+                refreshed_upstream_revision="f" * 40,  # invented replacement revision
+                refreshed_evidence_ref="forged@drifted-surface@f",  # invented evidence ref
+                refreshed_evidence_source=trusted["evidence_source"],
+            )
+        )
+        self.assertEqual(forged["decision"], "STALE")
+        self.assertNotIn("material_currentness_refreshed", forged["notes"])
+        self.assertNotIn("refreshed_identity_readback", forged["notes"])
+        self.assertEqual(forged["grants"], frozenset())
+        self.assertEqual(forged["gate_mutations"], ())
 
 
 class AttributableRoleEvidenceTests(unittest.TestCase):
