@@ -29,7 +29,10 @@ file only enforces and tests the local fail-closed gate (review #1049 F04-R3:
 a nonmaterial claim whose materiality/identity/authority refs do not resolve
 against the fixture's independently attested registries — issuer, spec
 baseline, accepted-delta fingerprint, evidence head — or resolve but bind to
-a different subject stays BLOCKED; the registries distinguish an unverified
+a different subject stays BLOCKED; review #1057 F01: a finding whose recorded
+evidence head is not the independently attested CURRENT evidence head for its
+subject is stale and equally fails the disposition closed; the registries
+distinguish an unverified
 caller reference from a separately attested fixture finding without claiming
 production verification). None of these gaps are claimed as RECONCILED or
 proven here; T11/T12 integration, a real Build Host run, and a fresh R3
@@ -157,7 +160,9 @@ def decide(projection: dict) -> dict:
         # #1049 F04-R3: a caller-supplied reference is unverified input, not
         # evidence, so every ref is additionally resolved against the fixture's
         # independently attested registries (issuer, subject, accepted-delta
-        # fingerprint, evidence head) and must bind to this exact disposition.
+        # fingerprint, evidence head — the head verified current against the
+        # independently attested current-head source per review #1057 F01)
+        # and must bind to this exact disposition.
         # A well-formed but unattested ("fake") ref fails closed BLOCKED, and
         # a bare `nonmaterial=True` assertion stays BLOCKED, never
         # NONMATERIAL. The authoritative binding of real materiality checks is
@@ -210,8 +215,10 @@ def decide(projection: dict) -> dict:
                 "independently attested materiality finding "
                 f"{projection['materiality_finding_ref']} (issuer, spec baseline, "
                 "accepted-delta fingerprint, and evidence head resolved against "
-                "the attested-finding registry and bound to this exact "
-                "disposition); no empty heavyweight record"
+                "the attested-finding registry, the recorded evidence head equal "
+                "to the independently attested current evidence head for the "
+                "subject, and bound to this exact disposition); no empty "
+                "heavyweight record"
             ],
         )
     missing = [
@@ -353,10 +360,17 @@ def nonmaterial_attestation_failures(projection: dict) -> list[str]:
     registries (`ATTESTED_*` below) and returns one failure reason per ref
     that does not resolve to an attested binding, or that resolves but is not
     bound to this disposition's exact subject (authority/spec, baseline/spec,
-    delta fingerprint, finding issuer/subject/delta). Absent refs are already
+    delta fingerprint, finding issuer/subject/delta). Review #1057 F01: the
+    finding's recorded evidence head must additionally equal the CURRENT
+    evidence head attested in `ATTESTED_CURRENT_EVIDENCE_HEADS` for the
+    subject — resolved from that trusted registry via the finding's own
+    attested baseline, never from a caller-supplied value — so an
+    attested-but-stale finding fails the disposition closed instead of
+    yielding NONMATERIAL. Absent refs are already
     reported by the caller-side presence checks; this helper only judges refs
-    that are present. An empty result means every ref resolved and mutually
-    binds — the only case the nonmaterial branch may admit. The authoritative
+    that are present. An empty result means every ref resolved, mutually
+    binds, and is evidence-current — the only case the nonmaterial branch may
+    admit. The authoritative
     binding of real materiality checks stays DEFERRED_TO_T11/NOT_RUN: this
     fixture-level attestation distinguishes an unverified caller reference
     from a separately attested fixture finding without claiming production
@@ -455,6 +469,29 @@ def nonmaterial_attestation_failures(projection: dict) -> list[str]:
                 f"accepted-delta fingerprint {finding['delta_sha']} while "
                 f"proposed_delta_ref {delta_ref!r} resolves to fingerprint "
                 f"{delta['delta_sha']}; delta-fingerprint binding fails closed"
+            )
+        # Review #1057 F01 (evidence currentness): an attested finding is
+        # evidence only for the evidence head it was actually checked at.
+        # The CURRENT evidence head for the subject is resolved from the
+        # fixture's trusted attestation source (via the finding's own
+        # attested baseline — never from any caller-supplied value); a
+        # finding whose recorded head is not exactly that current head is
+        # stale and must not yield NONMATERIAL.
+        finding_baseline = ATTESTED_SPEC_BASELINES.get(finding["spec_baseline_ref"])
+        subject = finding_baseline["spec"] if finding_baseline is not None else None
+        current_head = (
+            ATTESTED_CURRENT_EVIDENCE_HEADS.get(subject)
+            if subject is not None
+            else None
+        )
+        if current_head is None or finding["evidence_head"] != current_head:
+            failures.append(
+                f"materiality finding {finding_ref!r} is attested at evidence "
+                f"head {finding['evidence_head']!r} while the independently "
+                f"attested current evidence head for subject {subject!r} is "
+                f"{current_head!r}; a finding checked at a stale or superseded "
+                "evidence head is not current evidence and fails the "
+                "disposition closed"
             )
     return failures
 
@@ -635,7 +672,10 @@ ACCEPTED_S1 = "spec/S1@accepted-delta-sha"
 # nonmaterial disposition's refs against these registries (at call time, see
 # `nonmaterial_attestation_failures`) and fails closed (BLOCKED) on any
 # unresolvable or mis-bound ref — including a well-formed but unregistered
-# ("fake") one. The authoritative binding of real materiality checks stays
+# ("fake") one — and on any finding whose recorded evidence head is not the
+# attested CURRENT head for its subject (review #1057 F01; see
+# `ATTESTED_CURRENT_EVIDENCE_HEADS` below). The authoritative binding of real
+# materiality checks stays
 # DEFERRED_TO_T11/NOT_RUN: fixture attestation only distinguishes unverified
 # caller references from separately attested fixture findings; it is not a
 # production verification claim.
@@ -670,6 +710,26 @@ ATTESTED_MATERIALITY_FINDINGS = {
         "delta_sha": "revised-delta-sha",
         "evidence_head": "evidence-head-sha",
     },
+    # Review #1057 F01: a once-attested finding whose recorded evidence head
+    # has since been superseded. It resolves and binds issuer, baseline, and
+    # accepted-delta fingerprint exactly, so only an independent
+    # evidence-currentness check (below) can keep it from driving a
+    # NONMATERIAL disposition.
+    "finding/materiality@superseded-evidence-head-sha": {
+        "issuer": AUTHORIZED_AUTHORITY,
+        "spec_baseline_ref": "spec/S1@baseline-sha",
+        "proposed_delta_ref": ACCEPTED_S1,
+        "delta_sha": "accepted-delta-sha",
+        "evidence_head": "superseded-evidence-head-sha",
+    },
+}
+# Review #1057 F01: the fixture's trusted attestation of the CURRENT evidence
+# head per evidence subject. This registry — never any caller-supplied value —
+# is the authoritative source the nonmaterial gate compares a finding's
+# recorded `evidence_head` against; a finding checked at a superseded head is
+# stale and must fail the disposition closed instead of yielding NONMATERIAL.
+ATTESTED_CURRENT_EVIDENCE_HEADS = {
+    "spec/S1": "evidence-head-sha",
 }
 
 P01_PROJECTION = {
@@ -940,6 +1000,22 @@ class PositiveReconciliationDecisionTests(unittest.TestCase):
         # disposition — not because the string shape looks plausible.
         self.assertIn("finding/materiality@evidence-head-sha", verdict["reasons"][0])
         self.assertIn("independently attested materiality finding", verdict["reasons"][0])
+
+    def test_current_evidence_head_finding_still_supports_nonmaterial(self) -> None:
+        # Review #1057 F01 positive oracle: a finding whose recorded
+        # `evidence_head` equals the independently attested CURRENT evidence
+        # head for its subject remains legitimate NONMATERIAL support — the
+        # currentness gate admits exactly the current case and nothing else.
+        projection = dict(P03_NONMATERIAL)
+        finding = ATTESTED_MATERIALITY_FINDINGS[projection["materiality_finding_ref"]]
+        self.assertEqual(
+            finding["evidence_head"],
+            ATTESTED_CURRENT_EVIDENCE_HEADS["spec/S1"],
+        )
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "NONMATERIAL")
+        self.assertIn("finding/materiality@evidence-head-sha", verdict["reasons"][0])
+        self.assertIn("current evidence head", verdict["reasons"][0])
 
 
 class NegativeReconciliationDecisionTests(unittest.TestCase):
@@ -1321,6 +1397,33 @@ class NegativeReconciliationDecisionTests(unittest.TestCase):
         self.assertTrue(
             any("delta-fingerprint binding fails closed" in reason for reason in verdict["reasons"])
         )
+
+    def test_stale_evidence_head_finding_cannot_mark_nonmaterial(self) -> None:
+        # Review #1057 F01 minimally sufficient falsifier: the finding
+        # resolves against the attested registry and binds issuer, baseline,
+        # and accepted-delta fingerprint exactly, but it was checked at a
+        # superseded evidence head. The current evidence head is resolved
+        # from the fixture's trusted attestation source (never from any
+        # caller-supplied value), so the disposition must fail closed
+        # instead of exiting NONMATERIAL from an attested-but-stale finding.
+        projection = dict(P03_NONMATERIAL)
+        projection["materiality_finding_ref"] = (
+            "finding/materiality@superseded-evidence-head-sha"
+        )
+        stale = ATTESTED_MATERIALITY_FINDINGS[projection["materiality_finding_ref"]]
+        self.assertNotEqual(
+            stale["evidence_head"],
+            ATTESTED_CURRENT_EVIDENCE_HEADS["spec/S1"],
+        )
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        # The sole failure is evidence currentness: no other ref is
+        # mis-bound, so exactly one fail-closed reason is reported.
+        self.assertEqual(len(verdict["reasons"]), 1)
+        self.assertIn("attested at evidence head", verdict["reasons"][0])
+        self.assertIn("superseded evidence head", verdict["reasons"][0])
+        self.assertIn("fails the disposition closed", verdict["reasons"][0])
 
     def test_attested_refs_bound_to_different_specs_fail_closed(self) -> None:
         # Review #1049 F04-R3 subject binding: every ref individually
