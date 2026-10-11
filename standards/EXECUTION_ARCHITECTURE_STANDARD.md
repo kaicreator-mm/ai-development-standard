@@ -807,6 +807,8 @@ the old dispatch is durably provably unclaimed: delivered/acknowledged
   condition label DISPATCHED_UNCLAIMED; not a new lifecycle state)
 + the old dispatch's canonical admission/event references resolve and
   currentness was re-read with no unknown publication outcome
++ no other dispatch on the protected claim key carries an active
+  accepted Claim (one active claim per key, §11)
 + the actor is the authorized current single writer for the protected
   claim key (§11.1)
 + the reroute reason is itself durable and role-correct

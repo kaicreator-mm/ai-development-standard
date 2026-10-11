@@ -18,6 +18,23 @@ The adapter below is the test oracle for the documented §27.5/§28.5
 boundary, not a runtime artifact. Real GitHub multi-host/current-source
 claims need real actor-separated readback and stay out of scope here; any
 additive schema field proposal is routed to T11 without being edited here.
+
+R1 bounded repair (fresh independent review of PR #1066, issue #1013):
+
+- F1 — the pack's T06-N05 "stale base/PR HEAD" limb is now executable:
+  the fixture validates `head_sha` against the current subject
+  (`STALE_HEAD`, zero mutation) instead of carrying a dead field.
+- F2 — `attempt_wake` binds the §27.5 liveness rule to its full
+  predicate: accepted current Review/Validator PASS evidence FOR the
+  successor subject (`EVIDENCE_SUBJECT_MISMATCH` otherwise); claim-only
+  or non-PASS records never wake a downstream real `blocked_by`.
+- F3 — `Decision.__eq__` compares generations too; every Decision
+  literal in this file pins the expected/current pair.
+- F4 — the N06 readback-unavailable case asserts zero mutation via
+  full-snapshot comparison like its sibling ambiguity cases.
+- F5 — the §27.5 reroute precondition set gains "no other dispatch on
+  the protected claim key carries an active accepted Claim", mirrored
+  by a reroute-side active-claim check and a fixture seeding guard.
 """
 
 from __future__ import annotations
@@ -62,7 +79,7 @@ TERMINALS = {"DONE", "COMPLETED", "FAILED", "CANCELLED", "TIMEOUT", "STALE", "SU
 # Canonical disposition/reason vocabulary used by the adapter decisions.
 DISPOSITIONS = {
     "ACCEPTED", "STALE", "INELIGIBLE", "UNKNOWN", "BLOCKED", "REJECTED",
-    "STALE_BASE", "TENANT_MISMATCH", "PACK_IDENTITY_DRIFT",
+    "STALE_BASE", "STALE_HEAD", "TENANT_MISMATCH", "PACK_IDENTITY_DRIFT",
     "GROUP_GRANT_MISSING", "GROUP_GRANT_EXPIRED", "RESOURCE_EXHAUSTED_OR_UNKNOWN",
     "CONDITIONAL_WRITE_REJECTED", "INCOMPATIBLE_ACTIVE_CLAIM", "TERMINAL_DISPATCH",
     "PUBLICATION_OUTCOME_AMBIGUOUS", "DURABLE_READBACK_UNAVAILABLE",
@@ -71,6 +88,7 @@ DISPOSITIONS = {
     "CLAIM_IS_NOT_REVIEW_EVIDENCE", "RECONCILED", "CLAIM_KEY_SLOT_MANIPULATION",
     "GENERATION_MISMATCH", "NO_SUCH_DISPATCH", "COMPOSITE_ADMITTED", "CLAIMED",
     "REROUTED", "TERMINAL_RECORDED", "WOKEN", "NOT_LAWFUL_FOR_UNCLAIMED",
+    "EVIDENCE_SUBJECT_MISMATCH",
     "RECONCILIATION_OPEN",
 }
 
@@ -103,7 +121,13 @@ class Decision:
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Decision):
             return NotImplemented
-        return self.status == other.status and self.reason == other.reason and self.key == other.key
+        return (
+            self.status == other.status
+            and self.reason == other.reason
+            and self.key == other.key
+            and self.expected_generation == other.expected_generation
+            and self.current_generation == other.current_generation
+        )
 
 
 @dataclass(frozen=True)
@@ -196,8 +220,11 @@ class ClaimAdmissionAdapter:
         self.bound_resources: dict[str, tuple[tuple[str, int], ...]] = {}
         self.ambiguous_keys: set[str] = set()
         self.readback_unavailable = False
-        self.current_subject = {"base": "base-AAA", "tenant": "tenant-1", "pack": "pack-v1"}
+        self.current_subject = {
+            "base": "base-AAA", "head": "head-111", "tenant": "tenant-1", "pack": "pack-v1",
+        }
         self.group_grants: dict[str, tuple[str, bool]] = {}  # group -> (ref, live)
+        self.current_successor: str | None = None  # last claimed successor subject
         self._seq = 0
 
     # -- durable projections -------------------------------------------------
@@ -254,6 +281,10 @@ class ClaimAdmissionAdapter:
 
     def seed_web_dispatch(self, key: str, role: str = "builder",
                           operator: str | None = None, state: str = "ACKNOWLEDGED") -> DispatchRecord:
+        # Fixture discipline: seeding must never bypass composite admission —
+        # a key with an active accepted claim cannot receive a new dispatch.
+        if self.active_claim_on(key) is not None:
+            raise AssertionError("fixture misuse: seeding over an active claim on the key")
         generation = self.current_generation(key)
         return self._publish(key, role=role, origin="WEB", generation=generation,
                              assigned_operator=operator, state=state)
@@ -261,6 +292,8 @@ class ClaimAdmissionAdapter:
     def _currentness_rejection(self, proposal: ClaimProposal) -> str | None:
         if proposal.base_sha != self.current_subject["base"]:
             return "STALE_BASE"
+        if proposal.head_sha != self.current_subject["head"]:
+            return "STALE_HEAD"
         if proposal.tenant != self.current_subject["tenant"]:
             return "TENANT_MISMATCH"
         if proposal.pack_ref != self.current_subject["pack"]:
@@ -311,6 +344,7 @@ class ClaimAdmissionAdapter:
                                  state="ACKNOWLEDGED")
         dispatch.claim = ClaimRecord(proposal.operator, proposal.session, current)
         self.bound_resources[dispatch.dispatch_id] = proposal.resources
+        self.current_successor = dispatch.dispatch_id
         self.events.append({
             "type": "DISPATCH_CLAIMED", "key": proposal.key, "dispatch_id": dispatch.dispatch_id,
             "operator": proposal.operator, "generation": current, "origin": proposal.origin,
@@ -346,6 +380,7 @@ class ClaimAdmissionAdapter:
                             expected_generation, current)
         dispatch.claim = ClaimRecord(operator, session, current)
         dispatch.state = "ACKNOWLEDGED"
+        self.current_successor = dispatch_id
         self.events.append({
             "type": "DISPATCH_CLAIMED", "key": dispatch.key, "dispatch_id": dispatch_id,
             "operator": operator, "generation": current, "origin": dispatch.origin,
@@ -368,13 +403,18 @@ class ClaimAdmissionAdapter:
         if old.admission_ref is None:
             return Decision("BLOCKED", "ADMISSION_REF_UNRESOLVABLE", key)
         current = self.current_generation(key)
-        if old.claim is not None and old.state not in TERMINALS:
-            # No stolen claim: the active claim belongs to its owning
+        if old.state in TERMINALS:
+            # Terminal precedence: a dispatch with a durable terminal can
+            # never be rerouted again (exactly one terminal, §11).
+            return Decision("REJECTED", "DUPLICATE_TERMINAL", key, old.generation, current)
+        active = self.active_claim_on(key)
+        if old.claim is not None or active is not None:
+            # No stolen claim: neither the old dispatch nor any other dispatch
+            # on this protected key may hold an active accepted claim (§27.5
+            # precondition set) — resolution belongs to the owning
             # cancellation/terminal/recovery authority, not to the reroute.
             return Decision("REJECTED", "NOT_LAWFUL_CLAIMED_DISPATCH", key,
                             old.generation, current)
-        if old.state in TERMINALS:
-            return Decision("REJECTED", "DUPLICATE_TERMINAL", key, old.generation, current)
         # Durable append-only terminal + generation advance g → g+1.
         old.state = "CANCELLED"
         old.terminals.append("CANCELLED")
@@ -434,10 +474,17 @@ class ClaimAdmissionAdapter:
     # -- §27.5 bounded liveness: wake/drain of downstream blocked_by ----------
 
     def attempt_wake(self, dependency_ref: str, evidence: dict | None) -> Decision:
+        # Wake requires accepted CURRENT Reviewer/Validator evidence FOR the
+        # successor subject — a claim, a missing subject, or a non-PASS
+        # record never reduces a downstream gate (§27.5 bounded liveness).
         if evidence is None:
             return Decision("BLOCKED", "NO_CURRENT_ACCEPTED_REVIEW_EVIDENCE", dependency_ref)
-        if evidence.get("kind") == "claim":
+        if evidence.get("kind") not in ("review", "validation"):
             return Decision("BLOCKED", "CLAIM_IS_NOT_REVIEW_EVIDENCE", dependency_ref)
+        if evidence.get("subject") != self.current_successor:
+            return Decision("BLOCKED", "EVIDENCE_SUBJECT_MISMATCH", dependency_ref)
+        if evidence.get("status") != "PASS":
+            return Decision("BLOCKED", "NO_CURRENT_ACCEPTED_REVIEW_EVIDENCE", dependency_ref)
         return Decision("ACCEPTED", "WOKEN", dependency_ref, detail=evidence.get("subject", ""))
 
 
@@ -457,7 +504,7 @@ OP_LOCAL_B = "op-local-second"
 def proposal(adapter: ClaimAdmissionAdapter, operator: str = OP_WEB, session: str = "s1",
              key: str = KEY, generation: int | None = None, origin: str = "WEB",
              resources: tuple[tuple[str, int], ...] = (), group_grant_ref: str | None = None,
-             base: str | None = None, tenant: str | None = None,
+             base: str | None = None, head: str | None = None, tenant: str | None = None,
              pack: str | None = None) -> ClaimProposal:
     subject = adapter.current_subject
     return ClaimProposal(
@@ -467,7 +514,7 @@ def proposal(adapter: ClaimAdmissionAdapter, operator: str = OP_WEB, session: st
         session=session,
         origin=origin,
         base_sha=subject["base"] if base is None else base,
-        head_sha="head-111",
+        head_sha=subject["head"] if head is None else head,
         tenant=subject["tenant"] if tenant is None else tenant,
         pack_ref=subject["pack"] if pack is None else pack,
         group_grant_ref=group_grant_ref,
@@ -511,6 +558,8 @@ class SectionContractTests(unittest.TestCase):
         section_27_5 = section(S_27_5)
         self.assertIn("durably provably unclaimed: delivered/acknowledged", section_27_5)
         self.assertIn("condition label DISPATCHED_UNCLAIMED; not a new lifecycle state", section_27_5)
+        self.assertIn("no other dispatch on the protected claim key carries an active", section_27_5)
+        self.assertIn("accepted Claim (one active claim per key, §11)", section_27_5)
         self.assertIn("the actor is the authorized current single writer for the protected", section_27_5)
         self.assertIn("durable CANCELLED/SUPERSEDED terminal on the old dispatch at its", section_27_5)
         self.assertIn("generation g (append-only; advances the key generation g → g+1)", section_27_5)
@@ -664,13 +713,10 @@ class DuplicateKeyRaceTests(unittest.TestCase):
                 self.assertEqual(1, first.expected_generation)
                 self.assertEqual(1, second.expected_generation)
                 winner = adapter.admit(first)
-                self.assertEqual(Decision("ACCEPTED", "COMPOSITE_ADMITTED", KEY), winner)
-                self.assertEqual(1, winner.current_generation)
+                self.assertEqual(Decision("ACCEPTED", "COMPOSITE_ADMITTED", KEY, 1, 1), winner)
                 mid = adapter.snapshot()
                 loser = adapter.admit(second)
-                self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY), loser)
-                self.assertEqual(1, loser.expected_generation)
-                self.assertEqual(2, loser.current_generation)
+                self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY, 1, 2), loser)
                 self.assertEqual(mid, adapter.snapshot())  # loser mutated nothing
                 claims = [d for d in adapter.dispatches.values() if d.claim is not None]
                 self.assertEqual(1, len(claims))
@@ -688,7 +734,7 @@ class DuplicateKeyRaceTests(unittest.TestCase):
                                         origin="LOCAL"))
         # Same semantic key → one active claim; an authorized compatibility
         # group never turns the claim itself into parallel claim keys.
-        self.assertEqual(Decision("REJECTED", "INCOMPATIBLE_ACTIVE_CLAIM", KEY_GROUPED), second)
+        self.assertEqual(Decision("REJECTED", "INCOMPATIBLE_ACTIVE_CLAIM", KEY_GROUPED, 2, 2), second)
 
 
 # ---------------------------------------------------------------------------
@@ -706,12 +752,12 @@ class RerouteLegalityTests(unittest.TestCase):
         self.assertEqual("ACCEPTED", claimed.status)
         before = adapter.snapshot()
         stolen = adapter.reroute_unclaimed(CONTROLLER, old.dispatch_id, "LOCAL", "provenance")
-        self.assertEqual(Decision("REJECTED", "NOT_LAWFUL_CLAIMED_DISPATCH", KEY), stolen)
+        self.assertEqual(Decision("REJECTED", "NOT_LAWFUL_CLAIMED_DISPATCH", KEY, 1, 1), stolen)
         self.assertEqual(1, stolen.expected_generation)
         self.assertEqual(before, adapter.snapshot())
         # No second LOCAL claim can appear on the key while the claim is active.
         second = adapter.admit(proposal(adapter, operator=OP_LOCAL, origin="LOCAL"))
-        self.assertEqual(Decision("REJECTED", "INCOMPATIBLE_ACTIVE_CLAIM", KEY), second)
+        self.assertEqual(Decision("REJECTED", "INCOMPATIBLE_ACTIVE_CLAIM", KEY, 1, 1), second)
 
     def test_n02_positive_only_the_owning_authority_resolves_a_claimed_dispatch(self) -> None:
         adapter = make_adapter()
@@ -732,7 +778,7 @@ class RerouteLegalityTests(unittest.TestCase):
         events_before = deepcopy(adapter.events)
         rerouted = adapter.reroute_unclaimed(CONTROLLER, old.dispatch_id, "LOCAL",
                                              "unclaimed web proposal; work must run LOCAL")
-        self.assertEqual(Decision("ACCEPTED", "REROUTED", KEY), rerouted)
+        self.assertEqual(Decision("ACCEPTED", "REROUTED", KEY, 1, 2), rerouted)
         self.assertEqual(1, rerouted.expected_generation)
         self.assertEqual(2, rerouted.current_generation)
         # Old dispatch: exactly one durable append-only terminal, history kept.
@@ -748,17 +794,17 @@ class RerouteLegalityTests(unittest.TestCase):
         self.assertEqual(events_before, adapter.events[: len(events_before)])
         # A distinct, independent fresh LOCAL operator claims at g+1.
         claimed = adapter.claim(fresh.dispatch_id, OP_LOCAL, "s-local-fresh", 2)
-        self.assertEqual(Decision("ACCEPTED", "CLAIMED", KEY), claimed)
+        self.assertEqual(Decision("ACCEPTED", "CLAIMED", KEY, 2, 2), claimed)
         self.assertNotEqual(OP_WEB, fresh.claim.operator)
         self.assertNotEqual(CONTROLLER, fresh.claim.operator)
         # Late WEB claim at the superseded generation g resolves STALE.
         late = adapter.claim(fresh.dispatch_id, OP_WEB, "s-web", 1)
-        self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY), late)
+        self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY, 1, 2), late)
         self.assertEqual(1, late.expected_generation)
         self.assertEqual(2, late.current_generation)
         # No duplicate terminal on the old dispatch; no revival.
         duplicate = adapter.reroute_unclaimed(CONTROLLER, old.dispatch_id, "WEB", "again")
-        self.assertEqual(Decision("REJECTED", "DUPLICATE_TERMINAL", KEY), duplicate)
+        self.assertEqual(Decision("REJECTED", "DUPLICATE_TERMINAL", KEY, 1, 2), duplicate)
         self.assertEqual(["CANCELLED"], old.terminals)
 
     def test_n03b_reroute_cannot_mint_a_parallel_claim_key_by_renaming(self) -> None:
@@ -803,7 +849,7 @@ class CompositeAtomicityTests(unittest.TestCase):
         before = adapter.snapshot()
         denied = adapter.admit(proposal(adapter, operator=OP_WEB,
                                         resources=(("gpu-batch", 1), ("fabric-switch", 1))))
-        self.assertEqual(Decision("INELIGIBLE", "RESOURCE_EXHAUSTED_OR_UNKNOWN", KEY), denied)
+        self.assertEqual(Decision("INELIGIBLE", "RESOURCE_EXHAUSTED_OR_UNKNOWN", KEY, 1, 1), denied)
         self.assertEqual(before, adapter.snapshot())
 
     def test_n04_mid_commit_conditional_failure_leaves_zero_partial_bindings(self) -> None:
@@ -811,7 +857,7 @@ class CompositeAtomicityTests(unittest.TestCase):
         adapter.resources.fail_commit_for = "singular-device"
         denied = adapter.admit(proposal(adapter, operator=OP_WEB,
                                         resources=(("gpu-batch", 2), ("singular-device", 1))))
-        self.assertEqual(Decision("REJECTED", "CONDITIONAL_WRITE_REJECTED", KEY), denied)
+        self.assertEqual(Decision("REJECTED", "CONDITIONAL_WRITE_REJECTED", KEY, 1, 1), denied)
         # The R1 units that committed first were rolled back: no partial chain.
         self.assertEqual({"gpu-batch": 0, "singular-device": 0}, adapter.resources.active)
         self.assertEqual(1, adapter.current_generation(KEY))
@@ -836,11 +882,14 @@ class CompositeAtomicityTests(unittest.TestCase):
 class CurrentnessAndForgeryTests(unittest.TestCase):
     """N05: stale base/HEAD, tenant, pack identity, grants, generations."""
 
-    def test_n05_stale_base_head_is_ineligible_with_zero_mutation(self) -> None:
+    def test_n05_stale_base_or_pr_head_is_ineligible_with_zero_mutation(self) -> None:
         adapter = make_adapter()
         before = adapter.snapshot()
-        denied = adapter.admit(proposal(adapter, operator=OP_WEB, base="base-OLD"))
-        self.assertEqual(Decision("INELIGIBLE", "STALE_BASE", KEY, 1, 1), denied)
+        stale_base = adapter.admit(proposal(adapter, operator=OP_WEB, base="base-OLD"))
+        self.assertEqual(Decision("INELIGIBLE", "STALE_BASE", KEY, 1, 1), stale_base)
+        self.assertEqual(before, adapter.snapshot())
+        stale_head = adapter.admit(proposal(adapter, operator=OP_WEB, head="head-OLD"))
+        self.assertEqual(Decision("INELIGIBLE", "STALE_HEAD", KEY, 1, 1), stale_head)
         self.assertEqual(before, adapter.snapshot())
 
     def test_n05_tenant_mismatch_is_ineligible_with_zero_mutation(self) -> None:
@@ -862,11 +911,11 @@ class CurrentnessAndForgeryTests(unittest.TestCase):
         before = adapter.snapshot()
         forged = adapter.admit(proposal(adapter, operator=OP_WEB, key=KEY_GROUPED,
                                         group_grant_ref="#forged@0"))
-        self.assertEqual(Decision("INELIGIBLE", "GROUP_GRANT_MISSING", KEY_GROUPED), forged)
+        self.assertEqual(Decision("INELIGIBLE", "GROUP_GRANT_MISSING", KEY_GROUPED, 1, 1), forged)
         adapter.group_grants["gpu-shared"] = ("#auth@1", False)
         expired = adapter.admit(proposal(adapter, operator=OP_WEB, key=KEY_GROUPED,
                                          group_grant_ref="#auth@1"))
-        self.assertEqual(Decision("INELIGIBLE", "GROUP_GRANT_EXPIRED", KEY_GROUPED), expired)
+        self.assertEqual(Decision("INELIGIBLE", "GROUP_GRANT_EXPIRED", KEY_GROUPED, 1, 1), expired)
         self.assertEqual(before, adapter.snapshot())
 
     def test_n05_late_old_generation_resolves_stale_with_zero_mutation(self) -> None:
@@ -874,7 +923,7 @@ class CurrentnessAndForgeryTests(unittest.TestCase):
         adapter.admit(proposal(adapter, operator=OP_LOCAL, origin="LOCAL"))
         before = adapter.snapshot()
         late = adapter.admit(proposal(adapter, operator=OP_WEB, generation=1))
-        self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY), late)
+        self.assertEqual(Decision("STALE", "GENERATION_MISMATCH", KEY, 1, 2), late)
         self.assertEqual(before, adapter.snapshot())
 
 
@@ -902,9 +951,11 @@ class PublicationAmbiguityTests(unittest.TestCase):
         adapter = make_adapter()
         old = adapter.seed_web_dispatch(KEY, operator=OP_WEB)
         adapter.readback_unavailable = True
+        before = adapter.snapshot()
         self.assertEqual("UNKNOWN", adapter.admit(proposal(adapter, operator=OP_LOCAL)).status)
         self.assertEqual("BLOCKED", adapter.reroute_unclaimed(
             CONTROLLER, old.dispatch_id, "LOCAL", "r").status)
+        self.assertEqual(before, adapter.snapshot())  # fail closed = zero mutation
         # Durable reconciliation reopens the lawful path.
         adapter.readback_unavailable = False
         adapter.reconcile_publication(KEY, outcome="unclaimed")
@@ -944,7 +995,7 @@ class LivenessWakeDrainTests(unittest.TestCase):
         first = adapter.claim(old.dispatch_id, OP_WEB, "s-web", old.generation)
         self.assertEqual("ACCEPTED", first.status)
         second = adapter.claim(old.dispatch_id, OP_WEB, "s-web", old.generation)
-        self.assertEqual(Decision("ACCEPTED", "IDEMPOTENT_RESUME", KEY), second)
+        self.assertEqual(Decision("ACCEPTED", "IDEMPOTENT_RESUME", KEY, 1, 1), second)
         claims = [d for d in adapter.dispatches.values() if d.claim is not None]
         self.assertEqual(1, len(claims))
         self.assertEqual(1, len([e for e in adapter.events if e["type"] == "DISPATCH_CLAIMED"]))
@@ -959,6 +1010,18 @@ class LivenessWakeDrainTests(unittest.TestCase):
         without_evidence = adapter.attempt_wake("dep-v411-t07", None)
         self.assertEqual(Decision("BLOCKED", "NO_CURRENT_ACCEPTED_REVIEW_EVIDENCE", "dep-v411-t07"),
                          without_evidence)
+        # Accepted current evidence must be FOR the successor subject.
+        wrong_subject = adapter.attempt_wake("dep-v411-t07", {
+            "kind": "review", "subject": "some-other-dispatch", "status": "PASS",
+        })
+        self.assertEqual(Decision("BLOCKED", "EVIDENCE_SUBJECT_MISMATCH", "dep-v411-t07"),
+                         wrong_subject)
+        # A current-subject non-PASS record is not accepted evidence either.
+        failed_review = adapter.attempt_wake("dep-v411-t07", {
+            "kind": "review", "subject": accepted.detail, "status": "FAIL",
+        })
+        self.assertEqual(Decision("BLOCKED", "NO_CURRENT_ACCEPTED_REVIEW_EVIDENCE", "dep-v411-t07"),
+                         failed_review)
 
     def test_p07_accepted_current_review_evidence_lets_the_legal_terminal_wake_drain(self) -> None:
         adapter = make_adapter()
