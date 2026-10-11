@@ -117,7 +117,13 @@ T012_MERGED_BLOBS = {
     "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
     "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
     ".agent/execution/T-012/IMPLEMENTATION_MAP.md": "8dc93553a7e7b23d55495662b1ad31fe461fe368",
-    "scripts/test_v49_gate_currentness.py": "fae5d04d7dc3ef0b214a6d2f68a367b83c2628c2",
+    # F1-style re-bind (issue #967 V411-SHARED-PIN-CONVERGENCE-R1B; dispatch
+    # #967@6111990453, builder claim #967@6112283672, operator-authorized
+    # amendment #967@6112493424): the convergence lane itself edits this T-012
+    # output (exact T02/T06 admission extensions under the existing v4.11
+    # context gate), so the pin moves to the converged kernel blob; every
+    # other T-012 output stays pinned to its exact composed blob.
+    "scripts/test_v49_gate_currentness.py": "2a7a03a0995f2494d9c39f173bcad934b97d9d43",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
     # F1-style re-bind (#1038): the CI-repair lane itself edits this T-012
     # output (checkout fetch-depth: 0), so the pin moves to the repaired
