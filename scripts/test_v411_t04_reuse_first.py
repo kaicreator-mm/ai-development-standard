@@ -9,13 +9,29 @@ adoption and BUILD_NEW), and (b) fixture-driven deterministic decisions over
 the J12 H1/H2/H3/BUILD_NEW contract including license drift, revision staleness
 and fail-closed routing. Purely textual/offline; no network, no runtime.
 
+R2 bounded repair (#1043 R2-F01..F04): source/license-file/NOTICE observations
+are modeled as independent facts, each pinned to the revision it was actually
+taken at — an observation taken at another revision is history and fails the
+reliance stale, and a green status with no revision binding never authorizes.
+The upstream inspector and the project license-policy owner are distinct,
+non-interchangeable evidence roles. Material rights-bearing drift behind a
+non-copying mode demands refreshed mode-matched evidence and otherwise fails
+closed to STALE without a blanket H3 demotion. Negative fixtures for these
+floors are additionally derived by an in-file oracle that reads the required
+facts out of the owner clauses and never calls the decision model, so the
+model and the clauses falsify together instead of self-attesting.
+
 Acceptance boundary (NOT_RUN): T04 is an owner-local documentation deliverable
-and has no production decision hook. Central wiring of the reuse floors into
-shared prompts/schemas/manifest is T11, binding reuse dispositions to executed
-validation evidence is T12, and real upstream read-back of pinned identities is
-out of scope for this offline task (fixtures use synthetic local identities).
-Those obligations stay recorded in `NOT_RUN_OBLIGATIONS` as NOT_RUN and are not
-claimed as verified by this suite.
+and has no production decision hook. This suite is owner-local offline
+acceptance only; the in-file evaluator is not an online production contract
+proof and no agreement with one is claimed. Central wiring of the reuse floors
+into shared prompts/schemas/manifest is T11, binding reuse dispositions to
+executed validation evidence is T12, and real upstream read-back of pinned
+identities and executed builds on a real build host are out of scope for this
+offline task (fixtures use synthetic local identities and synthetic
+observation content). Those obligations stay recorded in
+`NOT_RUN_OBLIGATIONS` as NOT_RUN and are not claimed as verified by this
+suite.
 """
 
 from __future__ import annotations
@@ -50,13 +66,36 @@ FULL_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 OWNER_EVIDENCE_SOURCES = {"owner_decision", "inspected_upstream", "recorded_disposition"}
 UNTRUSTED_EVIDENCE_SOURCES = {"README", "unpinned_latest", "arbitrary_checker"}
 
-# F05: obligations this documentation-only task cannot execute are recorded as
-# NOT_RUN, never claimed as verified. T11/T12 are the owner-assigned successor
-# tasks; upstream read-back is deferred because this suite is offline.
+# F05/F04: obligations this documentation-only task cannot execute are
+# recorded as NOT_RUN, never claimed as verified. T11/T12 are the
+# owner-assigned successor tasks; upstream read-back and real build execution
+# are deferred because this suite is offline, and the in-file evaluator is an
+# owner-local offline acceptance oracle, not an online production contract.
 NOT_RUN_OBLIGATIONS = {
-    "T11": "wire the reuse decision floors into shared L1/L2/L3 prompts, schemas and the manifest (central wiring task)",
-    "T12": "bind reuse dispositions to executed validation evidence at the owning gate (Validation owner)",
-    "upstream_readback": "dereference pinned upstream identities against the real upstream; fixtures carry synthetic local identities only",
+    "T11": (
+        "wire the reuse decision floors into shared L1/L2/L3 prompts, schemas "
+        "and the manifest (central wiring task); operative contract consistency "
+        "with those T11 surfaces is NOT_RUN here"
+    ),
+    "T12": (
+        "bind reuse dispositions to executed validation evidence at the owning "
+        "gate (Validation owner); operative contract consistency with T12 gates "
+        "is NOT_RUN here"
+    ),
+    "upstream_readback": (
+        "dereference pinned upstream identities against the real upstream; "
+        "fixtures carry synthetic local identities and synthetic observation "
+        "content only and claim no real upstream right"
+    ),
+    "production_contract": (
+        "the in-file evaluator is an owner-local offline acceptance oracle for "
+        "this documentation-only task; agreement with an online production "
+        "decision contract is NOT_RUN and is not claimed"
+    ),
+    "real_build_host": (
+        "no executed build or validation on a real build host is performed; "
+        "this suite stays textual/offline by design"
+    ),
 }
 
 
@@ -181,6 +220,22 @@ def evaluate_reuse(case: dict) -> dict:
         if not evidence_sources.intersection(OWNER_EVIDENCE_SOURCES):
             missing.append("authoritative_evidence_source")
 
+        # F02: the upstream inspector and the project license-policy owner are
+        # distinct, non-interchangeable roles. An authoritative bounded-reuse
+        # verdict needs an independently attributable current upstream
+        # inspection AND an independent project license-policy ruling; neither
+        # evidence source can stand in for the other and a green policy boolean
+        # without an owner attribution rules nothing.
+        has_current_inspection = "inspected_upstream" in evidence_sources
+        has_policy_authority = (
+            "owner_decision" in evidence_sources
+            and case.get("license_policy_authority") == "owner_decision"
+        )
+        if not has_current_inspection:
+            missing.append("current_upstream_inspection_evidence")
+        if not has_policy_authority:
+            missing.append("independent_license_policy_authority")
+
         # N01: reliance on a new revision never inherits the historic permission.
         historic = case.get("historic_permission_revision")
         current = case.get("current_reliance_revision")
@@ -207,13 +262,65 @@ def evaluate_reuse(case: dict) -> dict:
         if stale:
             obligations.update({"fresh_equivalence_source_check", "validation_impact"})
 
-        if case.get("license_observation") != "inspected_authorized":
-            missing.append("inspected_license_observation_at_relied_revision")
-            if case.get("license_observation") in ("conflicting", "missing"):
-                obligations.add("license_authority_disposition")
-        if case.get("notice_observation") != "present":
-            missing.append("notice_observation_at_relied_revision")
-        if not case.get("license_policy_authorized"):
+        # F01: observations carry their own identity. Source, license-file and
+        # NOTICE observations are three independent facts, each pinned to the
+        # revision it was actually taken at (revision + observed content/blob).
+        # Only an observation bound to the relied revision authorizes; one
+        # taken at another revision is history and makes the reliance stale;
+        # a green status with no revision binding at all is unattributable and
+        # fails closed (§9 "as observed at that revision, not as remembered").
+        relied_revision = current or (sha if FULL_SHA_RE.match(sha) else "")
+        observation_identities = (
+            (
+                "source",
+                bool(case.get("source_observation_blob")),
+                case.get("source_observation_revision"),
+                case.get("source_observation_blob"),
+                "source_observation_at_relied_revision",
+            ),
+            (
+                "license",
+                case.get("license_observation") == "inspected_authorized",
+                case.get("license_observation_revision"),
+                case.get("license_observation_content"),
+                "inspected_license_observation_at_relied_revision",
+            ),
+            (
+                "notice",
+                case.get("notice_observation") == "present",
+                case.get("notice_observation_revision"),
+                case.get("notice_observation_content"),
+                "notice_observation_at_relied_revision",
+            ),
+        )
+        observation_elsewhere = False
+        license_bound_now = False
+        if relied_revision:
+            for kind, claimed, at_revision, content, marker in observation_identities:
+                if claimed and at_revision == relied_revision and content:
+                    if kind == "license":
+                        license_bound_now = True
+                    continue
+                missing.append(marker)
+                if claimed and at_revision:
+                    observation_elsewhere = True
+        # Without a license observation bound to the relied revision the rights
+        # state is unknown/conflicting/missing: fail closed with the project
+        # license/security authority (§9); upstream visibility resolves nothing.
+        if not license_bound_now:
+            obligations.add("license_authority_disposition")
+        if observation_elsewhere:
+            stale = True
+            obligations.update({"fresh_equivalence_source_check", "validation_impact"})
+            notes["observation_bound_to_other_revision"] = True
+
+        # F02: the policy ruling must cover the relied revision. A ruling
+        # recorded at a historic revision is inherited history, not current
+        # authority; it fails closed instead of authorizing.
+        if case.get("license_policy_authorized"):
+            if has_policy_authority and relied_revision and case.get("license_policy_revision") != relied_revision:
+                missing.append("license_policy_disposition_at_relied_revision")
+        else:
             missing.append("license_policy_disposition")
         if not case.get("attribution"):
             missing.append("attribution")
@@ -240,6 +347,23 @@ def evaluate_reuse(case: dict) -> dict:
         decision = "BLOCKED" if missing else "ALLOWED"
         grants = frozenset({"local_build"}) if decision == "ALLOWED" else frozenset()
         notes["not_a_silent_default"] = True
+
+    # F03: material rights-bearing drift behind a non-copying mode invalidates
+    # the mode's own self-description. The mode keeps its shape and floor (no
+    # blanket H3 demotion), but it must present refreshed, mode-matched
+    # evidence at the new material state; an allowed verdict resting on a
+    # stale self-description is downgraded to STALE and loses every grant
+    # (§13: drift behind already-relied-on reuse is stale until re-checked).
+    if (
+        decision == "ALLOWED"
+        and case.get("material_upstream_delta")
+        and mode in ("PATTERN_HARVEST", "SPEC_MODULE_RECONSTRUCTION", "BUILD_NEW")
+        and not case.get("refreshed_mode_matched_evidence")
+    ):
+        decision = "STALE"
+        grants = frozenset()
+        obligations.update({"fresh_equivalence_source_check", "validation_impact"})
+        notes["stale_material_self_description"] = True
 
     return {
         "subject": case["subject"],
@@ -279,8 +403,10 @@ def h2_case(**overrides: object) -> dict:
 
 
 def h3_case(**overrides: object) -> dict:
-    # NOTE: `upstream_full_sha` below is a synthetic 40-hex fixture identity.
-    # It is never dereferenced against a real upstream; real read-back stays
+    # NOTE: `upstream_full_sha`, the observation revision pins and the
+    # observation contents below are synthetic 40-hex fixture identities and
+    # synthetic observation content. They are never dereferenced against a
+    # real upstream and claim no real upstream right; real read-back stays
     # recorded in NOT_RUN_OBLIGATIONS and is not claimed as observed.
     case = {
         "subject": "H3 fixture",
@@ -288,12 +414,20 @@ def h3_case(**overrides: object) -> dict:
         "upstream_repo": "upstream/example-lib",
         "upstream_full_sha": "b" * 40,
         "material_paths": ["src/example.rs"],
+        "source_observation_revision": "b" * 40,
+        "source_observation_blob": "blob:src/example.rs@b",
         "license_observation": "inspected_authorized",
+        "license_observation_revision": "b" * 40,
+        "license_observation_content": "license-text@b:MIT",
         "notice_observation": "present",
+        "notice_observation_revision": "b" * 40,
+        "notice_observation_content": "notice-content@b",
         "license_policy_authorized": True,
+        "license_policy_authority": "owner_decision",
+        "license_policy_revision": "b" * 40,
         "attribution": True,
         "local_behavior_tests": True,
-        "evidence_sources": ["inspected_upstream", "recorded_disposition"],
+        "evidence_sources": ["inspected_upstream", "owner_decision"],
     }
     case.update(overrides)
     return case
@@ -1114,18 +1248,517 @@ class ContractBoundDecisionTraceTests(unittest.TestCase):
         self.assertEqual(honest_h3["missing"], baseline["missing"])
 
     def test_acceptance_limitations_are_recorded_as_not_run(self) -> None:
-        self.assertEqual(set(NOT_RUN_OBLIGATIONS), {"T11", "T12", "upstream_readback"})
+        self.assertEqual(
+            set(NOT_RUN_OBLIGATIONS),
+            {"T11", "T12", "upstream_readback", "production_contract", "real_build_host"},
+        )
         for obligation, note in NOT_RUN_OBLIGATIONS.items():
             with self.subTest(obligation=obligation):
                 self.assertTrue(note.strip())
-        # The module docstring states the boundary honestly: this suite cannot
-        # claim acceptance completeness for central wiring, executed evidence
-        # or real upstream observation.
+        # The module docstring states the boundary honestly: this suite is
+        # owner-local offline acceptance only — it cannot claim completeness
+        # for central wiring (T11), executed evidence (T12), an online
+        # production contract, or real upstream observation.
         doc = sys.modules[__name__].__doc__ or ""
         self.assertIn("Acceptance boundary (NOT_RUN)", doc)
+        self.assertIn("owner-local offline", doc)
+        self.assertIn("not an online production contract", doc)
         self.assertIn("T11", doc)
         self.assertIn("T12", doc)
         self.assertIn("NOT_RUN_OBLIGATIONS", doc)
+
+
+class RevisionBoundObservationTests(unittest.TestCase):
+    """F01/R2: every observation is an independent fact pinned to the relied revision.
+
+    A license/NOTICE/source observation taken at another revision is history,
+    never current authority; a green status without a revision binding at all
+    is unattributable; either half of the license/NOTICE pair alone does not
+    authorize.
+    """
+
+    def test_f01_observations_at_old_revision_do_not_authorize_new_reliance(self) -> None:
+        # The exact R2 finding: green license/NOTICE/source booleans observed
+        # at revision A carried over to a reliance on revision B must not stay
+        # ALLOWED — the reliance goes stale until freshly re-observed at B.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 A observations, B reliance",
+                historic_permission_revision="a" * 40,
+                current_reliance_revision="b" * 40,
+                source_observation_revision="a" * 40,
+                source_observation_blob="blob:src/example.rs@a",
+                license_observation_revision="a" * 40,
+                license_observation_content="license-text@a:MIT",
+                notice_observation_revision="a" * 40,
+                notice_observation_content="notice-content@a",
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertTrue(verdict["notes"]["observation_bound_to_other_revision"])
+        for marker in (
+            "source_observation_at_relied_revision",
+            "inspected_license_observation_at_relied_revision",
+            "notice_observation_at_relied_revision",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, verdict["missing"])
+        for obligation in ("fresh_equivalence_source_check", "validation_impact"):
+            with self.subTest(obligation=obligation):
+                self.assertIn(obligation, verdict["obligations"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f01_one_misbound_observation_is_enough_to_go_stale(self) -> None:
+        # A-observation must not silently inherit into B-reliance — even a
+        # single observation identity pinned at the old revision breaks the
+        # authorization.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 license still pinned at A",
+                current_reliance_revision="c" * 40,
+                upstream_full_sha="c" * 40,
+                source_observation_revision="c" * 40,
+                source_observation_blob="blob:src/example.rs@c",
+                license_observation_revision="a" * 40,
+                license_observation_content="license-text@a:MIT",
+                notice_observation_revision="c" * 40,
+                notice_observation_content="notice-content@c",
+                license_policy_revision="c" * 40,
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertIn("inspected_license_observation_at_relied_revision", verdict["missing"])
+        self.assertTrue(verdict["notes"]["observation_bound_to_other_revision"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f01_green_status_without_revision_binding_fails_closed(self) -> None:
+        # The unbound variant of the same hole: green booleans with no
+        # observation identity at all are unattributable memory, not
+        # observation, and fail closed instead of authorizing.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 unbound green booleans",
+                source_observation_revision=None,
+                source_observation_blob=None,
+                license_observation_revision=None,
+                license_observation_content=None,
+                notice_observation_revision=None,
+                notice_observation_content=None,
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        for marker in (
+            "source_observation_at_relied_revision",
+            "inspected_license_observation_at_relied_revision",
+            "notice_observation_at_relied_revision",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f01_notice_observation_alone_does_not_authorize(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 NOTICE observed, license not",
+                license_observation=None,
+                license_observation_revision=None,
+                license_observation_content=None,
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("inspected_license_observation_at_relied_revision", verdict["missing"])
+        self.assertIn("license_authority_disposition", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f01_license_observation_alone_does_not_authorize(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 license observed, NOTICE not",
+                notice_observation=None,
+                notice_observation_revision=None,
+                notice_observation_content=None,
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("notice_observation_at_relied_revision", verdict["missing"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f01_independent_observations_are_checked_one_by_one(self) -> None:
+        # Source, license-file and NOTICE are distinct observation identities:
+        # binding two of them to the relied revision while the third stays at
+        # the old one leaves exactly the third broken, and never inherits.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F01 per-identity binding",
+                current_reliance_revision="c" * 40,
+                upstream_full_sha="c" * 40,
+                license_policy_revision="c" * 40,
+            )
+        )
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertEqual(
+            [m for m in verdict["missing"] if m.endswith("_at_relied_revision")],
+            [
+                "source_observation_at_relied_revision",
+                "inspected_license_observation_at_relied_revision",
+                "notice_observation_at_relied_revision",
+            ],
+        )
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+
+class InspectorPolicyRoleSeparationTests(unittest.TestCase):
+    """F02/R2: upstream inspector and project license-policy owner are distinct roles.
+
+    An authoritative bounded-reuse verdict needs both an independently
+    attributable current upstream inspection AND an independent project
+    license-policy ruling (owner decision); neither role can be swapped,
+    inherited or self-declared by a green boolean.
+    """
+
+    def test_f02_owner_decision_alone_cannot_replace_current_inspection(self) -> None:
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F02 owner-only",
+                evidence_sources=["owner_decision"],
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("current_upstream_inspection_evidence", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f02_inspection_alone_cannot_issue_the_license_policy_ruling(self) -> None:
+        # A green `license_policy_authorized` boolean without an independent
+        # owner attribution rules nothing — the inspector cannot self-issue
+        # the project policy disposition.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F02 inspector-only",
+                evidence_sources=["inspected_upstream"],
+                license_policy_authority=None,
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("independent_license_policy_authority", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f02_inherited_policy_without_current_inspection_is_denied(self) -> None:
+        # A policy ruling recorded at the historic revision, carried forward
+        # with no current upstream inspection, is inherited history and denies.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F02 inherited policy",
+                evidence_sources=["owner_decision"],
+                license_policy_revision="a" * 40,
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("current_upstream_inspection_evidence", verdict["missing"])
+        self.assertIn("license_policy_disposition_at_relied_revision", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f02_recorded_disposition_cannot_serve_as_upstream_inspection(self) -> None:
+        # Role non-interchangeability on the owner side: a recorded prior
+        # disposition is owner evidence, but it is not a current upstream
+        # inspection and cannot stand in for one.
+        verdict = evaluate_reuse(
+            h3_case(
+                subject="F02 recorded disposition is not inspection",
+                evidence_sources=["recorded_disposition", "owner_decision"],
+            )
+        )
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertIn("current_upstream_inspection_evidence", verdict["missing"])
+        self.assertNotIn("bounded_code_reuse", verdict["grants"])
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f02_both_roles_present_with_revision_bound_facts_authorize(self) -> None:
+        # Control: the split does not over-block. With both roles present and
+        # every observation bound to the relied revision, the bounded grant
+        # survives.
+        verdict = evaluate_reuse(h3_case(subject="F02 control"))
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["missing"], [])
+        self.assertEqual(verdict["grants"], frozenset({"bounded_code_reuse"}))
+        self.assertEqual(verdict["gate_mutations"], ())
+
+
+class MaterialDriftNonCopyModeTests(unittest.TestCase):
+    """F03/R2: material rights-bearing drift fails closed in every non-copying mode.
+
+    The mode keeps its shape and floor (no blanket H3 demotion and no copying
+    boolean involved), but an ALLOWED verdict may not rest on a stale
+    self-description: refreshed, mode-matched evidence is required, otherwise
+    the verdict is STALE with fresh-check plus Validation Impact obligations.
+    """
+
+    def test_f03_h1_material_delta_without_refreshed_evidence_is_stale(self) -> None:
+        verdict = evaluate_reuse(h1_case(subject="F03 H1 stale self-description", material_upstream_delta=True))
+        self.assertEqual(verdict["mode"], "PATTERN_HARVEST")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
+        for obligation in ("fresh_equivalence_source_check", "validation_impact"):
+            with self.subTest(obligation=obligation):
+                self.assertIn(obligation, verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f03_h2_material_delta_without_refreshed_evidence_is_stale(self) -> None:
+        verdict = evaluate_reuse(h2_case(subject="F03 H2 stale self-description", material_upstream_delta=True))
+        self.assertEqual(verdict["mode"], "SPEC_MODULE_RECONSTRUCTION")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f03_build_new_material_delta_without_refreshed_evidence_is_stale(self) -> None:
+        verdict = evaluate_reuse(
+            build_new_case(subject="F03 BUILD_NEW stale self-description", material_upstream_delta=True)
+        )
+        self.assertEqual(verdict["mode"], "BUILD_NEW")
+        self.assertEqual(verdict["decision"], "STALE")
+        self.assertTrue(verdict["notes"]["stale_material_self_description"])
+        self.assertNotIn("pinned_full_sha", verdict["missing"])  # no blanket H3 floor
+        self.assertIn("validation_impact", verdict["obligations"])
+        self.assertEqual(verdict["grants"], frozenset())
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_f03_refreshed_mode_matched_evidence_restores_the_mode_verdict(self) -> None:
+        # Positive controls: with refreshed mode-matched evidence the mode's
+        # own verdict stands (minus the grant-erasing downgrade); the material
+        # delta still keeps the Validation Impact obligation.
+        cases = [
+            h1_case(subject="F03 H1 refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
+            h2_case(subject="F03 H2 refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
+            build_new_case(subject="F03 BUILD_NEW refreshed", material_upstream_delta=True, refreshed_mode_matched_evidence=True),
+        ]
+        for case in cases:
+            verdict = evaluate_reuse(case)
+            with self.subTest(subject=case["subject"]):
+                self.assertEqual(verdict["decision"], "ALLOWED")
+                self.assertIn("validation_impact", verdict["obligations"])
+                self.assertNotIn("stale_material_self_description", verdict["notes"])
+                self.assertEqual(verdict["gate_mutations"], ())
+        self.assertEqual(
+            evaluate_reuse(cases[1])["grants"],
+            frozenset({"local_spec_module"}),
+        )
+
+
+class IndependentOracleFalsificationTests(unittest.TestCase):
+    """F04/R2: negative fixtures derived independently of the decision model.
+
+    The required facts and the routing are re-derived here from the owner
+    clause text (Dependency §9/§13) with predicates over the raw fixture
+    dict; they never call or mirror `evaluate_reuse`. A loosening of the
+    model or a weakening of the clauses breaks the agreement in either
+    direction, so the model and the document falsify together instead of
+    self-attesting. All fixtures stay synthetic and offline.
+    """
+
+    maxDiff = None
+
+    # (§9 clause phrase that must back the fact, raw-case predicate)
+    @classmethod
+    def floor_fact_groups(cls) -> list[tuple[str, object]]:
+        return [
+            (
+                "the upstream repository, the full commit SHA relied on",
+                cls.has_pinned_identity,
+            ),
+            (
+                "exact provenance facts observed at a named upstream revision",
+                cls.has_current_inspection_evidence,
+            ),
+            (
+                "the license file and NOTICE content as observed at that revision",
+                cls.has_revision_bound_license_and_notice,
+            ),
+            (
+                "the project license-policy disposition authorizing the specific reuse mode",
+                cls.has_independent_policy_ruling,
+            ),
+        ]
+
+    @staticmethod
+    def relied_revision(case: dict) -> str:
+        current = case.get("current_reliance_revision")
+        if current:
+            return current
+        sha = case.get("upstream_full_sha") or ""
+        return sha if FULL_SHA_RE.match(sha) else ""
+
+    @classmethod
+    def has_pinned_identity(cls, case: dict) -> bool:
+        return (
+            bool(case.get("upstream_repo"))
+            and bool(cls.relied_revision(case))
+            and bool(case.get("material_paths"))
+        )
+
+    @staticmethod
+    def has_current_inspection_evidence(case: dict) -> bool:
+        return "inspected_upstream" in set(case.get("evidence_sources", []))
+
+    @classmethod
+    def has_revision_bound_license_and_notice(cls, case: dict) -> bool:
+        relied = cls.relied_revision(case)
+        if not relied:
+            return False
+        return (
+            case.get("license_observation") == "inspected_authorized"
+            and case.get("license_observation_revision") == relied
+            and bool(case.get("license_observation_content"))
+            and case.get("notice_observation") == "present"
+            and case.get("notice_observation_revision") == relied
+            and bool(case.get("notice_observation_content"))
+        )
+
+    @classmethod
+    def has_independent_policy_ruling(cls, case: dict) -> bool:
+        relied = cls.relied_revision(case)
+        return (
+            case.get("license_policy_authorized") is True
+            and case.get("license_policy_authority") == "owner_decision"
+            and "owner_decision" in set(case.get("evidence_sources", []))
+            and bool(relied)
+            and case.get("license_policy_revision") == relied
+        )
+
+    @classmethod
+    def observation_pinned_elsewhere(cls, case: dict) -> bool:
+        relied = cls.relied_revision(case)
+        if not relied:
+            return False
+        pinned = (
+            (bool(case.get("source_observation_blob")), case.get("source_observation_revision")),
+            (case.get("license_observation") == "inspected_authorized", case.get("license_observation_revision")),
+            (case.get("notice_observation") == "present", case.get("notice_observation_revision")),
+        )
+        return any(claimed and revision and revision != relied for claimed, revision in pinned)
+
+    @classmethod
+    def independent_disposition(cls, case: dict) -> str:
+        """Route from the §13 clause semantics, not from `evaluate_reuse`."""
+        if cls.observation_pinned_elsewhere(case):
+            return "STALE"
+        dep9 = dependency_provenance_license()
+        for phrase, predicate in cls.floor_fact_groups():
+            if phrase not in dep9:
+                raise AssertionError(f"backing clause disappeared from Dependency §9: {phrase!r}")
+            if not predicate(case):
+                return "NOT_ALLOWED"
+        return "ALLOWED"
+
+    def test_backing_clauses_are_present_in_the_owner_sections(self) -> None:
+        dep9 = dependency_provenance_license()
+        routing = dependency_failure_handling()
+        for phrase, _predicate in self.floor_fact_groups():
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, dep9)
+        self.assertIn("These observations are revision-bound.", dep9)
+        self.assertIn("the prior permission is stale", routing)
+        self.assertIn(
+            "keep the reuse disposition non-authoritative (`BLOCKED`/unknown)",
+            routing,
+        )
+
+    def test_full_floor_fixture_matches_the_independent_derivation(self) -> None:
+        case = h3_case(subject="independent full-floor control")
+        derived = self.independent_disposition(case)
+        verdict = evaluate_reuse(case)
+        self.assertEqual(derived, "ALLOWED")
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["grants"], frozenset({"bounded_code_reuse"}))
+        self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_negative_fixtures_match_the_independent_derivation(self) -> None:
+        a, b, c = "a" * 40, "b" * 40, "c" * 40
+        matrix = [
+            h3_case(subject="ind owner-only", evidence_sources=["owner_decision"]),
+            h3_case(
+                subject="ind inspector-only",
+                evidence_sources=["inspected_upstream"],
+                license_policy_authority=None,
+            ),
+            h3_case(subject="ind inherited policy", evidence_sources=["owner_decision"], license_policy_revision=a),
+            h3_case(
+                subject="ind A observations, B reliance",
+                historic_permission_revision=a,
+                current_reliance_revision=b,
+                source_observation_revision=a,
+                source_observation_blob="blob:src@a",
+                license_observation_revision=a,
+                license_observation_content="license@a",
+                notice_observation_revision=a,
+                notice_observation_content="notice@a",
+            ),
+            h3_case(
+                subject="ind one misbound observation",
+                current_reliance_revision=c,
+                upstream_full_sha=c,
+                license_observation_revision=a,
+                license_observation_content="license@a",
+                license_policy_revision=c,
+            ),
+            h3_case(
+                subject="ind license only",
+                notice_observation=None,
+                notice_observation_revision=None,
+                notice_observation_content=None,
+            ),
+            h3_case(
+                subject="ind notice only",
+                license_observation=None,
+                license_observation_revision=None,
+                license_observation_content=None,
+            ),
+            h3_case(
+                subject="ind unbound green booleans",
+                source_observation_revision=None,
+                source_observation_blob=None,
+                license_observation_revision=None,
+                license_observation_content=None,
+                notice_observation_revision=None,
+                notice_observation_content=None,
+            ),
+            h3_case(subject="ind unknown checker", evidence_sources=["unknown_checker"]),
+        ]
+        for case in matrix:
+            derived = self.independent_disposition(case)
+            verdict = evaluate_reuse(case)
+            with self.subTest(subject=case["subject"], derived=derived, actual=verdict["decision"]):
+                self.assertNotEqual(derived, "ALLOWED")
+                if derived == "STALE":
+                    self.assertEqual(verdict["decision"], "STALE")
+                else:
+                    self.assertIn(verdict["decision"], {"BLOCKED", "UNKNOWN"})
+                self.assertEqual(verdict["grants"], frozenset())
+                self.assertEqual(verdict["gate_mutations"], ())
+
+    def test_independent_floor_stays_scoped_to_right_bearing_material(self) -> None:
+        # Scope control on the independent side: pattern harvest without any
+        # copying stays outside the §9 identity floor on both sides, and the
+        # in-file floor_fact_groups must not silently bind it.
+        case = h1_case(subject="independent H1 out of scope")
+        verdict = evaluate_reuse(case)
+        self.assertEqual(verdict["decision"], "ALLOWED")
+        self.assertEqual(verdict["mode"], "PATTERN_HARVEST")
+        self.assertNotIn("pinned_full_sha", verdict["missing"])
 
 
 if __name__ == "__main__":
