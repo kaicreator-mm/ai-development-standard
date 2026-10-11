@@ -61,6 +61,16 @@ R4 bounded repair (review #1051 P1-R3-01..P2-R3-02, issue #1010):
   (DEFERRED_TO_T11); the legacy membership-only refs are the historical
   fixture world.
 
+R5 bounded repair (review #1059 F01/P1, issue #1010):
+
+- F01 — a non-null legal-looking transition tuple can no longer authorize a
+  DIFFERENT emitted next_state: admission additionally checks the claimed
+  tuple against durable reality on both ends — the subject's actual durable
+  workflow_state (from-state) and the actually emitted payload.next_state
+  (to-state) — and rejects any mismatch atomically with zero snapshot
+  mutation (`replace(review_pass(H, "src-review-1"), next_state="done")` is
+  now ILLEGAL_TRANSITION, not an admitted durable `done` write).
+
 The adapter below is the test oracle for the documented §8.1.1/§9.4 boundary,
 not a runtime artifact. Shared event-schema/verifier wiring stays with T11
 (DEFERRED_TO_T11); the fixture needs only existing event-v2 fields.
@@ -585,6 +595,30 @@ class AdmissionBoundary:
         if intent.transition is not None:
             if (intent.actor_role,) + intent.transition not in LEGAL_TRANSITIONS:
                 return Decision("REJECTED", "ILLEGAL_TRANSITION")
+            # R5 (review #1059 F01/P1): a caller-supplied legal tuple no
+            # longer speaks for the payload — BOTH ends of the claimed
+            # transition are additionally checked against durable reality:
+            # (a) the ACTUALLY emitted next_state must BE the tuple's
+            #     destination. Presenting review-ready→merge-ready while
+            #     emitting a schema-legal but unauthorized "done" mints an
+            #     unrequested workflow advance out of a legal-looking tuple
+            #     (to_payload prefers an explicit next_state).
+            # (b) the claimed from-state must be grounded in the trusted
+            #     store: the subject's current durable workflow_state, or the
+            #     fixture world's durable entry state (INITIAL_SUBJECT_STATE —
+            #     the earliest state from which the modeled review transitions
+            #     depart, which independent reviewers re-report per
+            #     test_p02/test_n03). §8.4.1 dispatch-projection events
+            #     (RESPONSIBILITY_HANDOFF) carry dispatch-lifecycle tuples,
+            #     not subject workflow_state transitions, so (b) does not
+            #     apply to them.
+            # Any mismatch is rejected atomically — zero durable mutation.
+            if emitted_next != intent.transition[1]:
+                return Decision("REJECTED", "ILLEGAL_TRANSITION")
+            if not intent.responsibility_mode:
+                current_state = self.workflow_state.get(subject, INITIAL_SUBJECT_STATE)
+                if intent.transition[0] not in (current_state, INITIAL_SUBJECT_STATE):
+                    return Decision("REJECTED", "ILLEGAL_TRANSITION")
         elif emitted_next:
             # R4 (review #1051 P1-R3-03): transition legality (§8.1) is
             # validated even when the caller omits the transition tuple —
@@ -1939,6 +1973,55 @@ class NullTransitionLegalityTests(unittest.TestCase):
         self.assertEqual(Decision("REJECTED", "ILLEGAL_TRANSITION"), boundary.admit(rogue))
         self.assertEqual(before, boundary.snapshot())
         self.assertEqual([], boundary.facts_for(H))
+
+
+class TransitionTupleRealityTests(unittest.TestCase):
+    """R5 (review #1059 F01/P1): a non-null `intent.transition` tuple no
+    longer authorizes the payload by looking legal. Admission additionally
+    checks the claimed tuple against durable reality on BOTH ends: the
+    subject's ACTUAL durable workflow_state (from-state, from the trusted
+    store) and the ACTUALLY emitted payload.next_state (to-state). A legal
+    pair plus a schema-legal but unauthorized emitted destination is
+    rejected atomically with zero durable mutation."""
+
+    def test_legal_non_null_transition_matching_actual_state_and_emitted_next_is_admitted(self):
+        # R5 positive oracle: the legal review-ready→merge-ready tuple against
+        # a subject whose ACTUAL durable state is review-ready, emitting
+        # exactly the tuple's destination, is admitted normally and advances
+        # the durable state (the pre-existing instance of this path is
+        # test_p01; here the realized transition is asserted explicitly).
+        boundary = make_boundary()
+        intent = review_pass(H, "src-review-1")
+        self.assertEqual(("review-ready", "merge-ready"), intent.transition)
+        self.assertEqual("merge-ready", intent.to_payload(H)["next_state"])
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(intent))
+        self.assertEqual({H: "merge-ready"}, boundary.workflow_state)
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+
+    def test_legal_tuple_with_unauthorized_emitted_next_state_is_rejected_with_zero_mutation(self):
+        # R5 negative oracle (the exact review #1059 F01 reproduction): the
+        # claimed tuple stays the legal review-ready→merge-ready pair, but
+        # the emitted next_state is the schema-legal yet unauthorized "done"
+        # (to_payload prefers an explicit next_state over the tuple). The
+        # boundary must REJECT the attempt AND leave the durable
+        # workflow_state snapshot byte-for-byte unchanged — no reviewer can
+        # move review-ready→done, with or without a legal-looking tuple.
+        boundary = make_boundary()
+        attack = replace(review_pass(H, "src-review-1"), next_state="done")
+        self.assertEqual(("review-ready", "merge-ready"), attack.transition)
+        self.assertEqual("done", attack.to_payload(H)["next_state"])
+        before = boundary.snapshot()
+        decision = boundary.admit(attack)
+        self.assertEqual(
+            Decision("REJECTED", "ILLEGAL_TRANSITION"),
+            decision,
+            "F01: a legal tuple plus an unauthorized emitted next_state was ADMITTED; "
+            f"durable workflow_state after the call: {dict(boundary.workflow_state)!r}",
+        )
+        self.assertEqual(before, boundary.snapshot())
+        # byte-for-byte durable zero mutation: no workflow_state write at all
+        self.assertEqual({}, dict(boundary.workflow_state))
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
 
 
 class CurrentnessGateTests(unittest.TestCase):
