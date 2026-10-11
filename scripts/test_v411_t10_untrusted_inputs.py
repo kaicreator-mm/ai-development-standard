@@ -39,12 +39,25 @@ against the accepted owner/gate records — a claimed digest identifying
 different existing bytes fails closed; destructive cleanup verifies path
 byte identity the same way and takes reconstructability from trusted
 reconstruction/retention provenance records instead of a caller boolean;
-the tenant scope is resolved by consulting `TenantAuthority.binding_for`
-with the actual invoking principal at the operation boundary (caller-built
-binding objects are never accepted); and secret-ref classification is an
-authorized provider/scope/key registry lookup — the fixture stand-in for
-the §5 contextual mapping guarantee (real provider integration stays
-DEFERRED_TO_T11/T12).
+    the tenant scope is resolved by consulting `TenantAuthority.binding_for`
+    with the actual invoking principal at the operation boundary (caller-built
+    binding objects are never accepted); and secret-ref classification is an
+    authorized provider/scope/key registry lookup — the fixture stand-in for
+    the §5 contextual mapping guarantee (real provider integration stays
+    DEFERRED_TO_T11/T12).
+
+    Review #1060 R5 bounded repair (F01): the durable secret-write boundary
+    is itself an untrusted-input boundary — it re-resolves the raw ref's
+    exact provider/scope/key against the trusted registry, derives the
+    actual tenant/validity from that resolution, and refuses the write
+    (nothing persisted) when the ref does not resolve or the resolution
+    mismatches the declared provenance; caller-supplied decision/provenance
+    objects are never trusted at the persistence boundary. F02 stays an
+    honestly bounded deferral: `destructive_cleanup` verifies byte identity
+    via a digest measured from the path's actual bytes at decision time,
+    performs no actual unlink in this model, and race-safe deletion remains
+    owned by the real effect consumer (T11/T12) — never claimed by this
+    suite.
 
 Scope note: T11 (shared schema/validation) and T12 (integration) remain
 explicitly DEFERRED — the centralized accepted-record store is stubbed
@@ -276,20 +289,38 @@ def classify_ref(ref: str, *, tenant: str, registry: AuthorizedSecretRefRegistry
 
 
 def durable_secret_record(
-    decision: str, ref: str, *, provenance: SecretRefRecord | None = None
+    decision: str,
+    ref: str,
+    *,
+    registry: AuthorizedSecretRefRegistry | None = None,
+    provenance: SecretRefRecord | None = None,
 ) -> dict | None:
     """Only proven symbolic refs persist to ordinary durable records.
 
     Review #1052 F04: `provenance` is the authoritative registry lookup
     result for the concrete ref, never a caller-supplied assertion; an
     `AUTHORIZED_REFERENCE` without an authoritative record persists nothing.
+
+    Review #1060 F01: this durable-write boundary is itself an
+    untrusted-input boundary — the caller-supplied decision/provenance
+    objects are never trusted here. The boundary re-resolves the exact
+    provider/scope/key from the raw ref against the trusted registry and
+    derives the actual tenant/validity from that resolution; the write is
+    refused with nothing persisted when the ref does not parse, no trusted
+    registry is available, the ref does not resolve to a registered
+    provider/scope/key, or that resolution does not exactly match the
+    declared provenance.
     """
     if decision == AUTHORIZED_REFERENCE:
-        if provenance is None:
+        parsed = parse_secret_ref(ref)
+        if parsed is None or registry is None or provenance is None:
+            return None
+        authoritative = registry.lookup(ref, tenant=parsed[1])
+        if authoritative is None or authoritative != provenance:
             return None
         return {
             "ref": ref,
-            "source": f"authorized-registry:{provenance.provider}/{provenance.scope}",
+            "source": f"authorized-registry:{authoritative.provider}/{authoritative.scope}",
         }
     if decision == QUARANTINED:
         return {"ref": "[REDACTED:value-in-ref-position]", "source": "redacted-untrusted-ref"}
@@ -1024,9 +1055,13 @@ class SecretRefClassificationTests(unittest.TestCase):
         )
         self.assertEqual(classify_ref(ref, tenant="tenant-A", registry=registry), AUTHORIZED_REFERENCE)
         # Provenance is the authoritative registry lookup result (review
-        # #1052 F04), never a caller-supplied string.
+        # #1052 F04), never a caller-supplied string; the durable-write
+        # boundary re-resolves it against the registry itself (review
+        # #1060 F01).
         provenance = registry.lookup(ref, tenant="tenant-A")
-        record = durable_secret_record(AUTHORIZED_REFERENCE, ref, provenance=provenance)
+        record = durable_secret_record(
+            AUTHORIZED_REFERENCE, ref, registry=registry, provenance=provenance
+        )
         self.assertEqual(record, {"ref": ref, "source": "authorized-registry:ci/tenant-A"})
         self.assertFalse(any(pattern.search(ref) for pattern in BEARER_LIKE_PATTERNS))
         self.assertTrue(fast_path_proportional(material_config=False, secret_required=False))
@@ -1129,10 +1164,37 @@ class SecretRefClassificationTests(unittest.TestCase):
         ref = "ci:tenant-A/app/read-token"
         provenance = registry.lookup(ref, tenant="tenant-A")
         self.assertIsNotNone(provenance)
-        record = durable_secret_record(AUTHORIZED_REFERENCE, ref, provenance=provenance)
+        record = durable_secret_record(
+            AUTHORIZED_REFERENCE, ref, registry=registry, provenance=provenance
+        )
         self.assertEqual(
             record,
             {"ref": ref, "source": "authorized-registry:ci/tenant-A"},
+        )
+
+    def test_durable_write_refuses_forged_provenance_for_unregistered_ref(self):
+        """Review #1060 F01: the durable-write boundary re-resolves the ref itself.
+
+        The caller-supplied decision/provenance objects are untrusted input at
+        the persistence boundary: the boundary must resolve the exact
+        provider/scope/key from the raw ref against the trusted registry,
+        derive the actual tenant/validity from that resolution, and refuse the
+        durable write — persisting nothing — when the ref does not resolve or
+        the resolution does not exactly match the declared provenance. Audit
+        #1060 reproduction: an unregistered cross-tenant ref wearing a forged
+        tenant-A provenance record must not persist (previously it produced a
+        durable record claiming `authorized-registry:vault/tenant-A`).
+        """
+        registry = AuthorizedSecretRefRegistry(
+            SecretRefRecord(provider="ci", scope="tenant-A", key="app/read-token"),
+        )
+        self.assertIsNone(
+            durable_secret_record(
+                AUTHORIZED_REFERENCE,
+                "vault:tenant-B/unauthorized",
+                registry=registry,
+                provenance=SecretRefRecord("vault", "tenant-A", "valid"),
+            )
         )
 
 
