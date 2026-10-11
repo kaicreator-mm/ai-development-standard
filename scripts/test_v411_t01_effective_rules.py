@@ -52,12 +52,23 @@ trusted owner proofs require a mandatory exact-subject binding and a full
 CURRENT and syntactic shape is never claimed to equal source verification
 (F04); and malformed proof/observation entries (missing or ill-typed fields)
 route to a durable fail-closed trace instead of raising KeyError (F05).
+
+Review #1056 R5 bounded repairs (fail-closed hardening, this revision): a
+scoped-absence inventory ref is evidence only when it resolves to a REAL
+record in the trusted fixture inventory registry bound to the exact subject,
+the exact material dimension, a registered owner/scope identity, and an
+immutable, current inventory revision — a forged but well-shaped
+"inventory:attacker@707b" ref with a self-declared fresh flag and exact
+subject can no longer mint NOT_APPLICABLE/ADMITTED and fails closed as
+UNKNOWN/NOT_RUN; the registry is the fixture inspector/owner authority and
+real T02/T11 inventory-source integration stays DEFERRED_TO_T11 / NOT_RUN.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+from types import MappingProxyType
 import re
 import unittest
 
@@ -292,7 +303,93 @@ PROOF_REF_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*:[A-Za-z0-9._/-]+@[0-9a-f]{64}
 # names a scoped inventory record ("inventory:<scope>@<immutable-blob>"); the
 # record must additionally be bound to the exact subject and taken from a
 # fresh HEAD.
-INVENTORY_REF_PATTERN = re.compile(r"^inventory:[A-Za-z0-9._/-]+@[0-9a-f]{4,64}$")
+# Review #1056 F01: shape alone never mints evidence — the ref must resolve to
+# a real record in TRUSTED_INVENTORY_RECORDS below.
+INVENTORY_REF_PATTERN = re.compile(
+    r"^inventory:(?P<scope>[A-Za-z0-9._/-]+)@(?P<revision>[0-9a-f]{4,64})$"
+)
+
+
+def inventory_ref_parts(ref: str) -> tuple[str, str] | None:
+    """Split a well-shaped inventory ref into (scope, immutable revision)."""
+    match = INVENTORY_REF_PATTERN.match(ref)
+    if match is None:
+        return None
+    return match.group("scope"), match.group("revision")
+
+
+# Review #1056 F01: trusted fixture inventory record registry — the scope-owned
+# inspector/owner authority for scoped-absence observations in this decision
+# oracle. Each record binds one exact inventory ref to the subject it was
+# independently inspected for, the material dimension its scope authorizes
+# absence for, the owning scope identity, and the immutable inventory revision
+# the ref pins (currentness at the pinned HEAD). It is populated once at import
+# and exposed read-only. Honesty boundary: this registry is a test fixture
+# authority — it asserts record existence and binding only; a real external
+# inventory provider lookup (T02/T11 source integration) stays
+# DEFERRED_TO_T11 / NOT_RUN and is never claimed here.
+def _build_trusted_inventory_registry() -> dict[str, dict]:
+    registry: dict[str, dict] = {}
+
+    def register(ref: str, subject: str, dimension: str, scope_owner: str) -> None:
+        parts = inventory_ref_parts(ref)
+        if parts is None:
+            raise ValueError(f"registry record ref {ref!r} is not a well-shaped inventory ref")
+        scope, revision = parts
+        registry[ref] = {
+            "ref": ref,
+            "scope": scope,
+            "inventory_revision": revision,
+            "subject": subject,
+            "dimension": dimension,
+            "scope_owner": scope_owner,
+            "current": True,
+        }
+
+    for dimension in MATERIAL_DIMENSIONS:
+        # cli docs fixture: every dimension inspected ABSENT within scope.
+        register(f"inventory:{dimension}@707b", CLI_DOCS_SUBJECT, dimension, "cli-docs task owner")
+        # service X01 fixtures (@707e N06 coverage, @707f label-contradiction).
+        register(f"inventory:{dimension}@707e", SERVICE_X01_SUBJECT, dimension, "x01 service task owner")
+        register(f"inventory:{dimension}@707f", SERVICE_X01_SUBJECT, dimension, "x01 service task owner")
+    # service X01 cross-concern N04 scoped absences (scope != dimension there).
+    register("inventory:perm@707d", SERVICE_X01_SUBJECT, "permission", "x01 service task owner")
+    register("inventory:deploy@707d", SERVICE_X01_SUBJECT, "deploy", "x01 service task owner")
+    register("inventory:effect@707d", SERVICE_X01_SUBJECT, "external_effect", "x01 service task owner")
+    return registry
+
+
+TRUSTED_INVENTORY_RECORDS = MappingProxyType(_build_trusted_inventory_registry())
+
+
+def inventory_record_defect(ref: str, subject: str, dimension: str) -> str:
+    """Review #1056 F01: return a rejection reason when an inventory ref does
+    not resolve to a trusted record bound to this exact subject, this exact
+    material dimension, its registered owner/scope identity, and an immutable,
+    current inventory revision. A well-shaped but invented ref finds no record
+    and fails closed — it can never mint an N/A."""
+    record = TRUSTED_INVENTORY_RECORDS.get(ref)
+    if record is None:
+        return (
+            f"inventory ref {ref!r} resolves to no trusted inventory record: "
+            "scope/inspector identity is unattested"
+        )
+    if record["subject"] != subject:
+        return (
+            f"trusted inventory record {ref!r} is bound to subject "
+            f"{record['subject']!r}, not {subject!r}"
+        )
+    if record["dimension"] != dimension:
+        return (
+            f"trusted inventory record {ref!r} covers dimension "
+            f"{record['dimension']!r}, not {dimension!r}"
+        )
+    parts = inventory_ref_parts(ref)
+    if parts is None or record["scope"] != parts[0] or record["inventory_revision"] != parts[1]:
+        return f"trusted inventory record {ref!r} does not bind its immutable scope@revision identity"
+    if record.get("current") is not True:
+        return f"trusted inventory record {ref!r} is not current at this pinned HEAD"
+    return ""
 
 
 def proof_shape_defect(owner_proof: object) -> str:
@@ -339,12 +436,15 @@ def proof_ref_defect(owner_proof: dict, subject: str) -> str:
     return ""
 
 
-def observation_defect(observation: object, subject: str) -> str:
+def observation_defect(observation: object, subject: str, dimension: str) -> str:
     """Review #1048 F02/F05: validate an observation before it counts as fact.
 
     A claimed ABSENT_WITH_INSPECTED_SCOPE is evidence only when the entry is a
     mapping, the state is canonical, the observation is fresh, the ref is a
-    scoped inventory record, and the record is bound to this exact subject;
+    scoped inventory record, the record is bound to this exact subject, and
+    the ref resolves to a real record in the trusted fixture inventory
+    registry bound to this subject, this dimension, its registered owner/scope
+    identity and an immutable current inventory revision (review #1056 F01);
     anything else routes to UNKNOWN and can never mint an N/A.
     """
     if not isinstance(observation, dict):
@@ -362,6 +462,11 @@ def observation_defect(observation: object, subject: str) -> str:
                 f"inspected-ABSENT observation {ref!r} is not bound to this exact subject "
                 f"{subject!r}"
             )
+        # Review #1056 F01: a well-shaped ref is a claim, not evidence — it
+        # must resolve to a trusted inventory record owned by this scope.
+        record_defect = inventory_record_defect(ref, subject, dimension)
+        if record_defect:
+            return record_defect
     elif observation["state"] == "PRESENT" and (not isinstance(ref, str) or not ref.strip()):
         return "PRESENT observation without a fact ref is not inspected evidence"
     return ""
@@ -537,7 +642,7 @@ def resolve_effective_rules(fixture: dict) -> dict:
     for dimension in MATERIAL_DIMENSIONS:
         obligation = DIMENSION_OBLIGATIONS[dimension]
         observation = observations.get(dimension)
-        observation_defect_text = observation_defect(observation, subject)
+        observation_defect_text = observation_defect(observation, subject, dimension)
         if observation is None:
             emit(
                 obligation,
@@ -1667,6 +1772,77 @@ class R4InspectedAbsenceBindingTests(unittest.TestCase):
                 self.assertEqual(rule["epistemic"], "UNKNOWN")
                 self.assertEqual(rule["gate_state"], "NOT_RUN")
                 self.assertIn("not a mapping", rule["trace"]["applicability_reason"])
+
+
+class R5TrustedInventoryRecordTests(unittest.TestCase):
+    """Review #1056 F01 (P1): a scoped-absence inventory ref is evidence only
+    when it resolves to a REAL record in the trusted fixture inventory
+    registry — bound to the exact subject, the exact material dimension, a
+    registered owner/scope identity, and an immutable, current inventory
+    revision. A forged but well-shaped "inventory:attacker@707b"-style ref
+    with a self-declared fresh flag and the exact subject can no longer mint
+    NOT_APPLICABLE/ADMITTED; it fails closed as UNKNOWN/NOT_RUN."""
+
+    def test_positive_real_scoped_absence_backed_by_trusted_record_stays_na(self) -> None:
+        """Positive oracle: a real registry-backed scoped absence still resolves
+        NOT_APPLICABLE legitimately — the trusted route is preserved."""
+        for dimension in MATERIAL_DIMENSIONS:
+            ref = f"inventory:{dimension}@707b"
+            record = TRUSTED_INVENTORY_RECORDS.get(ref)
+            with self.subTest(dimension=dimension):
+                self.assertIsNotNone(record, f"{ref!r} must resolve to a trusted record")
+                self.assertEqual(record["subject"], CLI_DOCS_SUBJECT)
+                self.assertEqual(record["dimension"], dimension)
+                self.assertEqual(record["inventory_revision"], "707b")
+                self.assertTrue(record["scope_owner"])
+                self.assertIs(record["current"], True)
+                self.assertEqual(inventory_record_defect(ref, CLI_DOCS_SUBJECT, dimension), "")
+        result = resolve_effective_rules(cli_docs_fixture())
+        self.assertEqual(result["resolution"], "ADMITTED")
+        gate_map_result = gate_map(result)
+        for dimension in MATERIAL_DIMENSIONS:
+            obligation = DIMENSION_OBLIGATIONS[dimension]
+            with self.subTest(dimension=dimension):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "ABSENT_WITH_INSPECTED_SCOPE")
+                self.assertEqual(gate_map_result[obligation], "NOT_APPLICABLE")
+
+    def test_negative_forged_well_shaped_ref_without_trusted_record_fails_closed(self) -> None:
+        """The review #1056 counterexample: forged well-shaped
+        "inventory:attacker@707b"-style refs carrying a self-declared fresh
+        flag and the exact subject can no longer create
+        NOT_APPLICABLE/ADMITTED — no trusted record exists for the invented
+        refs, so every dimension fails closed as UNKNOWN/NOT_RUN."""
+        forged_observations = {
+            dimension: {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": f"inventory:attacker-{dimension}@707b",
+                "fresh": True,
+                "subject": CLI_DOCS_SUBJECT,
+            }
+            for dimension in MATERIAL_DIMENSIONS
+        }
+        result = resolve_effective_rules(cli_docs_fixture(observations=forged_observations))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertEqual(result["resolution"], "UNKNOWN_EPISTEMIC")
+        gate_map_result = gate_map(result)
+        for dimension in MATERIAL_DIMENSIONS:
+            ref = forged_observations[dimension]["ref"]
+            obligation = DIMENSION_OBLIGATIONS[dimension]
+            with self.subTest(dimension=dimension):
+                # The forged ref is well-shaped but attests nothing.
+                self.assertTrue(INVENTORY_REF_PATTERN.match(ref))
+                self.assertIsNone(TRUSTED_INVENTORY_RECORDS.get(ref))
+                self.assertIn(
+                    "no trusted inventory record",
+                    inventory_record_defect(ref, CLI_DOCS_SUBJECT, dimension),
+                )
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "UNKNOWN")
+                self.assertEqual(gate_map_result[obligation], "NOT_RUN")
+                self.assertNotEqual(gate_map_result[obligation], "NOT_APPLICABLE")
+                self.assertIn("no trusted inventory record", rule["trace"]["applicability_reason"])
+        self.assertNotIn("NOT_APPLICABLE", set(gate_map_result.values()))
 
 
 class R4CanonicalAuthorityIdentityTests(unittest.TestCase):
