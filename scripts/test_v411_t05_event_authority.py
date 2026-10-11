@@ -35,6 +35,32 @@ R2 bounded repair (review #1044 P1-01..P2-01, Controller repair order #1010):
   `jsonschema` is importable, otherwise an explicitly non-full structural
   fallback with full-semantics validation recorded NOT_RUN).
 
+R4 bounded repair (review #1051 P1-R3-01..P2-R3-02, issue #1010):
+
+- P1-R3-01 — the idempotent second source is RECONCILED: a second verified
+  ref presented for an already-admitted canonical identity is bound to that
+  identity inside the idempotent branch (zero canonical mutation beyond the
+  reconciliation), so a ref that rode through an idempotent readback can
+  never later mint a different Review fact.
+- P1-R3-02 — an A→B handoff is TWO schema-legal facts per §8.4.1: the
+  transferring owner's parent authorization (operator_id=A on the parent
+  event) plus the RECEIVING operator's own `DISPATCH_CLAIMED`
+  (operator_id=B; `claimed_by` on the dispatch), with owner/executor/scope
+  reconstructible from durable facts (execution §28.2). The canonical
+  schema has no receiver field on the parent handoff event; that schema
+  delta is proposed to the owners (routed to T11).
+- P1-R3-03 — transition legality is derived from the boundary's current
+  durable state plus the actually emitted `next_state` even when the
+  caller omits `transition` (§8.1: legality against current durable
+  state); the review-ready→done null-transition is rejected atomically.
+- P2-R3-01 — `current_review` fails closed for a stale subject (STALE);
+  `history_review` is the distinct immutable-audit query.
+- P2-R3-02 — dedicated verified refs carry immutable owner-local source
+  records (the exact canonical payload they ground); cross-ref mismatches
+  fail closed. Production source-content readback wiring stays with T11
+  (DEFERRED_TO_T11); the legacy membership-only refs are the historical
+  fixture world.
+
 The adapter below is the test oracle for the documented §8.1.1/§9.4 boundary,
 not a runtime artifact. Shared event-schema/verifier wiring stays with T11
 (DEFERRED_TO_T11); the fixture needs only existing event-v2 fields.
@@ -284,7 +310,6 @@ class EventIntent:
     issue: str = ""
     task: str = ""
     target: str = ""
-    handoff_to: str = ""  # RESPONSIBILITY_HANDOFF receiver (the "B" of A→B)
 
     def to_payload(self, sha: str) -> dict:
         """Project the intent onto a canonical event-v2 payload. `sha` is the
@@ -339,8 +364,6 @@ class EventIntent:
             payload["task"] = self.task
         if self.target:
             payload["target"] = self.target
-        if self.handoff_to:
-            payload["handoff_to"] = self.handoff_to
         if self.requests_protected_claim:
             payload["requests_protected_claim"] = True
             if self.protected_claim_key:
@@ -359,6 +382,12 @@ class AdmittedFact:
     transport_actor: str
     verdict: str  # canonical status; only REVIEW_RESULT facts feed aggregation
     blocking: bool
+    # R4 (review #1051 P1-R3-02): dispatch projection fields kept on the
+    # admitted fact so owner/executor/parent/scope reconstruct from durable
+    # accepted facts alone (execution §28.2).
+    task: str = ""
+    parent_dispatch_ref: str = ""
+    dispatch_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -370,6 +399,8 @@ class Decision:
 
 @dataclass(frozen=True)
 class ReviewOutcome:
+    # R4 (review #1051 P2-R3-01): "STALE" is the currentness-gate denial for
+    # a prior subject, not an aggregation judgment (§9.1).
     judgment: str
     conflict_refs: tuple[str, ...] = ()
 
@@ -384,6 +415,25 @@ LEGAL_TRANSITIONS = {
     ("validator", "review-ready", "validation-needed"),
     ("merge-controller", "validation-needed", "merge-ready"),
 }
+
+# R4 (review #1051 P1-R3-03): the fixture world's durable entry state for
+# every subject — the earliest state from which the modeled transitions
+# depart. Production derives the current durable state from the real object
+# state (shared T06/T11 surface); here the boundary tracks it explicitly so
+# transition legality (§8.1) is checked against THIS state plus the emitted
+# next_state, never merely against an optional caller-supplied tuple.
+INITIAL_SUBJECT_STATE = "review-ready"
+
+# R4 (review #1051 P1-R3-03): merge-controller REVIEW_DECISION policy
+# records (§6) route review outcomes without being reviewer workflow
+# transitions; the fixture bounds their (transition=None) routing to these
+# (current-state, next_state) pairs.
+POLICY_ROUTING = frozenset(
+    {
+        ("review-ready", "review-ready"),  # required/recommended review keeps the subject in review
+        ("review-ready", "merge-ready"),  # not-required / recommended-skipped clears review
+    }
+)
 
 # Verified logical-operator registry fixture: (transport_actor, operator_id,
 # session_ref) -> (operator_kind, allowed roles). "alice-shared" proves one
@@ -403,8 +453,21 @@ DISPATCHES = {
     "disp-2": {"work": "issue-202", "created_by": "builder-op-1", "claimed_by": "builder-op-1"},
 }
 
-# Durable source/proof references the fixture world has independently verified.
-VERIFIED_SOURCES = frozenset({"src-review-1", "src-review-2"})
+# Durable source/proof references the fixture world has independently
+# verified. R4 (review #1051 P2-R3-02): "src-bound-*" refs additionally
+# carry immutable content records (SOURCE_EVENT_RECORDS below) so admission
+# reads the actual verified event back; "src-handoff-b" is a membership-only
+# verified ref used to prove second-handoff rejection; "src-review-*" stay
+# membership-only as the historical fixture world.
+VERIFIED_SOURCES = frozenset(
+    {
+        "src-review-1",
+        "src-review-2",
+        "src-handoff-b",
+        "src-bound-pass-1",
+        "src-bound-pass-2",
+    }
+)
 
 
 @dataclass
@@ -429,6 +492,15 @@ class AdmissionBoundary:
     # same immutable identity. Re-binding a verified source to a different
     # identity is a stale-identity rejection, never a second authority.
     source_bindings: dict = field(default_factory=dict)
+    # R4 (review #1051 P1-R3-02): RESPONSIBILITY_HANDOFF state — an open
+    # authorization (work identity -> {transferor, task}) awaiting the
+    # receiving operator's own DISPATCH_CLAIMED, plus the live
+    # claimed_by overlay over the initial dispatch objects.
+    pending_handoffs: dict = field(default_factory=dict)
+    dispatch_claims: dict = field(default_factory=dict)  # dispatch_id -> claimed_by operator
+    # R4 (review #1051 P1-R3-03): current durable workflow state per subject,
+    # advanced only by accepted events that emit a next_state (§8.1).
+    workflow_state: dict = field(default_factory=dict)
     _next_ref: int = 0
 
     def snapshot(self) -> tuple:
@@ -441,6 +513,9 @@ class AdmissionBoundary:
             tuple(sorted(self.verified_source_refs)),
             tuple(sorted(self.source_bindings.items())),
             self._next_ref,
+            tuple(sorted(self.pending_handoffs.items())),
+            tuple(sorted(self.dispatch_claims.items())),
+            tuple(sorted(self.workflow_state.items())),
         )
 
     def resolve_subject(self, claimed: str) -> tuple[str, str]:
@@ -494,12 +569,34 @@ class AdmissionBoundary:
             # protected-claim request, or any other payload mutation mints
             # authority out of thin air and is rejected (§8.1.1, §9.4).
             return Decision("REJECTED", "STALE_IDENTITY")
+        record = SOURCE_EVENT_RECORDS.get(intent.proof_ref)
+        if record is not None and payload != record["payload"]:
+            # R4 (review #1051 P2-R3-02): the owner-local immutable source
+            # record grounds EXACT event content. A presentation whose payload
+            # differs from the record — another operator, another subject, a
+            # mutated verdict — is a cross-ref mismatch: the source does not
+            # ground this event, so it fails closed.
+            return Decision("REJECTED", "STALE_IDENTITY")
         if intent.event in REVIEW_EVENTS and subject != self.live_subject:
             # Exact current-subject check applies to every sha-bearing Review
             # event shape, with or without a transition (§9.1).
             return Decision("REJECTED", "STALE_IDENTITY")
+        emitted_next = payload.get("next_state", "")
         if intent.transition is not None:
             if (intent.actor_role,) + intent.transition not in LEGAL_TRANSITIONS:
+                return Decision("REJECTED", "ILLEGAL_TRANSITION")
+        elif emitted_next:
+            # R4 (review #1051 P1-R3-03): transition legality (§8.1) is
+            # validated even when the caller omits the transition tuple —
+            # derived from the boundary's current durable state plus the
+            # actually emitted next_state, never left unchecked.
+            current_state = self.workflow_state.get(subject, INITIAL_SUBJECT_STATE)
+            if intent.event == "REVIEW_DECISION":
+                # §6 policy records route review outcomes; their routing is
+                # bounded by POLICY_ROUTING, not by workflow-role triples.
+                if (current_state, emitted_next) not in POLICY_ROUTING:
+                    return Decision("REJECTED", "ILLEGAL_TRANSITION")
+            elif (intent.actor_role, current_state, emitted_next) not in LEGAL_TRANSITIONS:
                 return Decision("REJECTED", "ILLEGAL_TRANSITION")
         if intent.requests_protected_claim and intent.event not in CLAIM_EVENTS:
             # P1-03: the §8.4.2 protected-claim projection belongs to the
@@ -517,7 +614,14 @@ class AdmissionBoundary:
         if identity in self.admitted_identities:
             # P1-03: idempotence is keyed by the canonical event identity —
             # the same canonical event re-delivered through any verified
-            # source converges; idempotent replay mutates nothing.
+            # source converges; idempotent replay mutates no canonical state.
+            # R4 (review #1051 P1-R3-01): the second source ref is RECONCILED
+            # to the same immutable identity here, before the decision
+            # returns — a ref that rode through an idempotent readback must
+            # never stay unbound, or it could later ground a DIFFERENT fact
+            # (the R3 three-step PASS→alias→FAIL flip).
+            if intent.proof_ref not in self.source_bindings:
+                self.source_bindings[intent.proof_ref] = identity
             return Decision("ACCEPTED", "", idempotent=True)
         return self._publish(intent, subject, payload, identity)
 
@@ -528,7 +632,12 @@ class AdmissionBoundary:
         parent = DISPATCHES.get(intent.parent_dispatch_ref)
         if parent is None:
             return Decision("REJECTED", "UNKNOWN")
-        current_owner = self.active_handoffs.get(parent["work"], parent["claimed_by"])
+        work = parent["work"]
+        current_owner = (
+            self.active_handoffs.get(work)
+            or self.dispatch_claims.get(intent.parent_dispatch_ref)
+            or parent["claimed_by"]
+        )
         if intent.responsibility_mode == "DELEGATED_SUBWORK":
             # P1-02: delegation, like handoff, is source-checked — a
             # DELEGATED_SUBWORK projection splits scope out of the parent
@@ -537,35 +646,36 @@ class AdmissionBoundary:
             if intent.operator_id != current_owner:
                 return Decision("REJECTED", "UNAUTHORIZED")
             return None
-        # RESPONSIBILITY_HANDOFF: a real A→B ownership transfer.
-        if self.active_handoffs.get(DISPATCHES[intent.parent_dispatch_ref]["work"]) is not None:
+        # RESPONSIBILITY_HANDOFF (R4 review #1051 P1-R3-02): an A→B transfer
+        # is TWO durable facts — the transferring owner's parent
+        # authorization (§8.4.1: "the parent dispatch owner on the event")
+        # and the RECEIVING operator's own DISPATCH_CLAIMED (§8.4.1: the
+        # receiving operator is `operator_id` on the claim event and
+        # `claimed_by` on the dispatch). Owner authorization always comes
+        # from the parent dispatch/state, never from the claimer.
+        pending = self.pending_handoffs.get(work)
+        if pending is not None:
+            # An authorization is open: the only completing fact is the
+            # receiving operator claiming in his own name. The transferor
+            # completing his own handoff records no change of ownership —
+            # an illegal ownership transition, never a legal transfer.
+            if intent.operator_id == pending["transferor"]:
+                return Decision("REJECTED", "ILLEGAL_TRANSITION")
+            if intent.task != pending["task"]:
+                # The completion must stay within the authorized bounded
+                # scope (execution §28.2: exact work identity + scope).
+                return Decision("REJECTED", "ILLEGAL_TRANSITION")
+            # The receiver's own verifiable identity is enforced by the
+            # generic verified-operator gate before this check runs.
+            return None
+        if self.active_handoffs.get(work) is not None:
             # A second active handoff is rejected like any incompatible
             # second claim (§8.4.1).
             return Decision("REJECTED", "BLOCKED")
         if intent.operator_id != current_owner:
-            # Ownership transfer must be initiated by the dispatch's proven
-            # current owner: an unattributed handoff from any other verified
+            # Opening a handoff requires the dispatch's proven current
+            # owner: an unattributed handoff from any other verified
             # operator transfers nothing (§8.4.1, §8.5).
-            return Decision("REJECTED", "UNAUTHORIZED")
-        if not intent.handoff_to:
-            # A handoff must name its receiver; without a "B" there is no
-            # transfer to authorize.
-            return Decision("REJECTED", "INVALID_SCHEMA")
-        if intent.handoff_to == intent.operator_id:
-            # A "handoff" whose receiver is the transferor records no change
-            # of ownership and is an illegal ownership transition, never a
-            # legal transfer (P1-02).
-            return Decision("REJECTED", "ILLEGAL_TRANSITION")
-        receiver_roles = [
-            roles
-            for (_, operator, _), (_, roles) in VERIFIED_OPERATORS.items()
-            if operator == intent.handoff_to
-        ]
-        if not receiver_roles:
-            # The receiver must be a verifiable operator; an unverifiable
-            # receiver cannot become the recorded owner.
-            return Decision("REJECTED", "UNKNOWN")
-        if not any(intent.actor_role in roles for roles in receiver_roles):
             return Decision("REJECTED", "UNAUTHORIZED")
         return None
 
@@ -590,6 +700,9 @@ class AdmissionBoundary:
                 transport_actor=intent.transport_actor,
                 verdict=intent.verdict,
                 blocking=blocking,
+                task=intent.task,
+                parent_dispatch_ref=intent.parent_dispatch_ref,
+                dispatch_id=intent.dispatch_id,
             )
         )
         self.verified_source_refs.add(event_ref)
@@ -601,11 +714,31 @@ class AdmissionBoundary:
         if intent.operator_kind == "human":
             self.human_acts.append((event_ref, intent.operator_id))
         if intent.responsibility_mode == "RESPONSIBILITY_HANDOFF":
-            # The recorded owner becomes the named receiver — a real A→B
-            # change of attribution, not a re-stamp of the transferor.
-            self.active_handoffs[DISPATCHES[intent.parent_dispatch_ref]["work"]] = intent.handoff_to
+            # R4 (review #1051 P1-R3-02): the authorization opens the
+            # handoff and moves nothing; the receiving operator's own claim
+            # completes it — work owner and dispatch `claimed_by` become the
+            # claim event's `operator_id` (§8.4.1), bounded to the
+            # authorized task. The parent handoff event cannot name the
+            # receiver with existing canonical fields; that schema delta is
+            # proposed to the owners (routed to T11).
+            work = DISPATCHES[intent.parent_dispatch_ref]["work"]
+            pending = self.pending_handoffs.get(work)
+            if pending is not None:
+                del self.pending_handoffs[work]
+                self.active_handoffs[work] = intent.operator_id
+                self.dispatch_claims[intent.parent_dispatch_ref] = intent.operator_id
+            else:
+                self.pending_handoffs[work] = {
+                    "transferor": intent.operator_id,
+                    "task": intent.task,
+                }
         if intent.requests_protected_claim:
             self.active_claims[intent.protected_claim_key] = intent.operator_id
+        # R4 (review #1051 P1-R3-03): the accepted event's emitted next_state
+        # is the new current durable workflow state of the subject (§8.1).
+        emitted_next = payload.get("next_state", "")
+        if emitted_next:
+            self.workflow_state[subject] = emitted_next
         return Decision("ACCEPTED", "")
 
     def admit_raw(self, raw: RawSource) -> Decision:
@@ -615,27 +748,42 @@ class AdmissionBoundary:
     def facts_for(self, subject: str, event: str = "REVIEW_RESULT") -> list:
         return [fact for fact in self.admitted if fact.subject == subject and fact.event == event]
 
+    def history_review(self, subject: str) -> ReviewOutcome:
+        """R4 (review #1051 P2-R3-01): the DISTINCT history query — reduces
+        every accepted REVIEW_RESULT fact for the subject regardless of
+        currentness (the immutable audit trail). Never satisfies a current
+        Review condition; use `current_review` for that."""
+
+        return self._reduce(self.facts_for(subject))
+
     def current_review(self, subject: str) -> ReviewOutcome:
         """§9.1/§9.3/§9.4 reduction: current accepted REVIEW_RESULT facts only
         (REVIEW_DECISION policy records never feed it), order-invariant. The
         Review judgment is derived here from canonical statuses — never
-        minted at admission."""
+        minted at admission. R4 (review #1051 P2-R3-01): fails closed for a
+        stale subject — a prior subject never purports to be the current
+        Review outcome (§9.1); `history_review` serves the audit trail."""
 
+        if subject != self.live_subject:
+            return ReviewOutcome("STALE")
+        return self._reduce(self.facts_for(subject))
+
+    def _reduce(self, facts: list) -> ReviewOutcome:
         seen: set = set()
-        facts: list = []
-        for fact in self.facts_for(subject):
+        deduped: list = []
+        for fact in facts:
             if fact.event_ref in seen:
                 continue
             seen.add(fact.event_ref)
-            facts.append(fact)
-        passes = [fact for fact in facts if fact.verdict == "PASS"]
-        failing = [fact for fact in facts if fact.blocking]
+            deduped.append(fact)
+        passes = [fact for fact in deduped if fact.verdict == "PASS"]
+        failing = [fact for fact in deduped if fact.blocking]
         if passes and failing:
             # Opposite accepted outcomes on the same exact subject are a
             # conflict, not a judgment — computed from the canonical statuses
             # (and fail-closed blocking) alone, independent of severity and
             # arrival order, never latest-wins (§9.3, §9.4).
-            return ReviewOutcome("BLOCKED", tuple(sorted(fact.event_ref for fact in facts)))
+            return ReviewOutcome("BLOCKED", tuple(sorted(fact.event_ref for fact in deduped)))
         if passes:
             return ReviewOutcome("PASS")
         if failing:
@@ -781,11 +929,16 @@ def delegated_subwork_intent(
 
 def handoff_intent(
     transferor: tuple[str, str, str] = ("alice-shared", "builder-op-1", "sess-b1"),
-    receiver: str = "builder-op-3",
     proof: str = "src-review-1",
 ) -> EventIntent:
-    """A real A→B RESPONSIBILITY_HANDOFF: the proven current owner (A) names a
-    distinct verified receiver (B); admission records B as the new owner."""
+    """R4 (review #1051 P1-R3-02): the PARENT event of an A→B
+    RESPONSIBILITY_HANDOFF — the transferring owner's authorization. Per
+    §8.4.1 the transferring operator is the parent dispatch owner on the
+    event (`operator_id` here) and `created_by` on the dispatch. The
+    RECEIVER is not named on this event: the canonical event-v2 schema has
+    no receiver field for the parent handoff event, so the receiving
+    operator enters the durable record through his own DISPATCH_CLAIMED
+    (`handoff_claim_intent`) — schema-delta proposal routed to T11."""
 
     transport, operator_id, session = transferor
     return EventIntent(
@@ -803,8 +956,56 @@ def handoff_intent(
         responsibility_mode="RESPONSIBILITY_HANDOFF",
         parent_dispatch_ref="disp-2",
         task="#202",
-        handoff_to=receiver,
     )
+
+
+def handoff_claim_intent(
+    receiver: tuple[str, str, str] = ("gina-shared", "builder-op-3", "sess-b3"),
+    proof: str = "src-review-2",
+) -> EventIntent:
+    """R4 (review #1051 P1-R3-02): the RECEIVING operator's own
+    DISPATCH_CLAIMED completing an authorized A→B handoff. §8.4.1: the
+    receiving operator IS the claim event's `operator_id` (and `claimed_by`
+    on the dispatch); owner authorization comes from the accepted parent
+    handoff event, not from anything the claimer owns. Scope stays bounded
+    to the parent dispatch's work identity and task."""
+
+    transport, operator_id, session = receiver
+    return EventIntent(
+        event="DISPATCH_CLAIMED",
+        actor_role="builder",
+        operator_kind="codex",
+        operator_id=operator_id,
+        session_ref=session,
+        transport_actor=transport,
+        subject=H,
+        proof_ref=proof,
+        dispatch_id="disp-2",
+        dispatch_state="CLAIMED",
+        transition=("claimed", "implementing"),
+        responsibility_mode="RESPONSIBILITY_HANDOFF",
+        parent_dispatch_ref="disp-2",
+        task="#202",
+    )
+
+
+# R4 (review #1051 P2-R3-02): owner-local immutable source records — each
+# dedicated verified ref durably records the ACTUAL canonical event content
+# it grounds, so admission reads the verified source back independently
+# instead of trusting the caller-chosen payload. Production wiring of this
+# readback against the shared verifier remains a T11 surface
+# (DEFERRED_TO_T11); the legacy "src-review-*"/"src-handoff-b" refs stay
+# membership-only as the historical fixture world.
+BOUND_PASS_2_INTENT = review_pass(
+    H,
+    "src-bound-pass-2",
+    operator=("alice-shared", "reviewer-op-2", "sess-r2"),
+    kind="codex",
+)
+SOURCE_EVENT_RECORDS = {
+    "src-bound-pass-1": {"payload": review_pass(H, "src-bound-pass-1").to_payload(H)},
+    "src-bound-pass-2": {"payload": BOUND_PASS_2_INTENT.to_payload(H)},
+}
 
 
 FORGED_COMMENT = (
@@ -1355,18 +1556,51 @@ class ProofBindingAndIdempotenceTests(unittest.TestCase):
 
     def test_idempotence_is_keyed_by_canonical_event_identity(self) -> None:
         # P1-03: the same canonical event re-delivered through a second
-        # verified source is the same identity — idempotent, one fact, zero
-        # mutation. (Under the previous whole-intent idempotence key this
-        # replay published a second fact.)
+        # verified source is the same identity — idempotent, one fact.
+        # R4 (review #1051 P1-R3-01): the alias ref is RECONCILED to that
+        # identity inside the idempotent branch; the only snapshot delta is
+        # the alias binding — canonical state (facts, identities, claims,
+        # handoffs, human acts, verified refs, ref counter, handoff/claim/
+        # workflow maps) is untouched. A further replay through the
+        # now-bound alias is a full zero-mutation readback.
         boundary = make_boundary()
         first = review_pass(H, "src-review-1")
         self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(first))
+        pass_identity = canonical_event_identity(first.to_payload(H))
         before = boundary.snapshot()
         alias = replace(first, proof_ref="src-review-2")
         self.assertEqual(Decision("ACCEPTED", "", idempotent=True), boundary.admit(alias))
-        self.assertEqual(before, boundary.snapshot())
+        after = boundary.snapshot()
+        # the sole delta: src-review-2 reconciled to the PASS identity
+        self.assertEqual(before[:6] + before[7:], after[:6] + after[7:])
+        self.assertEqual(
+            dict(before[6]) | {"src-review-2": pass_identity}, dict(after[6])
+        )
         self.assertEqual(1, len(boundary.facts_for(H)))
         self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+        # replay through the reconciled alias: complete zero mutation
+        replay = boundary.admit(replace(first, proof_ref="src-review-2"))
+        self.assertEqual(Decision("ACCEPTED", "", idempotent=True), replay)
+        self.assertEqual(after, boundary.snapshot())
+
+    def test_alias_source_cannot_mint_a_different_fact_after_idempotent_readback(self) -> None:
+        # R4 (review #1051 P1-R3-01) — the exact three-step R3 trace:
+        # (1) admit PASS(H) via src-review-1; (2) the idempotent second
+        # source (alias src-review-2) is reconciled to the PASS identity;
+        # (3) a FAIL under the now-bound alias cannot mint a different
+        # blocking fact — the current judgment cannot be flipped without a
+        # newly verified, distinct proof. Step 3 is a rejected attempt with
+        # zero mutation.
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        alias = replace(review_pass(H, "src-review-1"), proof_ref="src-review-2")
+        self.assertEqual(Decision("ACCEPTED", "", idempotent=True), boundary.admit(alias))
+        before = boundary.snapshot()
+        attack = review_fail(H, "src-review-2")
+        self.assertEqual(Decision("REJECTED", "STALE_IDENTITY"), boundary.admit(attack))
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+        self.assertEqual(1, len(boundary.facts_for(H)))
 
 
 class DispatchAuthorityTests(unittest.TestCase):
@@ -1476,58 +1710,75 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
         self.assertEqual(1, len(boundary.admitted))
 
     def test_n06b_real_a_to_b_handoff_changes_the_recorded_owner(self) -> None:
-        # N06 contrast (P1-02): a fully attributed RESPONSIBILITY_HANDOFF
-        # initiated by the dispatch's proven owner (builder-op-1) naming a
-        # DISTINCT verified receiver (builder-op-3) transfers ownership
-        # exactly once, and the recorded owner actually changes A→B; a second
+        # N06 contrast (P1-02, R4 review #1051 P1-R3-02): an A→B handoff is
+        # TWO schema-legal facts — the transferring owner's parent
+        # authorization (operator_id=A on the parent event, §8.4.1) and the
+        # RECEIVING operator's own DISPATCH_CLAIMED (operator_id=B; §8.4.1:
+        # "operator_id on the claim event"). The authorization alone moves
+        # nothing; after completion owner/executor/scope reconstruct from
+        # durable facts (execution §28.2): current owner B, dispatch
+        # claimed_by B, bounded to the parent dispatch's task. A second
         # active handoff of the same work is rejected like any incompatible
         # second claim.
         boundary = make_boundary()
-        self.assertEqual(
-            Decision("ACCEPTED", ""), boundary.admit(handoff_intent(receiver="builder-op-3"))
-        )
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(handoff_intent()))
+        self.assertEqual({}, boundary.active_handoffs)  # authorization alone transfers nothing
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(handoff_claim_intent()))
+        handoff_facts = [fact for fact in boundary.admitted if fact.event == "DISPATCH_CLAIMED"]
+        self.assertEqual("builder-op-1", handoff_facts[0].operator_id)  # transferor on the parent event
+        self.assertEqual("disp-2", handoff_facts[0].parent_dispatch_ref)
+        self.assertEqual("#202", handoff_facts[0].task)  # bounded scope
+        self.assertEqual("builder-op-3", handoff_facts[1].operator_id)  # receiver = claim operator_id
         self.assertEqual("builder-op-3", boundary.active_handoffs["issue-202"])
+        self.assertEqual("builder-op-3", boundary.dispatch_claims["disp-2"])
         after_transfer = boundary.snapshot()
         second = boundary.admit(
             handoff_intent(
-                transferor=("gina-shared", "builder-op-3", "sess-b3"),
-                receiver="builder-op-2",
-                proof="src-review-2",
+                transferor=("gina-shared", "builder-op-3", "sess-b3"), proof="src-handoff-b"
             )
         )
         self.assertEqual(Decision("REJECTED", "BLOCKED"), second)
         self.assertEqual("builder-op-3", boundary.active_handoffs["issue-202"])
         self.assertEqual(after_transfer, boundary.snapshot())
 
-    def test_n06c_self_handoff_and_unverifiable_receiver_transfer_nothing(self) -> None:
-        # P1-02: a "handoff" whose receiver is the transferor records no
-        # change of ownership and is an illegal transition; an unverifiable
-        # receiver cannot become the recorded owner. Zero mutation in both.
-        for label, receiver, reason in (
-            ("self_handoff", "builder-op-1", "ILLEGAL_TRANSITION"),
-            ("unverifiable_receiver", "ghost-op", "UNKNOWN"),
-        ):
-            with self.subTest(case=label):
-                boundary = make_boundary()
-                before = boundary.snapshot()
-                decision = boundary.admit(handoff_intent(receiver=receiver))
-                self.assertEqual(Decision("REJECTED", reason), decision)
-                self.assertEqual({}, boundary.active_handoffs)
-                self.assertEqual(before, boundary.snapshot())
+    def test_n06c_self_claim_and_unverifiable_receiver_transfer_nothing(self) -> None:
+        # P1-02 (R4 review #1051 P1-R3-02): the transferor completing his own
+        # open handoff records no change of ownership — an illegal ownership
+        # transition; an unverifiable receiver cannot become the recorded
+        # owner (the generic verified-operator gate fails closed UNAUTHORIZED
+        # before the responsibility check runs). Zero mutation in both.
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(handoff_intent()))
+        before = boundary.snapshot()
+        self_claim = handoff_claim_intent(
+            receiver=("alice-shared", "builder-op-1", "sess-b1"), proof="src-review-2"
+        )
+        self.assertEqual(Decision("REJECTED", "ILLEGAL_TRANSITION"), boundary.admit(self_claim))
+        self.assertEqual({}, boundary.active_handoffs)
+        self.assertEqual(before, boundary.snapshot())
+        ghost_boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), ghost_boundary.admit(handoff_intent()))
+        ghost_before = ghost_boundary.snapshot()
+        ghost = handoff_claim_intent(
+            receiver=("ghost-login", "ghost-op", "ghost-session"), proof="src-review-2"
+        )
+        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), ghost_boundary.admit(ghost))
+        self.assertEqual({}, ghost_boundary.active_handoffs)
+        self.assertEqual(ghost_before, ghost_boundary.snapshot())
 
     def test_n06d_handoff_initiated_by_non_owner_is_unauthorized_and_transfers_nothing(self) -> None:
         # P1-02: disp-2 is created/claimed by builder-op-1 with no active
-        # handoff; builder-op-2's fully verified handoff event is still
-        # UNAUTHORIZED because an ownership transfer must be initiated by the
-        # proven current owner. Zero mutation.
+        # handoff; builder-op-2's fully verified parent handoff event is
+        # still UNAUTHORIZED because opening an ownership transfer requires
+        # the proven current owner (§8.4.1, §8.5). Zero mutation — no open
+        # authorization, no owner change.
         boundary = make_boundary()
         before = boundary.snapshot()
-        grab = handoff_intent(
-            transferor=("frank-shared", "builder-op-2", "sess-b2"), receiver="builder-op-3"
-        )
+        grab = handoff_intent(transferor=("frank-shared", "builder-op-2", "sess-b2"))
         decision = boundary.admit(grab)
         self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), decision)
         self.assertEqual({}, boundary.active_handoffs)
+        self.assertEqual({}, boundary.pending_handoffs)
         self.assertEqual(before, boundary.snapshot())
 
 
@@ -1558,7 +1809,8 @@ class CanonicalSchemaEquivalenceTests(unittest.TestCase):
             "review_policy_not_required": review_policy_decision(H, "src-review-1", "not-required"),
             "dispatch_request": dispatch_request_intent(),
             "owner_delegation": delegated_subwork_intent(),
-            "a_to_b_handoff": handoff_intent(),
+            "handoff_parent_authorization": handoff_intent(),
+            "handoff_receiving_claim": handoff_claim_intent(),
             "role_claim": EventIntent(
                 event="ROLE_CLAIMED",
                 actor_role="builder",
@@ -1620,6 +1872,171 @@ class CanonicalSchemaEquivalenceTests(unittest.TestCase):
         # P2-01: schema admissibility is never asserted by a fixture-supplied
         # boolean; it is computed from the real schema on every admission.
         self.assertNotIn("schema_valid", EventIntent.__dataclass_fields__)
+
+
+class NullTransitionLegalityTests(unittest.TestCase):
+    """R4 (review #1051 P1-R3-03): transition legality is derived from the
+    boundary's current durable state plus the actually emitted next_state,
+    even when the caller omits the transition tuple (§8.1: legality against
+    current durable facts, not an optional caller-supplied tuple)."""
+
+    def test_null_transition_to_illegal_state_is_rejected_with_zero_mutation(self) -> None:
+        # The R3 branch trace: the payload passes REVIEW_RESULT's required
+        # fields and the schema's valid `done` enumeration, but a reviewer
+        # cannot move review-ready→done directly. The boundary derives the
+        # transition from its durable state and rejects atomically — no
+        # workflow/gate state mutation.
+        boundary = make_boundary()
+        before = boundary.snapshot()
+        attack = replace(review_pass(H, "src-review-2"), transition=None, next_state="done")
+        self.assertEqual(Decision("REJECTED", "ILLEGAL_TRANSITION"), boundary.admit(attack))
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
+
+    def test_null_transition_after_a_pass_still_checks_the_advanced_state(self) -> None:
+        # After a PASS advanced the subject to merge-ready, the derived pair
+        # is (merge-ready, done) — equally illegal for a reviewer. The
+        # null-transition loophole cannot reach _publish in any durable
+        # state; the current judgment stays PASS.
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        before = boundary.snapshot()
+        attack = replace(
+            review_pass(
+                H,
+                "src-review-2",
+                operator=("alice-shared", "reviewer-op-2", "sess-r2"),
+                kind="codex",
+            ),
+            transition=None,
+            next_state="done",
+        )
+        self.assertEqual(Decision("REJECTED", "ILLEGAL_TRANSITION"), boundary.admit(attack))
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+
+    def test_null_transition_with_a_legal_derived_pair_is_still_admitted(self) -> None:
+        # Contrast: deriving the transition is not a blanket denial. A
+        # None-transition REVIEW_RESULT whose emitted next_state forms a
+        # legal (current-state → next) pair for the role is admitted.
+        boundary = make_boundary()
+        legal = replace(review_pass(H, "src-review-1"), transition=None, next_state="merge-ready")
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(legal))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+
+    def test_policy_decision_null_transition_routing_stays_bounded(self) -> None:
+        # REVIEW_DECISION policy records (§6) are not reviewer workflow
+        # transitions: their None-transition routing is bounded by
+        # POLICY_ROUTING. `validation-needed` is schema-legal for a required
+        # policy without a decision, but it is not a policy route — rejected
+        # atomically with zero mutation.
+        boundary = make_boundary()
+        self.assertEqual(
+            Decision("ACCEPTED", ""), boundary.admit(review_policy_decision(H, "src-review-1"))
+        )
+        before = boundary.snapshot()
+        rogue = replace(review_policy_decision(H, "src-review-2"), next_state="validation-needed")
+        self.assertEqual(Decision("REJECTED", "ILLEGAL_TRANSITION"), boundary.admit(rogue))
+        self.assertEqual(before, boundary.snapshot())
+        self.assertEqual([], boundary.facts_for(H))
+
+
+class CurrentnessGateTests(unittest.TestCase):
+    """R4 (review #1051 P2-R3-01): `current_review` fails closed for a stale
+    subject — a prior subject's accepted PASS never purports to be the
+    current Review outcome (§9.1). `history_review` is the distinct
+    immutable-audit query."""
+
+    def test_current_review_fails_closed_for_a_prior_subject(self) -> None:
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        boundary.live_subject = H2
+        stale = boundary.current_review(H)
+        self.assertEqual(ReviewOutcome("STALE"), stale)
+        self.assertNotEqual(ReviewOutcome("PASS"), stale)
+        # the successor subject has no facts yet; the H PASS remains history
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H2))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.history_review(H))
+
+    def test_history_query_is_distinct_from_the_current_gate(self) -> None:
+        boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
+        boundary.live_subject = H2
+        successor = review_pass(
+            H2,
+            "src-review-2",
+            operator=("alice-shared", "reviewer-op-2", "sess-r2"),
+            kind="codex",
+        )
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(successor))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H2))
+        self.assertEqual(ReviewOutcome("STALE"), boundary.current_review(H))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.history_review(H))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.history_review(H2))
+        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.history_review("ff" + "0" * 38))
+
+
+class SourceReadbackTests(unittest.TestCase):
+    """R4 (review #1051 P2-R3-02): owner-local immutable ref→actual-event
+    source readback. The dedicated refs record the exact canonical payload
+    they ground; any cross-ref mismatch (other operator, other subject,
+    mutated content, swapped ref) fails closed. Production source-content
+    readback wiring remains a shared T11 surface (DEFERRED_TO_T11); the
+    legacy membership-only refs are the historical fixture world."""
+
+    def test_source_records_pin_the_exact_verified_content(self) -> None:
+        # The records are the actual canonical payloads of the intents the
+        # owner verified — not caller-chosen projections.
+        self.assertEqual(
+            review_pass(H, "src-bound-pass-1").to_payload(H),
+            SOURCE_EVENT_RECORDS["src-bound-pass-1"]["payload"],
+        )
+        self.assertEqual(
+            BOUND_PASS_2_INTENT.to_payload(H),
+            SOURCE_EVENT_RECORDS["src-bound-pass-2"]["payload"],
+        )
+
+    def test_exact_source_content_is_admitted_and_read_back_independently(self) -> None:
+        boundary = make_boundary()
+        self.assertEqual(
+            Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-bound-pass-1"))
+        )
+        identity = canonical_event_identity(SOURCE_EVENT_RECORDS["src-bound-pass-1"]["payload"])
+        # independent readback: the source record grounds exactly the
+        # published immutable identity
+        self.assertEqual(identity, boundary.source_bindings["src-bound-pass-1"])
+        self.assertEqual(identity, boundary.source_bindings[boundary.facts_for(H)[0].event_ref])
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+
+    def test_cross_ref_mismatch_between_source_and_presentation_is_rejected(self) -> None:
+        # Every presenter below is a fully verified reviewer acting in the
+        # schema-legal reviewer role, so the rejection comes from the source
+        # record readback itself, not from an earlier identity layer.
+        cases = {
+            "operator_mismatch": replace(
+                review_pass(H, "src-bound-pass-1"),
+                operator_kind="codex",
+                operator_id="reviewer-op-2",
+                session_ref="sess-r2",
+            ),
+            "subject_mismatch": replace(BOUND_PASS_2_INTENT, subject=H2),
+            "content_mutation": replace(
+                BOUND_PASS_2_INTENT,
+                verdict="FAIL",
+                finding_severities=("P1",),
+                transition=("review-ready", "changes-requested"),
+            ),
+            "ref_swap": replace(
+                review_pass(H, "src-bound-pass-1"), proof_ref="src-bound-pass-2"
+            ),
+        }
+        for label, intent in cases.items():
+            with self.subTest(case=label):
+                boundary = make_boundary()
+                before = boundary.snapshot()
+                self.assertEqual(Decision("REJECTED", "STALE_IDENTITY"), boundary.admit(intent))
+                self.assertEqual(before, boundary.snapshot())
+                self.assertEqual([], boundary.facts_for(H))
 
 
 class ReducerPurityTests(unittest.TestCase):
