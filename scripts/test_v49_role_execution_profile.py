@@ -61,6 +61,24 @@ READ_ONLY_OWNER_PATHS_REBOUND_BLOBS = {
     "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
 }
 
+# v4.11 F1 shared-pin bridge (issue #1064; Controller authorization #967:
+# SHARED_CI_PIN_OWNER_F1=#1064_CONDITIONAL_AUTHORIZED_EXACT_SHARED_TEST_THREE_PATHS;
+# builder claim #1064@6107138303): PR #1028 (T03) lawfully mutates
+# standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md inside its approved
+# owner pack, so the stale-style BASE_SHA identity pin above is RED at the
+# v4.11 integrated candidate. Exact dual-pin admission: the historical pin
+# evidence stays authoritative and is RE-DERIVED from git (the blob at
+# BASE_SHA df94641e, itself re-anchored against the immutable v4.11 version
+# base) — never a hand-editable constant; the ONE exact approved v4.11 blob
+# below is admitted ONLY under the exact v4.11 context gate
+# (_v411_context_verified), never as an allowed-any waiver. Any third blob
+# still fails; the version base (old blobs) keeps passing on the historical
+# evidence alone; zero tests removed, no intent weakened.
+VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
+V411_OWNER_BLOBS = {
+    "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md": "15e355f6ec86370599f2dda7b61963d93fead66f",
+}
+
 PLANNING_PATHS = tuple(
     f".agent/execution/T-004/{name}"
     for name in (
@@ -129,6 +147,34 @@ def git_object_sha(rev: str, rel_path: str) -> str:
         text=True,
     )
     return result.stdout.strip()
+
+
+def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
+    """Exact v4.11 context gate, keyed on verifiable repository facts only
+    (no environment variables, no CI event context — both are spoofable or
+    absent in local runs). Open iff BOTH hold:
+
+    (1) HEAD descends from the exact v4.11 version base commit, and
+    (2) that base still carries the historical pinned blob for ``rel_path`` —
+        i.e. the recorded v4.9 pin evidence is untampered.
+
+    Every other tree (rebased lineage, wrong base, tampered base constants,
+    shallow checkout lacking the base object) fails closed to the historical
+    pin alone.
+    """
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", VERSION_BASE_SHA, "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError:
+        return False
+    try:
+        return git_object_sha(VERSION_BASE_SHA, rel_path) == historical_blob
+    except subprocess.CalledProcessError:
+        return False
 
 
 def heading_exists(text: str, anchor: str) -> bool:
@@ -556,6 +602,10 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
 
     def test_read_only_owner_surfaces_unmutated_since_base(self) -> None:
         for rel_path in READ_ONLY_OWNER_PATHS:
+            if rel_path in V411_OWNER_BLOBS:
+                # Exact dual-pin admission at the end of this test (v4.11 F1
+                # bridge, issue #1064); the surface stays read-only either way.
+                continue
             with self.subTest(path=rel_path):
                 self.assertEqual(
                     git_object_sha(BASE_SHA, rel_path),
@@ -568,6 +618,21 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
             with self.subTest(path_rebound=rel_path):
                 self.assertEqual(pinned_blob, git_object_sha("HEAD", rel_path))
         self.assertEqual(git_object_sha(BASE_SHA, "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md"), FROZEN_L2_BLOB)
+        # v4.11 F1 shared-pin bridge (issue #1064): pin-identity admission for
+        # the one owner-pack mutation approved for v4.11. The historical
+        # evidence is re-derived from the immutable BASE_SHA (never a
+        # hand-editable constant) and re-anchored at the immutable v4.11
+        # version base; the approved v4.11 blob is admitted ONLY under the
+        # exact v4.11 context gate. Any third blob still fails.
+        for rel_path, v411_blob in V411_OWNER_BLOBS.items():
+            historical_blob = git_object_sha(BASE_SHA, rel_path)
+            with self.subTest(path_pin_anchor=rel_path):
+                self.assertEqual(git_object_sha(VERSION_BASE_SHA, rel_path), historical_blob)
+            with self.subTest(path_v411_bridge=rel_path):
+                admitted = {historical_blob}
+                if _v411_context_verified(rel_path, historical_blob):
+                    admitted.add(v411_blob)
+                self.assertIn(git_object_sha("HEAD", rel_path), admitted)
 
     def test_immutable_planning_files_unmutated_since_pack_head(self) -> None:
         for rel_path in PLANNING_PATHS:

@@ -31,6 +31,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 import unittest
 
@@ -75,6 +76,23 @@ OWNER_BLOBS = {
     IQS: "3beba2d0324d95674b7bad2ef621e2aa81c66563",
     TDS: "f355c020f07828a62ad617ffa80cb40b708ab4d4",
     ICGS: "266aefe32e0990c24fc8c1d6d731c4a3456fc3fc",
+}
+
+# v4.11 F1 shared-pin bridge (issue #1064; Controller authorization #967:
+# SHARED_CI_PIN_OWNER_F1=#1064_CONDITIONAL_AUTHORIZED_EXACT_SHARED_TEST_THREE_PATHS;
+# builder claim #1064@6107138303): PR #1028 (T03) lawfully mutates the ICGS
+# owner inside its approved owner pack, so the exact-subject ICGS pin above is
+# RED at the v4.11 integrated candidate. Exact dual-pin admission: every
+# historical OWNER_BLOBS constant stays authoritative and gains a tamper
+# anchor (each must stay re-derivable from the immutable recorded
+# BASELINE_SHA commit); the ONE exact approved v4.11 ICGS blob below is
+# admitted ONLY under the exact v4.11 context gate (_v411_context_verified),
+# never as an allowed-any waiver. Any third blob still fails; the version
+# base (old blobs) keeps passing on the historical pin alone; zero tests
+# removed, no intent weakened.
+VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
+V411_OWNER_BLOBS = {
+    ICGS: "15e355f6ec86370599f2dda7b61963d93fead66f",
 }
 
 # The normative corpus the negative scan covers: every durable surface that
@@ -142,6 +160,46 @@ def git_blob_sha(text: str) -> str:
     return hashlib.sha1(b"blob %d\x00" % len(payload) + payload).hexdigest()
 
 
+def _git_object_sha_at(rev: str, rel_path: str) -> str:
+    """Exact blob of ``rel_path`` in commit ``rev``.
+
+    Raises if git or the object is unavailable: the pin-anchor evidence must
+    never silently skip (issue #1064 bridge).
+    """
+    return subprocess.run(
+        ["git", "rev-parse", f"{rev}:{rel_path}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+def _v411_context_verified(rel_path: Path, historical_blob: str) -> bool:
+    """Exact v4.11 context gate, keyed on verifiable repository facts only
+    (no environment variables, no CI event context — both are spoofable or
+    absent in local runs). Open iff BOTH hold:
+
+    (1) HEAD descends from the exact v4.11 version base commit, and
+    (2) that base still carries the historical pinned blob for ``rel_path`` —
+        i.e. the recorded v4.10 pin evidence is untampered.
+
+    Every other tree (rebased lineage, wrong base, tampered pin constant,
+    shallow checkout lacking the base object) fails closed to the historical
+    pin alone.
+    """
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", VERSION_BASE_SHA, "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+        return _git_object_sha_at(VERSION_BASE_SHA, rel_path.relative_to(ROOT).as_posix()) == historical_blob
+    except (subprocess.CalledProcessError, OSError):
+        return False
+
+
 def corpus_files() -> list[Path]:
     files: list[Path] = []
     for directory in CORPUS_DIRS:
@@ -181,11 +239,26 @@ class ExactSubjectBindingTests(unittest.TestCase):
         for path, expected in OWNER_BLOBS.items():
             with self.subTest(owner=path.name):
                 self.assertTrue(path.is_file(), f"owner standard missing: {path}")
-                self.assertEqual(
-                    git_blob_sha(normalized_text(path)),
-                    expected,
+                actual = git_blob_sha(normalized_text(path))
+                admitted = {expected}
+                v411_blob = V411_OWNER_BLOBS.get(path)
+                if v411_blob is not None and _v411_context_verified(path, expected):
+                    admitted.add(v411_blob)
+                self.assertIn(
+                    actual,
+                    admitted,
                     owner_mutation_message(path),
                 )
+
+    def test_owner_blob_identities_are_anchor_verified(self) -> None:
+        # v4.11 F1 shared-pin bridge tamper evidence (issue #1064): every
+        # recorded historical OWNER_BLOBS constant must be re-derivable from
+        # the immutable recorded BASELINE_SHA commit — a hand-edited pin
+        # constant can never self-certify, independent of any admission
+        # decision in test_owner_blob_identities_are_pinned.
+        for path, expected in OWNER_BLOBS.items():
+            with self.subTest(owner=path.name):
+                self.assertEqual(_git_object_sha_at(BASELINE_SHA, path.relative_to(ROOT).as_posix()), expected)
 
     def test_r3_pack_identity_is_bound(self) -> None:
         self.assertTrue(PACK.is_dir(), f"R3 execution pack missing: {PACK}")

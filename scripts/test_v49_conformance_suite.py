@@ -117,7 +117,7 @@ T012_MERGED_BLOBS = {
     "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
     "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
     ".agent/execution/T-012/IMPLEMENTATION_MAP.md": "8dc93553a7e7b23d55495662b1ad31fe461fe368",
-    "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
+    "scripts/test_v49_gate_currentness.py": "fae5d04d7dc3ef0b214a6d2f68a367b83c2628c2",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
     # F1-style re-bind (#1038): the CI-repair lane itself edits this T-012
     # output (checkout fetch-depth: 0), so the pin moves to the repaired
