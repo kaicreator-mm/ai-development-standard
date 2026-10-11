@@ -36,6 +36,22 @@ CURRENT); and the centralized effective-rule projection / real owner-contract
 integration oracle is DEFERRED_TO_T11 and explicitly NOT_RUN — this task-local
 model is a decision oracle fixture, not the owner contract executor, and no
 owner-contract PASS completeness is claimed here.
+
+Review #1048 R4 bounded repairs (fail-closed hardening, this revision): a
+same-tier or stronger-tier weakening override can never erase an independently
+PRESENT (or otherwise owner-required) gate — only a source-authorized scoped
+absence justifies NOT_APPLICABLE, every other weakening skip is a conflict
+(F01); an inspected-ABSENT observation is evidence only when it is fresh and
+names a scoped inventory record bound to this exact subject — blank/misbound/
+stale observations route to UNKNOWN and never mint an N/A (F02); each
+applicable authority tier binds to its exact canonical path plus immutable
+owner blob, so a blob-shaped suffix on a noncanonical path is rejected, and
+real owner-side source verification stays DEFERRED_TO_T11 / NOT_RUN (F03);
+trusted owner proofs require a mandatory exact-subject binding and a full
+64-hex immutable identity pin — a forged short ref without a subject is never
+CURRENT and syntactic shape is never claimed to equal source verification
+(F04); and malformed proof/observation entries (missing or ill-typed fields)
+route to a durable fail-closed trace instead of raising KeyError (F05).
 """
 
 from __future__ import annotations
@@ -179,6 +195,23 @@ OWNER_BLOBS = {
     "TASK_ACCEPTANCE": "e" * 40,
 }
 
+# Review #1048 F03: each applicable authority tier binds to the EXACT
+# canonical path plus its immutable owner blob; a ref that merely ends with a
+# blob-shaped suffix on a noncanonical path is not the owner source.
+# DEFERRED_TO_T11 / NOT_RUN honesty note: OWNER_BLOBS and
+# CANONICAL_AUTHORITY_PATHS are synthetic in-test fixtures — this model asserts
+# exact canonical-path binding and immutable-pin shape only and never claims
+# owner-side source verification it cannot perform.
+CANONICAL_AUTHORITY_PATHS = {
+    "FROZEN_PRD_CONTRACT": "docs/prd.md#freeze",
+    "FROZEN_ARCHITECTURE": "docs/l2.md#freeze",
+    "PROJECT_OVERRIDES": ".dev-standard/PROJECT_OVERRIDES.md",
+    "TASK_ACCEPTANCE": "issues/1007",
+}
+
+SERVICE_X01_SUBJECT = "svc/orders@task/fix-compound"
+CLI_DOCS_SUBJECT = "cli/tools@task/docs-only"
+
 X01_JOBS = frozenset(
     {"J03_BUG_FIX", "J06_PERSISTENT_DATA_MIGRATION", "J07_SECURITY_VULNERABILITY", "J08_EXTERNAL_WRITE_DEPLOY"}
 )
@@ -237,7 +270,11 @@ def proof(
     fresh: bool = True,
     subject: str | None = None,
 ) -> dict:
-    entry = {"verdict": verdict, "ref": ref or f"proof:{verdict.lower()}@707f", "fresh": fresh}
+    entry = {
+        "verdict": verdict,
+        "ref": ref or f"proof:{verdict.lower()}@{PROOF_PIN_HEX}",
+        "fresh": fresh,
+    }
     if subject is not None:
         entry["subject"] = subject
     return entry
@@ -246,7 +283,37 @@ def proof(
 # Review #1041 F04: a trusted owner proof ref must be a non-blank, well-formed
 # "source:identity@immutable-blob" pointer; blank or malformed refs (wrong
 # source shape, missing/empty blob) are not evidence and fail closed.
-PROOF_REF_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*:[A-Za-z0-9._/-]+@[0-9a-f]{4,40}$")
+# Review #1048 F04: the immutable blob is a full 64-hex sha256-shaped identity
+# pin; short pseudo-pins (e.g. 4-hex "707f") are rejected as forged.
+PROOF_PIN_HEX = "7" * 64
+PROOF_REF_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*:[A-Za-z0-9._/-]+@[0-9a-f]{64}$")
+
+# Review #1048 F02: an inspected-ABSENT observation is evidence only when it
+# names a scoped inventory record ("inventory:<scope>@<immutable-blob>"); the
+# record must additionally be bound to the exact subject and taken from a
+# fresh HEAD.
+INVENTORY_REF_PATTERN = re.compile(r"^inventory:[A-Za-z0-9._/-]+@[0-9a-f]{4,64}$")
+
+
+def proof_shape_defect(owner_proof: object) -> str:
+    """Review #1048 F05: field-presence/type validation before any judgment.
+
+    A malformed proof entry (non-mapping, missing/ill-typed verdict, missing/
+    ill-typed ``fresh``, or missing/ill-typed ``ref``) routes to a durable
+    fail-closed trace instead of raising KeyError. A missing proof is not a
+    shape defect — the caller handles it through the dedicated NOT_RUN route.
+    """
+    if owner_proof is None:
+        return ""
+    if not isinstance(owner_proof, dict):
+        return "owner proof entry is not a mapping"
+    if not isinstance(owner_proof.get("verdict"), str) or not owner_proof["verdict"]:
+        return "owner proof is missing a non-empty string verdict"
+    if not isinstance(owner_proof.get("fresh"), bool):
+        return "owner proof is missing a boolean fresh flag"
+    if not isinstance(owner_proof.get("ref"), str):
+        return "owner proof is missing a string ref"
+    return ""
 
 
 def proof_ref_defect(owner_proof: dict, subject: str) -> str:
@@ -254,40 +321,76 @@ def proof_ref_defect(owner_proof: dict, subject: str) -> str:
 
     Blank refs, malformed refs, and refs bound to a different exact subject
     are untrusted; the caller fails the gate closed instead of binding CURRENT.
+    Review #1048 F04: an exact subject binding is mandatory — a proof without
+    a subject is self-attested, never trusted, no matter how well-shaped its
+    ref is; and a well-shaped ref is still only a syntactic claim, never
+    verified owner-side source evidence (T11-deferred).
     """
     ref = owner_proof.get("ref")
     if not isinstance(ref, str) or not ref.strip():
         return "blank proof ref is not trusted evidence"
     if not PROOF_REF_PATTERN.match(ref):
-        return f"malformed proof ref {ref!r}: expected 'source:identity@immutable-blob'"
+        return f"malformed proof ref {ref!r}: expected 'source:identity@64-hex-immutable-pin'"
     bound_subject = owner_proof.get("subject")
-    if bound_subject is not None and bound_subject != subject:
+    if not isinstance(bound_subject, str) or not bound_subject:
+        return f"proof ref {ref!r} carries no exact subject binding: untrusted"
+    if bound_subject != subject:
         return f"proof ref {ref!r} is bound to subject {bound_subject!r}, not {subject!r}"
     return ""
 
 
-def all_pass_proofs() -> dict:
+def observation_defect(observation: object, subject: str) -> str:
+    """Review #1048 F02/F05: validate an observation before it counts as fact.
+
+    A claimed ABSENT_WITH_INSPECTED_SCOPE is evidence only when the entry is a
+    mapping, the state is canonical, the observation is fresh, the ref is a
+    scoped inventory record, and the record is bound to this exact subject;
+    anything else routes to UNKNOWN and can never mint an N/A.
+    """
+    if not isinstance(observation, dict):
+        return "observation entry is not a mapping"
+    if observation.get("state") not in EPISTEMIC_STATES:
+        return f"observation state {observation.get('state')!r} is not a canonical epistemic state"
+    if observation.get("fresh") is not True:
+        return "stale observation (from an earlier HEAD) is not inspected evidence"
+    ref = observation.get("ref")
+    if observation["state"] == "ABSENT_WITH_INSPECTED_SCOPE":
+        if not isinstance(ref, str) or not INVENTORY_REF_PATTERN.match(ref):
+            return f"inspected-ABSENT observation ref {ref!r} is not a scoped inventory record"
+        if observation.get("subject") != subject:
+            return (
+                f"inspected-ABSENT observation {ref!r} is not bound to this exact subject "
+                f"{subject!r}"
+            )
+    elif observation["state"] == "PRESENT" and (not isinstance(ref, str) or not ref.strip()):
+        return "PRESENT observation without a fact ref is not inspected evidence"
+    return ""
+
+
+def all_pass_proofs(subject: str = SERVICE_X01_SUBJECT) -> dict:
     # Review #1032 R03: proof refs are contract-derived and per-obligation, so a
     # trace can be falsified back to the exact owning evidence it claims.
+    # Review #1048 F04: every trusted proof carries the full 64-hex identity
+    # pin and an exact subject binding; without the binding it is untrusted.
     obligations = set(DIMENSION_OBLIGATIONS.values()) | set(JOB_OBLIGATIONS.values())
     return {
-        obligation: proof(ref=f"proof:{re.sub(r'[^a-z0-9]+', '-', obligation).strip('-')}@707f")
+        obligation: proof(
+            ref=f"proof:{re.sub(r'[^a-z0-9]+', '-', obligation).strip('-')}@{PROOF_PIN_HEX}",
+            subject=subject,
+        )
         for obligation in sorted(obligations)
     }
 
 
 def service_x01_fixture(**overrides) -> dict:
     fixture = {
-        "exact_subject": "svc/orders@task/fix-compound",
+        "exact_subject": SERVICE_X01_SUBJECT,
         "standard_revision": PINNED_STANDARD_REVISION,
+        # Review #1048 F03: the fixture builds each authority ref as the exact
+        # canonical path plus the immutable owner blob — the only shape the
+        # currentness gate accepts (strict equality, no suffix matching).
         "authority_refs": {
-            tier: f"{path}@{OWNER_BLOBS[tier]}"
-            for tier, path in (
-                ("FROZEN_PRD_CONTRACT", "docs/prd.md#freeze"),
-                ("FROZEN_ARCHITECTURE", "docs/l2.md#freeze"),
-                ("PROJECT_OVERRIDES", ".dev-standard/PROJECT_OVERRIDES.md"),
-                ("TASK_ACCEPTANCE", "issues/1007"),
-            )
+            tier: f"{path}@{OWNER_BLOBS[tier]}" for tier, path in CANONICAL_AUTHORITY_PATHS.items()
         },
         "adoption": "A0_COMPATIBILITY",
         "archetype": "SERVICE",
@@ -307,7 +410,7 @@ def service_x01_fixture(**overrides) -> dict:
 
 def cli_docs_fixture(**overrides) -> dict:
     fixture = service_x01_fixture(
-        exact_subject="cli/tools@task/docs-only",
+        exact_subject=CLI_DOCS_SUBJECT,
         adoption="A0_COMPATIBILITY",
         archetype="CLI",
         condition="NEW",
@@ -317,10 +420,13 @@ def cli_docs_fixture(**overrides) -> dict:
                 "state": "ABSENT_WITH_INSPECTED_SCOPE",
                 "ref": f"inventory:{dimension}@707b",
                 "fresh": True,
+                "subject": CLI_DOCS_SUBJECT,
             }
             for dimension in MATERIAL_DIMENSIONS
         },
-        owner_proofs={"affected docs checks": proof(ref="proof:docs@707b")},
+        owner_proofs={
+            "affected docs checks": proof(ref=f"proof:docs@{PROOF_PIN_HEX}", subject=CLI_DOCS_SUBJECT)
+        },
     )
     fixture.update(overrides)
     return fixture
@@ -399,10 +505,16 @@ def resolve_effective_rules(fixture: dict) -> dict:
                 + ")"
             )
         else:
-            for tier, authority_ref in refs.items():
-                expected = OWNER_BLOBS.get(tier)
-                if expected is None or not authority_ref.endswith(f"@{expected}"):
-                    currentness_failure = f"owner blob mismatch for {tier}"
+            for tier in sorted(OWNER_BLOBS):
+                # Review #1048 F03: strict equality against the exact canonical
+                # path plus the immutable owner blob — a blob-shaped suffix on
+                # a noncanonical path is not the owner source and is rejected.
+                expected_ref = f"{CANONICAL_AUTHORITY_PATHS[tier]}@{OWNER_BLOBS[tier]}"
+                if refs.get(tier) != expected_ref:
+                    currentness_failure = (
+                        f"owner authority ref for {tier} is not the exact canonical source "
+                        f"{expected_ref}"
+                    )
                     break
     if currentness_failure:
         emit(
@@ -417,14 +529,36 @@ def resolve_effective_rules(fixture: dict) -> dict:
         return {"resolution": "REJECTED_CURRENTNESS", "rules": rules, "conflict": False}
 
     # 2. Epistemic facts: PRESENT / ABSENT_WITH_INSPECTED_SCOPE / UNKNOWN.
+    # Review #1048 F02/F05: every observation is validated before it counts as
+    # an inspected fact; a claimed scoped absence without a fresh, scoped,
+    # exact-subject-bound inventory ref routes to UNKNOWN and can never mint
+    # an N/A, and malformed entries never raise.
+    observations = fixture["observations"] if isinstance(fixture["observations"], dict) else {}
     for dimension in MATERIAL_DIMENSIONS:
         obligation = DIMENSION_OBLIGATIONS[dimension]
-        observation = fixture["observations"].get(dimension)
-        if observation is None or not observation.get("fresh") or observation["state"] == "UNKNOWN":
+        observation = observations.get(dimension)
+        observation_defect_text = observation_defect(observation, subject)
+        if observation is None:
             emit(
                 obligation,
                 "UNKNOWN",
-                "NONE" if observation is None else observation.get("ref", "NONE"),
+                "NONE",
+                "material dimension uninspected or observation stale/missing; fail closed as UNKNOWN",
+            )
+        elif observation_defect_text:
+            raw_ref = observation.get("ref") if isinstance(observation, dict) else None
+            observed_ref = raw_ref if isinstance(raw_ref, str) and raw_ref else "NONE"
+            emit(
+                obligation,
+                "UNKNOWN",
+                observed_ref,
+                f"{observation_defect_text}; fail closed as UNKNOWN",
+            )
+        elif observation["state"] == "UNKNOWN":
+            emit(
+                obligation,
+                "UNKNOWN",
+                observation.get("ref", "NONE"),
                 "material dimension uninspected or observation stale/missing; fail closed as UNKNOWN",
             )
         elif observation["state"] == "ABSENT_WITH_INSPECTED_SCOPE":
@@ -461,17 +595,21 @@ def resolve_effective_rules(fixture: dict) -> dict:
     # no other owner or declared label demands; against an inspected PRESENT
     # fact it is a contradiction and the aggregate must DENY. F04: blank/
     # malformed/misbound/wrong-subject proof refs are untrusted and fail
-    # closed as NOT_RUN/UNKNOWN, never CURRENT.
+    # closed as NOT_RUN/UNKNOWN, never CURRENT. Review #1048 F04/F05: the
+    # exact-subject binding is mandatory (a subjectless proof is never
+    # trusted), the pin is a full 64-hex identity, and malformed proof
+    # entries fail closed instead of raising.
     conflict = False
     label_demanded_obligations = {
         JOB_OBLIGATIONS[job] for job in declared_jobs if job in JOB_OBLIGATIONS
     }
+    owner_proofs = fixture["owner_proofs"] if isinstance(fixture["owner_proofs"], dict) else {}
     ref_owners: dict[str, set[str]] = {}
     for rule in rules:
-        owner_proof = fixture["owner_proofs"].get(rule["obligation"])
+        owner_proof = owner_proofs.get(rule["obligation"])
         if (
-            owner_proof is not None
-            and owner_proof.get("fresh")
+            isinstance(owner_proof, dict)
+            and owner_proof.get("fresh") is True
             and isinstance(owner_proof.get("ref"), str)
         ):
             ref_owners.setdefault(owner_proof["ref"], set()).add(rule["obligation"])
@@ -493,13 +631,29 @@ def resolve_effective_rules(fixture: dict) -> dict:
             rule["gate_state"] = "NOT_APPLICABLE"
             rule["trace"]["required_evidence_currentness"] = "NOT_REQUIRED"
             continue
-        owner_proof = fixture["owner_proofs"].get(obligation)
-        if state == "UNKNOWN" or owner_proof is None or not owner_proof["fresh"]:
+        # Review #1048 F05: field presence/types are validated before any
+        # judgment — a malformed proof entry routes to a durable fail-closed
+        # NOT_RUN trace, never a KeyError and never PASS.
+        owner_proof = owner_proofs.get(obligation)
+        shape_defect = proof_shape_defect(owner_proof)
+        if shape_defect:
+            rule["gate_state"] = "NOT_RUN"
+            rule["trace"]["owner_proof_ref"] = "NONE"
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
+            rule["trace"]["applicability_reason"] += (
+                f"; malformed owner proof rejected ({shape_defect}); fail closed as NOT_RUN"
+            )
+            continue
+        if state == "UNKNOWN" or owner_proof is None:
             rule["gate_state"] = "NOT_RUN"
             rule["trace"]["owner_proof_ref"] = "NONE" if owner_proof is None else owner_proof["ref"]
             rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
-            if owner_proof is not None and not owner_proof["fresh"]:
-                rule["trace"]["applicability_reason"] += "; earlier assessment is from a stale HEAD and stays UNKNOWN"
+            continue
+        if not owner_proof["fresh"]:
+            rule["gate_state"] = "NOT_RUN"
+            rule["trace"]["owner_proof_ref"] = owner_proof["ref"]
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
+            rule["trace"]["applicability_reason"] += "; earlier assessment is from a stale HEAD and stays UNKNOWN"
             continue
         # F04: only a non-blank, well-formed, subject-bound, uniquely bound
         # proof ref is trusted evidence; anything else fails closed.
@@ -541,18 +695,48 @@ def resolve_effective_rules(fixture: dict) -> dict:
 
     # 5. Precedence within concern: lower authority cannot weaken a higher
     #    owner's gate; contradiction is a CONFLICT, never a silent downgrade.
-    for override in fixture["overrides"]:
-        rule = by_obligation.get(override["obligation"])
-        if rule is None or override["value"] not in WEAKENING_VALUES:
+    #    Review #1048 F01: NO override tier — same or stronger included — can
+    #    erase an independently PRESENT (or otherwise owner-required) gate;
+    #    only a source-authorized scoped absence (an independently inspected
+    #    ABSENT_WITH_INSPECTED_SCOPE bound to a valid observation ref) can
+    #    justify NOT_APPLICABLE. Every other weakening skip is a conflict and
+    #    the affected gate stays BLOCKED (hard non-weakening floor).
+    overrides = fixture["overrides"] if isinstance(fixture["overrides"], list) else []
+    for override in overrides:
+        if not isinstance(override, dict):
             continue
-        if AUTHORITY_TIERS.index(rule["tier"]) < AUTHORITY_TIERS.index(override["tier"]):
+        rule = by_obligation.get(override.get("obligation"))
+        if rule is None or override.get("value") not in WEAKENING_VALUES:
+            continue
+        override_tier = override.get("tier")
+        if override_tier not in AUTHORITY_TIERS:
             conflict = True
             rule["gate_state"] = "BLOCKED"
             rule["trace"]["applicability_reason"] += (
-                "; lower-authority override denied, affected gate stays BLOCKED/NOT_RUN"
+                "; override with an unknown authority tier fails closed, affected gate stays BLOCKED"
             )
+            continue
+        scoped_absence = rule["epistemic"] == "ABSENT_WITH_INSPECTED_SCOPE" and isinstance(
+            rule["trace"]["observed_fact_ref"], str
+        ) and bool(rule["trace"]["observed_fact_ref"].strip())
+        if scoped_absence:
+            # The independently inspected scoped absence already justifies the
+            # N/A on its own authority; the override neither strengthens nor
+            # weakens it.
+            continue
+        conflict = True
+        if AUTHORITY_TIERS.index(override_tier) > AUTHORITY_TIERS.index(rule["tier"]):
+            denial = "lower-authority override denied"
         else:
-            rule["gate_state"] = "NOT_APPLICABLE"
+            denial = (
+                f"{override_tier} weakening override denied (no same-tier or higher-tier skip "
+                "against an independently required gate)"
+            )
+        rule["gate_state"] = "BLOCKED"
+        rule["trace"]["applicability_reason"] += (
+            f"; {denial}, affected gate stays BLOCKED/NOT_RUN; only a source-authorized "
+            "scoped absence can justify NOT_APPLICABLE"
+        )
 
     # 6. Finite coverage denominator: compound job sets without an equivalent
     #    covered class stay UNVERIFIED with a repair route, never blanket PASS;
@@ -874,12 +1058,28 @@ class ObligationConjunctionTests(unittest.TestCase):
 
     def test_n04_local_na_does_not_lift_other_owner_gates(self) -> None:
         """Pack N04: cross-concern AND keeps migration/security gates required."""
+        # Review #1048 F02: inspected-ABSENT observations are subject-bound.
         observations = {
-            "permission": {"state": "ABSENT_WITH_INSPECTED_SCOPE", "ref": "inventory:perm@707d", "fresh": True},
+            "permission": {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": "inventory:perm@707d",
+                "fresh": True,
+                "subject": SERVICE_X01_SUBJECT,
+            },
             "security": {"state": "PRESENT", "ref": "obs:security@707d", "fresh": True},
             "migration": {"state": "PRESENT", "ref": "obs:migration@707d", "fresh": True},
-            "deploy": {"state": "ABSENT_WITH_INSPECTED_SCOPE", "ref": "inventory:deploy@707d", "fresh": True},
-            "external_effect": {"state": "ABSENT_WITH_INSPECTED_SCOPE", "ref": "inventory:effect@707d", "fresh": True},
+            "deploy": {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": "inventory:deploy@707d",
+                "fresh": True,
+                "subject": SERVICE_X01_SUBJECT,
+            },
+            "external_effect": {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": "inventory:effect@707d",
+                "fresh": True,
+                "subject": SERVICE_X01_SUBJECT,
+            },
         }
         result = resolve_effective_rules(service_x01_fixture(declared_jobs=set(), observations=observations))
         self.assertEqual(gate_map(result)["authorized actor/permission evidence"], "NOT_APPLICABLE")
@@ -897,7 +1097,12 @@ class ObligationConjunctionTests(unittest.TestCase):
             service_x01_fixture(
                 declared_jobs=jobs,
                 observations={
-                    dimension: {"state": "ABSENT_WITH_INSPECTED_SCOPE", "ref": f"inventory:{dimension}@707e", "fresh": True}
+                    dimension: {
+                        "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                        "ref": f"inventory:{dimension}@707e",
+                        "fresh": True,
+                        "subject": SERVICE_X01_SUBJECT,
+                    }
                     for dimension in MATERIAL_DIMENSIONS
                 },
                 owner_proofs=all_pass_proofs(),
@@ -938,13 +1143,15 @@ class AggregateAdmissionFailClosedTests(unittest.TestCase):
     def test_n08_fail_owner_proof_blocks_admission(self) -> None:
         """A current FAIL review verdict blocks the aggregate as REJECTED_GATES."""
         proofs = all_pass_proofs()
-        proofs["independent security review"] = proof("FAIL", ref="review:sec-fail@707c")
+        proofs["independent security review"] = proof(
+            "FAIL", ref=f"review:sec-fail@{PROOF_PIN_HEX}", subject=SERVICE_X01_SUBJECT
+        )
         result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
         self.assertEqual(result["resolution"], "REJECTED_GATES")
         self.assertNotEqual(result["resolution"], "ADMITTED")
         security = rule_for(result, "independent security review")
         self.assertEqual(security["gate_state"], "FAIL")
-        self.assertEqual(security["trace"]["owner_proof_ref"], "review:sec-fail@707c")
+        self.assertEqual(security["trace"]["owner_proof_ref"], f"review:sec-fail@{PROOF_PIN_HEX}")
 
     def test_n09_stale_owner_proof_blocks_admission(self) -> None:
         """A stale-HEAD proof never satisfies its gate and blocks the aggregate."""
@@ -1127,7 +1334,11 @@ class R2NaBypassDenyTests(unittest.TestCase):
     def test_f02a_na_owner_proof_against_present_fact_denies_aggregate(self) -> None:
         """PRESENT inspected security fact + NOT_APPLICABLE owner proof → DENY."""
         proofs = all_pass_proofs()
-        proofs["independent security review"] = proof("NOT_APPLICABLE", ref="proof:na-vs-present@707f")
+        proofs["independent security review"] = proof(
+            "NOT_APPLICABLE",
+            ref=f"proof:na-vs-present@{PROOF_PIN_HEX}",
+            subject=SERVICE_X01_SUBJECT,
+        )
         result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
         self.assertEqual(result["resolution"], "CONFLICT")
         self.assertNotEqual(result["resolution"], "ADMITTED")
@@ -1145,6 +1356,7 @@ class R2NaBypassDenyTests(unittest.TestCase):
                 "state": "ABSENT_WITH_INSPECTED_SCOPE",
                 "ref": f"inventory:{dimension}@707f",
                 "fresh": True,
+                "subject": SERVICE_X01_SUBJECT,
             }
             for dimension in MATERIAL_DIMENSIONS
         }
@@ -1259,7 +1471,7 @@ class R2ProofRefTrustTests(unittest.TestCase):
             "wrong_source_shape": {"verdict": "PASS", "ref": "::@", "fresh": True},
             "wrong_subject": {
                 "verdict": "PASS",
-                "ref": "proof:independent-security-review@707f",
+                "ref": f"proof:independent-security-review@{PROOF_PIN_HEX}",
                 "fresh": True,
                 "subject": "svc/other@task/elsewhere",
             },
@@ -1283,9 +1495,9 @@ class R2ProofRefTrustTests(unittest.TestCase):
 
     def test_f04_misbound_shared_ref_cannot_serve_two_obligations(self) -> None:
         proofs = all_pass_proofs()
-        shared = "proof:shared-evidence@707f"
-        proofs["independent security review"] = proof(ref=shared)
-        proofs["authorized actor/permission evidence"] = proof(ref=shared)
+        shared = f"proof:shared-evidence@{PROOF_PIN_HEX}"
+        proofs["independent security review"] = proof(ref=shared, subject=SERVICE_X01_SUBJECT)
+        proofs["authorized actor/permission evidence"] = proof(ref=shared, subject=SERVICE_X01_SUBJECT)
         result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
         self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
         for obligation in ("independent security review", "authorized actor/permission evidence"):
@@ -1294,6 +1506,332 @@ class R2ProofRefTrustTests(unittest.TestCase):
                 self.assertEqual(rule["gate_state"], "NOT_RUN")
                 self.assertNotEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
                 self.assertIn("misbound", rule["trace"]["applicability_reason"])
+
+
+class R4SameTierOverrideDenyTests(unittest.TestCase):
+    """Review #1048 F01: no override tier — same or stronger included — can
+    erase an independently PRESENT (or otherwise owner-required) gate; only a
+    source-authorized scoped absence justifies NOT_APPLICABLE."""
+
+    def test_f01_same_tier_weakening_override_cannot_erase_present_security_gate(self) -> None:
+        """FROZEN_PRD_CONTRACT-tier skip vs the same-tier PRESENT security gate:
+        aggregate CONFLICT, gate BLOCKED — never a minted N/A + ADMITTED."""
+        result = resolve_effective_rules(
+            service_x01_fixture(
+                owner_proofs=all_pass_proofs(),
+                overrides=[
+                    {
+                        "obligation": "independent security review",
+                        "value": "not-required",
+                        "tier": "FROZEN_PRD_CONTRACT",
+                    }
+                ],
+            )
+        )
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertTrue(result["conflict"])
+        self.assertEqual(result["resolution"], "CONFLICT")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "BLOCKED")
+        self.assertNotEqual(security["gate_state"], "NOT_APPLICABLE")
+        self.assertNotEqual(security["trace"]["required_evidence_currentness"], "NOT_REQUIRED")
+        self.assertIn("no same-tier or higher-tier skip", security["trace"]["applicability_reason"])
+
+    def test_f01_stronger_tier_weakening_override_cannot_erase_inspected_gate(self) -> None:
+        """A higher-authority (FROZEN_PRD_CONTRACT) skip against a
+        PROJECT_OVERRIDES-tier inspected gate is still a conflict, never a
+        silent NOT_APPLICABLE downgrade."""
+        result = resolve_effective_rules(
+            service_x01_fixture(
+                declared_jobs={"J03_BUG_FIX"},
+                owner_proofs=all_pass_proofs(),
+                overrides=[
+                    {
+                        "obligation": "authorized actor/permission evidence",
+                        "value": "skip",
+                        "tier": "FROZEN_PRD_CONTRACT",
+                    }
+                ],
+            )
+        )
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertTrue(result["conflict"])
+        self.assertEqual(result["resolution"], "CONFLICT")
+        permission = rule_for(result, "authorized actor/permission evidence")
+        self.assertEqual(permission["gate_state"], "BLOCKED")
+        self.assertNotEqual(permission["gate_state"], "NOT_APPLICABLE")
+        self.assertIn("no same-tier or higher-tier skip", permission["trace"]["applicability_reason"])
+
+    def test_f01_override_on_source_authorized_scoped_absence_stays_na(self) -> None:
+        """The legitimate route survives: an override over an independently
+        inspected scoped absence neither strengthens nor weakens the N/A."""
+        result = resolve_effective_rules(
+            cli_docs_fixture(
+                overrides=[
+                    {
+                        "obligation": "authorized actor/permission evidence",
+                        "value": "not_applicable",
+                        "tier": "PROJECT_OVERRIDES",
+                    }
+                ]
+            )
+        )
+        self.assertEqual(result["resolution"], "ADMITTED")
+        self.assertFalse(result["conflict"])
+        self.assertEqual(gate_map(result)["authorized actor/permission evidence"], "NOT_APPLICABLE")
+
+
+class R4InspectedAbsenceBindingTests(unittest.TestCase):
+    """Review #1048 F02: an inspected-ABSENT observation is evidence only with
+    a fresh, scoped, exact-subject-bound inventory ref; blank/misbound/stale
+    observations are UNKNOWN and never mint an N/A or an ADMITTED."""
+
+    def blank_absent_docs_fixture(self) -> dict:
+        return cli_docs_fixture(
+            observations={
+                dimension: {
+                    "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                    "ref": "",
+                    "fresh": True,
+                }
+                for dimension in MATERIAL_DIMENSIONS
+            }
+        )
+
+    def test_f02_blank_inspected_absent_ref_is_unknown_never_na(self) -> None:
+        """The review counterexample: all-blank inspected-ABSENT refs must not
+        mint N/A + ADMITTED — they route to UNKNOWN/NOT_RUN."""
+        result = resolve_effective_rules(self.blank_absent_docs_fixture())
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertEqual(result["resolution"], "UNKNOWN_EPISTEMIC")
+        for obligation in DIMENSION_OBLIGATIONS.values():
+            with self.subTest(obligation=obligation):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "UNKNOWN")
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertNotEqual(rule["gate_state"], "NOT_APPLICABLE")
+
+    def test_f02_wrong_subject_inspected_absent_ref_is_unknown_never_na(self) -> None:
+        """A well-shaped inventory ref bound to a different subject is not this
+        subject's inspected evidence and cannot mint an N/A."""
+        observations = {
+            dimension: {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": f"inventory:{dimension}@707b",
+                "fresh": True,
+                "subject": "svc/other@task/elsewhere",
+            }
+            for dimension in MATERIAL_DIMENSIONS
+        }
+        result = resolve_effective_rules(cli_docs_fixture(observations=observations))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertEqual(result["resolution"], "UNKNOWN_EPISTEMIC")
+        for obligation in DIMENSION_OBLIGATIONS.values():
+            with self.subTest(obligation=obligation):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "UNKNOWN")
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertIn("not bound to this exact subject", rule["trace"]["applicability_reason"])
+
+    def test_f02_stale_inspected_absent_ref_is_unknown_never_na(self) -> None:
+        """A stale-HEAD scoped-absence observation is uninspected evidence and
+        stays UNKNOWN; no N/A and no admission."""
+        observations = {
+            dimension: {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": f"inventory:{dimension}@707b",
+                "fresh": False,
+                "subject": CLI_DOCS_SUBJECT,
+            }
+            for dimension in MATERIAL_DIMENSIONS
+        }
+        result = resolve_effective_rules(cli_docs_fixture(observations=observations))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        self.assertEqual(result["resolution"], "UNKNOWN_EPISTEMIC")
+        for obligation in DIMENSION_OBLIGATIONS.values():
+            with self.subTest(obligation=obligation):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "UNKNOWN")
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertNotEqual(rule["gate_state"], "NOT_APPLICABLE")
+
+    def test_f02_malformed_observation_entry_is_unknown_not_crash(self) -> None:
+        """F05 (observations): a non-mapping observation entry routes to a
+        durable UNKNOWN trace instead of raising."""
+        observations = {dimension: "not-a-mapping" for dimension in MATERIAL_DIMENSIONS}
+        result = resolve_effective_rules(cli_docs_fixture(observations=observations))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        for obligation in DIMENSION_OBLIGATIONS.values():
+            with self.subTest(obligation=obligation):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["epistemic"], "UNKNOWN")
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertIn("not a mapping", rule["trace"]["applicability_reason"])
+
+
+class R4CanonicalAuthorityIdentityTests(unittest.TestCase):
+    """Review #1048 F03: each applicable authority tier binds to its exact
+    canonical path plus immutable owner blob; suffix-only pin matching on a
+    noncanonical path is rejected."""
+
+    def test_f03_noncanonical_path_with_matching_blob_suffix_is_rejected(self) -> None:
+        """The review counterexample: 'attacker/noncanonical-path@' + the real
+        FROZEN_PRD_CONTRACT blob still fails the currentness gate."""
+        refs = dict(service_x01_fixture()["authority_refs"])
+        refs["FROZEN_PRD_CONTRACT"] = "attacker/noncanonical-path@" + OWNER_BLOBS["FROZEN_PRD_CONTRACT"]
+        result = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs=refs)
+        )
+        self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertEqual(rule["gate_state"], "BLOCKED")
+                self.assertNotEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+                self.assertNotEqual(rule["gate_state"], "PASS")
+        self.assertIn(
+            "not the exact canonical source",
+            rule_for(result, "pinned standard currentness verification")["trace"]["applicability_reason"],
+        )
+
+    def test_f03_swapped_canonical_paths_are_rejected(self) -> None:
+        """Exact binding means path AND blob per tier: swapping canonical paths
+        between tiers fails even though every path and blob is canonical."""
+        refs = dict(service_x01_fixture()["authority_refs"])
+        refs["FROZEN_PRD_CONTRACT"], refs["FROZEN_ARCHITECTURE"] = (
+            refs["FROZEN_ARCHITECTURE"],
+            refs["FROZEN_PRD_CONTRACT"],
+        )
+        result = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs=refs)
+        )
+        self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+
+    @unittest.skip(
+        "DEFERRED_TO_T11 / NOT_RUN: OWNER_BLOBS and CANONICAL_AUTHORITY_PATHS are synthetic "
+        "in-test fixtures; verifying the real owner-side immutable sources (actual blob "
+        "lookups against the owning repositories) is owned by T11. This resolution model "
+        "asserts exact canonical-path binding and pin shape only — it never marks a source "
+        "trusted-CURRENT on verification it cannot perform."
+    )
+    def test_f03_real_owner_side_source_verification_deferred_to_t11(self) -> None:
+        raise AssertionError("must stay skipped until T11 wires real owner-side source verification")
+
+
+class R4MandatoryProofSubjectTests(unittest.TestCase):
+    """Review #1048 F04: a trusted owner proof requires a mandatory exact
+    subject binding and a full 64-hex immutable identity pin; a forged short
+    ref without a subject is never CURRENT (and shape is never claimed to
+    equal owner-side source verification — T11-deferred)."""
+
+    def test_f04_forged_short_ref_without_subject_is_never_current(self) -> None:
+        """The review counterexample: 'self:fake-security@707f' (no subject)
+        cannot claim the security gate PASS/CURRENT or admit the aggregate."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = {
+            "verdict": "PASS",
+            "ref": "self:fake-security@707f",
+            "fresh": True,
+        }
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertNotEqual(security["gate_state"], "PASS")
+        self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+        self.assertIn("untrusted proof ref rejected", security["trace"]["applicability_reason"])
+
+    def test_f04_well_shaped_ref_without_subject_is_still_untrusted(self) -> None:
+        """A 64-hex ref that passes the shape check but carries no subject
+        binding is self-attested and fails closed as NOT_RUN."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = {
+            "verdict": "PASS",
+            "ref": f"review:sec@{PROOF_PIN_HEX}",
+            "fresh": True,
+        }
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "NOT_RUN")
+        self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+        self.assertIn("no exact subject binding", security["trace"]["applicability_reason"])
+
+    def test_f04_full_pin_shape_is_required_short_pseudo_pin_rejected(self) -> None:
+        """The pattern itself rejects 4-hex pseudo-pins even with a subject."""
+        self.assertIsNotNone(PROOF_REF_PATTERN.match(f"proof:security@{PROOF_PIN_HEX}"))
+        for short_ref in ("proof:security@707f", "proof:security@" + "a" * 63):
+            with self.subTest(ref=short_ref):
+                self.assertIsNone(PROOF_REF_PATTERN.match(short_ref))
+        # and end-to-end: a subject-bound 4-hex ref still fails closed
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = {
+            "verdict": "PASS",
+            "ref": "proof:security@707f",
+            "fresh": True,
+            "subject": SERVICE_X01_SUBJECT,
+        }
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertNotEqual(security["gate_state"], "PASS")
+        self.assertIn("malformed proof ref", security["trace"]["applicability_reason"])
+
+
+class R4MalformedProofFailClosedTests(unittest.TestCase):
+    """Review #1048 F05: malformed proof entries (missing/ill-typed fields)
+    route to a durable fail-closed NOT_RUN/BLOCKED trace, never a KeyError and
+    never an admission."""
+
+    def test_f05_missing_fresh_flag_is_blocked_trace_not_keyerror(self) -> None:
+        """The review counterexample: a security proof without 'fresh' produces
+        a durable NOT_RUN decision — no exception, no admission."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = {"verdict": "PASS", "ref": "proof:security@707f"}
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))  # must not raise
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "NOT_RUN")
+        self.assertEqual(security["trace"]["required_evidence_currentness"], "UNKNOWN")
+        self.assertIn("malformed owner proof", security["trace"]["applicability_reason"])
+
+    def test_f05_ill_typed_and_non_mapping_proof_entries_fail_closed(self) -> None:
+        cases = {
+            "non_mapping": "not-a-proof",
+            "verdict_not_string": {"verdict": 7, "ref": f"proof:sec@{PROOF_PIN_HEX}", "fresh": True},
+            "empty_verdict": {"verdict": "", "ref": f"proof:sec@{PROOF_PIN_HEX}", "fresh": True},
+            "fresh_not_bool": {
+                "verdict": "PASS",
+                "ref": f"proof:sec@{PROOF_PIN_HEX}",
+                "fresh": "yes",
+            },
+            "ref_not_string": {"verdict": "PASS", "ref": 123, "fresh": True},
+        }
+        for name, owner_proof in cases.items():
+            with self.subTest(case=name):
+                proofs = all_pass_proofs()
+                proofs["independent security review"] = owner_proof
+                result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))  # no raise
+                self.assertNotEqual(result["resolution"], "ADMITTED")
+                security = rule_for(result, "independent security review")
+                self.assertIn(security["gate_state"], {"NOT_RUN", "BLOCKED"})
+                self.assertNotEqual(security["gate_state"], "PASS")
+                self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+                self.assertIn("malformed owner proof", security["trace"]["applicability_reason"])
+
+    def test_f05_malformed_containers_fail_closed_without_raising(self) -> None:
+        """Non-mapping owner_proofs / non-list overrides degrade to fail-closed
+        resolutions instead of crashing the resolution pass."""
+        blocked = resolve_effective_rules(service_x01_fixture(owner_proofs="garbage"))
+        self.assertNotEqual(blocked["resolution"], "ADMITTED")
+        for rule in blocked["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+        overridden = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), overrides="garbage")
+        )
+        self.assertEqual(overridden["resolution"], "ADMITTED")
+        self.assertFalse(overridden["conflict"])
 
 
 @unittest.skip(
