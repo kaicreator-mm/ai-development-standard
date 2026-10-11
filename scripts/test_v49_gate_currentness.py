@@ -153,6 +153,23 @@ READ_ONLY_DEPS_REBOUND_BLOBS = {
     "standards/DEVELOPMENT_WORKFLOW.md": "a7fef842927e58a93b671fe9869b9395559845ac",
 }
 
+# v4.11 F1 shared-pin bridge (issue #1064; Controller authorization #967:
+# SHARED_CI_PIN_OWNER_F1=#1064_CONDITIONAL_AUTHORIZED_EXACT_SHARED_TEST_THREE_PATHS;
+# builder claim #1064@6107138303): PR #1027 (T01) lawfully mutates
+# `standards/DEVELOPMENT_WORKFLOW.md` inside its approved owner pack, so the
+# historical v4.10-integrated pin above is RED at the v4.11 integrated
+# candidate. Exact dual-pin admission: the historical pin stays authoritative
+# everywhere and gains a tamper anchor (it must stay re-derivable from the
+# immutable v4.11 version base object); the ONE exact approved v4.11 blob
+# below is admitted ONLY under the exact v4.11 context gate
+# (`_v411_context_verified`), never as an allowed-any waiver. Any third blob
+# still fails; the version base (old blobs) keeps passing on the historical
+# pin alone; zero tests removed, no intent weakened.
+VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
+V411_OWNER_BLOBS = {
+    "standards/DEVELOPMENT_WORKFLOW.md": "57902fbcb56ffec9a461365ace472fb03e3520db",
+}
+
 # The routing vocabulary of this wiring engine. It deliberately contains no
 # verdict: routing dispositions only decide whether an owner-issued record may
 # be consulted for the current subject (or what must happen instead).
@@ -200,6 +217,29 @@ def git(*args: str) -> str:
 
 def git_blob_sha(rev: str, rel_path: str) -> str:
     return git("rev-parse", f"{rev}:{rel_path}")
+
+
+def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
+    """Exact v4.11 context gate, keyed on verifiable repository facts only
+    (no environment variables, no CI event context — both are spoofable or
+    absent in local runs). Open iff BOTH hold:
+
+    (1) HEAD descends from the exact v4.11 version base commit, and
+    (2) that base still carries the historical pinned blob for ``rel_path`` —
+        i.e. the recorded v4.9/v4.10 pin evidence is untampered.
+
+    Every other tree (rebased lineage, wrong base, tampered pin constant,
+    shallow checkout lacking the base object) fails closed to the historical
+    pin alone.
+    """
+    try:
+        git("merge-base", "--is-ancestor", VERSION_BASE_SHA, "HEAD")
+    except subprocess.CalledProcessError:
+        return False
+    try:
+        return git_blob_sha(VERSION_BASE_SHA, rel_path) == historical_blob
+    except subprocess.CalledProcessError:
+        return False
 
 
 def github_anchors(text: str) -> set[str]:
@@ -938,9 +978,24 @@ class GateCurrentnessKernel(unittest.TestCase):
                 continue
             with self.subTest(read_only=rel_path):
                 self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
+        # Tamper evidence for every recorded rebound pin (v4.11 F1 bridge,
+        # issue #1064): each historical constant must stay re-derivable from
+        # the immutable v4.11 version base object — independent of, and
+        # before, any admission decision below. A hand-edited pin constant
+        # can never self-certify.
+        for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
+            with self.subTest(read_only_rebound_pin_anchor=rel_path):
+                self.assertEqual(pinned_blob, git_blob_sha(VERSION_BASE_SHA, rel_path))
+        # v4.11 F1 shared-pin bridge (issue #1064): the historical pin governs
+        # everywhere; the exact approved v4.11 owner blob is admitted ONLY
+        # under the exact v4.11 context gate. Any third blob still fails.
         for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
             with self.subTest(read_only_rebound=rel_path):
-                self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))
+                admitted = {pinned_blob}
+                v411_blob = V411_OWNER_BLOBS.get(rel_path)
+                if v411_blob is not None and _v411_context_verified(rel_path, pinned_blob):
+                    admitted.add(v411_blob)
+                self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST
         # controller_authorizations[0]). The original T-010 lane guard
