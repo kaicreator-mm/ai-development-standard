@@ -18,6 +18,17 @@ the centrally designated wiring task); the v1 schema is asserted untouched.
 Purely offline: standard library only, with the optional `jsonschema` package
 used for v1 record admission when importable and a standard-library walk of
 the real schema document as the fallback admission path.
+
+Known deferrals (honest, never reported as covered): the supported-consumer
+completeness oracle and the C1→C2 window-drift oracle are DEFERRED_TO_T11 —
+their tests stay explicitly skipped as NOT_RUN because the seven logical
+projection fields alone cannot reveal an unlisted window or an authoritative
+support-scope registry; the authoritative binding of real materiality checks
+for nonmaterial dispositions is likewise DEFERRED_TO_T11/NOT_RUN, and this
+file only enforces and tests the local fail-closed gate (a nonmaterial claim
+without a provenance-bound materiality finding stays BLOCKED). None of these
+gaps are claimed as RECONCILED or proven here; T11/T12 integration, a real
+Build Host run, and a fresh R3 review remain NOT_RUN.
 """
 
 from __future__ import annotations
@@ -122,20 +133,36 @@ def decide(projection: dict) -> dict:
 
     Maps an accepted-spec evidence projection plus per-window dimension
     evidence to exactly one decision state with traceable reasons. Rule order
-    is fail-closed: evidenced nonmaterial proportionality, missing identity,
-    untestable externals, exact-ref derived accepted-spec drift, flagged
-    drifted scope, non-behavioral GREEN, accepted-not-implemented, superseded
-    evidence subject, per-window material-dimension admission (only evidenced
-    COMPATIBLE outcomes admit; the required wire/source/behavior floor is
-    derived from the standard rather than trusted from the caller), then
-    RECONCILED.
+    is fail-closed: provenance-bound nonmaterial proportionality, missing
+    identity, untestable externals, exact-ref derived accepted-spec drift,
+    flagged drifted scope, non-behavioral GREEN, accepted-not-implemented,
+    superseded evidence subject, per-window material-dimension admission (only
+    evidenced COMPATIBLE outcomes admit; the required wire/source/behavior
+    floor is derived from the standard rather than trusted from the caller),
+    then RECONCILED.
     """
     reasons: list[str] = []
     nonmaterial_windows = projection.get("affected_producer_consumer_windows")
     if projection.get("nonmaterial") and not nonmaterial_windows:
-        # A nonmaterial disposition is itself a conclusion that must be
-        # separately evidenced: it names a disposition authority and binds to
-        # an exact accepted change before proportionality applies.
+        # A nonmaterial disposition is a conclusion, not an input (review F04,
+        # fail-closed): it is admissible only when the caller supplies a
+        # provenance-bound, already-checked materiality finding (a finding
+        # identifier bound to an exact evidence head) on top of the disposition
+        # authority and the exact accepted-change binding. A bare
+        # `nonmaterial=True` assertion stays BLOCKED, never NONMATERIAL. The
+        # authoritative binding of real materiality checks is centrally owned
+        # wiring (DEFERRED_TO_T11, its integration oracle NOT_RUN here); the
+        # local fail-closed gate below is what this file enforces and tests.
+        blocked: list[str] = []
+        finding = projection.get("materiality_finding_ref")
+        if not isinstance(finding, str) or not finding:
+            blocked.append(
+                "nonmaterial disposition lacks a provenance-bound materiality "
+                "finding (checked finding bound to an evidence head); the "
+                "authoritative materiality-check binding is "
+                "DEFERRED_TO_T11/NOT_RUN and an unbound nonmaterial claim "
+                "stays BLOCKED"
+            )
         unevidenced = [
             ref
             for ref in ("acceptance_authority_ref", "spec_baseline_ref", "proposed_delta_ref")
@@ -143,17 +170,29 @@ def decide(projection: dict) -> dict:
         ]
         if nonmaterial_windows is None:
             unevidenced.append("affected_producer_consumer_windows")
-        if unevidenced:
-            return decision(
-                "UNKNOWN",
-                [
-                    f"nonmaterial disposition lacks separately evidenced support: {ref}"
-                    for ref in unevidenced
-                ],
+        blocked.extend(
+            f"nonmaterial disposition lacks separately evidenced support: {ref}"
+            for ref in unevidenced
+        )
+        contradictory = projection.get("contradictory_evidence_refs")
+        if contradictory:
+            # Disputed/misclassified change: evidence contradicting the
+            # nonmaterial claim must not admit the disposition even with an
+            # empty affected-window list.
+            blocked.append(
+                "nonmaterial disposition is disputed by contradictory evidence "
+                f"{contradictory!r}; the change is treated as misclassified "
+                "material and stays BLOCKED pending full re-admission"
             )
+        if blocked:
+            return decision("BLOCKED", blocked)
         return decision(
             "NONMATERIAL",
-            ["explicit proportionate nonmaterial disposition; no empty heavyweight record"],
+            [
+                "explicit proportionate nonmaterial disposition supported by the "
+                "checked materiality finding "
+                f"{projection['materiality_finding_ref']}; no empty heavyweight record"
+            ],
         )
     missing = [
         ref for ref in IDENTITY_REFS if not projection.get(ref)
@@ -318,12 +357,45 @@ def _stdlib_json_type_matches(instance: object, expected: str) -> bool:
     return False
 
 
+def _json_equal(instance: object, const: object) -> bool:
+    """Type-sensitive JSON equality per Draft 2020-12 const/enum semantics.
+
+    Python evaluates ``True == 1`` (and transitively ``[True] == [1]`` and
+    ``True in [1]``) as true, which would let a JSON boolean satisfy an
+    integer `const` or slip into a numeric `enum`. JSON Schema treats boolean
+    as a distinct type from integer/number, so equality here is structural
+    behind an explicit bool/non-bool type gate; JSON numbers 1 and 1.0 remain
+    equal.
+    """
+    if isinstance(instance, bool) or isinstance(const, bool):
+        return (
+            isinstance(instance, bool)
+            and isinstance(const, bool)
+            and instance == const
+        )
+    if isinstance(instance, (int, float)) and isinstance(const, (int, float)):
+        return instance == const
+    if type(instance) is not type(const):
+        return False
+    if isinstance(instance, list):
+        return len(instance) == len(const) and all(
+            _json_equal(left, right) for left, right in zip(instance, const)
+        )
+    if isinstance(instance, dict):
+        return instance.keys() == const.keys() and all(
+            _json_equal(value, const[key]) for key, value in instance.items()
+        )
+    return instance == const
+
+
 def _check_v1_constraints(instance: object, schema: dict) -> None:
     """Walk the real schema document's own keywords; raise on first violation.
 
     Covers the keyword set the v1 schema actually uses: `type` (including type
     lists), `const`, `enum`, `minLength`, `minItems`, `items`, `required`,
-    `properties`, and `additionalProperties: false`.
+    `properties`, and `additionalProperties: false`. `const` and `enum` use
+    type-sensitive JSON equality (`_json_equal`), so a JSON boolean never
+    satisfies an integer const (review F03).
     """
     expected = schema.get("type")
     if expected is not None:
@@ -332,9 +404,11 @@ def _check_v1_constraints(instance: object, schema: dict) -> None:
             raise _SchemaRejection(
                 f"expected type {expected}, got {type(instance).__name__}"
             )
-    if "const" in schema and instance != schema["const"]:
+    if "const" in schema and not _json_equal(instance, schema["const"]):
         raise _SchemaRejection(f"expected const {schema['const']!r}, got {instance!r}")
-    if "enum" in schema and instance not in schema["enum"]:
+    if "enum" in schema and not any(
+        _json_equal(instance, option) for option in schema["enum"]
+    ):
         raise _SchemaRejection(f"{instance!r} is not in the schema enum")
     if isinstance(instance, str):
         minimum = schema.get("minLength")
@@ -449,14 +523,18 @@ P02_HISTORICAL_H0 = {
     "affected_producer_consumer_windows": [evidenced_window("consumer/C0@v1")],
 }
 
-# A nonmaterial disposition is itself separately evidenced: a disposition
-# authority plus the exact accepted change binding it claims to have checked
-# before proportionality applies (review F04).
+# A nonmaterial disposition is itself separately evidenced (review F04): a
+# disposition authority, the exact accepted-change binding, and a
+# provenance-bound already-checked materiality finding bound to an evidence
+# head. The authoritative binding of real materiality checks is
+# DEFERRED_TO_T11/NOT_RUN; the decision model enforces the presence of the
+# binding and fails closed (BLOCKED) without it.
 P03_NONMATERIAL = {
     "nonmaterial": True,
     "acceptance_authority_ref": AUTHORIZED_AUTHORITY,
     "spec_baseline_ref": "spec/S1@baseline-sha",
     "proposed_delta_ref": ACCEPTED_S1,
+    "materiality_finding_ref": "finding/materiality@evidence-head-sha",
     "affected_producer_consumer_windows": [],
 }
 
@@ -670,6 +748,9 @@ class PositiveReconciliationDecisionTests(unittest.TestCase):
         self.assertEqual(verdict["decision"], "NONMATERIAL")
         self.assertIn("explicit proportionate nonmaterial disposition", verdict["reasons"][0])
         self.assertIn("no empty heavyweight record", verdict["reasons"][0])
+        # The disposition must be traceable to the provenance-bound materiality
+        # finding (review F04), never to the bare caller flag.
+        self.assertIn("finding/materiality@evidence-head-sha", verdict["reasons"][0])
 
 
 class NegativeReconciliationDecisionTests(unittest.TestCase):
@@ -928,15 +1009,54 @@ class NegativeReconciliationDecisionTests(unittest.TestCase):
 
     def test_unevidenced_nonmaterial_disposition_fails_closed(self) -> None:
         # Review F04 counterexample: a bare nonmaterial claim with no
-        # disposition authority and no exact change binding is not NONMATERIAL.
+        # disposition authority, no exact change binding, and no provenance-
+        # bound materiality finding is fail-closed BLOCKED, never NONMATERIAL.
         verdict = decide({"nonmaterial": True, "affected_producer_consumer_windows": []})
-        self.assertEqual(verdict["decision"], "UNKNOWN")
+        self.assertEqual(verdict["decision"], "BLOCKED")
         self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertIn(
+            "nonmaterial disposition lacks a provenance-bound materiality finding",
+            verdict["reasons"][0],
+        )
+        self.assertIn("DEFERRED_TO_T11/NOT_RUN", verdict["reasons"][0])
         for ref in ("acceptance_authority_ref", "spec_baseline_ref", "proposed_delta_ref"):
             self.assertIn(
                 f"nonmaterial disposition lacks separately evidenced support: {ref}",
                 verdict["reasons"],
             )
+
+    def test_nonmaterial_without_provenance_bound_materiality_finding_is_blocked(self) -> None:
+        # Review F04 (R2): `nonmaterial=True` plus empty windows plus the three
+        # identity refs is still just a caller assertion; without a checked
+        # materiality finding bound to an evidence head the disposition must
+        # not be admitted (fail-closed BLOCKED). The authoritative real-
+        # materiality binding is DEFERRED_TO_T11/NOT_RUN.
+        projection = dict(P03_NONMATERIAL)
+        del projection["materiality_finding_ref"]
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertIn("provenance-bound materiality finding", verdict["reasons"][0])
+        # A non-string finding identifier is equally unbound (malformed).
+        malformed = dict(P03_NONMATERIAL)
+        malformed["materiality_finding_ref"] = 7
+        self.assertEqual(decide(malformed)["decision"], "BLOCKED")
+
+    def test_disputed_nonmaterial_claim_with_contradictory_evidence_is_blocked(self) -> None:
+        # Review F04 (R2) disputed/misclassified negative oracle: a nonmaterial
+        # claim contradicted by evidence (even with no affected window listed)
+        # must not be admitted as NONMATERIAL.
+        projection = dict(P03_NONMATERIAL)
+        projection["contradictory_evidence_refs"] = ["evidence/consumer-report@head"]
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertTrue(
+            any("contradictory evidence" in reason for reason in verdict["reasons"])
+        )
+        self.assertTrue(
+            any("misclassified material" in reason for reason in verdict["reasons"])
+        )
 
     def test_nonmaterial_claim_with_a_material_diff_is_not_nonmaterial(self) -> None:
         # Review F04: a nonmaterial label contradicted by evidenced affected
@@ -1014,6 +1134,26 @@ class HistoricalV1ReaderCompatTests(unittest.TestCase):
             ):
                 with self.subTest(engine=engine, malformed=label):
                     self.assertFalse(accepts(malformed))
+
+    def test_v1_schema_rejects_boolean_schema_version_const_violation(self) -> None:
+        # Review F03 (R2): Python evaluates `True == 1`, so a loose `!=` const
+        # check would let the JSON boolean `true` satisfy the schema's
+        # `schema_version` integer `const 1`. Draft 2020-12 treats boolean as a
+        # distinct type from integer: the stdlib walk must reject, and the
+        # `jsonschema` engine must reject too when importable (otherwise that
+        # half is honestly NOT_RUN, never claimed).
+        mutated = copy.deepcopy(HISTORICAL_V1_RECORD)
+        mutated["schema_version"] = True
+        for engine, accepts in v1_schema_engines():
+            with self.subTest(engine=engine):
+                self.assertFalse(accepts(mutated))
+        if jsonschema is None:
+            # NOT_RUN: the jsonschema half of this dual-engine oracle is not
+            # claimed in stdlib-only environments; only the stdlib walk ran.
+            print(
+                "NOT_RUN: jsonschema unavailable; boolean-const oracle ran "
+                "the stdlib schema walk only"
+            )
 
 
 class DecisionModelSideEffectTests(unittest.TestCase):
