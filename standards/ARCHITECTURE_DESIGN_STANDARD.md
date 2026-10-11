@@ -156,3 +156,18 @@ A reviewer should be able to answer:
 ## 14. Failure handling
 
 If a high-impact UNKNOWN or owner conflict remains unresolved, classify the design as needing research/authority resolution rather than inventing local implementation freedom. Conflict with Frozen Product/L2 routes to the owning authority before implementation proceeds.
+
+## 15. Reuse-first adoption and BUILD_NEW
+
+When a material design decision adopts outside work, the reuse mode is an explicit accountable choice with distinct evidence floors, not a convenience default:
+
+1. **Pattern harvest (H1)** — adopt a cited upstream idea/mechanism inside a locally owned design. Requires the upstream reference and the local design; it does not require copying source, and similarity MUST NOT be read as direct copying or behavior equivalence.
+2. **Source-inspired re-specification (H2)** — re-express upstream behavior in a locally specified module. Requires disclosed origin and derivation context, the local contract, and differential/behavior/failure tests exposing divergence and risks. Presenting a material reconstruction as an undisclosed rewrite is provenance laundering and MUST NOT pass as local design.
+3. **Direct code reuse (H3)** — take upstream source into the project. Requires the exact immutable upstream identity and material paths, the license/NOTICE observed at that revision with the project license-policy disposition, attribution, and local behavior tests. Bounded H3 is admissible; it is never Validation PASS or release permission, and reliance on a different or drifted revision is stale until freshly re-checked.
+4. **BUILD_NEW** — build locally instead of adopting. Admissible only as an accountable decision that considered materially plausible mature comparators and records a concrete incompatible-license/coupling/security/maintenance rationale and a decision owner. It is not a silent default; ignored comparators or a missing owner keep it blocked.
+
+Architecture owns the mode selection, alternatives and local contracts; `DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` owns upstream identity, license/NOTICE currentness and reuse invalidation; Validation alone owns executed proof. No mode auto-promotes across L1→L2→L3 and no reuse disposition mints a gate or release state.
+
+These floors are mode-matched with `DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` §9: its full upstream-identity, license/NOTICE and policy-disposition floor binds reuse-right-bearing material — directly reused or physically copied upstream source or artifacts, especially H3 — while H1 and H2 carry exactly the lighter provenance stated above. The split never lowers the direct-copy rule: physically copied upstream source or artifacts taken into the tree, or artifact parity with upstream, make the work H3 with that full floor regardless of the claimed mode.
+
+Fast Path stays proportional: a low-risk, immaterial change with no material upstream dependency and no higher gate requires no mandatory external research or reuse catalog. The label does not erase material obligations — an actual vendored-source or license/NOTICE change keeps the obligations above regardless of how the work was labelled.
