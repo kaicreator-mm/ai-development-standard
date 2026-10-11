@@ -25,10 +25,15 @@ their tests stay explicitly skipped as NOT_RUN because the seven logical
 projection fields alone cannot reveal an unlisted window or an authoritative
 support-scope registry; the authoritative binding of real materiality checks
 for nonmaterial dispositions is likewise DEFERRED_TO_T11/NOT_RUN, and this
-file only enforces and tests the local fail-closed gate (a nonmaterial claim
-without a provenance-bound materiality finding stays BLOCKED). None of these
-gaps are claimed as RECONCILED or proven here; T11/T12 integration, a real
-Build Host run, and a fresh R3 review remain NOT_RUN.
+file only enforces and tests the local fail-closed gate (review #1049 F04-R3:
+a nonmaterial claim whose materiality/identity/authority refs do not resolve
+against the fixture's independently attested registries — issuer, spec
+baseline, accepted-delta fingerprint, evidence head — or resolve but bind to
+a different subject stays BLOCKED; the registries distinguish an unverified
+caller reference from a separately attested fixture finding without claiming
+production verification). None of these gaps are claimed as RECONCILED or
+proven here; T11/T12 integration, a real Build Host run, and a fresh R3
+review remain NOT_RUN.
 """
 
 from __future__ import annotations
@@ -133,8 +138,10 @@ def decide(projection: dict) -> dict:
 
     Maps an accepted-spec evidence projection plus per-window dimension
     evidence to exactly one decision state with traceable reasons. Rule order
-    is fail-closed: provenance-bound nonmaterial proportionality, missing
-    identity, untestable externals, exact-ref derived accepted-spec drift,
+    is fail-closed: provenance-bound nonmaterial proportionality over refs
+    resolved against the fixture's independently attested registries (review
+    #1049 F04-R3), missing identity, untestable externals, exact-ref derived
+    accepted-spec drift,
     flagged drifted scope, non-behavioral GREEN, accepted-not-implemented,
     superseded evidence subject, per-window material-dimension admission (only
     evidenced COMPATIBLE outcomes admit; the required wire/source/behavior
@@ -146,13 +153,17 @@ def decide(projection: dict) -> dict:
     if projection.get("nonmaterial") and not nonmaterial_windows:
         # A nonmaterial disposition is a conclusion, not an input (review F04,
         # fail-closed): it is admissible only when the caller supplies a
-        # provenance-bound, already-checked materiality finding (a finding
-        # identifier bound to an exact evidence head) on top of the disposition
-        # authority and the exact accepted-change binding. A bare
-        # `nonmaterial=True` assertion stays BLOCKED, never NONMATERIAL. The
-        # authoritative binding of real materiality checks is centrally owned
-        # wiring (DEFERRED_TO_T11, its integration oracle NOT_RUN here); the
-        # local fail-closed gate below is what this file enforces and tests.
+        # provenance-bound materiality finding that actually resolves — review
+        # #1049 F04-R3: a caller-supplied reference is unverified input, not
+        # evidence, so every ref is additionally resolved against the fixture's
+        # independently attested registries (issuer, subject, accepted-delta
+        # fingerprint, evidence head) and must bind to this exact disposition.
+        # A well-formed but unattested ("fake") ref fails closed BLOCKED, and
+        # a bare `nonmaterial=True` assertion stays BLOCKED, never
+        # NONMATERIAL. The authoritative binding of real materiality checks is
+        # centrally owned wiring (DEFERRED_TO_T11, its integration oracle
+        # NOT_RUN here); the local attestation gate below is what this file
+        # enforces and tests.
         blocked: list[str] = []
         finding = projection.get("materiality_finding_ref")
         if not isinstance(finding, str) or not finding:
@@ -174,6 +185,12 @@ def decide(projection: dict) -> dict:
             f"nonmaterial disposition lacks separately evidenced support: {ref}"
             for ref in unevidenced
         )
+        # Review #1049 F04-R3: shape checks alone treat arbitrary caller
+        # strings as already-checked evidence. Every present ref must
+        # additionally resolve against the attested registries and bind to
+        # this exact disposition subject; anything unresolvable or mis-bound
+        # fails the disposition closed below.
+        blocked.extend(nonmaterial_attestation_failures(projection))
         contradictory = projection.get("contradictory_evidence_refs")
         if contradictory:
             # Disputed/misclassified change: evidence contradicting the
@@ -190,8 +207,11 @@ def decide(projection: dict) -> dict:
             "NONMATERIAL",
             [
                 "explicit proportionate nonmaterial disposition supported by the "
-                "checked materiality finding "
-                f"{projection['materiality_finding_ref']}; no empty heavyweight record"
+                "independently attested materiality finding "
+                f"{projection['materiality_finding_ref']} (issuer, spec baseline, "
+                "accepted-delta fingerprint, and evidence head resolved against "
+                "the attested-finding registry and bound to this exact "
+                "disposition); no empty heavyweight record"
             ],
         )
     missing = [
@@ -323,6 +343,120 @@ def decide(projection: dict) -> dict:
 def decision(state: str, reasons: list[str]) -> dict:
     assert state in DECISION_STATES
     return {"decision": state, "reasons": reasons}
+
+
+def nonmaterial_attestation_failures(projection: dict) -> list[str]:
+    """Review #1049 F04-R3: a caller-supplied reference is not evidence.
+
+    Resolves a nonmaterial disposition's identity/authority refs and its
+    materiality finding against the fixture's independently attested
+    registries (`ATTESTED_*` below) and returns one failure reason per ref
+    that does not resolve to an attested binding, or that resolves but is not
+    bound to this disposition's exact subject (authority/spec, baseline/spec,
+    delta fingerprint, finding issuer/subject/delta). Absent refs are already
+    reported by the caller-side presence checks; this helper only judges refs
+    that are present. An empty result means every ref resolved and mutually
+    binds — the only case the nonmaterial branch may admit. The authoritative
+    binding of real materiality checks stays DEFERRED_TO_T11/NOT_RUN: this
+    fixture-level attestation distinguishes an unverified caller reference
+    from a separately attested fixture finding without claiming production
+    verification.
+    """
+    failures: list[str] = []
+    authority_ref = projection.get("acceptance_authority_ref")
+    baseline_ref = projection.get("spec_baseline_ref")
+    delta_ref = projection.get("proposed_delta_ref")
+    authority = (
+        ATTESTED_AUTHORITIES.get(authority_ref)
+        if isinstance(authority_ref, str)
+        else None
+    )
+    baseline = (
+        ATTESTED_SPEC_BASELINES.get(baseline_ref)
+        if isinstance(baseline_ref, str)
+        else None
+    )
+    delta = ATTESTED_DELTAS.get(delta_ref) if isinstance(delta_ref, str) else None
+    if authority_ref and authority is None:
+        failures.append(
+            f"acceptance_authority_ref {authority_ref!r} does not resolve to an "
+            "attested acceptance authority; an unverified caller reference is "
+            "not disposition evidence"
+        )
+    if baseline_ref and baseline is None:
+        failures.append(
+            f"spec_baseline_ref {baseline_ref!r} does not resolve to an attested "
+            "spec baseline; an unverified caller reference is not disposition "
+            "evidence"
+        )
+    if delta_ref and delta is None:
+        failures.append(
+            f"proposed_delta_ref {delta_ref!r} does not resolve to an attested "
+            "accepted delta; an unverified caller reference is not disposition "
+            "evidence"
+        )
+    # Subject binding among refs that individually resolve: one disposition
+    # carries exactly one subject — the authority, the baseline, and the
+    # accepted delta must all name the same spec.
+    if (
+        authority is not None
+        and baseline is not None
+        and authority["authorized_spec"] != baseline["spec"]
+    ):
+        failures.append(
+            f"acceptance_authority_ref {authority_ref!r} is attested for spec "
+            f"{authority['authorized_spec']} while spec_baseline_ref "
+            f"{baseline_ref!r} attests spec {baseline['spec']}; mismatched "
+            "subject binding fails closed"
+        )
+    if (
+        baseline is not None
+        and delta is not None
+        and delta["spec"] != baseline["spec"]
+    ):
+        failures.append(
+            f"proposed_delta_ref {delta_ref!r} is attested for spec "
+            f"{delta['spec']} while spec_baseline_ref {baseline_ref!r} attests "
+            f"spec {baseline['spec']}; mismatched subject binding fails closed"
+        )
+    # The finding itself: a present ref must resolve to an attested finding,
+    # and the attested issuer/subject/accepted-delta-fingerprint must equal
+    # this disposition's own refs (the ref names its attested evidence head).
+    finding_ref = projection.get("materiality_finding_ref")
+    finding = (
+        ATTESTED_MATERIALITY_FINDINGS.get(finding_ref)
+        if isinstance(finding_ref, str)
+        else None
+    )
+    if finding_ref and finding is None:
+        failures.append(
+            f"materiality finding ref {finding_ref!r} does not resolve to an "
+            "attested materiality finding (issuer, spec baseline, accepted-delta "
+            "fingerprint, and evidence head all fixture-attested); a "
+            "well-formed but unattested caller reference is not checked "
+            "evidence"
+        )
+    if finding is not None:
+        if finding["issuer"] != authority_ref:
+            failures.append(
+                f"materiality finding {finding_ref!r} is attested as issued by "
+                f"{finding['issuer']!r} while the disposition claims authority "
+                f"{authority_ref!r}; issuer binding fails closed"
+            )
+        if finding["spec_baseline_ref"] != baseline_ref:
+            failures.append(
+                f"materiality finding {finding_ref!r} is attested for baseline "
+                f"{finding['spec_baseline_ref']!r} while the disposition claims "
+                f"{baseline_ref!r}; subject binding fails closed"
+            )
+        if delta is not None and finding["delta_sha"] != delta["delta_sha"]:
+            failures.append(
+                f"materiality finding {finding_ref!r} is attested for "
+                f"accepted-delta fingerprint {finding['delta_sha']} while "
+                f"proposed_delta_ref {delta_ref!r} resolves to fingerprint "
+                f"{delta['delta_sha']}; delta-fingerprint binding fails closed"
+            )
+    return failures
 
 
 def evidenced_window(consumer_ref: str, outcomes: dict | None = None) -> dict:
@@ -491,6 +625,53 @@ def v1_schema_engines() -> list:
 AUTHORIZED_AUTHORITY = "authority/frozen-issue-comment"
 ACCEPTED_S1 = "spec/S1@accepted-delta-sha"
 
+# Review #1049 F04-R3: a caller-supplied reference is unverified input, not
+# evidence. These fixture-level registries are this test's independent
+# attestation record (issued by the fixture, never by the caller): each
+# attested materiality finding binds its issuer, its exact subject (spec
+# baseline + accepted delta), the accepted-delta fingerprint it was issued
+# against, and the evidence head it was checked at; identity/authority refs
+# must resolve to attested bindings of the same subject. `decide` resolves a
+# nonmaterial disposition's refs against these registries (at call time, see
+# `nonmaterial_attestation_failures`) and fails closed (BLOCKED) on any
+# unresolvable or mis-bound ref — including a well-formed but unregistered
+# ("fake") one. The authoritative binding of real materiality checks stays
+# DEFERRED_TO_T11/NOT_RUN: fixture attestation only distinguishes unverified
+# caller references from separately attested fixture findings; it is not a
+# production verification claim.
+ATTESTED_AUTHORITIES = {
+    # The fixture's acceptance authority, attested for spec S1 only.
+    AUTHORIZED_AUTHORITY: {"authorized_spec": "spec/S1"},
+}
+ATTESTED_SPEC_BASELINES = {
+    "spec/S1@baseline-sha": {"spec": "spec/S1"},
+    # A second attested baseline (different spec) so the subject-binding
+    # oracles can distinguish an unresolvable ref from a resolvable ref bound
+    # to the wrong subject.
+    "spec/S2@baseline-sha": {"spec": "spec/S2"},
+}
+ATTESTED_DELTAS = {
+    ACCEPTED_S1: {"spec": "spec/S1", "delta_sha": "accepted-delta-sha"},
+    # A second attested delta of the same spec, for the same purpose.
+    "spec/S1@revised-delta-sha": {"spec": "spec/S1", "delta_sha": "revised-delta-sha"},
+}
+ATTESTED_MATERIALITY_FINDINGS = {
+    "finding/materiality@evidence-head-sha": {
+        "issuer": AUTHORIZED_AUTHORITY,
+        "spec_baseline_ref": "spec/S1@baseline-sha",
+        "proposed_delta_ref": ACCEPTED_S1,
+        "delta_sha": "accepted-delta-sha",
+        "evidence_head": "evidence-head-sha",
+    },
+    "finding/materiality-revised@evidence-head-sha": {
+        "issuer": AUTHORIZED_AUTHORITY,
+        "spec_baseline_ref": "spec/S1@baseline-sha",
+        "proposed_delta_ref": "spec/S1@revised-delta-sha",
+        "delta_sha": "revised-delta-sha",
+        "evidence_head": "evidence-head-sha",
+    },
+}
+
 P01_PROJECTION = {
     "spec_baseline_ref": "spec/S1@baseline-sha",
     "proposed_delta_ref": ACCEPTED_S1,
@@ -526,9 +707,13 @@ P02_HISTORICAL_H0 = {
 # A nonmaterial disposition is itself separately evidenced (review F04): a
 # disposition authority, the exact accepted-change binding, and a
 # provenance-bound already-checked materiality finding bound to an evidence
-# head. The authoritative binding of real materiality checks is
-# DEFERRED_TO_T11/NOT_RUN; the decision model enforces the presence of the
-# binding and fails closed (BLOCKED) without it.
+# head. Review #1049 F04-R3: the finding ref below is admitted only because
+# it resolves to a fixture-level, independently attested registry entry
+# (issuer, spec baseline, accepted-delta fingerprint, evidence head) bound to
+# this exact disposition — not because its string shape looks plausible; an
+# unresolvable or mis-bound ref fails closed (BLOCKED). The authoritative
+# binding of real materiality checks is DEFERRED_TO_T11/NOT_RUN; the decision
+# model enforces the attestation binding and fails closed without it.
 P03_NONMATERIAL = {
     "nonmaterial": True,
     "acceptance_authority_ref": AUTHORIZED_AUTHORITY,
@@ -749,8 +934,12 @@ class PositiveReconciliationDecisionTests(unittest.TestCase):
         self.assertIn("explicit proportionate nonmaterial disposition", verdict["reasons"][0])
         self.assertIn("no empty heavyweight record", verdict["reasons"][0])
         # The disposition must be traceable to the provenance-bound materiality
-        # finding (review F04), never to the bare caller flag.
+        # finding (review F04), never to the bare caller flag. Review #1049
+        # F04-R3: the finding is admitted only because it resolves to the
+        # fixture's independently attested registry entry bound to this exact
+        # disposition — not because the string shape looks plausible.
         self.assertIn("finding/materiality@evidence-head-sha", verdict["reasons"][0])
+        self.assertIn("independently attested materiality finding", verdict["reasons"][0])
 
 
 class NegativeReconciliationDecisionTests(unittest.TestCase):
@@ -1056,6 +1245,98 @@ class NegativeReconciliationDecisionTests(unittest.TestCase):
         )
         self.assertTrue(
             any("misclassified material" in reason for reason in verdict["reasons"])
+        )
+
+    def test_review_1049_falsifier_arbitrary_refs_stay_blocked(self) -> None:
+        # Review #1049 F04-R3 concrete falsifier, pinned verbatim: every ref
+        # is a non-empty, well-shaped string, yet none resolves to an attested
+        # binding. The old shape-only gate admitted this projection as
+        # NONMATERIAL; it must fail closed BLOCKED instead.
+        projection = {
+            "nonmaterial": True,
+            "affected_producer_consumer_windows": [],
+            "materiality_finding_ref": "arbitrary/not-checked",
+            "acceptance_authority_ref": "arbitrary",
+            "spec_baseline_ref": "s",
+            "proposed_delta_ref": "d",
+        }
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertIn(
+            "does not resolve to an attested", verdict["reasons"][0]
+        )
+
+    def test_fake_but_well_formed_unattested_finding_ref_is_blocked(self) -> None:
+        # Review #1049 F04-R3: a plausible, well-formed finding ref the
+        # fixture never attested is unverified caller input, not checked
+        # evidence; the disposition fails closed instead of trusting the
+        # ref's shape (the negative class the R2 malformed/removal oracles
+        # did not cover).
+        projection = dict(P03_NONMATERIAL)
+        projection["materiality_finding_ref"] = "review:spec-governance@6105069"
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertIn(
+            "does not resolve to an attested materiality finding",
+            verdict["reasons"][0],
+        )
+
+    def test_unattested_identity_refs_fail_closed(self) -> None:
+        # Review #1049 F04-R3: the three identity/authority refs are no longer
+        # trusted on truthiness; each well-formed but unattested value fails
+        # the disposition closed.
+        for ref, fake in (
+            ("acceptance_authority_ref", "authority/self-declared-comment"),
+            ("spec_baseline_ref", "spec/S1@unattested-baseline-sha"),
+            ("proposed_delta_ref", "spec/S1@unattested-delta-sha"),
+        ):
+            with self.subTest(ref=ref):
+                projection = dict(P03_NONMATERIAL)
+                projection[ref] = fake
+                verdict = decide(projection)
+                self.assertEqual(verdict["decision"], "BLOCKED")
+                self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+                self.assertTrue(
+                    any(
+                        "does not resolve to an attested" in reason
+                        for reason in verdict["reasons"]
+                    )
+                )
+
+    def test_attested_finding_bound_to_wrong_delta_fingerprint_is_blocked(self) -> None:
+        # Review #1049 F04-R3: resolution is necessary but not sufficient —
+        # the attested finding for the revised delta resolves against the
+        # registry yet is bound to a different accepted-delta fingerprint
+        # than this disposition claims; the mismatch fails closed, never
+        # NONMATERIAL.
+        projection = dict(P03_NONMATERIAL)
+        projection["materiality_finding_ref"] = (
+            "finding/materiality-revised@evidence-head-sha"
+        )
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertTrue(
+            any("delta-fingerprint binding fails closed" in reason for reason in verdict["reasons"])
+        )
+
+    def test_attested_refs_bound_to_different_specs_fail_closed(self) -> None:
+        # Review #1049 F04-R3 subject binding: every ref individually
+        # resolves, but the baseline attests spec S2 while the authority and
+        # the finding attest spec S1; one disposition carries exactly one
+        # subject, so the mismatch fails closed.
+        projection = dict(P03_NONMATERIAL)
+        projection["spec_baseline_ref"] = "spec/S2@baseline-sha"
+        verdict = decide(projection)
+        self.assertEqual(verdict["decision"], "BLOCKED")
+        self.assertNotEqual(verdict["decision"], "NONMATERIAL")
+        self.assertTrue(
+            any("mismatched subject binding" in reason for reason in verdict["reasons"])
+        )
+        self.assertTrue(
+            any("subject binding fails closed" in reason for reason in verdict["reasons"])
         )
 
     def test_nonmaterial_claim_with_a_material_diff_is_not_nonmaterial(self) -> None:
