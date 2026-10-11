@@ -22,6 +22,20 @@ never a false-green ADMITTED); every covered job class resolves through an
 explicit owner-obligation mapping while unknown labels fail closed as
 UNVERIFIED_COVERAGE; each trace binds the real owning proof ref/currentness so
 the projection stays falsifiable.
+
+Review #1041 R2 bounded repairs (fail-closed hardening, this revision):
+an owner NOT_APPLICABLE verdict is admissible only for a dimension
+independently observed ABSENT within authorized scope that no other owner or
+declared job label demands — anywhere else it contradicts the inspected facts
+and the aggregate CONFLICTs/DENies (never silently N/A); the applicable
+canonical authority reference set must be complete with exact immutable pins
+(a missing member, a non-canonical tier, or an "unresolved" owner blob can
+never be current or pass); blank/malformed/misbound/wrong-subject/stale proof
+refs are untrusted evidence and fail closed as NOT_RUN/UNKNOWN (never
+CURRENT); and the centralized effective-rule projection / real owner-contract
+integration oracle is DEFERRED_TO_T11 and explicitly NOT_RUN — this task-local
+model is a decision oracle fixture, not the owner contract executor, and no
+owner-contract PASS completeness is claimed here.
 """
 
 from __future__ import annotations
@@ -217,8 +231,39 @@ def trace_subsection() -> str:
 # not a production rules engine and not a shared verifier)
 # ---------------------------------------------------------------------------
 
-def proof(verdict: str = "PASS", ref: str = "", fresh: bool = True) -> dict:
-    return {"verdict": verdict, "ref": ref or f"proof:{verdict.lower()}@707f", "fresh": fresh}
+def proof(
+    verdict: str = "PASS",
+    ref: str = "",
+    fresh: bool = True,
+    subject: str | None = None,
+) -> dict:
+    entry = {"verdict": verdict, "ref": ref or f"proof:{verdict.lower()}@707f", "fresh": fresh}
+    if subject is not None:
+        entry["subject"] = subject
+    return entry
+
+
+# Review #1041 F04: a trusted owner proof ref must be a non-blank, well-formed
+# "source:identity@immutable-blob" pointer; blank or malformed refs (wrong
+# source shape, missing/empty blob) are not evidence and fail closed.
+PROOF_REF_PATTERN = re.compile(r"^[a-z][a-z0-9_-]*:[A-Za-z0-9._/-]+@[0-9a-f]{4,40}$")
+
+
+def proof_ref_defect(owner_proof: dict, subject: str) -> str:
+    """Return a rejection reason when a proof ref is not trusted evidence.
+
+    Blank refs, malformed refs, and refs bound to a different exact subject
+    are untrusted; the caller fails the gate closed instead of binding CURRENT.
+    """
+    ref = owner_proof.get("ref")
+    if not isinstance(ref, str) or not ref.strip():
+        return "blank proof ref is not trusted evidence"
+    if not PROOF_REF_PATTERN.match(ref):
+        return f"malformed proof ref {ref!r}: expected 'source:identity@immutable-blob'"
+    bound_subject = owner_proof.get("subject")
+    if bound_subject is not None and bound_subject != subject:
+        return f"proof ref {ref!r} is bound to subject {bound_subject!r}, not {subject!r}"
+    return ""
 
 
 def all_pass_proofs() -> dict:
@@ -330,18 +375,35 @@ def resolve_effective_rules(fixture: dict) -> dict:
         rules.append(rule)
         by_obligation[obligation] = rule
 
-    # 1. Currentness: one immutable pin, resolved owner blobs, exact subject.
+    # 1. Currentness: one immutable pin, the complete applicable canonical
+    #    authority reference set with exact immutable pins, exact subject.
+    #    Review #1041 F03: omitting tiers a fixture cannot defend is not a
+    #    pass — the canonical owner/authority set is required in full, a
+    #    non-canonical tier is rejected, and an "unresolved" owner blob can
+    #    never count as current.
     currentness_failure = ""
     if fixture["standard_revision"] != PINNED_STANDARD_REVISION:
         currentness_failure = "standard revision is not the single pinned immutable revision"
     elif not subject:
         currentness_failure = "exact subject identity missing"
     else:
-        for tier, authority_ref in fixture["authority_refs"].items():
-            expected = OWNER_BLOBS.get(tier)
-            if expected is None or not authority_ref.endswith(f"@{expected}"):
-                currentness_failure = f"owner blob mismatch for {tier}"
-                break
+        refs = fixture["authority_refs"]
+        missing_tiers = sorted(tier for tier in OWNER_BLOBS if tier not in refs)
+        noncanonical_tiers = sorted(tier for tier in refs if tier not in OWNER_BLOBS)
+        if missing_tiers or noncanonical_tiers:
+            currentness_failure = (
+                "incomplete/non-canonical authority reference set (missing: "
+                + (", ".join(missing_tiers) or "none")
+                + "; non-canonical: "
+                + (", ".join(noncanonical_tiers) or "none")
+                + ")"
+            )
+        else:
+            for tier, authority_ref in refs.items():
+                expected = OWNER_BLOBS.get(tier)
+                if expected is None or not authority_ref.endswith(f"@{expected}"):
+                    currentness_failure = f"owner blob mismatch for {tier}"
+                    break
     if currentness_failure:
         emit(
             "pinned standard currentness verification",
@@ -394,19 +456,66 @@ def resolve_effective_rules(fixture: dict) -> dict:
     # Review #1032 R03: currentness is bound to the real owning proof here —
     # a missing or stale proof projects UNKNOWN with owner_proof_ref "NONE",
     # never CURRENT, and only a fresh PASS proof binds CURRENT + the proof ref.
+    # Review #1041 F02: an owner NOT_APPLICABLE verdict is admissible only for
+    # a dimension independently observed ABSENT within authorized scope that
+    # no other owner or declared label demands; against an inspected PRESENT
+    # fact it is a contradiction and the aggregate must DENY. F04: blank/
+    # malformed/misbound/wrong-subject proof refs are untrusted and fail
+    # closed as NOT_RUN/UNKNOWN, never CURRENT.
+    conflict = False
+    label_demanded_obligations = {
+        JOB_OBLIGATIONS[job] for job in declared_jobs if job in JOB_OBLIGATIONS
+    }
+    ref_owners: dict[str, set[str]] = {}
     for rule in rules:
+        owner_proof = fixture["owner_proofs"].get(rule["obligation"])
+        if (
+            owner_proof is not None
+            and owner_proof.get("fresh")
+            and isinstance(owner_proof.get("ref"), str)
+        ):
+            ref_owners.setdefault(owner_proof["ref"], set()).add(rule["obligation"])
+    for rule in rules:
+        obligation = rule["obligation"]
         state = rule["epistemic"]
         if state == "ABSENT_WITH_INSPECTED_SCOPE":
+            if obligation in label_demanded_obligations:
+                # F02(b): a declared job label demands this gate while the
+                # dimension is claimed inspected-ABSENT — the contradiction
+                # fails closed instead of minting an N/A.
+                conflict = True
+                rule["gate_state"] = "BLOCKED"
+                rule["trace"]["applicability_reason"] += (
+                    "; declared job label demands this gate while the dimension is claimed "
+                    "ABSENT_WITH_INSPECTED_SCOPE: contradiction fails closed, N/A denied"
+                )
+                continue
             rule["gate_state"] = "NOT_APPLICABLE"
             rule["trace"]["required_evidence_currentness"] = "NOT_REQUIRED"
             continue
-        owner_proof = fixture["owner_proofs"].get(rule["obligation"])
+        owner_proof = fixture["owner_proofs"].get(obligation)
         if state == "UNKNOWN" or owner_proof is None or not owner_proof["fresh"]:
             rule["gate_state"] = "NOT_RUN"
             rule["trace"]["owner_proof_ref"] = "NONE" if owner_proof is None else owner_proof["ref"]
             rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
             if owner_proof is not None and not owner_proof["fresh"]:
                 rule["trace"]["applicability_reason"] += "; earlier assessment is from a stale HEAD and stays UNKNOWN"
+            continue
+        # F04: only a non-blank, well-formed, subject-bound, uniquely bound
+        # proof ref is trusted evidence; anything else fails closed.
+        ref_defect = proof_ref_defect(owner_proof, subject)
+        if not ref_defect and len(ref_owners.get(owner_proof["ref"], ())) > 1:
+            other = sorted(ref_owners[owner_proof["ref"]] - {obligation})
+            ref_defect = (
+                f"proof ref {owner_proof['ref']!r} is misbound: already bound to "
+                + ", ".join(repr(item) for item in other)
+                + " and cannot prove this obligation too"
+            )
+        if ref_defect:
+            rule["gate_state"] = "NOT_RUN"
+            rule["trace"]["owner_proof_ref"] = owner_proof["ref"]
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
+            rule["trace"]["applicability_reason"] += f"; untrusted proof ref rejected ({ref_defect})"
             continue
         rule["trace"]["owner_proof_ref"] = owner_proof["ref"]
         if owner_proof["verdict"] == "PASS":
@@ -416,15 +525,22 @@ def resolve_effective_rules(fixture: dict) -> dict:
             rule["gate_state"] = "FAIL"
             rule["trace"]["required_evidence_currentness"] = "CURRENT"
         elif owner_proof["verdict"] == "NOT_APPLICABLE":
-            rule["gate_state"] = "NOT_APPLICABLE"
-            rule["trace"]["required_evidence_currentness"] = "NOT_REQUIRED"
+            # F02(a): a rule only reaches the verdict path on independent
+            # PRESENT inspection (UNKNOWN continues earlier), so an owner N/A
+            # verdict contradicts the inspected fact — aggregate must DENY.
+            conflict = True
+            rule["gate_state"] = "BLOCKED"
+            rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
+            rule["trace"]["applicability_reason"] += (
+                "; owner NOT_APPLICABLE proof contradicts the independently inspected "
+                "PRESENT fact: aggregate must DENY, N/A not admissible"
+            )
         else:
             rule["gate_state"] = "BLOCKED"
             rule["trace"]["required_evidence_currentness"] = "UNKNOWN"
 
     # 5. Precedence within concern: lower authority cannot weaken a higher
     #    owner's gate; contradiction is a CONFLICT, never a silent downgrade.
-    conflict = False
     for override in fixture["overrides"]:
         rule = by_obligation.get(override["obligation"])
         if rule is None or override["value"] not in WEAKENING_VALUES:
@@ -1001,6 +1117,204 @@ class TraceSideEffectBoundaryTests(unittest.TestCase):
         for rule in result["rules"]:
             with self.subTest(obligation=rule["obligation"]):
                 self.assertEqual(set(rule["trace"]), TRACE_FIELDS)
+
+
+class R2NaBypassDenyTests(unittest.TestCase):
+    """Review #1041 F02: an owner NOT_APPLICABLE verdict holds only for a
+    dimension independently observed ABSENT within authorized scope that no
+    other owner/declared label demands; contradictions DENY the aggregate."""
+
+    def test_f02a_na_owner_proof_against_present_fact_denies_aggregate(self) -> None:
+        """PRESENT inspected security fact + NOT_APPLICABLE owner proof → DENY."""
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = proof("NOT_APPLICABLE", ref="proof:na-vs-present@707f")
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertEqual(result["resolution"], "CONFLICT")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "BLOCKED")
+        self.assertNotEqual(security["gate_state"], "NOT_APPLICABLE")
+        self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+        self.assertIn("aggregate must DENY", security["trace"]["applicability_reason"])
+
+    def test_f02b_label_demanded_gate_vs_claimed_absent_contradiction_denies(self) -> None:
+        """Declared J07 label demands the gate while the dimension is claimed
+        inspected-ABSENT: the contradiction fails closed, no N/A is minted."""
+        observations = {
+            dimension: {
+                "state": "ABSENT_WITH_INSPECTED_SCOPE",
+                "ref": f"inventory:{dimension}@707f",
+                "fresh": True,
+            }
+            for dimension in MATERIAL_DIMENSIONS
+        }
+        result = resolve_effective_rules(
+            service_x01_fixture(declared_jobs={"J07_SECURITY_VULNERABILITY"}, observations=observations)
+        )
+        self.assertEqual(result["resolution"], "CONFLICT")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "BLOCKED")
+        self.assertNotEqual(security["gate_state"], "NOT_APPLICABLE")
+        self.assertIn("contradiction fails closed", security["trace"]["applicability_reason"])
+
+    def test_f02c_independently_inspected_absent_without_label_demand_stays_na(self) -> None:
+        """The light N/A route survives: inspected ABSENT + no label/owner
+        demand is still admissible proportionality, not a bypass."""
+        result = resolve_effective_rules(cli_docs_fixture())
+        self.assertEqual(result["resolution"], "ADMITTED")
+        for dimension in MATERIAL_DIMENSIONS:
+            obligation = DIMENSION_OBLIGATIONS[dimension]
+            self.assertEqual(gate_map(result)[obligation], "NOT_APPLICABLE")
+
+
+class R2AuthorityRefCompletenessTests(unittest.TestCase):
+    """Review #1041 F03: the applicable canonical authority reference set must
+    be complete with exact immutable pins; an "unresolved" owner blob can never
+    be current or pass."""
+
+    def test_f03_empty_authority_ref_set_is_rejected_even_with_full_proofs(self) -> None:
+        """authority_refs={} + every other proof PASS → DENY, never current."""
+        result = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs={})
+        )
+        self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        for rule in result["rules"]:
+            with self.subTest(obligation=rule["obligation"]):
+                self.assertNotEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+                self.assertNotEqual(rule["gate_state"], "PASS")
+                self.assertNotEqual(rule["trace"]["resolution"], "ADMITTED")
+
+    def test_f03_missing_single_authority_member_is_rejected(self) -> None:
+        refs = dict(service_x01_fixture()["authority_refs"])
+        del refs["TASK_ACCEPTANCE"]
+        result = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs=refs)
+        )
+        self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+        self.assertIn(
+            "TASK_ACCEPTANCE",
+            rule_for(result, "pinned standard currentness verification")["trace"]["applicability_reason"],
+        )
+
+    def test_f03_noncanonical_authority_tier_is_rejected(self) -> None:
+        refs = dict(service_x01_fixture()["authority_refs"])
+        refs["WIKI_RUMOR"] = f"wiki/rumor@{'f' * 40}"
+        result = resolve_effective_rules(
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs=refs)
+        )
+        self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+
+    def test_f03_unresolved_owner_blob_is_never_current_or_pass(self) -> None:
+        partial_refs = {
+            tier: ref
+            for tier, ref in service_x01_fixture()["authority_refs"].items()
+            if tier != "FROZEN_ARCHITECTURE"
+        }
+        fixtures = [
+            service_x01_fixture(owner_proofs=all_pass_proofs(), authority_refs={}),
+            service_x01_fixture(declared_jobs={"J03_BUG_FIX"}, authority_refs=partial_refs),
+        ]
+        for fixture in fixtures:
+            result = resolve_effective_rules(fixture)
+            with self.subTest(subject=fixture["exact_subject"]):
+                self.assertEqual(result["resolution"], "REJECTED_CURRENTNESS")
+            for rule in result["rules"]:
+                trace = rule["trace"]
+                if trace["owner_ref_blob"] == "unresolved" or "unresolved" in trace["decision_owner_ref"]:
+                    with self.subTest(obligation=rule["obligation"]):
+                        self.assertNotEqual(trace["required_evidence_currentness"], "CURRENT")
+                        self.assertNotEqual(rule["gate_state"], "PASS")
+
+    def test_f03_admitted_traces_never_carry_unresolved_owner_blobs(self) -> None:
+        for fixture in (service_x01_fixture(owner_proofs=all_pass_proofs()), cli_docs_fixture()):
+            result = resolve_effective_rules(fixture)
+            self.assertEqual(result["resolution"], "ADMITTED")
+            for rule in result["rules"]:
+                with self.subTest(obligation=rule["obligation"]):
+                    self.assertNotEqual(rule["trace"]["owner_ref_blob"], "unresolved")
+                    self.assertNotIn("unresolved", rule["trace"]["decision_owner_ref"])
+
+
+class R2ProofRefTrustTests(unittest.TestCase):
+    """Review #1041 F04: blank/wrong-source/malformed/misbound/wrong-subject/
+    stale proof refs are untrusted evidence and fail closed."""
+
+    def test_f04_blank_fresh_proof_ref_is_never_current_and_denies(self) -> None:
+        proofs = all_pass_proofs()
+        proofs["independent security review"] = {"verdict": "PASS", "ref": "", "fresh": True}
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        self.assertNotEqual(result["resolution"], "ADMITTED")
+        security = rule_for(result, "independent security review")
+        self.assertEqual(security["gate_state"], "NOT_RUN")
+        self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+        self.assertIn("untrusted proof ref rejected", security["trace"]["applicability_reason"])
+
+    def test_f04_malformed_wrong_source_and_wrong_subject_refs_fail_closed(self) -> None:
+        cases = {
+            "malformed_no_source": {"verdict": "PASS", "ref": "not-a-valid-ref", "fresh": True},
+            "malformed_no_blob": {"verdict": "PASS", "ref": "review:sec@", "fresh": True},
+            "wrong_source_shape": {"verdict": "PASS", "ref": "::@", "fresh": True},
+            "wrong_subject": {
+                "verdict": "PASS",
+                "ref": "proof:independent-security-review@707f",
+                "fresh": True,
+                "subject": "svc/other@task/elsewhere",
+            },
+            "stale": {"verdict": "PASS", "ref": "review:sec@deadbeef", "fresh": False},
+        }
+        for name, owner_proof in cases.items():
+            with self.subTest(case=name):
+                proofs = all_pass_proofs()
+                proofs["independent security review"] = owner_proof
+                result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+                self.assertNotEqual(result["resolution"], "ADMITTED")
+                security = rule_for(result, "independent security review")
+                self.assertNotEqual(security["gate_state"], "PASS")
+                self.assertNotEqual(security["trace"]["required_evidence_currentness"], "CURRENT")
+                if name == "stale":
+                    # stale proofs fail closed through the dedicated stale-HEAD
+                    # route rather than the untrusted-ref rejection.
+                    self.assertIn("stale HEAD", security["trace"]["applicability_reason"])
+                else:
+                    self.assertIn("untrusted proof ref rejected", security["trace"]["applicability_reason"])
+
+    def test_f04_misbound_shared_ref_cannot_serve_two_obligations(self) -> None:
+        proofs = all_pass_proofs()
+        shared = "proof:shared-evidence@707f"
+        proofs["independent security review"] = proof(ref=shared)
+        proofs["authorized actor/permission evidence"] = proof(ref=shared)
+        result = resolve_effective_rules(service_x01_fixture(owner_proofs=proofs))
+        self.assertEqual(result["resolution"], "UNVERIFIED_GATES")
+        for obligation in ("independent security review", "authorized actor/permission evidence"):
+            with self.subTest(obligation=obligation):
+                rule = rule_for(result, obligation)
+                self.assertEqual(rule["gate_state"], "NOT_RUN")
+                self.assertNotEqual(rule["trace"]["required_evidence_currentness"], "CURRENT")
+                self.assertIn("misbound", rule["trace"]["applicability_reason"])
+
+
+@unittest.skip(
+    "DEFERRED_TO_T11 / NOT_RUN: the centralized effective-rule projection and the real "
+    "owner-contract integration (shared verifier / Build Host wiring) are owned by T11. "
+    "This file's in-test resolution model is a decision oracle fixture, not the owner "
+    "contract executor; no owner-contract PASS completeness is claimed by this task. "
+    "Review #1041 F05."
+)
+class DeferredCentralizedProjectionIntegrationTests(unittest.TestCase):
+    """F05 (review #1041): explicit NOT_RUN marker for owner-contract execution.
+
+    Kept as a named, skipped oracle so the deferral stays visible in test
+    output instead of being conflated with a passing owner-contract check.
+    """
+
+    def test_centralized_projection_wired_to_real_owner_contract(self) -> None:
+        raise AssertionError("must stay skipped until T11 wires the centralized projection")
+
+    def test_owner_contract_pass_completeness_against_build_host(self) -> None:
+        raise AssertionError("must stay skipped until T11/Build Host integration exists")
 
 
 if __name__ == "__main__":
