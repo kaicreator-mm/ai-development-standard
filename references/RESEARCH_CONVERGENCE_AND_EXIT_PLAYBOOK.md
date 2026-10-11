@@ -71,7 +71,7 @@ Adversarial intake: existing evidence sufficient?
 
 **研究完成标准 = Evidence complete / decision-ready，不是 Feature complete。** Demo 可在接口尚未产品化、UI/packaging 未完成时收口；但必须写清尚未证明的真实执行/安全/Host/恢复语义。Static Research 可采用 ADOPT/ADAPT/DEFER/REJECT/INSUFFICIENT_EVIDENCE，Executable Research Demo 保留其 PASS/FAIL/BLOCKED；两者不能混淆（#186）。
 
-## 5. 五类出口，以及不得随意后推的风险
+## 5. 六类出口，以及不得随意后推的风险
 
 | 观察结果 | 正确出口 | 预研是否继续 |
 | --- | --- | --- |
