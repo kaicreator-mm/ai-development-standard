@@ -79,6 +79,25 @@ V411_OWNER_BLOBS = {
     "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md": "15e355f6ec86370599f2dda7b61963d93fead66f",
 }
 
+# v4.11 F2 shared-pin bridge (issue #967, dispatch V411-T06-F2-SHARED-PIN-R1;
+# rebind #967@6110741236: JIT base rebound to version/v4.11.0@03db16e9):
+# PR #1066 (T06) lawfully mutates standards/EXECUTION_ARCHITECTURE_STANDARD.md
+# inside its approved owner pack (qualified source head ca0a5230, review
+# #1013@6110395471_PASS), so the exact v4.10-integrated rebound pin in
+# READ_ONLY_OWNER_PATHS_REBOUND_BLOBS above is RED at the v4.11 integrated
+# candidate (observed: PR#1066_verify_FAIL_role_execution_profile_exact_
+# execution_standard_pin). Exact dual-pin admission, same idiom as the F1
+# bridge above: the historical pin stays authoritative everywhere and gains a
+# tamper anchor (it must stay re-derivable from the immutable v4.11 version
+# base object — a hand-edited constant can never self-certify); the ONE exact
+# qualified T06 blob below is admitted ONLY under the exact v4.11 context
+# gate (_v411_context_verified), never as an allowed-any waiver. Any third
+# blob still fails; the version base (old blob) keeps passing on the
+# historical pin alone; zero tests removed, no intent weakened.
+V411_REBOUND_OWNER_BLOBS = {
+    "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "048690864ff2bb3445780ba2ac5ed2e07b272485",
+}
+
 PLANNING_PATHS = tuple(
     f".agent/execution/T-004/{name}"
     for name in (
@@ -615,8 +634,25 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
         # the T-008-mutated dispatch surface are pinned to their exact current
         # blobs (see READ_ONLY_OWNER_PATHS_REBOUND_BLOBS provenance).
         for rel_path, pinned_blob in READ_ONLY_OWNER_PATHS_REBOUND_BLOBS.items():
-            with self.subTest(path_rebound=rel_path):
-                self.assertEqual(pinned_blob, git_object_sha("HEAD", rel_path))
+            v411_blob = V411_REBOUND_OWNER_BLOBS.get(rel_path)
+            if v411_blob is None:
+                with self.subTest(path_rebound=rel_path):
+                    self.assertEqual(pinned_blob, git_object_sha("HEAD", rel_path))
+                continue
+            # v4.11 F2 shared-pin bridge (issue #967, dispatch
+            # V411-T06-F2-SHARED-PIN-R1): tamper anchor first — the historical
+            # pin must stay re-derivable from the immutable v4.11 version
+            # base — then pin-identity admission of the ONE qualified T06
+            # blob under the exact v4.11 context gate. Any third blob still
+            # fails; the version base (old blob) keeps passing on the
+            # historical pin alone.
+            with self.subTest(path_rebound_pin_anchor=rel_path):
+                self.assertEqual(git_object_sha(VERSION_BASE_SHA, rel_path), pinned_blob)
+            with self.subTest(path_rebound_v411_bridge=rel_path):
+                admitted = {pinned_blob}
+                if _v411_context_verified(rel_path, pinned_blob):
+                    admitted.add(v411_blob)
+                self.assertIn(git_object_sha("HEAD", rel_path), admitted)
         self.assertEqual(git_object_sha(BASE_SHA, "docs/implementation/4.9.0/L2_ARCHITECTURE_EVIDENCE.md"), FROZEN_L2_BLOB)
         # v4.11 F1 shared-pin bridge (issue #1064): pin-identity admission for
         # the one owner-pack mutation approved for v4.11. The historical
