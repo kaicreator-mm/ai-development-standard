@@ -372,7 +372,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 0ab8d306fd4d5179970d7db33116366196acc9d1
+          ref: e68d2246fb88a3ccb0ea8f647ad98f021d1b30a7
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -380,7 +380,7 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T09 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "0ab8d306fd4d5179970d7db33116366196acc9d1"
+          test "$(git rev-parse HEAD)" = "e68d2246fb88a3ccb0ea8f647ad98f021d1b30a7"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD:standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md
           git rev-parse HEAD:standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md
@@ -401,7 +401,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 0ab8d306fd4d5179970d7db33116366196acc9d1
+          ref: e68d2246fb88a3ccb0ea8f647ad98f021d1b30a7
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
