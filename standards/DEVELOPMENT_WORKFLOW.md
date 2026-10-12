@@ -53,6 +53,35 @@ Integration Mode SHOULD 在 Stage 0 记录；若开发过程中复杂度显著�
 
 **Integration Mode 不决定 Review 是否 required。** Review 由 Review Policy 单独决定。
 
+### 2.3 Risk-intake：受影响源实质性清单（affected-source materiality inventory）
+
+Intake 阶段 MUST 为每个 changed subject 产出一份受影响源实质性清单（`MATERIALITY_INVENTORY` risk trace）：对每个 actually inspected 的 changed source，按实际 diff 检视记录 per-source epistemic state。清单消费 §4 “Effective-rule trace” floor 的解析语义 **read-only**，只向其供给 observed facts；它不是第二 applicability 权威，不新增 gate state、workflow state、共享 schema 或第二套方法论。
+
+material class 是从实际 diff 检视中观察到的实质效果事实（permission / API / security / migration / deployment / external-effect 等），不是新枚举权威。每条 inventory record MUST 绑定：
+
+```text
+subject
+source_path
+inspected_ref（实际检视所依据的 immutable blob/HEAD ref）
+material_class_observed
+epistemic_state ∈ {PRESENT, ABSENT_WITH_INSPECTED_SCOPE, UNKNOWN}
+currentness
+required_gate_ref（自 §4 floor 继承，只读）
+resolution_route
+```
+
+epistemic state 是关于检视本身的 epistemic fact，不是新增 gate 枚举；gate 状态仍使用既有枚举，未满足时保持 `NOT_RUN` / `BLOCKED`：
+
+- `PRESENT`：在该 source 上实际观察到某 material class，MUST 附 inspection ref。
+- `ABSENT_WITH_INSPECTED_SCOPE`：在明确陈述的 inspected scope 内实际检视并确认该 class 真实缺失，MUST 附 inspected scope ref；没有 affirmative inspection evidence 时 MUST NOT 使用。
+- `UNKNOWN`：未实际检视、不可检视或 currentness 未证明，是未检视 source 的默认状态。“未检视” MUST NOT 与“已检视且缺失”混同。
+
+currentness 绑定：`inspected_ref` MUST 解析到 candidate tree/HEAD 中该 source 的实际 blob；ref 缺失、过期（不匹配 candidate）或与 authority 矛盾时，该记录 MUST 降级为 `UNKNOWN` 并要求重新检视；MUST NOT 推断 currentness，MUST NOT 把过期的 ABSENT 提升为当前缺失。
+
+缺失或乐观的 job label 从来不是安全捷径：由 independently inspected material fact 导出的义务不因删除或缺失 label 而消失（§4 floor）。diff 检视显示 material change 而声明 label 未覆盖或缺失、source 未实际检视时，MUST fail closed `BLOCKED` 并按 §4 “Applicability UNKNOWN 或矛盾：fail closed” 路由到 owning authority；MUST NOT 记为 `NOT_APPLICABLE`，MUST NOT 产生 `PASS`。label 与检视矛盾时按 `CONFLICT` 路由 owning authority 并保留历史事实。
+
+清单只供给观察事实：MUST NOT 用清单解除、降级或豁免 floor 或更高 authority 已要求的任何 gate；MUST NOT 以清单为据铸造新 gate/枚举。全部 changed source 检视为当前缺失且无 `PRESENT` class 时，既有 proportionate/快速路径（§7）保持不变，MUST NOT 因清单强加 speculative 的全版本记录。集中式 trace schema / manifest / verifier 投影归其既有 canonical owner；投影缺失时相关集成保持 `NOT_RUN` / `BLOCKED`，additive 提案按既有路由升级，本节不铸造 shadow schema/template/manifest 字段。
+
 ## 3. 生命周期
 
 ### Stage 0 — Intake / Baseline
