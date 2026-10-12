@@ -123,7 +123,12 @@ T012_MERGED_BLOBS = {
     # output (exact T02/T06 admission extensions under the existing v4.11
     # context gate), so the pin moves to the converged kernel blob; every
     # other T-012 output stays pinned to its exact composed blob.
-    "scripts/test_v49_gate_currentness.py": "2a7a03a0995f2494d9c39f173bcad934b97d9d43",
+    # R2C re-bind (issue #967 V411-T13-T07-SHARED-PIN-CONVERGENCE-R2C; dispatch
+    # #967@6119832547, amendment #967@6120017465, builder claim
+    # #967@6120085271): the convergence lane again edits this T-012 output
+    # (exact T13 workflow / T07 execution admission extensions under the same
+    # v4.11 context gate), so the pin moves to the resulting kernel blob.
+    "scripts/test_v49_gate_currentness.py": "9f278074d0c243f6580e8095064235ac8d19cb85",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
     # F1-style re-bind (#1038): the CI-repair lane itself edits this T-012
     # output (checkout fetch-depth: 0), so the pin moves to the repaired

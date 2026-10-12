@@ -177,14 +177,31 @@ READ_ONLY_DEPS_REBOUND_BLOBS = {
 # repository-fact context gate (version-base ancestry + historical pin
 # identity at that base — no env/label/caller admission), any third blob
 # still fails, and every other surface keeps its exact historical pin.
+#
+# v4.11 shared-pin convergence R2C (issue #967; dispatch #967@6119832547 as
+# amended by #967@6120017465, builder claim #967@6120085271): the admitted-set
+# extension is exactly two more lawful successor blobs — the qualified T13
+# workflow blob `59221855…` (DEVELOPMENT_WORKFLOW.md at the qualified T13 head
+# 869b8a3d, PR #1070, review #1015@6119728123_PASS_SOURCE_ONLY), admitted
+# after the already-admitted T01/T02 blobs on the same version-lineage chain,
+# and the exact qualified T07 execution blob `f5552653…`
+# (EXECUTION_ARCHITECTURE_STANDARD.md at the qualified T07 head b144e4ce,
+# review #1014@6119709894_PASS_SOURCE_ONLY), admitted after the
+# already-admitted T06 blob. Pin constants only: every admitted value stays
+# gated by the same repository-fact context gate (version-base ancestry +
+# historical pin identity at that base — no env/label/caller admission), any
+# further blob still fails, and every other surface keeps its exact
+# historical pin.
 VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
 V411_OWNER_BLOBS = {
     "standards/DEVELOPMENT_WORKFLOW.md": (
         "57902fbcb56ffec9a461365ace472fb03e3520db",
         "a12fc755cf994180aeaea25055a8a24ac0bf6c9f",
+        "592218559e15db927c9d1df8ee1c2e877ae42985",
     ),
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": (
         "048690864ff2bb3445780ba2ac5ed2e07b272485",
+        "f5552653f9fd69697b21d87d9890426943fd7f41",
     ),
 }
 
