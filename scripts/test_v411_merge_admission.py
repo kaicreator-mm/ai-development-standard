@@ -91,6 +91,10 @@ MANIFEST = ROOT / "standard-manifest.json"
 
 # Exact base of this task (controller admission #1014@6118129585).
 BASE_SHA = "b501b0825ec79ce6d1742ceabca0bcdc5dc0a72a"
+# Immutable source-reviewed *owner-lane* HEAD: scope changes are attributed
+# to this source commit, not to all lawful version descendants of BASE_SHA.
+# The new composed HEAD still has to descend from this exact owner commit.
+OWNER_QUALIFIED_HEAD = "b144e4cedbc03c87070ea13a608eff67e0717eab"
 
 # ---------------------------------------------------------------------------
 # section identity (headings are the section identity; tests slice by them)
@@ -971,9 +975,23 @@ class Section14PlacementTests(unittest.TestCase):
             self.assertEqual(git_blob(BASE_SHA, rel), git_blob("HEAD", rel), rel)
 
     def test_owner_write_set_is_exactly_two_paths_and_tree_clean(self):
-        changed = set(filter(None, git("diff", "--name-only", BASE_SHA, "HEAD").splitlines()))
+        # Owner write-set is an immutable source-lane fact. The integrated
+        # version can lawfully contain other owners' already-reviewed changes;
+        # comparing original BASE_SHA to integrated HEAD would falsely blame
+        # those unrelated paths on T07.
+        changed = set(filter(None, git(
+            "diff", "--name-only", BASE_SHA, OWNER_QUALIFIED_HEAD
+        ).splitlines()))
+        self.assertEqual(changed, {EA, "scripts/test_v411_merge_admission.py"})
+        # An unrelated/reconstructed tree must not impersonate the reviewed
+        # owner successor merely by copying the text.
+        git("merge-base", "--is-ancestor", OWNER_QUALIFIED_HEAD, "HEAD")
+        # Preserve the approved §14 exactly even in a lawful combined version
+        # with later unrelated owner sections or CI support paths.
+        approved = git("show", f"{OWNER_QUALIFIED_HEAD}:{EA}")
         self.assertEqual(
-            changed, {EA, "scripts/test_v411_merge_admission.py"}
+            section(ea_text(), SECTION_14, SECTION_15),
+            section(approved, SECTION_14, SECTION_15),
         )
         self.assertEqual(git("status", "--porcelain").strip(), "")
 
