@@ -60,6 +60,25 @@ this PR HEAD until a lawful bridge admits the exact T13 successor blob, and
 the shared test_v49_conformance_suite.py gate-kernel blob rebind fails
 mechanically with it; the preflighted support lane (#1015@6117229584,
 precedent #1064) owns exactly those two files.
+
+R1 repair (failed Fresh Review #1015@6118076585, repair admission
+#1015@6118123513 — write set unchanged, oracle tightened fail-closed):
+(P1-01) coverage_ledger no longer accepts a caller-defined universe — it
+validates coverage input against the authoritative declared role ×
+transport × job-set × profile × archetype denominator derived from durable
+fixture authority; profile is part of ledger identity; omitted, proofless
+and out-of-denominator inputs produce explicit GAP/UNVERIFIED rows /
+rejected attempts and complete stays False. (P1-02) every T02 inventory
+record's epistemic/currentness state is validated BEFORE floor consumption:
+PRESENT with non-current ref, UNKNOWN, unresolved state, missing/malformed
+inspected ref and unsupported material class route fail-closed with
+re-inspection and can never silently vanish out of the conjunction, so an
+A0/not-required lane cannot report CONDUCT_TRACE_COMPLETE over them.
+(P1-03) a review:required admission must bind the exact subject/HEAD, an
+accepted + current Review fact, the reviewer role and the reviewer's
+logical operator/session provenance genuinely distinct from the Builder
+context; renamed reviewers, hex-shaped refs and same-context relabels never
+admit.
 """
 
 from __future__ import annotations
@@ -324,6 +343,27 @@ DECLARED_ROLES = frozenset(
 
 ARCHETYPES = frozenset({"A0", "A1", "A2", "A3", "A4"})
 
+# P1-01 repair: durable fixture authority declaring the finite actor
+# denominator (role × transport × job-set × profile × archetype — fixture-
+# level reading of the Frozen PRD actor model + declared profiles; not a new
+# authority, and never caller-defined). Coverage input is validated AGAINST
+# the material subset of this denominator.
+DECLARED_PROFILES = frozenset({"p-engineering", "p-security", "p-validation", "p-docs"})
+
+DECLARED_DENOMINATOR = (
+    {"role": "builder", "transport": "LOCAL", "job_set": ("J_PERMISSION_REVIEW",), "profile": "p-engineering", "archetype": "A1"},
+    {"role": "builder", "transport": "WEB", "job_set": ("J_API_COMPATIBILITY",), "profile": "p-engineering", "archetype": "A1"},
+    {"role": "reviewer", "transport": "LOCAL", "job_set": ("J_SECURITY_REVIEW",), "profile": "p-engineering", "archetype": "A2"},
+    # Profile twin of the previous entry: identical except profile, proving
+    # profile is part of ledger identity (omitting one twin is visible).
+    {"role": "reviewer", "transport": "LOCAL", "job_set": ("J_SECURITY_REVIEW",), "profile": "p-security", "archetype": "A2"},
+    {"role": "validator", "transport": "WEB", "job_set": ("J_EXTERNAL_EFFECT_HANDOFF",), "profile": "p-validation", "archetype": "A2"},
+    {"role": "validator", "transport": "LOCAL", "job_set": ("J_SECURITY_REVIEW", "J_DEPLOY_PLAN"), "profile": "p-validation", "archetype": "A4"},
+    # Proportional A0 docs-only lane: declared but NOT material (no coverage
+    # proof obligation; P04 proportionality).
+    {"role": "builder", "transport": "LOCAL", "job_set": ("J02_DOCS_LOW_RISK",), "profile": "p-docs", "archetype": "A0"},
+)
+
 EPISTEMIC_STATES = frozenset({"PRESENT", "ABSENT_WITH_INSPECTED_SCOPE", "UNKNOWN"})
 
 CANONICAL_GATE_STATES = frozenset({"PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"})
@@ -377,6 +417,18 @@ LEGALITY_ROUTES = frozenset(
     }
 )
 
+# P1-02 repair: inventory epistemic/currentness failures require
+# re-inspection (T02 degrade-to-UNKNOWN semantics) and route BLOCKED, never
+# silently out of the floor conjunction.
+INVENTORY_FAIL_CLOSED_ROUTES = frozenset(
+    {
+        "inventory_stale_degraded_unknown_fail_closed",
+        "inventory_unknown_requires_reinspection",
+        "inventory_inspected_ref_missing_or_malformed",
+        "inventory_state_unresolvable_fail_closed",
+    }
+)
+
 BLOB_HEX = re.compile(r"^[0-9a-f]{64}$")
 
 # Deterministic fixture pins (64-hex shaped, distinct per surface).
@@ -421,6 +473,41 @@ def _inventory_record(source_path, cls, state, currentness, inspected_ref):
         "currentness": currentness,
         "inspected_ref": inspected_ref,
     }
+
+
+def _builder_context(fixture):
+    """The Builder's logical operator/session provenance (P1-03)."""
+    ctx = fixture.get("operator_context") or {}
+    return (ctx.get("operator") or "", ctx.get("session") or "")
+
+
+def review_admission_failures(fixture, admission):
+    """P1-03: exact-subject/current/independence validation of a
+    review:required admission (Interaction §9.1 exact-subject currentness
+    semantics consumed read-only). Shape alone never admits: every field
+    must bind, and the reviewer's logical operator/session context must be
+    genuinely distinct from the Builder context — a renamed reviewer with
+    an arbitrary hex-shaped ref still fails."""
+    failures = []
+    if admission.get("subject_head") != fixture.get("subject_head"):
+        failures.append("review_admission_stale_subject")
+    if admission.get("accepted") is not True:
+        failures.append("review_admission_not_accepted")
+    if admission.get("currentness") != "CURRENT":
+        failures.append("review_admission_not_current")
+    if admission.get("reviewer_role") != "reviewer":
+        failures.append("reviewer_role_invalid")
+    operator = admission.get("reviewer_operator") or ""
+    session = admission.get("reviewer_session") or ""
+    if not operator or not session:
+        failures.append("review_admission_provenance_missing")
+    else:
+        builder_operator, builder_session = _builder_context(fixture)
+        if operator == builder_operator or session == builder_session:
+            failures.append("reviewer_context_not_independent")
+    if not failures and not BLOB_HEX.match(admission.get("admission_ref", "") or ""):
+        failures.append("review_admission_ref_unbound")
+    return failures
 
 
 def conduct_trace(fixture):
@@ -471,12 +558,37 @@ def conduct_trace(fixture):
     if fixture["role"] == "builder" and policy not in REVIEW_POLICIES:
         refusal.append("review_policy_unresolved_fail_closed")
 
-    # 2. consume T02 inventory facts (read-only): only PRESENT+CURRENT
-    # observations enter the floor conjunction.
+    # 2. consume T02 inventory facts (read-only) — P1-02 repair: every
+    # record's epistemic/currentness state is validated BEFORE floor
+    # consumption. PRESENT with a non-current/missing/malformed inspected
+    # ref, UNKNOWN, unresolved state and unsupported material classes route
+    # fail-closed with re-inspection; they can never silently vanish out of
+    # the conjunction and let a proportional lane report complete.
     present_classes = set()
     for rec in fixture["inventory"]:
-        if rec["epistemic_state"] == "PRESENT" and rec["currentness"] == "CURRENT":
-            present_classes.add(rec["material_class"])
+        state = rec.get("epistemic_state")
+        ref = rec.get("inspected_ref") or ""
+        currentness = rec.get("currentness")
+        cls = rec.get("material_class")
+        if state == "PRESENT":
+            if cls not in MATERIAL_CLASSES:
+                refusal.append("unsupported_class_fail_closed")
+            elif not BLOB_HEX.match(ref):
+                refusal.append("inventory_inspected_ref_missing_or_malformed")
+            elif currentness != "CURRENT":
+                refusal.append("inventory_stale_degraded_unknown_fail_closed")
+            else:
+                present_classes.add(cls)
+        elif state == "ABSENT_WITH_INSPECTED_SCOPE":
+            # A stale/unproven absence degrades to UNKNOWN (T02): it never
+            # mints a present fact and never silently disappears — the
+            # record requires re-inspection before the trace can complete.
+            if not BLOB_HEX.match(ref) or currentness != "CURRENT":
+                refusal.append("inventory_stale_degraded_unknown_fail_closed")
+        elif state == "UNKNOWN":
+            refusal.append("inventory_unknown_requires_reinspection")
+        else:
+            refusal.append("inventory_state_unresolvable_fail_closed")
 
     # 3. consume the T01 floor (single resolution path, read-only). An
     # unsupported job class already failed closed above; the floor function
@@ -525,7 +637,10 @@ def conduct_trace(fixture):
             # provenance is recorded, never promoted to host evidence.
             trace["input_refs"]["remote_readback"] = readbacks[0]["ref"]
 
-    # 7. review proportionality (builder exit only).
+    # 7. review proportionality (builder exit only) — P1-03 repair: the
+    # admission must bind exact subject/HEAD, accepted + current Review
+    # fact, reviewer role and genuinely independent operator/session
+    # provenance; reviewer-name and hex-shape checks alone are gone.
     if fixture["role"] == "builder" and policy in REVIEW_POLICIES:
         admission = fixture.get("independent_review_admission")
         if policy == "required":
@@ -533,18 +648,21 @@ def conduct_trace(fixture):
                 refusal.append("review_admission_required")
             elif admission.get("reviewer") == fixture["actor"] or admission.get("self_review"):
                 refusal.append("self_review_rejected")
-            elif not BLOB_HEX.match(admission.get("admission_ref", "") or ""):
-                refusal.append("review_admission_required")
+            else:
+                refusal.extend(review_admission_failures(fixture, admission))
         else:
             # lawful recommended/not-required: no hard Fresh Review
             # prerequisite; a fabricated universal gate is not honored.
             if fixture.get("fabricated_fresh_gate"):
                 rejected.append("unauthorized_fresh_gate_rejected")
 
-    # 8. decision (fail-closed routing).
+    # 8. decision (fail-closed routing). Inventory epistemic failures block
+    # with re-inspection (T02), same as legality routes; exit evidence
+    # failures deny exit.
     if refusal:
+        blocking = LEGALITY_ROUTES | INVENTORY_FAIL_CLOSED_ROUTES
         trace["decision"] = (
-            "BLOCKED" if any(r in LEGALITY_ROUTES for r in refusal) else "EXIT_DENIED"
+            "BLOCKED" if any(r in blocking for r in refusal) else "EXIT_DENIED"
         )
         trace["disposition"] = "GAP/UNVERIFIED"
         trace["refusal_grounds"] = tuple(sorted(refusal))
@@ -586,38 +704,90 @@ def is_material_combo(combo):
     return any(job != "J02_DOCS_LOW_RISK" for job in combo["job_set"])
 
 
-def coverage_ledger(combos):
-    """P01/N06: equivalence-coverage ledger over the finite declared
-    role × transport × job-set × profile/archetype denominator. Every
-    material combination stays recorded: COVERED with a direct or
-    equivalence-class proof, or GAP/UNVERIFIED with an owner-routed
-    disposition — never omitted, never NOT_APPLICABLE."""
-    entries = []
-    for combo in combos:
-        if not is_material_combo(combo):
+DENOMINATOR_PROOF_KINDS = ("direct", "equivalence_class")
+
+
+def _combo_key(combo):
+    """Full five-dimension ledger identity — profile included (P1-01)."""
+    return (
+        combo["role"],
+        combo["transport"],
+        frozenset(combo["job_set"]),
+        combo["profile"],
+        combo["archetype"],
+    )
+
+
+_EXPECTED_DENOMINATOR = {_combo_key(c): c for c in DECLARED_DENOMINATOR}
+
+
+def expected_material_denominator():
+    """P1-01: the authoritative expected material denominator, derived from
+    the declared durable denominator authority — never from the coverage
+    input. Caller input is validated against this; it cannot shrink or
+    extend the universe."""
+    return tuple(
+        dict(combo, job_set=frozenset(combo["job_set"]))
+        for combo in DECLARED_DENOMINATOR
+        if is_material_combo(combo)
+    )
+
+
+def coverage_ledger(supplied_coverage):
+    """P01/N06 (R1): equivalence-coverage ledger over the AUTHORITATIVE
+    finite declared role × transport × job-set × profile × archetype
+    denominator. Coverage input only attaches proofs to expected material
+    combinations: every expected material combination stays recorded —
+    COVERED with a direct or equivalence-class proof, or an explicit
+    GAP/UNVERIFIED row with an owner-routed disposition — never omitted,
+    never NOT_APPLICABLE. Out-of-denominator input and invalid proof kinds
+    are recorded rejected attempts and keep the ledger incomplete."""
+    rejected = []
+    covered = {}
+    for item in supplied_coverage or []:
+        key = _combo_key(item)
+        if key not in _EXPECTED_DENOMINATOR:
+            rejected.append("coverage_input_outside_declared_denominator")
             continue
-        covered_by = combo.get("covered_by")
-        covered = covered_by in ("direct", "equivalence_class")
+        proof = item.get("covered_by")
+        if proof not in DENOMINATOR_PROOF_KINDS:
+            rejected.append("coverage_proof_kind_invalid")
+            continue
+        covered[key] = proof
+    entries = []
+    expected = expected_material_denominator()
+    for combo in expected:
+        proof = covered.get(_combo_key(combo))
         entries.append(
             {
                 "role": combo["role"],
                 "transport": combo["transport"],
-                "job_set": frozenset(combo["job_set"]),
+                "job_set": combo["job_set"],
+                "profile": combo["profile"],
                 "archetype": combo["archetype"],
-                "status": "COVERED" if covered else "GAP/UNVERIFIED",
-                "proof": covered_by,
+                "status": "COVERED" if proof else "GAP/UNVERIFIED",
+                "proof": proof,
                 "resolution_route": (
                     "equivalence_class_coverage"
-                    if covered
+                    if proof == "equivalence_class"
+                    else "direct_coverage"
+                    if proof == "direct"
                     else "coverage_gap_owner_routed"
                 ),
             }
         )
     return {
         "entries": entries,
-        "complete": bool(entries) and all(e["status"] == "COVERED" for e in entries),
+        "expected_material_denominator": len(expected),
+        "declared_denominator": len(DECLARED_DENOMINATOR),
+        "complete": (
+            bool(expected)
+            and all(_combo_key(combo) in covered for combo in expected)
+            and not rejected
+        ),
         "uncovered": [e for e in entries if e["status"] != "COVERED"],
         "not_applicable_used": False,
+        "rejected_attempts": tuple(sorted(set(rejected))),
     }
 
 
@@ -673,12 +843,42 @@ ALLOWED_MODEL_VOCABULARY = (
         "floor_weakening_override_rejected",
         "coverage_gap_owner_routed",
         "equivalence_class_coverage",
+        # R1 repair routes (P1-01/P1-02/P1-03).
+        "direct_coverage",
+        "coverage_input_outside_declared_denominator",
+        "coverage_proof_kind_invalid",
+        "inventory_stale_degraded_unknown_fail_closed",
+        "inventory_unknown_requires_reinspection",
+        "inventory_inspected_ref_missing_or_malformed",
+        "inventory_state_unresolvable_fail_closed",
+        "review_admission_stale_subject",
+        "review_admission_not_accepted",
+        "review_admission_not_current",
+        "reviewer_role_invalid",
+        "review_admission_provenance_missing",
+        "reviewer_context_not_independent",
+        "review_admission_ref_unbound",
     }
 )
 
 # ---------------------------------------------------------------------------
 # fixtures (deterministic; exact-subject ground truth vs actor input)
 # ---------------------------------------------------------------------------
+
+
+def valid_review_admission(subject_head=HEAD_A):
+    """P1-03: a genuinely independent, accepted, current, exact-subject
+    review admission with full logical operator/session provenance."""
+    return {
+        "reviewer": "reviewer-1",
+        "reviewer_role": "reviewer",
+        "reviewer_operator": "op-reviewer-1",
+        "reviewer_session": "sess-reviewer-1",
+        "subject_head": subject_head,
+        "accepted": True,
+        "currentness": "CURRENT",
+        "admission_ref": ADMISSION_REF,
+    }
 
 
 def builder_local_fixture():
@@ -692,6 +892,8 @@ def builder_local_fixture():
         "profile": "p-engineering",
         "archetype": "A1",
         "legality_ref": LEGALITY_BUILDER,
+        "subject_head": HEAD_A,
+        "operator_context": {"operator": "op-builder-1", "session": "sess-builder-1"},
         "input_refs": {"src/authz.py": BLOB_AUTHZ},
         "allowed_acts_scope": ("src/authz.py",),
         "inventory": [
@@ -701,10 +903,7 @@ def builder_local_fixture():
             {"gate": "floor:gate-material-permission", "currentness": "CURRENT", "ref": BLOB_AUTHZ}
         ],
         "review_policy": "required",
-        "independent_review_admission": {
-            "reviewer": "reviewer-1",
-            "admission_ref": ADMISSION_REF,
-        },
+        "independent_review_admission": valid_review_admission(),
     }
 
 
@@ -719,6 +918,8 @@ def web_validator_fixture():
         "profile": "p-validation",
         "archetype": "A1",
         "legality_ref": LEGALITY_VALIDATOR,
+        "subject_head": HEAD_A,
+        "operator_context": {"operator": "op-validator-web", "session": "sess-validator-web"},
         "input_refs": {"docs/guide.md": BLOB_DOCS},
         "allowed_acts_scope": ("docs/guide.md",),
         "inventory": [
@@ -743,6 +944,8 @@ def docs_a0_fixture(review_policy="not-required"):
             "profile": "p-docs",
             "archetype": "A0",
             "legality_ref": LEGALITY_BUILDER,
+            "subject_head": HEAD_A,
+            "operator_context": {"operator": "op-builder-1", "session": "sess-builder-1"},
             "input_refs": {"docs/guide.md": BLOB_DOCS},
             "allowed_acts_scope": ("docs/guide.md",),
             "inventory": [
@@ -979,39 +1182,99 @@ class P01CompleteConductChainTests(unittest.TestCase):
         self.assertNotIn('"PASS"', dumped)
         self.assertNotIn('"NOT_APPLICABLE"', dumped)
 
-    def test_p01_equivalence_coverage_ledger_proves_finite_denominator(self):
-        combos = [
-            {"role": "builder", "transport": "LOCAL", "job_set": {"J_PERMISSION_REVIEW"}, "archetype": "A1", "covered_by": "direct"},
-            {"role": "reviewer", "transport": "LOCAL", "job_set": {"J_SECURITY_REVIEW"}, "archetype": "A2", "covered_by": "equivalence_class"},
-            {"role": "validator", "transport": "WEB", "job_set": {"J_EXTERNAL_EFFECT_HANDOFF"}, "archetype": "A2", "covered_by": "direct"},
-            {"role": "builder", "transport": "WEB", "job_set": {"J_API_COMPATIBILITY"}, "archetype": "A1", "covered_by": "equivalence_class"},
-            {"role": "builder", "transport": "LOCAL", "job_set": {"J02_DOCS_LOW_RISK"}, "archetype": "A0", "covered_by": None},
+    def _full_proofs(self):
+        """Direct/equivalence proofs over EVERY expected material
+        combination of the authoritative declared denominator."""
+        return [
+            dict(combo, covered_by="direct" if index % 2 == 0 else "equivalence_class")
+            for index, combo in enumerate(expected_material_denominator())
         ]
-        ledger = coverage_ledger(combos)
+
+    def test_p01_equivalence_coverage_ledger_proves_finite_denominator(self):
+        ledger = coverage_ledger(self._full_proofs())
         self.assertTrue(ledger["complete"])
         self.assertEqual(ledger["uncovered"], [])
         self.assertFalse(ledger["not_applicable_used"])
+        # Ledger identity carries all five dimensions including profile.
+        self.assertEqual(len(ledger["entries"]), ledger["expected_material_denominator"])
+        self.assertGreater(ledger["expected_material_denominator"], 0)
+        for entry in ledger["entries"]:
+            with self.subTest(entry=dump(entry)):
+                self.assertIn(entry["profile"], DECLARED_PROFILES)
+                self.assertIn(entry["status"], {"COVERED"})
         # Equivalence-class sampling (no Cartesian explosion): every material
         # combination carries an explicit proof kind.
         proofs = {e["proof"] for e in ledger["entries"]}
         self.assertEqual(proofs, {"direct", "equivalence_class"})
-        self.assertEqual(
-            len(ledger["entries"]),
-            sum(1 for c in combos if is_material_combo(c)),
-        )
 
     def test_p01_unproven_material_combination_stays_gap_never_omitted(self):
-        combos = [
-            {"role": "builder", "transport": "LOCAL", "job_set": {"J_PERMISSION_REVIEW"}, "archetype": "A1", "covered_by": "direct"},
-            {"role": "reviewer", "transport": "WEB", "job_set": {"J_DEPLOY_PLAN"}, "archetype": "A2", "covered_by": None},
-        ]
-        ledger = coverage_ledger(combos)
+        proofs = self._full_proofs()
+        del proofs[0]  # one expected material combination left unproven
+        ledger = coverage_ledger(proofs)
         self.assertFalse(ledger["complete"])
-        uncovered = ledger["uncovered"]
-        self.assertEqual(len(uncovered), 1)
-        self.assertEqual(uncovered[0]["status"], "GAP/UNVERIFIED")
-        self.assertEqual(uncovered[0]["resolution_route"], "coverage_gap_owner_routed")
+        self.assertEqual(len(ledger["uncovered"]), 1)
+        uncovered = ledger["uncovered"][0]
+        self.assertEqual(uncovered["status"], "GAP/UNVERIFIED")
+        self.assertEqual(uncovered["resolution_route"], "coverage_gap_owner_routed")
+        self.assertIsNone(uncovered["proof"])
+        # The omitted combination is RECORDED, never dropped from the ledger.
+        self.assertEqual(len(ledger["entries"]), ledger["expected_material_denominator"])
         self.assertFalse(ledger["not_applicable_used"])
+
+    def test_p01_profile_twin_omission_is_explicit_gap_row(self):
+        # Prove the p-engineering reviewer lane but omit its p-security
+        # profile twin: only profile distinguishes them, so the gap row
+        # proves profile is part of ledger identity.
+        proofs = [
+            dict(combo, covered_by="direct") for combo in expected_material_denominator()
+        ]
+        for proof in proofs:
+            if proof["profile"] == "p-security":
+                proof["covered_by"] = None  # supplied but unproven
+        ledger = coverage_ledger(proofs)
+        self.assertFalse(ledger["complete"])
+        gaps = ledger["uncovered"]
+        self.assertEqual(len(gaps), 1)
+        self.assertEqual(gaps[0]["profile"], "p-security")
+        self.assertEqual(gaps[0]["role"], "reviewer")
+        self.assertEqual(gaps[0]["status"], "GAP/UNVERIFIED")
+
+    def test_p01_coverage_input_cannot_define_its_own_universe(self):
+        # A partial input list cannot declare completeness: the ledger is
+        # computed over the authoritative denominator, not the input.
+        partial = [dict(expected_material_denominator()[0], covered_by="direct")]
+        ledger = coverage_ledger(partial)
+        self.assertFalse(ledger["complete"])
+        self.assertEqual(
+            len(ledger["uncovered"]),
+            ledger["expected_material_denominator"] - 1,
+        )
+        # Input claiming coverage for a combination OUTSIDE the declared
+        # denominator is a rejected attempt, never a covered row.
+        bogus = {
+            "role": "superadmin",
+            "transport": "WEB",
+            "job_set": ("J_SECURITY_REVIEW",),
+            "profile": "p-engineering",
+            "archetype": "A9",
+            "covered_by": "direct",
+        }
+        ledger = coverage_ledger([*self._full_proofs(), bogus])
+        self.assertFalse(ledger["complete"])
+        self.assertIn(
+            "coverage_input_outside_declared_denominator", ledger["rejected_attempts"]
+        )
+        self.assertEqual(ledger["uncovered"], [])
+        self.assertTrue(
+            all(e["role"] != "superadmin" and e["archetype"] != "A9" for e in ledger["entries"])
+        )
+
+    def test_p01_invalid_proof_kind_is_rejected_not_covered(self):
+        proofs = [dict(expected_material_denominator()[0], covered_by="asserted")]
+        ledger = coverage_ledger(proofs)
+        self.assertFalse(ledger["complete"])
+        self.assertIn("coverage_proof_kind_invalid", ledger["rejected_attempts"])
+        self.assertEqual(ledger["uncovered"][0]["status"], "GAP/UNVERIFIED")
 
 
 class P02WebHandoffProvenanceTests(unittest.TestCase):
@@ -1036,8 +1299,16 @@ class P03ReviewProportionalityTests(unittest.TestCase):
         fixture = builder_local_fixture()
         result = conduct_trace(fixture)
         self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertEqual(fixture["independent_review_admission"]["reviewer"], "reviewer-1")
-        self.assertNotEqual(fixture["independent_review_admission"]["reviewer"], fixture["actor"])
+        admission = fixture["independent_review_admission"]
+        # The passing admission is genuinely bound, not shape-only.
+        self.assertEqual(admission["subject_head"], fixture["subject_head"])
+        self.assertTrue(admission["accepted"])
+        self.assertEqual(admission["currentness"], "CURRENT")
+        self.assertEqual(admission["reviewer_role"], "reviewer")
+        self.assertNotEqual(admission["reviewer"], fixture["actor"])
+        self.assertNotEqual(admission["reviewer_operator"], fixture["operator_context"]["operator"])
+        self.assertNotEqual(admission["reviewer_session"], fixture["operator_context"]["session"])
+        self.assertEqual(result["refusal_grounds"], ())
 
     def test_p03_lawful_recommended_skip_stays_proportional(self):
         fixture = docs_a0_fixture(review_policy="recommended")
@@ -1093,10 +1364,7 @@ class N01FabricatedWebHostEvidenceTests(unittest.TestCase):
         fixture["role"] = "builder"
         fixture["legality_ref"] = LEGALITY_BUILDER
         fixture["review_policy"] = "required"
-        fixture["independent_review_admission"] = {
-            "reviewer": "reviewer-1",
-            "admission_ref": ADMISSION_REF,
-        }
+        fixture["independent_review_admission"] = valid_review_admission()
         fixture["web_host_claims"] = ["Build Host main was checked out and tests passed"]
         result = conduct_trace(fixture)
         self.assertEqual(result["decision"], "EXIT_DENIED")
@@ -1243,28 +1511,234 @@ class N05FloorNonWeakeningTests(unittest.TestCase):
 
 class N06IncompleteCoverageCannotBeCompleteTests(unittest.TestCase):
     def test_n06_builder_only_coverage_never_reports_complete(self):
-        combos = [
-            # The proven lane: Builder / CLI LOCAL / A0-J02 proportional case.
-            {"role": "builder", "transport": "LOCAL", "job_set": {"J02_DOCS_LOW_RISK"}, "archetype": "A0", "covered_by": "direct"},
-            {"role": "builder", "transport": "LOCAL", "job_set": {"J_PERMISSION_REVIEW"}, "archetype": "A1", "covered_by": "direct"},
-            # Otherwise-identical role carrying multi-J security/deploy
-            # obligation, left unchecked.
-            {"role": "validator", "transport": "LOCAL", "job_set": {"J_SECURITY_REVIEW", "J_DEPLOY_PLAN"}, "archetype": "A4", "covered_by": None},
+        # The proven lane: Builder / CLI LOCAL / A0-J02 proportional case,
+        # plus the Builder permission lane — while the otherwise-identical
+        # reviewer/validator material lanes (including the multi-J
+        # security/deploy A4 obligation) stay unproven.
+        builder_only = [
+            dict(combo, covered_by="direct")
+            for combo in expected_material_denominator()
+            if combo["role"] == "builder"
         ]
-        ledger = coverage_ledger(combos)
+        ledger = coverage_ledger(builder_only)
         self.assertFalse(ledger["complete"])
-        self.assertEqual(len(ledger["uncovered"]), 1)
-        gap = ledger["uncovered"][0]
-        self.assertEqual(gap["status"], "GAP/UNVERIFIED")
-        self.assertEqual(gap["resolution_route"], "coverage_gap_owner_routed")
-        self.assertEqual(gap["job_set"], frozenset({"J_SECURITY_REVIEW", "J_DEPLOY_PLAN"}))
-        self.assertEqual(gap["archetype"], "A4")
+        gaps = ledger["uncovered"]
+        self.assertEqual(len(gaps), ledger["expected_material_denominator"] - len(builder_only))
+        self.assertGreater(len(gaps), 0)
+        for gap in gaps:
+            with self.subTest(gap=dump(gap)):
+                self.assertEqual(gap["status"], "GAP/UNVERIFIED")
+                self.assertEqual(gap["resolution_route"], "coverage_gap_owner_routed")
+        multi_j = [
+            gap for gap in gaps if gap["job_set"] >= frozenset({"J_SECURITY_REVIEW", "J_DEPLOY_PLAN"})
+        ]
+        self.assertEqual(len(multi_j), 1)
+        self.assertEqual(multi_j[0]["archetype"], "A4")
+        self.assertEqual(multi_j[0]["profile"], "p-validation")
         self.assertFalse(ledger["not_applicable_used"])
-        # The uncovered combination is RECORDED, not omitted.
-        self.assertEqual(
-            len(ledger["entries"]),
-            sum(1 for c in combos if is_material_combo(c)),
+        # Every uncovered combination is RECORDED, not omitted.
+        self.assertEqual(len(ledger["entries"]), ledger["expected_material_denominator"])
+
+
+class StaleUnknownInventoryCannotVanishTests(unittest.TestCase):
+    """R1 P1-02: stale/UNKNOWN/unresolved/malformed inventory records are
+    validated BEFORE floor consumption and route fail-closed — a
+    proportional A0/not-required lane can never report
+    CONDUCT_TRACE_COMPLETE over them."""
+
+    def test_stale_present_inventory_blocks_a0_not_required_lane(self):
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record("src/authz.py", "permission", "PRESENT", "STALE", BLOB_STALE)
         )
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "BLOCKED")
+        self.assertEqual(result["disposition"], "GAP/UNVERIFIED")
+        self.assertIn("inventory_stale_degraded_unknown_fail_closed", result["refusal_grounds"])
+        self.assertEqual(result["resolution_route"], "owner_routed_fail_closed")
+        # The degraded record never enters the floor as a verified fact.
+        self.assertEqual(
+            result["required_gate_set"],
+            floor_required_gates(frozenset(fixture["job_set"]), set()),
+        )
+        self.assertNotIn('"PASS"', dump(result))
+
+    def test_unknown_inventory_blocks_a0_not_required_lane(self):
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record("src/authz.py", "permission", "UNKNOWN", "UNKNOWN", "")
+        )
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "BLOCKED")
+        self.assertEqual(result["disposition"], "GAP/UNVERIFIED")
+        self.assertIn("inventory_unknown_requires_reinspection", result["refusal_grounds"])
+
+    def test_malformed_inspected_ref_on_present_record_fails_closed(self):
+        fixture = builder_local_fixture()
+        fixture["inventory"] = [
+            _inventory_record("src/authz.py", "permission", "PRESENT", "CURRENT", "chat-context-ref")
+        ]
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "BLOCKED")
+        self.assertIn(
+            "inventory_inspected_ref_missing_or_malformed", result["refusal_grounds"]
+        )
+
+    def test_stale_absent_scope_degrades_to_reinspection_not_absence(self):
+        fixture = docs_a0_fixture()
+        fixture["inventory"] = [
+            _inventory_record("docs/guide.md", None, "ABSENT_WITH_INSPECTED_SCOPE", "STALE", BLOB_STALE)
+        ]
+        result = conduct_trace(fixture)
+        # The stale absence is NOT promoted to a verified current absence
+        # and never silently dropped: it degrades to UNKNOWN/re-inspection.
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("inventory_stale_degraded_unknown_fail_closed", result["refusal_grounds"])
+
+    def test_unsupported_material_class_in_inventory_fails_closed(self):
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record("infra/cluster.yaml", "cluster_secret", "PRESENT", "CURRENT", BLOB_AUTHZ)
+        )
+        result = conduct_trace(fixture)
+        self.assertEqual(result["decision"], "BLOCKED")
+        self.assertIn("unsupported_class_fail_closed", result["refusal_grounds"])
+
+    def test_unresolvable_epistemic_state_fails_closed(self):
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record("src/authz.py", "permission", "ASSUMED_CLEAN", "CURRENT", BLOB_AUTHZ)
+        )
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("inventory_state_unresolvable_fail_closed", result["refusal_grounds"])
+
+    def test_control_valid_inventory_still_admits_proportional_complete(self):
+        # The lawful control: inspected-absent-only inventory keeps the A0
+        # proportional lane complete — the fail-closed routes above must not
+        # over-block valid inventories.
+        result = conduct_trace(docs_a0_fixture())
+        self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["refusal_grounds"], ())
+
+
+class ReviewAdmissionExactBindingTests(unittest.TestCase):
+    """R1 P1-03: a review:required admission must bind exact subject/HEAD,
+    accepted + current status, reviewer role and genuinely independent
+    logical operator/session provenance. Renamed reviewers, hex-shaped refs
+    and same-context relabels never admit."""
+
+    def _fixture(self):
+        return builder_local_fixture()
+
+    def test_lawful_independent_exact_subject_admission_passes(self):
+        result = conduct_trace(self._fixture())
+        self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertNotIn("review_admission_required", result["refusal_grounds"])
+
+    def test_stale_subject_admission_fails(self):
+        fixture = self._fixture()
+        fixture["independent_review_admission"] = valid_review_admission(subject_head="9b" * 32)
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "EXIT_DENIED")
+        self.assertIn("review_admission_stale_subject", result["refusal_grounds"])
+        self.assertEqual(result["disposition"], "GAP/UNVERIFIED")
+
+    def test_not_accepted_admission_fails(self):
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["accepted"] = False
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("review_admission_not_accepted", result["refusal_grounds"])
+
+    def test_not_current_admission_fails(self):
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["currentness"] = "STALE"
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("review_admission_not_current", result["refusal_grounds"])
+
+    def test_missing_provenance_fails(self):
+        for drop in ("reviewer_operator", "reviewer_session"):
+            with self.subTest(field=drop):
+                fixture = self._fixture()
+                admission = valid_review_admission()
+                del admission[drop]
+                fixture["independent_review_admission"] = admission
+                result = conduct_trace(fixture)
+                self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+                self.assertIn("review_admission_provenance_missing", result["refusal_grounds"])
+
+    def test_same_context_relabel_fails(self):
+        # Different reviewer LABEL, identical logical operator/session
+        # context: not genuinely independent.
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["reviewer"] = "reviewer-renamed"
+        admission["reviewer_operator"] = fixture["operator_context"]["operator"]
+        admission["reviewer_session"] = fixture["operator_context"]["session"]
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("reviewer_context_not_independent", result["refusal_grounds"])
+
+    def test_same_operator_different_session_fails(self):
+        # The same logical operator behind a fresh session is still the
+        # Builder's own context, not an independent reviewer.
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["reviewer_operator"] = fixture["operator_context"]["operator"]
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("reviewer_context_not_independent", result["refusal_grounds"])
+
+    def test_reviewer_role_invalid_fails(self):
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["reviewer_role"] = "builder"
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("reviewer_role_invalid", result["refusal_grounds"])
+
+    def test_arbitrary_hex_ref_without_binding_fails(self):
+        # A hex-shaped admission_ref plus a renamed reviewer, with no
+        # subject binding, no accepted/current fact, no provenance: every
+        # binding route fires; the hex shape alone never admits.
+        fixture = self._fixture()
+        fixture["independent_review_admission"] = {
+            "reviewer": "reviewer-any",
+            "admission_ref": "ef" * 32,
+        }
+        result = conduct_trace(fixture)
+        self.assertEqual(result["decision"], "EXIT_DENIED")
+        for route in (
+            "review_admission_stale_subject",
+            "review_admission_not_accepted",
+            "review_admission_not_current",
+            "reviewer_role_invalid",
+            "review_admission_provenance_missing",
+        ):
+            self.assertIn(route, result["refusal_grounds"])
+        self.assertNotEqual(result["resolution_route"], "conduct_chain_resolved")
+
+    def test_valid_bindings_with_unbound_hex_ref_still_fail(self):
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["admission_ref"] = "not-a-ref"
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertIn("review_admission_ref_unbound", result["refusal_grounds"])
 
 
 class ModelVocabularyAndRoutingTests(unittest.TestCase):
