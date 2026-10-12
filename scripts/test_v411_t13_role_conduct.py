@@ -104,6 +104,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import re
+import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1150,6 +1151,38 @@ class RoleConductSectionPlacementTests(unittest.TestCase):
                     pos += 1
                 self.assertLess(pos, len(found), f"heading missing/out of order: {expected}")
                 pos += 1
+
+
+    def test_complete_owner_standards_match_reviewed_qualified_source(self):
+        # Owner-lane invariant, NOT a blanket assertion on later T08/T11
+        # integrated successors which must have their own reviewed source pins.
+        # A section-only guard cannot see a clean committed edit elsewhere.
+        qualified = "869b8a3d774a0e5d705fb4154704d23e800230be"
+        qualified_base = "68078183b56680a6cad9be3410d303bb6f259d10"
+        def git(*args):
+            return subprocess.run(
+                ["git", *args], cwd=ROOT, text=True, capture_output=True,
+                encoding="utf-8", check=True
+            ).stdout
+
+        self.assertEqual(git("status", "--porcelain"), "")
+        ancestry = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", qualified, "HEAD"],
+            cwd=ROOT, capture_output=True, text=True
+        )
+        self.assertEqual(ancestry.returncode, 0)
+        paths = set(git("diff", "--name-only", qualified_base, qualified).splitlines())
+        self.assertEqual(paths, {
+            "standards/DEVELOPMENT_WORKFLOW.md",
+            "standards/TASK_DECOMPOSITION_STANDARD.md",
+            "scripts/test_v411_t13_role_conduct.py",
+        })
+        for rel in (
+            "standards/DEVELOPMENT_WORKFLOW.md",
+            "standards/TASK_DECOMPOSITION_STANDARD.md",
+        ):
+            with self.subTest(owner_path=rel):
+                self.assertEqual(read(rel), git("show", f"{qualified}:{rel}"))
 
 
 class RoleConductSectionContractTests(unittest.TestCase):
