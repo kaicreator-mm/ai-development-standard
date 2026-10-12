@@ -986,13 +986,13 @@ class Section14PlacementTests(unittest.TestCase):
         # An unrelated/reconstructed tree must not impersonate the reviewed
         # owner successor merely by copying the text.
         git("merge-base", "--is-ancestor", OWNER_QUALIFIED_HEAD, "HEAD")
-        # Preserve the approved §14 exactly even in a lawful combined version
-        # with later unrelated owner sections or CI support paths.
+        # T07 must preserve the COMPLETE source-reviewed owner standard:
+        # checking only §14 allows a clean, committed unauthorized rewrite
+        # outside §14 to masquerade as a lawful ancestry-only composition.
+        # A later owner (e.g. T14) needs its own exact qualified successor
+        # and integration-scoped proof; it is never implicitly whitelisted.
         approved = git("show", f"{OWNER_QUALIFIED_HEAD}:{EA}")
-        self.assertEqual(
-            section(ea_text(), SECTION_14, SECTION_15),
-            section(approved, SECTION_14, SECTION_15),
-        )
+        self.assertEqual(ea_text(), approved)
         self.assertEqual(git("status", "--porcelain").strip(), "")
 
 
