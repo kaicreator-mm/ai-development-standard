@@ -185,3 +185,50 @@ Minimal/Fast-Path work need not materialize external-system facts when no extern
 - CI/runner standards own execution-channel capabilities.
 - Release standards own release/candidate truth.
 - T07 owns central adoption/wiring.
+
+## 21. v4.11 irreversible effect boundary and uncertain external outcome
+
+A lawful Claim, credential, READY state or earlier authorization check does not grant irrevocable permission to perform a later irreversible external mutation. Immediately before the physical side-effect boundary, execution MUST refresh the applicable current human-decision authority owned by the Workflow/T08 contract and re-bind it to the exact repository, subject/head, operation, tenant, target/environment and authorized scope.
+
+### 21.1 Post-Claim pre-effect checkpoint
+
+The effect may execute only when all currently required predicates remain provably authorizing at the last practical checkpoint before mutation:
+
+```text
+current accepted Claim/ref/generation
+AND current human decision source readback
+AND decision == APPROVE
+AND no current unsuperseded DENY or WITHHOLD
+AND repository/head/operation/tenant/scope still match
+AND external target/environment identity still matches
+AND effect_id and attempt_id are present and collision-free
+AND applicable side-effect permission remains current
+=> EFFECT_MAY_EXECUTE
+```
+
+A current `DENY`, `WITHHOLD`, stale/unreadable authority source, invalid supersession, changed tenant/target/head/scope, missing effect identity, wrong credentials or contradictory current facts MUST block before the sink mutation. A previous Claim remains historical work ownership evidence; it does not veto a later higher-authority human denial.
+
+The checkpoint cannot promise impossible global atomicity across GitHub and an unrelated external provider. If the authority source cannot be refreshed close enough to the side effect to make enforcement trustworthy, execution MUST fail closed rather than claim stronger atomicity than exists.
+
+### 21.2 Persistent effect identity, ACK loss and UNKNOWN outcome
+
+Each potentially irreversible write MUST carry a durable `effect_id` plus a distinct `attempt_id` and logical operator/Claim generation sufficient to distinguish successor attempts.
+
+If the mutation may have committed but the acknowledgement is lost, timeout/transport failure MUST produce `EFFECT_OUTCOME_UNKNOWN` / HOLD. It is forbidden to infer either success or failure from the lost ACK. A successor operator MUST NOT issue a blind second mutation merely because it did not observe the first acknowledgement.
+
+Trustworthy reconciliation requires at least one of:
+
+- authoritative provider/persistent-state readback bound to the same tenant/target/effect identity;
+- provider or sink semantics that prove same-`effect_id` deduplication/idempotency for the exact operation;
+- a separately authorized compensating transition with exact current subject, target, scope and post-condition.
+
+A proven same-effect idempotent replay MUST NOT increase the real sink mutation count twice. Compensation is a new authorized effect; it never proves the original ACK, and it never converts an unknown original outcome into a fictional success/failure history.
+
+### 21.3 Successor, collision and outage handling
+
+READY, new worker/provider, retry, rebase or successor Claim does not supersede current human authority. Competing successors, external readback outage, effect-ID collision, tenant/target drift, wrong credentials, partial recovery publication or insufficient reconciliation evidence stay `BLOCKED` / `EFFECT_OUTCOME_UNKNOWN` with no guessed next write.
+
+Durable evidence SHOULD record the actual pre/post mutation counter or equivalent provider state, current authority/readback ref, actor and Claim generation, effect/attempt IDs, target/tenant/environment, outcome classification and reconciliation basis. A boolean assertion that a write "would have been blocked" is not equivalent to observing the sink.
+
+This section consumes T08 human-authority semantics and Execution Claim lineage; it does not redefine either owner and creates no shared schema. Shared projection, if required, belongs to T11.
+
