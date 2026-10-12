@@ -19,7 +19,13 @@ BASE_SHA = "f15f7ad14dcd62051308cb2c240996998562b808"
 EXTERNAL_HEADING = "## 21. v4.11 irreversible effect boundary and uncertain external outcome"
 MIGRATION_HEADING = "## 15. v4.11 interrupted destructive recovery and compensation boundary"
 
-SUBJECT = "f15f7ad14dcd62051308cb2c240996998562b808"
+SUBJECT = subprocess.run(
+    ["git", "rev-parse", "HEAD"],
+    cwd=ROOT,
+    text=True,
+    capture_output=True,
+    check=True,
+).stdout.strip()
 REPOSITORY = "kaicreator-mm/ai-development-standard"
 TENANT = "ads-test"
 TARGET = "sqlite-safe-sink"
@@ -534,6 +540,12 @@ class T09N04LostAckTests(SinkCase):
         self.assertEqual(first["outcome"], "EFFECT_OUTCOME_UNKNOWN")
         self.assertEqual(first["before"], 0)
         self.assertEqual(first["after"], 1)
+        self.assertEqual(self.sink.effect_count(effect_id), 1)
+
+        # Simulate the actor/process disappearing after commit but before ACK:
+        # close the DB handle and reopen the same persistent file before B acts.
+        self.sink.close()
+        self.sink = PersistentSafeSink(self.path)
         self.assertEqual(self.sink.effect_count(effect_id), 1)
 
         hold = self.sink.reconcile_unknown(effect_id=effect_id, readback_available=False, dedup_proven=False)
