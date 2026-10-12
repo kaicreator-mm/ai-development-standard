@@ -79,6 +79,24 @@ accepted + current Review fact, the reviewer role and the reviewer's
 logical operator/session provenance genuinely distinct from the Builder
 context; renamed reviewers, hex-shaped refs and same-context relabels never
 admit.
+
+R2 repair (failed Fresh Review #1015@6118886682, repair admission
+#1015@6119100611 — write set unchanged, the two remaining P1s closed
+fail-closed): (P1-02) material-class vocabulary is validated BEFORE any
+epistemic-state-specific consumption — a non-null unsupported class fails
+closed in EVERY inventory state (PRESENT / ABSENT_WITH_INSPECTED_SCOPE /
+UNKNOWN) and can never silently vanish out of the conjunction, while the
+lawful classless inspected-absence representation (material_class=None +
+ABSENT_WITH_INSPECTED_SCOPE + CURRENT + valid 64-hex inspected_ref) stays
+a valid path. (P1-03) `admission_ref` now resolves against a deterministic
+read-only authoritative Review fact REGISTRY (an owner-local projection of
+existing Interaction-Protocol accepted Review facts — not a new Review
+authority/schema/event family): subject/accepted/current/reviewer-role/
+operator/session are bound FROM the registry record, caller-supplied
+duplicates can neither mint nor override authority, an arbitrary valid
+64-hex ref absent from the registry fails `review_admission_ref_unbound`,
+and missing/unverifiable Builder provenance fails closed
+(`builder_provenance_missing`) BEFORE independence is evaluated.
 """
 
 from __future__ import annotations
@@ -440,7 +458,41 @@ BLOB_STALE = "c9" * 32
 LEGALITY_BUILDER = "d1" * 32
 LEGALITY_VALIDATOR = "d2" * 32
 ADMISSION_REF = "e1" * 32
+STALE_ADMISSION_REF = "e2" * 32
 REMOTE_READBACK_REF = "f1" * 32
+
+# P1-03 (R2): deterministic READ-ONLY authoritative Review fact registry —
+# an owner-local projection of existing Interaction-Protocol ACCEPTED
+# Review facts (fixture-level; NOT a new Review authority, schema or
+# event family). Registry key = exact `admission_ref` (64-hex); each
+# record durably binds the exact subject head, accepted status,
+# currentness, reviewer role and the reviewer's logical operator/session
+# provenance. `review_admission_failures()` resolves the admission ref
+# here and binds subject/accepted/current/role/operator/session FROM the
+# record: caller-supplied duplicates can neither mint nor override
+# authority, and a well-formed 64-hex ref absent from this registry
+# fails `review_admission_ref_unbound`.
+REVIEW_FACT_REGISTRY = {
+    # Lawful accepted current exact-subject independent Review fact.
+    ADMISSION_REF: {
+        "subject_head": HEAD_A,
+        "accepted": True,
+        "currentness": "CURRENT",
+        "reviewer_role": "reviewer",
+        "reviewer_operator": "op-reviewer-1",
+        "reviewer_session": "sess-reviewer-1",
+    },
+    # Superseded Review fact: durably registered but bound to a stale
+    # head and no longer current — resolving it fails the admission.
+    STALE_ADMISSION_REF: {
+        "subject_head": BLOB_STALE,
+        "accepted": True,
+        "currentness": "STALE",
+        "reviewer_role": "reviewer",
+        "reviewer_operator": "op-reviewer-1",
+        "reviewer_session": "sess-reviewer-1",
+    },
+}
 
 # ---------------------------------------------------------------------------
 # T01 floor (read-only consumption) + T13 conduct decision model
@@ -482,31 +534,44 @@ def _builder_context(fixture):
 
 
 def review_admission_failures(fixture, admission):
-    """P1-03: exact-subject/current/independence validation of a
-    review:required admission (Interaction §9.1 exact-subject currentness
-    semantics consumed read-only). Shape alone never admits: every field
-    must bind, and the reviewer's logical operator/session context must be
-    genuinely distinct from the Builder context — a renamed reviewer with
-    an arbitrary hex-shaped ref still fails."""
+    """P1-03 (R2): exact-subject/current/independence validation of a
+    review:required admission against the deterministic read-only
+    authoritative Review fact registry (Interaction §8.1.1/§9.1 semantics
+    consumed read-only). `admission_ref` is resolved in the registry and
+    subject/accepted/current/reviewer-role/operator/session are bound FROM
+    the authoritative record — caller-supplied duplicates can neither mint
+    nor override authority. A well-formed 64-hex ref absent from the
+    registry fails `review_admission_ref_unbound`; missing/unverifiable
+    Builder provenance fails closed (`builder_provenance_missing`) BEFORE
+    independence can be evaluated; the registry-bound reviewer context
+    must remain genuinely distinct from the Builder context."""
     failures = []
-    if admission.get("subject_head") != fixture.get("subject_head"):
+    builder_operator, builder_session = _builder_context(fixture)
+    if not builder_operator or not builder_session:
+        # Missing/unverifiable Builder provenance: independence is
+        # unprovable — fail closed before it can be "proven".
+        failures.append("builder_provenance_missing")
+    record = REVIEW_FACT_REGISTRY.get(admission.get("admission_ref", "") or "")
+    if record is None:
+        # Unregistered ref (malformed, or an arbitrary valid 64-hex): no
+        # durable accepted fact resolves — caller fields never mint one.
+        failures.append("review_admission_ref_unbound")
+        return failures
+    if record.get("subject_head") != fixture.get("subject_head"):
         failures.append("review_admission_stale_subject")
-    if admission.get("accepted") is not True:
+    if record.get("accepted") is not True:
         failures.append("review_admission_not_accepted")
-    if admission.get("currentness") != "CURRENT":
+    if record.get("currentness") != "CURRENT":
         failures.append("review_admission_not_current")
-    if admission.get("reviewer_role") != "reviewer":
+    if record.get("reviewer_role") != "reviewer":
         failures.append("reviewer_role_invalid")
-    operator = admission.get("reviewer_operator") or ""
-    session = admission.get("reviewer_session") or ""
+    operator = record.get("reviewer_operator") or ""
+    session = record.get("reviewer_session") or ""
     if not operator or not session:
         failures.append("review_admission_provenance_missing")
-    else:
-        builder_operator, builder_session = _builder_context(fixture)
+    elif "builder_provenance_missing" not in failures:
         if operator == builder_operator or session == builder_session:
             failures.append("reviewer_context_not_independent")
-    if not failures and not BLOB_HEX.match(admission.get("admission_ref", "") or ""):
-        failures.append("review_admission_ref_unbound")
     return failures
 
 
@@ -559,19 +624,30 @@ def conduct_trace(fixture):
         refusal.append("review_policy_unresolved_fail_closed")
 
     # 2. consume T02 inventory facts (read-only) — P1-02 repair: every
-    # record's epistemic/currentness state is validated BEFORE floor
-    # consumption. PRESENT with a non-current/missing/malformed inspected
-    # ref, UNKNOWN, unresolved state and unsupported material classes route
-    # fail-closed with re-inspection; they can never silently vanish out of
-    # the conjunction and let a proportional lane report complete.
+    # record's material-class vocabulary and epistemic/currentness state
+    # are validated BEFORE floor consumption. The class vocabulary check
+    # fires BEFORE any epistemic-state-specific consumption (an unsupported
+    # non-null class fails closed in EVERY state — PRESENT,
+    # ABSENT_WITH_INSPECTED_SCOPE or UNKNOWN — and can never silently
+    # vanish out of the conjunction), while the lawful classless
+    # inspected-absence representation (material_class=None +
+    # ABSENT_WITH_INSPECTED_SCOPE + CURRENT + valid inspected_ref) stays
+    # valid. PRESENT with a non-current/missing/malformed inspected ref,
+    # UNKNOWN, and unresolved states route fail-closed with re-inspection.
     present_classes = set()
     for rec in fixture["inventory"]:
         state = rec.get("epistemic_state")
         ref = rec.get("inspected_ref") or ""
         currentness = rec.get("currentness")
         cls = rec.get("material_class")
+        if cls is not None and cls not in MATERIAL_CLASSES:
+            # Unsupported class vocabulary fails closed regardless of the
+            # record's epistemic state.
+            refusal.append("unsupported_class_fail_closed")
+            continue
         if state == "PRESENT":
             if cls not in MATERIAL_CLASSES:
+                # PRESENT requires a supported non-null observed class.
                 refusal.append("unsupported_class_fail_closed")
             elif not BLOB_HEX.match(ref):
                 refusal.append("inventory_inspected_ref_missing_or_malformed")
@@ -638,9 +714,11 @@ def conduct_trace(fixture):
             trace["input_refs"]["remote_readback"] = readbacks[0]["ref"]
 
     # 7. review proportionality (builder exit only) — P1-03 repair: the
-    # admission must bind exact subject/HEAD, accepted + current Review
-    # fact, reviewer role and genuinely independent operator/session
-    # provenance; reviewer-name and hex-shape checks alone are gone.
+    # admission must resolve to the registered authoritative Review fact
+    # (exact subject/HEAD, accepted + current, reviewer role) and the
+    # registry-bound reviewer provenance must be genuinely independent of
+    # the Builder context; caller-asserted duplicates and unregistered
+    # hex-shaped refs never admit.
     if fixture["role"] == "builder" and policy in REVIEW_POLICIES:
         admission = fixture.get("independent_review_admission")
         if policy == "required":
@@ -856,6 +934,7 @@ ALLOWED_MODEL_VOCABULARY = (
         "review_admission_not_current",
         "reviewer_role_invalid",
         "review_admission_provenance_missing",
+        "builder_provenance_missing",
         "reviewer_context_not_independent",
         "review_admission_ref_unbound",
     }
@@ -866,15 +945,18 @@ ALLOWED_MODEL_VOCABULARY = (
 # ---------------------------------------------------------------------------
 
 
-def valid_review_admission(subject_head=HEAD_A):
-    """P1-03: a genuinely independent, accepted, current, exact-subject
-    review admission with full logical operator/session provenance."""
+def valid_review_admission():
+    """P1-03 (R2): the caller-supplied admission fixture for the lawful
+    lane. Its non-ref fields are untrusted caller assertions — the model
+    binds subject/accepted/current/role/operator/session from the
+    authoritative registry record keyed by the exact `admission_ref`
+    (ADMISSION_REF), never from these duplicates."""
     return {
         "reviewer": "reviewer-1",
         "reviewer_role": "reviewer",
         "reviewer_operator": "op-reviewer-1",
         "reviewer_session": "sess-reviewer-1",
-        "subject_head": subject_head,
+        "subject_head": HEAD_A,
         "accepted": True,
         "currentness": "CURRENT",
         "admission_ref": ADMISSION_REF,
@@ -1300,14 +1382,17 @@ class P03ReviewProportionalityTests(unittest.TestCase):
         result = conduct_trace(fixture)
         self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
         admission = fixture["independent_review_admission"]
-        # The passing admission is genuinely bound, not shape-only.
-        self.assertEqual(admission["subject_head"], fixture["subject_head"])
-        self.assertTrue(admission["accepted"])
-        self.assertEqual(admission["currentness"], "CURRENT")
-        self.assertEqual(admission["reviewer_role"], "reviewer")
+        # The passing admission resolves to the registered lawful Review
+        # fact: authority is bound FROM the registry record, not from the
+        # caller-supplied duplicates.
+        record = REVIEW_FACT_REGISTRY[admission["admission_ref"]]
+        self.assertEqual(record["subject_head"], fixture["subject_head"])
+        self.assertTrue(record["accepted"])
+        self.assertEqual(record["currentness"], "CURRENT")
+        self.assertEqual(record["reviewer_role"], "reviewer")
         self.assertNotEqual(admission["reviewer"], fixture["actor"])
-        self.assertNotEqual(admission["reviewer_operator"], fixture["operator_context"]["operator"])
-        self.assertNotEqual(admission["reviewer_session"], fixture["operator_context"]["session"])
+        self.assertNotEqual(record["reviewer_operator"], fixture["operator_context"]["operator"])
+        self.assertNotEqual(record["reviewer_session"], fixture["operator_context"]["session"])
         self.assertEqual(result["refusal_grounds"], ())
 
     def test_p03_lawful_recommended_skip_stays_proportional(self):
@@ -1607,6 +1692,40 @@ class StaleUnknownInventoryCannotVanishTests(unittest.TestCase):
         self.assertEqual(result["decision"], "BLOCKED")
         self.assertIn("unsupported_class_fail_closed", result["refusal_grounds"])
 
+    def test_unsupported_class_in_absent_scope_current_record_fails_closed(self):
+        # R2 P1-02: the unsupported-class vocabulary check fires BEFORE any
+        # epistemic-state-specific consumption — an unsupported non-null
+        # class under ABSENT_WITH_INSPECTED_SCOPE with CURRENT + a valid
+        # 64-hex inspected_ref cannot silently pass and reach
+        # CONDUCT_TRACE_COMPLETE on the proportional A0/not-required lane.
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record(
+                "infra/cluster.yaml", "cluster_secret", "ABSENT_WITH_INSPECTED_SCOPE", "CURRENT", BLOB_AUTHZ
+            )
+        )
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "BLOCKED")
+        self.assertEqual(result["disposition"], "GAP/UNVERIFIED")
+        self.assertIn("unsupported_class_fail_closed", result["refusal_grounds"])
+        self.assertEqual(result["resolution_route"], "owner_routed_fail_closed")
+        self.assertNotIn('"PASS"', dump(result))
+
+    def test_classless_inspected_absence_remains_lawful_control(self):
+        # R2 P1-02 positive control: the lawful classless inspected-absence
+        # representation (material_class=None + ABSENT_WITH_INSPECTED_SCOPE
+        # + CURRENT + valid 64-hex inspected_ref) stays a valid path — the
+        # pre-branch vocabulary check only refuses non-null unsupported
+        # classes, never the classless absence itself.
+        fixture = docs_a0_fixture()
+        fixture["inventory"].append(
+            _inventory_record("src/other.py", None, "ABSENT_WITH_INSPECTED_SCOPE", "CURRENT", BLOB_AUTHZ)
+        )
+        result = conduct_trace(fixture)
+        self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["refusal_grounds"], ())
+
     def test_unresolvable_epistemic_state_fails_closed(self):
         fixture = docs_a0_fixture()
         fixture["inventory"].append(
@@ -1626,112 +1745,69 @@ class StaleUnknownInventoryCannotVanishTests(unittest.TestCase):
 
 
 class ReviewAdmissionExactBindingTests(unittest.TestCase):
-    """R1 P1-03: a review:required admission must bind exact subject/HEAD,
-    accepted + current status, reviewer role and genuinely independent
-    logical operator/session provenance. Renamed reviewers, hex-shaped refs
-    and same-context relabels never admit."""
+    """R2 P1-03: a review:required admission_ref resolves against the
+    deterministic read-only authoritative Review fact registry; subject,
+    accepted/current status, reviewer role and reviewer operator/session
+    are bound FROM THE registry record — caller-supplied duplicates can
+    neither mint nor override authority. An arbitrary valid 64-hex ref
+    absent from the registry never admits, and missing/unverifiable
+    Builder provenance fails closed BEFORE independence is evaluated."""
 
     def _fixture(self):
         return builder_local_fixture()
 
-    def test_lawful_independent_exact_subject_admission_passes(self):
-        result = conduct_trace(self._fixture())
+    def test_registry_is_deterministic_read_only_projection(self):
+        # Every registry key is a valid 64-hex admission_ref and every
+        # record durably binds the full authority tuple.
+        for ref, record in REVIEW_FACT_REGISTRY.items():
+            with self.subTest(ref=ref):
+                self.assertTrue(BLOB_HEX.match(ref))
+                for field in (
+                    "subject_head",
+                    "accepted",
+                    "currentness",
+                    "reviewer_role",
+                    "reviewer_operator",
+                    "reviewer_session",
+                ):
+                    self.assertIn(field, record)
+                self.assertTrue(BLOB_HEX.match(record["subject_head"]))
+                self.assertTrue(record["reviewer_operator"])
+                self.assertTrue(record["reviewer_session"])
+
+    def test_lawful_registered_independent_exact_current_fact_passes(self):
+        fixture = self._fixture()
+        admission = fixture["independent_review_admission"]
+        # The passing admission's ref IS the registered lawful key.
+        self.assertIn(admission["admission_ref"], REVIEW_FACT_REGISTRY)
+        result = conduct_trace(fixture)
         self.assertEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
         self.assertNotIn("review_admission_required", result["refusal_grounds"])
+        self.assertEqual(result["refusal_grounds"], ())
 
-    def test_stale_subject_admission_fails(self):
+    def test_arbitrary_valid_hex_ref_with_valid_caller_fields_fails(self):
+        # The key R2 counterexample: every caller field asserts a lawful
+        # admission, but the valid 64-hex ref resolves to NO registry
+        # record — caller fields can never mint authority. (The R1
+        # variant used "not-a-ref" and only proved syntax rejection.)
         fixture = self._fixture()
-        fixture["independent_review_admission"] = valid_review_admission(subject_head="9b" * 32)
+        admission = valid_review_admission()
+        admission["admission_ref"] = "ef" * 32
+        fixture["independent_review_admission"] = admission
         result = conduct_trace(fixture)
         self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
         self.assertEqual(result["decision"], "EXIT_DENIED")
-        self.assertIn("review_admission_stale_subject", result["refusal_grounds"])
         self.assertEqual(result["disposition"], "GAP/UNVERIFIED")
-
-    def test_not_accepted_admission_fails(self):
-        fixture = self._fixture()
-        admission = valid_review_admission()
-        admission["accepted"] = False
-        fixture["independent_review_admission"] = admission
-        result = conduct_trace(fixture)
-        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertIn("review_admission_not_accepted", result["refusal_grounds"])
-
-    def test_not_current_admission_fails(self):
-        fixture = self._fixture()
-        admission = valid_review_admission()
-        admission["currentness"] = "STALE"
-        fixture["independent_review_admission"] = admission
-        result = conduct_trace(fixture)
-        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertIn("review_admission_not_current", result["refusal_grounds"])
-
-    def test_missing_provenance_fails(self):
-        for drop in ("reviewer_operator", "reviewer_session"):
-            with self.subTest(field=drop):
-                fixture = self._fixture()
-                admission = valid_review_admission()
-                del admission[drop]
-                fixture["independent_review_admission"] = admission
-                result = conduct_trace(fixture)
-                self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-                self.assertIn("review_admission_provenance_missing", result["refusal_grounds"])
-
-    def test_same_context_relabel_fails(self):
-        # Different reviewer LABEL, identical logical operator/session
-        # context: not genuinely independent.
-        fixture = self._fixture()
-        admission = valid_review_admission()
-        admission["reviewer"] = "reviewer-renamed"
-        admission["reviewer_operator"] = fixture["operator_context"]["operator"]
-        admission["reviewer_session"] = fixture["operator_context"]["session"]
-        fixture["independent_review_admission"] = admission
-        result = conduct_trace(fixture)
-        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertIn("reviewer_context_not_independent", result["refusal_grounds"])
-
-    def test_same_operator_different_session_fails(self):
-        # The same logical operator behind a fresh session is still the
-        # Builder's own context, not an independent reviewer.
-        fixture = self._fixture()
-        admission = valid_review_admission()
-        admission["reviewer_operator"] = fixture["operator_context"]["operator"]
-        fixture["independent_review_admission"] = admission
-        result = conduct_trace(fixture)
-        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertIn("reviewer_context_not_independent", result["refusal_grounds"])
-
-    def test_reviewer_role_invalid_fails(self):
-        fixture = self._fixture()
-        admission = valid_review_admission()
-        admission["reviewer_role"] = "builder"
-        fixture["independent_review_admission"] = admission
-        result = conduct_trace(fixture)
-        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
-        self.assertIn("reviewer_role_invalid", result["refusal_grounds"])
-
-    def test_arbitrary_hex_ref_without_binding_fails(self):
-        # A hex-shaped admission_ref plus a renamed reviewer, with no
-        # subject binding, no accepted/current fact, no provenance: every
-        # binding route fires; the hex shape alone never admits.
-        fixture = self._fixture()
-        fixture["independent_review_admission"] = {
-            "reviewer": "reviewer-any",
-            "admission_ref": "ef" * 32,
-        }
-        result = conduct_trace(fixture)
-        self.assertEqual(result["decision"], "EXIT_DENIED")
-        for route in (
-            "review_admission_stale_subject",
-            "review_admission_not_accepted",
-            "review_admission_not_current",
-            "reviewer_role_invalid",
-            "review_admission_provenance_missing",
-        ):
-            self.assertIn(route, result["refusal_grounds"])
+        self.assertIn("review_admission_ref_unbound", result["refusal_grounds"])
+        # No caller-asserted binding route fired: nothing was ever bound.
+        self.assertNotIn("review_admission_stale_subject", result["refusal_grounds"])
+        self.assertNotIn("review_admission_not_accepted", result["refusal_grounds"])
+        self.assertNotIn("review_admission_not_current", result["refusal_grounds"])
         self.assertNotEqual(result["resolution_route"], "conduct_chain_resolved")
 
-    def test_valid_bindings_with_unbound_hex_ref_still_fail(self):
+    def test_malformed_ref_still_fails_shape_check(self):
+        # Kept from R1: a malformed (non-64-hex) ref still fails the
+        # review_admission_ref_unbound shape check.
         fixture = self._fixture()
         admission = valid_review_admission()
         admission["admission_ref"] = "not-a-ref"
@@ -1739,6 +1815,70 @@ class ReviewAdmissionExactBindingTests(unittest.TestCase):
         result = conduct_trace(fixture)
         self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
         self.assertIn("review_admission_ref_unbound", result["refusal_grounds"])
+
+    def test_registry_stale_superseded_fact_fails(self):
+        # A REAL registry record that is bound to a stale/wrong subject and
+        # no longer current: resolving a durable but superseded fact fails
+        # the admission (exact-subject currentness, Interaction §9.1).
+        self.assertIn(STALE_ADMISSION_REF, REVIEW_FACT_REGISTRY)
+        fixture = self._fixture()
+        admission = valid_review_admission()
+        admission["admission_ref"] = STALE_ADMISSION_REF
+        fixture["independent_review_admission"] = admission
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "EXIT_DENIED")
+        self.assertIn("review_admission_stale_subject", result["refusal_grounds"])
+        self.assertIn("review_admission_not_current", result["refusal_grounds"])
+
+    def test_missing_builder_operator_provenance_fails_closed(self):
+        # R2 counterexample: without Builder operator provenance,
+        # independence is unprovable — fail closed BEFORE independence is
+        # evaluated, even though the registry record itself is lawful.
+        fixture = self._fixture()
+        fixture["operator_context"] = {"session": "sess-builder-1"}
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "EXIT_DENIED")
+        self.assertIn("builder_provenance_missing", result["refusal_grounds"])
+        # Independence was never evaluated: no independence verdict exists.
+        self.assertNotIn("reviewer_context_not_independent", result["refusal_grounds"])
+
+    def test_missing_builder_session_provenance_fails_closed(self):
+        fixture = self._fixture()
+        fixture["operator_context"] = {"operator": "op-builder-1"}
+        result = conduct_trace(fixture)
+        self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+        self.assertEqual(result["decision"], "EXIT_DENIED")
+        self.assertIn("builder_provenance_missing", result["refusal_grounds"])
+        self.assertNotIn("reviewer_context_not_independent", result["refusal_grounds"])
+
+    def test_reviewer_bound_from_registry_not_from_caller_fields(self):
+        # Independence compares the REGISTRY-bound reviewer provenance
+        # against the Builder context: a Builder context colliding with the
+        # registered reviewer fails even when the caller-supplied admission
+        # fields claim fully distinct provenance.
+        record = REVIEW_FACT_REGISTRY[ADMISSION_REF]
+        for collide in ("operator", "session"):
+            with self.subTest(context=collide):
+                fixture = self._fixture()
+                if collide == "operator":
+                    fixture["operator_context"] = {
+                        "operator": record["reviewer_operator"],
+                        "session": "sess-builder-1",
+                    }
+                else:
+                    fixture["operator_context"] = {
+                        "operator": "op-builder-1",
+                        "session": record["reviewer_session"],
+                    }
+                admission = valid_review_admission()
+                admission["reviewer_operator"] = "op-caller-claims-distinct"
+                admission["reviewer_session"] = "sess-caller-claims-distinct"
+                fixture["independent_review_admission"] = admission
+                result = conduct_trace(fixture)
+                self.assertNotEqual(result["decision"], "CONDUCT_TRACE_COMPLETE")
+                self.assertIn("reviewer_context_not_independent", result["refusal_grounds"])
 
 
 class ModelVocabularyAndRoutingTests(unittest.TestCase):
