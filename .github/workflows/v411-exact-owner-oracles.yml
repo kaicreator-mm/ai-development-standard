@@ -1,0 +1,66 @@
+name: v411-exact-owner-oracles
+
+on:
+  push:
+    branches:
+      - validation/v411-exact-owner-oracles-20261012
+
+permissions:
+  contents: read
+
+jobs:
+  t13-exact:
+    name: T13 exact-HEAD owner focused and T01/T02 regressions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact T13 owner subject
+        uses: actions/checkout@v4
+        with:
+          ref: 0762c939e32f5b37037c1de6606484b48bc9449c
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bind immutable T13 subject and clean worktree
+        run: |
+          test "$(git rev-parse HEAD)" = "0762c939e32f5b37037c1de6606484b48bc9449c"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD^{tree}
+          git rev-parse HEAD:standards/DEVELOPMENT_WORKFLOW.md
+          git rev-parse HEAD:standards/TASK_DECOMPOSITION_STANDARD.md
+          git rev-parse HEAD:scripts/test_v411_t13_role_conduct.py
+      - name: Run T13 full focused suite (no skips suppressed)
+        run: python scripts/test_v411_t13_role_conduct.py
+      - name: Run T01/T02 regressions
+        run: |
+          python scripts/test_v411_t01_effective_rules.py
+          python scripts/test_v411_t02_risk_intake.py
+
+  t07-exact:
+    name: T07 exact-HEAD R2 focused and Execution regressions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact T07 R2 subject
+        uses: actions/checkout@v4
+        with:
+          ref: 686c3fe664ae865fb01f509889cc7d027a1281dd
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bind immutable T07 subject and clean worktree
+        run: |
+          test "$(git rev-parse HEAD)" = "686c3fe664ae865fb01f509889cc7d027a1281dd"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD^{tree}
+          git rev-parse HEAD:standards/EXECUTION_ARCHITECTURE_STANDARD.md
+          git rev-parse HEAD:scripts/test_v411_merge_admission.py
+      - name: Run T07 full R2 focused suite (no skips suppressed)
+        run: python scripts/test_v411_merge_admission.py
+      - name: Run Execution regressions
+        run: |
+          python scripts/test_execution_architecture.py
+          python scripts/test_v48_execution_ownership.py
+          python scripts/test_v410_t06b_multi_dispatch_conformance.py
