@@ -269,16 +269,19 @@ jobs:
                       yield item
 
           all_tests=list(flatten(unittest.defaultTestLoader.loadTestsFromModule(m)))
-          historical="scripts.test_v411_merge_admission.Section14PlacementTests.test_owner_write_set_is_exactly_two_paths_and_tree_clean"
-          chosen=[t for t in all_tests if t.id()!=historical]
-          omitted=[t for t in all_tests if t.id()==historical]
-          assert len(omitted)==1, [t.id() for t in omitted]
+          historical={
+              "scripts.test_v411_merge_admission.Section14PlacementTests.test_owner_write_set_is_exactly_two_paths_and_tree_clean",
+              "scripts.test_v411_merge_admission.Section14PlacementTests.test_neighbouring_owner_spans_and_heading_sequence_unchanged",
+          }
+          chosen=[t for t in all_tests if t.id() not in historical]
+          omitted=[t for t in all_tests if t.id() in historical]
+          assert {t.id() for t in omitted}==historical, [t.id() for t in omitted]
           result=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(chosen))
           print(f"T07_REUSABLE_INTEGRATED={result.testsRun}")
           assert result.wasSuccessful()
-          identity=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(omitted))
-          assert not identity.wasSuccessful(), "historical T07 full-file identity unexpectedly admitted T14 successor"
-          print("T07_HISTORICAL_OWNER_IDENTITY=EXPECTED_NOT_APPLICABLE_ON_AUTHORIZED_T14_SUCCESSOR")
+          historical_result=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(omitted))
+          assert not historical_result.wasSuccessful(), "historical T07 owner-layout guards unexpectedly admitted T14 successor"
+          print("T07_HISTORICAL_OWNER_LAYOUT_GUARDS=EXPECTED_NOT_APPLICABLE_ON_AUTHORIZED_T14_SUCCESSOR")
           PY
 
   t14-adversarial-predecessor-tamper:
