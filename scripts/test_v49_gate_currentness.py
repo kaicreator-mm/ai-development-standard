@@ -198,6 +198,7 @@ V411_OWNER_BLOBS = {
         "57902fbcb56ffec9a461365ace472fb03e3520db",
         "a12fc755cf994180aeaea25055a8a24ac0bf6c9f",
         "592218559e15db927c9d1df8ee1c2e877ae42985",
+        "28c537e12c03f3f0cef501b8b5505e8ee28ca532",
     ),
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": (
         "048690864ff2bb3445780ba2ac5ed2e07b272485",
