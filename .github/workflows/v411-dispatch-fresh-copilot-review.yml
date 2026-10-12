@@ -1,9 +1,7 @@
 name: v411-fresh-reviewer-copilot-dispatch
 
 on:
-  push:
-    branches:
-      - validation/v411-exact-owner-oracles-20261012
+  workflow_dispatch:
 
 permissions:
   contents: read
