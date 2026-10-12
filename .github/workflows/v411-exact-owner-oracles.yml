@@ -546,10 +546,10 @@ jobs:
           test -z "$(git status --porcelain)"
       - name: T11 source write-set guard must reject committed sibling mutation
         run: |
-          if python -m unittest scripts.test_v411_central_wiring.CentralWiringOwnerLedgerTests.test_t11_source_write_set_is_central_only; then
+          if PYTHONPATH=scripts python -m unittest test_v411_central_wiring.CentralWiringOwnerLedgerTests.test_t11_source_write_set_is_central_only; then
             echo "FAIL_CLOSED_BREACH: forbidden sibling normative mutation passed T11 write-set guard"
             exit 1
           else
-            echo "EXPECTED_REJECTION: forbidden sibling normative mutation rejected"
+            echo "EXPECTED_REJECTION: forbidden sibling normative mutation rejected_by_write_set_guard"
           fi
 
