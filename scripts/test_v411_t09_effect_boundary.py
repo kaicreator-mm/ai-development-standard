@@ -790,12 +790,12 @@ class T09P07CompensationTests(SinkCase):
         )
 
     def compensation_approval(self, **kwargs) -> dict:
-        return decision(
-            "APPROVE",
-            operation=COMPENSATION_OPERATION,
-            scope=COMPENSATION_SCOPE,
-            **kwargs,
-        )
+        values = {
+            "operation": COMPENSATION_OPERATION,
+            "scope": COMPENSATION_SCOPE,
+        }
+        values.update(kwargs)
+        return decision("APPROVE", **values)
 
     def test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack(self):
         effect_id = "effect-p07"
