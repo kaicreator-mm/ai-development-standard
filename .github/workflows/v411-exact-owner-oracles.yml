@@ -16,7 +16,7 @@ jobs:
       - name: Checkout exact T13 owner subject
         uses: actions/checkout@v4
         with:
-          ref: 0762c939e32f5b37037c1de6606484b48bc9449c
+          ref: 1c3796921cbbe6c000241d0a5c0608b26e604e2d
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T13 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "0762c939e32f5b37037c1de6606484b48bc9449c"
+          test "$(git rev-parse HEAD)" = "1c3796921cbbe6c000241d0a5c0608b26e604e2d"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD^{tree}
           git rev-parse HEAD:standards/DEVELOPMENT_WORKFLOW.md
@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 0762c939e32f5b37037c1de6606484b48bc9449c
+          ref: 1c3796921cbbe6c000241d0a5c0608b26e604e2d
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -117,7 +117,7 @@ jobs:
           python-version: '3.12'
       - name: Assert exact T13 candidate and clean base
         run: |
-          test "$(git rev-parse HEAD)" = "0762c939e32f5b37037c1de6606484b48bc9449c"
+          test "$(git rev-parse HEAD)" = "1c3796921cbbe6c000241d0a5c0608b26e604e2d"
           test -z "$(git status --porcelain)"
           python scripts/test_v411_t13_role_conduct.py
       - name: Introduce clean committed unauthorized TDS change outside T13 section
