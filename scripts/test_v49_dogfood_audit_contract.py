@@ -61,7 +61,7 @@ T014_MERGED_BLOBS = {
     # because four owner surfaces it consumed read-only were re-bound from the
     # stale "unmutated since base" pin to exact integrated blobs (see
     # rebounded_since_base and the D08 disclosure below).
-    "fixtures/dogfood-audit-contract/owner_surfaces.json": "d5fa073283b59bdfebd7cbcd8261286aa5a0a630",
+    "fixtures/dogfood-audit-contract/owner_surfaces.json": "512c8328eb4cc7d35a0ae2afc734f672dd764cd6",
     "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
 }
 

@@ -153,7 +153,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/role-execution-profile-v1/valid_validator_profile.json": "7806102a312a6cbc73c80652ae0165fc133fca9f",
         "references/ROLE_EXECUTION_PROFILE_V1_REFERENCE.md": "cd16860e72ad26cdcd29f9d26b3c27f787367142",
         "schemas/role-execution-profile-v1.schema.json": "df96fb14dce9f39c753c80483e21c55b27beb685",
-        "scripts/test_v49_role_execution_profile.py": "dc80f645686c45174ff085f0bdc0ee2409889146",
+        "scripts/test_v49_role_execution_profile.py": "b11de36100176c130e260c3588aa6a28c832dc05",
     },
     "T-005": {
         "references/RELEASE_APPLICABILITY_REFERENCE.md": "4411d25300542f9d311b0dd4df6be346a0bbda0a",
@@ -162,7 +162,7 @@ V49_TASK_OUTPUT_BLOBS = {
     },
     "T-006": {
         "references/TASK_LEARNING_V2_COMPATIBILITY.json": "feda9fc12b17e91a14597a9130238734d8937c63",
-        "references/TASK_LEARNING_V2_REFERENCE.md": "529f2e52fa6ca9e2a41fe154f91c039f33d5eb5f",
+        "references/TASK_LEARNING_V2_REFERENCE.md": "95849c816be9eba3adc9a76c7e277bf3212ef745",
         "schemas/task-learning-v2.schema.json": "a7547c2e29bc7551cc066f776d48e3926456022c",
         "scripts/test_v49_task_learning_v2.py": "2cb452ea90838b0660271152637b735048dcc39c",
     },
@@ -177,13 +177,13 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/execution-core-v49/phase_table.json": "b6667f503775c7aacff7330535c793eb70057019",
         "references/PROPORTIONAL_ORCHESTRATION_REFERENCE.md": "388c2cbf92e1249f3baa04ae61a8f71989aa0bb9",
         "scripts/test_v49_execution_core.py": "ed01a3f56b7f7727954ab7688ea44007b99fbbe1",
-        "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "846158b95e4173182a258f49847e1fde6600baec",
     },
     "T-008": {
         "references/EXECUTION_CONTRACT_REFS_V49_COMPATIBILITY.json": "3ac43ea6a6a1ee35a60542c81209e6dffbd1b6cd",
         "references/EXECUTION_CONTRACT_REFS_V49_REFERENCE.md": "df8374d07c4415a519e8fd546c0965c9291e1977",
         "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
-        "scripts/test_v49_execution_contract_refs.py": "54146c83317be22d6557911b4853ca83f0cb9b85",
+        "scripts/test_v49_execution_contract_refs.py": "e1c93ba26da279795f80000cf7e8155ec2c73284",
     },
     "T-009": {
         "fixtures/jit-dag-governance/classification_table.json": "2706f81915cfc8df73d13be06e84b193237d837e",
@@ -203,10 +203,10 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/gate-currentness/stale_pass.json": "f6b4addc27e7b591e55027e1509042c4be99005b",
         "fixtures/gate-currentness/successor_chain.json": "51338b2ab39a1e145976dda55e4d1b61715746c7",
         "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "0c2538db15784ac0f7200ee4537eecec3e43b27f",
-        "scripts/test_v49_gate_currentness.py": "5aede49e96f1d1dab8357c55f38752da0dcc99ef",
+        "scripts/test_v49_gate_currentness.py": "f34d2c2d35a911afaaa58456da0ef2e1714abf3f",
     },
     "T-011": {
-        ".github/workflows/verify-standard.yml": "6e81b4d0b767cabb7c06440633a029cd94b17817",
+        ".github/workflows/verify-standard.yml": "9fa6099f867b4ce68c0963fbd012f8970753c4d6",
         "docs/implementation/4.9.0/MIGRATION_ADOPTION.md": "467e5e14e88f4acd34649880ea7e8af002df6c8b",
         "references/REGISTRY_ADOPTION_V49_REFERENCE.md": "ca59bab9c2ceae9ebffc2aa6fc5f4c5732540430",
         "scripts/test_v48_registry_adoption.py": "baf91bd8ed43dc91cac1d22d66e5ef3866cf018d",
@@ -226,7 +226,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
         "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
         "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
-        "scripts/test_v49_conformance_suite.py": "5d375c574809569df8490c1832d2d993edb8a20c",
+        "scripts/test_v49_conformance_suite.py": "a0eb9e1e6198888291c0f96be0f15d676023d849",
     },
     "T-013": {
         "fixtures/manual-reference-flow/derived_projections.json": "b47170194258a74bc72fac9b7e04da974a7506f4",
@@ -239,10 +239,10 @@ V49_TASK_OUTPUT_BLOBS = {
     "T-014": {
         "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
         "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
-        "fixtures/dogfood-audit-contract/owner_surfaces.json": "d5fa073283b59bdfebd7cbcd8261286aa5a0a630",
+        "fixtures/dogfood-audit-contract/owner_surfaces.json": "512c8328eb4cc7d35a0ae2afc734f672dd764cd6",
         "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
         "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
-        "scripts/test_v49_dogfood_audit_contract.py": "9d4dd62a0ecb91d02781a0bf27ffab5da6f2a768",
+        "scripts/test_v49_dogfood_audit_contract.py": "be1c73ab5920996ee50ea2ccbfb5b0bc6b2e1913",
     },
 }
 
@@ -349,7 +349,6 @@ RECOVERED_FAMILY_BLOBS = {
     "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md": "dbc2b955c4b707d204cfec7d0124af81582a1f4c",
     "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md": "9fe8d46bd6bb20b6210d912481b0a54102e61cb7",
     "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md": "3dddb3b5b81f44491b198a5496ba70f64942a561",
-    "standards/PROJECT_ADOPTION.md": "cb1edecc0423a0c34c0b6457cdde18ab36c18bfb",
     "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md": "b4ba0074600dc3a3802663093b663e0f23b57da5",
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md": "0d934401badd1bbdb4f8eb387adbf493a279e8c4",
 }
@@ -361,6 +360,7 @@ RECOVERED_FAMILY_BLOBS = {
 # still fails (same strength as the byte-identical-since-recovery pins).
 RECOVERED_FAMILY_REBOUND_BLOBS = {
     "checklists/version-closure.md": "2483856a53fbc0127378c45915ad2518819de996",
+    "standards/PROJECT_ADOPTION.md": "a8c2d7a01a3610d9444d17df614ec6cacf58b67e",
 }
 
 # Shared surfaces composed as unions by the post-recovery recompose (current

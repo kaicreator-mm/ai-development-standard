@@ -1223,6 +1223,62 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
         self.assertIn("ENVIRONMENT_PROFILE_CONTRADICTION", str(caught.exception))
 
 
+class V411IntegratedLastAdmissionSweepTests(unittest.TestCase):
+    """T11-owned integrated consumer for the landed T07 §14 contract.
+
+    This deliberately consumes the reusable T07 decision model rather than
+    re-running T07's historical owner-lane full-file/write-set guards against
+    the later T14 successor.
+    """
+
+    def _t07(self):
+        import test_v411_merge_admission as t07
+        return t07
+
+    def test_v411_t07_complete_current_sweep_and_guarded_merge_are_admissible(self) -> None:
+        t07 = self._t07()
+        state = t07.base_state()
+        adapter = t07.GitHubReadBoundary(state)
+        sweep = t07.run_admission_sweep(adapter)
+        self.assertEqual("MERGE_READY", sweep["verdict"])
+        self.assertFalse(sweep["incomplete"])
+        self.assertEqual(set(t07.SWEEP_SURFACES), {row["surface"] for row in sweep["surfaces"]})
+        outcome = t07.guarded_merge(adapter, sweep, state["head"])
+        self.assertEqual("MERGED", outcome["decision"])
+        self.assertTrue(outcome["merge_result"]["ratified"])
+
+    def test_v411_t07_incomplete_surface_never_defaults_to_absence(self) -> None:
+        t07 = self._t07()
+        adapter = t07.GitHubReadBoundary(
+            t07.base_state(),
+            missing_pages=("accepted_reviews",),
+        )
+        sweep = t07.run_admission_sweep(adapter)
+        self.assertEqual("BLOCKED", sweep["verdict"])
+        self.assertTrue(sweep["incomplete"])
+        self.assertIn("surface_read_incomplete", sweep["blockers"])
+        self.assertIn("accepted_reviews", sweep["blockers_by_surface"])
+
+    def test_v411_t07_same_subject_conflicting_reviews_fail_closed(self) -> None:
+        t07 = self._t07()
+        state = t07.base_state()
+        state["reviews"].append(t07.review_event("REQUEST_CHANGES"))
+        adapter = t07.GitHubReadBoundary(state)
+        sweep = t07.run_admission_sweep(adapter)
+        self.assertEqual("CONFLICT", sweep["verdict"])
+        self.assertIn("opposite_accepted_reviews_same_subject", sweep["conflicts"])
+        self.assertIn("current_review_p1_blocker", sweep["blockers"])
+
+    def test_v411_t07_unknown_permission_currentness_blocks(self) -> None:
+        t07 = self._t07()
+        state = t07.base_state()
+        state["permissions"][0]["currentness"] = "UNKNOWN"
+        adapter = t07.GitHubReadBoundary(state)
+        sweep = t07.run_admission_sweep(adapter)
+        self.assertEqual("BLOCKED", sweep["verdict"])
+        self.assertIn("permission_currentness_unknown", sweep["blockers"])
+
+
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__]))
     raise SystemExit(0 if result.wasSuccessful() else 1)
