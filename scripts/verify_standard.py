@@ -37,6 +37,7 @@ BOOTSTRAP_REQUIRED = {
     "scripts/test_protocol_schemas.py",
     "scripts/test_v33_lifecycle_contracts.py",
     "scripts/test_execution_architecture.py",
+    "scripts/test_v411_central_wiring.py",
     "scripts/v34_rules.py",
     "scripts/test_v34_lifecycle_contracts.py",
     "templates/task-pack.md",
