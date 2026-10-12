@@ -56,6 +56,47 @@ ACCEPTED_OWNER_SOURCE_REFS = {
     },
 }
 
+
+# Exact-value oracle for the one accepted v4.11 non-schema shared-test handoff.
+# The provenance is durable and independently reviewed:
+#   owner handoff  #1014@6118552578
+#   accepted review #1071@6123914750
+# This deliberately does NOT generalize from shape-valid proposal fields. T11
+# may consume only these exact accepted semantics; any other owner/delta/
+# compatibility/provenance tuple remains blocked instead of being invented.
+ACCEPTED_OWNER_PROPOSAL_ORACLES = {
+    "V411-T07": {
+        "owner_task_id": "V411-T07",
+        "frozen_source_ref": {
+            "path": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+            "section": "14",
+            "blob": T07_SOURCE_BLOB,
+        },
+        "additive_schema_delta": {
+            "target": "NO_SCHEMA_DELTA_SHARED_TEST_ONLY",
+            "posture": "NON_SCHEMA_HANDOFF",
+        },
+        "compatibility_evidence": {
+            "contract": "LAST_ADMISSION_SWEEP",
+            "version": "v4.11-t07-owner",
+            "baseline_blob": T07_SOURCE_BLOB,
+            "candidate_blob": T07_CURRENT_SUCCESSOR_BLOB,
+            "producer_classes": ["T07 owner-lane sweep producer"],
+            "consumer_classes": ["T11 shared execution-suite consumer"],
+            "support_window": "v4.11 central convergence",
+            "old_producer_to_new_reader": "NOT_APPLICABLE_SHARED_TEST",
+            "new_producer_to_old_reader": "NOT_APPLICABLE_SHARED_TEST",
+        },
+        "failing_verification_note": {
+            "status": "DEFERRED_TO_T11",
+            "owner_task_id": "V411-T07",
+            "gate": "T07_COMMON_SUITE",
+            "evidence_ref": "#1014@6118552578",
+            "accepted_review_ref": "#1071@6123914750",
+        },
+    },
+}
+
 ALLOWED_COMPAT_OUTCOMES = {
     "PASS",
     "BLOCKED",
@@ -179,7 +220,7 @@ def proposal_problems(proposal: dict) -> list[str]:
                 problems.append(f"COMPATIBILITY_{field.upper()}_INVALID")
 
     note = proposal["failing_verification_note"]
-    required_note = {"status", "owner_task_id", "gate", "evidence_ref"}
+    required_note = {"status", "owner_task_id", "gate", "evidence_ref", "accepted_review_ref"}
     if not isinstance(note, dict) or not required_note.issubset(note):
         problems.append("FAILING_VERIFICATION_NOTE_INCOMPLETE")
     else:
@@ -187,14 +228,31 @@ def proposal_problems(proposal: dict) -> list[str]:
             problems.append("FAILING_VERIFICATION_NOTE_MISMATCH")
         if not isinstance(note["gate"], str) or not note["gate"].strip():
             problems.append("FAILING_VERIFICATION_GATE_INVALID")
-        evidence_ref = note["evidence_ref"]
-        if (
-            not isinstance(evidence_ref, str)
-            or not evidence_ref.startswith("#")
-            or "@" not in evidence_ref
-            or not all(part.isdigit() for part in evidence_ref[1:].split("@", 1))
+        for field in ("evidence_ref", "accepted_review_ref"):
+            evidence_ref = note[field]
+            if (
+                not isinstance(evidence_ref, str)
+                or not evidence_ref.startswith("#")
+                or "@" not in evidence_ref
+                or not all(part.isdigit() for part in evidence_ref[1:].split("@", 1))
+            ):
+                problems.append(f"FAILING_VERIFICATION_{field.upper()}_INVALID")
+
+    # R2 repair: shape-valid data is never sufficient. Bind every semantic
+    # component to the exact accepted handoff oracle. This also makes a fully
+    # well-formed but unauthorized ADDITIVE_SCHEMA proposal fail closed.
+    expected = ACCEPTED_OWNER_PROPOSAL_ORACLES.get(owner)
+    if expected is None:
+        problems.append("NO_ACCEPTED_PROPOSAL_ORACLE")
+    else:
+        for field, code in (
+            ("frozen_source_ref", "SOURCE_REF_EXACT_MISMATCH"),
+            ("additive_schema_delta", "ADDITIVE_SCHEMA_DELTA_EXACT_MISMATCH"),
+            ("compatibility_evidence", "COMPATIBILITY_EVIDENCE_EXACT_MISMATCH"),
+            ("failing_verification_note", "FAILING_VERIFICATION_NOTE_EXACT_MISMATCH"),
         ):
-            problems.append("FAILING_VERIFICATION_EVIDENCE_REF_INVALID")
+            if proposal.get(field) != expected[field]:
+                problems.append(code)
     return problems
 
 
@@ -305,35 +363,7 @@ class CentralWiringOwnerLedgerTests(unittest.TestCase):
 
 class ProposalContractTests(unittest.TestCase):
     def valid_shape(self) -> dict:
-        return {
-            "owner_task_id": "V411-T07",
-            "frozen_source_ref": {
-                "path": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
-                "section": "14",
-                "blob": T07_SOURCE_BLOB,
-            },
-            "additive_schema_delta": {
-                "target": "NO_SCHEMA_DELTA_SHARED_TEST_ONLY",
-                "posture": "NON_SCHEMA_HANDOFF",
-            },
-            "compatibility_evidence": {
-                "contract": "LAST_ADMISSION_SWEEP",
-                "version": "v4.11-t07-owner",
-                "baseline_blob": T07_SOURCE_BLOB,
-                "candidate_blob": T07_CURRENT_SUCCESSOR_BLOB,
-                "producer_classes": ["T07 owner-lane sweep producer"],
-                "consumer_classes": ["T11 shared execution-suite consumer"],
-                "support_window": "v4.11 central convergence",
-                "old_producer_to_new_reader": "NOT_APPLICABLE_SHARED_TEST",
-                "new_producer_to_old_reader": "NOT_APPLICABLE_SHARED_TEST",
-            },
-            "failing_verification_note": {
-                "status": "DEFERRED_TO_T11",
-                "owner_task_id": "V411-T07",
-                "gate": "T07_COMMON_SUITE",
-                "evidence_ref": "#1014@6118552578",
-            },
-        }
+        return deepcopy(ACCEPTED_OWNER_PROPOSAL_ORACLES["V411-T07"])
 
     def test_complete_source_bound_proposal_shape_is_resolvable(self) -> None:
         self.assertEqual(proposal_problems(self.valid_shape()), [])
@@ -377,6 +407,54 @@ class ProposalContractTests(unittest.TestCase):
         bad_note["failing_verification_note"] = dict(bad_note["failing_verification_note"])
         bad_note["failing_verification_note"]["evidence_ref"] = "chat-only"
         cases.append(("note", bad_note, "FAILING_VERIFICATION_EVIDENCE_REF_INVALID"))
+
+        for label, proposal, expected in cases:
+            with self.subTest(label=label):
+                self.assertIn(expected, proposal_problems(proposal))
+
+
+    def test_r2_shape_valid_but_semantically_mismatched_proposals_fail_closed(self) -> None:
+        cases: list[tuple[str, dict, str]] = []
+
+        wrong_baseline = self.valid_shape()
+        wrong_baseline["compatibility_evidence"]["baseline_blob"] = T07_CURRENT_SUCCESSOR_BLOB
+        cases.append(("baseline_blob", wrong_baseline, "COMPATIBILITY_EVIDENCE_EXACT_MISMATCH"))
+
+        wrong_candidate = self.valid_shape()
+        wrong_candidate["compatibility_evidence"]["candidate_blob"] = T08_CURRENT_WORKFLOW_BLOB
+        cases.append(("candidate_blob", wrong_candidate, "COMPATIBILITY_EVIDENCE_EXACT_MISMATCH"))
+
+        for field, value in (
+            ("contract", "LOOKS_VALID_BUT_WRONG"),
+            ("version", "v4.11-wrong-owner"),
+            ("support_window", "another-current-looking-window"),
+            ("producer_classes", ["wrong producer"]),
+            ("consumer_classes", ["wrong consumer"]),
+        ):
+            proposal = self.valid_shape()
+            proposal["compatibility_evidence"][field] = value
+            cases.append((field, proposal, "COMPATIBILITY_EVIDENCE_EXACT_MISMATCH"))
+
+        fake_provenance = self.valid_shape()
+        fake_provenance["failing_verification_note"]["evidence_ref"] = "#1014@9999999999"
+        cases.append(("fake_evidence_ref", fake_provenance, "FAILING_VERIFICATION_NOTE_EXACT_MISMATCH"))
+
+        mismatched_review = self.valid_shape()
+        mismatched_review["failing_verification_note"]["accepted_review_ref"] = "#1071@9999999999"
+        cases.append(("wrong_review_ref", mismatched_review, "FAILING_VERIFICATION_NOTE_EXACT_MISMATCH"))
+
+        wrong_gate = self.valid_shape()
+        wrong_gate["failing_verification_note"]["gate"] = "T07_LOOKS_VALID_BUT_WRONG_GATE"
+        cases.append(("wrong_gate", wrong_gate, "FAILING_VERIFICATION_NOTE_EXACT_MISMATCH"))
+
+        unauthorized_schema = self.valid_shape()
+        unauthorized_schema["additive_schema_delta"] = {
+            "target": "schemas/plausible-but-unaccepted-v411.schema.json",
+            "posture": "ADDITIVE_SCHEMA",
+            "json_schema_draft": "2020-12",
+            "compatibility_mode": "NO_IN_PLACE_BREAKING_CHANGE",
+        }
+        cases.append(("unauthorized_schema", unauthorized_schema, "ADDITIVE_SCHEMA_DELTA_EXACT_MISMATCH"))
 
         for label, proposal, expected in cases:
             with self.subTest(label=label):
