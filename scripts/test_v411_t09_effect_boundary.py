@@ -398,6 +398,8 @@ class PersistentSafeSink:
             identity_refusal = identity_refusal or "original_effect_id_missing"
         if identity_refusal is not None:
             return {"state": "BLOCKED", "reason": identity_refusal}
+        if self.read_effect(original_effect_id) is None:
+            return {"state": "BLOCKED", "reason": "original_effect_unobserved"}
 
         guard = pre_effect_check(claim_record, authority, target=target)
         if not guard["authorized"]:
@@ -631,6 +633,49 @@ class T09N03AuthorityMismatchTests(SinkCase):
         self.assertEqual(self.sink.effect_count(), 0)
 
 
+class T09N03BEffectIdentityTests(SinkCase):
+    def test_empty_effect_or_attempt_id_fails_before_any_sink_mutation(self):
+        cases = [
+            ("", "attempt-empty-effect", "effect_id_missing"),
+            ("effect-empty-attempt", "", "attempt_id_missing"),
+        ]
+        for effect_id, attempt_id, reason in cases:
+            with self.subTest(reason=reason):
+                result = self.sink.execute(
+                    claim_record=claim("operator:identity", 1),
+                    authority=self.approve(),
+                    effect_id=effect_id,
+                    attempt_id=attempt_id,
+                    payload="must-not-persist",
+                )
+                self.assertEqual(result["outcome"], "BLOCKED_IDENTITY")
+                self.assertEqual(result["reason"], reason)
+                self.assertEqual(self.sink.effect_count(), 0)
+                self.assertEqual(self.sink.attempt_count(), 0)
+
+    def test_attempt_id_must_be_distinct_before_second_effect_mutation(self):
+        first = self.sink.execute(
+            claim_record=claim("operator:identity", 1),
+            authority=self.approve(),
+            effect_id="effect-identity-first",
+            attempt_id="attempt-reused",
+            payload="first",
+        )
+        self.assertEqual(first["outcome"], "ACKNOWLEDGED")
+        self.assertEqual(self.sink.effect_count(), 1)
+        second = self.sink.execute(
+            claim_record=claim("operator:identity", 2),
+            authority=self.approve(),
+            effect_id="effect-identity-second",
+            attempt_id="attempt-reused",
+            payload="second",
+        )
+        self.assertEqual(second["outcome"], "BLOCKED_IDENTITY")
+        self.assertEqual(second["reason"], "attempt_id_collision")
+        self.assertEqual(self.sink.effect_count(), 1)
+        self.assertEqual(self.sink.attempt_count(), 1)
+
+
 class T09N04LostAckTests(SinkCase):
     def test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry(self):
         effect_id = "effect-n04"
@@ -725,23 +770,42 @@ class T09P06ReadbackAndDedupTests(SinkCase):
 
 
 class T09P07CompensationTests(SinkCase):
-    def test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack(self):
-        effect_id = "effect-p07"
+    def _seed_unknown_original(self, effect_id: str) -> None:
         original = self.sink.execute(
             claim_record=claim("operator:A", 1),
             authority=self.approve(),
             effect_id=effect_id,
-            attempt_id="attempt-p07-original",
+            attempt_id=f"attempt-{effect_id}-original",
             payload="charged",
             drop_ack_after_commit=True,
         )
         self.assertEqual(original["outcome"], "EFFECT_OUTCOME_UNKNOWN")
-        compensation_auth = decision("APPROVE", scope="compensate:test")
+
+    def compensation_claim(self, actor: str = "operator:compensator") -> dict:
+        return claim(
+            actor,
+            10,
+            operation=COMPENSATION_OPERATION,
+            scope=COMPENSATION_SCOPE,
+        )
+
+    def compensation_approval(self, **kwargs) -> dict:
+        return decision(
+            "APPROVE",
+            operation=COMPENSATION_OPERATION,
+            scope=COMPENSATION_SCOPE,
+            **kwargs,
+        )
+
+    def test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack(self):
+        effect_id = "effect-p07"
+        self._seed_unknown_original(effect_id)
         result = self.sink.compensate(
             original_effect_id=effect_id,
             compensation_id="comp-p07",
-            authority=compensation_auth,
-            tenant=TENANT,
+            attempt_id="attempt-p07-comp",
+            claim_record=self.compensation_claim(),
+            authority=self.compensation_approval(),
             target=TARGET,
             post_condition="logical-value-restored",
         )
@@ -749,6 +813,46 @@ class T09P07CompensationTests(SinkCase):
         self.assertFalse(result["original_outcome_reclassified"])
         self.assertEqual(self.sink.effect_count(effect_id), 1)
         self.assertEqual(self.sink.compensation_count(), 1)
+
+    def test_compensation_full_guard_rejects_stale_wrong_head_wrong_scope_and_unreadable_source(self):
+        effect_id = "effect-p07-guard"
+        self._seed_unknown_original(effect_id)
+        claim_record = self.compensation_claim()
+        variants = [
+            self.compensation_approval(currentness="STALE"),
+            self.compensation_approval(subject_head="0" * 40),
+            self.compensation_approval(scope="wrong-compensation-scope"),
+            self.compensation_approval(source_readback="UNKNOWN"),
+        ]
+        for idx, authority in enumerate(variants):
+            with self.subTest(idx=idx):
+                before = self.sink.compensation_count()
+                result = self.sink.compensate(
+                    original_effect_id=effect_id,
+                    compensation_id=f"comp-p07-guard-{idx}",
+                    attempt_id=f"attempt-p07-guard-{idx}",
+                    claim_record=claim_record,
+                    authority=authority,
+                    target=TARGET,
+                    post_condition="must-not-be-written",
+                )
+                self.assertEqual(result["state"], "BLOCKED")
+                self.assertEqual(result["reason"], "compensation_authority_invalid")
+                self.assertEqual(self.sink.compensation_count(), before)
+
+    def test_compensation_requires_observed_original_effect_and_nonempty_identity(self):
+        result = self.sink.compensate(
+            original_effect_id="missing-original",
+            compensation_id="comp-missing-original",
+            attempt_id="attempt-comp-missing-original",
+            claim_record=self.compensation_claim(),
+            authority=self.compensation_approval(),
+            target=TARGET,
+            post_condition="none",
+        )
+        self.assertEqual(result["state"], "BLOCKED")
+        self.assertEqual(result["reason"], "original_effect_unobserved")
+        self.assertEqual(self.sink.compensation_count(), 0)
 
 
 class T09N08DriftCollisionOutageTests(SinkCase):
@@ -787,6 +891,35 @@ class T09N08DriftCollisionOutageTests(SinkCase):
 
 
 class T09P09InterruptedMigrationRecoveryTests(SinkCase):
+    def recovery_claim(self, *, tenant: str = TENANT, subject_head: str = SUBJECT, scope: str = RECOVERY_SCOPE) -> dict:
+        return claim(
+            "operator:recovery",
+            20,
+            subject_head=subject_head,
+            operation=RECOVERY_OPERATION,
+            tenant=tenant,
+            scope=scope,
+        )
+
+    def recovery_approval(
+        self,
+        *,
+        tenant: str = TENANT,
+        subject_head: str = SUBJECT,
+        scope: str = RECOVERY_SCOPE,
+        currentness: str = "CURRENT",
+        source_readback: str = "CURRENT",
+    ) -> dict:
+        return decision(
+            "APPROVE",
+            subject_head=subject_head,
+            operation=RECOVERY_OPERATION,
+            tenant=tenant,
+            scope=scope,
+            currentness=currentness,
+            source_readback=source_readback,
+        )
+
     def test_verified_snapshot_recovery_is_distinct_from_fresh_install(self):
         tenant, target = TENANT, TARGET
         self.sink.set_migration_state(tenant, target, "schema-v1-with-data")
@@ -797,9 +930,13 @@ class T09P09InterruptedMigrationRecoveryTests(SinkCase):
             "INTERRUPTED_DESTRUCTIVE_PARTIAL",
         )
 
-        recovery_auth = decision("APPROVE", operation=OPERATION, tenant=tenant)
         recovered = self.sink.recover_snapshot(
-            "snapshot-p09", tenant=tenant, target=target, authority=recovery_auth
+            "snapshot-p09",
+            recovery_effect_id="recovery-effect-p09",
+            attempt_id="attempt-recovery-p09",
+            claim_record=self.recovery_claim(),
+            target=target,
+            authority=self.recovery_approval(),
         )
         self.assertEqual(recovered["state"], "RECOVERED")
         self.assertEqual(recovered["post_state"], "schema-v1-with-data")
@@ -822,11 +959,41 @@ class T09P09InterruptedMigrationRecoveryTests(SinkCase):
         self.sink.snapshot("snapshot-wrong-tenant", TENANT, TARGET)
         result = self.sink.recover_snapshot(
             "snapshot-wrong-tenant",
-            tenant="other-tenant",
+            recovery_effect_id="recovery-wrong-tenant",
+            attempt_id="attempt-recovery-wrong-tenant",
+            claim_record=self.recovery_claim(tenant="other-tenant"),
             target=TARGET,
-            authority=decision("APPROVE", tenant="other-tenant"),
+            authority=self.recovery_approval(tenant="other-tenant"),
         )
         self.assertEqual(result["state"], "BLOCKED")
+        self.assertEqual(result["reason"], "snapshot_target_mismatch")
+
+    def test_recovery_full_guard_rejects_stale_wrong_head_wrong_scope_and_unreadable_source_without_mutation(self):
+        self.sink.set_migration_state(TENANT, TARGET, "schema-v1")
+        self.sink.snapshot("snapshot-recovery-guard", TENANT, TARGET)
+        self.sink.set_migration_state(TENANT, TARGET, "INTERRUPTED_DESTRUCTIVE_PARTIAL")
+        variants = [
+            self.recovery_approval(currentness="STALE"),
+            self.recovery_approval(subject_head="0" * 40),
+            self.recovery_approval(scope="wrong-recovery-scope"),
+            self.recovery_approval(source_readback="UNKNOWN"),
+        ]
+        for idx, authority in enumerate(variants):
+            with self.subTest(idx=idx):
+                before = self.sink.get_migration_state(TENANT, TARGET)
+                attempts_before = self.sink.attempt_count()
+                result = self.sink.recover_snapshot(
+                    "snapshot-recovery-guard",
+                    recovery_effect_id=f"recovery-guard-{idx}",
+                    attempt_id=f"attempt-recovery-guard-{idx}",
+                    claim_record=self.recovery_claim(),
+                    target=TARGET,
+                    authority=authority,
+                )
+                self.assertEqual(result["state"], "BLOCKED")
+                self.assertEqual(result["reason"], "recovery_authority_invalid")
+                self.assertEqual(self.sink.get_migration_state(TENANT, TARGET), before)
+                self.assertEqual(self.sink.attempt_count(), attempts_before)
 
 
 class RealBuildHostHumanAuthorityTests(SinkCase):
