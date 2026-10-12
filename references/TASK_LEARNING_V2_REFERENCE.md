@@ -110,3 +110,15 @@ If those surfaces are required to make this contract appear functional, stop and
   "disposition": "MORE_EVIDENCE"
 }
 ```
+## v4.11 owner-local admissibility clarification
+
+The canonical execution owner for v4.11 is `EXECUTION_ARCHITECTURE_STANDARD.md` §30. This reference remains same-family documentation and does not add schema fields.
+
+At **citation time and every later consumption**, a material record is current only when its immutable implementation subject and `currentness_ref` still match the exact consumed subject and its required source/test/validation/review refs resolve. Drift demotes the record to historical-only evidence; missing or ambiguous resolution fails closed.
+
+`confidence_layers` describe bounded evidence strength, never permission to promote inference into fact. A lesson sourced only from private model/agent deliberation, or any claim extending beyond durable cited evidence, is not factual Task Learning evidence. Negative factual lessons use the same rules as positive lessons.
+
+Every later consumer treats the record as `SUBORDINATE_EVIDENCE_ONLY`: it may inform an existing Review, Validation, Task Pack/L3 clarification or Evolution Intake, but cannot mutate Product/L2/Task/DAG/normative ADS source, mint PASS, approve an evolution candidate, or gain authority from counts/scores.
+
+`ALREADY_SATISFIED` for the v4.11 R11 requirement requires exact production source plus current executable tests proving the full owner contract. Schema/reference existence or historical tests alone are not equivalence proof.
+
