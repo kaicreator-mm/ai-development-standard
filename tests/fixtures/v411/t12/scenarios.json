@@ -1,0 +1,3142 @@
+{
+  "schema_version": "ai-dev/v411-t12-scenarios-v1",
+  "integration_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+  "pack_blob": "a2af3ef49c852ff36cbb0a4eaac7d13e817b7890",
+  "logical_case_count": 26,
+  "executable_record_count": 52,
+  "scenarios": {
+    "S01": {
+      "positive": {
+        "case_id": "S01",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J02"
+        ],
+        "actual_source_refs": [
+          "standards/DEVELOPMENT_WORKFLOW.md",
+          "scripts/test_v411_t02_risk_intake.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S01:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t02_risk_intake.py#test_p03_a0_path_stands_and_states_still_listed"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t02_risk_intake.py",
+              "test": "test_p03_a0_path_stands_and_states_still_listed"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t02_risk_intake.py::test_p03_a0_path_stands_and_states_still_listed"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S01:J02",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S01",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J02"
+        ],
+        "actual_source_refs": [
+          "standards/DEVELOPMENT_WORKFLOW.md",
+          "scripts/test_v411_t02_risk_intake.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S01:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t02_risk_intake.py#test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t02_risk_intake.py",
+              "test": "test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t02_risk_intake.py::test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S01:J02",
+        "exceptions": []
+      }
+    },
+    "S02": {
+      "positive": {
+        "case_id": "S02",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "scripts/test_v411_t06_claim_admission.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S02:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_p03_review_required_satisfied_only_by_independent_admission"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_p03_review_required_satisfied_only_by_independent_admission"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_p03_review_required_satisfied_only_by_independent_admission"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S02:J03",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S02",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "scripts/test_v411_t06_claim_admission.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S02:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t06_claim_admission.py#test_n05_stale_base_or_pr_head_is_ineligible_with_zero_mutation",
+          "scripts/test_v411_t13_role_conduct.py#test_n02a_self_review_never_satisfies_review_required"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n05_stale_base_or_pr_head_is_ineligible_with_zero_mutation"
+            },
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_n02a_self_review_never_satisfies_review_required"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t06_claim_admission.py::test_n05_stale_base_or_pr_head_is_ineligible_with_zero_mutation",
+          "execute scripts/test_v411_t13_role_conduct.py::test_n02a_self_review_never_satisfies_review_required"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S02:J03",
+        "exceptions": []
+      }
+    },
+    "S03": {
+      "positive": {
+        "case_id": "S03",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J07"
+        ],
+        "actual_source_refs": [
+          "standards/PROJECT_ADOPTION.md",
+          "scripts/test_v411_t01_effective_rules.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S03:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_n01_removing_j07_label_keeps_security_gate_required"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n01_removing_j07_label_keeps_security_gate_required"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_n01_removing_j07_label_keeps_security_gate_required"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S03:J07",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S03",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J07"
+        ],
+        "actual_source_refs": [
+          "standards/PROJECT_ADOPTION.md",
+          "scripts/test_v411_t01_effective_rules.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S03:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_n02_lower_authority_override_cannot_weaken_frozen_review"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n02_lower_authority_override_cannot_weaken_frozen_review"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_n02_lower_authority_override_cannot_weaken_frozen_review"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S03:J07",
+        "exceptions": []
+      }
+    },
+    "S04": {
+      "positive": {
+        "case_id": "S04",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J06"
+        ],
+        "actual_source_refs": [
+          "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S04:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S04:J06",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S04",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J06"
+        ],
+        "actual_source_refs": [
+          "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S04:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_wrong_tenant_snapshot_cannot_recover"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_wrong_tenant_snapshot_cannot_recover"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_wrong_tenant_snapshot_cannot_recover"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S04:J06",
+        "exceptions": []
+      }
+    },
+    "S05": {
+      "positive": {
+        "case_id": "S05",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J05"
+        ],
+        "actual_source_refs": [
+          "standards/INTERFACE_COMPATIBILITY_STANDARD.md",
+          "scripts/test_v411_t03_spec_implementation_currentness.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S05:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S05:J05",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S05",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J05"
+        ],
+        "actual_source_refs": [
+          "standards/INTERFACE_COMPATIBILITY_STANDARD.md",
+          "scripts/test_v411_t03_spec_implementation_currentness.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S05:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_n01_accepted_spec_without_producer_shipment_stays_blocked"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_n01_accepted_spec_without_producer_shipment_stays_blocked"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_n01_accepted_spec_without_producer_shipment_stays_blocked"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S05:J05",
+        "exceptions": []
+      }
+    },
+    "S06": {
+      "positive": {
+        "case_id": "S06",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S06:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t04_reuse_first.py#test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t04_reuse_first.py::test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S06:J12",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S06",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S06:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t04_reuse_first.py#test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_n01_new_revision_cannot_inherit_historic_license_permission"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t04_reuse_first.py::test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S06:J12",
+        "exceptions": []
+      }
+    },
+    "S07": {
+      "positive": {
+        "case_id": "S07",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J01",
+          "J02",
+          "J03",
+          "J04"
+        ],
+        "actual_source_refs": [
+          "standards/TASK_DECOMPOSITION_STANDARD.md",
+          "scripts/test_v411_t13_role_conduct.py",
+          "scripts/test_v411_merge_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S07:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_p01_declared_denominator_resolves_complete_trace_bound_to_facts",
+          "scripts/test_v411_merge_admission.py#test_p04_downstream_not_ready_before_merge_ready_from_result_after"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_p01_declared_denominator_resolves_complete_trace_bound_to_facts"
+            },
+            {
+              "file": "scripts/test_v411_merge_admission.py",
+              "test": "test_p04_downstream_not_ready_before_merge_ready_from_result_after"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_p01_declared_denominator_resolves_complete_trace_bound_to_facts",
+          "execute scripts/test_v411_merge_admission.py::test_p04_downstream_not_ready_before_merge_ready_from_result_after"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S07:J01+J02+J03+J04",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S07",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J01",
+          "J02",
+          "J03",
+          "J04"
+        ],
+        "actual_source_refs": [
+          "standards/TASK_DECOMPOSITION_STANDARD.md",
+          "scripts/test_v411_t13_role_conduct.py",
+          "scripts/test_v411_merge_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S07:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_n03_missing_legality_ref_fails_closed"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_n03_missing_legality_ref_fails_closed"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_n03_missing_legality_ref_fails_closed"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S07:J01+J02+J03+J04",
+        "exceptions": []
+      }
+    },
+    "S08": {
+      "positive": {
+        "case_id": "S08",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J08"
+        ],
+        "actual_source_refs": [
+          "standards/DEVELOPMENT_WORKFLOW.md",
+          "standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md",
+          "scripts/test_v411_t08_human_denial_authority.py",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S08:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_authoritative_readback_reconciles_committed_unknown"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "SAFE_LOCAL_E2_UNIT_AUTHORITY",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_authoritative_readback_reconciles_committed_unknown"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_authoritative_readback_reconciles_committed_unknown"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S08:J08",
+        "exceptions": [
+          "authenticated external human source may remain NOT_RUN; local physical sink must execute"
+        ]
+      },
+      "negative": {
+        "case_id": "S08",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J08"
+        ],
+        "actual_source_refs": [
+          "standards/DEVELOPMENT_WORKFLOW.md",
+          "standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md",
+          "scripts/test_v411_t08_human_denial_authority.py",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S08:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_claimed_a_current_deny_blocks_before_real_sink_mutation",
+          "scripts/test_v411_t09_effect_boundary.py#test_successor_ready_does_not_override_same_unsuperseded_deny"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "SAFE_LOCAL_E2_UNIT_AUTHORITY",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_claimed_a_current_deny_blocks_before_real_sink_mutation"
+            },
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_successor_ready_does_not_override_same_unsuperseded_deny"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_claimed_a_current_deny_blocks_before_real_sink_mutation",
+          "execute scripts/test_v411_t09_effect_boundary.py::test_successor_ready_does_not_override_same_unsuperseded_deny"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": 0,
+        "equivalence_class": "S08:J08",
+        "exceptions": [
+          "authenticated external human source may remain NOT_RUN; local physical sink must execute"
+        ]
+      }
+    },
+    "S09": {
+      "positive": {
+        "case_id": "S09",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "scripts/test_v411_t06_claim_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S09:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t06_claim_admission.py#test_n01_positive_authorized_group_keys_still_admit_one_claim"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n01_positive_authorized_group_keys_still_admit_one_claim"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t06_claim_admission.py::test_n01_positive_authorized_group_keys_still_admit_one_claim"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S09:J03",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S09",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "scripts/test_v411_t06_claim_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S09:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t06_claim_admission.py#test_n01_same_key_race_admits_exactly_one_claim_regardless_of_origin",
+          "scripts/test_v411_t05_event_authority.py#test_n04_pass_is_never_reused_for_a_successor_subject"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n01_same_key_race_admits_exactly_one_claim_regardless_of_origin"
+            },
+            {
+              "file": "scripts/test_v411_t05_event_authority.py",
+              "test": "test_n04_pass_is_never_reused_for_a_successor_subject"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t06_claim_admission.py::test_n01_same_key_race_admits_exactly_one_claim_regardless_of_origin",
+          "execute scripts/test_v411_t05_event_authority.py::test_n04_pass_is_never_reused_for_a_successor_subject"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S09:J03",
+        "exceptions": []
+      }
+    },
+    "S10": {
+      "positive": {
+        "case_id": "S10",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J04"
+        ],
+        "actual_source_refs": [
+          "standards/TASK_DECOMPOSITION_STANDARD.md",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S10:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_p02_web_chain_ends_in_lawful_handoff_without_host_assertions"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_p02_web_chain_ends_in_lawful_handoff_without_host_assertions"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_p02_web_chain_ends_in_lawful_handoff_without_host_assertions"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S10:J04",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S10",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J04"
+        ],
+        "actual_source_refs": [
+          "standards/TASK_DECOMPOSITION_STANDARD.md",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S10:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_n01_web_host_claim_is_gap_no_exit_no_pass_minted",
+          "scripts/test_v411_t13_role_conduct.py#test_n02a_self_review_never_satisfies_review_required"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_n01_web_host_claim_is_gap_no_exit_no_pass_minted"
+            },
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_n02a_self_review_never_satisfies_review_required"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_n01_web_host_claim_is_gap_no_exit_no_pass_minted",
+          "execute scripts/test_v411_t13_role_conduct.py::test_n02a_self_review_never_satisfies_review_required"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S10:J04",
+        "exceptions": []
+      }
+    },
+    "S11": {
+      "positive": {
+        "case_id": "S11",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J09"
+        ],
+        "actual_source_refs": [
+          "standards/RELEASE_STANDARD.md",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S11:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v49_release_applicability.py#test_release_authority_owns_gate_by_subject_decision",
+          "scripts/test_v49_release_applicability.py#test_unknown_is_fail_closed"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "CONTRACT_SIMULATION_NO_RELEASE_PASS",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_release_authority_owns_gate_by_subject_decision"
+            },
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_unknown_is_fail_closed"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v49_release_applicability.py::test_release_authority_owns_gate_by_subject_decision",
+          "execute scripts/test_v49_release_applicability.py::test_unknown_is_fail_closed"
+        ],
+        "expected_transition": "T12_CONTRACT_EVALUATED_DOWNSTREAM_RELEASE_NOT_RUN",
+        "expected_effect_count": null,
+        "equivalence_class": "S11:J09",
+        "exceptions": [
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
+        ]
+      },
+      "negative": {
+        "case_id": "S11",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J09"
+        ],
+        "actual_source_refs": [
+          "standards/RELEASE_STANDARD.md",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S11:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v49_release_applicability.py#test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "CONTRACT_SIMULATION_NO_RELEASE_PASS",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_low_risk_shortcuts_are_not_positive_release_proof"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v49_release_applicability.py::test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "expected_transition": "T12_CONTRACT_EVALUATED_DOWNSTREAM_RELEASE_NOT_RUN",
+        "expected_effect_count": null,
+        "equivalence_class": "S11:J09",
+        "exceptions": [
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
+        ]
+      }
+    },
+    "S12": {
+      "positive": {
+        "case_id": "S12",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J10"
+        ],
+        "actual_source_refs": [
+          "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S12:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_verified_snapshot_recovery_is_distinct_from_fresh_install",
+          "scripts/test_v411_t09_effect_boundary.py#test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+            },
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_verified_snapshot_recovery_is_distinct_from_fresh_install",
+          "execute scripts/test_v411_t09_effect_boundary.py::test_authorized_compensation_is_distinct_and_does_not_reclassify_original_ack"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S12:J10",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S12",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J10"
+        ],
+        "actual_source_refs": [
+          "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S12:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_wrong_tenant_snapshot_cannot_recover"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_wrong_tenant_snapshot_cannot_recover"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_wrong_tenant_snapshot_cannot_recover"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S12:J10",
+        "exceptions": []
+      }
+    },
+    "S13": {
+      "positive": {
+        "case_id": "S13",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J11"
+        ],
+        "actual_source_refs": [
+          "standards/INTERFACE_COMPATIBILITY_STANDARD.md",
+          "scripts/test_v411_t03_spec_implementation_currentness.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S13:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_removed_operation_requires_current_producer_and_all_windows"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_removed_operation_requires_current_producer_and_all_windows"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_removed_operation_requires_current_producer_and_all_windows"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S13:J11",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S13",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J11"
+        ],
+        "actual_source_refs": [
+          "standards/INTERFACE_COMPATIBILITY_STANDARD.md",
+          "scripts/test_v411_t03_spec_implementation_currentness.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S13:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S13:J11",
+        "exceptions": []
+      }
+    },
+    "S14": {
+      "positive": {
+        "case_id": "S14",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S14:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t04_reuse_first.py#test_r5_f01_trusted_record_readback_legitimately_restores_allowed"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_r5_f01_trusted_record_readback_legitimately_restores_allowed"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t04_reuse_first.py::test_r5_f01_trusted_record_readback_legitimately_restores_allowed"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S14:J12",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S14",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S14:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t04_reuse_first.py#test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_n01_new_revision_cannot_inherit_historic_license_permission"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t04_reuse_first.py::test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S14:J12",
+        "exceptions": []
+      }
+    },
+    "S15": {
+      "positive": {
+        "case_id": "S15",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "A0",
+          "A4"
+        ],
+        "actual_source_refs": [
+          "standards/PROJECT_ADOPTION.md",
+          "scripts/test_v411_t01_effective_rules.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S15:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_p02_a0_and_a4_resolve_identical_gates"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_p02_a0_and_a4_resolve_identical_gates"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_p02_a0_and_a4_resolve_identical_gates"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S15:A0+A4",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S15",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "A0",
+          "A4"
+        ],
+        "actual_source_refs": [
+          "standards/PROJECT_ADOPTION.md",
+          "scripts/test_v411_t01_effective_rules.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S15:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_n02_lower_authority_override_cannot_weaken_frozen_review"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n02_lower_authority_override_cannot_weaken_frozen_review"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_n02_lower_authority_override_cannot_weaken_frozen_review"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S15:A0+A4",
+        "exceptions": []
+      }
+    },
+    "S16": {
+      "positive": {
+        "case_id": "S16",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "scripts/test_v411_t06_claim_admission.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S16:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t06_claim_admission.py#test_n03_lawful_unclaimed_web_to_fresh_local_reroute_full_trace"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n03_lawful_unclaimed_web_to_fresh_local_reroute_full_trace"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t06_claim_admission.py::test_n03_lawful_unclaimed_web_to_fresh_local_reroute_full_trace"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S16:J03",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S16",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+          "scripts/test_v411_t06_claim_admission.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S16:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t06_claim_admission.py#test_n02_claimed_web_dispatch_cannot_be_stolen_by_reroute",
+          "scripts/test_v411_t06_claim_admission.py#test_n03b_reroute_cannot_mint_a_parallel_claim_key_by_renaming"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n02_claimed_web_dispatch_cannot_be_stolen_by_reroute"
+            },
+            {
+              "file": "scripts/test_v411_t06_claim_admission.py",
+              "test": "test_n03b_reroute_cannot_mint_a_parallel_claim_key_by_renaming"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t06_claim_admission.py::test_n02_claimed_web_dispatch_cannot_be_stolen_by_reroute",
+          "execute scripts/test_v411_t06_claim_admission.py::test_n03b_reroute_cannot_mint_a_parallel_claim_key_by_renaming"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S16:J03",
+        "exceptions": []
+      }
+    },
+    "S17": {
+      "positive": {
+        "case_id": "S17",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "scripts/test_v411_t05_event_authority.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S17:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t05_event_authority.py#test_p01_shared_login_with_verified_operator_separation_is_admitted"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t05_event_authority.py",
+              "test": "test_p01_shared_login_with_verified_operator_separation_is_admitted"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t05_event_authority.py::test_p01_shared_login_with_verified_operator_separation_is_admitted"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S17:J03",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S17",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J03"
+        ],
+        "actual_source_refs": [
+          "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "scripts/test_v411_t05_event_authority.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S17:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t05_event_authority.py#test_n03_same_subject_opposite_outcomes_block_regardless_of_arrival"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t05_event_authority.py",
+              "test": "test_n03_same_subject_opposite_outcomes_block_regardless_of_arrival"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t05_event_authority.py::test_n03_same_subject_opposite_outcomes_block_regardless_of_arrival"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S17:J03",
+        "exceptions": []
+      }
+    },
+    "S18": {
+      "positive": {
+        "case_id": "S18",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/CONFIGURATION_SECRETS_STANDARD.md",
+          "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+          "scripts/test_v411_t10_untrusted_inputs.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:S18:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t10_untrusted_inputs.py#test_authorized_symbolic_ref_and_scoped_readonly_use"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t10_untrusted_inputs.py",
+              "test": "test_authorized_symbolic_ref_and_scoped_readonly_use"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t10_untrusted_inputs.py::test_authorized_symbolic_ref_and_scoped_readonly_use"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "S18:J12",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "S18",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J12"
+        ],
+        "actual_source_refs": [
+          "standards/CONFIGURATION_SECRETS_STANDARD.md",
+          "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+          "scripts/test_v411_t10_untrusted_inputs.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:S18:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t10_untrusted_inputs.py#test_tool_text_cannot_grant_authority_or_dispatch",
+          "scripts/test_v411_t10_untrusted_inputs.py#test_github_message_does_not_admit_events",
+          "scripts/test_v411_t10_untrusted_inputs.py#test_bearer_like_ref_is_quarantined_and_never_persisted"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t10_untrusted_inputs.py",
+              "test": "test_tool_text_cannot_grant_authority_or_dispatch"
+            },
+            {
+              "file": "scripts/test_v411_t10_untrusted_inputs.py",
+              "test": "test_github_message_does_not_admit_events"
+            },
+            {
+              "file": "scripts/test_v411_t10_untrusted_inputs.py",
+              "test": "test_bearer_like_ref_is_quarantined_and_never_persisted"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t10_untrusted_inputs.py::test_tool_text_cannot_grant_authority_or_dispatch",
+          "execute scripts/test_v411_t10_untrusted_inputs.py::test_github_message_does_not_admit_events",
+          "execute scripts/test_v411_t10_untrusted_inputs.py::test_bearer_like_ref_is_quarantined_and_never_persisted"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "S18:J12",
+        "exceptions": []
+      }
+    },
+    "X01": {
+      "positive": {
+        "case_id": "X01",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J03",
+          "J06",
+          "J07",
+          "J08"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
+          "scripts/test_v411_t02_risk_intake.py",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X01:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_p03_x01_conjunction_admits_only_when_every_owner_passes",
+          "scripts/test_v411_t02_risk_intake.py#test_p01_present_records_bind_refs_and_floor_gate_set_is_enforced"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "SAFE_LOCAL_E2_UNIT_AUTHORITY",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_p03_x01_conjunction_admits_only_when_every_owner_passes"
+            },
+            {
+              "file": "scripts/test_v411_t02_risk_intake.py",
+              "test": "test_p01_present_records_bind_refs_and_floor_gate_set_is_enforced"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_p03_x01_conjunction_admits_only_when_every_owner_passes",
+          "execute scripts/test_v411_t02_risk_intake.py::test_p01_present_records_bind_refs_and_floor_gate_set_is_enforced"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X01:J03+J06+J07+J08",
+        "exceptions": [
+          "authenticated external human source may remain NOT_RUN; local physical sink must execute"
+        ]
+      },
+      "negative": {
+        "case_id": "X01",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J03",
+          "J06",
+          "J07",
+          "J08"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
+          "scripts/test_v411_t02_risk_intake.py",
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X01:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t01_effective_rules.py#test_n01_removing_j07_label_keeps_security_gate_required",
+          "scripts/test_v411_t09_effect_boundary.py#test_claimed_a_current_deny_blocks_before_real_sink_mutation"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "SAFE_LOCAL_E2_UNIT_AUTHORITY",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n01_removing_j07_label_keeps_security_gate_required"
+            },
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_claimed_a_current_deny_blocks_before_real_sink_mutation"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t01_effective_rules.py::test_n01_removing_j07_label_keeps_security_gate_required",
+          "execute scripts/test_v411_t09_effect_boundary.py::test_claimed_a_current_deny_blocks_before_real_sink_mutation"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": 0,
+        "equivalence_class": "X01:J03+J06+J07+J08",
+        "exceptions": [
+          "authenticated external human source may remain NOT_RUN; local physical sink must execute"
+        ]
+      }
+    },
+    "X02": {
+      "positive": {
+        "case_id": "X02",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J05",
+          "J12"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X02:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles",
+          "scripts/test_v411_t04_reuse_first.py#test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles"
+            },
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles",
+          "execute scripts/test_v411_t04_reuse_first.py::test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X02:J05+J12",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X02",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A2",
+        "job_labels": [
+          "J05",
+          "J12"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X02:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_n01_accepted_spec_without_producer_shipment_stays_blocked",
+          "scripts/test_v411_t04_reuse_first.py#test_n01_license_change_alone_fails_closed_without_historic_pair"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_n01_accepted_spec_without_producer_shipment_stays_blocked"
+            },
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_n01_license_change_alone_fails_closed_without_historic_pair"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_n01_accepted_spec_without_producer_shipment_stays_blocked",
+          "execute scripts/test_v411_t04_reuse_first.py::test_n01_license_change_alone_fails_closed_without_historic_pair"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X02:J05+J12",
+        "exceptions": []
+      }
+    },
+    "X03": {
+      "positive": {
+        "case_id": "X03",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J06",
+          "J08",
+          "J10"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X03:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_authoritative_readback_reconciles_committed_unknown",
+          "scripts/test_v411_t09_effect_boundary.py#test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_authoritative_readback_reconciles_committed_unknown"
+            },
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_authoritative_readback_reconciles_committed_unknown",
+          "execute scripts/test_v411_t09_effect_boundary.py::test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X03:J06+J08+J10",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X03",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J06",
+          "J08",
+          "J10"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t09_effect_boundary.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X03:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X03:J06+J08+J10",
+        "exceptions": []
+      }
+    },
+    "X04": {
+      "positive": {
+        "case_id": "X04",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J07",
+          "J09"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t13_role_conduct.py",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X04:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_p03_review_required_satisfied_only_by_independent_admission",
+          "scripts/test_v49_release_applicability.py#test_unknown_is_fail_closed"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "CONTRACT_SIMULATION_NO_RELEASE_PASS",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_p03_review_required_satisfied_only_by_independent_admission"
+            },
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_unknown_is_fail_closed"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_p03_review_required_satisfied_only_by_independent_admission",
+          "execute scripts/test_v49_release_applicability.py::test_unknown_is_fail_closed"
+        ],
+        "expected_transition": "T12_CONTRACT_EVALUATED_DOWNSTREAM_RELEASE_NOT_RUN",
+        "expected_effect_count": null,
+        "equivalence_class": "X04:J07+J09",
+        "exceptions": [
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
+        ]
+      },
+      "negative": {
+        "case_id": "X04",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J07",
+          "J09"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t13_role_conduct.py",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X04:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t13_role_conduct.py#test_n02b_fabricated_universal_fresh_gate_against_not_required_is_rejected",
+          "scripts/test_v49_release_applicability.py#test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "CONTRACT_SIMULATION_NO_RELEASE_PASS",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_n02b_fabricated_universal_fresh_gate_against_not_required_is_rejected"
+            },
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_low_risk_shortcuts_are_not_positive_release_proof"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t13_role_conduct.py::test_n02b_fabricated_universal_fresh_gate_against_not_required_is_rejected",
+          "execute scripts/test_v49_release_applicability.py::test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "expected_transition": "T12_CONTRACT_EVALUATED_DOWNSTREAM_RELEASE_NOT_RUN",
+        "expected_effect_count": null,
+        "equivalence_class": "X04:J07+J09",
+        "exceptions": [
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
+        ]
+      }
+    },
+    "X05": {
+      "positive": {
+        "case_id": "X05",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J04",
+          "J05"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_merge_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X05:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles",
+          "scripts/test_v411_merge_admission.py#test_p03_merge_proceeds_on_sweep_plus_confirming_final_readback"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles"
+            },
+            {
+              "file": "scripts/test_v411_merge_admission.py",
+              "test": "test_p03_merge_proceeds_on_sweep_plus_confirming_final_readback"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_p01_authorized_added_spec_fully_implemented_and_windowed_reconciles",
+          "execute scripts/test_v411_merge_admission.py::test_p03_merge_proceeds_on_sweep_plus_confirming_final_readback"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X05:J04+J05",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X05",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A3",
+        "job_labels": [
+          "J04",
+          "J05"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_merge_admission.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X05:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X05:J04+J05",
+        "exceptions": []
+      }
+    },
+    "X06": {
+      "positive": {
+        "case_id": "X06",
+        "polarity": "positive",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J11",
+          "J12"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X06:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_removed_operation_requires_current_producer_and_all_windows",
+          "scripts/test_v411_t04_reuse_first.py#test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_removed_operation_requires_current_producer_and_all_windows"
+            },
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_removed_operation_requires_current_producer_and_all_windows",
+          "execute scripts/test_v411_t04_reuse_first.py::test_p03_direct_reuse_with_exact_source_and_license_is_bounded"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X06:J11+J12",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X06",
+        "polarity": "negative",
+        "archetype": "LIBRARY",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A1",
+        "job_labels": [
+          "J11",
+          "J12"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py",
+          "scripts/test_v411_t04_reuse_first.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X06:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t03_spec_implementation_currentness.py#test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass",
+          "scripts/test_v411_t04_reuse_first.py#test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+              "test": "test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+            },
+            {
+              "file": "scripts/test_v411_t04_reuse_first.py",
+              "test": "test_n01_new_revision_cannot_inherit_historic_license_permission"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t03_spec_implementation_currentness.py::test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass",
+          "execute scripts/test_v411_t04_reuse_first.py::test_n01_new_revision_cannot_inherit_historic_license_permission"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X06:J11+J12",
+        "exceptions": []
+      }
+    },
+    "X07": {
+      "positive": {
+        "case_id": "X07",
+        "polarity": "positive",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J08",
+          "J09"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t09_effect_boundary.py",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X07:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t09_effect_boundary.py#test_proven_same_effect_dedup_replay_never_increments_twice",
+          "scripts/test_v49_release_applicability.py#test_release_authority_owns_gate_by_subject_decision"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t09_effect_boundary.py",
+              "test": "test_proven_same_effect_dedup_replay_never_increments_twice"
+            },
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_release_authority_owns_gate_by_subject_decision"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t09_effect_boundary.py::test_proven_same_effect_dedup_replay_never_increments_twice",
+          "execute scripts/test_v49_release_applicability.py::test_release_authority_owns_gate_by_subject_decision"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X07:J08+J09",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X07",
+        "polarity": "negative",
+        "archetype": "SERVICE",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A4",
+        "job_labels": [
+          "J08",
+          "J09"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t09_effect_boundary.py",
+          "scripts/test_v49_release_applicability.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X07:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v49_release_applicability.py#test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v49_release_applicability.py",
+              "test": "test_low_risk_shortcuts_are_not_positive_release_proof"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v49_release_applicability.py::test_low_risk_shortcuts_are_not_positive_release_proof"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X07:J08+J09",
+        "exceptions": []
+      }
+    },
+    "X08": {
+      "positive": {
+        "case_id": "X08",
+        "polarity": "positive",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J02",
+          "J03"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t02_risk_intake.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-positive",
+        "operator_session": "t12:X08:positive",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t02_risk_intake.py#test_p03_a0_path_stands_and_states_still_listed",
+          "scripts/test_v411_t13_role_conduct.py#test_p04_a0_docs_only_stays_proportional_with_no_speculative_ceremony"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t02_risk_intake.py",
+              "test": "test_p03_a0_path_stands_and_states_still_listed"
+            },
+            {
+              "file": "scripts/test_v411_t13_role_conduct.py",
+              "test": "test_p04_a0_docs_only_stays_proportional_with_no_speculative_ceremony"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t02_risk_intake.py::test_p03_a0_path_stands_and_states_still_listed",
+          "execute scripts/test_v411_t13_role_conduct.py::test_p04_a0_docs_only_stays_proportional_with_no_speculative_ceremony"
+        ],
+        "expected_transition": "LEGAL_OWNER_CONTRACT",
+        "expected_effect_count": null,
+        "equivalence_class": "X08:J02+J03",
+        "exceptions": []
+      },
+      "negative": {
+        "case_id": "X08",
+        "polarity": "negative",
+        "archetype": "CLI",
+        "adoption_profile": "v4.11",
+        "adoption_level": "A0",
+        "job_labels": [
+          "J02",
+          "J03"
+        ],
+        "actual_source_refs": [
+          "scripts/test_v411_t02_risk_intake.py",
+          "scripts/test_v411_t13_role_conduct.py"
+        ],
+        "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "affected_source_head": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
+        "actor": "builder:fixture-adversarial",
+        "operator_session": "t12:X08:negative",
+        "permissions": [
+          "repo:read",
+          "local:test"
+        ],
+        "authority_refs": [
+          "#943@6084264198",
+          "#954",
+          "#966",
+          "#967@6098238946",
+          "#1020"
+        ],
+        "owner_refs": [
+          "scripts/test_v411_t02_risk_intake.py#test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+        ],
+        "mandatory_gates": [
+          "SOURCE_CURRENTNESS",
+          "OWNER_CONTRACT",
+          "ADVERSARIAL_ORACLE"
+        ],
+        "fidelity": "OWNER_EXECUTABLE_REUSE",
+        "setup": "fresh exact-head checkout; no production credentials/network",
+        "runner": {
+          "type": "unittest-owner-methods",
+          "tests": [
+            {
+              "file": "scripts/test_v411_t02_risk_intake.py",
+              "test": "test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+            }
+          ]
+        },
+        "assertions": [
+          "execute scripts/test_v411_t02_risk_intake.py::test_n01a_docs_only_label_over_material_diff_is_blocked_as_conflict"
+        ],
+        "expected_transition": "DENIED_FAIL_CLOSED",
+        "expected_effect_count": null,
+        "equivalence_class": "X08:J02+J03",
+        "exceptions": []
+      }
+    }
+  },
+  "compound": {
+    "id": "J09+J10+J11+J12",
+    "actual_source_refs": [
+      "scripts/test_v49_release_applicability.py",
+      "scripts/test_v411_t09_effect_boundary.py",
+      "scripts/test_v411_t03_spec_implementation_currentness.py",
+      "scripts/test_v411_t04_reuse_first.py"
+    ],
+    "tests": [
+      {
+        "file": "scripts/test_v49_release_applicability.py",
+        "test": "test_unknown_is_fail_closed"
+      },
+      {
+        "file": "scripts/test_v411_t09_effect_boundary.py",
+        "test": "test_wrong_tenant_snapshot_cannot_recover"
+      },
+      {
+        "file": "scripts/test_v411_t03_spec_implementation_currentness.py",
+        "test": "test_n03_old_consumer_on_removed_operation_is_incompatible_despite_c1_pass"
+      },
+      {
+        "file": "scripts/test_v411_t04_reuse_first.py",
+        "test": "test_n01_new_revision_cannot_inherit_historic_license_permission"
+      }
+    ],
+    "expected_disposition": "UNVERIFIED/BLOCKED_UNTIL_ALL_MATERIAL_OWNER_FACTS_CURRENT",
+    "release_gate": "NOT_RUN"
+  }
+}
