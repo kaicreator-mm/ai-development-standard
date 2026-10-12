@@ -390,7 +390,8 @@ jobs:
       - name: Run external-system and migration predecessor regressions
         run: |
           python scripts/test_v41_external_systems.py
-          python scripts/test_data_migration_governance.py
+          python scripts/test_v42_data_migration.py
+          python scripts/test_v42_migration_conformance.py
 
   t09-adversarial-predecessor-tamper:
     name: T09 rejects committed tamper of predecessor-owned external clauses
