@@ -22,7 +22,13 @@ jobs:
           req=urllib.request.Request(endpoint,data=json.dumps(payload).encode(),headers={"Authorization":"Bearer "+os.environ["GH_TOKEN"],"Content-Type":"application/json","Accept":"application/vnd.github+json"},method="POST")
           try:
             with urllib.request.urlopen(req,timeout=45) as response:
-              result=json.load(response)
+              raw=response.read()
+              print("MODEL_PROBE_HTTP="+str(response.status))
+              print("MODEL_PROBE_CONTENT_TYPE="+response.headers.get("content-type","missing"))
+              print("MODEL_PROBE_BODY_LEN="+str(len(raw)))
+              print("MODEL_PROBE_BODY_PREFIX="+raw[:240].decode("utf-8","replace"))
+              assert response.headers.get("content-type","").startswith("application/json"),"inference did not return JSON"
+              result=json.loads(raw)
               output=result["choices"][0]["message"]["content"].strip()
               print("MODEL_PROBE_HTTP="+str(response.status))
               print("MODEL_PROBE_RESPONSE="+output[:120])
