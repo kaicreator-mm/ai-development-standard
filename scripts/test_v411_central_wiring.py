@@ -43,6 +43,26 @@ T08_CURRENT_WORKFLOW_BLOB = "28c537e12c03f3f0cef501b8b5505e8ee28ca532"
 T09_EXTERNAL_BLOB = "3f7189301f7292200a98ebd027372513a801bc03"
 T09_MIGRATION_BLOB = "bf15f3f387cb81a78ecb54169b1cfec00dc8340a"
 
+# Accepted source refs are exact owner-review subjects, not merely any Git blob
+# that happens to exist. T07 is the only complete central proposal in this T11
+# candidate; every other owner remains NO_SHARED_DELTA/BLOCKED_NAMED/reuse-only.
+ACCEPTED_OWNER_SOURCE_REFS = {
+    "V411-T07": {
+        (
+            "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+            "14",
+            T07_SOURCE_BLOB,
+        ),
+    },
+}
+
+ALLOWED_COMPAT_OUTCOMES = {
+    "PASS",
+    "BLOCKED",
+    "NOT_RUN",
+    "NOT_APPLICABLE_SHARED_TEST",
+}
+
 ALLOWED_T11_PATHS = {
     "checklists/version-closure.md",
     "fixtures/dogfood-audit-contract/owner_surfaces.json",
@@ -84,12 +104,13 @@ def proposal_problems(proposal: dict) -> list[str]:
     if missing:
         problems.append("MISSING_PROPOSAL_ELEMENTS:" + ",".join(missing))
         return problems
-    if proposal["owner_task_id"] not in LANDED_OWNERS:
+
+    owner = proposal["owner_task_id"]
+    if owner not in LANDED_OWNERS:
         problems.append("REJECTED_UNFROZEN")
+
     source = proposal["frozen_source_ref"]
-    if not isinstance(source, dict) or not {
-        "path", "section", "blob"
-    }.issubset(source):
+    if not isinstance(source, dict) or not {"path", "section", "blob"}.issubset(source):
         problems.append("SOURCE_REF_INCOMPLETE")
     else:
         blob = source["blob"]
@@ -97,16 +118,117 @@ def proposal_problems(proposal: dict) -> list[str]:
             problems.append("SOURCE_BLOB_INVALID")
         elif git("cat-file", "-e", f"{blob}^{{blob}}", check=False).returncode != 0:
             problems.append("SOURCE_BLOB_UNRESOLVABLE")
+        exact_ref = (source.get("path"), str(source.get("section")), blob)
+        if exact_ref not in ACCEPTED_OWNER_SOURCE_REFS.get(owner, set()):
+            problems.append("SOURCE_REF_MISMATCH")
+
+    delta = proposal["additive_schema_delta"]
+    if not isinstance(delta, dict) or not {"target", "posture"}.issubset(delta):
+        problems.append("ADDITIVE_SCHEMA_DELTA_INCOMPLETE")
+    elif delta["posture"] == "NON_SCHEMA_HANDOFF":
+        if delta["target"] != "NO_SCHEMA_DELTA_SHARED_TEST_ONLY":
+            problems.append("NON_SCHEMA_HANDOFF_TARGET_INVALID")
+    elif delta["posture"] == "ADDITIVE_SCHEMA":
+        required_delta = {"target", "posture", "json_schema_draft", "compatibility_mode"}
+        if not required_delta.issubset(delta):
+            problems.append("ADDITIVE_SCHEMA_DELTA_INCOMPLETE")
+        else:
+            if not isinstance(delta["target"], str) or not delta["target"].startswith("schemas/"):
+                problems.append("SCHEMA_TARGET_INVALID")
+            if delta["json_schema_draft"] != "2020-12":
+                problems.append("SCHEMA_DRAFT_INVALID")
+            if delta["compatibility_mode"] != "NO_IN_PLACE_BREAKING_CHANGE":
+                problems.append("SCHEMA_COMPATIBILITY_POSTURE_INVALID")
+    else:
+        problems.append("ADDITIVE_SCHEMA_POSTURE_UNKNOWN")
+
     compat = proposal["compatibility_evidence"]
-    if not isinstance(compat, dict) or not {
-        "old_producer_to_new_reader", "new_producer_to_old_reader"
-    }.issubset(compat):
-        problems.append("COMPATIBILITY_DIMENSION_MISSING")
+    required_compat = {
+        "contract",
+        "version",
+        "baseline_blob",
+        "candidate_blob",
+        "producer_classes",
+        "consumer_classes",
+        "support_window",
+        "old_producer_to_new_reader",
+        "new_producer_to_old_reader",
+    }
+    if not isinstance(compat, dict) or not required_compat.issubset(compat):
+        problems.append("COMPATIBILITY_EVIDENCE_INCOMPLETE")
+    else:
+        for field in ("contract", "version", "support_window"):
+            if not isinstance(compat[field], str) or not compat[field].strip():
+                problems.append(f"COMPATIBILITY_{field.upper()}_INVALID")
+        for field in ("producer_classes", "consumer_classes"):
+            value = compat[field]
+            if not isinstance(value, list) or not value or not all(
+                isinstance(item, str) and item.strip() for item in value
+            ):
+                problems.append(f"COMPATIBILITY_{field.upper()}_INVALID")
+        for field in ("baseline_blob", "candidate_blob"):
+            blob = compat[field]
+            if (
+                not isinstance(blob, str)
+                or len(blob) != 40
+                or git("cat-file", "-e", f"{blob}^{{blob}}", check=False).returncode != 0
+            ):
+                problems.append(f"COMPATIBILITY_{field.upper()}_INVALID")
+        for field in ("old_producer_to_new_reader", "new_producer_to_old_reader"):
+            if compat[field] not in ALLOWED_COMPAT_OUTCOMES:
+                problems.append(f"COMPATIBILITY_{field.upper()}_INVALID")
+
     note = proposal["failing_verification_note"]
-    if not isinstance(note, str) or "DEFERRED_TO_T11" not in note:
-        problems.append("FAILING_VERIFICATION_NOTE_MISSING")
+    required_note = {"status", "owner_task_id", "gate", "evidence_ref"}
+    if not isinstance(note, dict) or not required_note.issubset(note):
+        problems.append("FAILING_VERIFICATION_NOTE_INCOMPLETE")
+    else:
+        if note["status"] != "DEFERRED_TO_T11" or note["owner_task_id"] != owner:
+            problems.append("FAILING_VERIFICATION_NOTE_MISMATCH")
+        if not isinstance(note["gate"], str) or not note["gate"].strip():
+            problems.append("FAILING_VERIFICATION_GATE_INVALID")
+        evidence_ref = note["evidence_ref"]
+        if (
+            not isinstance(evidence_ref, str)
+            or not evidence_ref.startswith("#")
+            or "@" not in evidence_ref
+            or not all(part.isdigit() for part in evidence_ref[1:].split("@", 1))
+        ):
+            problems.append("FAILING_VERIFICATION_EVIDENCE_REF_INVALID")
     return problems
 
+
+def proposal_key(proposal: dict) -> tuple[str, str, str, str]:
+    source = proposal["frozen_source_ref"]
+    delta = proposal["additive_schema_delta"]
+    return (
+        proposal["owner_task_id"],
+        source["path"],
+        str(source["section"]),
+        delta["target"],
+    )
+
+
+def reconcile_proposals(proposals: list[dict]) -> dict:
+    seen: set[tuple[str, str, str, str]] = set()
+    deltas: list[tuple[str, str, str, str]] = []
+    problems: list[str] = []
+    for proposal in proposals:
+        current = proposal_problems(proposal)
+        if current:
+            problems.extend(current)
+            continue
+        key = proposal_key(proposal)
+        if key in seen:
+            problems.append("DUPLICATE_PROPOSAL:" + "|".join(key))
+            continue
+        seen.add(key)
+        deltas.append(key)
+    return {
+        "verdict": "PASS" if not problems else "BLOCKED",
+        "problems": problems,
+        "deltas": deltas,
+    }
 
 def manifest_problems(manifest: dict) -> list[str]:
     problems: list[str] = []
@@ -195,10 +317,22 @@ class ProposalContractTests(unittest.TestCase):
                 "posture": "NON_SCHEMA_HANDOFF",
             },
             "compatibility_evidence": {
+                "contract": "LAST_ADMISSION_SWEEP",
+                "version": "v4.11-t07-owner",
+                "baseline_blob": T07_SOURCE_BLOB,
+                "candidate_blob": T07_CURRENT_SUCCESSOR_BLOB,
+                "producer_classes": ["T07 owner-lane sweep producer"],
+                "consumer_classes": ["T11 shared execution-suite consumer"],
+                "support_window": "v4.11 central convergence",
                 "old_producer_to_new_reader": "NOT_APPLICABLE_SHARED_TEST",
                 "new_producer_to_old_reader": "NOT_APPLICABLE_SHARED_TEST",
             },
-            "failing_verification_note": "DEFERRED_TO_T11:T07_COMMON_SUITE",
+            "failing_verification_note": {
+                "status": "DEFERRED_TO_T11",
+                "owner_task_id": "V411-T07",
+                "gate": "T07_COMMON_SUITE",
+                "evidence_ref": "#1014@6118552578",
+            },
         }
 
     def test_complete_source_bound_proposal_shape_is_resolvable(self) -> None:
@@ -212,6 +346,53 @@ class ProposalContractTests(unittest.TestCase):
         unfrozen["owner_task_id"] = "V411-T99"
         self.assertIn("REJECTED_UNFROZEN", proposal_problems(unfrozen))
 
+    def test_n01_existing_but_wrong_source_blob_is_rejected(self) -> None:
+        wrong = self.valid_shape()
+        wrong["frozen_source_ref"] = dict(wrong["frozen_source_ref"])
+        wrong["frozen_source_ref"]["blob"] = T07_CURRENT_SUCCESSOR_BLOB
+        self.assertEqual(
+            0,
+            git("cat-file", "-e", f"{T07_CURRENT_SUCCESSOR_BLOB}^{{blob}}", check=False).returncode,
+        )
+        self.assertIn("SOURCE_REF_MISMATCH", proposal_problems(wrong))
+
+    def test_n01_wrong_owner_section_is_rejected(self) -> None:
+        wrong = self.valid_shape()
+        wrong["frozen_source_ref"] = dict(wrong["frozen_source_ref"], section="99")
+        self.assertIn("SOURCE_REF_MISMATCH", proposal_problems(wrong))
+
+    def test_proposal_contract_missing_mandatory_subfields_fails_closed(self) -> None:
+        cases: list[tuple[str, dict, str]] = []
+
+        bad_delta = self.valid_shape()
+        bad_delta["additive_schema_delta"] = {"posture": "NON_SCHEMA_HANDOFF"}
+        cases.append(("delta", bad_delta, "ADDITIVE_SCHEMA_DELTA_INCOMPLETE"))
+
+        bad_compat = self.valid_shape()
+        bad_compat["compatibility_evidence"] = dict(bad_compat["compatibility_evidence"])
+        del bad_compat["compatibility_evidence"]["support_window"]
+        cases.append(("compat", bad_compat, "COMPATIBILITY_EVIDENCE_INCOMPLETE"))
+
+        bad_note = self.valid_shape()
+        bad_note["failing_verification_note"] = dict(bad_note["failing_verification_note"])
+        bad_note["failing_verification_note"]["evidence_ref"] = "chat-only"
+        cases.append(("note", bad_note, "FAILING_VERIFICATION_EVIDENCE_REF_INVALID"))
+
+        for label, proposal, expected in cases:
+            with self.subTest(label=label):
+                self.assertIn(expected, proposal_problems(proposal))
+
+    def test_p01_proposal_ledger_is_exactly_once_and_duplicate_fails_closed(self) -> None:
+        proposal = self.valid_shape()
+        one = reconcile_proposals([proposal])
+        self.assertEqual("PASS", one["verdict"])
+        self.assertEqual(1, len(one["deltas"]))
+
+        duplicate = reconcile_proposals([proposal, deepcopy(proposal)])
+        self.assertEqual("BLOCKED", duplicate["verdict"])
+        self.assertEqual(1, len(duplicate["deltas"]))
+        self.assertTrue(any(p.startswith("DUPLICATE_PROPOSAL:") for p in duplicate["problems"]))
+
     def test_n02_conflicting_same_surface_semantics_stay_blocked(self) -> None:
         proposals = [
             ("V411-T05", "agent-event-v2:event", "A"),
@@ -221,7 +402,6 @@ class ProposalContractTests(unittest.TestCase):
         for _, surface, semantics in proposals:
             by_surface.setdefault(surface, set()).add(semantics)
         self.assertEqual({"agent-event-v2:event"}, {k for k, v in by_surface.items() if len(v) > 1})
-
 
 class CompatibilityTests(unittest.TestCase):
     def setUp(self) -> None:
