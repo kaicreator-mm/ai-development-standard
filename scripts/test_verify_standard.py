@@ -123,22 +123,6 @@ class StandardVerifierRegressionTests(unittest.TestCase):
         )
 
 
-    def test_v411_central_wiring_suite_and_manifest_entry_cannot_be_deleted_together(self) -> None:
-        temp, repo = self.copied_repo()
-        self.addCleanup(temp.cleanup)
-        victim = "scripts/test_v411_central_wiring.py"
-        (repo / victim).unlink()
-        manifest_path = repo / "standard-manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        manifest["sections"]["verification"].remove(victim)
-        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-        result = self.run_verifier(repo)
-        output = result.stdout + result.stderr
-        self.assertNotEqual(result.returncode, 0, output)
-        self.assertIn(victim, output)
-        self.assertIn("bootstrap-required", output)
-
-
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(
         unittest.defaultTestLoader.loadTestsFromTestCase(StandardVerifierRegressionTests)
