@@ -30,6 +30,7 @@ ACTION = {
     "tenant": "ads",
     "scope": {"release:v4.11"},
     "provider": "worker-a",
+    "decision_owner": "human:alice",
 }
 
 
@@ -67,6 +68,18 @@ def authority_registry() -> dict[str, dict]:
             "allowed_tenant": ACTION["tenant"],
             "allowed_operations": {"release", "deploy"},
             "allowed_scope": {"release:v4.11", "deploy:prod"},
+        },
+        "owner:mallory": {
+            "fixture_class": UNIT_FIXTURE_CLASS,
+            "authority_actor": "human:mallory",
+            "decision_owner": "human:mallory",
+            "delegation_ref": None,
+            "valid": True,
+            "revoked": False,
+            "allowed_repository": ACTION["repository"],
+            "allowed_tenant": ACTION["tenant"],
+            "allowed_operations": {"release"},
+            "allowed_scope": {"release:v4.11"},
         },
         "delegate:bob": {
             "fixture_class": UNIT_FIXTURE_CLASS,
@@ -175,6 +188,8 @@ def validate_canonical_record(
             refusal.append("authority_actor_mismatch")
         if record.get("decision_owner") != authority.get("decision_owner"):
             refusal.append("decision_owner_mismatch")
+        if record.get("decision_owner") != action.get("decision_owner"):
+            refusal.append("wrong_decision_owner_for_action")
         if record.get("delegation_ref") != authority.get("delegation_ref"):
             refusal.append("delegation_ref_mismatch")
         if action["repository"] != authority.get("allowed_repository"):
@@ -463,6 +478,21 @@ class T08N05SupersessionTests(unittest.TestCase):
         )
         self.assertEqual(result["state"], "DENY")
 
+    def test_different_human_owner_cannot_supersede(self):
+        deny = decision_record(decision_ref="deny-wrong-owner", decision="DENY")
+        approve = decision_record(
+            decision_ref="approve-wrong-owner",
+            authority_ref="owner:mallory",
+            decision="APPROVE",
+            supersession_ref="deny-wrong-owner",
+        )
+        result = resolve_decisions(
+            ["deny-wrong-owner", "approve-wrong-owner"],
+            events=canonical_event_registry(deny, approve),
+        )
+        self.assertEqual(result["state"], "BLOCKED")
+        self.assertIn("wrong_decision_owner_for_action", result["refusals"])
+
     def test_revoked_delegate_cannot_supersede(self):
         deny = decision_record(decision_ref="deny-s3", decision="DENY")
         approve = decision_record(
@@ -509,6 +539,16 @@ class T08N06UnknownAndContradictionTests(unittest.TestCase):
             with self.subTest(ref=record["decision_ref"]):
                 self.assertEqual(result["state"], "BLOCKED")
                 self.assertFalse(result["authorized"])
+
+    def test_approve_plus_withhold_remains_non_authorizing(self):
+        approve = decision_record(decision_ref="approve-conflict", decision="APPROVE")
+        withhold = decision_record(decision_ref="withhold-conflict", decision="WITHHOLD")
+        result = resolve_decisions(
+            ["approve-conflict", "withhold-conflict"],
+            events=canonical_event_registry(approve, withhold),
+        )
+        self.assertEqual(result["state"], "WITHHOLD")
+        self.assertFalse(result["authorized"])
 
     def test_no_decision_is_blocked_not_implicit_approve(self):
         result = resolve_decisions([], events={})
