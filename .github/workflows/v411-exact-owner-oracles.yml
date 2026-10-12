@@ -277,7 +277,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ddc510b14b1d0f5800508273871d2ea19552f9a7
+          ref: faedbb3757de0a42f714111a1bc1e110e68ebbec
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -285,13 +285,37 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T14 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "ddc510b14b1d0f5800508273871d2ea19552f9a7"
+          test "$(git rev-parse HEAD)" = "faedbb3757de0a42f714111a1bc1e110e68ebbec"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD:standards/EXECUTION_ARCHITECTURE_STANDARD.md
           git rev-parse HEAD:references/TASK_LEARNING_V2_REFERENCE.md
           git rev-parse HEAD:scripts/test_v411_task_learning.py
-      - name: Run T14 focused suite
-        run: python scripts/test_v411_task_learning.py
+      - name: Run T14 reusable focused suite and classify historical owner-write-set guard
+        run: |
+          python - <<'PY'
+          import unittest
+          import scripts.test_v411_task_learning as m
+
+          def flatten(suite):
+              for item in suite:
+                  if isinstance(item, unittest.TestSuite):
+                      yield from flatten(item)
+                  else:
+                      yield item
+
+          all_tests=list(flatten(unittest.defaultTestLoader.loadTestsFromModule(m)))
+          historical="scripts.test_v411_task_learning.OwnerBoundaryTests.test_exact_three_path_owner_write_set_and_clean_tree"
+          selected=[t for t in all_tests if t.id()!=historical]
+          omitted=[t for t in all_tests if t.id()==historical]
+          assert len(omitted)==1, [t.id() for t in omitted]
+          result=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(selected))
+          print(f"T14_REUSABLE_INTEGRATED={result.testsRun}")
+          assert result.wasSuccessful()
+          old_guard=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(omitted))
+          assert not old_guard.wasSuccessful(), "historical T14 owner-write-set guard unexpectedly accepted composed successor"
+          print("T14_HISTORICAL_OWNER_WRITESET=EXPECTED_NOT_APPLICABLE_ON_COMPOSED_SUCCESSOR")
+          PY
+          test "$(git diff --name-only 9c2494f27fa65585324a036efb698a9453f4ae50 HEAD | sort)" = "$(printf '%s\n' references/TASK_LEARNING_V2_REFERENCE.md scripts/test_v411_task_learning.py standards/EXECUTION_ARCHITECTURE_STANDARD.md | sort)"
       - name: Run v4.8/v4.9 Task Learning regressions
         run: |
           python scripts/test_v48_task_learning.py
@@ -333,14 +357,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ddc510b14b1d0f5800508273871d2ea19552f9a7
+          ref: faedbb3757de0a42f714111a1bc1e110e68ebbec
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Prove T14 candidate green
-        run: python scripts/test_v411_task_learning.py
+      - name: Prove reusable T14 candidate green on composed successor
+        run: |
+          python - <<'PY'
+          import unittest
+          import scripts.test_v411_task_learning as m
+
+          def flatten(suite):
+              for item in suite:
+                  if isinstance(item, unittest.TestSuite):
+                      yield from flatten(item)
+                  else:
+                      yield item
+
+          historical="scripts.test_v411_task_learning.OwnerBoundaryTests.test_exact_three_path_owner_write_set_and_clean_tree"
+          selected=[t for t in flatten(unittest.defaultTestLoader.loadTestsFromModule(m)) if t.id()!=historical]
+          result=unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(selected))
+          assert result.wasSuccessful()
+          print(f"T14_REUSABLE_INTEGRATED={result.testsRun}")
+          PY
       - name: Commit unauthorized edit inside predecessor-owned section
         run: |
           python - <<'PY'
@@ -355,10 +396,10 @@ jobs:
           git -c user.name='T14 Scope Falsifier' -c user.email='scope@example.invalid' add standards/EXECUTION_ARCHITECTURE_STANDARD.md
           git -c user.name='T14 Scope Falsifier' -c user.email='scope@example.invalid' commit -m 'negative: unauthorized predecessor Execution edit'
           test -z "$(git status --porcelain)"
-      - name: T14 owner boundary must reject committed predecessor tamper
+      - name: T14 predecessor-prefix guard must reject committed tamper
         run: |
-          if python scripts/test_v411_task_learning.py; then
-            echo "FAIL_CLOSED_BREACH: predecessor-owned Execution tamper passed T14 owner guard"
+          if python -m unittest scripts.test_v411_task_learning.OwnerBoundaryTests.test_preexisting_execution_architecture_is_byte_identical; then
+            echo "FAIL_CLOSED_BREACH: predecessor-owned Execution tamper passed T14 prefix guard"
             exit 1
           else
             echo "EXPECTED_REJECTION: predecessor-owned Execution tamper rejected"
