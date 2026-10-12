@@ -883,3 +883,58 @@ PUBLISHABLE
 Default is fail-closed: absent an explicit `PUBLISHABLE` classification from the applicable source authority, evidence remains `PROJECT_PRIVATE` or `RESTRICTED` and MUST NOT be published as standard evidence. Prefer minimal refs/digests and non-sensitive summaries over copied bodies. Secrets, credentials, private chain-of-thought and hidden-evaluator/Hidden Validation payloads are never publication material.
 
 Changing publication class does not change evidence strength, owner authority or promotion status. A private observation can still lead to `NO_CHANGE`, `MORE_EVIDENCE` or a private ADS Intake; publication is a separate decision.
+
+## 9. Human decision authority, DENY/WITHHOLD and lawful supersession
+
+Protected human decisions are authority facts, not text markers. A GitHub author, shared `transport_actor`, model/tool output, reviewer prose, A2A payload, or a string such as `HUMAN_APPROVED` MUST NOT mint human authority by itself. A Controller MAY transcribe a genuine cited human/delegate act, but transcription does not make the Controller the decision owner.
+
+### 9.1 Authority-bound decision projection
+
+A consumer MAY project an already-owned accepted decision using these facts only; this section creates no new event enum or shared schema:
+
+```text
+authority_actor
+authority_owner_ref
+delegation_ref                # optional only when authority is delegated
+transport_actor
+decision_ref
+decision_time
+decision ∈ {DENY, WITHHOLD, APPROVE}
+repository
+subject_head
+operation
+tenant
+scope
+supersession_ref              # only for an explicit lawful supersession
+source_readback
+currentness
+decision_owner
+material_reason               # when material
+```
+
+The authority basis MUST resolve independently of arbitrary comment/body text to the applicable owning human or bounded delegation record. The accepted decision/event ref, authority/delegation ref and source readback MUST be current and resolvable for the exact protected subject. Shared GitHub transport identity is transport evidence only; two logical operators using one transport actor do not inherit each other's authority.
+
+### 9.2 Admission, dominance and scope
+
+For a protected action, admission is the conjunction of all current higher-authority predicates. The decision MUST bind the exact repository, subject HEAD, operation and tenant, and the requested action scope MUST be contained by the decision's authorized scope. Wrong repository/HEAD/version/tenant/operation, stale age/window, narrower unrelated scope, revoked/expired delegation, unknown source readback, or an unaccepted event cannot authorize another action.
+
+A current unsuperseded `DENY` dominates. Derived `READY`, retry, majority, scheduler progress, provider/worker replacement, WEB→LOCAL handoff, a newer transport identity, or a later unlinked `APPROVE` MUST NOT erase it. `WITHHOLD` is a durable non-authorizing human decision distinct from both no decision and `DENY`; it may lawfully hold release/deployment without creating a blanket line-by-line human-review requirement. Absence of `DENY` is never inferred as `APPROVE`.
+
+### 9.3 Lawful supersession
+
+A later `APPROVE` supersedes an applicable `DENY` only when all of the following are proven together:
+
+1. the new decision is made by the same owning human authority or a currently valid delegate of that same owner;
+2. `supersession_ref` names the exact immutable prior `DENY` decision ref;
+3. repository, current subject HEAD, operation, tenant and authorized scope exactly cover the controlled action;
+4. the new authority/delegation basis and accepted decision source are independently readable and current; and
+5. the old `DENY` remains preserved as historical evidence rather than being rewritten or deleted.
+
+Recency alone is not supersession. A stale approval, unlinked approval, wrong-scope approval, revoked delegation, or quoted prior approval remains non-authorizing.
+
+### 9.4 Fail-closed routing and owner boundary
+
+Missing/unknown authority, unreadable source, contradictory controlling decisions, omitted refusal evidence, revoked/expired delegation, invalid supersession lineage, or ambiguous scope MUST route the controlled action to `BLOCKED` / `NOT_RUN` with the controlling refs and material reason preserved. Retrying through a different worker/provider/transport identity is not recovery; recovery requires owner adjudication or genuine reauthorization under this section.
+
+This section decides **who lawfully said what for which exact protected scope**. It performs no irreversible side effect, measures no sink mutation and does not claim external-effect prevention. T09 exclusively owns the pre-effect authority refresh, physical effect boundary, mutation counter and uncertain-outcome recovery. T07 owns merge admission; T11 owns any shared projection/schema wiring; T12/V01 own integrated/visible evidence. Unit fixtures may test these semantics, but a fixture MUST be labeled unit-level and MUST NOT be presented as proof that a genuine human authorization occurred. If no independently verifiable genuine human/delegation source is available, that positive real-human proof remains `NOT_RUN`; it must not be fabricated from a marker string.
+
