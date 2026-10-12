@@ -115,10 +115,21 @@ READ_ONLY_SURFACE_REBOUND_BLOBS = {
 # allowed-any waiver. Pin constants only: any third blob still fails; the
 # version base (old blob) keeps passing on the historical pin alone; zero
 # tests removed, no intent weakened.
+#
+# v4.11 shared-pin convergence R2C (issue #967; dispatch #967@6119832547 as
+# amended by #967@6120017465, builder claim #967@6120085271): the admitted-set
+# extension is exactly one more lawful successor blob — the exact qualified
+# T07 execution blob `f5552653…` (EXECUTION_ARCHITECTURE_STANDARD.md at the
+# qualified T07 head b144e4ce, review #1014@6119709894_PASS_SOURCE_ONLY),
+# admitted after the already-admitted T06 blob. Pin constants only: every
+# admitted value stays gated by the same repository-fact context gate, any
+# further blob still fails, and every other surface keeps its exact
+# historical pin.
 VERSION_BASE_SHA = "2096f1f1d20ac98990af7e71df55355b94751b05"
 V411_OWNER_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": (
         "048690864ff2bb3445780ba2ac5ed2e07b272485",
+        "f5552653f9fd69697b21d87d9890426943fd7f41",
     ),
 }
 
@@ -673,8 +684,9 @@ class ExecutionContractRefsV49LifecycleBoundaryTests(unittest.TestCase):
             with self.subTest(path_rebound_pin_anchor=rel):
                 self.assertEqual(git_blob_sha(ROOT / rel, rev=VERSION_BASE_SHA), blob)
         # v4.11 shared-pin convergence (issue #967): the historical pin governs
-        # everywhere; the exact qualified T06 execution blob is admitted ONLY
-        # under the exact v4.11 context gate. Any third blob still fails.
+        # everywhere; the exact qualified T06/T07 execution blobs are admitted
+        # ONLY under the exact v4.11 context gate. Any further blob still
+        # fails.
         for rel, blob in READ_ONLY_SURFACE_REBOUND_BLOBS.items():
             with self.subTest(path_rebound=rel):
                 admitted = {blob}
