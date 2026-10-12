@@ -364,3 +364,70 @@ jobs:
             echo "EXPECTED_REJECTION: predecessor-owned Execution tamper rejected"
           fi
 
+  t09-exact:
+    name: T09 exact-HEAD persistent safe-sink effect boundary
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 0ab8d306fd4d5179970d7db33116366196acc9d1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bind immutable T09 subject and clean worktree
+        run: |
+          test "$(git rev-parse HEAD)" = "0ab8d306fd4d5179970d7db33116366196acc9d1"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD:standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md
+          git rev-parse HEAD:standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md
+          git rev-parse HEAD:scripts/test_v411_t09_effect_boundary.py
+      - name: Run T09 focused persistent SQLite safe-sink suite
+        run: python scripts/test_v411_t09_effect_boundary.py
+      - name: Run external-system and migration predecessor regressions
+        run: |
+          python scripts/test_v41_external_systems.py
+          python scripts/test_data_migration_governance.py
+
+  t09-adversarial-predecessor-tamper:
+    name: T09 rejects committed tamper of predecessor-owned external clauses
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 0ab8d306fd4d5179970d7db33116366196acc9d1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prove T09 candidate green
+        run: python scripts/test_v411_t09_effect_boundary.py
+      - name: Commit unauthorized predecessor edit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md")
+          s=p.read_text(encoding="utf-8")
+          marker="## 10. Retries"
+          assert marker in s
+          s=s.replace(marker, "<!-- T09_NEGATIVE_UNAUTHORIZED_PREDECESSOR_TAMPER -->\n\n"+marker, 1)
+          p.write_text(s, encoding="utf-8")
+          PY
+          git -c user.name='T09 Scope Falsifier' -c user.email='scope@example.invalid' add standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md
+          git -c user.name='T09 Scope Falsifier' -c user.email='scope@example.invalid' commit -m 'negative: unauthorized predecessor external edit'
+          test -z "$(git status --porcelain)"
+      - name: Owner boundary must reject committed predecessor tamper
+        run: |
+          if python -m unittest scripts.test_v411_t09_effect_boundary.OwnerBoundaryTests.test_external_predecessor_content_is_append_only; then
+            echo "FAIL_CLOSED_BREACH: predecessor external tamper passed T09 prefix guard"
+            exit 1
+          else
+            echo "EXPECTED_REJECTION: predecessor external tamper rejected"
+          fi
+
