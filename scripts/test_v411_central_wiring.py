@@ -278,7 +278,7 @@ class ManifestAndGateTests(unittest.TestCase):
     def test_n04_duplicate_or_absent_manifest_path_fails(self) -> None:
         manifest = json.loads((ROOT / "standard-manifest.json").read_text(encoding="utf-8"))
         dup = deepcopy(manifest)
-        dup["sections"]["verification"].append("scripts/test_v411_central_wiring.py")
+        dup["sections"]["verification"].append("scripts/test_execution_architecture.py")
         self.assertTrue(any(p.startswith("DUPLICATE:") for p in manifest_problems(dup)))
         absent = deepcopy(manifest)
         absent["sections"]["verification"].append("scripts/does-not-exist-v411.py")
