@@ -1,6 +1,26 @@
 """V411-T07 focused regression: Merge Controller last-admission exact-state
 sweep and guarded merge readiness.
 
+R1 repair (#1014@6118919006 CHANGES_REQUIRED at reviewed HEAD
+91a4e83645abdb2a4304e18ea404456b89dbc408, handoff #1014@6118983678): this
+successor closes the six findings against the same two owner paths —
+P1-01 required-prerequisite absence/failed Validation/missing Review
+binding now fail closed; P1-02 the merge guard validates the recorded
+sweep inventory itself (partial/duplicated/not-complete/contradicted
+records are rejected even under a green verdict flag); P1-03 the merge
+mutation is a compare-and-swap on the exact expected HEAD/base-target at
+the mutation boundary (observable post-final-read drift aborts with zero
+mutation; the uncloseable residual window is acknowledged to remain only
+for the other surfaces); P1-04 the post-merge compensating audit is a
+real injected integration-identity-bound read sequence over all required
+surfaces where incomplete/UNKNOWN leaves the integration unratified with
+no retroactive PASS; P2-01 platform generation is modeled distinctly from
+the local read sequence (generation-only change over unchanged facts
+still invalidates; UNKNOWN generation fails closed); P2-02 relevant merge
+permissions currentness joins the required surface inventory, consumed
+read-only from the existing authority contract. Each repaired
+false-admission is encoded red-before/green-after (R1P1*/R1P2* cases).
+
 Encodes the V411-T07 precompiled L3 (issue comment #1014@6117238049, pack
 blob 4604bb8dc1a2bb3ff682e6a3ddc9577fd823120c, controller admission
 #1014@6118129585, exact base version/v4.11.0@b501b0825ec79ce6d1742ceabca0bc
@@ -99,8 +119,9 @@ S141_CLAUSES = (
     "accepted native Review decisions",
     "native blocked_by dependencies",
     "required check state",
-    "authoritative Task/Validation links",
+    "authoritative Task/Review/Validation links",
     "unresolved release-significant findings",
+    "relevant merge permissions currentness (consumed read-only from the existing authority contract through an exact authoritative reference)",
     "Assurance Plan currentness binding (`CURRENT`/`STALE`/`UNKNOWN`, consumed per §29.1)",
     "sweep_id",
     "exact_source_head",
@@ -112,6 +133,13 @@ S141_CLAUSES = (
     "verdict",
     "Completeness is a recorded fact claim supported by that readback, never defaulted",
     "an unread remainder is never treated as empty",
+    "Every configured required check must appear in a COMPLETE required-check listing at the exact head",
+    "a configured required check that never reported is an unsatisfied condition, never an implicit pass",
+    "A Validation or Review link counts as resolved only when its status is `PASS` at the exact subject",
+    "The platform generation recorded by a surface read is the source-side change counter, distinct from the controller's local read sequence",
+    "a generation change over unchanged facts and watermarks still invalidates the recorded sweep",
+    "UNKNOWN generation or currentness can never support readiness",
+    "a missing, not-granted or UNKNOWN permission currentness blocks",
     "Two opposite accepted Review decisions at the same exact subject are a CONFLICT, not last-writer-wins",
     "A stale reviewed HEAD never satisfies a current subject (Interaction Protocol §9.1 semantics consumed read-only)",
     "readiness is computed from current facts only; historical facts stay historical",
@@ -127,16 +155,25 @@ S142_CLAUSES = (
     "the plan binding is `CURRENT`",
     "observes no post-sweep late event",
     "Unchanged HEAD alone never admits",
+    "The recorded sweep is validated before any use: every required surface present exactly once, every recorded read COMPLETE, and no recorded blocker or conflict contradicting a green verdict",
+    "a verdict flag alone is never proof",
+    "The merge mutation itself is conditional on the exact expected source head and base/target at the mutation boundary (compare-and-swap)",
+    "aborts the merge with zero partial mutation",
     "rejects the merge with zero partial mutation and restarts the sweep",
 )
 S143_CLAUSES = (
     "A change landing between the final admission readback and the merge attempt is fail-closed when observed: BLOCK/restart, never retroactive ratification",
+    "The exact expected HEAD/base-target of the mutation is guarded at the mutation boundary itself, so the uncloseable residual window remains only for the other admission surfaces",
     "the residual window is explicitly documented and compensated",
     "the post-merge record carries a compensating admission re-readback bound to the integration identity",
-    "any breach it observes marks the integration unratified pending re-sweep — downstream ready sets are not unlocked from it",
+    "a real bounded read sequence over all required admission surfaces (integration SHA and tree)",
+    "any breach it observes marks the integration unratified pending re-sweep",
+    "an incomplete, missing-page or transport-UNKNOWN compensating read leaves the integration unratified pending re-sweep",
+    "ratification is never granted retroactively",
+    "Downstream ready sets are not unlocked from an unratified integration",
 )
 S144_CLAUSES = (
-    "Incomplete or failed surface read, watermark gap, late blocker, HEAD/base drift (§12), same-head Review conflict, unresolvable link, or `STALE`/`UNKNOWN` plan binding → `BLOCKED` (or `CONFLICT` where distinct)",
+    "Incomplete or failed surface read, UNKNOWN generation or currentness, watermark gap, late blocker, HEAD/base drift (§12), expected-HEAD compare-and-swap rejection, same-head Review conflict, unresolvable link, a non-`PASS` Validation/Review link status, a configured required check missing from its listing, missing or UNKNOWN permission currentness, an invalid recorded sweep inventory (partial, duplicated or not-complete surface records), or `STALE`/`UNKNOWN` plan binding → `BLOCKED` (or `CONFLICT` where distinct)",
     "recording the exact sweep id, the subject identities and the missing/changed surface",
     "API/transport uncertainty can never be converted to PASS",
     "no merge is ever ratified on an invalidated sweep",
@@ -154,6 +191,7 @@ SWEEP_SURFACES = (
     "task_validation_links",
     "unresolved_findings",
     "plan_currentness",
+    "relevant_permissions",
 )
 
 SWEEP_VERDICTS = frozenset({"MERGE_READY", "BLOCKED", "CONFLICT"})
@@ -167,14 +205,18 @@ MERGE_OUTCOMES = frozenset(
 ADMISSION_ROUTES = frozenset(
     {
         "sweep_not_merge_ready",
+        "recorded_sweep_invalid_restart_sweep",
         "expected_head_drift_recompute",
+        "expected_head_cas_rejected_zero_mutation",
         "identity_mismatch_restart_sweep",
         "late_event_observed_restart_sweep",
         "surface_watermark_changed_restart_sweep",
+        "surface_generation_changed_restart_sweep",
         "residual_breach_observed_pre_mutation",
         "final_admission_readback_required",
         "atomic_snapshot_claim_rejected",
         "post_merge_residual_breach_re_sweep_required",
+        "post_merge_audit_incomplete_or_unknown",
         "review_conflict_owner",
     }
 )
@@ -186,21 +228,33 @@ BLOCKER_ROUTES = frozenset(
         "current_acceptance_missing",
         "current_review_p1_blocker",
         "native_blocked_by_dependency",
+        "required_check_missing",
         "required_check_not_success",
         "required_check_stale_head",
         "required_link_missing",
+        "validation_link_not_pass",
+        "review_link_not_pass",
         "link_subject_missing",
         "link_subject_mismatch",
         "link_ambiguous",
         "unresolved_release_significant_finding",
         "plan_currentness_not_current",
+        "required_permission_missing",
+        "permission_not_granted",
+        "permission_currentness_unknown",
         "surface_read_incomplete",
         "surface_read_unknown",
     }
 )
 
-# The authoritative Task/Validation links §11 requires to resolve for merge.
-REQUIRED_LINK_KINDS = ("task", "validation")
+# The authoritative Task/Review/Validation links §11 requires to resolve for
+# merge (frozen Pack N05 includes the Review binding).
+REQUIRED_LINK_KINDS = ("task", "review", "validation")
+# Evidence-kind links resolve only with a PASS status at the exact subject;
+# FAIL, missing or UNKNOWN status fails closed.
+EVIDENCE_LINK_KINDS = ("review", "validation")
+# The merge transition's own permission (read-only authority contract).
+REQUIRED_PERMISSIONS = ("merge",)
 
 # Deterministic fixture pins (64-hex shaped, distinct per subject).
 HEAD_1 = "a1" * 32  # the live candidate head under admission
@@ -240,13 +294,16 @@ def base_state(head=HEAD_1, base_target=BASE_T):
         "base_target": base_target,
         "reviews": [review_event("APPROVE")],
         "checks": [{"check": "verify", "state": "SUCCESS", "head_sha": head}],
+        "required_checks": ("verify",),
         "blocked_by": [],
         "links": [
             {"kind": "task", "ref": "#1014", "subject_head": head, "status": "OPEN"},
+            {"kind": "review", "ref": "review-1", "subject_head": head, "status": "PASS"},
             {"kind": "validation", "ref": "val-1", "subject_head": head, "status": "PASS"},
         ],
         "findings": [],
         "plan": "CURRENT",
+        "permissions": [{"permission": "merge", "granted": True, "currentness": "CURRENT"}],
         "generation": 1,
         "watermarks": {
             "accepted_reviews": 0,
@@ -255,6 +312,7 @@ def base_state(head=HEAD_1, base_target=BASE_T):
             "task_validation_links": 0,
             "unresolved_findings": 0,
             "plan_currentness": 0,
+            "relevant_permissions": 0,
         },
         "merged": False,
     }
@@ -275,38 +333,58 @@ def inject_event(state, surface, mutate):
 class GitHubReadBoundary:
     """Deterministic injected read-boundary adapter: models sequential
     surface reads with explicit completeness/watermark facts. Scripted
-    faults (truncated listing, missing page, transport failure) and the
-    platform generation counter are explicit and recorded; absence is only
-    ever readable from a COMPLETE listing."""
+    faults (truncated listing, missing page, transport failure, unknown
+    platform generation) and the platform generation counter are explicit
+    and recorded; absence is only ever readable from a COMPLETE listing.
 
-    def __init__(self, state, *, truncated=(), missing_pages=(), transport_failures=()):
+    The adapter distinguishes the source-side platform generation (a real
+    source mutation; never moved by reads) from the controller's local read
+    sequence (every read bumps it) — request-sequence churn is never
+    mistaken for a generation change, and a generation change with
+    unchanged facts/watermarks is still detectable through read identity.
+    """
+
+    def __init__(self, state, *, truncated=(), missing_pages=(), transport_failures=(),
+                 generation_unknown=()):
         self.state = state
         self.truncated = set(truncated)
         self.missing_pages = set(missing_pages)
         self.transport_failures = set(transport_failures)
+        self.generation_unknown = set(generation_unknown)
         self.reads = []
+        self._read_seq = 0
 
     def read(self, surface):
         st = self.state
-        st["generation"] += 1
+        self._read_seq += 1
         if surface in self.transport_failures:
             record = {
                 "surface": surface,
-                "read_ref": f"{surface}@transport-error",
+                "read_ref": f"{surface}@transport-error@seq{self._read_seq}",
                 "identity": None,
                 "completeness": "UNKNOWN",
             }
         elif surface in self.missing_pages:
             record = {
                 "surface": surface,
-                "read_ref": f"{surface}@page-missing",
+                "read_ref": f"{surface}@page-missing@seq{self._read_seq}",
                 "identity": None,
                 "completeness": "INCOMPLETE",
+            }
+        elif surface in self.generation_unknown:
+            # The listing and its facts are readable, but the platform
+            # cannot establish the source generation for this read:
+            # currentness is UNKNOWN and never supports readiness.
+            record = {
+                "surface": surface,
+                "read_ref": f"{surface}@generation-unknown@seq{self._read_seq}",
+                "identity": {"generation": None},
+                "completeness": "UNKNOWN",
             }
         elif surface in self.truncated:
             record = {
                 "surface": surface,
-                "read_ref": f"{surface}@truncated@ev{st['watermarks'][surface]}",
+                "read_ref": f"{surface}@truncated@seq{self._read_seq}@ev{st['watermarks'][surface]}",
                 "identity": st["watermarks"][surface],
                 "completeness": "INCOMPLETE",
             }
@@ -314,7 +392,9 @@ class GitHubReadBoundary:
             watermark = st["watermarks"].get(surface, 0)
             record = {
                 "surface": surface,
-                "read_ref": f"{surface}@gen{st['generation']}@ev{watermark}",
+                "read_ref": (
+                    f"{surface}@gen{st['generation']}@seq{self._read_seq}@ev{watermark}"
+                ),
                 "identity": self._identity(surface),
                 "completeness": "COMPLETE",
                 "facts": self._facts(surface),
@@ -326,6 +406,13 @@ class GitHubReadBoundary:
         st = self.state
         if surface == "pr_head":
             return {"head": st["head"], "base_target": st["base_target"]}
+        return {
+            **self._counter_identity(surface),
+            "generation": st["generation"],
+        }
+
+    def _counter_identity(self, surface):
+        st = self.state
         if surface == "required_checks":
             return {"head_sha": st["head"], "watermark": st["watermarks"][surface]}
         if surface == "plan_currentness":
@@ -341,13 +428,18 @@ class GitHubReadBoundary:
         if surface == "blocked_by_dependencies":
             return {"blocked_by": list(st["blocked_by"])}
         if surface == "required_checks":
-            return {"checks": list(st["checks"])}
+            return {
+                "checks": list(st["checks"]),
+                "required": list(st["required_checks"]),
+            }
         if surface == "task_validation_links":
             return {"links": list(st["links"])}
         if surface == "unresolved_findings":
             return {"findings": list(st["findings"])}
         if surface == "plan_currentness":
             return {"plan": st["plan"]}
+        if surface == "relevant_permissions":
+            return {"permissions": list(st["permissions"])}
         raise AssertionError(f"unknown surface: {surface}")
 
 
@@ -363,12 +455,17 @@ def run_admission_sweep(adapter):
     historical and are never counted."""
     st = adapter.state
     blockers = []
+    blockers_by_surface = {}
     conflicts = []
     surfaces = []
     sweep_head = None
     incomplete = False
     unknown = False
     historical = 0
+
+    def block(surface, route):
+        blockers.append(route)
+        blockers_by_surface.setdefault(surface, []).append(route)
 
     for surface in SWEEP_SURFACES:
         read = adapter.read(surface)
@@ -383,10 +480,11 @@ def run_admission_sweep(adapter):
         if read["completeness"] != "COMPLETE":
             # An unread remainder is never treated as empty: incompleteness
             # alone denies readiness even with zero observed blockers.
-            blockers.append(
+            block(
+                surface,
                 "surface_read_incomplete"
                 if read["completeness"] == "INCOMPLETE"
-                else "surface_read_unknown"
+                else "surface_read_unknown",
             )
             incomplete = incomplete or read["completeness"] == "INCOMPLETE"
             unknown = unknown or read["completeness"] == "UNKNOWN"
@@ -394,10 +492,10 @@ def run_admission_sweep(adapter):
         facts = read["facts"]
         if surface == "pr_head":
             if sweep_head is not None and facts["head"] != sweep_head:
-                blockers.append("pr_head_moved_during_sweep")
+                block(surface, "pr_head_moved_during_sweep")
             sweep_head = facts["head"]
             if facts["head"] != st["head"]:
-                blockers.append("pr_head_moved_during_sweep")
+                block(surface, "pr_head_moved_during_sweep")
         elif surface == "accepted_reviews":
             accepted = [rev for rev in facts["reviews"] if rev["accepted"]]
             current = [rev for rev in accepted if rev["sha"] == sweep_head]
@@ -407,42 +505,70 @@ def run_admission_sweep(adapter):
             if approvals and changes:
                 conflicts.append("opposite_accepted_reviews_same_subject")
             if changes:
-                blockers.append("current_review_p1_blocker")
+                block(surface, "current_review_p1_blocker")
             if not approvals:
-                blockers.append("current_acceptance_missing")
+                block(surface, "current_acceptance_missing")
         elif surface == "blocked_by_dependencies":
             if facts["blocked_by"]:
-                blockers.append("native_blocked_by_dependency")
+                block(surface, "native_blocked_by_dependency")
         elif surface == "required_checks":
+            listed = {check["check"] for check in facts["checks"]}
+            for required in facts["required"]:
+                if required not in listed:
+                    # A configured required check that never reported is an
+                    # unsatisfied condition, never an implicit pass.
+                    block(surface, "required_check_missing")
             for check in facts["checks"]:
                 if check["head_sha"] != sweep_head:
-                    blockers.append("required_check_stale_head")
+                    block(surface, "required_check_stale_head")
                 elif check["state"] != "SUCCESS":
-                    blockers.append("required_check_not_success")
+                    block(surface, "required_check_not_success")
         elif surface == "task_validation_links":
             groups = {}
             for link in facts["links"]:
                 groups.setdefault((link["kind"], link["ref"]), []).append(link)
+            kinds_present = {kind for kind, _ in groups}
             for kind in REQUIRED_LINK_KINDS:
-                if not any(k == kind for k, _ in groups):
-                    blockers.append("required_link_missing")
+                if kind not in kinds_present:
+                    block(surface, "required_link_missing")
             for (kind, ref), members in groups.items():
                 subjects = {m.get("subject_head") for m in members}
                 if None in subjects:
-                    blockers.append("link_subject_missing")
+                    block(surface, "link_subject_missing")
                 elif len(members) > 1 and len(subjects) > 1:
-                    blockers.append("link_ambiguous")
+                    block(surface, "link_ambiguous")
                 elif subjects != {sweep_head}:
-                    blockers.append("link_subject_mismatch")
+                    block(surface, "link_subject_mismatch")
+                elif kind in EVIDENCE_LINK_KINDS and any(
+                    m.get("status") != "PASS" for m in members
+                ):
+                    # A failed, missing or UNKNOWN evidence status never
+                    # satisfies the Validation/Review condition.
+                    block(
+                        surface,
+                        "validation_link_not_pass"
+                        if kind == "validation"
+                        else "review_link_not_pass",
+                    )
         elif surface == "unresolved_findings":
             if facts["findings"]:
-                blockers.append("unresolved_release_significant_finding")
+                block(surface, "unresolved_release_significant_finding")
         elif surface == "plan_currentness":
             if facts["plan"] != "CURRENT":
-                blockers.append("plan_currentness_not_current")
+                block(surface, "plan_currentness_not_current")
+        elif surface == "relevant_permissions":
+            listed_permissions = {p["permission"] for p in facts["permissions"]}
+            for required in REQUIRED_PERMISSIONS:
+                if required not in listed_permissions:
+                    block(surface, "required_permission_missing")
+            for permission in facts["permissions"]:
+                if permission.get("currentness") != "CURRENT":
+                    block(surface, "permission_currentness_unknown")
+                elif not permission.get("granted"):
+                    block(surface, "permission_not_granted")
 
     if sweep_head is None:
-        blockers.append("pr_head_unreadable")
+        block("pr_head", "pr_head_unreadable")
     if conflicts:
         verdict = "CONFLICT"
     elif blockers or incomplete or unknown or sweep_head is None:
@@ -450,11 +576,14 @@ def run_admission_sweep(adapter):
     else:
         verdict = "MERGE_READY"
     return {
-        "sweep_id": f"last-admission-sweep@gen{st['generation']}",
+        "sweep_id": f"last-admission-sweep@gen{st['generation']}@seq{len(adapter.reads)}",
         "exact_source_head": sweep_head,
         "exact_base_target": st["base_target"],
         "surfaces": surfaces,
         "blockers": tuple(sorted(set(blockers))),
+        "blockers_by_surface": {
+            surface: tuple(sorted(routes)) for surface, routes in blockers_by_surface.items()
+        },
         "conflicts": tuple(sorted(set(conflicts))),
         "unresolved_findings": tuple(st["findings"]),
         "plan_currentness": st["plan"],
@@ -499,19 +628,44 @@ def attempt_unguarded_merge(adapter, expected_head):
     }
 
 
+def _recorded_sweep_defects(sweep):
+    """P1-02: validate the recorded sweep itself — every required surface
+    exactly once, all COMPLETE, no recorded blocker/conflict, no incomplete
+    flag. A green verdict flag alone is never proof."""
+    defects = []
+    records = sweep.get("surfaces") or []
+    names = [record.get("surface") for record in records]
+    if sorted(names) != sorted(SWEEP_SURFACES):
+        defects.append("surface_inventory_mismatch")
+    if len(names) != len(set(names)):
+        defects.append("duplicate_surface_record")
+    if any(record.get("completeness") != "COMPLETE" for record in records):
+        defects.append("recorded_surface_not_complete")
+    if sweep.get("incomplete"):
+        defects.append("recorded_incomplete_flag")
+    if sweep.get("blockers") or sweep.get("conflicts"):
+        defects.append("recorded_blocker_contradicts_green_verdict")
+    return defects
+
+
 def guarded_merge(adapter, sweep, expected_head, *, residual_inject=None,
                   residual_visible=True):
     """§14.2/§14.3: the merge step itself re-admits.
 
-    Order: recorded-sweep admissibility → expected-head guard → fresh
-    bounded final admission readback (identity + watermark comparison) →
-    last bounded mutation-guard recheck → mutation → post-merge
-    compensating admission re-readback. `residual_inject` models a change
-    landing in the final-read-to-merge window: visible=True places it
-    before the last recheck (observable → zero mutation); visible=False
-    places it in the true residual gap (only the post-merge compensating
-    audit can observe it → unratified pending re-sweep, never ratified
-    retroactively)."""
+    Order: recorded-sweep admissibility → recorded-sweep inventory
+    validation → expected-head guard → fresh bounded final admission
+    readback (identity + watermark/generation comparison) → last bounded
+    mutation-guard recheck (including the exact head/base-target identity)
+    → conditional merge mutation (compare-and-swap on the exact expected
+    head/base-target) → post-merge compensating admission re-readback — a
+    real read sequence over all required surfaces bound to the integration
+    identity. `residual_inject` models a change landing in the
+    final-read-to-merge window: visible=True places it before the last
+    recheck (observable → zero mutation); visible=False places it after the
+    last recheck — head/base-target drift is still rejected by the
+    mutation's compare-and-swap, while other-surface changes fall in the
+    true residual gap and surface only through the compensating audit
+    (unratified pending re-sweep, never ratified retroactively)."""
     outcome = {"decision": None, "routes": [], "merge_result": None, "audit": None}
 
     if sweep.get("atomic_snapshot_claim") or not sweep.get("surfaces"):
@@ -521,6 +675,12 @@ def guarded_merge(adapter, sweep, expected_head, *, residual_inject=None,
     if sweep["verdict"] != "MERGE_READY":
         outcome["decision"] = "BLOCKED"
         outcome["routes"].append("sweep_not_merge_ready")
+        return outcome
+    inventory_defects = _recorded_sweep_defects(sweep)
+    if inventory_defects:
+        outcome["decision"] = "BLOCKED"
+        outcome["routes"].append("recorded_sweep_invalid_restart_sweep")
+        outcome["sweep_defects"] = tuple(sorted(set(inventory_defects)))
         return outcome
     if expected_head != sweep["exact_source_head"]:
         outcome["decision"] = "REJECTED_RECOMPUTE"
@@ -548,19 +708,37 @@ def guarded_merge(adapter, sweep, expected_head, *, residual_inject=None,
     }
     changed = sorted(s for s, ident in sweep_identity.items() if final_identity.get(s) != ident)
     if changed:
+        watermark_only_changed = all(
+            _identity_watermark(sweep_identity[s]) == _identity_watermark(final_identity.get(s))
+            for s in changed
+        )
         outcome["decision"] = "BLOCKED"
-        outcome["routes"].append("surface_watermark_changed_restart_sweep")
+        outcome["routes"].append(
+            "surface_generation_changed_restart_sweep"
+            if watermark_only_changed
+            else "surface_watermark_changed_restart_sweep"
+        )
         outcome["changed_surfaces"] = tuple(changed)
         return outcome
 
-    # Last bounded mutation-guard recheck: watermark comparison over the
-    # final readback's identities, taken immediately before the mutation.
+    # Last bounded mutation-guard recheck: watermark/generation comparison
+    # over the final readback's identities plus the exact head/base-target
+    # identity, taken immediately before the mutation.
     def mutation_guard_breaches():
-        return sorted(
-            surface
-            for surface, watermark in adapter.state["watermarks"].items()
-            if _final_watermark(final, surface) != watermark
-        )
+        breaches = set()
+        head_identity = _final_identity(final, "pr_head")
+        if head_identity is not None and (
+            head_identity.get("head") != adapter.state["head"]
+            or head_identity.get("base_target") != adapter.state["base_target"]
+        ):
+            breaches.add("pr_head")
+        for surface, watermark in adapter.state["watermarks"].items():
+            if _identity_watermark(_final_identity(final, surface)) != watermark:
+                breaches.add(surface)
+            final_generation = _final_generation(final, surface)
+            if final_generation is not None and final_generation != adapter.state["generation"]:
+                breaches.add(surface)
+        return sorted(breaches)
 
     if residual_inject is not None and residual_visible:
         # The breach lands after the final readback but before the last
@@ -576,10 +754,15 @@ def guarded_merge(adapter, sweep, expected_head, *, residual_inject=None,
 
     st = adapter.state
     if residual_inject is not None and not residual_visible:
-        # The breach lands after the last bounded recheck: the true residual
-        # gap no read protocol can close (§14.3).
+        # The breach lands after the last bounded recheck. The merge
+        # mutation is still conditional: compare-and-swap on the exact
+        # expected head/base-target at the mutation boundary itself.
         residual_inject(st)
-    st["generation"] += 1
+    if st["head"] != expected_head or st["base_target"] != sweep["exact_base_target"]:
+        outcome["decision"] = "BLOCKED"
+        outcome["routes"].append("expected_head_cas_rejected_zero_mutation")
+        outcome["changed_surfaces"] = ("pr_head",)
+        return outcome
     merge_result = {
         "source_head": expected_head,
         "base_target_before": sweep["exact_base_target"],
@@ -591,37 +774,87 @@ def guarded_merge(adapter, sweep, expected_head, *, residual_inject=None,
     }
     st["merged"] = True
 
-    # §14.3 compensating audit: post-merge admission re-readback bound to
-    # the integration identity.
-    breach_surfaces = mutation_guard_breaches()
-    if breach_surfaces:
-        merge_result["ratified"] = False
-        outcome["routes"].append("post_merge_residual_breach_re_sweep_required")
+    # §14.3 compensating audit: a real post-merge admission re-readback
+    # bound to the integration identity.
+    audit = compensating_post_merge_readback(adapter, merge_result)
+    if audit["ratified"]:
         outcome["audit"] = {
-            "compensating_readback_surfaces": breach_surfaces,
-            "ratified": False,
-            "route": "unratified_pending_re_sweep",
-        }
-        outcome["decision"] = "MERGED_UNRATIFIED_RESTART_REQUIRED"
-    else:
-        outcome["audit"] = {
+            "integration_sha": audit["integration_sha"],
+            "integration_tree": audit["integration_tree"],
+            "compensating_readback_sweep_id": audit["sweep_id"],
             "compensating_readback_surfaces": [],
+            "unread_surfaces": (),
             "ratified": True,
             "route": "no_post_merge_breach_observed",
         }
         outcome["decision"] = "MERGED"
+    else:
+        merge_result["ratified"] = False
+        breach_surfaces = sorted(set(audit["unread_surfaces"]) | set(audit["breach_surfaces"]))
+        if audit["unread_surfaces"]:
+            outcome["routes"].append("post_merge_audit_incomplete_or_unknown")
+        if audit["breach_blockers"] or audit["breach_conflicts"]:
+            outcome["routes"].append("post_merge_residual_breach_re_sweep_required")
+        outcome["audit"] = {
+            "integration_sha": audit["integration_sha"],
+            "integration_tree": audit["integration_tree"],
+            "compensating_readback_sweep_id": audit["sweep_id"],
+            "compensating_readback_surfaces": breach_surfaces,
+            "unread_surfaces": audit["unread_surfaces"],
+            "breach_blockers": audit["breach_blockers"],
+            "breach_conflicts": audit["breach_conflicts"],
+            "ratified": False,
+            "route": "unratified_pending_re_sweep",
+        }
+        outcome["decision"] = "MERGED_UNRATIFIED_RESTART_REQUIRED"
     outcome["merge_result"] = merge_result
     return outcome
 
 
-def _final_watermark(final_sweep, surface):
+def compensating_post_merge_readback(adapter, merge_result):
+    """§14.3: a genuinely injected, integration-identity-bound read sequence
+    over ALL required admission surfaces after the merge mutation. An
+    incomplete, missing-page or transport-UNKNOWN read is an audit failure:
+    the integration stays unratified pending re-sweep; late admission
+    facts observed by the audit are breaches, never retroactive PASS."""
+    audit_sweep = run_admission_sweep(adapter)
+    unread_surfaces = tuple(
+        s["surface"] for s in audit_sweep["surfaces"] if s["completeness"] != "COMPLETE"
+    )
+    return {
+        "integration_sha": merge_result["integration_sha"],
+        "integration_tree": merge_result["integration_tree"],
+        "sweep_id": audit_sweep["sweep_id"],
+        "unread_surfaces": unread_surfaces,
+        "breach_blockers": tuple(audit_sweep["blockers"]),
+        "breach_conflicts": tuple(audit_sweep["conflicts"]),
+        "breach_surfaces": tuple(sorted(audit_sweep["blockers_by_surface"])),
+        "ratified": not unread_surfaces
+        and not audit_sweep["blockers"]
+        and not audit_sweep["conflicts"],
+    }
+
+
+def _final_identity(final_sweep, surface):
     for record in final_sweep["surfaces"]:
         if record["surface"] == surface and record["completeness"] == "COMPLETE":
-            identity = record["identity"]
-            if isinstance(identity, dict) and "watermark" in identity:
-                return identity["watermark"]
-            if isinstance(identity, dict) and "listing_watermark" in identity:
-                return identity["listing_watermark"]
+            return record["identity"]
+    return None
+
+
+def _identity_watermark(identity):
+    if isinstance(identity, dict):
+        if "watermark" in identity:
+            return identity["watermark"]
+        if "listing_watermark" in identity:
+            return identity["listing_watermark"]
+    return None
+
+
+def _final_generation(final_sweep, surface):
+    identity = _final_identity(final_sweep, surface)
+    if isinstance(identity, dict) and "generation" in identity:
+        return identity["generation"]
     return None
 
 
@@ -810,10 +1043,19 @@ class P01SweepRecordsExactStateAndAdmitsTests(unittest.TestCase):
                 self.assertTrue(record["read_ref"])
                 self.assertIsNotNone(record["identity"])
         # Every read is recorded in order — a bounded read sequence.
-        self.assertEqual([r["surface"] for r in adapter.reads], list(SWEEP_SURFACES))
+        pass_len = len(SWEEP_SURFACES)
+        self.assertEqual(
+            [r["surface"] for r in adapter.reads[:pass_len]], list(SWEEP_SURFACES)
+        )
         # Guarded merge executes and the post-merge record binds identities.
         outcome = guarded_merge(adapter, sweep, HEAD_1)
         self.assertEqual(outcome["decision"], "MERGED")
+        # Three full read passes in total: the recorded sweep, the merge's
+        # final admission readback and the post-merge compensating audit.
+        self.assertEqual(len(adapter.reads), 3 * pass_len)
+        self.assertEqual(
+            [r["surface"] for r in adapter.reads[-pass_len:]], list(SWEEP_SURFACES)
+        )
         result = outcome["merge_result"]
         self.assertEqual(result["source_head"], HEAD_1)
         self.assertEqual(result["base_target_before"], BASE_T)
@@ -992,9 +1234,12 @@ class N04DriftAfterEvidenceTests(unittest.TestCase):
 
 
 class N05LinkResolutionTests(unittest.TestCase):
+    def _link(self, state, kind):
+        return next(l for l in state["links"] if l["kind"] == kind)
+
     def test_n05_link_bound_to_different_subject_blocks(self):
         state = base_state()
-        state["links"][1]["subject_head"] = HEAD_0
+        self._link(state, "validation")["subject_head"] = HEAD_0
         adapter = GitHubReadBoundary(state)
         sweep = run_admission_sweep(adapter)
         self.assertEqual(sweep["verdict"], "BLOCKED")
@@ -1002,7 +1247,7 @@ class N05LinkResolutionTests(unittest.TestCase):
 
     def test_n05_link_missing_subject_blocks(self):
         state = base_state()
-        state["links"][1]["subject_head"] = None
+        self._link(state, "validation")["subject_head"] = None
         adapter = GitHubReadBoundary(state)
         sweep = run_admission_sweep(adapter)
         self.assertIn("link_subject_missing", sweep["blockers"])
@@ -1275,6 +1520,356 @@ class ModelVocabularyAndRoutingTests(unittest.TestCase):
                   "sweep_projection": "DEFERRED_TO_T11"}
         self.assertIn(routed["review_conflict"], ADMISSION_ROUTES)
         self.assertEqual(routed["sweep_projection"], "DEFERRED_TO_T11")
+
+
+# ---------------------------------------------------------------------------
+# R1 repair oracles (#1014@6118919006 findings P1-01..P1-04, P2-01, P2-02)
+# ---------------------------------------------------------------------------
+
+
+class R1P1RequiredPrerequisiteTests(unittest.TestCase):
+    """P1-01: a missing configured required check, a failed/unknown
+    Validation link and a missing required Review binding can never become
+    MERGE_READY (Interaction §11 prerequisites, read-only)."""
+
+    def test_p1_missing_configured_required_check_blocks(self):
+        state = base_state()
+        state["checks"] = []  # the configured required check never reported
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("required_check_missing", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIsNone(outcome["merge_result"])
+        self.assertFalse(adapter.state["merged"])
+
+    def test_p1_failed_validation_link_blocks(self):
+        state = base_state()
+        validation = next(l for l in state["links"] if l["kind"] == "validation")
+        validation["status"] = "FAIL"
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("validation_link_not_pass", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p1_unknown_validation_link_status_blocks(self):
+        state = base_state()
+        validation = next(l for l in state["links"] if l["kind"] == "validation")
+        validation["status"] = None
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("validation_link_not_pass", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+
+    def test_p1_missing_required_review_binding_blocks(self):
+        # A Review binding absent entirely: the Review condition is
+        # unsatisfied, never guessed from the accepted-reviews listing.
+        state = base_state()
+        state["links"] = [state["links"][0], state["links"][1]]
+        state["links"] = [l for l in state["links"] if l["kind"] != "review"]
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("required_link_missing", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIsNone(outcome["merge_result"])
+
+
+class R1P1RecordedSweepInventoryTests(unittest.TestCase):
+    """P1-02: the merge guard validates the recorded sweep inventory itself;
+    a verdict flag is never accepted as proof."""
+
+    def _green_sweep(self):
+        adapter = GitHubReadBoundary(base_state())
+        return adapter, run_admission_sweep(adapter)
+
+    def test_p1_partial_recorded_sweep_rejected_even_with_green_verdict(self):
+        adapter, sweep = self._green_sweep()
+        sweep["surfaces"] = sweep["surfaces"][:1]  # misrepresent the sweep
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("recorded_sweep_invalid_restart_sweep", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+        self.assertFalse(adapter.state["merged"])
+
+    def test_p1_duplicated_surface_record_rejected(self):
+        adapter, sweep = self._green_sweep()
+        sweep["surfaces"] = [sweep["surfaces"][0], *sweep["surfaces"]]
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("recorded_sweep_invalid_restart_sweep", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p1_incomplete_flag_contradicting_green_verdict_rejected(self):
+        adapter, sweep = self._green_sweep()
+        sweep["incomplete"] = True  # verdict flag asserts ready anyway
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("recorded_sweep_invalid_restart_sweep", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p1_recorded_blocker_contradicting_green_verdict_rejected(self):
+        adapter, sweep = self._green_sweep()
+        sweep["blockers"] = ("native_blocked_by_dependency",)
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("recorded_sweep_invalid_restart_sweep", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+
+
+class R1P1ExpectedHeadCasTests(unittest.TestCase):
+    """P1-03: the merge mutation is conditional on the exact expected HEAD
+    and base/target at the mutation boundary; observable post-final-read
+    drift aborts with zero mutation. The uncloseable residual window remains
+    only for the other admission surfaces."""
+
+    def test_p1_observable_head_drift_after_final_read_aborts_zero_mutation(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def residual_head_move(s):
+            s["head"] = HEAD_0  # observable after the final readback
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=residual_head_move,
+                                residual_visible=True)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("residual_breach_observed_pre_mutation", outcome["routes"])
+        self.assertIn("pr_head", outcome["changed_surfaces"])
+        self.assertIsNone(outcome["merge_result"])
+        self.assertFalse(adapter.state["merged"])
+
+    def test_p1_observable_target_drift_after_final_read_aborts_zero_mutation(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def residual_target_move(s):
+            s["base_target"] = BASE_T_NEXT
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=residual_target_move,
+                                residual_visible=True)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("residual_breach_observed_pre_mutation", outcome["routes"])
+        self.assertIn("pr_head", outcome["changed_surfaces"])
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p1_head_drift_in_true_gap_is_cas_rejected_zero_mutation(self):
+        # The mutation itself is compare-and-swap on the exact expected head:
+        # head/target drift is never part of the uncloseable residual gap.
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def gap_head_move(s):
+            s["head"] = HEAD_0
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=gap_head_move,
+                                residual_visible=False)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("expected_head_cas_rejected_zero_mutation", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+        self.assertFalse(adapter.state["merged"])
+
+    def test_p1_base_target_drift_in_true_gap_is_cas_rejected_zero_mutation(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def gap_target_move(s):
+            s["base_target"] = BASE_T_NEXT
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=gap_target_move,
+                                residual_visible=False)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("expected_head_cas_rejected_zero_mutation", outcome["routes"])
+        self.assertIsNone(outcome["merge_result"])
+        self.assertFalse(adapter.state["merged"])
+
+
+class R1P1PostMergeCompensatingReadbackTests(unittest.TestCase):
+    """P1-04: the post-merge compensating audit is a real injected read
+    sequence over all required surfaces bound to the integration identity;
+    incomplete/UNKNOWN audit reads leave the integration unratified."""
+
+    def test_p1_post_merge_audit_is_real_read_sequence_bound_to_integration(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "MERGED")
+        # Three full read passes: recorded sweep, final admission readback,
+        # and the post-merge compensating audit — a real read sequence, not
+        # an in-memory watermark peek.
+        self.assertEqual(len(adapter.reads), 3 * len(SWEEP_SURFACES))
+        post_merge_reads = adapter.reads[-len(SWEEP_SURFACES):]
+        self.assertEqual(
+            [r["surface"] for r in post_merge_reads], list(SWEEP_SURFACES)
+        )
+        self.assertTrue(outcome["audit"])
+        self.assertEqual(
+            outcome["audit"]["integration_sha"],
+            outcome["merge_result"]["integration_sha"],
+        )
+        self.assertEqual(
+            outcome["audit"]["integration_tree"],
+            outcome["merge_result"]["integration_tree"],
+        )
+
+    def test_p1_post_merge_missing_page_leaves_integration_unratified(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def gap_fault(s):
+            # A page goes missing only after the final admission readback.
+            adapter.missing_pages.add("required_checks")
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=gap_fault,
+                                residual_visible=False)
+        self.assertEqual(outcome["decision"], "MERGED_UNRATIFIED_RESTART_REQUIRED")
+        self.assertIn("post_merge_audit_incomplete_or_unknown", outcome["routes"])
+        self.assertIn("required_checks", outcome["audit"]["unread_surfaces"])
+        self.assertFalse(outcome["merge_result"]["ratified"])
+        self.assertEqual(
+            downstream_ready_sets(outcome["merge_result"]), {"T08": "NOT_READY"}
+        )
+
+    def test_p1_post_merge_transport_unknown_leaves_integration_unratified(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def gap_fault(s):
+            adapter.transport_failures.add("plan_currentness")
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=gap_fault,
+                                residual_visible=False)
+        self.assertEqual(outcome["decision"], "MERGED_UNRATIFIED_RESTART_REQUIRED")
+        self.assertIn("post_merge_audit_incomplete_or_unknown", outcome["routes"])
+        self.assertFalse(outcome["merge_result"]["ratified"])
+
+    def test_p1_unratified_record_is_never_retroactively_pass(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+
+        def gap_late_review(s):
+            s["reviews"].append(
+                review_event("REQUEST_CHANGES", operator="op-reviewer-2",
+                             session="sess-reviewer-2", event_id="rev-gap-2")
+            )
+            s["watermarks"]["accepted_reviews"] += 1
+
+        outcome = guarded_merge(adapter, sweep, HEAD_1,
+                                residual_inject=gap_late_review,
+                                residual_visible=False)
+        unratified = outcome["merge_result"]
+        self.assertFalse(unratified["ratified"])
+        # A later clean read can never rewrite the recorded integration's
+        # ratification: no retroactive PASS.
+        recheck = run_admission_sweep(adapter)
+        self.assertEqual(
+            downstream_ready_sets(unratified), {"T08": "NOT_READY"}
+        )
+        self.assertIsNot(unratified["ratified"], True)
+        self.assertFalse(recheck.get("atomic_snapshot_claim", False))
+
+
+class R1P2PlatformGenerationTests(unittest.TestCase):
+    """P2-01: platform/source generation is distinct from the controller's
+    local read sequence; a generation change over unchanged facts and
+    watermarks still invalidates, and UNKNOWN generation fails closed."""
+
+    def test_p2_generation_change_with_unchanged_facts_and_watermarks_restarts(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+        # Pure platform regeneration: no fact, watermark or head change.
+        adapter.state["generation"] += 1
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIn("surface_generation_changed_restart_sweep", outcome["routes"])
+        self.assertTrue(outcome["changed_surfaces"])
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p2_unknown_generation_is_never_promoted_to_ready(self):
+        adapter = GitHubReadBoundary(
+            base_state(), generation_unknown=("task_validation_links",)
+        )
+        sweep = run_admission_sweep(adapter)
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+        self.assertIn("surface_read_unknown", sweep["blockers"])
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p2_local_read_sequence_is_not_platform_generation(self):
+        # Reads themselves never mutate source truth: two consecutive sweeps
+        # over an unchanged source both admit, while every read stays
+        # individually recorded (local request sequence, not generation).
+        adapter = GitHubReadBoundary(base_state())
+        generation_before = adapter.state["generation"]
+        first = run_admission_sweep(adapter)
+        second = run_admission_sweep(adapter)
+        self.assertEqual(adapter.state["generation"], generation_before)
+        self.assertEqual(first["verdict"], "MERGE_READY")
+        self.assertEqual(second["verdict"], "MERGE_READY")
+        self.assertNotEqual(
+            [r["read_ref"] for r in first["surfaces"]],
+            [r["read_ref"] for r in second["surfaces"]],
+        )
+
+
+class R1P2RelevantPermissionsTests(unittest.TestCase):
+    """P2-02: relevant merge permissions currentness is a required admission
+    surface (frozen Pack §4), consumed read-only from the existing authority
+    contract; missing/UNKNOWN fails closed."""
+
+    def test_p2_permission_surface_is_swept_with_read_identity(self):
+        adapter = GitHubReadBoundary(base_state())
+        sweep = run_admission_sweep(adapter)
+        surface_names = [s["surface"] for s in sweep["surfaces"]]
+        self.assertIn("relevant_permissions", surface_names)
+        record = next(
+            s for s in sweep["surfaces"] if s["surface"] == "relevant_permissions"
+        )
+        self.assertEqual(record["completeness"], "COMPLETE")
+        self.assertTrue(record["read_ref"])
+        self.assertIsNotNone(record["identity"])
+
+    def test_p2_permission_currentness_unknown_blocks(self):
+        state = base_state()
+        state["permissions"] = [
+            {"permission": "merge", "granted": True, "currentness": "UNKNOWN"}
+        ]
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("permission_currentness_unknown", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+        outcome = guarded_merge(adapter, sweep, HEAD_1)
+        self.assertEqual(outcome["decision"], "BLOCKED")
+        self.assertIsNone(outcome["merge_result"])
+
+    def test_p2_required_permission_missing_blocks(self):
+        state = base_state()
+        state["permissions"] = []
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("required_permission_missing", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
+
+    def test_p2_permission_not_granted_blocks(self):
+        state = base_state()
+        state["permissions"] = [
+            {"permission": "merge", "granted": False, "currentness": "CURRENT"}
+        ]
+        adapter = GitHubReadBoundary(state)
+        sweep = run_admission_sweep(adapter)
+        self.assertIn("permission_not_granted", sweep["blockers"])
+        self.assertEqual(sweep["verdict"], "BLOCKED")
 
 
 class NoShadowCentralProjectionTests(unittest.TestCase):
