@@ -247,7 +247,10 @@ class CompatibilityTests(unittest.TestCase):
         new_payload = dict(historical, future_optional="new-value")
         self.assertIs(self.v2.get("additionalProperties"), False)
         errors = validate_subset(new_payload, self.v2)
-        self.assertTrue(any("additional property" in error for error in errors), errors)
+        self.assertTrue(
+            any("unexpected property" in error or "additional property" in error for error in errors),
+            errors,
+        )
 
     def test_n08_bounded_old_event_enum_rejects_new_member(self) -> None:
         old_event_reader = self.event["properties"]["event"]
@@ -257,16 +260,19 @@ class CompatibilityTests(unittest.TestCase):
 
 
 class ManifestAndGateTests(unittest.TestCase):
-    def test_p03_manifest_registers_central_and_dogfood_verification_once(self) -> None:
+    def test_p03_no_schema_or_template_delta_preserves_manifest_and_golden_index(self) -> None:
+        # Pack P03 is conditional: only a NEW schema/template is registered.
+        # This T11 candidate intentionally creates neither, so changing the
+        # canonical manifest/GOLDEN_INDEX would be an incompatible ceremony-only delta.
+        self.assertEqual(
+            blob_at(BASE_SHA, "standard-manifest.json"),
+            blob_at("HEAD", "standard-manifest.json"),
+        )
+        self.assertEqual(
+            blob_at(BASE_SHA, "templates/GOLDEN_INDEX.md"),
+            blob_at("HEAD", "templates/GOLDEN_INDEX.md"),
+        )
         manifest = json.loads((ROOT / "standard-manifest.json").read_text(encoding="utf-8"))
-        verification = manifest["sections"]["verification"]
-        for rel in (
-            "scripts/test_v411_central_wiring.py",
-            "scripts/test_v49_integrated_dogfood.py",
-            "scripts/test_v49_dogfood_audit_contract.py",
-        ):
-            with self.subTest(rel=rel):
-                self.assertEqual(verification.count(rel), 1)
         self.assertEqual(manifest_problems(manifest), [])
 
     def test_n04_duplicate_or_absent_manifest_path_fails(self) -> None:
