@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           gh api graphql \
-            -f query='query($owner:String!,$repo:String!,$n:Int!){repository(owner:$owner,name:$repo){pullRequest(number:$n){number headRefOid reviewRequests(first:20){nodes{requestedReviewer{__typename ... on Bot{login} ... on User{login}}}} reviews(last:20){nodes{state author{login} commit{oid}}}}}}}' \
+            -f query='query($owner:String!,$repo:String!,$n:Int!) { repository(owner:$owner,name:$repo) { pullRequest(number:$n) { number headRefOid reviewRequests(first:20) { nodes { requestedReviewer { __typename ... on Bot { login } ... on User { login } } } } reviews(last:20) { nodes { state author { login } commit { oid } } } } } }' \
             -f owner=kaicreator-mm -f repo=ai-development-standard -F n=${{ matrix.pr }} \
             --jq '.data.repository.pullRequest | {number,headRefOid,requestedReviewers:[.reviewRequests.nodes[].requestedReviewer],actualReviews:[.reviews.nodes[]|{state,author,commit}]}'
       - name: Inspect Copilot work-started events (no PASS inference)
