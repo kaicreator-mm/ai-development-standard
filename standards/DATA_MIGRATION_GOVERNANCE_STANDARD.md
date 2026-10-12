@@ -149,3 +149,35 @@ Tools/frameworks MAY emit mechanism-specific plans, histories or checksums refer
 Unknown source state, unresolved dependency ordering, unavailable target environment, missing recovery prerequisites, or absent production authority MUST remain explicit uncertainty/BLOCKED in the owning workflow. They MUST NOT be normalized into migration success.
 
 When required executable proof cannot run in Web/CI, create an exact-subject Validation handoff that binds the datastore/runtime/environment tuple and side-effect boundary actually required.
+
+## 15. v4.11 interrupted destructive recovery and compensation boundary
+
+For a destructive or otherwise material persistent-state transition, fresh-install success, migration-file presence, a down script, or a prior successful upgrade MUST NOT substitute for executed interrupted-recovery evidence.
+
+### 15.1 Recovery prerequisites and exact applicability
+
+Before an interrupted recovery or compensating transition can mutate persistent state, execution MUST prove the exact target/tenant/environment, source and intended target state, applicable current side-effect authority, and the recovery prerequisite actually selected for this subject (for example validated backup/snapshot, forward-repair evidence or an explicitly authorized compensating transition).
+
+A backup/snapshot reference must resolve to the exact protected subject and target. Missing, stale, wrong-tenant or ambiguous recovery evidence fails closed before mutation.
+
+### 15.2 Recovery evidence is separate from fresh-install evidence
+
+Executed recovery evidence MUST record the actual interrupted-state subject and observed post-condition. The following inferences remain forbidden:
+
+```text
+fresh install succeeds              -> interrupted recovery succeeds
+down/rollback script exists         -> rollback was executed or safe
+compensation executes               -> original external ACK was observed
+partial recovery publication exists -> recovery completed
+```
+
+Where the original irreversible effect outcome is UNKNOWN, recovery logic consumes that uncertainty rather than erasing it. If safe next action cannot be established from authoritative readback, proven same-effect deduplication, validated recovery prerequisites or explicit compensation authority, the transition remains `BLOCKED` / `UNKNOWN`.
+
+### 15.3 Authorized compensation
+
+Compensation is a distinct transition with its own current authority, exact source/target identity, tenant/target binding, effect/attempt identity and required post-condition. It MAY be used when idempotent replay is unavailable and the owning authority explicitly permits the exact compensating action.
+
+Compensation MUST NOT be used to infer the original action's acknowledgement, to justify a blind repeat of the original effect, or to broaden recovery authority beyond the exact compensating scope. Cleanup itself is a side effect and remains subject to the External System pre-effect checkpoint.
+
+T11 exclusively owns any shared schema/projection required later; this section introduces no new shared event/state enum.
+
