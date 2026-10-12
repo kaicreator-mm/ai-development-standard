@@ -38,6 +38,16 @@ Issue text may point to a Frozen Task Pack rather than duplicate the whole contr
 
 A Task is **Agent-dispatchable** only when a qualified Agent can resolve identity, allowed scope, required gates and completion from these durable facts plus the frozen authority they reference, without hidden conversation or chat context. A decomposition that depends on undocumented side-channel context to execute, validate or review correctly is not a valid Task boundary.
 
+### 2.1 Role / Task-entry requirements
+
+A material execution Task MUST resolve, before dispatch, its acting role denominator from durable authority: the declared role/job/profile/archetype that acts on the Task, the transport (WEB/LOCAL) it acts through, and a legality reference resolving to that durable authority.
+
+Every material actor-subject resolves one conduct trace per the Workflow role-conduct section — input, allowed acts, required evidence, refusal grounds, exit/handoff — consuming the effective-rule floor and the affected-source materiality inventory read-only.
+
+A Task entry whose material role/job/profile/archetype denominator cannot be resolved from these durable facts is not agent-dispatchable and stays `GAP/UNVERIFIED`, never READY by default. Incomplete material role/job/profile coverage MUST NOT be reported complete; an unsupported role/archetype/class has no default powers and fails closed.
+
+These entry requirements create no new gate authority, dispatch/claim authority, merge authority or Task-Learning authority. A central schema/manifest/verifier projection of conduct traces belongs to its existing canonical owner; while that projection is missing, affected integration stays `NOT_RUN` / `BLOCKED` and additive proposals follow the existing routing.
+
 ## 3. Primary concern boundary
 
 One Task SHOULD have one primary concern that can be described without joining unrelated authority domains with “and also”.
