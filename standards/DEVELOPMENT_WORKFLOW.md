@@ -746,6 +746,39 @@ decision_owner / ref
 - observation 缺失、来自过期 HEAD 或与 authority 矛盾时，事实记为 `UNKNOWN`，MUST NOT 记为已检视的 `ABSENT_WITH_INSPECTED_SCOPE`，MUST NOT 产生 `PASS`；`PRESENT` / `ABSENT_WITH_INSPECTED_SCOPE` / `UNKNOWN` 是 epistemic fact，不是新增 gate state，gate 状态仍使用既有枚举，未满足时保持 `NOT_RUN` / `BLOCKED`。
 - 本节不新增 gate state、workflow state、共享 schema、模板或第二套方法论；集中式 trace schema / manifest / verifier 投影归其既有 canonical owner，该投影缺失时相关集成保持 `NOT_RUN` / `BLOCKED` 并按既有路由升级。
 
+### Role conduct trace：角色行为链（role-conduct trace）
+
+对每个 acting actor-subject（在一个 declared role/job/profile/archetype 下、经 WEB 或 LOCAL transport 作用于一个 exact subject 的 agent），conduct 解析 MUST 产出一份角色行为链（`ROLE_CONDUCT_TRACE`）：从 durable authority（而非 hidden conversation / chat context）解析 Input → Allowed acts → Required evidence → Handoff/Exit。每条 trace MUST 绑定：
+
+```text
+actor
+transport
+role/job/profile/archetype
+legality_ref
+input_refs
+allowed_acts_scope（write set）
+required_evidence[]（per material class，含 freshness）
+refusal_grounds
+exit_or_handoff_condition
+resolution_route
+```
+
+本节消费 §4 “Effective-rule trace” floor 与 §2.3 “Risk-intake” inventory 的解析语义 **read-only**：`required_evidence[]` 按 material class 自 T02 inventory 的 epistemic states（`PRESENT` / `ABSENT_WITH_INSPECTED_SCOPE` / `UNKNOWN`）与 T01 floor 的 required gate 集取得出，trace 只绑定并路由这些事实。它不是第二 applicability 权威，不新增 gate state、workflow state、共享 schema、模板或第二套方法论。
+
+角色合法性（legality）：role/job/profile/archetype MUST 自 durable authority 解析出 `legality_ref`（declared role/archetype/profile 权威或本节 authority chain 的 owning authority ref）。unsupported / undeclared 的 role、archetype 或 actor class 没有默认权力，MUST fail closed（`GAP/UNVERIFIED` / `BLOCKED`）并按 §4 “Applicability UNKNOWN 或矛盾：fail closed” 路由 owning authority；`legality_ref` 缺失或不可解析时同样 fail closed。
+
+No invented powers（不发明权力）：WEB actor 的 source-bound authenticated GitHub remote readback（exact repository/ref/SHA/tree/read timestamp/actor）只是 scoped source metadata，不是 host 证据；WEB actor 完成其 allowed acts 后 MUST 以 handoff 结束并要求 LOCAL/host owner 供给 host/build/runtime 证据，MUST NOT 断言其无法观察的 checkout、build/run 结果、side-effect 或 future-freshness 事实，MUST NOT 由此铸造 Validation `PASS`。WEB/LOCAL provenance 冲突按 `CONFLICT` 路由 owning authority 并保留历史事实。
+
+Builder 不能自我满足 `review:required`：exit 只能由该 Builder 未产出的 genuinely independent accepted current Review admission 满足（Reviewer 是 distinct actor，self-review 按 `CONFLICT` 拒绝）。合法的 `review:recommended` / `review:not-required`（按 Stage 2.6 与 `standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §6 解析）保持 proportionate：MUST NOT 被强加 fabricated 的 universal Fresh Review 前置 gate；Review Policy 解析 UNKNOWN 或矛盾时按 Stage 2.6 fail closed。
+
+Proportionality（比例原则）：低风险 A0（如 docs-only）conduct 保持 proportionate——不施加 speculative 的 research ceremony 或 blanket gates；但 T01 floor 与 T02 inventory 的 applicable duties 不因此消失，更低 authority 的 profile/override 不削弱 floor（上一节 “Effective-rule trace” 非削弱条款）。
+
+Required evidence 完整性：required_evidence 缺失、过期（stale freshness / HEAD）或与 T02 inventory 的 `PRESENT` class 不符时，exit/handoff MUST 被拒绝；MUST NOT 记 `NOT_APPLICABLE`，MUST NOT 产生 `PASS`。有限 declared role × transport × job-set × profile/archetype denominator 上的每个 material combination MUST 解析出完整 trace 或显式 `GAP/UNVERIFIED` 处置（允许 equivalence-class 采样覆盖，但未证明的 material combination MUST NOT 被报告为 complete，也不得省略或记 `NOT_APPLICABLE`）。
+
+Failure routing：unsupported role/class 或 `legality_ref` 缺失 → `GAP/UNVERIFIED` / `BLOCKED`；required evidence 缺失或过期 → exit denied；WEB/LOCAL provenance 冲突或 self-review → `CONFLICT` / 拒绝；集中式 trace schema / manifest / verifier 投影缺失 → 相关集成保持 `NOT_RUN` / `BLOCKED`，additive 提案按既有路由升级；Frozen Product/L2 冲突 → STOP/escalate，不自行修复。
+
+本节不铸造第二 gate authority、Dispatch/Claim authority、human-decision authority、merge authority 或 Task-Learning authority；这些仍归其既有 owner，本节不铸造 shadow schema/template/manifest 字段。
+
 ## 5. Blocker Propagation
 
 Blocker 只沿依赖边传播。
