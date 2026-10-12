@@ -1138,3 +1138,68 @@ N adverse Review cannot be shopped around
 ```
 
 The L2 currentness/JIT/adverse negatives bind to the same kernel: stale plan at Claim/merge continues => reject [K01]; `stale PASS -> successor PASS` without owner transfer => reject [K10]; `R1 FAIL -> R2 PASS` erasure and same-subject reviewer shopping => reject [K05/K10]; JIT phase not in Assurance Plan/Task Pack treated as in-envelope => reject [K02/K10]; `WAITING_LINEAGE` invented as canonical Issue state => reject [K03/K10]; predecessor not integrated but dependent execution started via generic rebind => reject [K03/K10].
+
+## 30. Task Learning evidence owner contract (v4.11, additive)
+
+Task Learning v1/v2 remain the existing bounded evidence family defined by their read-only schemas and references. This section owns only execution-time **admissibility and consumption semantics** for that family. It creates no new schema fields, record family, database, lifecycle, workflow state, Gate authority, Product/L2/Task mutation authority, or automatic ADS-evolution path.
+
+### 30.1 Source binding and consumption-time currentness
+
+A material Task Learning record is admissible as current evidence only when its cited production identity and evidence refs are resolvable and the record is bound to the exact implementation subject both when recorded and whenever later work consumes it.
+
+```text
+citation-time source/current subject resolvable
+AND consumption-time current subject == implementation_subject_ref == currentness_ref
+AND required source/test/validation/review refs resolvable
+=> CURRENT_BOUNDED_EVIDENCE
+```
+
+A stale exact subject is immutable **historical evidence only**. A missing, mutable, ambiguous or unresolvable subject/ref is `UNKNOWN` and fails closed for any current R11 claim. Neither stale nor unknown evidence is rebound to successor code, and later successful work never retroactively ratifies stale evidence.
+
+### 30.2 Epistemic strength and provenance authenticity
+
+The existing `confidence_layers` vocabulary is evidence-strength metadata, not truth authority. A factual claim may be treated as source-bound only to the extent supported by durable boundary-external refs that actually resolve. Unsupported inference, extrapolation beyond cited refs, or claimed private model/agent deliberation with no durable external evidence is `UNSUPPORTED_INFERRED` and MUST NOT be stored or presented as fact.
+
+Private chain-of-thought is never a Task Learning evidence source. A summary/rationale may record a bounded conclusion, constraint or lesson, but its factual layer must be reconstructible from cited source/test/validation/review evidence without requiring private deliberation.
+
+Positive and negative factual lessons use the same source/currentness discipline. A factual failure, limitation or constraint is not lower-quality evidence merely because it is adverse.
+
+### 30.3 Fast path and same-family compatibility
+
+If completed work produced no reusable material learning:
+
+```text
+TASK_LEARNING=NONE_MATERIAL
+```
+
+No empty ceremony record is created. v1 records remain v1 records and are consumed under the v1 schema/reference; v2 records remain explicit same-family successors and are consumed under v2. No parser silently reinterprets one version as the other.
+
+### 30.4 Subordinate-evidence-only consumption
+
+Later work may consume a current Task Learning record only as `SUBORDINATE_EVIDENCE_ONLY`. The record may inform an existing Review, Validation, Task Pack/L3 clarification, or ADS Evolution Intake owned elsewhere, but it MUST NOT itself:
+
+- edit or approve Product, L2, Task scope, DAG topology or normative ADS source;
+- mint Gate/Review/Validation/Release PASS;
+- mark an ADS evolution candidate approved or bypass Intake → L1 → PRD → L2 → Task governance;
+- gain authority by accumulation, recurrence count, confidence score or any numeric threshold.
+
+An `ads_evolution_candidate_ref` points to an existing intake entry; it does not create or approve one. Owner/currentness/counterevidence review remains required.
+
+### 30.5 ALREADY_SATISFIED equivalence bar and failure routing
+
+`ALREADY_SATISFIED` for R11 is lawful only when exact production source plus current executable tests demonstrate the complete owner contract on the exact subject. Schema presence, an old PASS, a reference document, or a syntactically valid record alone is insufficient.
+
+Failure routing is explicit:
+
+```text
+stale exact subject                         => HISTORICAL_ONLY
+unresolvable / ambiguous current source     => BLOCKED / UNKNOWN
+private-deliberation-only provenance        => REJECTED_UNVERIFIABLE
+unsupported factual inference               => REJECTED_UNSUPPORTED_INFERENCE
+attempted authority / Product-L2-Task edit  => BLOCKED_AUTHORITY_BOUNDARY
+missing exact-source/current-test proof for
+ALREADY_SATISFIED                           => REJECTED_EQUIVALENCE_CLAIM
+```
+
+The record id, cited refs, current subject and missing proof remain durable evidence for repair/adjudication. T11 exclusively owns any shared schema/manifest/verifier projection; T12/V01 own integrated/version-level conformance. This section does not modify those surfaces.
+
