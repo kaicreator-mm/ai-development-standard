@@ -31,6 +31,10 @@ TENANT = "ads-test"
 TARGET = "sqlite-safe-sink"
 OPERATION = "irreversible-write"
 SCOPE = "effect:test"
+COMPENSATION_OPERATION = "compensate-effect"
+COMPENSATION_SCOPE = "compensate:test"
+RECOVERY_OPERATION = "recover-migration"
+RECOVERY_SCOPE = "recovery:test"
 
 UNIT_AUTHORITY_SOURCE = "UNIT_LEVEL_AUTHORITY_FIXTURE_ONLY"
 REAL_AUTHORITY_SOURCE = "OPERATOR_SUPPLIED_INDEPENDENT_HUMAN_AUTHORITY"
@@ -52,18 +56,27 @@ def file_prefix(path: Path, heading: str) -> str:
     return text[: text.index(heading)].rstrip()
 
 
-def claim(actor: str, generation: int = 1) -> dict:
+def claim(
+    actor: str,
+    generation: int = 1,
+    *,
+    repository: str = REPOSITORY,
+    subject_head: str = SUBJECT,
+    operation: str = OPERATION,
+    tenant: str = TENANT,
+    scope: str = SCOPE,
+) -> dict:
     return {
         "accepted": True,
         "currentness": "CURRENT",
         "claim_ref": f"claim:{actor}:{generation}",
         "actor": actor,
         "generation": generation,
-        "repository": REPOSITORY,
-        "subject_head": SUBJECT,
-        "operation": OPERATION,
-        "tenant": TENANT,
-        "scope": SCOPE,
+        "repository": repository,
+        "subject_head": subject_head,
+        "operation": operation,
+        "tenant": tenant,
+        "scope": scope,
     }
 
 
@@ -246,6 +259,22 @@ class PersistentSafeSink:
     def compensation_count(self) -> int:
         return int(self.conn.execute("SELECT COUNT(*) FROM compensations").fetchone()[0])
 
+    def attempt_count(self) -> int:
+        return int(self.conn.execute("SELECT COUNT(*) FROM attempts").fetchone()[0])
+
+    def _identity_refusal(self, *, effect_id: str, attempt_id: str) -> str | None:
+        if not isinstance(effect_id, str) or not effect_id.strip():
+            return "effect_id_missing"
+        if not isinstance(attempt_id, str) or not attempt_id.strip():
+            return "attempt_id_missing"
+        exists = self.conn.execute(
+            "SELECT 1 FROM attempts WHERE attempt_id=?",
+            (attempt_id,),
+        ).fetchone()
+        if exists is not None:
+            return "attempt_id_collision"
+        return None
+
     def read_effect(self, effect_id: str) -> dict | None:
         row = self.conn.execute(
             "SELECT effect_id, tenant, target, operation, payload_digest, actor, claim_generation "
@@ -270,8 +299,16 @@ class PersistentSafeSink:
         drop_ack_after_commit: bool = False,
         dedup_proven: bool = False,
     ) -> dict:
-        guard = pre_effect_check(claim_record, authority, target=target, credentials_ok=credentials_ok)
         before = self.effect_count()
+        identity_refusal = self._identity_refusal(effect_id=effect_id, attempt_id=attempt_id)
+        if identity_refusal is not None:
+            return {
+                "outcome": "BLOCKED_IDENTITY",
+                "before": before,
+                "after": self.effect_count(),
+                "reason": identity_refusal,
+            }
+        guard = pre_effect_check(claim_record, authority, target=target, credentials_ok=credentials_ok)
         if not guard["authorized"]:
             self.conn.execute(
                 "INSERT INTO attempts(attempt_id,effect_id,actor,claim_generation,outcome) VALUES(?,?,?,?,?)",
@@ -347,22 +384,52 @@ class PersistentSafeSink:
         *,
         original_effect_id: str,
         compensation_id: str,
+        attempt_id: str,
+        claim_record: dict,
         authority: dict,
-        tenant: str,
         target: str,
         post_condition: str,
     ) -> dict:
-        if authority.get("decision") != "APPROVE" or authority.get("currentness") != "CURRENT":
-            return {"state": "BLOCKED", "reason": "compensation_authority_invalid"}
-        if authority.get("tenant") != tenant or target != TARGET or authority.get("scope") != "compensate:test":
-            return {"state": "BLOCKED", "reason": "compensation_scope_mismatch"}
+        identity_refusal = self._identity_refusal(
+            effect_id=compensation_id,
+            attempt_id=attempt_id,
+        )
+        if not isinstance(original_effect_id, str) or not original_effect_id.strip():
+            identity_refusal = identity_refusal or "original_effect_id_missing"
+        if identity_refusal is not None:
+            return {"state": "BLOCKED", "reason": identity_refusal}
+
+        guard = pre_effect_check(claim_record, authority, target=target)
+        if not guard["authorized"]:
+            return {"state": "BLOCKED", "reason": "compensation_authority_invalid", "guard": guard}
+
         with self.conn:
             self.conn.execute(
                 "INSERT INTO compensations(compensation_id,original_effect_id,tenant,target,post_condition) "
                 "VALUES(?,?,?,?,?)",
-                (compensation_id, original_effect_id, tenant, target, post_condition),
+                (
+                    compensation_id,
+                    original_effect_id,
+                    claim_record["tenant"],
+                    target,
+                    post_condition,
+                ),
             )
-        return {"state": "COMPENSATED", "original_outcome_reclassified": False}
+            self.conn.execute(
+                "INSERT INTO attempts(attempt_id,effect_id,actor,claim_generation,outcome) VALUES(?,?,?,?,?)",
+                (
+                    attempt_id,
+                    compensation_id,
+                    claim_record["actor"],
+                    claim_record["generation"],
+                    "COMPENSATED",
+                ),
+            )
+        return {
+            "state": "COMPENSATED",
+            "original_outcome_reclassified": False,
+            "guard": guard,
+        }
 
     def set_migration_state(self, tenant: str, target: str, value: str) -> None:
         with self.conn:
@@ -390,7 +457,25 @@ class PersistentSafeSink:
                 (snapshot_id, tenant, target, payload),
             )
 
-    def recover_snapshot(self, snapshot_id: str, *, tenant: str, target: str, authority: dict) -> dict:
+    def recover_snapshot(
+        self,
+        snapshot_id: str,
+        *,
+        recovery_effect_id: str,
+        attempt_id: str,
+        claim_record: dict,
+        target: str,
+        authority: dict,
+    ) -> dict:
+        identity_refusal = self._identity_refusal(
+            effect_id=recovery_effect_id,
+            attempt_id=attempt_id,
+        )
+        if not isinstance(snapshot_id, str) or not snapshot_id.strip():
+            identity_refusal = identity_refusal or "snapshot_id_missing"
+        if identity_refusal is not None:
+            return {"state": "BLOCKED", "reason": identity_refusal}
+
         row = self.conn.execute(
             "SELECT tenant,target,payload FROM snapshots WHERE snapshot_id=?",
             (snapshot_id,),
@@ -398,13 +483,35 @@ class PersistentSafeSink:
         if row is None:
             return {"state": "BLOCKED", "reason": "snapshot_missing"}
         snap_tenant, snap_target, payload = row
-        if (snap_tenant, snap_target) != (tenant, target):
+        if (snap_tenant, snap_target) != (claim_record["tenant"], target):
             return {"state": "BLOCKED", "reason": "snapshot_target_mismatch"}
-        if authority.get("decision") != "APPROVE" or authority.get("tenant") != tenant:
-            return {"state": "BLOCKED", "reason": "recovery_authority_invalid"}
+
+        guard = pre_effect_check(claim_record, authority, target=target)
+        if not guard["authorized"]:
+            return {"state": "BLOCKED", "reason": "recovery_authority_invalid", "guard": guard}
+
         state = json.loads(payload)["schema"]
-        self.set_migration_state(tenant, target, state)
-        return {"state": "RECOVERED", "post_state": self.get_migration_state(tenant, target)}
+        with self.conn:
+            self.conn.execute(
+                "INSERT INTO migration_state(tenant,target,state_key,state_value) VALUES(?,?,?,?) "
+                "ON CONFLICT(tenant,target,state_key) DO UPDATE SET state_value=excluded.state_value",
+                (claim_record["tenant"], target, "schema", state),
+            )
+            self.conn.execute(
+                "INSERT INTO attempts(attempt_id,effect_id,actor,claim_generation,outcome) VALUES(?,?,?,?,?)",
+                (
+                    attempt_id,
+                    recovery_effect_id,
+                    claim_record["actor"],
+                    claim_record["generation"],
+                    "RECOVERED",
+                ),
+            )
+        return {
+            "state": "RECOVERED",
+            "post_state": self.get_migration_state(claim_record["tenant"], target),
+            "guard": guard,
+        }
 
 
 class SinkCase(unittest.TestCase):
