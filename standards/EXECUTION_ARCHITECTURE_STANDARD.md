@@ -781,6 +781,58 @@ Until reconciliation determines the durable outcome, replacement admission for t
 
 These rules reuse the existing GitHub/repository fact plane, section 11 Claim lifecycle, existing runner/resource owners, and existing Interchange family. They create no second scheduler/state database, durable Availability owner, or new Exchange family.
 
+### 27.5 Atomic protected claim generations and lawful unclaimed dispatch reroute (v4.11, additive)
+
+This subsection binds the section 11.1.1 admission generations and the §27.3 composite admission set into one exact rule set for accepting a protected claim and for lawfully replacing a provably unclaimed dispatch across execution environments. It is additive: no second scheduler lifecycle, no new event family, no state database. `execution_environment` / `scheduler_origin` provenance (§11.1.1) never becomes authority, and a lawful reroute never mints a different protected claim key for the same `(repository, work item, role)` work.
+
+**Generation-bound composite admission.** A protected claim/dispatch admission decision consumes, at exactly one serialization point (§27.3), the full set:
+
+```text
+expected admission_generation g for the protected claim key
++ the work claim itself
++ every required resource binding (§27.3 set A)
++ exact subject currentness: base/HEAD, tenant/environment scope,
+  Task Pack / Execution Pack identity
++ a resolvable, unexpired compatibility-group grant for any
+  non-default group (§11.1.1 compatibility_authority_ref)
+```
+
+The decision accepts only when the durable current generation equals `g` AND every member of the set commits at that one point; acceptance advances the key's generation exactly once. Failure of any member — exhausted or unknown required resource, rejected conditional write, stale generation, stale subject currentness, or an unresolvable/expired group grant — rejects the whole decision: zero accepted claims, zero owned resource bindings, no partial canonical publication, and no generation advance. A sequence of individually successful per-key or per-resource conditional writes is never composite proof, and a partial-success chain MUST NOT be presented as an accepted atomic admission.
+
+**Lawful unclaimed dispatch reroute.** A dispatch may be replaced by a fresh dispatch carrying a different `execution_environment` (for example a WEB proposal rerouted to a fresh LOCAL admission) only when ALL of the following hold from durable canonical facts read back at decision time:
+
+```text
+the old dispatch is durably provably unclaimed: delivered/acknowledged
+  with NO accepted DISPATCH_CLAIMED at its generation (the derived
+  condition label DISPATCHED_UNCLAIMED; not a new lifecycle state)
++ the old dispatch's canonical admission/event references resolve and
+  currentness was re-read with no unknown publication outcome
++ no other dispatch on the protected claim key carries an active
+  accepted Claim (one active claim per key, §11)
++ the actor is the authorized current single writer for the protected
+  claim key (§11.1)
++ the reroute reason is itself durable and role-correct
+```
+
+The lawful sequence is exactly:
+
+```text
+durable CANCELLED/SUPERSEDED terminal on the old dispatch at its
+  generation g (append-only; advances the key generation g → g+1)
+→ fresh role-correct dispatch published at generation g+1
+→ a distinct, independent operator claims it with DISPATCH_CLAIMED
+  at g+1 (the accepted Claim is the Start Record; Interaction protocol
+  §8.5, §11.2)
+```
+
+Prior accepted facts remain immutable history; the old dispatch ends with exactly one terminal; and a late claim presented at the superseded generation `g` resolves `STALE` with zero canonical mutation, no terminal duplication, and no revival from stale proposals. Cancellation of an unclaimed dispatch never rewrites or releases a prior accepted Claim, and there is no automatic timeout seizure: liveness expiry may open an investigation or an explicitly configured timeout policy (§11.2), but replacement still requires this exact sequence.
+
+**No stolen claim.** If durable facts show the old dispatch's generation IS claimed — an accepted `DISPATCH_CLAIMED` exists — the unclaimed-reroute sequence is unlawful. The controller MUST NOT steal, release, or reassign the active claim through a reroute and MUST NOT admit a second claim on the key; it stops instead. Resolution belongs to the claim's owning cancellation/terminal/recovery authority (§11.2, §19); until that authority durably resolves the claim under the existing serialized admission, replacement admission on the affected key is blocked.
+
+**Unknown outcome blocks replacement.** This extends §27.4 to the reroute case: when the old dispatch's ACK/publication outcome is ambiguous, its canonical admission reference is missing or unresolvable, or the durable readback is unavailable, the controller MUST fail closed and block incompatible replacement on the affected key until durable reconciliation determines the outcome. An advisory open issue, queue entry, or derived ready-set state MUST NOT by itself create such a blocker for an unrelated legal gate.
+
+**Bounded liveness — wake and drain.** Re-claiming the same dispatch by the same logical operator at the current generation stays idempotent (§11). After a legal fresh terminal on the old dispatch, wake/drain of downstream real `blocked_by` dependencies MAY proceed only after accepted current Reviewer/Validator evidence for the successor subject under the existing review policy. An accepted Claim is attribution and a Start Record, never a Review or Validation PASS, and MUST NOT reduce a downstream gate by itself.
+
 ## 28. Responsibility and control semantics for delegated execution
 
 This section settles responsibility, authority and human-control semantics when work is executed across operators (human or agent, in chains or in parallel). It is additive and composes with the existing `Work Item → Dispatch → Claim → result/evidence` architecture (section 11), the Human Decision Queue (section 19), closed-loop orchestration (section 25) and composite admission (section 27). It creates no nested authority, no second Claim lifecycle, no second Human approval workflow, no new workflow/dispatch/candidate/release state, no scheduler, and no event family. Delegation and handoff are durable attribution over existing Claim/Dispatch facts, not a parallel lifecycle.
@@ -849,6 +901,14 @@ Required behavior:
 - causation for authority-bearing decisions is durably reconstructible (section 28.2).
 
 Human controllability is a hard product behavior. Human line-by-line code reading is not.
+
+### 28.5 Reroute responsibility attribution and claim-key integrity (v4.11, additive)
+
+For the §27.5 reroute case, responsibility reconstructs from existing durable facts (§28.2):
+
+- the actor performing the durable `CANCELLED`/`SUPERSEDED` reroute terminal owns and is durably attributable for that cancellation decision; between the terminal and the successor's accepted Claim, active responsibility for the work stays with that actor under the existing single-writer admission (§11.1);
+- the fresh dispatch's accepted Claim starts a new attributable responsibility chain (requesting authority → fresh operator) while the old dispatch's accepted history remains immutable;
+- a delegated child inherits attenuated authority (§28.3) and never derives a second or parallel protected claim key, admission generation, or fresh claim identity for the same work by renaming role, group, session, or slot-4 key segments. The derived key (§11.1.1) is semantic; key-slot manipulation that would evade duplicate-claim rejection is an authority violation, not a new claim.
 
 > Numbering note: this section was authored and released as `§28` in the v4.9 line on `main`. At the v4.10 integration it is renumbered `§29` because `§28` is the v4.10 responsibility/human-control section above (added by V410-T02A). Historical v4.9 references to `§28.x` resolve to `§29.x` in this tree; the v4.9 release artifacts at their own revisions retain the original numbering, and all v4.9-side citations in this tree were mechanically rebound to `§29` in the same integration merge.
 ## 29. v4.9 proportional orchestration core
