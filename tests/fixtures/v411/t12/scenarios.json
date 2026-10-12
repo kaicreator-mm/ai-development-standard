@@ -10,7 +10,7 @@
         "case_id": "S01",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A0",
         "job_labels": [
           "J02"
@@ -59,13 +59,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S01:J02",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "proportional docs-only change with source-inspected risk"
       },
       "negative": {
         "case_id": "S01",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A0",
         "job_labels": [
           "J02"
@@ -114,7 +115,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S01:J02",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "proportional docs-only change with source-inspected risk"
       }
     },
     "S02": {
@@ -122,7 +124,7 @@
         "case_id": "S02",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J03"
@@ -172,13 +174,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S02:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "bounded brownfield repair and independent gate"
       },
       "negative": {
         "case_id": "S02",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J03"
@@ -234,7 +237,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S02:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "bounded brownfield repair and independent gate"
       }
     },
     "S03": {
@@ -242,7 +246,7 @@
         "case_id": "S03",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J07"
@@ -291,13 +295,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S03:J07",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "security-sensitive service change at A0"
       },
       "negative": {
         "case_id": "S03",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J07"
@@ -346,7 +351,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S03:J07",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "security-sensitive service change at A0"
       }
     },
     "S04": {
@@ -354,7 +360,7 @@
         "case_id": "S04",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J06"
@@ -403,13 +409,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S04:J06",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "fresh install versus upgrade/interrupted recovery"
       },
       "negative": {
         "case_id": "S04",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J06"
@@ -458,7 +465,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S04:J06",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "fresh install versus upgrade/interrupted recovery"
       }
     },
     "S05": {
@@ -466,7 +474,7 @@
         "case_id": "S05",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A2",
         "job_labels": [
           "J05"
@@ -515,13 +523,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S05:J05",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "accepted public spec delta versus current implementation/consumers"
       },
       "negative": {
         "case_id": "S05",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A2",
         "job_labels": [
           "J05"
@@ -570,7 +579,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S05:J05",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "accepted public spec delta versus current implementation/consumers"
       }
     },
     "S06": {
@@ -578,7 +588,7 @@
         "case_id": "S06",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A2",
         "job_labels": [
           "J12"
@@ -627,13 +637,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S06:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "Reuse First source/license/currentness decision"
       },
       "negative": {
         "case_id": "S06",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A2",
         "job_labels": [
           "J12"
@@ -682,7 +693,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S06:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "Reuse First source/license/currentness decision"
       }
     },
     "S07": {
@@ -690,7 +702,7 @@
         "case_id": "S07",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
         "job_labels": [
           "J01",
@@ -749,13 +761,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S07:J01+J02+J03+J04",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "Product-to-implementation owner chain"
       },
       "negative": {
         "case_id": "S07",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
         "job_labels": [
           "J01",
@@ -808,7 +821,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S07:J01+J02+J03+J04",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "Product-to-implementation owner chain"
       }
     },
     "S08": {
@@ -816,7 +830,7 @@
         "case_id": "S08",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J08"
@@ -869,13 +883,14 @@
         "equivalence_class": "S08:J08",
         "exceptions": [
           "authenticated external human source may remain NOT_RUN; local physical sink must execute"
-        ]
+        ],
+        "condition": "post-claim human decision at external effect boundary"
       },
       "negative": {
         "case_id": "S08",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J08"
@@ -934,7 +949,8 @@
         "equivalence_class": "S08:J08",
         "exceptions": [
           "authenticated external human source may remain NOT_RUN; local physical sink must execute"
-        ]
+        ],
+        "condition": "post-claim human decision at external effect boundary"
       }
     },
     "S09": {
@@ -942,7 +958,7 @@
         "case_id": "S09",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J03"
@@ -992,13 +1008,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S09:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "parallel non-overlapping builders and exact-head review"
       },
       "negative": {
         "case_id": "S09",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J03"
@@ -1054,7 +1071,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S09:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "parallel non-overlapping builders and exact-head review"
       }
     },
     "S10": {
@@ -1062,7 +1080,7 @@
         "case_id": "S10",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A4",
         "job_labels": [
           "J04"
@@ -1111,13 +1129,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S10:J04",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "provider-neutral role/capability truth"
       },
       "negative": {
         "case_id": "S10",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A4",
         "job_labels": [
           "J04"
@@ -1172,7 +1191,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S10:J04",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "provider-neutral role/capability truth"
       }
     },
     "S11": {
@@ -1180,7 +1200,7 @@
         "case_id": "S11",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J09"
@@ -1237,13 +1257,14 @@
         "equivalence_class": "S11:J09",
         "exceptions": [
           "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
-        ]
+        ],
+        "condition": "release-prerequisite contract before downstream release actors"
       },
       "negative": {
         "case_id": "S11",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J09"
@@ -1294,7 +1315,8 @@
         "equivalence_class": "S11:J09",
         "exceptions": [
           "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
-        ]
+        ],
+        "condition": "release-prerequisite contract before downstream release actors"
       }
     },
     "S12": {
@@ -1302,7 +1324,7 @@
         "case_id": "S12",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J10"
@@ -1357,13 +1379,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S12:J10",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "incident/recovery target and aftermath"
       },
       "negative": {
         "case_id": "S12",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J10"
@@ -1412,7 +1435,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S12:J10",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "incident/recovery target and aftermath"
       }
     },
     "S13": {
@@ -1420,7 +1444,7 @@
         "case_id": "S13",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J11"
@@ -1469,13 +1493,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S13:J11",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "deprecation/retirement consumer window"
       },
       "negative": {
         "case_id": "S13",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J11"
@@ -1524,7 +1549,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S13:J11",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "deprecation/retirement consumer window"
       }
     },
     "S14": {
@@ -1532,7 +1558,7 @@
         "case_id": "S14",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J12"
@@ -1581,13 +1607,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S14:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "upstream source/license revision drift"
       },
       "negative": {
         "case_id": "S14",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J12"
@@ -1636,7 +1663,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S14:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "upstream source/license revision drift"
       }
     },
     "S15": {
@@ -1644,12 +1672,9 @@
         "case_id": "S15",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
-        "job_labels": [
-          "A0",
-          "A4"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/PROJECT_ADOPTION.md",
           "scripts/test_v411_t01_effective_rules.py"
@@ -1694,18 +1719,20 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S15:A0+A4",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "mixed A0-like worker and A4 controller under same pin",
+        "mixed_adoption_levels": [
+          "A0",
+          "A4"
+        ]
       },
       "negative": {
         "case_id": "S15",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
-        "job_labels": [
-          "A0",
-          "A4"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/PROJECT_ADOPTION.md",
           "scripts/test_v411_t01_effective_rules.py"
@@ -1750,7 +1777,12 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S15:A0+A4",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "mixed A0-like worker and A4 controller under same pin",
+        "mixed_adoption_levels": [
+          "A0",
+          "A4"
+        ]
       }
     },
     "S16": {
@@ -1758,11 +1790,9 @@
         "case_id": "S16",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
-        "job_labels": [
-          "J03"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
           "scripts/test_v411_t06_claim_admission.py",
@@ -1808,17 +1838,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S16:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "WEB/LOCAL Fresh Reviewer substitution"
       },
       "negative": {
         "case_id": "S16",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
-        "job_labels": [
-          "J03"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
           "scripts/test_v411_t06_claim_admission.py",
@@ -1870,7 +1899,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S16:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "WEB/LOCAL Fresh Reviewer substitution"
       }
     },
     "S17": {
@@ -1878,11 +1908,9 @@
         "case_id": "S17",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
-        "job_labels": [
-          "J03"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
           "scripts/test_v411_t05_event_authority.py"
@@ -1927,17 +1955,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S17:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "opposite accepted same-head Reviews"
       },
       "negative": {
         "case_id": "S17",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
-        "job_labels": [
-          "J03"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
           "scripts/test_v411_t05_event_authority.py"
@@ -1982,7 +2009,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S17:J03",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "opposite accepted same-head Reviews"
       }
     },
     "S18": {
@@ -1990,11 +2018,9 @@
         "case_id": "S18",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
-        "job_labels": [
-          "J12"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/CONFIGURATION_SECRETS_STANDARD.md",
           "standards/WORKSPACE_ARTIFACT_STANDARD.md",
@@ -2040,17 +2066,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "S18:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "untrusted A2A/MCP/GitHub content boundary"
       },
       "negative": {
         "case_id": "S18",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "NEW",
         "adoption_level": "A3",
-        "job_labels": [
-          "J12"
-        ],
+        "job_labels": [],
         "actual_source_refs": [
           "standards/CONFIGURATION_SECRETS_STANDARD.md",
           "standards/WORKSPACE_ARTIFACT_STANDARD.md",
@@ -2108,7 +2133,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "S18:J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "untrusted A2A/MCP/GitHub content boundary"
       }
     },
     "X01": {
@@ -2116,7 +2142,7 @@
         "case_id": "X01",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J03",
@@ -2177,13 +2203,14 @@
         "equivalence_class": "X01:J03+J06+J07+J08",
         "exceptions": [
           "authenticated external human source may remain NOT_RUN; local physical sink must execute"
-        ]
+        ],
+        "condition": "J03+J06+J07+J08 high-risk compound"
       },
       "negative": {
         "case_id": "X01",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J03",
@@ -2244,7 +2271,8 @@
         "equivalence_class": "X01:J03+J06+J07+J08",
         "exceptions": [
           "authenticated external human source may remain NOT_RUN; local physical sink must execute"
-        ]
+        ],
+        "condition": "J03+J06+J07+J08 high-risk compound"
       }
     },
     "X02": {
@@ -2252,7 +2280,7 @@
         "case_id": "X02",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A2",
         "job_labels": [
           "J05",
@@ -2308,13 +2336,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X02:J05+J12",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J05+J12 contract and reuse compound"
       },
       "negative": {
         "case_id": "X02",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A2",
         "job_labels": [
           "J05",
@@ -2370,7 +2401,10 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X02:J05+J12",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J05+J12 contract and reuse compound"
       }
     },
     "X03": {
@@ -2378,7 +2412,7 @@
         "case_id": "X03",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J06",
@@ -2434,13 +2468,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X03:J06+J08+J10",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "J06+J08+J10 incident/data restoration compound"
       },
       "negative": {
         "case_id": "X03",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J06",
@@ -2490,7 +2525,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X03:J06+J08+J10",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "J06+J08+J10 incident/data restoration compound"
       }
     },
     "X04": {
@@ -2498,7 +2534,7 @@
         "case_id": "X04",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J07",
@@ -2555,14 +2591,16 @@
         "expected_effect_count": null,
         "equivalence_class": "X04:J07+J09",
         "exceptions": [
-          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
-        ]
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks",
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J07+J09 release/security compound"
       },
       "negative": {
         "case_id": "X04",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J07",
@@ -2619,8 +2657,10 @@
         "expected_effect_count": null,
         "equivalence_class": "X04:J07+J09",
         "exceptions": [
-          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks"
-        ]
+          "V01/V02/V03/V04/R01/R02 real evidence deferred to owning downstream tasks",
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J07+J09 release/security compound"
       }
     },
     "X05": {
@@ -2628,7 +2668,7 @@
         "case_id": "X05",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J04",
@@ -2684,13 +2724,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X05:J04+J05",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J04+J05 parallel public-API compound"
       },
       "negative": {
         "case_id": "X05",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A3",
         "job_labels": [
           "J04",
@@ -2740,7 +2783,10 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X05:J04+J05",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J04+J05 parallel public-API compound"
       }
     },
     "X06": {
@@ -2748,7 +2794,7 @@
         "case_id": "X06",
         "polarity": "positive",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J11",
@@ -2804,13 +2850,14 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X06:J11+J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "J11+J12 retirement/reuse compound"
       },
       "negative": {
         "case_id": "X06",
         "polarity": "negative",
         "archetype": "LIBRARY",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A1",
         "job_labels": [
           "J11",
@@ -2866,7 +2913,8 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X06:J11+J12",
-        "exceptions": []
+        "exceptions": [],
+        "condition": "J11+J12 retirement/reuse compound"
       }
     },
     "X07": {
@@ -2874,7 +2922,7 @@
         "case_id": "X07",
         "polarity": "positive",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J08",
@@ -2930,13 +2978,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X07:J08+J09",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J08+J09 release/external-deploy compound"
       },
       "negative": {
         "case_id": "X07",
         "polarity": "negative",
         "archetype": "SERVICE",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A4",
         "job_labels": [
           "J08",
@@ -2986,7 +3037,10 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X07:J08+J09",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J08+J09 release/external-deploy compound"
       }
     },
     "X08": {
@@ -2994,7 +3048,7 @@
         "case_id": "X08",
         "polarity": "positive",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J02",
@@ -3050,13 +3104,16 @@
         "expected_transition": "LEGAL_OWNER_CONTRACT",
         "expected_effect_count": null,
         "equivalence_class": "X08:J02+J03",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J02+J03 low-risk mixed compound"
       },
       "negative": {
         "case_id": "X08",
         "polarity": "negative",
         "archetype": "CLI",
-        "adoption_profile": "v4.11",
+        "adoption_profile": "BROWNFIELD",
         "adoption_level": "A0",
         "job_labels": [
           "J02",
@@ -3106,7 +3163,10 @@
         "expected_transition": "DENIED_FAIL_CLOSED",
         "expected_effect_count": null,
         "equivalence_class": "X08:J02+J03",
-        "exceptions": []
+        "exceptions": [
+          "Frozen Product compound class does not constrain NEW/BROWNFIELD; T12 instantiates BROWNFIELD representative"
+        ],
+        "condition": "J02+J03 low-risk mixed compound"
       }
     }
   },
