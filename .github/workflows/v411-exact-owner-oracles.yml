@@ -144,7 +144,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 5af789dbef2e4b935822df17fdf26c880f717387
+          ref: dd0f8ccfdf835edd8472e7ab5e7f83cfed6df25d
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -152,7 +152,7 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T08 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "5af789dbef2e4b935822df17fdf26c880f717387"
+          test "$(git rev-parse HEAD)" = "dd0f8ccfdf835edd8472e7ab5e7f83cfed6df25d"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD^{tree}
           git rev-parse HEAD:standards/DEVELOPMENT_WORKFLOW.md
@@ -197,7 +197,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 5af789dbef2e4b935822df17fdf26c880f717387
+          ref: dd0f8ccfdf835edd8472e7ab5e7f83cfed6df25d
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
