@@ -485,7 +485,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ed72b877eefe7d824ff69ccb6e322db493fd04d5
+          ref: 277e82ad8e3f608f77378850ed8af09f601b2591
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -493,7 +493,7 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T11 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "ed72b877eefe7d824ff69ccb6e322db493fd04d5"
+          test "$(git rev-parse HEAD)" = "277e82ad8e3f608f77378850ed8af09f601b2591"
           test -z "$(git status --porcelain)"
           git diff --name-only 7844041c1fd9a69d923cb4da67a86745401c3988 HEAD
           git rev-parse HEAD:standard-manifest.json
@@ -525,7 +525,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ed72b877eefe7d824ff69ccb6e322db493fd04d5
+          ref: 277e82ad8e3f608f77378850ed8af09f601b2591
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
