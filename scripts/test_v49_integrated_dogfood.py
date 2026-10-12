@@ -210,7 +210,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "docs/implementation/4.9.0/MIGRATION_ADOPTION.md": "467e5e14e88f4acd34649880ea7e8af002df6c8b",
         "references/REGISTRY_ADOPTION_V49_REFERENCE.md": "ca59bab9c2ceae9ebffc2aa6fc5f4c5732540430",
         "scripts/test_v48_registry_adoption.py": "baf91bd8ed43dc91cac1d22d66e5ef3866cf018d",
-        "standard-manifest.json": "da97e7f44951100dbe680be33202ce5fa8beaa83",
+        "standard-manifest.json": "971ebcb65c19f68e8d634d75d8ea96ee30957edf",
     },
     "T-012": {
         "fixtures/conformance-suite/carry_forward.json": "918d3165b67a1d48da1ef990cd2a21a140dc3a6a",
@@ -349,7 +349,6 @@ RECOVERED_FAMILY_BLOBS = {
     "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md": "dbc2b955c4b707d204cfec7d0124af81582a1f4c",
     "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md": "9fe8d46bd6bb20b6210d912481b0a54102e61cb7",
     "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md": "3dddb3b5b81f44491b198a5496ba70f64942a561",
-    "standards/PROJECT_ADOPTION.md": "a8c2d7a01a3610d9444d17df614ec6cacf58b67e",
     "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md": "b4ba0074600dc3a3802663093b663e0f23b57da5",
     "templates/project/.dev-standard/PROJECT_OVERRIDES.md": "0d934401badd1bbdb4f8eb387adbf493a279e8c4",
 }
@@ -361,6 +360,7 @@ RECOVERED_FAMILY_BLOBS = {
 # still fails (same strength as the byte-identical-since-recovery pins).
 RECOVERED_FAMILY_REBOUND_BLOBS = {
     "checklists/version-closure.md": "2483856a53fbc0127378c45915ad2518819de996",
+    "standards/PROJECT_ADOPTION.md": "a8c2d7a01a3610d9444d17df614ec6cacf58b67e",
 }
 
 # Shared surfaces composed as unions by the post-recovery recompose (current
@@ -378,7 +378,7 @@ RECOVERED_COMPOSED_SHARED_BLOBS = {
     "schemas/dispatch.schema.json": "90bea62524beb0215d5f40cf0be9986786648fec",
     "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
     "scripts/test_v48_registry_adoption.py": "baf91bd8ed43dc91cac1d22d66e5ef3866cf018d",
-    "standard-manifest.json": "da97e7f44951100dbe680be33202ce5fa8beaa83",
+    "standard-manifest.json": "971ebcb65c19f68e8d634d75d8ea96ee30957edf",
     "templates/golden/STANDARD_COVERAGE.json": "5149d74063433fba6c867bd4bfed015fe0d321c4",
 }
 
