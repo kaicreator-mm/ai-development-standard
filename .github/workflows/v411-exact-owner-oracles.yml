@@ -49,7 +49,7 @@ jobs:
       - name: Checkout exact T07 R2 subject
         uses: actions/checkout@v4
         with:
-          ref: 319e5c27e528732cdefe361a6255174d849f999a
+          ref: 6f0392d837ab7fe9d7e8a84a108d9f0cfe6e1fb4
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -57,7 +57,7 @@ jobs:
           python-version: '3.12'
       - name: Bind immutable T07 subject and clean worktree
         run: |
-          test "$(git rev-parse HEAD)" = "319e5c27e528732cdefe361a6255174d849f999a"
+          test "$(git rev-parse HEAD)" = "6f0392d837ab7fe9d7e8a84a108d9f0cfe6e1fb4"
           test -z "$(git status --porcelain)"
           git rev-parse HEAD^{tree}
           git rev-parse HEAD:standards/EXECUTION_ARCHITECTURE_STANDARD.md
@@ -76,7 +76,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 319e5c27e528732cdefe361a6255174d849f999a
+          ref: 6f0392d837ab7fe9d7e8a84a108d9f0cfe6e1fb4
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -84,7 +84,7 @@ jobs:
           python-version: '3.12'
       - name: Prove reviewed HEAD and original test green
         run: |
-          test "$(git rev-parse HEAD)" = "319e5c27e528732cdefe361a6255174d849f999a"
+          test "$(git rev-parse HEAD)" = "6f0392d837ab7fe9d7e8a84a108d9f0cfe6e1fb4"
           python -m unittest scripts.test_v411_merge_admission.Section14PlacementTests.test_owner_write_set_is_exactly_two_paths_and_tree_clean
       - name: Inject committed unauthorized edit outside section 14
         run: |
@@ -133,4 +133,97 @@ jobs:
             exit 1
           else
             echo "EXPECTED_REJECTION: T13 owner focused suite rejected an unauthorized TDS edit"
+          fi
+
+
+  t08-exact:
+    name: T08 exact-HEAD human authority focused and predecessor regressions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 5af789dbef2e4b935822df17fdf26c880f717387
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bind immutable T08 subject and clean worktree
+        run: |
+          test "$(git rev-parse HEAD)" = "5af789dbef2e4b935822df17fdf26c880f717387"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD^{tree}
+          git rev-parse HEAD:standards/DEVELOPMENT_WORKFLOW.md
+          git rev-parse HEAD:scripts/test_v411_t08_human_denial_authority.py
+      - name: Run T08 focused suite
+        run: python scripts/test_v411_t08_human_denial_authority.py
+      - name: Run T01 and T02 Workflow predecessor regressions
+        run: |
+          python scripts/test_v411_t01_effective_rules.py
+          python scripts/test_v411_t02_risk_intake.py
+      - name: Run reusable T13 semantic suite excluding historical full-file owner identity
+        run: |
+          python - <<'PY'
+          import unittest
+          import scripts.test_v411_t13_role_conduct as m
+
+          def flatten(suite):
+              for item in suite:
+                  if isinstance(item, unittest.TestSuite):
+                      yield from flatten(item)
+                  else:
+                      yield item
+
+          all_tests = list(flatten(unittest.defaultTestLoader.loadTestsFromModule(m)))
+          historical = "scripts.test_v411_t13_role_conduct.RoleConductSectionPlacementTests.test_complete_owner_standards_match_reviewed_qualified_source"
+          selected = [t for t in all_tests if t.id() != historical]
+          omitted = [t for t in all_tests if t.id() == historical]
+          assert len(omitted) == 1, [t.id() for t in omitted]
+          result = unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(selected))
+          print(f"T13_REUSABLE_INTEGRATED={result.testsRun}")
+          assert result.wasSuccessful()
+          identity_result = unittest.TextTestRunner(verbosity=1).run(unittest.TestSuite(omitted))
+          assert not identity_result.wasSuccessful(), "historical T13 full-file identity unexpectedly accepted authorized T08 successor"
+          print("T13_HISTORICAL_OWNER_IDENTITY=EXPECTED_NOT_APPLICABLE_ON_AUTHORIZED_T08_SUCCESSOR")
+          PY
+
+  t08-adversarial-prior-owner-tamper:
+    name: T08 rejects committed tamper of predecessor-owned Workflow
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 5af789dbef2e4b935822df17fdf26c880f717387
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prove T08 candidate green
+        run: python scripts/test_v411_t08_human_denial_authority.py
+      - name: Commit unauthorized edit inside predecessor-owned Workflow prefix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("standards/DEVELOPMENT_WORKFLOW.md")
+          s=p.read_text(encoding="utf-8")
+          marker="## 5. Blocker Propagation"
+          assert marker in s
+          s=s.replace(marker, "<!-- T08_NEGATIVE_UNAUTHORIZED_PREDECESSOR_TAMPER -->\n\n"+marker, 1)
+          p.write_text(s, encoding="utf-8")
+          PY
+          git -c user.name='T08 Scope Falsifier' -c user.email='scope@example.invalid' add standards/DEVELOPMENT_WORKFLOW.md
+          git -c user.name='T08 Scope Falsifier' -c user.email='scope@example.invalid' commit -m 'negative: unauthorized predecessor Workflow edit'
+          test -z "$(git status --porcelain)"
+      - name: Focused owner boundary must reject committed predecessor tamper
+        run: |
+          if python scripts/test_v411_t08_human_denial_authority.py; then
+            echo "FAIL_CLOSED_BREACH: committed predecessor-owned Workflow tamper passed T08 owner guard"
+            exit 1
+          else
+            echo "EXPECTED_REJECTION: committed predecessor-owned Workflow tamper rejected"
           fi
