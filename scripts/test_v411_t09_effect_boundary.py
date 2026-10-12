@@ -753,6 +753,16 @@ class RealBuildHostHumanAuthorityTests(SinkCase):
         self.assertEqual(result["after"], 0)
         self.assertEqual(self.sink.effect_count(), 0)
         self.assertEqual(len(evidence), 64)
+        print(
+            "REAL_HOST_EVIDENCE "
+            f"head={SUBJECT} "
+            f"authority_sha256={evidence} "
+            f"decision_ref={authority['decision_ref']} "
+            f"sink={self.path} "
+            f"pre_mutations={result['before']} "
+            f"post_mutations={result['after']} "
+            "outcome=BLOCKED_CURRENT_HUMAN_DENY"
+        )
 
 
 if __name__ == "__main__":
