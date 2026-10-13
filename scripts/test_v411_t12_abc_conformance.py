@@ -409,6 +409,85 @@ def execute_s17_same_subject_review(polarity: str, tested_sha: str, tested_tree:
     }
 
 
+def execute_docs_risk_role_same_subject(
+    case_id: str, polarity: str, tested_sha: str, tested_tree: str
+) -> dict:
+    """S01/X08: T02 inspected risk -> T13 role conduct, one exact subject.
+
+    An inspected-absence A0 docs path is a proportionate legal trace. A
+    docs-only label over material code is rejected by T02; T13 receives the
+    ACTUAL T02 inventory as its input and denies the uncovered required
+    evidence. No fresh risk facts are invented by this adapter.
+    """
+    t02 = load_owner_module("scripts/test_v411_t02_risk_intake.py")
+    t13 = load_owner_module("scripts/test_v411_t13_role_conduct.py")
+    subject = t02.HEAD_A
+    if polarity == "positive":
+        source = t02.inspected_absent_fixture(subject=subject, docs_only_claim=True)
+    else:
+        source = t02.base_fixture()
+        source["subject"] = subject
+        source["declared_jobs"] = {"J02_DOCS_LOW_RISK"}
+        source["label_claims"] = {"docs_only": True}
+    risk = t02.inventory(source)
+    conduct_input = t13.docs_a0_fixture()
+    conduct_input["subject_head"] = source["candidate_head"]
+    conduct_input["input_refs"] = dict(source["candidate_tree"])
+    conduct_input["allowed_acts_scope"] = tuple(sorted(source["candidate_tree"]))
+    conduct_input["inventory"] = [
+        t13._inventory_record(
+            rec["source_path"],
+            rec["material_class_observed"] if rec["epistemic_state"] == "PRESENT" else None,
+            rec["epistemic_state"],
+            rec["currentness"],
+            rec["inspected_ref"],
+        )
+        for rec in risk["records"]
+    ]
+    conduct = t13.conduct_trace(conduct_input)
+    same_subject = (
+        risk["subject"] == source["subject"]
+        == source["candidate_head"] == conduct_input["subject_head"]
+        == subject
+    )
+    positive = polarity == "positive"
+    ok = (
+        same_subject
+        and (
+            risk["decision"] == "PROPORTIONATE_ABSENT_FAST_PATH"
+            and conduct["decision"] == "CONDUCT_TRACE_COMPLETE"
+            and not risk["required_gate_set"]
+            and not conduct["required_gate_set"]
+            if positive else
+            risk["decision"] == "BLOCKED"
+            and conduct["decision"] == "EXIT_DENIED"
+            and bool(risk["required_gate_set"])
+            and risk["required_gate_set"] == conduct["required_gate_set"]
+            and "required_evidence_missing" in conduct["refusal_grounds"]
+        )
+    )
+    return {
+        "test_contract_ok": ok,
+        "case_id": case_id,
+        "subject": subject,
+        "candidate_sha": tested_sha,
+        "candidate_tree": tested_tree,
+        "same_subject_join": same_subject,
+        "risk_owner_state": risk["decision"],
+        "risk_required_gates": sorted(risk["required_gate_set"]),
+        "material_inventory_records": risk["records"],
+        "conduct_owner_state": conduct["decision"],
+        "conduct_required_gates": sorted(conduct["required_gate_set"]),
+        "conduct_refusal_grounds": sorted(conduct["refusal_grounds"]),
+        "fidelity": "LOCAL_T02_T13_SYNTHETIC_SOURCE_INSPECTION_NOT_REAL_RISK_READBACK",
+        "source_owners": [
+            "T02 material-risk inspection inventory",
+            "T13 floor-preserving role conduct trace",
+        ],
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -439,7 +518,11 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         execute_x02_same_subject(record["polarity"], tested_sha, tested_tree)
         if case_id == "X02" else None
     )
-    local_probe = x01_probe if x01_probe is not None else x02_probe
+    docs_probe = (
+        execute_docs_risk_role_same_subject(case_id, record["polarity"], tested_sha, tested_tree)
+        if case_id in {"S01", "X08"} else None
+    )
+    local_probe = next((x for x in (x01_probe, x02_probe, docs_probe) if x is not None), None)
     review_probe = (
         execute_s17_same_subject_review(record["polarity"], tested_sha, tested_tree)
         if case_id == "S17" else None
@@ -461,7 +544,9 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     transition = (
         [x["outcome"] for x in x01_probe["attempts"]] if x01_probe is not None
         else [x["outcome"] for x in sink] if sink
-        else [review_probe["observed_review_judgment"]] if review_probe else None
+        else [review_probe["observed_review_judgment"]] if review_probe
+        else [docs_probe["risk_owner_state"], docs_probe["conduct_owner_state"]] if docs_probe
+        else None
     )
     source_readbacks = []
     for rel in sorted(set(record["actual_source_refs"])):
