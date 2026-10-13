@@ -4,9 +4,9 @@
 
 **当前准确姿态（未发布）**：冻结 v4.11 Product（#943）、L2（#954）和 20-node/30-edge Task DAG（#966）保持不变。T01–T14 的 14 项实现均已通过各自属主门禁并集成至 `version/v4.11.0`；其中 T12 PR #1086 在 `eb8ffb8bc7b462894972137569375222df153add` 合并，合并源 Tree 与已验证 R8 Tree 完全一致，postmerge CI #38407398929 SUCCESS。
 
-**可见验证状态**：V01 #1021 在上述精确候选上执行 139/139 `scripts/test_*.py`（126 PASS、13 个历史 Task-HEAD/Exact-State 断言 RED）；已执行 T12 的 52 条正负验证，并保留 Material/Release 的 `BLOCKED/NOT_RUN` 证据。V01 最终裁决为 **BLOCKED**，需要历史断言属主的逐类裁决以及本版本身份三元组修正后的独立受影响验证。本条目只记录已发生的事实，不把待解决项降格为 PASS 或 `NOT_APPLICABLE`。
+**可见验证状态**：V01 #1021 在上述精确候选上执行 139/139 `scripts/test_*.py`（126 PASS、13 个历史 Task-HEAD/Exact-State 断言 RED）；已执行 T12 的 52 条正负验证，并保留 Material/Release 的 `BLOCKED/NOT_RUN` 证据。V01 Validator 在这一原始 SHA/tree 上提交的首轮终判为 **V01_BLOCKED**（#1021@6148175429）；历史断言属主的逐类裁决、身份三元组后继候选的受影响验证须以各自新的精确 SHA 证据为准，此处并不覆盖后续终判。本条目只记录已发生的事实，不把待解决项降格为 PASS 或 `NOT_APPLICABLE`。
 
-**未声明的门禁**：尚无 V01 PASS、V02 Candidate Freeze、V03 Hidden Validation、V04 Fresh Closeout、R01 Release Qualification、R02 `main` Integration、发布 tag 或 GitHub Release。历史 v4.10 及更早条目全部按原有原文保留。
+**本条目的权威边界**：本次身份修复不提供 V01 PASS、V02 Candidate Freeze、V03 Hidden Validation、V04 Fresh Closeout、R01 Release Qualification、R02 `main` Integration、发布 tag 或 GitHub Release 的证据；各门禁以其独立 exact-SHA 终判为准。历史 v4.10 及更早条目全部按原有原文保留。
 
 ## v4.10.0 — Unreleased candidate
 
