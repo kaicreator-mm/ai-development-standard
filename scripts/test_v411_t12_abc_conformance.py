@@ -321,7 +321,10 @@ def execute_spec_reuse_review_same_subject(case_id: str, polarity: str, tested_s
     spec_facts = dict(t03.P01_PROJECTION)
     spec_facts["implementation_subject_ref"] = subject
     spec_facts["evidence_subject_ref"] = subject
-    consumer_break = case_id == "X06" and polarity == "negative"
+    consumer_break = case_id in {"S13", "X06"} and polarity == "negative"
+    spec_not_shipped = case_id == "S05" and polarity == "negative"
+    if spec_not_shipped:
+        spec_facts["implements_accepted_delta"] = False
     if consumer_break:
         # A deprecated API with an old supported C0 consumer must not be
         # promoted by a green newer C1 window or lawful license reuse.
@@ -349,7 +352,11 @@ def execute_spec_reuse_review_same_subject(case_id: str, polarity: str, tested_s
         subject == boundary.live_subject
     )
     expected_reuse = "BLOCKED" if drift else "ALLOWED"
-    expected_spec = "INCOMPATIBLE" if consumer_break else "RECONCILED"
+    expected_spec = (
+        "INCOMPATIBLE" if consumer_break
+        else "BLOCKED" if spec_not_shipped
+        else "RECONCILED"
+    )
     ok = (
         matches and spec["decision"] == expected_spec
         and reuse["decision"] == expected_reuse
@@ -364,7 +371,7 @@ def execute_spec_reuse_review_same_subject(case_id: str, polarity: str, tested_s
         spec["decision"] == "RECONCILED" and reuse["decision"] == "ALLOWED"
         and review.judgment == "PASS"
     )
-    if (drift or consumer_break) and allowed:
+    if (drift or consumer_break or spec_not_shipped) and allowed:
         ok = False
     return {
         "test_contract_ok": ok,
@@ -380,9 +387,10 @@ def execute_spec_reuse_review_same_subject(case_id: str, polarity: str, tested_s
         "combined_authorization": (
             "CONTRACT_SIMULATION_POSITIVE" if allowed else
             "DENIED_BY_SUPPORTED_OLD_CONSUMER" if consumer_break else
+            "DENIED_BY_ACCEPTED_BUT_UNSHIPPED_SPEC" if spec_not_shipped else
             "DENIED_BY_CURRENT_LICENSE_OWNER"
         ),
-        "negative_attempted": drift or consumer_break,
+        "negative_attempted": drift or consumer_break or spec_not_shipped,
         "supported_old_consumer_incompatible": consumer_break,
         "source_owners": [
             "T03 spec/implementation reconciler",
@@ -637,7 +645,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         execute_spec_reuse_review_same_subject(
             case_id, record["polarity"], tested_sha, tested_tree
         )
-        if case_id in {"X02", "X06"} else None
+        if case_id in {"S05", "S13", "X02", "X06"} else None
     )
     docs_probe = (
         execute_docs_risk_role_same_subject(case_id, record["polarity"], tested_sha, tested_tree)
