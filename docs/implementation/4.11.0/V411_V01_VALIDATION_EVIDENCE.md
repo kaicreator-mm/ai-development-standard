@@ -320,3 +320,111 @@ FINDING_F04=registered profile includes zero test_v410_*/test_v411_* owner suite
 - N06: no source repaired, no test weakened/deleted; the 13 REDs preserved as RED with logs.
 - N08: every inherited deferral carries a fresh version-candidate re-evaluation record (Contract §4).
 - N09: `evidence_only_head` recorded distinct from `tested_sha`; no ancestry promotion.
+
+---
+
+# SUCCESSOR RECORD (append-only) — exact-SHA tuple evidence at `dc997f86` / tree `ba15c37a`
+
+<!-- Appended 2026-10-14 by the distinct successor CLOSURE_VALIDATOR. Sections §1–§9 above are the
+     eb8ffb8b terminal evidence and remain immutable. Raw per-suite logs retained locally under
+     workspace `_tmp/v411-v01-closure-validator/logs/` (ephemeral, 39 files); the durable facts are
+     this appendix and the Issue #1021 successor terminal comment. -->
+
+## 10. Successor tuple identity triplet (VALIDATION §6/§7)
+
+```ini
+CANDIDATE_SHA=dc997f86d693d26cc9025ff0a52620cc6bba3961
+CANDIDATE_TREE=ba15c37a75238f161b09bb917488b5fbd6cfcb12
+TESTED_SHA=dc997f86d693d26cc9025ff0a52620cc6bba3961
+TESTED_TREE=ba15c37a75238f161b09bb917488b5fbd6cfcb12
+EVIDENCE_ONLY_HEAD=recorded on the evidence-branch commit carrying this file (branch t1021-v01-successor-evidence, from 9fe4142d; distinct from TESTED_SHA; ancestry confers no executed tuple)
+EVIDENCE_BRANCH_GENERATION=s2 (successor records appended on a NEW branch generation; the eb8ffb8b-generation branch validation/v411-v01-evidence / PR #1095 head is NOT moved — evidence-chain guard: old evidence PR not repointed, not merged)
+SOURCE_BRANCH=refs/heads/version/v4.11.0 live GitHub readback == dc997f86 (verified pre-execution, 2026-10-14)
+PRIOR_TUPLE=eb8ffb8bc7b462894972137569375222df153add / 51c77593e58a97fce35d7e88055b5b57bad5af15 (parent of dc997f86; delta = exactly VERSION(+1/−1), README.md(+6/−2), CHANGELOG.md(+8/−0), merge PR #1094, merge_commit==dc997f86 live-verified)
+SUITE_DENOMINATOR=139 tracked scripts/test_*.py at subject (`git ls-tree -r --name-only HEAD` count; inventory unchanged vs eb8ffb8b — recount only, NO successor 139 census claimed)
+```
+
+## 11. Host / runtime / worktree
+
+```ini
+HOST=Windows 11 10.0.26300 x64 (host `Nilar`), Git Bash MINGW64_NT-10.0-26300
+PYTHON=3.14.7 (cpython); jsonschema 4.26.0 (only non-stdlib import)
+WORKTREE=fresh detached clean worktree at exact SHA (`pinned-dc997f86`, created from bare mirror)
+CLEAN_BEFORE=porcelain 0; CLEAN_AFTER=porcelain 0; HEAD/tree re-verified identical after all 39 runs (dc997f86 / ba15c37a)
+PYTHONFLAGS=python -B (no bytecode); per-command real exit codes captured (`cmd > log 2>&1; echo EXIT=$?`)
+SOURCE_MUTATION=NONE; MERGE=NONE; PRODUCTION_NETWORK=NOT_USED (github.com API readback only); PRODUCTION_CREDENTIALS=NOT_USED
+```
+
+## 12. Focused affected verification — 39 commands, real exit codes (no blanket re-run)
+
+Affected-set derivation: successor delta touches `VERSION`/`README.md`/`CHANGELOG.md`; affected surfaces =
+(a) owner C1–C6 replacement oracles, (b) the 13 historical suites (census guard), (c) every suite whose
+oracle reads the identity files or computes candidate-diff path sets (`grep`-derived, complete), (d) the
+current identity/conformance oracles. Everything else keeps its eb8ffb8b PASS per the owner's
+content-coupling audit + this delta inspection.
+
+### 12.1 Replacement / current oracles — all GREEN
+
+| command (`python -B <p>`, cwd=worktree root) | exit | note |
+|---|---|---|
+| `scripts/verify_standard.py` | **0** | standard verification PASS incl. current identity-triple check at subject (RC-2 current oracle; C1/C2/C6 replacement) |
+| `scripts/test_verify_standard.py` | **0** | verifier self-suite |
+| `scripts/test_v49_release_applicability.py` | **0** | release applicability semantics |
+| `scripts/test_v47_state_dimension_registry.py` | **0** | C1/C2 replacement (current registry owner) |
+| `scripts/test_v49_authority_state_registry.py` | **0** | C1/C2 replacement |
+| `scripts/test_v43_task_decomposition.py` | **0** | C3 replacement (current TDS semantics) |
+
+### 12.2 Identity-coupled (C6 + NEW-2)
+
+| command | exit | result |
+|---|---|---|
+| `scripts/test_v49_integrated_dogfood.py` | **1** | Ran 32, failures=3 — **exactly** `test_i01_recovered_families_byte_identical_since_recovery` subTests composed_union=`CHANGELOG.md`/`README.md`/`VERSION`; all other 29 tests OK (owner C6 reproduced independently; no extra failure) |
+| `scripts/test_v411_t12_abc_conformance.py` | **1** | **NEW-2**: `REGISTRY_OR_WRITESET_FAIL` — owner-conflict write outside T12 unique paths: CHANGELOG.md/README.md/VERSION; preflight aborts BEFORE ledger emission → 52 records not emittable at this SHA (guard: `git diff --name-only 301ebcda… HEAD` ⊄ {test file, tests/fixtures/v411/t12/}) |
+
+### 12.3 The 13 historical suites at the successor (census guard; no relabel)
+
+| suite | exit | failing assertions (count) | vs ledger classification |
+|---|---|---|---|
+| `test_v410_owner_convergence.py` | 1 | 5 | C1 ✓ unchanged |
+| `test_v410_t02b_machine_projection.py` | 1 | 1 | C2 ✓ |
+| `test_v410_t05a_shared_code_safety.py` | 1 | 1 | C3 ✓ |
+| `test_v410_t07a_acceptance_projection.py` | 1 | 2 | C1 ✓ |
+| `test_v410_t07b_decision_record.py` | 1 | 1 | C1 ✓ |
+| `test_v410_t08a_integration_runner.py` | 1 | 1 | C1 ✓ |
+| `test_v411_central_wiring.py` | 1 | own census **Ran 22, failures=2**: C4 `test_t11_source_write_set_is_central_only` + **NEW-1** `test_dogfood_and_audit_debt_are_executable_not_keyword_only` (C6 propagation via inline dogfood run) | C4 ✓ + 1 unenumerated |
+| `test_v411_merge_admission.py` | 1 | 3 (Ran 74 → 71 PASS) | C5 ✓ |
+| `test_v411_t06_claim_admission.py` | 1 | 1 | C5 ✓ |
+| `test_v411_t08_human_denial_authority.py` | 1 | 1 | C5 ✓ |
+| `test_v411_t09_effect_boundary.py` | 1 | 1 | C5 ✓ |
+| `test_v411_t13_role_conduct.py` | 1 | 1 (Ran 62 → 61 PASS) | C5 ✓ |
+| `test_v411_task_learning.py` | 1 | 1 | C5 ✓ |
+
+### 12.4 Remaining coupling-surface suites — all GREEN (18)
+
+`test_verify_project_standard` `test_v33_semantic_regressions` `test_v34_lifecycle_contracts`
+`test_v34_review_repairs` `test_pointer_only_trigger_contract` `test_v43_adoption_wiring`
+`test_v43_profile_framework` `test_v43_archetype_profiles` `test_v43_go_java_rust_profiles`
+`test_v43_ts_python_profiles` `test_v45_maintenance_hotfix_conformance` `test_v46_session_handoff_dogfood`
+`test_v46_cross_standard_conformance` `test_v48_registry_adoption` `test_v48_orchestration_dogfood`
+`test_v49_dogfood_audit_contract` `test_v49_gate_currentness` `test_v49_conformance_suite` — all exit **0**
+at the exact SHA. Diff-based guard suites not in this list are fully enumerated in §12.3 (all RED,
+classified). Coverage of the diff-based guard class is therefore complete.
+
+## 13. Preservation facts
+
+```ini
+OLD_LEDGER=139 executed / 126 PASS / 13 RUN-FAIL — pinned ONLY to eb8ffb8b/51c77593, immutable, NOT relabelled, no successor 139 census invented
+HISTORICAL_REDS=preserved RED with logs (13 suites); no test edited, deleted, hidden, or repaired
+CENSUS_CORRECTION=#1021@6150183669 §4 "≈125/14" was static conjecture (NOT_EXECUTED); actual successor focused census = 15 suites exit=1 (13 historical + t12_abc NEW-2; central_wiring counted once) with 2 unenumerated failure instances (NEW-1, NEW-2)
+```
+
+## 14. CI / platform / applicability ground facts at the exact subject
+
+```ini
+CI=GitHub Actions run 38427879181 `verify-standard` (ubuntu-latest, CPython 3.12) head_sha=dc997f86… → completed / success (live API readback by this validator); CI is executor, never Release authority (N01)
+BUILD_PACKAGE_TOOLCHAIN=0 hits at ba15c37a (pyproject/setup*/package.json/Cargo.toml/Makefile/Dockerfile/compose/go.mod/pom.xml/gradle enumeration)
+EXTERNAL_DEPLOY_SURFACE=0 hits (terraform/k8s/kubernetes/deploy enumeration)
+SOLE_WORKFLOW=.github/workflows/verify-standard.yml
+AUTHORITY_BLOB_GUARDS@ba15c37a=VALIDATION_STANDARD 1522b85f / RELEASE_STANDARD c4d72506 / EXECUTION_ARCHITECTURE_STANDARD 846158b9 (RB-01 binding) / V01 Pack 8885201a / checklist 2483856a / verify_standard.py a6233b79 / dogfood f3b165b3 — all verified identical by this validator
+PR_1095=open + draft + unmerged (live readback; old-candidate evidence not promoted)
+```

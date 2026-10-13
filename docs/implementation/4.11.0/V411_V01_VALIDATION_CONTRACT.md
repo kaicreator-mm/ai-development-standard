@@ -112,3 +112,119 @@ This verdict is V01 visible-closure scope only. It does not authorize Candidate 
 Hidden Validation (V03), Fresh Closeout (V04), Release Qualification (R01), Repository
 Integration (R02), or any main-merge. Independent V01 Review is a separate actor binding to the
 exact evidence artifact SHAs. No source repair, no merge, no freeze performed by this Validator.
+
+---
+
+# SUCCESSOR RECORD (append-only) — RC-2 re-establishment & second V01 terminal at `dc997f86`
+
+<!-- Appended 2026-10-14 by the distinct successor CLOSURE_VALIDATOR (fresh local session, zero prior
+     #1021 comments; transport actor kaicreator-mm). Sections above remain the eb8ffb8b terminal and
+     are immutable history (VALIDATION §6/§13 N03: no relabel across tuples). This appendix binds a
+     NEW exact tuple and supersedes nothing retroactively. Only this owned artifact path is written. -->
+
+## S1. Successor decision identity (RELEASE §11.2)
+
+```ini
+TASK_ID=V411-V01 (second terminal, successor re-establishment)
+SUBJECT_REF=refs/heads/version/v4.11.0 (authoritative live readback == dc997f86)
+SUBJECT_IDENTITY=dc997f86d693d26cc9025ff0a52620cc6bba3961
+SUBJECT_TREE=ba15c37a75238f161b09bb917488b5fbd6cfcb12
+TESTED_SHA=dc997f86d693d26cc9025ff0a52620cc6bba3961 (all 39 focused executions below)
+TESTED_TREE=ba15c37a75238f161b09bb917488b5fbd6cfcb12
+EVIDENCE_ONLY_HEAD=the commit carrying this file on branch t1021-v01-successor-evidence (from 9fe4142d; ancestry confers no executed tuple)
+PRIOR_TERMINAL=#1021@6148175429 (V01_BLOCKED @ eb8ffb8b/51c77593) — preserved verbatim
+STATIC_IMPACT_INPUT=#1021@6150183669 (RC-2 VALIDATION_IMPACT_DECISION; content-coupling audit) — scope corrected by this execution (S3)
+RELEASE_OWNER_DISPOSITION=#1021@6150684306 (C1–C6 per-class + Decisions B/C; authority blob c4d72506 verified identical at subject tree by this validator)
+FROZEN_PACK=docs/implementation/4.11.0/task-packs/V411-V01_independent_validation_closure.md blob=8885201ac2501f3a6e3a3d31123a63c2546986d2 (unchanged at subject)
+FROZEN_DAG=#966 blob=9866d35ae1512b156cfdc94cc01aec2fa897f3e6 (topology V01→V02→V03→V04→R01→R02 re-read at subject)
+RELEASE_AUTHORITY_REF=standards/RELEASE_STANDARD.md@c4d72506 §11 (§11.1/§11.3/§11.4 applied)
+DECIDED_AT=2026-10-14
+ACTOR_OR_OPERATOR=zcode-t1021-v01s-closure-validator (local_agent; transport_actor=kaicreator-mm)
+V01_VERDICT=V01_BLOCKED (successor terminal)
+```
+
+## S2. Gate × subject applicability re-evaluation (affected/current gates at `dc997f86`)
+
+| gate_id | applicability | decision_ref | state @ dc997f86 | basis / proof |
+| --- | --- | --- | --- | --- |
+| exact_candidate_identity | REQUIRED_NOW | this record | **PASS** | live ref readback dc997f86 pre/post; worktree `pinned-dc997f86` clean before/after all runs (porcelain 0; HEAD/tree unchanged); N02 negative holds |
+| visible_full_regression | REQUIRED_NOW | owner #1021@6150684306 §3 (C1–C6) + this validator S3 | **BLOCKED** | 139/126/13 ledger preserved at `eb8ffb8b` only; successor focused census: C1–C5 suites RED with exactly the classified assertion counts; C6 dogfood RED = exactly 3 identity subTests; replacement oracles re-executed GREEN at subject; **NEW-1 + NEW-2 unclassified successor REDs** → not PASS, no self-grantable disposition |
+| t12_integrated_conformance | REQUIRED_NOW | this record (NEW-2) | **BLOCKED** | runner preflight `REGISTRY_OR_WRITESET_FAIL` exit 1 at subject; 52-record ledger NOT emittable at dc997f86; old 52/52 PASS stays historical at `eb8ffb8b` (N03/N09: no ancestry promotion); no owner disposition covers this suite-state |
+| critical_journeys_visible | REQUIRED_NOW (visible/contract scope) | this record (NEW-2) | **BLOCKED** | journey ± oracles execute via the same T12 runner; re-establishment execution impossible at subject; old 12/12 journey PASS stays historical at `eb8ffb8b` |
+| journey_material_same_subject (28 T12 gate-BLOCKED rows; compound J09+J10+J11+J12; material_unverified_count=31) | REQUIRED_NOW before R01; **UNRESOLVED at V01** | owner §5 (fresh, bound dc997f86): routed fact, not waived | **BLOCKED (carried)** | per frozen Pack §1 acceptance + N08: still-unresolved inherited deferral at the version-candidate boundary keeps verdict not-PASS; "before R01" is schedule, not satisfaction (RELEASE §11.3; §10/§11.6 no BLOCKED→PASS) |
+| journey_material_release_gate (J09: S11±/X04± real Release/Hidden) | REQUIRED_NOW at owning stages V03/R01 | owner §5 + frozen DAG #966 (V03 Hidden / R01 RQ rows) | **NOT_RUN (lawful forward schedule)** | genuinely later-stage gate: substance requires Release-Controller actor and Hidden machinery existing only at V03/R01; not V01-blocking, never gate-satisfying |
+| production_build_artifact_package_install | NOT_APPLICABLE (owner Decision B) | #1021@6150684306 §4-B | **NOT_APPLICABLE** | validator independently re-enumerated at ba15c37a: 0 build toolchains, 0 owned build/package/install/deploy/publish entrypoints, sole workflow verify-standard.yml; currentness condition recorded by owner |
+| external_tenant_effect | NOT_APPLICABLE (owner Decision C) | #1021@6150684306 §4-C | **NOT_APPLICABLE** | validator independently re-enumerated: 0 deploy/external surface; T12 X07 fidelity LOCAL_SQLITE_AND_SYNTHETIC_RELEASE_PREREQUISITE_NOT_PRODUCTION_DEPLOY (fixture unchanged) |
+| platform_matrix | REQUIRED_NOW | this record | **PASS** (focused currentness) | Windows 11 26300 x64 / CPython 3.14.7 focused host executions at exact SHA (39 commands, real exit codes, EVIDENCE §10) + ubuntu-latest / CPython 3.12 CI run 38427879181 SUCCESS at exact SHA; no platform divergence inside the affected subset; full-139 tuple remains historical at `eb8ffb8b` |
+| ci_profile_registered | REQUIRED_NOW (owning policy verify-standard.yml) | this record | **PASS** | run 38427879181 completed/success head_sha=dc997f86 (live readback by this validator); CI is executor, never Release authority (N01); F-04 coverage gap still routed to policy owner |
+| docs_reconciliation | REQUIRED_NOW | this record (re-established per VALIDATION §6/§7) | **PASS** | identity triple verified first-hand at subject (VERSION=4.11.0; README L3 未发布 v4.11.0 candidate; CHANGELOG head v4.11.0 — Unreleased version-branch candidate); delta exactly VERSION(+1/−1)/README.md(+6/−2)/CHANGELOG.md(+8/−0), no standards/schemas/scripts touched; authority blob guards unchanged (VALIDATION 1522b85f / RELEASE c4d72506 / EXECUTION 846158b9 per RB-01 / Pack 8885201a / checklist 2483856a / verify_standard.py a6233b79); delta content truthful (records old V01_BLOCKED, claims no PASS). RC-2 CLOSED |
+| evidence_integrity | REQUIRED_NOW | this record | **PASS** | tested_sha (dc997f86) recorded distinctly from evidence_only_head; no relabel of old-tuple evidence; historical REDs preserved RED with logs; no new 139 census invented (denominator recount only: 139 tracked scripts at subject) |
+
+## S3. New successor findings (this validator's focused executions; NOT covered by any prior disposition)
+
+**NEW-2 (blocking) — T12 runner write-set preflight fires at the successor.**
+`scripts/test_v411_t12_abc_conformance.py` exit **1** at `dc997f86`: `V411_T12: REGISTRY_OR_WRITESET_FAIL`,
+problems = owner-conflict write outside T12 unique paths: `CHANGELOG.md` / `README.md` / `VERSION`.
+Guard mechanics (read at subject): `validate_write_set()` (line 222) computes
+`git diff --name-only INTEGRATION_BASE HEAD` with `INTEGRATION_BASE=301ebcda…` and
+`ALLOWED_WRITE_PREFIXES={scripts/test_v411_t12_abc_conformance.py, tests/fixtures/v411/t12/}` — a T12-era
+whole-candidate exact-write-set guard, GREEN at `eb8ffb8b` (old EVIDENCE §4: 52/52), RED solely by the
+authorized RC-2 merge #1094 itself. NOT covered by the owner C1–C6 census (13 suites @ eb8ffb8b + dogfood
+identity subTests); NOT caught by #1021@6150183669 §4 (its static audit covered content coupling — reads of
+the identity files — not path-presence coupling in `git diff` based guards; its "≈125/14" blanket-census
+conjecture was explicitly NOT_EXECUTED and is shown incomplete by this execution). Effect: the 52-record
+conformance ledger cannot be produced at this SHA; `t12_integrated_conformance` and
+`critical_journeys_visible` re-establishment is blocked. The Validator may not self-grant the disposition
+(RC-1 discipline) and may not repair (Pack N06).
+
+**NEW-1 (blocking, propagation instance of C6) — central-wiring wrapper newly RED.**
+`test_v411_central_wiring.py` own census at subject: **Ran 22, failures=2** (at `eb8ffb8b`: failures=1, only
+the C4-classified `test_t11_source_write_set_is_central_only`). Added failure:
+`test_dogfood_and_audit_debt_are_executable_not_keyword_only` (rel=`scripts/test_v49_integrated_dogfood.py`)
+— the wrapper executes the dogfood suite inline, so C6's 3 identity subTest REDs propagate. Same root cause
+as owner C6 (identity pins moved by RC-2 merge #1094), but the owner's C6 receipt enumerates only the
+dogfood's own failure list; this wrapper observable at the successor is unenumerated and needs an owner
+receipt extension (mechanical; not Validator-grantable).
+
+**Successor focused census (complete affected set, 39 commands; EVIDENCE §10 for the full table):**
+13/13 historical suites still exit=1 (per-suite failing-assertion counts match the ledger classification
+exactly, except central_wiring +1 per NEW-1); dogfood exit=1 with exactly the 3 classified identity
+subTests; `test_v411_t12_abc_conformance.py` NEW-2 exit=1; all replacement oracles and all 20 further
+coupling-surface suites exit=0. Zero candidate-semantic failures observed anywhere.
+
+## S4. Verdict rule application (successor terminal)
+
+- `REQUIRED_NOW` rows not PASS at `dc997f86`: `visible_full_regression` (BLOCKED — NEW-1/NEW-2 unclassified
+  successor REDs; C1–C6 themselves dispositioned and replacements green), `t12_integrated_conformance`
+  (BLOCKED — NEW-2), `critical_journeys_visible` (BLOCKED — NEW-2), plus the carried REQUIRED_NOW
+  `journey_material_same_subject` (BLOCKED, unresolved inherited deferral — by itself already keeps the
+  verdict not-PASS per Pack §1 acceptance threshold and N08).
+- Not FAIL: no executed check failed on candidate semantics (all REDs are historical-guard class,
+  guard-propagation, or material NOT_RUN truths; zero semantic failures across the focused census).
+- Therefore the truthful successor terminal is **`V01_BLOCKED`** at `dc997f86/ba15c37a`. Publishing
+  V01_PASS would relabel unresolved dispositions and successor-induced guard REDs — forbidden (RELEASE §10,
+  Pack N03/N04/N06).
+
+## S5. Named blockers and smallest owner actions
+
+1. **NEW-2** (`t12_integrated_conformance`, `critical_journeys_visible`): Release-owner successor
+   disposition for the T12-era whole-candidate write-set guard (e.g. a `#1064`-style dual-pin bridge binding
+   the `INTEGRATION_BASE` guard to the T12 tested tuple, or an explicit owner re-scope). Any such change is
+   an authorized source commit → NEW successor SHA with its own `VALIDATION_IMPACT_DECISION` and affected-gate
+   re-establishment. Owner: Release authority (+ T12 owner). NOT executable by the Validator.
+2. **journey_material_same_subject** (28 rows + compound, material_unverified_count=31): unresolved inherited
+   deferral; owning stages V03 (Hidden evidence) / R01 (RQ consumption) per frozen DAG + owner §5 routing;
+   cannot be consumed as V01-satisfied by "required before R01" scheduling (Pack N08; RELEASE §11.3).
+3. **NEW-1** (`visible_full_regression` census): owner receipt extension enumerating the central-wiring
+   wrapper propagation instance within C6's class (root cause and replacement oracle already dispositioned).
+
+## S6. Boundary
+
+This successor terminal performs no Candidate Freeze (V02), no Hidden Validation (V03), no Fresh Closeout
+(V04), no Release Qualification (R01), no Repository Integration (R02), no source repair, no merge, no CI
+waiver. `V02_ADMISSION=NO` from this terminal: V01 is not PASS and unresolved required closure gates exist
+(frozen DAG V02 row itself requires "no unresolved required closure gate"). PR #1095 stays Draft/unmerged
+(verified live); old-candidate evidence is not successor PASS. Fresh Review READY evidence is NOT submitted
+(verdict is BLOCKED); the evidence chain (branch/commit/blobs + #1021 terminal) is nonetheless packaged so a
+genuinely fresh independent reviewer can bind to exact SHAs. Independent V01 Review remains a separate
+actor from this Validator.
