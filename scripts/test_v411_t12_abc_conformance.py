@@ -716,9 +716,13 @@ def execute_release_prerequisite_contract(
         "actual_tested_negative_waiver_attempts": negatives,
         "security_floor_counterexample": security,
         "observed_local_contract": (
-            "REQUIRED_NOW_FUTURE_GATE_NOT_RUN"
+            "CURRENT_REQUIRED_GATE_STANDING"
+            if polarity == "positive" and positive_ok else
+            "CURRENT_REQUIRED_GATE_UNVERIFIED"
             if polarity == "positive" else
-            "FORGED_STALE_CI_ONLY_WAIVERS_REJECTED"
+            "OWNER_WAIVER_COUNTEREXAMPLES_REJECTED"
+            if all_negatives_rejected else
+            "UNSAFE_WAIVER_POSSIBLY_ADMITTED"
         ),
         "future_gate_truth": {
             "V01_VISIBLE": "NOT_RUN", "V02_FREEZE": "NOT_RUN",
