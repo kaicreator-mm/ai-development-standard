@@ -544,8 +544,18 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "sink_readback_provenance": sink,
         "gate_disposition": "NOT_RUN" if release_contract else p3_state,
         "proof_layers": proof_layers,
-        "result": ("PASS_OWNER_ASSERTIONS_INTEGRATION_BLOCKED" if contract_ok else "FAIL"),
-        "currentness": "SOURCE_HEAD_CURRENT_OWNER_ASSERTIONS;WORK_SUBJECT_NOT_PROVEN" if contract_ok else "UNVERIFIED",
+        "result": (
+            "PASS_TEST_ONLY_SAME_SUBJECT_CONTRACT"
+            if contract_ok and local_probe is not None
+            else "PASS_OWNER_ASSERTIONS_INTEGRATION_BLOCKED"
+            if contract_ok else "FAIL"
+        ),
+        "currentness": (
+            "CURRENT_TEST_SUBJECT_BUT_REAL_AUTHORITY_NOT_PROVEN"
+            if contract_ok and local_probe is not None
+            else "SOURCE_HEAD_CURRENT_OWNER_ASSERTIONS;WORK_SUBJECT_NOT_PROVEN"
+            if contract_ok else "UNVERIFIED"
+        ),
         "fidelity": record["fidelity"],
         "evidence_refs": [f"{x['file']}#{x['test']}" for x in record["runner"]["tests"]],
         "owner_test_results": test_results,
