@@ -546,8 +546,10 @@ def execute_x05_parallel_api_same_subject(
     })
     # Disjoint task identities. No artificial GPU grant or shared-key
     # collision: these two builders are lawfully parallel on distinct work.
-    left_key = "kaicreator-mm/ai-development-standard#1020:builder:__default__"
-    right_key = "kaicreator-mm/ai-development-standard#1021:builder:__default__"
+    # Synthetic task keys intentionally do NOT impersonate real #1020/#1021
+    # actor Claims or the blocked V01 Validator role.
+    left_key = "t12-synthetic/task-A:builder:__default__"
+    right_key = "t12-synthetic/task-B:builder:__default__"
     left = claims.admit(t06.proposal(
         claims, key=left_key, operator=t06.OP_LOCAL, origin="LOCAL", session="x05-left"
     ))
