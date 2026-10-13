@@ -51,11 +51,13 @@ Before a high-cost Real Host handoff, the Builder can execute a **cheap** smoke 
 git rev-parse HEAD
 git rev-parse HEAD^{tree}
 git status --porcelain
-# Avoid py_compile side effects in the clean worktree.
-python -B scripts/test_v411_t12_abc_conformance.py > t12-smoke.log 2>&1
+# Keep diagnostic output outside the candidate checkout.
+smoke_log="$(mktemp "${TMPDIR:-/tmp}/t12-smoke.XXXXXX.log")"
+# -B avoids bytecode cache writes; use the Task's actual entrypoint.
+python -B scripts/test_v411_t12_abc_conformance.py > "$smoke_log" 2>&1
 test_exit=$?
 echo "TASK_SMOKE_EXIT=$test_exit"
-python - t12-smoke.log "$test_exit" <<'PY'
+python - "$smoke_log" "$test_exit" <<'PY'
 import json, pathlib, sys
 text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
 if sys.argv[2] != "0":
@@ -79,6 +81,7 @@ assert all(
 assert data["downstream_release_truth"] == "NOT_RUN"
 print("FOCUSED_SMOKE_OK: real runner produced required ledger structure")
 PY
+git status --porcelain  # must still satisfy the Task's clean-tree policy
 ```
 
 Run this with logs **outside the protected worktree** when clean status is a Task gate. The example is T12-specific; future Tasks substitute their *own* frozen oracle, expected registry count and output contract. Executing a local smoke **does not replace** a mandatory Real Host/Independent Review, and an emitted ledger **does not** certify the semantic truth of each C, security or Release field. Reviewers still probe counterexamples and physical/currentness provenance.
