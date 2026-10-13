@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import importlib.util
 import io
+from contextlib import nullcontext
+from unittest.mock import patch
 import json
 from pathlib import Path
 import subprocess
@@ -91,32 +93,61 @@ def resolve_test(rel: str, method: str) -> unittest.TestCase:
 
 
 def execute_owner_test(spec: dict) -> dict:
+    """Execute the real owner's assertion and capture side effects separately.
+
+    unittest success is only an observation of an owner assertion, NOT an
+    observed canonical policy transition. For T09, intercept the already
+    authoritative SQLite sink boundary after the actual attempted operation;
+    no fixture expected value can substitute for readback.
+    """
     rel = spec.get("file")
     method = spec.get("test")
     if not isinstance(rel, str) or not isinstance(method, str):
         return {"ok": False, "error": "malformed owner test binding", "spec": spec}
     try:
         case = resolve_test(rel, method)
+        module = load_owner_module(rel)
+        sink_observations = []
+        context = nullcontext()
+        if rel == "scripts/test_v411_t09_effect_boundary.py":
+            sink_class = module.PersistentSafeSink
+            original_execute = sink_class.execute
+
+            def observed_execute(sink, *args, **kwargs):
+                result = original_execute(sink, *args, **kwargs)
+                sink_observations.append({
+                    "outcome": result.get("outcome"),
+                    "reported_before": result.get("before"),
+                    "reported_after": result.get("after"),
+                    "actual_effect_count_readback": sink.effect_count(),
+                    "attempt_id": kwargs.get("attempt_id"),
+                    "effect_id": kwargs.get("effect_id"),
+                    "observation_source": "PersistentSafeSink.execute + SQLite COUNT(*)",
+                    "fidelity": "ISOLATED_TEST_SQLITE_NOT_EXTERNAL_HUMAN_AUTHORITY",
+                })
+                return result
+            context = patch.object(sink_class, "execute", observed_execute)
+
         stream = io.StringIO()
-        # Class-level unittest fixtures (setUpClass/tearDownClass) are managed
-        # by TestSuite, not by invoking TestCase directly. Some reused owner
-        # oracles (for example release applicability) intentionally load their
-        # source-bound contracts in setUpClass, so every composed owner method
-        # must execute through an isolated one-case suite.
+        # Run through an isolated TestSuite so owner setUpClass is honored.
         suite = unittest.TestSuite([case])
-        result = unittest.TextTestRunner(stream=stream, verbosity=0).run(suite)
+        with context:
+            result = unittest.TextTestRunner(stream=stream, verbosity=0).run(suite)
         return {
-            "ok": result.wasSuccessful(),
+            "ok": result.wasSuccessful() and result.testsRun == 1 and not result.skipped,
             "file": rel,
             "test": method,
             "tests_run": result.testsRun,
             "failures": [msg for _, msg in result.failures],
             "errors": [msg for _, msg in result.errors],
             "skipped": [reason for _, reason in result.skipped],
+            "assertion_observation": "PASS" if result.wasSuccessful() and not result.skipped else "FAIL",
+            "sink_observations": sink_observations,
             "output": stream.getvalue().strip(),
         }
     except Exception as exc:
-        return {"ok": False, "file": rel, "test": method, "error": repr(exc)}
+        return {"ok": False, "file": rel, "test": method, "error": repr(exc),
+                "sink_observations": [], "assertion_observation": "FAIL"}
 
 
 def validate_registry(doc: dict) -> list[str]:
@@ -202,23 +233,85 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     ok = all(item.get("ok") for item in test_results)
     case_id = record["case_id"]
     release_contract = case_id in DOWNSTREAM_RELEASE_IDS
+    sink = [entry for test in test_results for entry in test.get("sink_observations", [])]
+    # Never project "expected_effect_count" as a sensor reading.  In the
+    # physical DENY cases, insist on a real executed sink attempt and its
+    # persisted database COUNT readback. Other scenarios lack effect sensors.
+    actual_effect_count = (
+        max(entry["actual_effect_count_readback"] for entry in sink)
+        if sink else None
+    )
+    expectation = record.get("expected_effect_count")
+    physical_deny = case_id in PHYSICAL_DENY_IDS and record["polarity"] == "negative"
+    physical_ok = (
+        not physical_deny or
+        (bool(sink) and actual_effect_count == 0 and
+         all(x["outcome"] == "BLOCKED" for x in sink))
+    )
+    if physical_deny and expectation != 0:
+        physical_ok = False
+    contract_ok = ok and physical_ok
+    # Executed unittest assertions are observed. A domain policy transition
+    # is NOT observed merely because the assertions passed; only a recorded
+    # owner operation (here an actual safe SQLite effect attempt) can give
+    # a bounded transition observation.
+    transition = (
+        [x["outcome"] for x in sink] if sink else None
+    )
+    owner_facts = [{
+        "file": t.get("file"),
+        "method": t.get("test"),
+        "tested_sha": tested_sha,
+        "tested_tree": tested_tree,
+        "assertion_observation": t.get("assertion_observation"),
+    } for t in test_results]
+    # A, B and C have different meanings. We do not fan one suite-wide
+    # Boolean into three purported independent material proofs.
+    a_files = (
+        "test_v411_t01_", "test_v411_t02_", "test_v411_t03_",
+        "test_v411_t04_", "test_v411_t10_", "test_v411_t13_",
+    )
+    b_files = (
+        "test_v411_t05_", "test_v411_t06_", "test_v411_t08_",
+        "test_v411_t09_", "test_v411_merge_admission",
+    )
+    def layer_fact(t, prefixes):
+        return any(t.get("file", "").split("/")[-1].startswith(p) for p in prefixes)
+    a_facts = [x for x in owner_facts if layer_fact(x, a_files)]
+    b_facts = [x for x in owner_facts if layer_fact(x, b_files)]
+    a_ok = bool(a_facts) and all(x["assertion_observation"] == "PASS" for x in a_facts)
+    b_ok = bool(b_facts) and all(x["assertion_observation"] == "PASS" for x in b_facts)
+    # Even with two sets of owner-method successes, their *internal fixture*
+    # subjects are not necessarily the same S/X work item. That actual
+    # fact-composition proof remains unresolved. A common Git HEAD alone
+    # cannot establish common subject.
+    p3_state = "BLOCKED" if contract_ok else "FAIL"
+    proof_layers = {
+        "P1_A": {"state": "PASS" if a_ok else ("NOT_RUN" if not a_facts else "FAIL"),
+                 "fidelity": "OWNER_UNIT_ASSERTIONS", "evidence": a_facts},
+        "P2_B": {"state": "PASS" if b_ok else ("NOT_RUN" if not b_facts else "FAIL"),
+                 "fidelity": "OWNER_UNIT_ASSERTIONS", "evidence": b_facts},
+        "P3_C": {"state": p3_state, "fidelity": "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
+                 "reason": "owner test fixtures are independently constructed; exact HEAD is not shared work subject",
+                 "a_supported": a_ok, "b_supported": b_ok},
+    }
     return {
         "case_id": case_id,
         "polarity": record["polarity"],
         "tested_sha": tested_sha,
         "tested_tree": tested_tree,
         "command": "python scripts/test_v411_t12_abc_conformance.py",
-        "exit": 0 if ok else 1,
-        "observed_transition": record["expected_transition"] if ok else "OWNER_ORACLE_FAILED",
-        "observed_effect": record["expected_effect_count"],
-        "gate_disposition": "NOT_RUN" if release_contract else ("PASS" if ok else "FAIL"),
-        "proof_layers": {
-            "P1_A": "PASS" if ok else "FAIL",
-            "P2_B": "PASS" if ok else "FAIL",
-            "P3_C": "PASS" if ok else "FAIL",
-        },
-        "result": "PASS_CONTRACT" if ok and release_contract else ("PASS" if ok else "FAIL"),
-        "currentness": "CURRENT" if ok else "UNVERIFIED",
+        "exit": 0 if contract_ok else 1,
+        "asserted_expected_transition": record["expected_transition"],
+        "observed_transition": transition,
+        "observed_owner_assertions": "PASS" if ok else "FAIL",
+        "expected_effect_count": expectation,
+        "observed_effect": actual_effect_count,
+        "sink_readback_provenance": sink,
+        "gate_disposition": "NOT_RUN" if release_contract else p3_state,
+        "proof_layers": proof_layers,
+        "result": ("PASS_OWNER_ASSERTIONS_INTEGRATION_BLOCKED" if contract_ok else "FAIL"),
+        "currentness": "SOURCE_HEAD_CURRENT_OWNER_ASSERTIONS;WORK_SUBJECT_NOT_PROVEN" if contract_ok else "UNVERIFIED",
         "fidelity": record["fidelity"],
         "evidence_refs": [f"{x['file']}#{x['test']}" for x in record["runner"]["tests"]],
         "owner_test_results": test_results,
@@ -226,14 +319,53 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
 
 
 def run_compound(compound: dict, tested_sha: str, tested_tree: str) -> dict:
+    """One declared integration subject; never equate distinct owner fixtures."""
     results = [execute_owner_test(spec) for spec in compound["tests"]]
     ok = all(item.get("ok") for item in results)
+    required = ("J09", "J10", "J11", "J12")
+    subject = {
+        "work_subject": "kaicreator-mm/ai-development-standard#1020:T12:J09+J10+J11+J12",
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "required_jobs": list(required),
+    }
+    source_bindings = [{
+        "job": job, "path": p,
+        "actual_blob": git("rev-parse", f"HEAD:{p}"),
+        "candidate_sha": tested_sha,
+        "work_subject": subject["work_subject"],
+        "evidence_kind": "CURRENT_SOURCE_READBACK_NOT_WORK_SUBJECT_OUTCOME",
+    } for job, p in zip(required, compound["actual_source_refs"])]
+    # Test that omission of any material category is rejected by the
+    # completeness checker; no new owner transition policy is implemented.
+    def complete(facts):
+        return all(job in facts for job in required) and all(
+            facts[job].get("actual_blob") and facts[job].get("work_subject") == subject["work_subject"]
+            for job in required
+        )
+    fact_map = {row["job"]: row for row in source_bindings}
+    omission_negatives = {
+        job: not complete({k: v for k, v in fact_map.items() if k != job})
+        for job in required
+    }
+    completeness = complete(fact_map) and all(omission_negatives.values())
+    # Git blob equality and passing independent unit methods do NOT prove
+    # that a single real work item underwent all four owner operations.
+    # J09 future release is also lawfully absent at this stage.
     return {
-        "id": compound["id"],
-        "tested_sha": tested_sha,
-        "tested_tree": tested_tree,
-        "result": "PASS_CONTRACT" if ok else "FAIL",
-        "material_disposition": compound["expected_disposition"],
+        "id": compound["id"], "subject": subject,
+        "tested_sha": tested_sha, "tested_tree": tested_tree,
+        "owner_source_readbacks": source_bindings,
+        "omission_negative_tests": omission_negatives,
+        "source_completeness_checked": completeness,
+        "owner_assertion_tests_pass": ok,
+        "contract_coverage_oracle": "PASS" if ok and completeness else "FAIL",
+        "result": "BLOCKED",
+        "material_disposition": "MATERIAL_INTERSECTION_UNKNOWN",
+        "unverified_reasons": [
+            "independent owner unit methods do not share one runtime work-subject",
+            "release J09 cannot receive future V01-R02 authority at T12 time",
+        ],
+        "resolution_owner": "T12 exact-subject integration adapter; release J09 to V01-R02",
         "release_gate": "NOT_RUN",
         "owner_test_results": results,
     }
@@ -255,7 +387,7 @@ def main() -> int:
 
     compound = run_compound(doc["compound"], tested_sha, tested_tree)
     failures = [r for r in records if r["exit"] != 0]
-    if compound["result"] != "PASS_CONTRACT":
+    if compound["contract_coverage_oracle"] != "PASS":
         failures.append({"compound": compound})
     ledger = {
         "event": "V411_T12_RUNTIME_EVIDENCE_LEDGER",
@@ -273,7 +405,7 @@ def main() -> int:
     if failures:
         print(json.dumps({"V411_T12": "FAIL", "failure_count": len(failures)}, indent=2))
         return 1
-    print("V411_T12=PASS records=52 compound=PASS_CONTRACT downstream_release=NOT_RUN")
+    print("V411_T12=OWNER_ASSERTIONS_PASS_INTEGRATED_PROOF_BLOCKED records=52 compound=BLOCKED downstream_release=NOT_RUN")
     return 0
 
 
