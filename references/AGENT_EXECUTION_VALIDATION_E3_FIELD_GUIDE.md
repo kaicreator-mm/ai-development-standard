@@ -44,10 +44,12 @@ For a Bash/Linux-only illustrative command, preserve the test's left-hand status
 
 ~~~bash
 set -o pipefail
-timeout 900s python scripts/test_example.py 2>&1 | tee run.log
-test_rc=${PIPESTATUS[0]}
-printf 'TEST_EXIT=%s\n' "$test_rc"
-exit "$test_rc"
+# Preserve exact-SHA checkout cleanliness by logging in a temporary directory.
+log_dir="$(mktemp -d "${TMPDIR:-/tmp}/ads-e3-evidence.XXXXXX")"
+timeout 900s python scripts/test_example.py 2>&1 | tee "$log_dir/run.log"
+status=( "${PIPESTATUS[@]}" )  # capture producer and tee exits immediately
+printf 'TEST_EXIT=%s TEE_EXIT=%s\n' "${status[0]}" "${status[1]}"
+test "${status[0]}" -eq 0 && test "${status[1]}" -eq 0
 ~~~
 
 The command above is an example, **not** a prescribed universal command or a substitute for task-specific timeout policy. On Windows or shells without timeout/PIPESTATUS, use that host's equivalent while preserving the invoked process exit code.
