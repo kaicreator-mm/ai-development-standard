@@ -1,10 +1,10 @@
 # AI Development Standard
 
-当前版本：`v4.11.0`（**未发布 version-branch candidate；V01 可见验证尚未通过，未冻结、未发布**）
+当前版本：`v4.11.0`（**未发布 version-branch candidate；此身份声明本身不等于 V01、冻结或发布 PASS**）
 
-> **v4.11.0 当前候选姿态**：`version/v4.11.0` 已集成冻结 Task DAG 的 T01–T14（14/14；T12 PR #1086 合并提交 `eb8ffb8bc7b462894972137569375222df153add`）。V01 #1021 已执行真实可见验证但结论仍为 **BLOCKED**；RC-1 历史版本 Exact-State 测试属主裁决与 RC-2 版本身份修复尚需按新候选独立验证。此说明不产生 Candidate Freeze、Hidden Validation、Release Qualification、`main` 合并、tag、GitHub Release 或任何发布 PASS。
+> **v4.11.0 当前候选姿态**：`version/v4.11.0` 已集成冻结 Task DAG 的 T01–T14（14/14；T12 PR #1086 合并提交 `eb8ffb8bc7b462894972137569375222df153add`）。V01 #1021 曾在初始候选 `eb8ffb8bc7b462894972137569375222df153add` 上执行真实可见验证，并于 #1021@6148175429 给出 **V01_BLOCKED**（RC-1 历史 Exact-State 属主裁决、RC-2 版本身份不一致）；这是绑定旧 SHA 的历史回执，不代表任何后继候选的现行验证结论。此说明不产生 Candidate Freeze、Hidden Validation、Release Qualification、`main` 合并、tag、GitHub Release 或任何发布 PASS。
 >
-> **后续门禁**：按 v4.11 冻结 DAG 顺序执行 V01→V02→V03→V04→R01→R02。下列 v4.10 及更早的顺序谱系叙述作为**历史上下文**保留，不能当作 v4.11 当前发布姿态。
+> **版本关闭门禁顺序**：按 v4.11 冻结 DAG 的 V01→V02→V03→V04→R01→R02 执行，现行状态应读取各 Issue 对精确 SHA 的最新合法终判。下列 v4.10 及更早的顺序谱系叙述作为**历史上下文**保留，不能当作 v4.11 当前发布姿态。
 
 > **历史 v4.10 顺序集成谱系声明（sequential integration composition）**：本仓库当时处于 v4.10.0 顺序集成候选状态（v4.8 谱系语义已于 version/v4.10.0 候选线内集成，历史谱系声明保留原状），由两条已记录谱系真实组合而成：
 >
