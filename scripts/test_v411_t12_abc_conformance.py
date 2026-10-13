@@ -22,6 +22,18 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 REGISTRY = ROOT / "tests" / "fixtures" / "v411" / "t12" / "scenarios.json"
 INTEGRATION_BASE = "301ebcdae1ad3a2cec8cd23627b2423282f98997"
+# T12's authoring-write-set assertion belongs to this accepted, actually tested
+# integration boundary. Later release-candidate changes are separate owners.
+T12_ACCEPTED_SHA = "eb8ffb8bc7b462894972137569375222df153add"
+T12_ACCEPTED_TREE = "51c77593e58a97fce35d7e88055b5b57bad5af15"
+# Bounded RC-2 release-owned identity update (PR #1094). These pins guard
+# against arbitrary successor edits; the new RC-3 test patch is separately
+# reviewed and must not weaken owner/runtime oracles.
+RELEASE_IDENTITY_BLOBS = {
+    "VERSION": "a162ea75a967e35509bc5ac94844c6566af239b1",
+    "README.md": "861794fafeda9b14c90592eb2ea6082def36f799",
+    "CHANGELOG.md": "b29398b7577b64403889228c93dcfc07d669408a",
+}
 EXPECTED_IDS = {f"S{i:02d}" for i in range(1, 19)} | {f"X{i:02d}" for i in range(1, 9)}
 REQUIRED_FIELDS = {
     "case_id", "polarity", "archetype", "adoption_profile", "adoption_level",
@@ -220,12 +232,33 @@ def validate_registry(doc: dict) -> list[str]:
 
 
 def validate_write_set() -> list[str]:
+    """Verify T12's own writes at T12's accepted boundary, never at a later
+    release-candidate HEAD. The successor must still have exactly the
+    separately accepted RC-2 identity edits and this scoped guard correction.
+    Neither check grants Version Closure, Hidden or Release authority.
+    """
     problems = []
-    if git("merge-base", "--is-ancestor", INTEGRATION_BASE, "HEAD") != "":
-        pass
-    for path in changed_paths():
-        if not any(path == prefix or path.startswith(prefix) for prefix in ALLOWED_WRITE_PREFIXES):
+    # Fail closed if the historical base/T12 boundary does not resolve or
+    # if this runner is transplanted into a divergent or shallow lineage.
+    git("merge-base", "--is-ancestor", INTEGRATION_BASE, T12_ACCEPTED_SHA)
+    git("merge-base", "--is-ancestor", T12_ACCEPTED_SHA, "HEAD")
+    if git("rev-parse", f"{T12_ACCEPTED_SHA}^{{tree}}") != T12_ACCEPTED_TREE:
+        problems.append("accepted T12 subject tree mismatch")
+    for path in git("diff", "--name-only", INTEGRATION_BASE, T12_ACCEPTED_SHA).splitlines():
+        if not (path == ALLOWED_WRITE_PREFIXES[0]
+                or path.startswith(ALLOWED_WRITE_PREFIXES[1])):
             problems.append(f"owner-conflict write outside T12 unique paths: {path}")
+
+    # The three metadata files belong to RC-2, not to T12. A successor is
+    # admitted only while their exact reviewed blobs remain unchanged.
+    for path in git("diff", "--name-only", T12_ACCEPTED_SHA, "HEAD").splitlines():
+        if path == ALLOWED_WRITE_PREFIXES[0]:
+            continue  # this exact script's separate, reviewed RC-3 repair
+        if path in RELEASE_IDENTITY_BLOBS:
+            if git("rev-parse", f"HEAD:{path}") != RELEASE_IDENTITY_BLOBS[path]:
+                problems.append(f"post-T12 release identity blob drift: {path}")
+            continue
+        problems.append(f"unadmitted post-T12 candidate write: {path}")
     return problems
 
 
