@@ -274,7 +274,7 @@ def validate_write_set() -> list[str]:
     else:
         normalized = source.replace(needle, baseline, 1)
         blob = (b"blob " + str(len(normalized)).encode("ascii")
-                + b"\\x00" + normalized)
+                + b"\x00" + normalized)
         if hashlib.sha1(blob).hexdigest() != SELF_GUARD_BLOB:
             problems.append("reviewed runner source self-identity drift")
 
