@@ -671,6 +671,7 @@ def execute_release_prerequisite_contract(
         # A0/label-stripping cannot cancel the inspected security source fact.
         t01 = load_owner_module("scripts/test_v411_t01_effective_rules.py")
         security_facts = t01.service_x01_fixture(
+            exact_subject=candidate_id,
             declared_jobs={"J09_RELEASE_QUALIFICATION"},
             owner_proofs={},
         )
@@ -679,8 +680,33 @@ def execute_release_prerequisite_contract(
             r for r in security_model["rules"]
             if r["obligation"] == "independent security review"
         ]
+        security_subject = security_facts["exact_subject"]
+        # The T01 material security owner and the Release prerequisite must
+        # share one exact candidate identity. A security risk record from an
+        # older subject cannot be joined to the current Release predicate.
+        same_subject = (
+            security_subject == candidate_id
+            and all(r["trace"]["exact_subject"] == candidate_id for r in obligated)
+        )
+        mismatched_security = t01.resolve_effective_rules(
+            t01.service_x01_fixture(
+                exact_subject="t12:x04:stale-other-candidate",
+                declared_jobs={"J09_RELEASE_QUALIFICATION"},
+                owner_proofs={},
+            )
+        )
+        stale_security_rules = [
+            r for r in mismatched_security["rules"]
+            if r["obligation"] == "independent security review"
+        ]
+        mismatch_rejected = bool(stale_security_rules) and all(
+            r["trace"]["exact_subject"] != candidate_id for r in stale_security_rules
+        )
         security = {
-            "subject": security_facts["exact_subject"],
+            "subject": security_subject,
+            "release_subject": candidate_id,
+            "same_subject_join": same_subject,
+            "stale_security_fact_mismatch_rejected": mismatch_rejected,
             "declared_jobs": sorted(security_facts["declared_jobs"]),
             "inspection_security_state": security_facts["observations"]["security"]["state"],
             "actual_required_obligations": sorted(r["obligation"] for r in obligated),
@@ -696,6 +722,8 @@ def execute_release_prerequisite_contract(
     security_ok = security is None or (
         security["inspection_security_state"] == "PRESENT"
         and security["no_security_label_waiver"]
+        and security["same_subject_join"]
+        and security["stale_security_fact_mismatch_rejected"]
         and security["owner_resolution"] != "ADMITTED"
     )
     ok = positive_ok and all_negatives_rejected and security_ok
@@ -858,8 +886,12 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         b_ok = True  # Genuine B owner invocation on the same test subject.
     if review_probe is not None and review_probe["test_contract_ok"]:
         b_ok = True  # T05 admitted event and current reducer, not source prose.
+    # C is an actual conjunction, never a successful local-probe override
+    # when either independent A or B layer was NOT_RUN or failed. Negative
+    # omission falsifier: remove all A or all B owner assertions from a local
+    # record while keeping probe intact; C must no longer mint PASS.
     p3_state = (
-        "PASS" if contract_ok and local_probe is not None
+        "PASS" if contract_ok and local_probe is not None and a_ok and b_ok
         else "BLOCKED" if contract_ok else "FAIL"
     )
     proof_layers = {
@@ -872,7 +904,8 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "P3_C": {"state": p3_state,
                  "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if local_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
                  "reason": "TEST-ONLY shared subject with executed owner decisions" if local_probe else "owner unit fixtures are independently constructed",
-                 "a_supported": a_ok, "b_supported": b_ok},
+                 "a_supported": a_ok, "b_supported": b_ok,
+                 "missing_a_or_b_blocks_c": not (a_ok and b_ok)},
     }
     return {
         "case_id": case_id,
