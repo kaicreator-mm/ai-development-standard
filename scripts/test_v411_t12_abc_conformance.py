@@ -300,6 +300,7 @@ def execute_x01_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         "declared_jobs": sorted(facts["declared_jobs"]),
         "same_subject_join": facts["exact_subject"] == human["subject_head"] == a["subject_head"],
         "current_human_source_fidelity": "LOCAL_UNIT_AUTHORITY_FIXTURE_NOT_REAL_HUMAN",
+        "fidelity": "ISOLATED_PERSISTENT_SQLITE_TEST_AUTHORITY_NOT_REAL_HUMAN_OR_REMOTE",
         "attempts": attempts,
         "observed_effect_count": count,
         "source_owners": ["T01 effective-rule resolver", "T09 persistent SQLite effect sink"],
