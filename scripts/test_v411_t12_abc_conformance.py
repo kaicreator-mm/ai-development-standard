@@ -1084,12 +1084,22 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         b_ok = True  # Genuine B owner invocation on the same test subject.
     if review_probe is not None and review_probe["test_contract_ok"]:
         b_ok = True  # T05 admitted event and current reducer, not source prose.
-    # C is an actual conjunction, never a successful local-probe override
-    # when either independent A or B layer was NOT_RUN or failed. Negative
-    # omission falsifier: remove all A or all B owner assertions from a local
-    # record while keeping probe intact; C must no longer mint PASS.
+    # C requires independently successful A and B PLUS a current executed
+    # same-subject adapter. A successful test-only adapter is not a substitute
+    # for a missing owner layer. Exercise both omission counterexamples.
+    def can_admit_c(a_layer: bool, b_layer: bool, probe: dict | None) -> bool:
+        return (
+            bool(a_layer and b_layer and probe is not None)
+            and probe.get("test_contract_ok") is True
+            and probe.get("same_subject_join") is True
+        )
+    c_omission_negatives = {
+        "missing_a_denied": not can_admit_c(False, b_ok, local_probe),
+        "missing_b_denied": not can_admit_c(a_ok, False, local_probe),
+    }
     p3_state = (
-        "PASS" if contract_ok and local_probe is not None and a_ok and b_ok
+        "PASS" if contract_ok and can_admit_c(a_ok, b_ok, local_probe)
+                   and all(c_omission_negatives.values())
         else "BLOCKED" if contract_ok else "FAIL"
     )
     proof_layers = {
@@ -1103,7 +1113,8 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
                  "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if local_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
                  "reason": "TEST-ONLY shared subject with executed owner decisions" if local_probe else "owner unit fixtures are independently constructed",
                  "a_supported": a_ok, "b_supported": b_ok,
-                 "missing_a_or_b_blocks_c": not (a_ok and b_ok)},
+                 "missing_a_or_b_blocks_c": not (a_ok and b_ok),
+                 "omission_negatives": c_omission_negatives},
     }
     return {
         "case_id": case_id,
