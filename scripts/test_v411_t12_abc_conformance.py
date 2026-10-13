@@ -8,6 +8,7 @@ only; actual evidence is emitted at runtime.
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import io
 from contextlib import nullcontext
 from unittest.mock import patch
@@ -22,6 +23,22 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 REGISTRY = ROOT / "tests" / "fixtures" / "v411" / "t12" / "scenarios.json"
 INTEGRATION_BASE = "301ebcdae1ad3a2cec8cd23627b2423282f98997"
+# T12's authoring-write-set assertion belongs to this accepted, actually tested
+# integration boundary. Later release-candidate changes are separate owners.
+T12_ACCEPTED_SHA = "eb8ffb8bc7b462894972137569375222df153add"
+T12_ACCEPTED_TREE = "51c77593e58a97fce35d7e88055b5b57bad5af15"
+# Normalized Git blob pin: a committed one-file guard against accidental edits.
+# The pinned full PR HEAD/tree + independent review remain the external trust
+# anchor; code cannot grant itself authoritativeness by changing its own pin.
+SELF_GUARD_BLOB = "71ce67c278d2e8038e647c700d9c73e5dc9d3d50"
+# Bounded RC-2 release-owned identity update (PR #1094). These pins guard
+# against arbitrary successor edits; the new RC-3 test patch is separately
+# reviewed and must not weaken owner/runtime oracles.
+RELEASE_IDENTITY_BLOBS = {
+    "VERSION": "a162ea75a967e35509bc5ac94844c6566af239b1",
+    "README.md": "861794fafeda9b14c90592eb2ea6082def36f799",
+    "CHANGELOG.md": "b29398b7577b64403889228c93dcfc07d669408a",
+}
 EXPECTED_IDS = {f"S{i:02d}" for i in range(1, 19)} | {f"X{i:02d}" for i in range(1, 9)}
 REQUIRED_FIELDS = {
     "case_id", "polarity", "archetype", "adoption_profile", "adoption_level",
@@ -220,12 +237,60 @@ def validate_registry(doc: dict) -> list[str]:
 
 
 def validate_write_set() -> list[str]:
+    """Check T12 authoring at its accepted boundary, then guard all successor
+    identity/source changes without treating legitimate RC-2 release metadata
+    as T12 writes. Does not confer version/release authority.
+    """
     problems = []
-    if git("merge-base", "--is-ancestor", INTEGRATION_BASE, "HEAD") != "":
-        pass
-    for path in changed_paths():
-        if not any(path == prefix or path.startswith(prefix) for prefix in ALLOWED_WRITE_PREFIXES):
+
+    # Worktree-sourced owner modules and registries require an actual clean
+    # scripts/tests checkout, not merely an immutable Git HEAD tree.
+    dirty = git("status", "--porcelain=v1", "-uall", "--", "scripts/", "tests/")
+    if dirty:
+        problems.append("scripts/tests working tree not clean: " + dirty[:500])
+
+    # Fail closed on missing/shallow/divergent history.
+    git("merge-base", "--is-ancestor", INTEGRATION_BASE, T12_ACCEPTED_SHA)
+    git("merge-base", "--is-ancestor", T12_ACCEPTED_SHA, "HEAD")
+    if git("rev-parse", f"{T12_ACCEPTED_SHA}^{{tree}}") != T12_ACCEPTED_TREE:
+        problems.append("accepted T12 subject tree mismatch")
+    for path in git("diff", "--no-renames", "--name-only",
+                    INTEGRATION_BASE, T12_ACCEPTED_SHA).splitlines():
+        if not (path == ALLOWED_WRITE_PREFIXES[0]
+                or path.startswith(ALLOWED_WRITE_PREFIXES[1])):
             problems.append(f"owner-conflict write outside T12 unique paths: {path}")
+
+    # Reviewable self-identity guard for accidental changes; the external,
+    # independently reviewed exact HEAD/tree is the actual trust anchor.
+    script = ALLOWED_WRITE_PREFIXES[0]
+    source = subprocess.run(
+        ["git", "show", f"HEAD:{script}"], cwd=ROOT, capture_output=True,
+        check=True,
+    ).stdout
+    needle = f'SELF_GUARD_BLOB = "{SELF_GUARD_BLOB}"'.encode("ascii")
+    baseline = b'SELF_GUARD_BLOB = "' + b"0" * 40 + b'"'
+    if source.count(needle) != 1:
+        problems.append("self guard marker absent or ambiguous")
+    else:
+        normalized = source.replace(needle, baseline, 1)
+        blob = (b"blob " + str(len(normalized)).encode("ascii")
+                + b"\x00" + normalized)
+        if hashlib.sha1(blob).hexdigest() != SELF_GUARD_BLOB:
+            problems.append("reviewed runner source self-identity drift")
+
+    # Verify ALL three exact accepted identity blobs unconditionally, even if
+    # a path is reverted and disappears from the cumulative commit diff.
+    for path, expected_blob in RELEASE_IDENTITY_BLOBS.items():
+        if git("rev-parse", f"HEAD:{path}") != expected_blob:
+            problems.append(f"post-T12 release identity blob drift: {path}")
+
+    # A rename must expose both old and new paths. The only successor-owned
+    # script change is this immutable, self-checked RC-3 runner.
+    for path in git("diff", "--no-renames", "--name-only",
+                    T12_ACCEPTED_SHA, "HEAD").splitlines():
+        if path == script or path in RELEASE_IDENTITY_BLOBS:
+            continue
+        problems.append(f"unadmitted post-T12 candidate write: {path}")
     return problems
 
 
