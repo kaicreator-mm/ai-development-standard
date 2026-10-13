@@ -30,8 +30,9 @@ Bash / Git Bash — an actual producer exit survives a `tee` pipeline:
 
 ```bash
 set -o pipefail
-mkdir -p .validation-logs
-timeout 900s python scripts/test_example.py 2>&1 | tee .validation-logs/test_example.log
+# Keep evidence logs outside the protected exact-SHA checkout.
+log_dir="$(mktemp -d "${TMPDIR:-/tmp}/ads-validation.XXXXXX")"
+timeout 900s python scripts/test_example.py 2>&1 | tee "$log_dir/test_example.log"
 status=( "${PIPESTATUS[@]}" )  # capture immediately after pipeline
 printf 'TEST_EXIT=%s TEE_EXIT=%s\n' "${status[0]}" "${status[1]}"
 test "${status[0]}" -eq 0 && test "${status[1]}" -eq 0
