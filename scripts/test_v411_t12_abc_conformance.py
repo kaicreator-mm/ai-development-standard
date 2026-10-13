@@ -307,6 +307,72 @@ def execute_x01_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     }
 
 
+def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+    """T03+T04+T05 one-subject A/B/C contract, test-fixture fidelity only.
+
+    The accepted spec projection, upstream reuse/license decision and actual
+    canonical Review event admission all bind to the SAME exact H subject.
+    This does not establish actual remote upstream inspection/licensing.
+    """
+    t03 = load_owner_module("scripts/test_v411_t03_spec_implementation_currentness.py")
+    t04 = load_owner_module("scripts/test_v411_t04_reuse_first.py")
+    t05 = load_owner_module("scripts/test_v411_t05_event_authority.py")
+    subject = t05.H
+    spec_facts = dict(t03.P01_PROJECTION)
+    spec_facts["implementation_subject_ref"] = subject
+    spec_facts["evidence_subject_ref"] = subject
+    spec = t03.decide(spec_facts)
+    drift = polarity == "negative"
+    upstream_facts = t04.h3_case(subject=subject, upstream_license_changed=drift)
+    reuse = t04.evaluate_reuse(upstream_facts)
+    boundary = t05.make_boundary()
+    admitted = boundary.admit(t05.review_pass(subject, "src-review-1"))
+    review = boundary.current_review(subject)
+    matches = (
+        spec_facts["implementation_subject_ref"] ==
+        spec_facts["evidence_subject_ref"] ==
+        upstream_facts["subject"] ==
+        subject == boundary.live_subject
+    )
+    expected_reuse = "BLOCKED" if drift else "ALLOWED"
+    ok = (
+        matches and spec["decision"] == "RECONCILED"
+        and reuse["decision"] == expected_reuse
+        and admitted.state == "ACCEPTED"
+        and review.verdict == "PASS"
+        and (not drift or "license_notice_observation_at_current_revision" in reuse["missing"])
+    )
+    # The negative oracle must demonstrate a forbidden composite admission
+    # despite separately green spec and Review; it never regards the negative
+    # upstream block as a successful permission to reuse.
+    allowed = (
+        spec["decision"] == "RECONCILED" and reuse["decision"] == "ALLOWED"
+        and review.verdict == "PASS"
+    )
+    if drift and allowed:
+        ok = False
+    return {
+        "test_contract_ok": ok,
+        "subject": subject,
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "same_subject_join": matches,
+        "spec_owner_state": spec["decision"],
+        "reuse_owner_state": reuse["decision"],
+        "reuse_missing": reuse["missing"],
+        "event_admission": admitted.state,
+        "review_owner_state": review.verdict,
+        "combined_authorization": "CONTRACT_SIMULATION_POSITIVE" if allowed else "DENIED_BY_CURRENT_LICENSE_OWNER",
+        "negative_attempted": drift,
+        "source_owners": [
+            "T03 spec/implementation reconciler",
+            "T04 revision-bound reuse evaluator",
+            "T05 canonical event admission+current Review reducer",
+        ],
+        "fidelity": "LOCAL_SYNTHETIC_SOURCE_AND_OPERATOR_TEST_FIXTURES_NOT_REAL_UPSTREAM_RIGHT",
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -333,7 +399,12 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         execute_x01_same_subject(record["polarity"], tested_sha, tested_tree)
         if case_id == "X01" else None
     )
-    contract_ok = ok and physical_ok and (x01_probe is None or x01_probe["test_contract_ok"])
+    x02_probe = (
+        execute_x02_same_subject(record["polarity"], tested_sha, tested_tree)
+        if case_id == "X02" else None
+    )
+    local_probe = x01_probe if x01_probe is not None else x02_probe
+    contract_ok = ok and physical_ok and (local_probe is None or local_probe["test_contract_ok"])
     if x01_probe is not None:
         # An actual, separate, physical adapter readback overrides no source
         # field blindly.  The same-subject probe has stronger fidelity than
@@ -390,22 +461,22 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     # subjects are not necessarily the same S/X work item. That actual
     # fact-composition proof remains unresolved. A common Git HEAD alone
     # cannot establish common subject.
-    if x01_probe is not None and x01_probe["test_contract_ok"]:
-        b_ok = True  # T09 actual effect adapter, bound to the T01 subject.
+    if local_probe is not None and local_probe["test_contract_ok"]:
+        b_ok = True  # Genuine B owner invocation on the same test subject.
     p3_state = (
-        "PASS" if contract_ok and x01_probe is not None
+        "PASS" if contract_ok and local_probe is not None
         else "BLOCKED" if contract_ok else "FAIL"
     )
     proof_layers = {
         "P1_A": {"state": "PASS" if a_ok else ("NOT_RUN" if not a_facts else "FAIL"),
                  "fidelity": "OWNER_UNIT_ASSERTIONS", "evidence": a_facts},
         "P2_B": {"state": "PASS" if b_ok else ("NOT_RUN" if not b_facts else "FAIL"),
-                 "fidelity": "OWNER_UNIT_ASSERTIONS_AND_LOCAL_SQLITE_SAME_SUBJECT" if x01_probe else "OWNER_UNIT_ASSERTIONS",
+                 "fidelity": "LOCAL_OWNER_ADAPTER_SAME_SUBJECT" if local_probe else "OWNER_UNIT_ASSERTIONS",
                  "evidence": b_facts,
-                 "same_subject_probe": x01_probe},
+                 "same_subject_probe": local_probe},
         "P3_C": {"state": p3_state,
-                 "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if x01_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
-                 "reason": "TEST-ONLY same subject and physical SQLite" if x01_probe else "owner unit fixtures are independently constructed",
+                 "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if local_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
+                 "reason": "TEST-ONLY shared subject with executed owner decisions" if local_probe else "owner unit fixtures are independently constructed",
                  "a_supported": a_ok, "b_supported": b_ok},
     }
     return {
@@ -419,7 +490,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "observed_transition": transition,
         "observed_owner_assertions": "PASS" if ok else "FAIL",
         "source_readbacks": source_readbacks,
-        "same_subject_execution": x01_probe,
+        "same_subject_execution": local_probe,
         "source_currentness_scope": "GIT_BLOB_READBACK_ONLY_NO_AFFECTED_RISK_CLAIM",
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
