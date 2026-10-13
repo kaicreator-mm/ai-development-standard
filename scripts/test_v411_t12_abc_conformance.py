@@ -729,6 +729,7 @@ def execute_release_prerequisite_contract(
     ok = positive_ok and all_negatives_rejected and security_ok
     return {
         "test_contract_ok": ok,
+        "same_subject_join": security is None or security["same_subject_join"],
         "case_id": case_id,
         "polarity": polarity,
         "tested_sha": tested_sha,
@@ -776,7 +777,9 @@ def execute_x03_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     jobs = {"J06_PERSISTENT_DATA_MIGRATION", "J08_EXTERNAL_WRITE_DEPLOY", "J10_INCIDENT_RECOVERY"}
     facts = t01.service_x01_fixture(
         exact_subject=subject, declared_jobs=jobs,
-        owner_proofs=t01.all_pass_proofs(subject) if polarity == "positive" else {},
+        # The negative tests uncertain effects and withheld recovery,
+        # not a permission to write under a missing source-risk proof.
+        owner_proofs=t01.all_pass_proofs(subject),
     )
     policy = t01.resolve_effective_rules(facts)
     with tempfile.TemporaryDirectory(prefix="v411-t12-x03-") as temp:
@@ -841,7 +844,7 @@ def execute_x03_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         and local_authority["subject_head"] == subject
         and recovery_authority["subject_head"] == subject
         and observed_tenant == tenant
-        and policy["resolution"] == ("ADMITTED" if positive else "UNVERIFIED_GATES")
+        and policy["resolution"] == "ADMITTED"
         and interrupted == "INTERRUPTED_DESTRUCTIVE_PARTIAL"
         and first["outcome"] == "EFFECT_OUTCOME_UNKNOWN"
         and after_first == survived_reopen == after_replay == count == 1
@@ -1005,11 +1008,16 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         )
         if case_id in DOWNSTREAM_RELEASE_IDS else None
     )
+    if case_id == "X04":
+        # X04's bounded C join contains the actual security-floor source
+        # binding and the existing Release-owner predicate on ONE candidate.
+        local_probe = release_probe
     contract_ok = (
         ok and physical_ok
         and (local_probe is None or local_probe["test_contract_ok"])
         and (review_probe is None or review_probe["test_contract_ok"])
         and (release_probe is None or release_probe["test_contract_ok"])
+        and (local_probe is None or local_probe.get("same_subject_join") is True)
     )
     if x01_probe is not None:
         # An actual, separate, physical adapter readback overrides no source
@@ -1119,6 +1127,15 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
         "sink_readback_provenance": sink,
+        "cross_owner_effect_provenance": (
+            {
+                "subject": local_probe["subject"],
+                "observed_count": local_probe["observed_effect_count"],
+                "fidelity": local_probe["fidelity"],
+            }
+            if local_probe is not None and local_probe.get("observed_effect_count") is not None
+            else None
+        ),
         "gate_disposition": "NOT_RUN" if release_contract else p3_state,
         "proof_layers": proof_layers,
         "result": (
