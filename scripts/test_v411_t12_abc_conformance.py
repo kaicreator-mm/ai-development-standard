@@ -14,6 +14,7 @@ from unittest.mock import patch
 import json
 from pathlib import Path
 import subprocess
+import tempfile
 import sys
 import unittest
 
@@ -228,6 +229,84 @@ def validate_write_set() -> list[str]:
     return problems
 
 
+def execute_x01_same_subject(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+    """Exercise T01 fact/owner conjunction and T09 *actual* SQLite effect sink
+    on ONE identical work subject, preserving the TEST-ONLY human authority
+    class. No actual external human authorization or Release PASS is inferred.
+    """
+    t01 = load_owner_module("scripts/test_v411_t01_effective_rules.py")
+    t09 = load_owner_module("scripts/test_v411_t09_effect_boundary.py")
+    subject = t01.SERVICE_X01_SUBJECT
+    facts = (
+        t01.service_x01_fixture(owner_proofs=t01.all_pass_proofs())
+        if polarity == "positive"
+        else t01.service_x01_fixture(declared_jobs={"J03_BUG_FIX"})
+    )
+    policy = t01.resolve_effective_rules(facts)
+    with tempfile.TemporaryDirectory(prefix="v411-t12-x01-") as temp:
+        sink = t09.PersistentSafeSink(Path(temp) / "x01-effects.sqlite3")
+        try:
+            human = t09.decision(
+                "APPROVE" if polarity == "positive" else "DENY",
+                subject_head=subject,
+                ref="t12-x01-test-only-authority",
+            )
+            a = t09.claim("operator:A", 7, subject_head=subject)
+            attempt_a = sink.execute(
+                claim_record=a, authority=human,
+                effect_id="t12-x01-a", attempt_id="t12-x01-attempt-a",
+                payload="isolated-test-payload",
+            )
+            attempts = [{
+                "actor": a["actor"], "outcome": attempt_a["outcome"],
+                "effect_count_after": sink.effect_count(),
+                "attempt_id": "t12-x01-attempt-a",
+            }]
+            if polarity == "negative":
+                b = t09.claim("operator:B", 8, subject_head=subject)
+                attempt_b = sink.execute(
+                    claim_record=b, authority=human,
+                    effect_id="t12-x01-b", attempt_id="t12-x01-attempt-b",
+                    payload="denied-successor-retry",
+                )
+                attempts.append({
+                    "actor": b["actor"], "outcome": attempt_b["outcome"],
+                    "effect_count_after": sink.effect_count(),
+                    "attempt_id": "t12-x01-attempt-b",
+                })
+            count = sink.effect_count()
+        finally:
+            sink.close()
+    is_positive = polarity == "positive"
+    expected_resolution = "ADMITTED" if is_positive else "UNVERIFIED_GATES"
+    expected_effect = 1 if is_positive else 0
+    expected_outcome = "ACKNOWLEDGED" if is_positive else "BLOCKED"
+    ok = (
+        facts["exact_subject"] == subject
+        and human["subject_head"] == subject
+        and a["subject_head"] == subject
+        and policy["resolution"] == expected_resolution
+        and count == expected_effect
+        and all(x["outcome"] == expected_outcome for x in attempts)
+        and (not is_positive or len(attempts) == 1)
+        and (is_positive or len(attempts) == 2)
+    )
+    return {
+        "test_contract_ok": ok,
+        "subject": subject,
+        "candidate_sha": tested_sha,
+        "candidate_tree": tested_tree,
+        "fact_based_owner_resolution": policy["resolution"],
+        "declared_jobs": sorted(facts["declared_jobs"]),
+        "same_subject_join": facts["exact_subject"] == human["subject_head"] == a["subject_head"],
+        "current_human_source_fidelity": "LOCAL_UNIT_AUTHORITY_FIXTURE_NOT_REAL_HUMAN",
+        "attempts": attempts,
+        "observed_effect_count": count,
+        "source_owners": ["T01 effective-rule resolver", "T09 persistent SQLite effect sink"],
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -250,13 +329,24 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     )
     if physical_deny and expectation != 0:
         physical_ok = False
-    contract_ok = ok and physical_ok
+    x01_probe = (
+        execute_x01_same_subject(record["polarity"], tested_sha, tested_tree)
+        if case_id == "X01" else None
+    )
+    contract_ok = ok and physical_ok and (x01_probe is None or x01_probe["test_contract_ok"])
+    if x01_probe is not None:
+        # An actual, separate, physical adapter readback overrides no source
+        # field blindly.  The same-subject probe has stronger fidelity than
+        # the standalone owner test's fixture assertions.
+        actual_effect_count = x01_probe["observed_effect_count"]
     # Executed unittest assertions are observed. A domain policy transition
     # is NOT observed merely because the assertions passed; only a recorded
     # owner operation (here an actual safe SQLite effect attempt) can give
     # a bounded transition observation.
     transition = (
-        [x["outcome"] for x in sink] if sink else None
+        [x["outcome"] for x in x01_probe["attempts"]] if x01_probe is not None
+        else [x["outcome"] for x in sink] if sink
+        else None
     )
     source_readbacks = []
     for rel in sorted(set(record["actual_source_refs"])):
@@ -300,14 +390,22 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     # subjects are not necessarily the same S/X work item. That actual
     # fact-composition proof remains unresolved. A common Git HEAD alone
     # cannot establish common subject.
-    p3_state = "BLOCKED" if contract_ok else "FAIL"
+    if x01_probe is not None and x01_probe["test_contract_ok"]:
+        b_ok = True  # T09 actual effect adapter, bound to the T01 subject.
+    p3_state = (
+        "PASS" if contract_ok and x01_probe is not None
+        else "BLOCKED" if contract_ok else "FAIL"
+    )
     proof_layers = {
         "P1_A": {"state": "PASS" if a_ok else ("NOT_RUN" if not a_facts else "FAIL"),
                  "fidelity": "OWNER_UNIT_ASSERTIONS", "evidence": a_facts},
         "P2_B": {"state": "PASS" if b_ok else ("NOT_RUN" if not b_facts else "FAIL"),
-                 "fidelity": "OWNER_UNIT_ASSERTIONS", "evidence": b_facts},
-        "P3_C": {"state": p3_state, "fidelity": "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
-                 "reason": "owner test fixtures are independently constructed; exact HEAD is not shared work subject",
+                 "fidelity": "OWNER_UNIT_ASSERTIONS_AND_LOCAL_SQLITE_SAME_SUBJECT" if x01_probe else "OWNER_UNIT_ASSERTIONS",
+                 "evidence": b_facts,
+                 "same_subject_probe": x01_probe},
+        "P3_C": {"state": p3_state,
+                 "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if x01_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
+                 "reason": "TEST-ONLY same subject and physical SQLite" if x01_probe else "owner unit fixtures are independently constructed",
                  "a_supported": a_ok, "b_supported": b_ok},
     }
     return {
@@ -321,6 +419,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "observed_transition": transition,
         "observed_owner_assertions": "PASS" if ok else "FAIL",
         "source_readbacks": source_readbacks,
+        "same_subject_execution": x01_probe,
         "source_currentness_scope": "GIT_BLOB_READBACK_ONLY_NO_AFFECTED_RISK_CLAIM",
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
