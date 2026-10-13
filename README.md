@@ -1,8 +1,12 @@
 # AI Development Standard
 
-当前版本：`v4.10.0`（**未发布 version-branch sequential integration candidate**）
+当前版本：`v4.11.0`（**未发布 version-branch candidate；此身份声明本身不等于 V01、冻结或发布 PASS**）
 
-> **顺序集成谱系声明（sequential integration composition）**：本仓库当前处于 v4.10.0 顺序集成候选状态（v4.8 谱系语义已于 version/v4.10.0 候选线内集成，历史谱系声明保留原状），由两条已记录谱系真实组合而成：
+> **v4.11.0 当前候选姿态**：`version/v4.11.0` 已集成冻结 Task DAG 的 T01–T14（14/14；T12 PR #1086 合并提交 `eb8ffb8bc7b462894972137569375222df153add`）。V01 #1021 曾在初始候选 `eb8ffb8bc7b462894972137569375222df153add` 上执行真实可见验证，并于 #1021@6148175429 给出 **V01_BLOCKED**（RC-1 历史 Exact-State 属主裁决、RC-2 版本身份不一致）；这是绑定旧 SHA 的历史回执，不代表任何后继候选的现行验证结论。此说明不产生 Candidate Freeze、Hidden Validation、Release Qualification、`main` 合并、tag、GitHub Release 或任何发布 PASS。
+>
+> **版本关闭门禁顺序**：按 v4.11 冻结 DAG 的 V01→V02→V03→V04→R01→R02 执行，现行状态应读取各 Issue 对精确 SHA 的最新合法终判。下列 v4.10 及更早的顺序谱系叙述作为**历史上下文**保留，不能当作 v4.11 当前发布姿态。
+
+> **历史 v4.10 顺序集成谱系声明（sequential integration composition）**：本仓库当时处于 v4.10.0 顺序集成候选状态（v4.8 谱系语义已于 version/v4.10.0 候选线内集成，历史谱系声明保留原状），由两条已记录谱系真实组合而成：
 >
 > - **v4.9 working line**：`version/v4.9.0@916dcb66850e33cc2a77a7ef75b0968d5c150ccf`（tree `296878a84c2b2f97f1b6ac6f20edb9a7210435bc`），携带 v4.9 planning baseline 与 v4.9 任务内容（T001/T002 执行记录已并入；该线亦携带已在 v4.9 线完成的 T-005 执行记录）。
 > - **integrated current main**：`main@92e4f764a2630a131d3f156b39f0f09064c9849e`（tree `db8cd8185c6206e93512a455a1f9f8b1e121033f`），携带 v4.1–v4.8 全部集成内容（含 v4.3-sequential、v4.8 执行/能力/资格/Dispatch-Claim/Task Learning owner surfaces 与 LG47 registry surfaces）及已并入 `main` 的 v4.9 planning lane。
