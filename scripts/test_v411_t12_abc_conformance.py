@@ -615,6 +615,123 @@ def execute_x05_parallel_api_same_subject(
     }
 
 
+def execute_release_prerequisite_contract(
+    case_id: str, polarity: str, tested_sha: str, tested_tree: str
+) -> dict:
+    """S11/X04 T12-local Release contract only, NOT a downstream gate result.
+
+    Reuse the v4.9 owner currentness and applicability predicates. A version
+    candidate's identity is the actual examined Git SHA+tree. All owner
+    records used here are synthetic test evidence, never human/Release acts.
+    """
+    release = load_owner_module("scripts/test_v49_gate_currentness.py")
+    release_owner = "standards/RELEASE_STANDARD.md#11-release-applicability-by-gate--subject"
+    candidate_id = f"ads:v4.11:t12:{tested_sha}@tree:{tested_tree}"
+    candidate = {"candidate_identity": candidate_id}
+    owned = {
+        "gate_id": "hidden-validation",
+        "subject_identity": candidate_id,
+        "release_authority_ref": release_owner,
+        "applicability": "REQUIRED_NOW",
+        "decision_ref": "synthetic-release-required-now-NO_ACTUAL_RELEASE_ACT",
+    }
+    current, current_reason = release.release_decision_current(owned, candidate)
+    omitted = release.version_gate_omission_allowed([], owned)
+    # Each negative must be actually passed to existing owner functions.
+    # The applicability helper itself checks only role and disposition;
+    # join that decision to exact currentness before any admission.
+    stale = dict(owned, subject_identity="old-candidate@stale",
+                 applicability="NOT_APPLICABLE")
+    forged = dict(owned, release_authority_ref="builder/self-approval",
+                  applicability="NOT_APPLICABLE")
+    no_owner = None
+    alternatives = [("STALE_SUBJECT", stale), ("FORGED_OWNER", forged),
+                    ("CI_ONLY_NO_RELEASE_OWNER", no_owner)]
+    negatives = []
+    for name, proposal in alternatives:
+        admissible_current, why = release.release_decision_current(proposal, candidate)
+        owner_matches = proposal is not None and proposal.get("release_authority_ref") == release_owner
+        allows_omission = release.version_gate_omission_allowed(
+            [{"gate_id": "hidden-validation", "applicability": "NOT_APPLICABLE",
+              "subject_ref": "task-ci-only", "release_authority_ref": "builder"}],
+            proposal,
+            closure_claims_gate_satisfied_via_deferral=False,
+        )
+        unsafe_waiver = admissible_current and owner_matches and allows_omission
+        negatives.append({
+            "counterexample": name,
+            "owner_currentness": admissible_current,
+            "currentness_reason": why,
+            "owned_by_release_authority": bool(owner_matches),
+            "raw_owner_omission_predicate": allows_omission,
+            "combined_unsafe_waiver_admitted": bool(unsafe_waiver),
+        })
+    security = None
+    if case_id == "X04":
+        # A0/label-stripping cannot cancel the inspected security source fact.
+        t01 = load_owner_module("scripts/test_v411_t01_effective_rules.py")
+        security_facts = t01.service_x01_fixture(
+            declared_jobs={"J09_RELEASE_QUALIFICATION"},
+            owner_proofs={},
+        )
+        security_model = t01.resolve_effective_rules(security_facts)
+        obligated = [
+            r for r in security_model["rules"]
+            if r["obligation"] == "independent security review"
+        ]
+        security = {
+            "subject": security_facts["exact_subject"],
+            "declared_jobs": sorted(security_facts["declared_jobs"]),
+            "inspection_security_state": security_facts["observations"]["security"]["state"],
+            "actual_required_obligations": sorted(r["obligation"] for r in obligated),
+            "owner_resolution": security_model["resolution"],
+            "synthetic_security_review_admitted": False,
+            "no_security_label_waiver": bool(obligated),
+            "source": "T01 inspected material fact under A0 local fixture",
+        }
+    # T12 positive=the gate obligation is calculated correctly on CURRENT
+    # available facts while future gates remain NOT_RUN; not an actual release.
+    all_negatives_rejected = all(not n["combined_unsafe_waiver_admitted"] for n in negatives)
+    positive_ok = current and current_reason == "CURRENT" and not omitted
+    security_ok = security is None or (
+        security["inspection_security_state"] == "PRESENT"
+        and security["no_security_label_waiver"]
+        and security["owner_resolution"] != "ADMITTED"
+    )
+    ok = positive_ok and all_negatives_rejected and security_ok
+    return {
+        "test_contract_ok": ok,
+        "case_id": case_id,
+        "polarity": polarity,
+        "tested_sha": tested_sha,
+        "tested_tree": tested_tree,
+        "candidate_identity": candidate_id,
+        "current_release_owner_requirement": {
+            "current": current, "reason": current_reason,
+            "applicability": owned["applicability"],
+            "version_gate_omission_allowed": omitted,
+            "release_owner_ref": release_owner,
+            "fidelity": "SYNTHETIC_TEST_ONLY_NOT_OWNER_ISSUED_RELEASE_DECISION",
+        },
+        "actual_tested_negative_waiver_attempts": negatives,
+        "security_floor_counterexample": security,
+        "observed_local_contract": (
+            "REQUIRED_NOW_FUTURE_GATE_NOT_RUN"
+            if polarity == "positive" else
+            "FORGED_STALE_CI_ONLY_WAIVERS_REJECTED"
+        ),
+        "future_gate_truth": {
+            "V01_VISIBLE": "NOT_RUN", "V02_FREEZE": "NOT_RUN",
+            "V03_HIDDEN": "NOT_RUN", "V04_CLOSEOUT": "NOT_RUN",
+            "R01_QUALIFICATION": "NOT_RUN", "R02_INTEGRATION": "NOT_RUN",
+        },
+        "real_release_gate": "NOT_RUN",
+        "source_owners": ["v4.9 gate-currentness owner",
+                          "T01 inspected security floor" if case_id == "X04" else "Release applicability owner"],
+        "fidelity": "CONTRACT_SIMULATION_NO_RELEASE_PASS",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -662,10 +779,17 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         execute_s17_same_subject_review(record["polarity"], tested_sha, tested_tree)
         if case_id == "S17" else None
     )
+    release_probe = (
+        execute_release_prerequisite_contract(
+            case_id, record["polarity"], tested_sha, tested_tree
+        )
+        if case_id in DOWNSTREAM_RELEASE_IDS else None
+    )
     contract_ok = (
         ok and physical_ok
         and (local_probe is None or local_probe["test_contract_ok"])
         and (review_probe is None or review_probe["test_contract_ok"])
+        and (release_probe is None or release_probe["test_contract_ok"])
     )
     if x01_probe is not None:
         # An actual, separate, physical adapter readback overrides no source
@@ -682,7 +806,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         else [review_probe["observed_review_judgment"]] if review_probe
         else [docs_probe["risk_owner_state"], docs_probe["conduct_owner_state"]] if docs_probe
         else [x05_probe["spec_owner_state"], x05_probe["current_review_judgment"]] if x05_probe
-        else None
+        else [release_probe["observed_local_contract"]] if release_probe else None
     )
     source_readbacks = []
     for rel in sorted(set(record["actual_source_refs"])):
@@ -759,6 +883,11 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "source_readbacks": source_readbacks,
         "same_subject_execution": local_probe,
         "review_same_subject_execution": review_probe,
+        "release_prerequisite_contract_execution": release_probe,
+        "release_local_contract_state": (
+            "PASS_TEST_ONLY_PREREQUISITE" if release_probe and release_probe["test_contract_ok"]
+            else "FAIL" if release_probe else "NOT_APPLICABLE_TO_THIS_CASE"
+        ),
         "source_currentness_scope": "GIT_BLOB_READBACK_ONLY_NO_AFFECTED_RISK_CLAIM",
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
