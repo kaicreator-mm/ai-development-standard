@@ -764,6 +764,183 @@ def execute_release_prerequisite_contract(
     }
 
 
+def execute_x03_same_subject(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+    """J06+J08+J10: one actual SQLite file, same subject, tenant, migration
+    snapshot, incident recovery and externally modelled ACK-uncertain effect.
+
+    This is a persistent isolated E2 sink, not a real remote provider.
+    """
+    t01 = load_owner_module("scripts/test_v411_t01_effective_rules.py")
+    t09 = load_owner_module("scripts/test_v411_t09_effect_boundary.py")
+    subject = f"ads:v411:t12:x03:{tested_sha}"
+    jobs = {"J06_PERSISTENT_DATA_MIGRATION", "J08_EXTERNAL_WRITE_DEPLOY", "J10_INCIDENT_RECOVERY"}
+    facts = t01.service_x01_fixture(
+        exact_subject=subject, declared_jobs=jobs,
+        owner_proofs=t01.all_pass_proofs(subject) if polarity == "positive" else {},
+    )
+    policy = t01.resolve_effective_rules(facts)
+    with tempfile.TemporaryDirectory(prefix="v411-t12-x03-") as temp:
+        db = Path(temp) / "x03.sqlite3"
+        sink = t09.PersistentSafeSink(db)
+        tenant, target = t09.TENANT, t09.TARGET
+        effect_id, snapshot_id = "x03-original-effect", "x03-snapshot-v1"
+        try:
+            sink.set_migration_state(tenant, target, "schema-v1-with-data")
+            sink.snapshot(snapshot_id, tenant, target)
+            sink.set_migration_state(tenant, target, "INTERRUPTED_DESTRUCTIVE_PARTIAL")
+            interrupted = sink.get_migration_state(tenant, target)
+            claim_a = t09.claim("operator:A", 1, subject_head=subject)
+            local_authority = t09.decision("APPROVE", subject_head=subject,
+                                           ref="x03-test-only-operator")
+            first = sink.execute(
+                claim_record=claim_a, authority=local_authority,
+                effect_id=effect_id, attempt_id="x03-first",
+                payload="one-migration-incident-write", drop_ack_after_commit=True,
+            )
+            after_first = sink.effect_count()
+            sink.close()
+            sink = t09.PersistentSafeSink(db)
+            survived_reopen = sink.effect_count()
+            readback_available = polarity == "positive"
+            reconciled = sink.reconcile_unknown(
+                effect_id=effect_id, readback_available=readback_available,
+                dedup_proven=False,
+            )
+            b = t09.claim("operator:B", 2, subject_head=subject)
+            attempted_replay = sink.execute(
+                claim_record=b, authority=local_authority,
+                effect_id=effect_id, attempt_id="x03-successor-replay",
+                payload="one-migration-incident-write", dedup_proven=False,
+            )
+            after_replay = sink.effect_count()
+            recovery_claim = t09.claim(
+                "operator:recovery", 20, subject_head=subject,
+                operation=t09.RECOVERY_OPERATION, scope=t09.RECOVERY_SCOPE,
+            )
+            recovery_authority = t09.decision(
+                "APPROVE" if polarity == "positive" else "WITHHOLD",
+                subject_head=subject, operation=t09.RECOVERY_OPERATION,
+                scope=t09.RECOVERY_SCOPE, ref="x03-test-only-recovery-owner",
+            )
+            recovery = sink.recover_snapshot(
+                snapshot_id, recovery_effect_id="x03-recovery-effect",
+                attempt_id="x03-recovery-attempt", claim_record=recovery_claim,
+                target=target, authority=recovery_authority,
+            )
+            after_recovery = sink.get_migration_state(tenant, target)
+            observed_tenant = sink.read_effect(effect_id)["tenant"]
+            count = sink.effect_count()
+        finally:
+            sink.close()
+    positive = polarity == "positive"
+    ok = (
+        facts["exact_subject"] == subject
+        and claim_a["subject_head"] == subject
+        and b["subject_head"] == subject
+        and recovery_claim["subject_head"] == subject
+        and local_authority["subject_head"] == subject
+        and recovery_authority["subject_head"] == subject
+        and observed_tenant == tenant
+        and policy["resolution"] == ("ADMITTED" if positive else "UNVERIFIED_GATES")
+        and interrupted == "INTERRUPTED_DESTRUCTIVE_PARTIAL"
+        and first["outcome"] == "EFFECT_OUTCOME_UNKNOWN"
+        and after_first == survived_reopen == after_replay == count == 1
+        and attempted_replay["outcome"] == "BLOCKED_EFFECT_ID_COLLISION"
+        and (reconciled["state"], recovery["state"], after_recovery) == (
+            ("RECONCILED", "RECOVERED", "schema-v1-with-data") if positive
+            else ("HOLD", "BLOCKED", "INTERRUPTED_DESTRUCTIVE_PARTIAL")
+        )
+        and (positive or reconciled["safe_to_replay"] is False)
+    )
+    return {
+        "test_contract_ok": ok, "subject": subject,
+        "same_subject_join": claim_a["subject_head"] == recovery_claim["subject_head"] == subject,
+        "tenant": observed_tenant, "target": target,
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "a_owner_resolution": policy["resolution"],
+        "first_effect_outcome": first["outcome"], "effect_count_after_first": after_first,
+        "effect_count_after_reopen": survived_reopen,
+        "reconciliation": reconciled["state"],
+        "successor_replay_outcome": attempted_replay["outcome"],
+        "recovery_state": recovery["state"],
+        "recovered_schema": after_recovery, "observed_effect_count": count,
+        "fidelity": "ISOLATED_PERSISTENT_SQLITE_TEST_AUTHORITY_NOT_REMOTE_DEPLOY",
+        "source_owners": ["T01 effective-rule owner", "T09 migration recovery/effect owner"],
+        "release_effect": "NONE",
+    }
+
+
+def execute_x07_same_subject(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+    """J08+J09: exact candidate Release predicate joined to the T01 owner
+    and a physical deployment-effect attempt in a test-only SQLite sink.
+
+    CI-green and caller-supplied Release claims are NOT human/write authority;
+    missing real Release qualification remains NOT_RUN in either polarity.
+    """
+    t01 = load_owner_module("scripts/test_v411_t01_effective_rules.py")
+    t09 = load_owner_module("scripts/test_v411_t09_effect_boundary.py")
+    release = execute_release_prerequisite_contract("S11", polarity, tested_sha, tested_tree)
+    subject = release["candidate_identity"]
+    positive = polarity == "positive"
+    source_facts = t01.service_x01_fixture(
+        exact_subject=subject,
+        declared_jobs={"J08_EXTERNAL_WRITE_DEPLOY", "J09_RELEASE_QUALIFICATION"},
+        owner_proofs=t01.all_pass_proofs(subject) if positive else {},
+    )
+    source = t01.resolve_effective_rules(source_facts)
+    with tempfile.TemporaryDirectory(prefix="v411-t12-x07-") as temp:
+        sink = t09.PersistentSafeSink(Path(temp) / "x07-deploy.sqlite3")
+        try:
+            claim_a = t09.claim("operator:A", 1, subject_head=subject)
+            authority = t09.decision(
+                "APPROVE" if positive else "WITHHOLD",
+                subject_head=subject, tenant=t09.TENANT, scope=t09.SCOPE,
+                ref="x07-test-only-boundary-not-real-release",
+            )
+            attempt = sink.execute(
+                claim_record=claim_a, authority=authority,
+                effect_id="x07-deploy-test-effect", attempt_id="x07-attempt",
+                payload="scope-bound-test-only-deploy",
+            )
+            effect_count = sink.effect_count()
+            effect_row = sink.read_effect("x07-deploy-test-effect")
+        finally:
+            sink.close()
+    allowed = positive and release["test_contract_ok"] and source["resolution"] == "ADMITTED"
+    ok = (
+        release["test_contract_ok"]
+        and source_facts["exact_subject"] == claim_a["subject_head"] == authority["subject_head"] == subject
+        and release["current_release_owner_requirement"]["current"] is True
+        and release["current_release_owner_requirement"]["version_gate_omission_allowed"] is False
+        and release["real_release_gate"] == "NOT_RUN"
+        and all(v == "NOT_RUN" for v in release["future_gate_truth"].values())
+        and source["resolution"] == ("ADMITTED" if positive else "UNVERIFIED_GATES")
+        and attempt["outcome"] == ("ACKNOWLEDGED" if allowed else "BLOCKED")
+        and effect_count == (1 if allowed else 0)
+        and (effect_row is not None) == allowed
+        and (positive or "current_human_withhold" in attempt["guard"]["refusals"])
+    )
+    return {
+        "test_contract_ok": ok, "subject": subject,
+        "same_subject_join": source_facts["exact_subject"] == claim_a["subject_head"] == authority["subject_head"] == subject,
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "tenant": claim_a["tenant"], "scope": claim_a["scope"],
+        "a_owner_resolution": source["resolution"],
+        "release_prerequisite_state": release["observed_local_contract"],
+        "release_gate_current": release["current_release_owner_requirement"]["current"],
+        "release_gate_omission_allowed": release["current_release_owner_requirement"]["version_gate_omission_allowed"],
+        "ci_only_or_forged_waivers_rejected": all(
+            not x["combined_unsafe_waiver_admitted"]
+            for x in release["actual_tested_negative_waiver_attempts"]
+        ),
+        "sink_outcome": attempt["outcome"], "observed_effect_count": effect_count,
+        "real_release_gate": "NOT_RUN",
+        "fidelity": "LOCAL_SQLITE_AND_SYNTHETIC_RELEASE_PREREQUISITE_NOT_PRODUCTION_DEPLOY",
+        "source_owners": ["T01 source-risk rule", "v4.9 release currentness", "T09 SQLite effect sink"],
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -806,7 +983,18 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         )
         if case_id == "X05" else None
     )
-    local_probe = next((x for x in (x01_probe, x02_probe, docs_probe, x05_probe) if x is not None), None)
+    x03_probe = (
+        execute_x03_same_subject(record["polarity"], tested_sha, tested_tree)
+        if case_id == "X03" else None
+    )
+    x07_probe = (
+        execute_x07_same_subject(record["polarity"], tested_sha, tested_tree)
+        if case_id == "X07" else None
+    )
+    local_probe = next(
+        (x for x in (x01_probe, x02_probe, docs_probe, x05_probe, x03_probe, x07_probe) if x is not None),
+        None,
+    )
     review_probe = (
         execute_s17_same_subject_review(record["polarity"], tested_sha, tested_tree)
         if case_id == "S17" else None
@@ -838,6 +1026,8 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         else [review_probe["observed_review_judgment"]] if review_probe
         else [docs_probe["risk_owner_state"], docs_probe["conduct_owner_state"]] if docs_probe
         else [x05_probe["spec_owner_state"], x05_probe["current_review_judgment"]] if x05_probe
+        else [x03_probe["first_effect_outcome"], x03_probe["recovery_state"], x03_probe["successor_replay_outcome"]] if x03_probe
+        else [x07_probe["release_prerequisite_state"], x07_probe["sink_outcome"]] if x07_probe
         else [release_probe["observed_local_contract"]] if release_probe else None
     )
     source_readbacks = []
