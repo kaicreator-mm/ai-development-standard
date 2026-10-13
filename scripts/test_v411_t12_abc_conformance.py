@@ -509,6 +509,102 @@ def execute_docs_risk_role_same_subject(
     }
 
 
+def execute_x05_parallel_api_same_subject(
+    polarity: str, tested_sha: str, tested_tree: str
+) -> dict:
+    """X05: two disjoint T06 builder claims, T03 API compatibility and T05
+    current Review — ALL bound to the same exact simulated H subject.
+
+    Two lawful parallel Task claims cannot turn an incompatible still-
+    supported older consumer into a compliant integrated release.
+    """
+    t03 = load_owner_module("scripts/test_v411_t03_spec_implementation_currentness.py")
+    t05 = load_owner_module("scripts/test_v411_t05_event_authority.py")
+    t06 = load_owner_module("scripts/test_v411_t06_claim_admission.py")
+    subject = t05.H
+    spec_facts = dict(t03.P01_PROJECTION)
+    spec_facts["implementation_subject_ref"] = subject
+    spec_facts["evidence_subject_ref"] = subject
+    incompatible = polarity == "negative"
+    if incompatible:
+        spec_facts["affected_producer_consumer_windows"] = [
+            t03.evidenced_window(
+                "consumer/C0@v1",
+                {"wire": "COMPATIBLE", "source": "INCOMPATIBLE", "behavior": "INCOMPATIBLE"},
+            ),
+            t03.evidenced_window(
+                "consumer/C1@v2",
+                {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"},
+            ),
+        ]
+    contract = t03.decide(spec_facts)
+    claims = t06.make_adapter()
+    claims.current_subject.update({
+        "base": INTEGRATION_BASE,
+        "head": subject,
+        "pack": "V411-T12-ABC",
+    })
+    # Disjoint task identities. No artificial GPU grant or shared-key
+    # collision: these two builders are lawfully parallel on distinct work.
+    left_key = "kaicreator-mm/ai-development-standard#1020:builder:__default__"
+    right_key = "kaicreator-mm/ai-development-standard#1021:builder:__default__"
+    left = claims.admit(t06.proposal(
+        claims, key=left_key, operator=t06.OP_LOCAL, origin="LOCAL", session="x05-left"
+    ))
+    right = claims.admit(t06.proposal(
+        claims, key=right_key, operator=t06.OP_LOCAL_B, origin="LOCAL", session="x05-right"
+    ))
+    boundary = t05.make_boundary()
+    admission = boundary.admit(t05.review_pass(subject, "src-review-1"))
+    review = boundary.current_review(subject)
+    actual_keys = {
+        d.key for d in claims.dispatches.values()
+        if d.claim is not None
+    }
+    all_same_subject = (
+        spec_facts["implementation_subject_ref"] == subject
+        == spec_facts["evidence_subject_ref"]
+        == claims.current_subject["head"] == boundary.live_subject
+    )
+    expected_contract = "INCOMPATIBLE" if incompatible else "RECONCILED"
+    ok = (
+        all_same_subject and contract["decision"] == expected_contract
+        and left.status == "ACCEPTED" and right.status == "ACCEPTED"
+        and actual_keys == {left_key, right_key}
+        and admission.status == "ACCEPTED"
+        and review.judgment == "PASS"
+    )
+    combined = (
+        "CONTRACT_SIMULATION_POSITIVE"
+        if contract["decision"] == "RECONCILED"
+        else "DENIED_BY_SUPPORTED_OLD_CONSUMER"
+    )
+    if incompatible and combined == "CONTRACT_SIMULATION_POSITIVE":
+        ok = False
+    return {
+        "test_contract_ok": ok,
+        "subject": subject,
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "same_subject_join": all_same_subject,
+        "spec_owner_state": contract["decision"],
+        "claim_owner_decisions": [
+            {"key": left_key, "state": left.status},
+            {"key": right_key, "state": right.status},
+        ],
+        "accepted_claim_keys": sorted(actual_keys),
+        "review_admission": admission.status,
+        "current_review_judgment": review.judgment,
+        "combined_authorization": combined,
+        "fidelity": "LOCAL_T03_T05_T06_OWNER_FIXTURES_NOT_LIVE_BUILDER_CLAIMS",
+        "source_owners": [
+            "T03 spec implementation consumer compatibility",
+            "T06 protected claim admission",
+            "T05 current Review",
+        ],
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -545,7 +641,13 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         execute_docs_risk_role_same_subject(case_id, record["polarity"], tested_sha, tested_tree)
         if case_id in {"S01", "X08"} else None
     )
-    local_probe = next((x for x in (x01_probe, x02_probe, docs_probe) if x is not None), None)
+    x05_probe = (
+        execute_x05_parallel_api_same_subject(
+            record["polarity"], tested_sha, tested_tree
+        )
+        if case_id == "X05" else None
+    )
+    local_probe = next((x for x in (x01_probe, x02_probe, docs_probe, x05_probe) if x is not None), None)
     review_probe = (
         execute_s17_same_subject_review(record["polarity"], tested_sha, tested_tree)
         if case_id == "S17" else None
@@ -569,6 +671,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         else [x["outcome"] for x in sink] if sink
         else [review_probe["observed_review_judgment"]] if review_probe
         else [docs_probe["risk_owner_state"], docs_probe["conduct_owner_state"]] if docs_probe
+        else [x05_probe["spec_owner_state"], x05_probe["current_review_judgment"]] if x05_probe
         else None
     )
     source_readbacks = []
