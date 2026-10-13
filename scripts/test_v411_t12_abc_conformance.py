@@ -373,6 +373,42 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     }
 
 
+def execute_s17_same_subject_review(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+    """Observe T05 accepted current Review facts and reducer, not fixture text.
+
+    One subject; opposite accepted outcomes must make current review BLOCKED,
+    never latest-wins. This proves B/Interaction at owner-model fidelity, not
+    independent Product/risk/A evidence or Release merge authority.
+    """
+    t05 = load_owner_module("scripts/test_v411_t05_event_authority.py")
+    subject = t05.H
+    boundary = t05.make_boundary()
+    first = boundary.admit(t05.review_pass(subject, "src-review-1"))
+    decisions = [{"kind": "PASS", "admission": first.status}]
+    if polarity == "negative":
+        second = boundary.admit(t05.review_fail(subject, "src-review-2"))
+        decisions.append({"kind": "FAIL", "admission": second.status})
+    review = boundary.current_review(subject)
+    actual = review.judgment
+    expected = "PASS" if polarity == "positive" else "BLOCKED"
+    ok = (
+        all(x["admission"] == "ACCEPTED" for x in decisions)
+        and actual == expected and boundary.live_subject == subject
+        and (polarity != "negative" or len(review.conflict_refs) == 2)
+    )
+    return {
+        "test_contract_ok": ok, "subject": subject,
+        "candidate_sha": tested_sha, "candidate_tree": tested_tree,
+        "admission_events": decisions,
+        "observed_review_judgment": actual,
+        "observed_conflicting_refs": list(review.conflict_refs),
+        "expected_review_judgment": expected,
+        "fidelity": "T05_OWNER_CANONICAL_EVENT_FIXTURE_NOT_LIVE_GITHUB",
+        "source_owners": ["T05 event admission and Review reducer"],
+        "release_effect": "NONE",
+    }
+
+
 def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     test_results = [execute_owner_test(spec) for spec in record["runner"]["tests"]]
     ok = all(item.get("ok") for item in test_results)
@@ -404,7 +440,15 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         if case_id == "X02" else None
     )
     local_probe = x01_probe if x01_probe is not None else x02_probe
-    contract_ok = ok and physical_ok and (local_probe is None or local_probe["test_contract_ok"])
+    review_probe = (
+        execute_s17_same_subject_review(record["polarity"], tested_sha, tested_tree)
+        if case_id == "S17" else None
+    )
+    contract_ok = (
+        ok and physical_ok
+        and (local_probe is None or local_probe["test_contract_ok"])
+        and (review_probe is None or review_probe["test_contract_ok"])
+    )
     if x01_probe is not None:
         # An actual, separate, physical adapter readback overrides no source
         # field blindly.  The same-subject probe has stronger fidelity than
@@ -417,7 +461,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     transition = (
         [x["outcome"] for x in x01_probe["attempts"]] if x01_probe is not None
         else [x["outcome"] for x in sink] if sink
-        else None
+        else [review_probe["observed_review_judgment"]] if review_probe else None
     )
     source_readbacks = []
     for rel in sorted(set(record["actual_source_refs"])):
@@ -463,6 +507,8 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     # cannot establish common subject.
     if local_probe is not None and local_probe["test_contract_ok"]:
         b_ok = True  # Genuine B owner invocation on the same test subject.
+    if review_probe is not None and review_probe["test_contract_ok"]:
+        b_ok = True  # T05 admitted event and current reducer, not source prose.
     p3_state = (
         "PASS" if contract_ok and local_probe is not None
         else "BLOCKED" if contract_ok else "FAIL"
@@ -473,7 +519,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "P2_B": {"state": "PASS" if b_ok else ("NOT_RUN" if not b_facts else "FAIL"),
                  "fidelity": "LOCAL_OWNER_ADAPTER_SAME_SUBJECT" if local_probe else "OWNER_UNIT_ASSERTIONS",
                  "evidence": b_facts,
-                 "same_subject_probe": local_probe},
+                 "same_subject_probe": local_probe if local_probe is not None else review_probe},
         "P3_C": {"state": p3_state,
                  "fidelity": "LOCAL_OWNER_ADAPTER_SIMULATION_SAME_SUBJECT" if local_probe else "INTEGRATED_SAME_SUBJECT_NOT_ESTABLISHED",
                  "reason": "TEST-ONLY shared subject with executed owner decisions" if local_probe else "owner unit fixtures are independently constructed",
@@ -491,6 +537,7 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "observed_owner_assertions": "PASS" if ok else "FAIL",
         "source_readbacks": source_readbacks,
         "same_subject_execution": local_probe,
+        "review_same_subject_execution": review_probe,
         "source_currentness_scope": "GIT_BLOB_READBACK_ONLY_NO_AFFECTED_RISK_CLAIM",
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
