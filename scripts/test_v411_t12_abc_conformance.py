@@ -307,7 +307,7 @@ def execute_x01_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     }
 
 
-def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -> dict:
+def execute_spec_reuse_review_same_subject(case_id: str, polarity: str, tested_sha: str, tested_tree: str) -> dict:
     """T03+T04+T05 one-subject A/B/C contract, test-fixture fidelity only.
 
     The accepted spec projection, upstream reuse/license decision and actual
@@ -321,8 +321,22 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     spec_facts = dict(t03.P01_PROJECTION)
     spec_facts["implementation_subject_ref"] = subject
     spec_facts["evidence_subject_ref"] = subject
+    consumer_break = case_id == "X06" and polarity == "negative"
+    if consumer_break:
+        # A deprecated API with an old supported C0 consumer must not be
+        # promoted by a green newer C1 window or lawful license reuse.
+        spec_facts["affected_producer_consumer_windows"] = [
+            t03.evidenced_window(
+                "consumer/C0@v1",
+                {"wire": "COMPATIBLE", "source": "INCOMPATIBLE", "behavior": "INCOMPATIBLE"},
+            ),
+            t03.evidenced_window(
+                "consumer/C1@v2",
+                {"wire": "COMPATIBLE", "source": "COMPATIBLE", "behavior": "COMPATIBLE"},
+            ),
+        ]
     spec = t03.decide(spec_facts)
-    drift = polarity == "negative"
+    drift = case_id == "X02" and polarity == "negative"
     upstream_facts = t04.h3_case(subject=subject, upstream_license_changed=drift)
     reuse = t04.evaluate_reuse(upstream_facts)
     boundary = t05.make_boundary()
@@ -335,8 +349,9 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         subject == boundary.live_subject
     )
     expected_reuse = "BLOCKED" if drift else "ALLOWED"
+    expected_spec = "INCOMPATIBLE" if consumer_break else "RECONCILED"
     ok = (
-        matches and spec["decision"] == "RECONCILED"
+        matches and spec["decision"] == expected_spec
         and reuse["decision"] == expected_reuse
         and admitted.status == "ACCEPTED"
         and review.judgment == "PASS"
@@ -349,10 +364,11 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         spec["decision"] == "RECONCILED" and reuse["decision"] == "ALLOWED"
         and review.judgment == "PASS"
     )
-    if drift and allowed:
+    if (drift or consumer_break) and allowed:
         ok = False
     return {
         "test_contract_ok": ok,
+        "case_id": case_id,
         "subject": subject,
         "candidate_sha": tested_sha, "candidate_tree": tested_tree,
         "same_subject_join": matches,
@@ -361,8 +377,13 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         "reuse_missing": reuse["missing"],
         "event_admission": admitted.status,
         "review_owner_state": review.judgment,
-        "combined_authorization": "CONTRACT_SIMULATION_POSITIVE" if allowed else "DENIED_BY_CURRENT_LICENSE_OWNER",
-        "negative_attempted": drift,
+        "combined_authorization": (
+            "CONTRACT_SIMULATION_POSITIVE" if allowed else
+            "DENIED_BY_SUPPORTED_OLD_CONSUMER" if consumer_break else
+            "DENIED_BY_CURRENT_LICENSE_OWNER"
+        ),
+        "negative_attempted": drift or consumer_break,
+        "supported_old_consumer_incompatible": consumer_break,
         "source_owners": [
             "T03 spec/implementation reconciler",
             "T04 revision-bound reuse evaluator",
@@ -515,8 +536,10 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         if case_id == "X01" else None
     )
     x02_probe = (
-        execute_x02_same_subject(record["polarity"], tested_sha, tested_tree)
-        if case_id == "X02" else None
+        execute_spec_reuse_review_same_subject(
+            case_id, record["polarity"], tested_sha, tested_tree
+        )
+        if case_id in {"X02", "X06"} else None
     )
     docs_probe = (
         execute_docs_risk_role_same_subject(case_id, record["polarity"], tested_sha, tested_tree)
