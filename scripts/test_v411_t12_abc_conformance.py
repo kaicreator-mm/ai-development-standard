@@ -338,8 +338,8 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     ok = (
         matches and spec["decision"] == "RECONCILED"
         and reuse["decision"] == expected_reuse
-        and admitted.state == "ACCEPTED"
-        and review.verdict == "PASS"
+        and admitted.status == "ACCEPTED"
+        and review.judgment == "PASS"
         and (not drift or "license_notice_observation_at_current_revision" in reuse["missing"])
     )
     # The negative oracle must demonstrate a forbidden composite admission
@@ -347,7 +347,7 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
     # upstream block as a successful permission to reuse.
     allowed = (
         spec["decision"] == "RECONCILED" and reuse["decision"] == "ALLOWED"
-        and review.verdict == "PASS"
+        and review.judgment == "PASS"
     )
     if drift and allowed:
         ok = False
@@ -359,8 +359,8 @@ def execute_x02_same_subject(polarity: str, tested_sha: str, tested_tree: str) -
         "spec_owner_state": spec["decision"],
         "reuse_owner_state": reuse["decision"],
         "reuse_missing": reuse["missing"],
-        "event_admission": admitted.state,
-        "review_owner_state": review.verdict,
+        "event_admission": admitted.status,
+        "review_owner_state": review.judgment,
         "combined_authorization": "CONTRACT_SIMULATION_POSITIVE" if allowed else "DENIED_BY_CURRENT_LICENSE_OWNER",
         "negative_attempted": drift,
         "source_owners": [
