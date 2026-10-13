@@ -258,6 +258,21 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
     transition = (
         [x["outcome"] for x in sink] if sink else None
     )
+    source_readbacks = []
+    for rel in sorted(set(record["actual_source_refs"])):
+        # A checked-in source is a material identity only if its exact blob
+        # resolves at the frozen integration base AND current candidate.
+        # The current candidate SHA is not inferred from the fixture.
+        base_blob = git("rev-parse", f"{INTEGRATION_BASE}:{rel}")
+        current_blob = git("rev-parse", f"HEAD:{rel}")
+        source_readbacks.append({
+            "path": rel,
+            "base_blob": base_blob,
+            "actual_current_blob": current_blob,
+            "candidate_sha": tested_sha,
+            "same_as_post_t11_base": base_blob == current_blob,
+            "evidence_kind": "GIT_SOURCE_BLOB_NOT_MATERIAL_RISK_INSPECTION",
+        })
     owner_facts = [{
         "file": t.get("file"),
         "method": t.get("test"),
@@ -305,6 +320,8 @@ def run_record(record: dict, tested_sha: str, tested_tree: str) -> dict:
         "asserted_expected_transition": record["expected_transition"],
         "observed_transition": transition,
         "observed_owner_assertions": "PASS" if ok else "FAIL",
+        "source_readbacks": source_readbacks,
+        "source_currentness_scope": "GIT_BLOB_READBACK_ONLY_NO_AFFECTED_RISK_CLAIM",
         "expected_effect_count": expectation,
         "observed_effect": actual_effect_count,
         "sink_readback_provenance": sink,
@@ -399,6 +416,11 @@ def main() -> int:
         "records": records,
         "compound": compound,
         "downstream_release_truth": "NOT_RUN",
+        "material_integration_state": "BLOCKED",
+        "material_unverified_count": sum(
+            r["proof_layers"]["P3_C"]["state"] == "BLOCKED" for r in records
+        ) + int(compound["result"] == "BLOCKED"),
+        "material_resolution_owner": "#1020 T12 same-work-subject integration; V01-R02 later release facts",
         "failure_count": len(failures),
     }
     print("V411_T12_EVIDENCE_LEDGER=" + json.dumps(ledger, sort_keys=True))
