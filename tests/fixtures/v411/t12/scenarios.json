@@ -2420,6 +2420,7 @@
           "J10"
         ],
         "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
           "scripts/test_v411_t09_effect_boundary.py"
         ],
         "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
@@ -2439,7 +2440,8 @@
         ],
         "owner_refs": [
           "scripts/test_v411_t09_effect_boundary.py#test_authoritative_readback_reconciles_committed_unknown",
-          "scripts/test_v411_t09_effect_boundary.py#test_verified_snapshot_recovery_is_distinct_from_fresh_install"
+          "scripts/test_v411_t09_effect_boundary.py#test_verified_snapshot_recovery_is_distinct_from_fresh_install",
+          "standards/PROJECT_ADOPTION.md"
         ],
         "mandatory_gates": [
           "SOURCE_CURRENTNESS",
@@ -2451,6 +2453,10 @@
         "runner": {
           "type": "unittest-owner-methods",
           "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_p02_a0_and_a4_resolve_identical_gates"
+            },
             {
               "file": "scripts/test_v411_t09_effect_boundary.py",
               "test": "test_authoritative_readback_reconciles_committed_unknown"
@@ -2483,6 +2489,7 @@
           "J10"
         ],
         "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
           "scripts/test_v411_t09_effect_boundary.py"
         ],
         "affected_source_base": "301ebcdae1ad3a2cec8cd23627b2423282f98997",
@@ -2501,7 +2508,8 @@
           "#1020"
         ],
         "owner_refs": [
-          "scripts/test_v411_t09_effect_boundary.py#test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry"
+          "scripts/test_v411_t09_effect_boundary.py#test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry",
+          "standards/PROJECT_ADOPTION.md"
         ],
         "mandatory_gates": [
           "SOURCE_CURRENTNESS",
@@ -2513,6 +2521,10 @@
         "runner": {
           "type": "unittest-owner-methods",
           "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n06_uncovered_compound_is_unverified_and_never_blanket_pass"
+            },
             {
               "file": "scripts/test_v411_t09_effect_boundary.py",
               "test": "test_commit_once_then_ack_lost_stays_unknown_and_successor_does_not_blind_retry"
@@ -2929,6 +2941,7 @@
           "J09"
         ],
         "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
           "scripts/test_v411_t09_effect_boundary.py",
           "scripts/test_v49_release_applicability.py"
         ],
@@ -2949,7 +2962,8 @@
         ],
         "owner_refs": [
           "scripts/test_v411_t09_effect_boundary.py#test_proven_same_effect_dedup_replay_never_increments_twice",
-          "scripts/test_v49_release_applicability.py#test_release_authority_owns_gate_by_subject_decision"
+          "scripts/test_v49_release_applicability.py#test_release_authority_owns_gate_by_subject_decision",
+          "standards/PROJECT_ADOPTION.md"
         ],
         "mandatory_gates": [
           "SOURCE_CURRENTNESS",
@@ -2961,6 +2975,10 @@
         "runner": {
           "type": "unittest-owner-methods",
           "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_p02_a0_and_a4_resolve_identical_gates"
+            },
             {
               "file": "scripts/test_v411_t09_effect_boundary.py",
               "test": "test_proven_same_effect_dedup_replay_never_increments_twice"
@@ -2994,6 +3012,7 @@
           "J09"
         ],
         "actual_source_refs": [
+          "scripts/test_v411_t01_effective_rules.py",
           "scripts/test_v411_t09_effect_boundary.py",
           "scripts/test_v49_release_applicability.py"
         ],
@@ -3013,7 +3032,8 @@
           "#1020"
         ],
         "owner_refs": [
-          "scripts/test_v49_release_applicability.py#test_low_risk_shortcuts_are_not_positive_release_proof"
+          "scripts/test_v49_release_applicability.py#test_low_risk_shortcuts_are_not_positive_release_proof",
+          "standards/PROJECT_ADOPTION.md"
         ],
         "mandatory_gates": [
           "SOURCE_CURRENTNESS",
@@ -3025,6 +3045,10 @@
         "runner": {
           "type": "unittest-owner-methods",
           "tests": [
+            {
+              "file": "scripts/test_v411_t01_effective_rules.py",
+              "test": "test_n06_uncovered_compound_is_unverified_and_never_blanket_pass"
+            },
             {
               "file": "scripts/test_v49_release_applicability.py",
               "test": "test_low_risk_shortcuts_are_not_positive_release_proof"
