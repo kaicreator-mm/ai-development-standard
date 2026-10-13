@@ -98,7 +98,13 @@ def execute_owner_test(spec: dict) -> dict:
     try:
         case = resolve_test(rel, method)
         stream = io.StringIO()
-        result = unittest.TextTestRunner(stream=stream, verbosity=0).run(case)
+        # Class-level unittest fixtures (setUpClass/tearDownClass) are managed
+        # by TestSuite, not by invoking TestCase directly. Some reused owner
+        # oracles (for example release applicability) intentionally load their
+        # source-bound contracts in setUpClass, so every composed owner method
+        # must execute through an isolated one-case suite.
+        suite = unittest.TestSuite([case])
+        result = unittest.TextTestRunner(stream=stream, verbosity=0).run(suite)
         return {
             "ok": result.wasSuccessful(),
             "file": rel,
