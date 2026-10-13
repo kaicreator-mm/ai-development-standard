@@ -30,7 +30,7 @@ T12_ACCEPTED_TREE = "51c77593e58a97fce35d7e88055b5b57bad5af15"
 # Normalized Git blob pin: a committed one-file guard against accidental edits.
 # The pinned full PR HEAD/tree + independent review remain the external trust
 # anchor; code cannot grant itself authoritativeness by changing its own pin.
-SELF_GUARD_BLOB = "0000000000000000000000000000000000000000"
+SELF_GUARD_BLOB = "71ce67c278d2e8038e647c700d9c73e5dc9d3d50"
 # Bounded RC-2 release-owned identity update (PR #1094). These pins guard
 # against arbitrary successor edits; the new RC-3 test patch is separately
 # reviewed and must not weaken owner/runtime oracles.
