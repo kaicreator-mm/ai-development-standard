@@ -127,3 +127,34 @@ After R0, a revised **non-normative** contract candidate was written at `referen
 - **HX08 — no human available:** required real-actor testimony/consent is missing and all AIs agree; Product cannot declare synthetic PASS. Must remain BLOCKED or lawfully revise Product promise/study method and state limitations. **CANDIDATE_TEXT_COVERED**.
 
 **Disposition:** C13 has useful product-level behavior and negative cases, but HX03 and HX07 require explicit consent/identity and model data-transfer constraints in the contract draft. No claim of independent-human replacement, savings or real study completion. `C13_ADOPTION=PRODUCT_CANDIDATE_ONLY; INDEPENDENT_REVIEW=NOT_RUN; REAL_HUMAN_STUDY=NOT_RUN.`
+
+
+## Targeted adversarial extension: C14 online behavioral evidence
+
+**Scope:** author-led source/ethics/epistemic attack, not independent empirical or legal approval. The candidate is `V412_CROSS_STAGE_CONTRACTS_CANDIDATE.md` §C14.
+
+| ID | Attack / assertion to reject | Countermeasure and current status |
+|---|---|---|
+| OX01 | 400 forum posts -> 400 unique real humans -> 40% target-market prevalence | Distinguish posts/contributors/population denominator, bot/copied content; `O1` self-report, biased sampling, no unjustified prevalence. **CANDIDATE_COVERED** |
+| OX02 | Publicly accessible thread -> license to bulk scrape/store/redistribute/train models | Verify explicit permitted use, current platform policy and applicable privacy/rights, with authorized research access; avoid restricted sites and unauthorized data transfer. **CANDIDATE_COVERED** |
+| OX03 | Multiple LLMs agree a subjective complaint proves new UX completion rate | Requires authentic task observation/telemetry or valid study; LLM consensus is interpretation only. **CANDIDATE_COVERED** |
+| OX04 | A generated/paid coordinated campaign of "customer complaints" is indexed | Sampling/dedupe/source provenance, account/temporal anomalous signal, contrary platform corroboration. Authorship often uncertain; state UNKNOWN rather than certifying humans. **CANDIDATE_COVERED** |
+| OX05 | Visible posts in sensitive health/minor/closed forum treated as fair game | Accessibility != ethical/legal permission; minimize identities, use approved source only, deny unauthorized provider upload. **CANDIDATE_COVERED** |
+| OX06 | Imported dataset was valid when acquired, then source deleted a post/revoked its permitted use | Source freshness, rights and retention/delete obligations must be rechecked at use and disposition updated. **PARTIAL: deletion/currentness implementation L2 open** |
+| OX07 | Genuine negative feedback from 2022 defines 2026 behavior after product redesign | Time-window and version/region/locale context bound; Product consumer judges outdatedness. **CANDIDATE_COVERED, numeric freshness threshold not mandated** |
+| OX08 | Researcher quietly alters planned blind-human Gold methodology by finding similar forum comments | Existing preregistration and required independent human Gold retain authority; public data is separate L1 evidence and cannot self-amend Gold. **CANDIDATE_COVERED** |
+| OX09 | Search is aimed only at negative reviews to justify a preselected product | Opposing sampling/selection disclosure and alternative evidence; cannot claim unbiased population. **CANDIDATE_COVERED** |
+| OX10 | First-party telemetry was legally collected for purpose A; now re-identifies or sells to third-party LLM | Purpose limitation/permissions and approved processing remain required; derived availability doesn't license new use. **CANDIDATE_COVERED; lawful basis owner remains open** |
+| OX11 | Forum signal is useful for `problem exists`, but Product asserts statistical threshold | Distinct decision claims require distinct methods; only the former may be adopted; numeric claim needs valid sampling/instrumentation. **CANDIDATE_COVERED** |
+| OX12 | Large optional scraping project prolongs L1 after research already sufficient | Timebox and stop rule; use existing research/approved tools; no new crawler or compulsory DAG. **CANDIDATE_COVERED** |
+
+**Source-policy substantiation used for negative proof planning, not a permission grant:** Reddit's current help page for Developer Platform / accessing Reddit data distinguishes authorized Reddit for Researchers pathway; Reddit Data API Terms are purpose/rate/rights-restricted; the ICO-hosted international regulatory statement warns public visibility does not make personal data unprotected. Survey quality methodology from AAPOR highlights online coverage and selection bias. Always re-evaluate actual source policy and applicable laws at collection time.
+
+**Open Product/L2:**
+- Real-human observational evidence sufficiency and target population criteria **for each Product claim**, especially where the only source is a forum complaint.
+- How researchers document third-party platform permissions, revocation, legal deletion, storage and authorized LLM ingestion.
+- Whether first-party consented behavioral logs (O3) can offer a real measured success denominator; access rules and cohort representativeness.
+- Rights, cross-border jurisdiction and privacy for public-but-sensitive communities.
+- Exact integration with #1100 DAG-P and C13 H3 classification: `O1/O2/O3` may be **human-origin historical evidence**, but not automatically a purpose-built `O5` or human decision/independent-review attestation.
+
+**Verdict:** `C14_ADDITION=PRODUCT_CANDIDATE_WITH_NEGATIVE_TESTS`; no operational crawling, actual sample, empirical Gold, legal advice, independent Product review, or L1 Product Freeze. No new implementation Task created.
