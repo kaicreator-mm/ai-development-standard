@@ -1,6 +1,6 @@
 # V411-PROOF-REBASELINE — prospective N08/S08 L3 Task Pack delta (DRAFT, no executable admission)
 
-> Product [#943@6167214986] authorizes **prospective** proof-scope change only. This is one **cross-owner coordination Pack** to make the impact, owner write sets and handoffs executable; it does not erase/change existing Frozen T08/T09/T12/V01 Pack blobs, alter native DAG, or count a completed Issue. The predecessor exact frozen subject `322e86845f78de8ea8cadb05ec624bfbb3a5de20` remains `V01=BLOCKED`. This Pack is **not an authorized dispatch** unless Product PR #1105 and L2 PR #1106 receive independent exact-head reviews, a lawful new Product/L2 Freeze and Release §11.5 gate×new-subject disposition, and this Pack itself is independently reviewed/admitted.
+> Product [#943@6167214986] authorizes **prospective** proof-scope change only. This is one **cross-owner coordination Pack** to make the impact, owner write sets and handoffs executable; it does not erase/change existing Frozen T08/T09/T12/V01 Pack blobs, alter native DAG, or count a completed Issue. The predecessor exact frozen subject `322e86845f78de8ea8cadb05ec624bfbb3a5de20` remains `V01=BLOCKED`. This Pack is **not an authorized dispatch** without Product successor exact Freeze, independently reviewed/owner-frozen L2 **design** (which may select conservative N08 UNKNOWN→HOLD), and independent Pack review/owner admission. The future Release §11.2/§11.5 **gate×new-candidate** decision and owner negative execution are required *before V01 PASS and protected Release actions*, not before authorizing implementation of the bounded adapter needed to produce their evidence. An unimplemented owner seam cannot bootstrap itself into a required pre-Builder positive Release signature.
 
 ```ini
 TASK_PACK_STATE=DRAFT_UNADMITTED
@@ -9,18 +9,18 @@ PRODUCT_ACT=#943@6167214986
 PRODUCT_PR=#1105@7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f
 PRODUCT_PRD_BLOB=edc9ef4d44edec035bac282dcc69467adf338729
 PRODUCT_MATRIX_BLOB=2c9320321a70cc2fb51979e88b55af044ebacfde
-L2_PR=#1106@227f599c0a2b2440b1f422959c943c27403f4426
-L2_BLOB=e07fdce9d540872a53b35ba47b04fc64f94db662
+L2_PR=#1106@c94a4fbf3383f07368ce6e9123d99c134f2ffdee
+L2_BLOB=6c5d446b4155a326545682387b64ad39e80a04c6
 ORIGINAL_T08_PACK=7999e5b294a56d051218832705b5e9279b4be3ee
 ORIGINAL_T09_PACK=3b338da726db0ab053609d6b6c557d9670d13951
 ORIGINAL_T12_PACK=a2af3ef49c852ff36cbb0a4eaac7d13e817b7890
 ORIGINAL_V01_PACK=8885201ac2501f3a6e3a3d31123a63c2546986d2
 ORIGINAL_CANDIDATE=322e86845f78de8ea8cadb05ec624bfbb3a5de20
-PRODUCT_FREEZE_SUCCESSOR=PENDING
-ARCHITECTURE_FREEZE_SUCCESSOR=PENDING
-RELEASE_OWNER_NEW_SUBJECT_DECISION=PENDING
+PRODUCT_FREEZE_SUCCESSOR=#943@6170435421_EXACT_HEAD_1105
+ARCHITECTURE_FREEZE_SUCCESSOR=PENDING_NEW_L2_R2_REVIEW
+RELEASE_OWNER_NEW_CANDIDATE_DECISION=NOT_ISSUED_REQUIRED_BEFORE_V01_PASS
 N08_REAL_OWNER_NEGATIVE=NOT_PROVEN
-S08_SYNTHETIC_SQLITE_A_B=NOT_RUN
+S08_SYNTHETIC_SQLITE_A_B=LOCAL_NON_GATE_EXIT0_#1108@6173669394_NOT_FORMAL
 REAL_HUMAN_DENY_E2E=NOT_PROVEN
 V01=BLOCKED
 ```
@@ -30,12 +30,13 @@ V01=BLOCKED
 **Admission DAG for work within the existing v4.11 Release/Review flow** (NOT six new native version-release tasks):
 
 ```text
-P0 Product exact-reviewed successor (#1105)
-   → P1 L2 source-reviewed and Release §11.5 prospective gate applicability (#1106/#943)
-   → P2 this integrated proof Task Pack independent review/freeze
+P0 Product exact-reviewed/frozen successor (#1105/#943@6170435421)
+   → P1 L2 source-reviewed + Architecture-owner **design** Freeze, conservative UNKNOWN→HOLD (#1106)
+   → P2 this bounded implementation Task Pack independent review/freeze
    → P3 T08 source provenance/test-only boundary contracts  ┐
    → P4 T09 same-file-backed SQLite A→B synthetic veto tests ├─→ P6 T12 bounded material conformance
    → P5 N08 actual owner union admission negative             ┘
+   → P6A new exact candidate + Release owner §11.2/§11.5 decision on observed owner proofs
    → P7 V01 fresh exact-new-candidate Validation/Review (Issue #1021)
    → V02 #1022 → V03 #1023 → V04 #1024 → R01 #1025 → R02 #1026
 ```
@@ -65,15 +66,15 @@ No single PR may simultaneously make owner implementation and independently appr
 
 ### 3.2 P4 actual SQLite effect mechanism
 
-- P4-P01: in a clean, isolated real local Build Host process use one **real file-backed SQLite** DB and one same protected effect identity (candidate/job/tenant/scope/operation/effect_id). Actor A has an actual accepted Claim then receives an explicitly **synthetic test-only DENY** before protected effect; execute the T09 owning sink (not a new fake sink) and observe a refused A attempt with no protected effect.
-- P4-P02: actor B, distinct operator, Claim generation and attempt ID, otherwise READY, attempts **same exact effect**, with current synthetic denial re-read if the seam supports it; B is refused. Close and independently reopen DB, read `attempts` with two blocked entries and `effects` (or actual protected effects table) with count=0; preserve auditable non-effect writes separately.
+- P4-P01: in a clean, isolated real local Build Host process use one **real file-backed SQLite** DB and one same protected effect identity (candidate/job/tenant/scope/operation/effect_id). Actor A has a **test-helper modeled** accepted Claim (actual native protected Claim admission = NOT_PROVEN) and receives an explicitly **synthetic test-only DENY** before protected effect; execute the existing T09 owning sink and observe a refused A attempt with no protected effect. A genuine native CLAIMED/READY transition is not inferred or waived for a consumer requiring that proof.
+- P4-P02: actor B, distinct **test-helper** operator/generation/attempt ID, modeled otherwise READY (not an authoritative native READY successor), attempts **same exact effect**, with synthetic denial fixture re-read if supported; B is refused. Close and independently reopen DB, read `attempts` with two blocked entries and `effects` (or actual protected effects table) with count=0; preserve auditable non-effect writes separately.
 - P4-N01: wrong tenant/scope/effect/head/actor, stale decision, unauthorized supersession, untrusted transport wrapper, missing authority, read-error, replay and B/C competition must not produce a protected effect or PASS. A local fake flag-only result is not enough. Report real exit codes, schema/owner source blob, environment and exact SHA.
 - P4-N02: historical human APPROVE **must not** be provided as the synthetic DENY nor edited. Synthetic DENY test must not claim actual human refused an operation. Real external provider and multi-host linearization are **NOT_RUN** unless separately actually executed.
 - P4 gate is `BLOCKED` until actual execution and independent negative review; user has **not** authorized an Agent to mint any human DENY.
 
 ### 3.3 P5 N08 exact actual-applicability / owner admission negatives
 
-- P5-P01: L2 and Release owners separately read exact source/applicable jobs, prove **both** Product eligibility conditions: no ADS-owned real four-job workload; and no materially novel compound safety predicate beyond current executed, owner-accepted X/owner coverage. They explicitly accept bounded residual consumer risk with exact subject and effective applicability; if either missing, conditional exclusion **not effective**.
+- P5-P01: The implementation must not *assume* either optional Product eligibility condition. L2/Release owners may separately establish both — no ADS-owned actual four-job workload and no novel material predicate — with current exact-subject proof and accepted residual risk, allowing the physical-positive exclusion only then. While either remains UNKNOWN/novel, the stronger four-way N08 negative owner-admission obligation stays REQUIRED/BLOCKED; this is an **implementation task to satisfy**, not a reason to prohibit admission of its own Task Pack. The actual Release owner must decide gate applicability on the later real candidate before V01 PASS.
 - P5-N01: actual declared four-job set missing each of J09/J10/J11/J12, wrong-work-subject/currentness, wrong actor/tenant/scope, stale license or unreconciled incident, or source proof omitted -> existing **owner-level** admission returns `HOLD/BLOCKED`, no unauthorized release advancement or side-effect. Must invoke real owning admission or independently accepted exact semantic equivalent — **not** only T12 `complete(fact_map)`.
 - P5-N02: declared `J09+J10+J11` with **observed actual** upstream source/license change implies J12 and real 4-way unknown/HOLD; truly only three facts with J12 inspected absent uses their three-job AND, no invented J12, no free exemption for an unknown novel triple. Hidden/RQ applicability does not vanish.
 - P5-N03: an Agent labels a 4-way unproved composite as PASS, NOT_APPLICABLE or “waived due to cost”, even when 4 metadata omissions pass → reject; no owner decision => Release/V01 remains BLOCKED.
@@ -92,11 +93,11 @@ Product scope §10 / proof matrix §5 [PR #1105], L2 existing-owner §14 [PR #11
 
 ## 5. Implementation and smallest lawful path
 
-1. **WEB**: obtain independent exact-head Product PR #1105 source/security review, independent exact-head L2 PR #1106 review, Release owner conditional applicability (no novel predicate) + lawful prospective migration disposition. Write successor decision with exact SHA and readbacks. If Product or Release rejects any condition, retain correct BLOCKED and reroute to real source proof or next version.
-2. **WEB**: independent Pack Reviewer compares this Pack against those accepted exact Product/L2 identities, frozen prior T08/T09/T12/V01 blobs, source T09/T12 test seams and §11.5. Issue a bounded PASS_FOR_DISPATCH or NEEDS_REVISION — Review alone is **not** Pack Freeze.
-3. **Builder T08/T09/T12**: after Pack admission, implement source-local contract and tests by one-concern PR write set; real Build Host focused T09/P4 test and owner P5 integration executed with **test-only** authority. Reuse existing owner source; only add code when a real proof gap exists. Don't request an independent actual human DENY unless Product revises scope.
-4. **Independent Reviewer / Validation Impact**: review actual effect/owner tests and SHA, verify raw logs; new candidate's `verify_standard`, affected unit suites, current validity/CI and material Critical Journeys. Carry original 139 historical facts only when authorized by current equivalence/impact; always preserve the **14 literal old failures** as raw FAIL.
-5. **V01 independent Closure Validator**: only after all owning proof/Release decisions accepted, produce honest current-version Closure; may be PASS or BLOCKED, and V02–R02 then gate strictly in native DAG order.
+1. **WEB**: consume the already exact-frozen Product #943@6170435421 and get independent delta review + accountable *design-only* L2 Freeze for #1106's conservative existing-owner placement; do not require implementation-dependent real Release proof to freeze the design, and do not claim the optional C1/C2 exclusion.
+2. **WEB**: independent Pack Reviewer checks this successor against accepted Product/L2 design, original Frozen T08/T09/T12/V01 blobs and §11.5. The Pack owner may freeze a **bounded implementation Pack** with N08 actual owner seam and negative test still specified as mandatory *deliverables*, not accepted gate results. Review alone is not Freeze.
+3. **Builder + focused local Validator**: after Pack admission, implement one-concern owner-local T08/T09/T12 deltas as needed and a minimal Project Adoption/Workflow/Release owner-admission bridge that consumes real current owner decisions (not a second policy engine); reuse #1108's already observed local 6/6 technical-only SQLite receipts without treating them as authenticated Claim/Human or formal candidate-proof PASS. Execute actual owner N08 omissions/undeclared J12/stale+revoke denials and isolated SQLite proof with proper exact-source readbacks.
+4. **Release owner / independent Validator**: pin the **new actual candidate**. Decide Release §11.2/§11.5 applicability at that exact subject using observed evidence and accountable owning decisions (no synthetic human signature); run focused impacted actual Host/critical-journey tests and explicit `VALIDATION_IMPACT_DECISION`. Preserve original 139 history (125 exit0/14 exit1) as immutable raw FAIL; new successor executions have their own exit values.
+5. **V01 independent Closure Validator**: with Pack/owner proofs and candidate-bound Release decisions actually current, issue V01 PASS or truthful BLOCKED, then admit V02→R02 strictly by original native DAG.
 
 ## 6. Failure handling, limitations and stopping rules
 
@@ -106,11 +107,11 @@ Product scope §10 / proof matrix §5 [PR #1105], L2 existing-owner §14 [PR #11
 - **SQLite test returns PASS but no observed sink/DB readback** → fidelity insufficient, BLOCKED, do not infer actual A/B behavior.
 - **Missing genuine human veto end-to-end** → `REAL_HUMAN_DENY_E2E_NOT_PROVEN` remains; standards-only successor may report narrower proof only if authorized, high-risk real consumer stays blocked until own proof.
 - **Missing independent role, Product/L2/Pack owner, Release applicability or Validation evidence** → BLOCKED and precisely name owner; do not issue round after round of duplicate LLM Review absent a new material counterexample.
-- **Stage order:** PR Product review -> L2/Release -> Pack/Builder tests -> V01; do not start V02/Hidden/RQ by optimism. No extra release gate or premature version tag.
+- **Stage order:** Product exact Freeze → L2 *design-only* Freeze (UNKNOWN→HOLD allowed) → Pack freeze to authorize implementing missing proof → independent Builder/Host owner negatives → new exact candidate + actual owning Release §11.2/§11.5 decision → V01. Design/Pack admission may not silently flip ANY unresolved N08/S08 Release gate. No extra release gate or premature version tag.
 
 ## 7. References / evidence preflight
 
 - Human Product Authority: #943@6167214986; original Product Freeze #943@6084264198; N08 reviewed predecision PR #1102@4fd81ed; S08 security challenger #943@6165647665.
-- Product PR #1105 newest reviewed **pending** exact head `7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f`; L2 PR #1106 exact head `227f599c0a2b2440b1f422959c943c27403f4426`.
+- Product PR #1105 exact source `7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f`, Product exact Freeze #943@6170435421; L2 source amended #1106@`c94a4fbf3383f07368ce6e9123d99c134f2ffdee` (new delta review/Architecture freeze pending).
 - Original T08 Pack `7999e5b2...`; T09 Pack `3b338da7...`; T12 Pack `a2af3ef4...`; V01 Pack `8885201a...`; original version candidate `322e868...`; Test runner T09 `scripts/test_v411_t09_effect_boundary.py@3e1d6a2d...`, T12 `scripts/test_v411_t12_abc_conformance.py@e66eaee2...`.
 - Honest Host status: V01 #1021@6156596087 (139 scripts 125 exit0/14 exit1; T12 52 assertions but material 28 BLOCKED/4 later NOT_RUN), independent V01 #1021@6162591281 = BLOCKED; historical human APPROVE #1021@6163883456 reviewed #1021@6163960062. No real human DENY proof. Current Draft #1103 evidence-only reviews PASS integrity **with** V01 BLOCKED.
