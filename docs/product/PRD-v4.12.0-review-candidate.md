@@ -35,6 +35,16 @@
 
 Cross-cutting: **Risk-Bounded Value First**: prefer CORE/material value, remove speculative periphery before Freeze, reuse existing proof when truly equivalent; non-negotiable source-owner trust/human/security/required tests/negative scenarios/release floors prevail.
 
+### 2.1 v4.12 delivery priority — no all-workstream mandate
+
+| Priority | Concrete acceptance-bearing product delta | Completion boundary |
+|---|---|---|
+| **P0 · required version core** | **FR-01** phase graph/authority applicability; **FR-03** prospective Scaffold Planning and paired Freeze; **FR-04** single-source GitHub bidirectional mapping and minimum deterministic consistency; **FR-05** owner-safe contracts/Task DAG/CI/readback; no-regression with v4.11 pins | Normative owner projection and focused negative conformance on representative new + existing project cases, **not** building five services |
+| **P1 · bounded integration** | **FR-02/06/07** risk/human evidence routing, read-only Steward observational workflow, environment preflight/recovery, source-bound Task Learning and bounded phase stop, preferably expressed through **existing** mechanisms | Evidence-backed smallest useful delta, preserve actual owner state/CLAIM/Review/Release; no new always-on service or independent human campaign |
+| **P2 · conditional / defer** | Rich GUI, always-running Steward daemon, automated cross-repo risk optimizer, universal full-codebase map, large sampling/cost/LLM benchmark, extra OS/device runner matrix | Do not gate v4.12 release absent an actual higher-owner material requirement; create future proposal only with evidence |
+
+**P0 does not mean every subfeature must be written from scratch.** Reconciliation must first classify existing v4.11 owner implementation `ALREADY_SATISFIED | BOUNDED_DELTA | NOT_APPLICABLE | DEFER` with exact source evidence. Review/Validation/Release floor remains what the existing source owner actually requires.
+
 ## 3. FR-01 — Three phase-scoped graphs and stage authority
 
 1. Keep semantic `L1 Product Evidence → PRD → Product Freeze`, `L2 Architecture Evidence/Decision → L2 Freeze`, `Implementation Task DAG → per-Task L3/implementation → Version Closure/Release`. `DAG-P` (L1) and `DAG-A` (L2) are **optional coordination views**; `DAG-I` is the actual substantive version implementation DAG **planned after L2** and completed with its Scaffold.
