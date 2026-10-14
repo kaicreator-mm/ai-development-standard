@@ -405,120 +405,128 @@ Do not require this register for a trivial search; detailed entries are proporti
 - No use of observed public forum behavior as normative PASS, independent-human-authored blind oracle or evidence of legally reserved human decisions without genuine source-method proof.
 
 
-## C15 — Contract-first bootstrap scaffold, interface-bound Tasks and risk-calibrated contract evolution (W1/W3/W5; L1 Product candidate)
+## C15 — Co-evolving scaffold and Implementation Task DAG before paired freeze (W1/W3/W5; v4.12 Product direction, candidate)
 
-**Product proposal:** for a *substantive multi-module, multi-agent or novel-repository* implementation, support a **Contract & Scaffold Baseline** derived from authoritative Frozen Product + L2 Architecture facts and the current repository, used as a stable exact-SHA planning base for detailed implementation decomposition. This fills a concrete coordination gap **only where it has marginal value**, and must neither create universal mandatory scaffolding nor sidestep existing Task/Claim/DAG authority.
+> **USER PRODUCT DIRECTION CONFIRMED 2026-10-14:** Generate an appropriately sized actual project scaffold **before full Implementation Task DAG Freeze**. While drafting/refining the Implementation Task DAG, **progressively enrich the same scaffold**. At completion of DAG planning, the scaffold is formally baselined **together with** the Implementation Task DAG; downstream execution Tasks consume that baseline. This **supersedes the former C15 choice of T00-as-default vs optional B** for prospective v4.12 Product design. It is **not yet Frozen PRD/normative permission** to bypass the currently pinned v4.11 Task-DAG-before-source rules.
 
-### S.1 Precise positioning and the two legal paths
-
-**Source authority and logical path:**
+### S.1 Exact stage sequence and semantic boundaries
 
 ```text
-Frozen Product/Scope + Frozen L2 architecture
-  → reuse/current-repo survey + module/contract/ownership map (no code mutation)
-  → [conditional Contract/Scaffold Baseline, from authorized code/projection work]
-  → final implementation Task DAG planning/freeze
-  → GitHub native live DAG; L3 evidence/Tasks/PRs/CI
-  → integration/current version closure
+Product Freeze
+  → L2 Architecture Evidence / Research and explicit L2 Freeze
+  → Bootstrap admission under limited existing-owner-like authority [v4.12 CHANGE REQUIRED]
+  → Initial Scaffold S0 (right-sized working project / contract shells / reuse)
+  ↔ Implementation DAG DRAFT D0
+      → Plan one feature/invariant concern
+      → Allocate module contract/owner/write scope
+      → Enrich SAME scaffold S1, S2, ... only as needed for that concern
+      → Add Task input/output, acceptance, dependency, L3 need, gates
+      → Check consistency/real build-smoke, clarify responsibility and repeat boundedly
+  → PAIRWISE CONVERGENCE: Scaffold SF + Task DAG DF agree on contracts,
+    module paths, write ownership, test entrypoints, blockers and references
+  → Scaffold Baseline acceptance + Implementation Task DAG Freeze
+      bind {FROZEN_PRODUCT_REF, FROZEN_L2_REF, SCAFFOLD_PROJECT_REF,
+            SCAFFOLD_EXACT_SHA/TREE, DAG_EXACT_CHECKPOINT, CONTRACT_SET,
+            UNIMPLEMENTED_BOUNDARIES, REQUIRED_PROOFS, ENVIRONMENT_LIMITS}
+  → Materialize implementation Tasks/native GitHub Issue Dependencies
+  → JIT Task Packs, accepted dispatch/Claim and implementation PRs
+  → Integration + version-gate evaluation + Release
 ```
 
-The scaffold is **NOT** a third Product/L2 Freeze, new L3 layer, architecture authority or an independent always-on dependency database. Creating source files or modifying a build graph is **real implementation work** with canonical authorized write scope; "pre-DAG" in the product story does **not** grant an agent a code-mutation exemption.
+**L2** fixes Architecture obligations/invariants and component ownership; its Freeze is **not** automatically a functioning project skeleton. **Scaffold** is real source/build/tests with a bounded **structure/contract** claim, **not** a Product/L2 decision or implemented feature. **Draft DAG** is planning and does not authorize a downstream worker. **Frozen DAG** is an implementation plan bound to the final accepted scaffold source; GitHub native Issue Dependencies are the live DAG only after authorized materialization. L3 remains task-local implementation evidence, often generated JIT after Freeze.
 
-Two implementation approaches must remain legitimate:
+### S.2 Legal bootstrap write authority before *full* DAG Freeze — prospective v4.12 delta
 
-- **A — Existing-authority default:** Freeze ordinary Implementation Task DAG **after L2** with one initial `T00_BOOTSTRAP` Task (Contract/Scaffold generation if material). Downstream Tasks are currently *dependent* on T00, and JIT/task-pack resolution after T00 consumes the exact proven scaffold source. Task decomposition may be refined only by the **existing authorized Task DAG mutation/amendment process** when it changes material topology/Task identity. Avoid freezing impossible detailed write sets before T00 baseline exists; use bounded pre-specified consumer concerns and authorized refinement.
-- **B — Candidate v4.12 staged planning** (requires **specific PRD/L2 governance approval before use**): Frozen L2 → small **authorized Bootstrap concern + bounded planning checkpoint/claim** using existing Task/Controller authority → accepted exact-SHA scaffold snapshot → first **detailed** Implementation Task DAG Freeze. This produces code before the *full* DAG only because the bootstrap work already has explicit legal Task/Issue/Claim/Review/Validation authority. If the pinned existing ADS version requires a frozen Task DAG before any Task source edit, **path B is not available until a prospective owning standards change**; use A. It is forbidden to call source generation "L2 research" to bypass a required implementation Task.
-- **C — Existing mature code / trivial project:** reuse checked-in layout/contracts; record `SCAFFOLD_REUSED` or `SCAFFOLD_NOT_NEEDED` under material planning owner; proceed directly to Implementation Task DAG / Fast Path. No empty generated files/Issue/Review just to satisfy a template.
+The current pinned v4.11 workflow requires Product/L2 Freeze → Implementation Task DAG Freeze → task materialization/accepted Claims before ordinary source mutation. Thus **current ADS projects cannot silently execute this pre-DAG codegen**.
 
-**Recommendation:** A is the safe default under current ADS; B is a v4.12 design option, not an already-approved exception. Both accomplish practical `interface baseline → stable parallelism` where warranted, with exact-source authority.
+v4.12 **shall propose an explicit, small, source-bound Bootstrap Work Authorization** through the **existing** Work Item/Controller/Claim/Task/Review/Validation authority, not a novel state machine/second owner:
 
-### S.2 Applicability and right-sizing
+- **Preconditions:** exact Frozen Product and L2 refs; active version/integration base; Product/L2-authorized scaffold concern; actor and WEB/LOCAL capability; permitted write set and explicit excluded implementation features; risk/Review/Validation floor; bounded environment/resources; legal reference to the source/writer and current standard pin.
+- **Admission:** an authorized bootstrap work item/claim and current serialized owner decision is required **before any source write**. It may be a tiny pre-DAG planning/bootstrap authority exception created prospectively in v4.12; this is **not** the full Implementation Task DAG, and may be represented using current GitHub Work Item mechanisms if L2 demonstrates equivalence. No arbitrary issue/comment/draft plan can grant mutation power. This exception needs amendments to existing Development Workflow / Work Item/Claim/Task governance and machine conformance; L1 Product direction alone is **not** that amendment.
+- **During co-evolution:** **one accepted bootstrap source writer per incompatible write surface**, or legal serialized noncolliding work under the existing Claim protocols; the planning agent may suggest revisions but is not a second simultaneous source writer. Every accepted code revision in the bootstrap concern is bounded, attributable, revision/currentness-checked and given actual focused validation. Do not let DRAFT Task entries execute feature implementation source changes. No secretly implementing promised features as scaffold "setup".
+- **Closeout:** the bounded bootstrap source work receives all applicable concern-level Review/Validation/CI evidence and lawful integration into the intended version base, then a **complete durable terminal**. Implementation DAG freeze happens only on an accepted exact source snapshot and cannot itself retroactively cure illegal earlier writes.
+- **Fallback for older pinned versions:** when this prospective exception is not authorized, use existing safe path (initial executable DAG with a Bootstrap Task), without pretending that older requirements were changed. v4.12 is future policy, not a v4.11 waiver.
 
-Select **`REUSE_EXISTING | CONTRACT_ONLY | GENERATE_MINIMAL | EXECUTABLE_BOOTSTRAP | OMIT`** with concise actual reasons:
-- REUSE_EXISTING: mature project already has usable module/API/build/test seam; inspect and pin exact reference, do not regenerate the tree.
-- CONTRACT_ONLY: L2 architecture facts give enough stable public contracts and module ownership to plan Tasks; no new source files necessary.
-- GENERATE_MINIMAL: type/interface/schema/API/port/adapter boundaries and test stubs reduce collisions; current Task authorization governs generated writes.
-- EXECUTABLE_BOOTSTRAP: multiple independent implementation Tasks truly depend on a clean running build/test/import/export/package skeleton and coherent integration seams; invest only in focused smoke.
-- OMIT: single-concern Fast Path, high-churn exploratory architecture, or expected extra scaffolding/maintenance cost exceeds incremental value with controlled risk.
+**No new universal mandatory "Scaffold Gate" or bootstrap review committee:** this is a precise earlier source-write authority transition with existing owners and truth floors. Machine encoding/allowed writes/actor transition semantics are **L2 OPEN**.
 
-Project layout pattern (monorepo vs multi-repo, TS vs Rust, backend vs embedded, framework choice) is an **L2 design result**; no universal folder tree, mandatory interface-per-function, agent framework or plugin registry is specified by ADS.
+### S.3 Adaptive scaffold detail and progressive enrichment
 
-### S.3 Minimum bounded scaffold/contract baseline
+Scaffold detail is chosen from the **actual Frozen L2 and coordination need**, not from project labels, number of Agents, percentage complete or template size:
 
-When scaffold code exists, the accepted baseline ideally contains **only applicable**:
-- frozen, source-linked **public API/schema/event/ABI/tool-call contracts** and module ownership/write-scope; identify **stable vs internal/private** boundaries;
-- package/module paths, minimal imports/exports and integration composition point, plus safe extension points that do not introduce speculative abstractions;
-- actual build/dependency/toolchain/lockfile/config baseline with needed secret-free environment example and low-cost reproducible compile/lint/test entrypoints;
-- focused **contract compilation/serialization checks, import/export wiring smoke, expected error markers**, and at least one negative or failure-path test when inherent to the contract;
-- interfaces for real environment adapters (if L2 requires) without pretending fake/stub implements external guarantees; where applicable mock/fake labels are obvious and cannot satisfy Production/Real Host assurance;
-- exact project/ref/head/tree/branch, upstream rights/provenance, check commands and **known intentionally unimplemented functionality** list; no acceptance-by-template checkbox.
-
-**Scaffold acceptance is narrowly `BASELINE_STRUCTURE_READY` or `CONTRACT_COMPILATION_READY`, NOT `FEATURE_COMPLETE`, `END_TO_END_PASS`, `E3_PASS`, `INTEGRATION_PASS`, or `RELEASE_READY`.** A compile-green `NotImplemented` or stub is not a runtime capability PASS. Never use test skip, unexecuted code paths or swallow failures to claim a green functional result.
-
-The baseline SHA is a **planning input** under a frozen L2: it cannot silently overwrite architecture decisions or change Frozen Product semantics. A source-scaffold branch/PR must follow ordinary real code Task authorization, currentness, Review Policy and supported merge semantics; don't leave all consumers pinned to a scaffold branch that never integrated.
-
-### S.4 How the implementation DAG consumes a scaffold
-
-Plan **feature/invariant/contract-responsibility Tasks**, **not automatically one Issue per interface**.
-
-Each Task resolves:
-`PRODUCT_ACCEPTANCE_REF + FROZEN_L2_REF + SCAFFOLD_BASE_SHA_IF_ANY + OWNED_CONTRACTS_AND_COMPAT_RULES + PRIMARY_CONCERN + ALLOWED_WRITE_SET + ALLOWED_INTERFACE_VARIANCE + UPSTREAM_DEPENDENCIES + FOCUSED_TEST_AND_NEGATIVE_GATE + INTEGRATION_OWNER + FORBIDDEN_CHANGES`.
-
-Candidate patterns:
-```text
-T00 bounded contract/bootstrap (only if needed)
-  ├── T01 core behavior across one or several private interfaces
-  ├── T02 independent host/external adapter
-  ├── T03 domain workflow/semantic capability
-  └── T04 UI/client consumption (only if stable contract permits)
-               ↓
-       T05 central composition/integration
-               ↓
-       gate-owner version validation and release
-```
-
-Tasks may have **no interface**, one interface, or many related interfaces; the unit is **one independently reviewable and valid concern/invariant** with truthful parallelism and no shared writer collision. Contract/ABI migrations, data migration, safety, test conformance and integration are proper Tasks even when not a "feature interface". Do not force interface-first indirection for implementation that has no value from that abstraction. If an apparently shared contract has not stabilized, enforce a real predecessor before parallel consumer claims or preserve the atomic concern.
-
-### S.5 Change classification: HIGH_ASSURANCE is not an all-purpose change approval
-
-| Class | Example | Proposed owner/response |
+| Scope | Suitable baseline | Guidance |
 |---|---|---|
-| `SAME_CONTRACT_IMPLEMENTATION` | implementation details/tests, private refactor, no consumer behavior/contract drift | Normal Task + actual focused checks; current contractual scope only |
-| `INTERNAL_SEAM_CHANGE` | private interface needed for one owner, no cross-owner semantics | Re-evaluate affected Task/Pack, currentness and tests; L2 owner if an actual frozen architecture invariant changed |
-| `SHARED_PUBLIC_CONTRACT_CHANGE` | API/schema/events/exported types/public error semantics, dependent consumers | Architecture/compatibility owning amendment + bounded consumer impact traversal, legal Task DAG mutation if topology changes, mandatory contract regression and required Review |
-| `MATERIAL_RISK_OR_EXTERNAL_EFFECT` | auth/trust/human DENY, irreversible external effect, persistent migration, concurrency/data integrity, cross-tenant, rights/provenance | **HIGH_ASSURANCE treatment** for the actual high-risk obligations and real negative tests (plus owner amendment for altered contracts); cannot be waived by ROI |
-| `PRODUCT_SCOPE_CHANGE` | feature promise, acceptance behavior or policy changes | explicit **Product Authority** amendment/thaw/successor; then re-evaluate L2/scaffold/DAG/assurance as impacted; HIGH_ASSURANCE is not a substitute for Product decision |
+| Existing mature project | **REUSE** verified current source, add only absent seams | No regeneration/destructive reset of working layouts |
+| Small concern / low-risk change | **MINIMAL / CONTRACT-ONLY** project/reference; optional omission only if authorized Product applicability | Do not add empty generator steps, redundant code or obligatory Host |
+| Several independent modules / multi-Agent | **STRUCTURAL / BUILDABLE** packages, schemas, stable contract boundaries, composition root, test runner, isolated write surfaces | Prefer reproducible compile/import/build smoke where relevant |
+| High-risk runtime / external integration | **RISK-BOUNDED** trust/error/failure contracts, fake-vs-real labels, environment preflight, relevant negative proof requirements | No fake/E1 proof promoted to E3, no automatic entire release matrix |
 
-No "any scaffold/interface edit automatically HIGH_ASSURANCE"; no "a small rename never needs high assurance." Determine from **real material impact + current authoritative security/Review/Release policy**. HIGH_ASSURANCE is **assurance strength**, not authority to modify frozen products/architecture; an ordinary Builder cannot change shared public contract just because strong validation is available.
+During **each** DAG design iteration, ask:
+1. Is the intended Task a meaningful independently reviewable **feature/invariant/contract/validation/integration concern** with clear authority and acceptance, rather than one method/interface/file?
+2. Which **actual concrete scaffold seam** (path, interface, schema, test harness, config, ownership boundary) must exist for an unfamiliar Agent to execute the Task without ad hoc architecture invention?
+3. Does enriching the scaffold now **reduce** foreseeable interface disagreement, shared-writer collision or downstream rework enough to justify its added cost? If not, leave the detail to L3/Task implementation.
+4. Is the new seam already supported by Frozen L2? If not, refer to Architecture owner; material Product/L2 changes cannot be silently imported as a bootstrap convenience.
+5. Do scaffold/source and draft Task acceptance now agree? Record mismatches and fix boundedly, avoiding circular "Task cannot be planned until fully implemented" claims.
 
-Post-baseline drift procedure: identify actual changed contract/semantic fields → trace consumer Tasks and tests → decide amended stable baseline/limited compatibility adapter vs legitimate same-contract repair → obtain **Product/L2/Task/Release** owners for their respective authority changes → keep accepted active Claims protected, route affected tasks to legal rebind/supersede → run risk-required exact-subject validation and permitted independent review → re-read merge/release gates. Avoid blanket restart of unaffected Task DAG nodes.
+**Allow gradual detail, not gradual fake implementation:** type/interface/API contract, minimal package tree, import/export, named module owner, dummy/no-op adapter that explicitly reports `NOT_IMPLEMENTED`, minimal test runner, generator provenance, dependency/lockfile, clean build instructions and known external Host prerequisites. Feature behavior should remain for post-freeze Tasks unless absolutely necessary to prove **scaffold structure**, and any required real executable pre-freeze behavior must be explicitly within Bootstrap authorized concern rather than silently hidden.
 
-### S.6 Cost-control and negative proof cases
+### S.4 Paired Freeze — acceptance contract and identities
 
-| ID | Adversarial case | Required response |
+At **one coordinated planning checkpoint**, the pair must be proven mutually consistent; conceptual "same-time freeze" does **not** require unsafe simultaneous GitHub writes or pretending two different SHAs are identical. The accepted source snapshot is **integrated on the authorized version branch**, with immutable commit/tree identity; the frozen DAG has its own exact revision pointing to that source. If both can be checkpointed in one safe commit under legitimate merge governance, fine; otherwise pin the explicit ordered pair.
+
+Minimal acceptance:
+- **Exact pins**: Product Freeze, L2 Freeze, repository/branch/source commit/tree, dependency & lock versions where material, scaffold validation evidence exact subject, planning DAG checkpoint/hash and current owner.
+- **Inventory match**: every planned independently dispatchable Task identifies the owned module/contracts/write-set and known interfaces/test commands in the scaffold, or an explicit lawful Task-owned future seam not yet created; no orphan scaffold promises that silently count as implemented.
+- **Dependency correctness**: true blocked-by relationships, cross-owner shared contracts, central wiring Task, atomic safety invariants and legitimate independent parallelism; no circular dependency caused by provisional scaffold notes.
+- **Implementation absence truth**: interface stub that throws or intentionally fails cannot satisfy Task/feature PASS. Track intentionally missing implementations and the Task(s) that will own them, distinguishing schema/compile smoke from behavior, real host and Release.
+- **Reproducibility**: applicable build/import/contract/negative-smoke executed on declared eligible environment with source/evidence identity, truthful `NOT_RUN` where required Host unavailable. High-risk mandatory proof may remain a legitimate downstream Task/Version responsibility **only if** its owner allows deferral and no bootstrap claim asserts it passed.
+- **Independent authority**: acceptance is a bounded bootstrap/current-source check + regular Task DAG planning Freeze under existing applicable policy, **not** a newly minted "scaffold Product Freeze". Frozen DAG/Task Packs consume the integrated scaffold and preserve Product/L2 authority hierarchy.
+- **Readback**: before materializing Issues, re-read accepted paired identities and validate source/contract/DAG concordance. If drift or ambiguity, rebind or hold impacted dependent tasks rather than issuing READY from stale draft.
+
+DAG-planning closeout **and** scaffold baseline completion are one program-level convergence objective; until both are satisfied, `IMPLEMENTATION_DAG_FREEZE=NO`. Do not block forever on optional scaffold polish that has no material Task/contract consumer; unknown mandatory architecture constraint remains blocking under the actual existing owner.
+
+### S.5 Post-Freeze implementation and change response
+
+Downstream tasks must consume **actual accepted scaffold source**, rather than re-specifying the build/run/contract conventions:
+`PRODUCT_REF + L2_REF + SCAFFOLD_SHA/TREE + DAG_CHECKPOINT + TASK_ID + OWNED_CONTRACTS + ALLOWED_WRITESET + DEPENDENCIES + REQUIRED_L3/TEST/GATES + INTEGRATION_OWNER`.
+
+Task size remains **one coherent independently valid concern**, not mechanically one API endpoint/TypeScript interface; Tasks for tests, migration, adaptation and central wiring can legitimately consume or evolve interfaces within authorized scope.
+
+Post-Freeze edit classification:
+- `PRIVATE_IMPLEMENTATION`: same contract and scoped behavior → current normal Task/concern test; **no blanket HIGH_ASSURANCE**.
+- `OWNED_INTERNAL_SEAM`: internal change with bounded consumers → scoped rebind/tests, Task Pack/DAG mutation when material; Architect only if L2 invariant changes.
+- `SHARED_CONTRACT_CHANGE`: changed public schema/API/error semantics/shared invariant → actual L2/compatibility amendment, affected consumer Task DAG and evidence impacts, risk-required review/tests; no unapproved Builder schema drift.
+- `HIGH_CONSEQUENCE`: security/permission/data integrity/irreversible effects/human DENY/major migration → **HIGH_ASSURANCE** for applicable mandatory evidence **plus** owning Product/L2 change authority as appropriate.
+- `PRODUCT_SCOPE_CHANGE`: Product amendment/thaw and affected L2/scaffold/Task reprojection before continued work.
+
+**HIGH_ASSURANCE remains assurance depth, not permission to edit Frozen contract.** Any scaffolding baseline changes after freeze are ordinary governed source/contract changes with currentness propagation; do not invalidate all unaffected code/evidence by default.
+
+### S.6 Adversarial examples for co-evolution (candidate negative tests)
+
+| ID | Attempted failure | Required outcome |
 |---|---|---|
-| SC01 | Mature application with stable packages receives a giant generated skeleton | `REUSE_EXISTING` or `OMIT`, no redundant scaffold Task |
-| SC02 | T00 writes real source before any legal Task authorization because it is "pre-DAG" | **DENY** source mutation; choose legal A or prospectively authorized B |
-| SC03 | All shell modules compile but public functions throw `NotImplemented`, CI claims feature PASS | Only scaffold/build smoke PASS, feature/runtime still unimplemented |
-| SC04 | Two Agents edit central composition root as "independent interface Tasks" | enforce separate wiring/integration owner and actual dependencies |
-| SC05 | Large security invariant split into ten interface-level PRs with no individually valid intermediate state | preserve atomic concern or freeze prerequisite contract before honest split |
-| SC06 | Private refactor inside unchanged L2 interface triggers full multi-model/Host/CJ/RQ ceremony | limited change with applicable focused owner gates; no automatic HIGH_ASSURANCE |
-| SC07 | Public event contract changes and stale consumer same-HEAD Review is reused | L2/compatibility amendment, impact readback and fresh required exact-subject evidence |
-| SC08 | Product acceptance changed but scaffold file paths unchanged | Product amendment first; exact affected L2/DAG consumers re-evaluated |
-| SC09 | Stubs/deterministic fakes demonstrate compile success, downstream claims E3 environment reliability | fake E1 smoke != real E3; keep required real environment gate |
-| SC10 | Initial scaffold locks language/runtime dependency unsupported on real Build Host | L2 dependency/toolchain authority handles incompatibility; no fake runnable claim |
-| SC11 | Scaffold generators pull incompatible external licenses or secrets into repository | enforce current upstream rights, lockfile, secret boundaries; no materializing without legal write/input authority |
-| SC12 | Scaffold is intentionally dynamic/plugin-oriented and no stable per-feature interfaces exist | plan capability/contracts/ownership seam only where material; do not mandate interface for each Task |
-| SC13 | Bootstrapping causes late changes to "frozen" detailed DAG; controller edits dependency text but not native edges | authorized mutation and native readback only; no phantom READY |
-| SC14 | Generated task code implements correct public API but breaks a shared failure/transaction invariant | independent invariant gate and integration owner; interface signature alone insufficient |
+| SC15 | Implementation DAG draft appears first, then scaffold code changes while planning agent declares full DAG frozen | No freeze until source accepted and paired identities read back |
+| SC16 | Scaffold grows to include full feature logic because planners want "100% runnable" Task templates | Bound to structural/contract concern, postpone behavior to feature Tasks; no hidden pre-DAG feature implementation |
+| SC17 | Two planning/Bootstrap Agents simultaneously edit a shared manifest and public contracts | One source writer under valid Claim; route conflicts through current owner |
+| SC18 | Scaffold compiles after inserting false-returning stubs; controller marks all corresponding Tasks DONE | Structure-only smoke, feature tasks remain unimplemented |
+| SC19 | Planning draft references interface schema V2, but merged scaffold contains V1 | Hold DAG Freeze; bind matching exact sources and truthfully migrate/repair |
+| SC20 | Repeated draft iterations make 30 empty PRs/issues with no new decision predicate | Budget/stop-loss; batch coherent bootstrap edits and minimize ceremony |
+| SC21 | Project pinned to v4.11 uses "new v4.12 Product direction" to write pre-DAG code | Prohibit, use old legal T00 DAG path or adopt future frozen rule prospectively |
+| SC22 | After Freeze, Worker silently edits cross-agent public API as a "quick fix" | Shared contract owner and affected consumers re-evaluation; cannot rely on stronger testing alone |
+| SC23 | Scaffold branch remains unmerged, but Task DAG bound to local unverified HEAD | Freeze not authorized until accepted integrated exact SHA/current source |
+| SC24 | Mature project with stable build receives complete rewrite under "generate once" | Reuse and minimally enrich existing project; no destructive recreation |
+| SC25 | A newly added adapter stub requires absent real E3 platform proof, but baseline CI is green | No E3 promotion; required applicable real proof remains NOT_RUN/blocked/deferred only by owner |
+| SC26 | During paired Freeze, late mandatory auth invariant reveals current architecture incomplete | Reopen/resolve actual L2 authority; no scaffold-only policy override or fake freeze |
 
-### S.7 Product/L2 unresolved decisions
+### S.7 Decisions and owner placement
 
-1. Does v4.12 actually authorize staged **B** (small explicit Bootstrap planning authority → full DAG), or choose only existing safe **A**? Must adjudicate against `DEVELOPMENT_WORKFLOW` Stage2.4/2.5, Task DAG Governance and GitHub work-item admission; **not a silent implied exception**.
-2. For which actual project contexts does executable bootstrap improve end-to-end time/rework enough to justify maintaining a stable SHA, and is CONTRACT_ONLY sufficient? Use real domain-harness/app8/ADS dogfood, not assumed savings.
-3. What defines minimum scaffold acceptance for a project: compilation, contract test, build/install, environment smoke, basic composition? Scope by actual frozen Product/L2 requirements; don't make full E3 a universal bootstrap gate.
-4. What exact source baseline and Task Pack/Execution Pack binding must be read before first downstream JIT Claim, and which implementation DAG mutation is needed for split/refinement?
-5. Where do API/schema evolution, compatibility, tests, generator provenance and high-assurance negative proof land in existing owner standards? No new `SCAFFOLD_AUTHORITY` or gate status.
-6. How to preserve prior mature project layout/third-party licensing, project pin and frozen historical consumers if the user chooses scaffold generation?
+**Product direction settled for prospective v4.12:** `SCAFFOLD_BEFORE_FULL_DAG_FREEZE=YES`; `SCAFFOLD_AND_DAG_DRAFT_COEVOLVE=YES`; `PAIRED_BASELINE_AT_DAG_FREEZE=YES`; `DETAIL_ADAPTIVE_TO_PROJECT=YES`; `AFTER_FREEZE_TASKS_CONSUME_SCAFFOLD=YES`. This supplants prior C15 "A default, B optional" **as Product intake direction**, not already enforceable policy in a pinned ADS standard.
 
-**Proposed v4.12 acceptance:** A complex new project can establish a minimally verifiable contract/bootstrap baseline and use its exact integrated source when planning/dispatching independent implementation tasks, yielding fewer shared-write collisions and truthful gates; a small/mature project can legally omit the scaffold entirely. A contract change receives **proportional risk-based assurance** plus authorized architecture/Product amendments when applicable. No extra universal stage, interface-per-Task, second DAG, obligatory Human Review or pre-DAG unowned source work.
+**Still L1/PRD/L2 OPEN:**
+1. Exact **bounded pre-DAG Bootstrap Work Authorization** projection in existing Issue/Task/Claim governance, allowed write set, whether it needs a tiny planning checkpoint, and compatibility with native GitHub dependencies; verify actual admission and failure modes.
+2. How a single accepted/bootstrap writer can iteratively edit code while planners refine draft DAG, preserving truthful exact subjects across source revisions and preserving the one-concern/one-PR economy.
+3. Project-specific **scaffold acceptance profile** and minimal real tests/Host preflight; do not universally force a build runner or E3 on abstract schemas.
+4. Exact **paired identity checkpoint** representation and source/currentness re-evaluation after integration commits, prospective migration/adoption for pinned projects.
+5. Required L2/compatibility decision path for interface changes discovered during planning vs post-Freeze; cases where architecture remains materially unresolved and must block final Freeze.
+6. Full negative conformance tests for unauthorized pre-DAG writes, duplicate Claim, unmerged source, stub PASS, false host evidence and overwritten Product/L2 scope.
+
+**No additional fourth DAG, no new independent scaffold authority, no new default HIGH_ASSURANCE on all edits.** The legal pre-DAG bootstrap exception must be fully specified and approved prospectively before any authorized Builder uses it.
