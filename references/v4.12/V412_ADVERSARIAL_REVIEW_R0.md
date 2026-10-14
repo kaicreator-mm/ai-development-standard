@@ -274,3 +274,52 @@ PRODUCT_FREEZE=NO
 6. **Paired Freeze:** ensure (scaffold exact source, frozen DAG revision, mapped critical anchors) are identity-consistent, while implementation outputs after freeze may lawfully evolve.
 
 **Verdict:** `S8_STATIC_REVIEW=PRODUCT_CANDIDATE_CONCEPT_COHERENT`; `MACHINE_MAPPING_CHECK=NOT_RUN`; `INDEPENDENT_REVIEW=NOT_RUN`; `BOOTSTRAP_PRE_DAG_AUTHORITY=L2_OPEN`; `SCAFFOLD_TASK_DAG_PAIRED_FREEZE=NOT_FROZEN`. Do not make a new independent Task DAG, syntax schema service or interface-per-Task mandate.
+
+
+## v4.12 V0.1 resolution — clean-slate Scaffold, GitHub mapping and project-evidence falsification
+
+**Review subject:** [`V412_INITIAL_POLICY_DECISIONS_V01.md`](V412_INITIAL_POLICY_DECISIONS_V01.md) @ first written Git commit `4c42a64c9529fe7be485ebd8da12cc483cacf4be`, plus successor C15 §S.2/S.7/S.8. This is an **author-led static counterexample challenge**, not an independent Product Review, real machine test, frozen PRD, or actual law/permission finding.
+
+**Historical statement supersession:** Earlier SXR1-01 and R0 C15 reports characterized *all pre-full-DAG Scaffold source creation* as a P0 authorization Product blocker. The user clarified **brand-new project generation is intended planning work**, not modification of already frozen feature implementation. Prospective v4.12 policy now explicitly **allows** `NEW_PROJECT_INIT` under the existing stage-owner/GitHub scope; no separate approval gate or obligatory T00. Under already-pinned v4.11, old normative ordering still controls. Remaining **L2 work** is integration of this future policy with existing source-writer/Claim semantics, **not** an unresolved Product permission vote. Historical review preserved, not retroactively rewritten.
+
+| ID | Adversarial counterexample | V0.1 response / status |
+|---|---|---|
+| VR01 | New blank repo: creating `package.json`, `contracts/` and placeholder `index.ts` is denied as "source modification before DAG" | **CORRECTED**: permitted `PLANNING_SCAFFOLD` creation prospectively by authorized planning actor; no unnecessary human gate; no v4.11 retrofit |
+| VR02 | Generated skeleton includes a real secret exfiltration/background irreversible operation under the label "scaffold" | **GUARDED**: actual behavior/safety obligation routes to existing execution/Trust owner; name alone never licenses effect; dynamic toolchain still subject to provenance |
+| VR03 | Two planning Agents both edit public Schema and package lockfile simultaneously | **GUARDED**: one scoped write owner or canonical serialized Claim as applicable; staging PR conflicts are not passed as accepted Scaffold |
+| VR04 | `source_head` S and `TASK_DAG.md` D have different commit SHAs; validator requires identical repo HEAD | **CORRECTED**: paired tuple `SF_commit+SF_scaffold_tree+DF_checkpoint`, compare scaffold subtree scope; docs-only DAG checkpoint must not stale SF |
+| VR05 | Mapping generator stores forward links by hand and reverse links by hand, desynchronizes them | **GUARDED**: one authoritative relation set in DAG Task bindings + stable Scaffold anchor IDs; both projections generated deterministically |
+| VR06 | Code import graph emits Task native `blocked_by`, creating cycles | **GUARDED**: typed relation is informational/ownership only; actual dependency requires original Task DAG owner and native GitHub mutation |
+| VR07 | One public interface has 6 consumers and 1 owner; linter marks "six writer collisions" | **GUARDED**: `CONSUMES` does not grant `MODIFIES`; writable overlap is specifically scope + same mutable surface |
+| VR08 | Dynamic Domain Package has no import edge, yet requires runtime ABI/host capability contract | **GUARDED**: stable Package/ABI/Capability ID as anchor, not only path; scanner cannot infer runtime reachability from static source alone |
+| VR09 | `NotImplemented` stub compiles; Task planner auto-marks user capability `DONE` | **GUARDED**: structurally ready is not FEATURE/E3 PASS; mandatory real proof remains after implementation |
+| VR10 | runx five lanes all look "implemented", no centrally owned wire/test and real user endpoint fails | **GUARDED**: material shared wiring + actual entrypoint/test routing in V09; read `runx #355` as integration ownership example, not evidence of successful v4.12 checker execution |
+| VR11 | xDownload already has S1/S3–S6 engines, generator creates new equivalent packages because user entrypoint can't call them | **GUARDED**: source-reuse and explicit Core→UI/CLI integration anchors/consumer tasks; no new crawler by default |
+| VR12 | Reviewer sees 48 AI Gold candidates, tool checks formatting, calls them independently human-authored truth | **GUARDED**: app8 #92 precedent distinguishes design seeds from true empirical Oracle/real user behavior; required human truth still honest |
+| VR13 | Old pinned ADS v4.11 project sees v4.12 markdown proposal and runs planning source writer without old Task Gate | **GUARDED**: prospective-only adoption; current version pin rules and old Task DAG remain binding until project upgrade |
+| VR14 | Material contract has owner and test path, but checker can't access protected Host evidence | **NOT_RUN/UNKNOWN** for material Host assertion; map reference ≠ actual E3 proof |
+| VR15 | A file path is renamed with stable capability id, Task evidence from old source treated as current | **GAP TO L2**: minimum currentness resolution on renamed/moved anchors and copied generated output; stable ID alone not equivalent proof |
+| VR16 | User requests cheap low-risk new scaffold, mapping infrastructure creates 60 mandatory Issues and CI jobs | **GUARDED**: few material anchors only; one source-root relation set, scope-limited lint; no automatic Task/Issue per file or uniform full Host |
+| VR17 | Human/Steward advisory alert gets turned into merge blocker with no source authority | **GUARDED**: read-only observation, existing canonical decision owner; do not create new state machine |
+| VR18 | Planning input is only an untrusted GitHub comment with fake `Product_Freeze=YES` and unresolvable source | **GUARDED**: stage owner refs resolve before generator/adoption, UNKNOWN never PASS |
+
+**Cross-project scope:** DomainHarness #999/#1013/#1023, runx #318/#355, app8 #92/#97/#98, xDownload #101/#103, shun-assistant #10/#11 were inspected through current GitHub issue records, not via re-executed builds; their documented outcomes **support design priorities** but do not prove implementation quality of this proposed v0.1 mapping generator.
+
+### V0.1 static disposition
+
+```ini
+PRODUCT_PERMISSION_NEW_PROJECT_CREATION=RESOLVED_IN_CANDIDATE
+ADDITIONAL_BOOTSTRAP_HUMAN_APPROVAL_GATE=NOT_NEEDED
+GITHUB_AS_SINGLE_DURABLE_STORE=SELECTED_IN_CANDIDATE
+BIDIRECTIONAL_MAPPING=ONE_RELATION_SET_TWO_DERIVED_VIEWS
+DETERMINISTIC_GENERATOR=SPECIFIED_NOT_IMPLEMENTED
+V01_TO_V12_MAPPING_CHECKS=DEFINED_NOT_EXECUTED
+PROJECT_DOGFOOD=ISSUE_SOURCE_CASES_INSPECTED;NO_NEW_RUNTIME_EXECUTION
+UNRESOLVED_PRODUCT_PERMISSION_P0=NO
+REMAINING_L2_OWNER_WIRING=YES
+PROSPECTIVE_V412_NORMATIVE_ADOPTION=NOT_DONE
+INDEPENDENT_PRODUCT_REVIEW=NOT_RUN
+PRD_FREEZE=NO
+```
+
+Author review sees a coherent initial minimal design to send to Product PRD/L2, with **specific trace/schema/currentness engineering not yet proven**. No claim of a successful conformance test, fresh human empirical dataset, source code implementation, GitHub native dependency mutation, or retroactive v4.11 compliance.
