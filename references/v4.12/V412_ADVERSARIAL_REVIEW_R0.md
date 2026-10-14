@@ -191,3 +191,53 @@ After R0, a revised **non-normative** contract candidate was written at `referen
 - **G6 real gate scope:** high risk may require real-host security/negative proof even if scaffold compiles; low-risk source-only scaffolding should not inherit whole-version Host/Hidden matrix.
 
 **Adversarial verdict:** `C15_R0_AUTHOR_LED_REVIEW=SEMANTIC_DESIGN_CANDIDATE_READY`; `P1_UNADDRESSED_SEMANTIC=0`; `P1_RUNTIME_MACHINE_PROOF=NOT_RUN`; `INDEPENDENT_ARCHITECTURE_REVIEW=NOT_RUN`; `L2_B_STAGED_BOOTSTRAP_AUTHORITY=OPEN`; `PRODUCT_FREEZE=NO`. No normative change to v4.11 execution/Task DAG, no E3, no completed version release.
+
+
+## C15 R1 — Co-evolving scaffold + DAG / paired-freeze adversarial update
+
+> **Exact review subject:** C15 revised candidate after user Product direction to generate a real scaffold **before full Implementation DAG Freeze**, enrich it alongside Draft DAG and freeze the **paired identities** before downstream Task execution. Review class = **author-led static adversarial challenge**, not Fresh Independent Review, not tested source, not an approved new work-authority mechanism. The preceding `C15 SX01–SX12` conclusions describe the **historical R0 candidate**, which had default T00 path A. R1 supersedes their path choice; do **not** cite R0 as an authorization for pre-DAG writes.
+
+```ini
+SCAFFOLD_PRODUCT_DIRECTION=SCAFFOLD_BEFORE_FULL_DAG_FREEZE
+DAG_DRAFT_AND_SCAFFOLD=CO_EVOLVE
+FREEZE_TARGET=PAIRED_EXACT_SCAFFOLD_AND_TASK_DAG
+USER_PRODUCT_DIRECTION=RECORDED
+CURRENT_V411_PRE_DAG_SOURCE_PERMISSION=NO
+V412_AUTHORIZATION_DELTA=DESIGN_REQUIRED
+MACHINE_TESTS=NOT_RUN
+INDEPENDENT_REVIEW=NOT_RUN
+PRODUCT_FREEZE=NO
+```
+
+### R1 negative-case matrix (planning checks, not executed tests)
+
+| ID | Red-team attack | Correct resolution | Candidate status |
+|---|---|---|---|
+| SXR1-01 **P0 authority candidate** | Developer invokes generator immediately after L2 Freeze, before scoped permission, because Product says "generate before DAG" | **Reject unclaimed source writes** under pinned v4.11. v4.12 must prospectively define bounded Bootstrap admission with real Issue/actor/write scope/currentness and test negative branch. No hidden bypass. | **TEXT_GUARDED / LEGAL IMPLEMENTATION OPEN** |
+| SXR1-02 **P1** | Planning Agent and Scaffold Agent both alter public schema; each independently seems current | one incompatible accepted source writer / canonical claim and re-read source, planning consumes newest accepted exact SHA; no silent second mutation authority | TEXT_GUARDED / CONFORMANCE OPEN |
+| SXR1-03 **P1** | DAG D1 references adapter v2, scaffold SF still exports v1; paired Freeze marks both ready | cross-check all material contracts/Task paths/ownership against integrated scaffold; do not Freeze until consistent | TEXT_GUARDED / EXACT CHECK OPEN |
+| SXR1-04 **P1** | Every change in DAG D0 forces new scaffold PR, which makes DAG stale and causes infinite feedback | bounded co-edit sessions, no new Issue per adjustment, one stable closing candidate; only real material currentness changes trigger new proof | TEXT_GUARDED / COST TEST OPEN |
+| SXR1-05 **P1** | Scaffold is on unmerged branch and DAG binds local SHA as production base | require accepted integrated version-branch source identity and current readback before DAG Freeze; local HEAD cannot stand in | TEXT_GUARDED / INTEGRATION TEST OPEN |
+| SXR1-06 **P1** | Partial stub returns success codes, basic test passes, DAG marks corresponding feature DONE | stub is explicitly unimplemented and cannot earn functional PASS; task acceptance remains future; honest negative/contract checks | TEXT_GUARDED / MACHINE TEST OPEN |
+| SXR1-07 **P1** | Architect discovers material trust boundary after S2 but planner says no time to reopen L2 | return to L2 contradiction/amendment authority; revised exact source + DAG draft only after legitimate decision | TEXT_GUARDED |
+| SXR1-08 **P1** | Bootstrap authority accidentally becomes general feature implementation authority, allowing security code before DAG | minimal contract/build/bootstrap only, strict write set and done predicate; implementation features require Task DAG/Claim | TEXT_GUARDED / ADMISSION TEST OPEN |
+| SXR1-09 **P2** | Mature repo is overwritten because Product said "generate a project" literally | reuse or minimally enrich existing accepted project, no destructive rewrite without lawful scope | TEXT_GUARDED |
+| SXR1-10 **P2** | Complex multi-host scaffold must pass all E3 platform gates before DAG Freeze, despite E3 being downstream version requirement | only intrinsic scaffold acceptance checks now; owner-approved later gates remain unsatisfied until their real execution, never fake PASS | TEXT_GUARDED |
+| SXR1-11 **P2** | Source + DAG in separate commits are rejected for not having identical SHA | paired freeze is a **tuple** (accepted exact scaffold source SHA/tree + DAG checkpoint), not an invented identical SHA guarantee | TEXT_GUARDED |
+| SXR1-12 **P2** | After paired freeze, Agent renames cross-cutting schema without L2 amendment and creates downstream PR conflicts | classify impact; lawful architecture/Task DAG/compatibility amendment and only affected revalidation, HIGH_ASSURANCE only by consequence | TEXT_GUARDED |
+| SXR1-13 **P1** | Bootstrap work never reaches clean closeout; DAG freezes based on transient generator output | version-integrated exact scaffold + bounded bootstrap gates/terminal are mandatory preconditions for DAG Freeze; no Draft->PASS promotion | TEXT_GUARDED / EVIDENCE TEST OPEN |
+| SXR1-14 **P2** | Product promise changed while scaffold paths and basic tests still match | Product owner must amend; derive affected architecture/scaffold/DAG impacts; no unchecked freeze | TEXT_GUARDED |
+
+### Residual design decisions and severity
+
+**P0 AUTHORIZATION / BLOCKER TO NORMATIVE ADOPTION:**
+1. Define a **legal exception** to the v4.11 sequence for a **bounded pre-full-DAG** Bootstrap **source** work item. Determine if existing GitHub Work Item + single Bootstrap Claim suffices, or whether the workflow and prerequisite predicate genuinely need a minimal prospective amendment. Must not invent parallel claim authority or create a fourth implementation DAG; verify **source writes rejected without that claim**.
+2. Define what **implementation is forbidden** in Bootstrap (normal features, security release behavior, migration) vs what limited executable build/contract wiring counts as scaffold; enforce source/write-set owner identity.
+
+**P1 L2 PROJECTIONS:** exact paired source/DAG checkpoint and currentness test; draft design iterates without duplicate accepted Claims; unresolved cross-module contracts and revision collisions; smoke-gate adequacy (without full E3); candidate stabilization and truthful skipped tests.
+
+**P2 OPTIMIZATION:** measure total planning+bootstrap+implementation rework vs old first-DAG-T00 pattern on an actual project; never assert savings without measurements. Preserve no-scaffold Fast Path and reuse for mature repos.
+
+**Reviewer interpretation:** P0 here means **important unresolved authority architecture that blocks declaring the revised workflow normative/ready**; it is **not a confirmed exploitable source defect in v4.11** and creates no new v4.11 Release blocker.
+
+`AUTHOR_LED_ADVERSARIAL_RESULT=PRODUCT_DIRECTION_COHERENT_BUT_AUTHORITY_DESIGN_OPEN`; `FROZEN_V412_PRD=NO`; `L2=NO`; `REAL_HOST=NOT_RUN`. Keep PR in Draft until normal Product Review/Freeze and L2 owner resolution.
