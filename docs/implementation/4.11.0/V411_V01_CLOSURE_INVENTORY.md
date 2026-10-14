@@ -11,7 +11,7 @@ OWNING_VALIDATOR_VERDICT=#1021@6162591281_BLOCKED
 FROZEN_V01_PACK_BLOB=8885201ac2501f3a6e3a3d31123a63c2546986d2
 RAW_VISIBLE_REGRESSION=139_INVOKED_125_PASS_14_FAIL
 T12_OWNER_ASSERTIONS=52_SUCCEEDED_ZERO_RUNNER_ERRORS
-GATE_S08_HUMAN=BLOCKED
+GATE_S08_HUMAN=BLOCKED_GENUINE_APPROVE_RECORDED_NEGATIVE_NOT_GENUINE_DENY
 GATE_FOURWAY=BLOCKED_UNDER_UNMODIFIED_FROZEN_PRODUCT
 FRESH_REVIEW_THIS_EVIDENCE=NOT_RUN
 V02=NOT_ADMITTED
@@ -28,7 +28,7 @@ The original 14 red scripts were all executed on the current HEAD and again on p
 
 | ID | Original owner/authority and source | What is still required | State, legal way forward |
 | --- | --- | --- | --- |
-| **B1 S08±** | Frozen Product §2.4, T09 owner; §RELEASE | A **genuinely authorized human DENY** at exact candidate `322e868`, scope `effect:test`, operation `irreversible-write`, tenant `ads-test`, source genuinely attributable; actual REAL_HOST source test + same one persistent SQLite object A denied and B successor denied, zero effects after reopen | **BLOCKED**. Human supplies actual authority record; Agent may present card/run code, **must not mint human decision**. No synthetic fixtures accepted. |
+| **B1 S08±** | Frozen Product §2.4, T09 owner; §RELEASE | A **genuinely authorized human DENY** at exact candidate `322e868`, scope `effect:test`, operation `irreversible-write`, tenant `ads-test`, source genuinely attributable; actual REAL_HOST source test + same one persistent SQLite object A denied and B successor denied, zero effects after reopen | **BLOCKED**. An accountable human **already chose APPROVE** (#1021@6163883456), with exact receipt verified by a distinct Validator (#1021@6163960062); the genuine APPROVE was **rejected** by the DENY-only T09 gate before the sink. It is a valid negative observation, not a DENY receipt, and must never be relabeled. Any new DENY must be a *separately freely made* current human decision; otherwise preserve BLOCKED or take lawful prospective Product change control. No synthetic fixture substitutes for the frozen human proof. |
 | **B2 N08 four-way** | Frozen PRD §2.2–2.3, Product Freeze #943, L2 §10, T12 source + V01 §N08 | Under original frozen v4.11 Product four-job combination has in-scope fail-closed Release proof obligation. True 4-way material positive not executed, `UNKNOWN`; negative union executed but not a positive | **BLOCKED**. Either truly material same-work-subject proof, **or** Product/L2/T12/V01/Release formally accept a *prospective* narrowed successor with explicit consumer limitation (§11.5). Current draft PR #1102 is only change-control proposal. |
 | **B3 V01 closure documentation/freshness** | Frozen V01 Pack §2/§7 | Three new V01-owned current evidence files exact-current, independent Fresh Reviewer and independently authorized Validator final tuple decision | **PARTIAL**: this 3-file Draft PR only stages source-bound **BLOCKED** artifacts, not accepted terminal. Reviewer checks exact blobs and Host-receipt fidelity; no Builder source edit or V02 shortcut. |
 
@@ -46,6 +46,6 @@ The original 14 red scripts were all executed on the current HEAD and again on p
 - Current `322e868` 139-script result =125 PASS /14 FAIL, no hidden conversion of raw results. `test_v411_t12_abc_conformance.py` 52 owner assertions success; 20 test-only PASS, 28 material raw BLOCKED, 4 future NOT_RUN are retained; four-way current UNKNOWN remains.
 - **Exclude** 28 redundant Host campaigns, physical four-way deployment **only after authorized scope successor**, unowned remote MCP service, unowned customer tenant deployment, and gratuitous historical pin reparations. **Keep** human DENY, contradictory accepted Review reduction, safe effect replay, exact-source license and independent release truth.
 - If any live consumer truly uses material four-way J09+J10+J11+J12, halt and seek their own exact evidence; do not claim ADS certified that combination.
-- Next revisit trigger: human S08 authorization receipt arrives; Product/L2 successor change is lawfully approved and new candidate created; or a new material current-source finding invalidates current owner replacement.
+- Next revisit trigger: a **new freely authorized** genuine human DENY (if actually chosen; current human choice is APPROVE); Product/L2/Pack successor change legally changes future acceptance with a new candidate; or a new material source finding invalidates current replacement. Do **not** solicit redundant human decisions solely to make a test green.
 
 **Terminal for this documentation author:** `EVIDENCE_PREPARED_WITH_V01_BLOCKED`. The currently authoritative independent final remains `V01_BLOCKED` (#1021@6162591281); this file does **not** close #1021.
