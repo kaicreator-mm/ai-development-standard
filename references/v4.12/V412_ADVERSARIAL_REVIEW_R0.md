@@ -83,3 +83,31 @@ Any in-branch R1 repair may address F01–F07 by adding compact cross-contract c
 R0 has **material design questions**, so it is **NOT Product Freeze ready**, NOT a Fresh Review and NOT a claim that C01–C12 are implemented or conformance-tested. A revised draft should demonstrate owner-based non-duplication and repair F01–F07. After that, one bounded independent Product review can evaluate a frozen *candidate* rather than spawning many per-finding Reviews. P/A graph encoding, reducer and schemas await genuine L2.
 
 **ADVERSARIAL_REVIEW_RESULT = NEEDS_REVISION_BEFORE_PRODUCT_FREEZE; NO_NORMATIVE_ADOPTION.**
+
+
+## R1 same-author repair/disposition checkpoint
+
+After R0, a revised **non-normative** contract candidate was written at `references/v4.12/V412_CROSS_STAGE_CONTRACTS_CANDIDATE.md`, §17 (R1-F01 through R1-F07). Initial R0 draft path is retired from the branch, preserved at original exact commit. This is **not independent re-review**, nor a validated implementation.
+
+| R0 finding | R1 source disposition | Still needed before actual v4.12 normative adoption |
+|---|---|---|
+| F01 P1 | **CANDIDATE_TEXT_ADDRESSED** (phase/repo/version identity) | L2 stable machine identity & cross-repo adoption semantics |
+| F02 P1 | **CANDIDATE_TEXT_ADDRESSED** (Product-purpose bounded feasibility) | Product owner/Risk-review acceptance and concrete case |
+| F03 P1 | **CANDIDATE_TEXT_ADDRESSED** (6-step impact and currentness readback) | Exact owner currentness/equivalence tests, not a second reducer |
+| F04 P1 | **CANDIDATE_TEXT_ADDRESSED** (no supersession-derived terminal) | L2 P/A graph projection / explicit authority decision conformance |
+| F05 P1 | **CANDIDATE_TEXT_ADDRESSED** (conflict precedence and scoped block) | Owner arbitration negative test and Human DENY dogfood |
+| F06 P1 | **CANDIDATE_TEXT_ADDRESSED** (trusted canonical source admission) | Actual pinned-schema producer conformance #783; cannot claim already implemented |
+| F07 P1 | **CANDIDATE_TEXT_ADDRESSED** (full-predicate equivalence) | Real gate-owner evidence/negative fidelity test |
+
+**Residual status:** `P1_SEMANTIC_WORDING_OPEN=0` in this self-reviewed candidate; `P1_INDEPENDENT_PRODUCT_REVIEW_REQUIRED_OR_APPLICABLE=NOT_RUN`; `P1_MACHINE_CONFORMANCE=NOT_RUN`. F08–F15 are **L2/owner-disposition candidates**, not fixed through a duplicate subsystem. The ten choices above stay **OPEN** until genuine Product/L2 decisions with precise owners.
+
+### Additional post-repair adversarial escape probes
+
+- **Escape E01 — Mixed evidence ages:** Study collected in 2024, exact source code pinned in 2026. New stable node tuple is not enough; consumer must explicitly judge freshness by claim type. **Product policy unresolved**, do not assert generic time threshold.
+- **Escape E02 — Across-project coordinated feature:** Two repositories share a product objective and partially incompatible architecture freezes. "one graph" must remain a *federated logical view* with independent source authorities, not a common mutating DAG. **L2 projection open**.
+- **Escape E03 — Resource allocation with no atomic backend:** Current environment may not provide composite admission atomicity; proposing a v4.12 scheduler cannot say YES because a lockfile exists. **BLOCK affected claim / use lawful existing serialized authority**, no fake capacity admission.
+- **Escape E04 — Repeated Product Review of unchanged scope:** A new reviewer cannot create new Product Freeze or release evidence merely by saying PASS; treat repeated nonmaterial review as no new authorization. **Existing owner**.
+- **Escape E05 — Release metric gaming:** A high throughput of tiny accepted PRs alongside a BLOCKED real E3 critical journey is failure, not success; Steward must rank real critical path and mandatory proof. **W2/owner L2 open**.
+- **Escape E06 — No public evidence for human study:** anonymization may make raw participant evidence inaccessible to a public reviewer; *lack of public raw data* alone does not mean none occurred, yet an unauthorized party cannot certify it. Requires authorized secure evidence consumer with redacted trace and privacy policy. **Product privacy/L2 evidence envelope open**.
+
+**Final author-led adversarial verdict on R1 candidate:** `REVIEWED_DRAFT_WITH_EXPLICIT_OPEN_DESIGN_DECISIONS`. Acceptable as an **L1/PRD candidate** for an independent review and real dogfood design, **NOT normative PASS / Product Freeze / implemented cross-stage contract**. No new v4.11 blocking authority.
