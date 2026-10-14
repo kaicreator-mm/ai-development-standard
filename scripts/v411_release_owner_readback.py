@@ -18,7 +18,7 @@ REPOSITORY = "kaicreator-mm/ai-development-standard"
 JOBS = ("J09", "J10", "J11", "J12")
 PIN = re.compile(r"^[0-9a-f]{40}$")
 COMMENT_URL = re.compile(r"^https://api\.github\.com/repos/kaicreator-mm/ai-development-standard/issues/comments/([1-9][0-9]*)$")
-OWNER_EVENT = "V411_RELEASE_OWNER_PROOF"
+OWNER_EVENT = "VALIDATION_RESULT"  # existing event-v2 family, source-only witness
 
 
 @dataclass(frozen=True)
