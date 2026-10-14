@@ -530,3 +530,123 @@ Post-Freeze edit classification:
 6. Full negative conformance tests for unauthorized pre-DAG writes, duplicate Claim, unmerged source, stub PASS, false host evidence and overwritten Product/L2 scope.
 
 **No additional fourth DAG, no new independent scaffold authority, no new default HIGH_ASSURANCE on all edits.** The legal pre-DAG bootstrap exception must be fully specified and approved prospectively before any authorized Builder uses it.
+
+
+
+### S.8 Bidirectional scaffold ↔ Implementation Task DAG traceability (Product direction candidate, not a new authority)
+
+**Decision:** The paired Scaffold Baseline and Implementation Task DAG SHOULD be **mutually traceable through a typed, source-bound many-to-many relation** while they co-evolve, and pairwise consistency SHOULD be a material freeze acceptance fact. **Mutual mapping != equivalence or one-to-one file/interface/Task assignment**. Scaffold is *project structure and contracts*; DAG is *authorized execution concerns/dependencies and acceptance*. Only L2 owns architecture facts; only frozen implementation planning/Task owners own Task boundaries and native live dependency semantics. Reverse lookup cannot rewrite either owner automatically.
+
+#### S.8.1 Mapping cardinality and semantic relation types
+
+Define the smallest useful conceptual index, not a second manually maintained truth DB:
+
+```text
+S = ScaffoldAnchor {
+  anchor_id, repo_ref, artifact_path_or_contract_id, kind,
+  scaffold_source_ref, lifecycle(existing|structural_stub|planned_future),
+  bound_architecture_contract_ref, surface_owner_ref
+}
+T = ImplementationConcern {
+  task_id, frozen_dag_ref, product_ref, l2_ref,
+  primary_goal_and_acceptance, task_owner, required_tests,
+  allowed_write_scope, required_consumer_contracts
+}
+M = Relation {
+  scaffold_anchor_id, task_id,
+  type(IMPLEMENTS|CREATES|MODIFIES|CONSUMES|TESTS|INTEGRATES),
+  authority_ref, scope, currentness_ref
+}
+```
+
+Names are **illustrative L2 projections**, not a new required schema or event vocabulary. Source project/actual code identities and GitHub current Task DAG dependency data remain native canonical authorities. A small versioned Markdown mapping, references in existing Task Packs/contracts, or generated source-index **all qualify** when grounded, cheap and reproducible. Avoid two writable copies of a mapping.
+
+Valid cardinalities:
+- **One Task → several anchors:** a coherent Runtime concern implements a type, runtime function, contract tests and packaging seam.
+- **One anchor → several Task links:** a shared API is **consumed** by Runtime/UI/Adapter and **tested** by Validation, while exactly one authorized change/integration owner handles incompatible mutations for the given current scope.
+- **Zero code anchors:** a Task may plan audit/validation/human evidence that creates no new code path; it still references the applicable contract/test subject.
+- **Future anchor:** a Task may own a declared future module that does not exist in scaffold source yet, explicitly `planned_future` and `NOT_IMPLEMENTED`, without fabricating a path/compiled proof.
+- **Scaffold-owned anchor:** existing dependency/CI/generated/bootstrap-only files may be governed by L2/integration/bootstrap ownership with **no feature implementation Task**, provided the provenance/owner is explicit.
+- **Structural relation ≠ task dependency:** a module import or API consumer link is not automatically a canonical GitHub `blocked_by` edge. Genuine blocked-by arises only from required integrated predecessor results/architecture/Task governance.
+
+#### S.8.2 Practical two-way lookup, not automatic scope authority
+
+```text
+Task → anchors
+  implemented/created/modified paths + concrete contracts
+  read-only dependency anchors + focused test/negative-proof anchors
+  allowed/forbidden writes + integration owner
+
+Anchor → Tasks
+  authorized write/change owner(s) by scope/time and status
+  implementation Task(s), consumers, test/validation owner
+  feature currently unimplemented vs structurally present
+```
+
+The mapper MAY signal: `TASK_HAS_NO_CONCRETE_BOUNDARY`, `CONTRACT_WITH_NO_CLEAR_CONSUMER`, `UNOWNED_MUTABLE_SURFACE`, `SHARED_WRITE_COLLISION`, `SCHEMA_OR_DAG_REF_STALE`, `ORPHAN_UNIMPLEMENTED_STUB`. These are **diagnostic findings**; they are not a new workflow status, authoritative Gate FAIL, forced Task split, automatic blocker or source-edit authorization. A graph checker never creates/removes GitHub native Issue Dependencies or changes Frozen L2 by inferring ownership from file paths.
+
+#### S.8.3 Co-evolution procedure and paired freeze consistency
+
+1. L2 Freeze → initial bounded scaffold authority and S0 structure, then Draft DAG D0.
+2. For each *material* planned Task, link the Task to an existing actual scaffold anchor, a contract-/module-level owner, or one explicitly declared **future seam**. Identify what is changed vs merely consumed, and validation acceptance.
+3. When a genuine new boundary appears, update the Draft DAG *and* lawful bounded scaffold source as applicable. Each real scaffold code change has an accepted Bootstrap Claim/write set and exact current source; a draft Task is never permission to write.
+4. Reverse scan only **material** scaffold anchors—public contracts, shared mutable wiring, critical test/build entrypoints, intentional stubs, exposed adapters—to ensure each has a declared responsible Task or baseline owner and all critical consumers. Do not require mapping every symbol or generated line.
+5. Detect and address: interface signature/type mismatch; incompatible Task write ownership; unimplemented placeholder without future Task/proof; Task acceptance missing required negative/integration proof; unjustified dependency and deadlock; unauthorized scope change.
+6. Freeze one accepted **pair** `{SCAFFOLD_SOURCE_SHA/TREE, DAG_CHECKPOINT, MAPPING_CHECKPOINT_OR_DERIVATION, PRODUCT_FREEZE_REF, L2_FREEZE_REF}`. Mapping snapshot is a *consistency/provenance projection*, not a separate third freeze/gate authority. Two source commits need not have identical SHA; exact ordered identities must resolve.
+7. After freeze, implementation Task Packs consume this snapshot. Changes to source/contracts or Task topology use their **existing** authorized amendment/currentness rules; recompute only affected map links and legally impacted Tasks/Validation. A post-freeze Task may legitimately create new private source files within its write set; requiring every future file in the original scaffold is an anti-pattern.
+
+**Minimal pairwise validation predicates (risk-weighted, not automatic per-file bureaucracy):**
+
+```text
+P1  every material planned Task has a resolvable concern/contract/future-seam ref
+P2  every material public/shared scaffold seam has accountable ownership and consumer/test routing
+P3  incompatible shared-mutating Task write sets are serialized or assigned explicit integration ownership
+P4  frozen L2 public contract meaning and mapped scaffold types/fixtures do not contradict
+P5  each material unimplemented placeholder stays NOT_IMPLEMENTED and maps to intended owner/required verification
+P6  mapping points at the accepted exact scaffold source and frozen DAG checkpoint, not a stray local head
+P7  reverse consumer/test links never imply GitHub blocked-by or Gate PASS without own accepted authority
+```
+
+Unknown or contradictory **material** P1–P7 prevents claim of paired planning consistency under its existing owning source; unrelated trivial/generated files may be unmapped. For a low-risk Fast Path, a compact Task→existing-code-and-test reference can be the entire mapping. No new universal mapping microservice, mandatory per-interface Issue or eager full-codebase analyzer.
+
+#### S.8.4 Concrete illustration
+
+```text
+Scaffold:
+  contracts/runtime-api.ts   [PUBLIC_CONTRACT; owner=L2/Contract]
+  runtime/engine.ts          [STRUCTURAL_STUB; owner=Runtime]
+  adapters/host.ts           [STRUCTURAL_STUB; owner=Adapter]
+  app/composition.ts         [SHARED_WIRING; owner=Integration]
+  tests/runtime.test.ts      [TEST_ENTRY; owner=Runtime/Validation]
+
+DAG:
+  T01 Runtime Core      IMPLEMENTS engine.ts; CONSUMES runtime-api.ts;
+                        TESTS runtime.test.ts
+  T02 Host Adapter      IMPLEMENTS host.ts; CONSUMES runtime-api.ts
+  T03 Integration       INTEGRATES composition.ts; CONSUMES T01/T02
+  T04 Validation        TESTS critical behavior via tests/; no mandatory interface creation
+
+Reverse: runtime-api.ts → T01,T02 (consumers), T03 (integration), T04 (validation)
+but it has one bounded public-contract change owner; `T01,T02` are not automatically a `blocked_by` relation merely because both import it.
+```
+
+#### S.8.5 Adversarial negative tests (candidate only)
+
+| ID | Challenge | Correct result |
+|---|---|---|
+| BM01 | Planner infers one Task per interface/file and 80 artificial tasks | Reject cardinality rule, preserve coherent concern and real dependencies |
+| BM02 | T01/T02 both write `app/composition.ts` claiming independent adapter implementation | Shared write collision, explicit integration owner or serialization |
+| BM03 | One public contract is consumed by six Tasks; mapper assigns six equal contract-edit owners | Distinguish CONSUMES from MODIFIES and current legitimate write/contract owner |
+| BM04 | Future extension does not yet have a source file so planning claims it complete | Explicit future seam/NOT_IMPLEMENTED, actual implementation later |
+| BM05 | Bootstrap-only lockfile/readme lacks a feature Task | Owner/provenance known, no synthetic feature Task needed |
+| BM06 | Path import automatically converted into GitHub blocked-by | Reject structural-link-to-Task-dependency promotion without owning proof |
+| BM07 | Frozen DAG pins source `abc`, mapping pins unmerged scaffold `def` | Pair invalid/stale; current source readback required |
+| BM08 | CI compiles 20 empty public stubs so mapper records 20 finished Tasks | Structure smoke only, feature acceptance unproven |
+| BM09 | Task concerns are valid but public contract mismatches actual scaffold schema | Paired freeze held for material mismatch, no hidden contract drift |
+| BM10 | After Freeze legitimate Runtime Task creates two internal files not in S0 | Allow under Task write-set; update affected projection, do not demand new Product/L2 freeze |
+| BM11 | Reviewer claims mapped test path ensures test was executed on exact SHA | Mapping is routing only; actual Validation owner evidence still needed |
+| BM12 | Auto-mapper sees a new module and self-creates a Task/changes Task DAG edge | Advisory only, authority-owned DAG mutation required |
+
+### S.8.6 Unresolved implementation specifics
+
+L2 must choose the lightest durable linkage (existing Task Pack/manifest/README or generated index), granularity (contract/module/test first), anchor identities on files renames/moves, acceptable manual A0/A1 projection, checker ownership/negative fixtures, currentness composition and handling of generated dependencies. These are **implementation/projection choices** not additional Product feature families. Pairwise mapping remains subordinate to already Frozen Product/L2 and current Task DAG/Claim/Validation authorities.
