@@ -12,6 +12,7 @@ all prospective S08 positive proof remains NOT_RUN/BLOCKED.
 from __future__ import annotations
 
 import hashlib
+from contextlib import closing
 import json
 import os
 from pathlib import Path
@@ -89,7 +90,7 @@ class TestOnlySameEffectVeto(unittest.TestCase):
                 sink.close()
 
             # Reopen the real file on a distinct sqlite3 connection.
-            with sqlite3.connect(db_path) as conn:
+            with closing(sqlite3.connect(db_path)) as conn:
                 effects = conn.execute(
                     "SELECT COUNT(*) FROM effects WHERE effect_id=?", (effect_id,)
                 ).fetchone()[0]
