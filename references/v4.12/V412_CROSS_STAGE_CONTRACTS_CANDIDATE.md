@@ -407,14 +407,14 @@ Do not require this register for a trivial search; detailed entries are proporti
 
 ## C15 — Co-evolving scaffold and Implementation Task DAG before paired freeze (W1/W3/W5; v4.12 Product direction, candidate)
 
-> **USER PRODUCT DIRECTION CONFIRMED 2026-10-14:** Generate an appropriately sized actual project scaffold **before full Implementation Task DAG Freeze**. While drafting/refining the Implementation Task DAG, **progressively enrich the same scaffold**. At completion of DAG planning, the scaffold is formally baselined **together with** the Implementation Task DAG; downstream execution Tasks consume that baseline. This **supersedes the former C15 choice of T00-as-default vs optional B** for prospective v4.12 Product design. It is **not yet Frozen PRD/normative permission** to bypass the currently pinned v4.11 Task-DAG-before-source rules.
+> **USER PRODUCT DIRECTION CONFIRMED AND CLARIFIED 2026-10-14:** Generate an appropriately sized actual project scaffold **before full Implementation Task DAG Freeze**. While drafting/refining the Implementation Task DAG, **progressively enrich the same scaffold**. At completion of DAG planning, the scaffold is formally baselined **together with** the Implementation Task DAG; downstream execution Tasks consume that baseline. This **supersedes the former C15 choice of T00-as-default vs optional B** for prospective v4.12 Product design. It is **not yet Frozen PRD/normative permission** to bypass the currently pinned v4.11 Task-DAG-before-source rules.
 
 ### S.1 Exact stage sequence and semantic boundaries
 
 ```text
 Product Freeze
   → L2 Architecture Evidence / Research and explicit L2 Freeze
-  → Bootstrap admission under limited existing-owner-like authority [v4.12 CHANGE REQUIRED]
+  → Scaffold Planning scope under prospective v4.12 policy (no extra gate)
   → Initial Scaffold S0 (right-sized working project / contract shells / reuse)
   ↔ Implementation DAG DRAFT D0
       → Plan one feature/invariant concern
@@ -435,19 +435,20 @@ Product Freeze
 
 **L2** fixes Architecture obligations/invariants and component ownership; its Freeze is **not** automatically a functioning project skeleton. **Scaffold** is real source/build/tests with a bounded **structure/contract** claim, **not** a Product/L2 decision or implemented feature. **Draft DAG** is planning and does not authorize a downstream worker. **Frozen DAG** is an implementation plan bound to the final accepted scaffold source; GitHub native Issue Dependencies are the live DAG only after authorized materialization. L3 remains task-local implementation evidence, often generated JIT after Freeze.
 
-### S.2 Legal bootstrap write authority before *full* DAG Freeze — prospective v4.12 delta
+### S.2 Planning Scaffold Creation (NEW_PROJECT_INIT) — positive permission, not an extra gate
 
-The current pinned v4.11 workflow requires Product/L2 Freeze → Implementation Task DAG Freeze → task materialization/accepted Claims before ordinary source mutation. Thus **current ADS projects cannot silently execute this pre-DAG codegen**.
+**Product decision clarified 2026-10-14:** generating a **brand-new** project Scaffold after Product/L2 Freeze is a legitimate **planning artifact creation**, not modifying an existing Frozen implementation, and must not be mislabeled as an illegal Feature-Task source mutation. `NEW_PROJECT_INIT` and `EXISTING_PROJECT_ADAPT` are distinct. Under the **prospective v4.12 workflow**, the Scaffold Planning stage has **express scope-limited permission to create and enrich files before the complete Implementation Task DAG Freeze**. It needs no new mandatory human approval, independent Bootstrap Freeze, or extra task per generated file. This is the user's intended design correction and **replaces S.2's earlier supposed unresolved P0 Product permission question**.
 
-v4.12 **shall propose an explicit, small, source-bound Bootstrap Work Authorization** through the **existing** Work Item/Controller/Claim/Task/Review/Validation authority, not a novel state machine/second owner:
+Permission and bounded accountability use only the current-source project and existing GitHub/work governance:
+- The **Frozen Product and L2** determine project goal, architecture, public boundary, compatibility and whether a new scaffold is appropriate. The responsible Scaffold planning owner/Agent has normal GitHub repository write permissions and a source/branch/PR identity.
+- Scope **PLANNING_SCAFFOLD** includes project/package directories, contracts/types/schemas, structural placeholder modules, build/test/CI entry points, dependency/lock/config, and bounded integration seams needed to represent the planned Task DAG. For mature existing source, make only necessary scoped additions without destructively overwriting existing code.
+- An explicit **stage role/scope reference** (can be in the existing L2→Scaffold/DAG planning checkpoint and Project/Work Item authority) records owner, allowed new/write paths, inputs/version pin, source branch and known out-of-scope behavior. This is **not a new formal Gate, separate control-plane authority or a claim of full implementation execution**.
+- Genuine Git writes remain attributable GitHub commits/PRs with ownership and conflict discipline. If several agents share mutable contracts/manifests, use existing serialized writer/Claim/controller mechanisms **where applicable**; a Draft DAG Task must not start unrelated business Feature implementation work. No automatic HIGH_ASSURANCE for ordinary clean-slate file creation.
+- Creation of real Product business behavior, data migration, privileged/external irreversible action and changed Frozen public API/Trust invariants require the same **real implementation/owner authority** that would apply outside Scaffold Planning; calling it "bootstrap" cannot bypass those obligations.
+- **Planning closeout** is an accepted, integrated exact Scaffold source/tree and a logically matching Frozen DAG checkpoint; actual scaffold structural/compile checks are required *as applicable*, not full product Feature/E3/Release PASS. A normal project's working branch/PR can be the delivery surface without artificially generating a `T00` merely to unlock ordinary planning.
+- **Version boundary:** this new planning-stage permission must still be integrated into the actual v4.12 `DEVELOPMENT_WORKFLOW` and its current Work Item/source-writer rules in L2, approved under v4.12 Product/architecture authority before normative adoption. **Current pinned v4.11 remains unchanged** and uses its lawful T00-in-DAG path.
 
-- **Preconditions:** exact Frozen Product and L2 refs; active version/integration base; Product/L2-authorized scaffold concern; actor and WEB/LOCAL capability; permitted write set and explicit excluded implementation features; risk/Review/Validation floor; bounded environment/resources; legal reference to the source/writer and current standard pin.
-- **Admission:** an authorized bootstrap work item/claim and current serialized owner decision is required **before any source write**. It may be a tiny pre-DAG planning/bootstrap authority exception created prospectively in v4.12; this is **not** the full Implementation Task DAG, and may be represented using current GitHub Work Item mechanisms if L2 demonstrates equivalence. No arbitrary issue/comment/draft plan can grant mutation power. This exception needs amendments to existing Development Workflow / Work Item/Claim/Task governance and machine conformance; L1 Product direction alone is **not** that amendment.
-- **During co-evolution:** **one accepted bootstrap source writer per incompatible write surface**, or legal serialized noncolliding work under the existing Claim protocols; the planning agent may suggest revisions but is not a second simultaneous source writer. Every accepted code revision in the bootstrap concern is bounded, attributable, revision/currentness-checked and given actual focused validation. Do not let DRAFT Task entries execute feature implementation source changes. No secretly implementing promised features as scaffold "setup".
-- **Closeout:** the bounded bootstrap source work receives all applicable concern-level Review/Validation/CI evidence and lawful integration into the intended version base, then a **complete durable terminal**. Implementation DAG freeze happens only on an accepted exact source snapshot and cannot itself retroactively cure illegal earlier writes.
-- **Fallback for older pinned versions:** when this prospective exception is not authorized, use existing safe path (initial executable DAG with a Bootstrap Task), without pretending that older requirements were changed. v4.12 is future policy, not a v4.11 waiver.
-
-**No new universal mandatory "Scaffold Gate" or bootstrap review committee:** this is a precise earlier source-write authority transition with existing owners and truth floors. Machine encoding/allowed writes/actor transition semantics are **L2 OPEN**.
+**Specific open L2 implementation matter, not a Product blocker:** define the minimum actor/scope/currentness/PR proof necessary to enforce `PLANNING_SCAFFOLD`, including rejection of **out-of-scope Feature execution**, while reusing existing GitHub/Claim roles without a second scheduler or mandatory manual gate. See [Initial Policy v0.1](V412_INITIAL_POLICY_DECISIONS_V01.md) §D01–D02.
 
 ### S.3 Adaptive scaffold detail and progressive enrichment
 
@@ -517,21 +518,27 @@ Post-Freeze edit classification:
 | SC25 | A newly added adapter stub requires absent real E3 platform proof, but baseline CI is green | No E3 promotion; required applicable real proof remains NOT_RUN/blocked/deferred only by owner |
 | SC26 | During paired Freeze, late mandatory auth invariant reveals current architecture incomplete | Reopen/resolve actual L2 authority; no scaffold-only policy override or fake freeze |
 
-### S.7 Decisions and owner placement
+### S.7 Product decisions and remaining engineering placement
 
-**Product direction settled for prospective v4.12:** `SCAFFOLD_BEFORE_FULL_DAG_FREEZE=YES`; `SCAFFOLD_AND_DAG_DRAFT_COEVOLVE=YES`; `PAIRED_BASELINE_AT_DAG_FREEZE=YES`; `DETAIL_ADAPTIVE_TO_PROJECT=YES`; `AFTER_FREEZE_TASKS_CONSUME_SCAFFOLD=YES`. This supplants prior C15 "A default, B optional" **as Product intake direction**, not already enforceable policy in a pinned ADS standard.
+**Chosen prospective v4.12 Product behavior:**
+```ini
+NEW_PROJECT_SCAFFOLD_CREATION_IN_PLANNING=ALLOWED_IN_BOUNDED_SCOPE
+BOOTSTRAP_EXTRA_HUMAN_APPROVAL_GATE=NO
+SCAFFOLD_BEFORE_FULL_DAG_FREEZE=YES
+SCAFFOLD_AND_DAG_DRAFT_COEVOLVE=YES
+PAIRED_BASELINE_AT_DAG_FREEZE=YES
+SCAFFOLD_TASK_MAPPING=GITHUB_SOURCED_TYPED_MANY_TO_MANY
+SCAFFOLD_MAPPING_REVERSE_VIEW=DETERMINISTICALLY_DERIVED
+SCAFFOLD_DETAIL=PROJECT_SPECIFIC
+AFTER_FREEZE_TASKS_CONSUME_SCAFFOLD=YES
+EXISTING_V411_PIN_MUTATION=NO
+```
 
-**Still L1/PRD/L2 OPEN:**
-1. Exact **bounded pre-DAG Bootstrap Work Authorization** projection in existing Issue/Task/Claim governance, allowed write set, whether it needs a tiny planning checkpoint, and compatibility with native GitHub dependencies; verify actual admission and failure modes.
-2. How a single accepted/bootstrap writer can iteratively edit code while planners refine draft DAG, preserving truthful exact subjects across source revisions and preserving the one-concern/one-PR economy.
-3. Project-specific **scaffold acceptance profile** and minimal real tests/Host preflight; do not universally force a build runner or E3 on abstract schemas.
-4. Exact **paired identity checkpoint** representation and source/currentness re-evaluation after integration commits, prospective migration/adoption for pinned projects.
-5. Required L2/compatibility decision path for interface changes discovered during planning vs post-Freeze; cases where architecture remains materially unresolved and must block final Freeze.
-6. Full negative conformance tests for unauthorized pre-DAG writes, duplicate Claim, unmerged source, stub PASS, false host evidence and overwritten Product/L2 scope.
+**Decided baseline representation / generation / validation (Product v0.1):** Store actual Scaffold source, anchor IDs and Task DAG `scaffold_bindings` under GitHub Git objects and repository planning paths; generate both read views from **one** relation set; deterministic V01–V12 consistency checks and stable paired `(scaffold source scope/tree, DAG checkpoint, mapping ref)` identity. Existing GitHub native Issue Dependencies remain the *post-freeze live execution graph*; mapping relationships never grant their own execution authority. See [Initial Policy Decisions v0.1](V412_INITIAL_POLICY_DECISIONS_V01.md) §D02.
 
-**No additional fourth DAG, no new independent scaffold authority, no new default HIGH_ASSURANCE on all edits.** The legal pre-DAG bootstrap exception must be fully specified and approved prospectively before any authorized Builder uses it.
+**Only L2 technical placement remains:** exact minimal reuse of existing Task DAG/Task Pack/manifest metadata rather than a forced new JSON schema; scaffold source writer/branch evidence under current Work Item/GitHub owner; accepted subtree/tree currentness across docs-only DAG commits; deterministic generator/checker implementation and fixtures; verified policy reconciliation for projects already pinned to v4.11. These are **implementation details**, not reopened Product decisions.
 
-
+**No additional fourth DAG, no new independent scaffold authority, no mandatory HIGH_ASSURANCE for all edits or one-interface-per-Task decomposition.** Authentic contract changes, real-risk behavior, native dependencies and current required Release/Validation floors retain their existing original owners.
 
 ### S.8 Bidirectional scaffold ↔ Implementation Task DAG traceability (Product direction candidate, not a new authority)
 
