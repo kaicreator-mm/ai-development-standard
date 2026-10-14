@@ -1,6 +1,6 @@
 # ADS v4.12 — 首版机制决策与项目实践归纳 v0.1
 
-> **STATUS: PRODUCT-DIRECTION DECISIONS / NON-NORMATIVE PRD INPUT.** 记录用户对先前未决内容的明确纠偏，并结合 2026-10-14 GitHub 项目实践形成一版拟采用的可执行语义。此处的“v0.1”是 **v4.12 设计方案版本**，不是已冻结 ADS 标准、真实实施或 Release。待 v4.12 PRD 的 Product Authority 正式冻结后，L2 只负责最小表示/集成与机器验证。既有 v4.11 pin **不被追溯修改**。
+> **HISTORICAL V0.1 INPUT — SUPERSEDED WHERE CONFLICTING BY PRD R3.** The original D01–D02 language that could imply conditional/no Claim, no required Review, anchor `owner/lifecycle`, or permissive docs-only drift is **not applicable**. Current PRD R3 requires `Work Item → accepted Claim before source creation → pre-dispatch Review Policy → required review/merge-ready → authorized merged SF`, single writer ownership from Task/Claim bindings, structural anchor identity only, fail-closed material scope, prospective v4.11 candidate pin, and manual A0/A1 Git-object proof. This notice prevents using examples below as an independent source of authority.\n>\n> **STATUS: PRODUCT-DIRECTION DECISIONS / NON-NORMATIVE PRD INPUT.** 记录用户对先前未决内容的明确纠偏，并结合 2026-10-14 GitHub 项目实践形成一版拟采用的可执行语义。此处的“v0.1”是 **v4.12 设计方案版本**，不是已冻结 ADS 标准、真实实施或 Release。待 v4.12 PRD 的 Product Authority 正式冻结后，L2 只负责最小表示/集成与机器验证。既有 v4.11 pin **不被追溯修改**。
 >
 > References: ADS Product Intake [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096), three graphs [#1100](https://github.com/kaicreator-mm/ai-development-standard/issues/1100), risk-bounded [#1099](https://github.com/kaicreator-mm/ai-development-standard/issues/1099), cross-stage contract [PR #1101](https://github.com/kaicreator-mm/ai-development-standard/pull/1101) C01–C15.
 
@@ -9,8 +9,8 @@
 **决策：** v4.12 允许在 **Product Freeze 与 L2 Freeze 之后、完整 Implementation Task DAG Freeze 之前**，由指定 Scaffold 规划参与者，在明确的 L2 工程范围内**创建新项目**（`NEW_PROJECT_INIT`）或仅对既有项目必要的工程骨架做增量完善（`EXISTING_PROJECT_ADAPT`）。这是 **Scaffold Planning 的合法交付行为**，不视为实现某个 DAG Feature Task，也不产生一个新的人工批准 Gate。
 
 - 用户所指的从零生成目录/基础配置、Contract/Schema、模块结构、占位实现、依赖/锁文件、构建入口、测试入口、受限集成骨架属于 **PLANNING_SCAFFOLD**。细节由实际项目复杂性、L2 合同和后续规划逐步决定。
-- v4.12 将在 **现有 DEVELOPMENT_WORKFLOW / Work Item/Task 政策内定义阶段行为的正面权限**：`Product_Freeze_ref + L2_Freeze_ref + appointed_planning_owner + permitted_scaffold_scope + GitHub_repository_write_permission + source_ref + version_pin`。无需额外创设一个 Product/Scaffold Freeze 权威、每次代码生成独立 Issue、单独“Bootstrap 许可审批委员会”，更不应因为从零生成就自动 HIGH_ASSURANCE。
-- **真实文件创建仍然是 GitHub 源码写入操作**，必须使用有权限的分支/PR、限定创建/更新路径、保留工作者身份/变更来源和实测输出。若多个 Agent 并行修改有重叠工程文件，仍遵守已有唯一写入 owner/已接受 Claim 与互斥/提交治理；创建新项目也不能豁免基本 GitHub 权限和当前项目 pin。
+- v4.12 将在 **现有 DEVELOPMENT_WORKFLOW / Work Item/Task 政策内定义阶段行为的正面权限**：`Product_Freeze_ref + L2_Freeze_ref + scoped_existing_work_item + accepted_claim + applicable_review_policy + permitted_scaffold_scope + authorized_merge_ready + GitHub_repository_write_permission + source_ref + version_pin`。无需额外创设一个 Product/Scaffold Freeze 权威、每次代码生成独立 Issue、单独“Bootstrap 许可审批委员会”，更不应因为从零生成就自动 HIGH_ASSURANCE。
+- **真实文件创建仍然是 GitHub 源码写入操作**，必须使用有权限的分支/PR、限定创建/更新路径、保留工作者身份/变更来源和实测输出。所有实际 Scaffold 源码新建/修改在合法已有 Work Item 之下 **必须先取得 accepted Claim**，并在派发前解析 Stage 2.6 Review Policy（public schema/API/safety 适用 `required`），满足该 PR 应有的测试、独立 Review、merge-ready 和授权合并；重叠工程写集还需符合互斥/提交治理；创建新项目也不能豁免基本 GitHub 权限和当前项目 pin。
 - Scaffold 阶段**不得未经正式 Task 权威**实现对外承诺的业务功能、应用外部不可逆副作用、执行业务迁移、假造真实 Host、绕过必须的安全/信任边界。少量为证明工程结构“可编译/可加载”的可执行胶水由 Scaffold 规划范围涵盖；有真实功能语义/不可逆风险的工作走正式任务/相应权威。
 - 如预冻结计划发现 **Frozen L2 的公共契约不成立**，回到 L2 owner 的合法 Architecture Amendment；**不会**让 Scaffold writer 自行重设计。脚手架不应意外在成熟项目中重置现有源码。
 - 对仍采用 v4.11 的项目，旧法仍须通过 Frozen Task DAG / T00 实现脚手架：这是 prospective rule；**不是主张现行 v4.11 源码写入限制不存在**。
@@ -45,10 +45,10 @@
 ```json
 {
   "scaffold_anchors": [
-    {"id":"abi.runtime.v1","kind":"CONTRACT","location":"packages/contracts/src/runtime.ts","lifecycle":"STRUCTURAL_READY","owner":"contract"},
-    {"id":"runtime.engine","kind":"MODULE","location":"packages/runtime/src/engine.ts","lifecycle":"UNIMPLEMENTED","owner":"T02"},
-    {"id":"app.composition","kind":"SHARED_WIRING","location":"packages/app/src/composition.ts","lifecycle":"STRUCTURAL_READY","owner":"T05"},
-    {"id":"host.probe","kind":"FUTURE_SEAM","location":null,"lifecycle":"PLANNED_FUTURE","owner":"T03"}
+    {"id":"abi.runtime.v1","kind":"CONTRACT","location":"packages/contracts/src/runtime.ts","contract_ref":"L2.runtime-abi","presence":"PRESENT"},
+    {"id":"runtime.engine","kind":"MODULE","location":"packages/runtime/src/engine.ts","contract_ref":"L2.engine","presence":"PRESENT"},
+    {"id":"app.composition","kind":"SHARED_WIRING","location":"packages/app/src/composition.ts","contract_ref":"L2.composition","presence":"PRESENT"},
+    {"id":"host.probe","kind":"FUTURE_SEAM","location":null,"contract_ref":"L2.host-probe","presence":"PLANNED_FUTURE"}
   ],
   "task_bindings": [
     {"task_id":"T02","links":[{"anchor_id":"runtime.engine","relation":"IMPLEMENTS"},{"anchor_id":"abi.runtime.v1","relation":"CONSUMES"}]},
@@ -63,12 +63,12 @@
 ### D02.2 确定性生成标准（V1）
 
 1. **读取 Git 基线：** 获取当前仓库、version/integration branch、Product Freeze ref、L2 Freeze ref、Scaffold source commit/subtree tree identity、Task DAG draft revision。不要使用 Chat transcript、未提交本地文件、问题评论中的伪造“PASS”当作当前事实。
-2. **解析 anchors：** 从明确声明的适用 `manifest/contract file` 或版本化 anchor list 提取稳定 ID、kind、location、owner、lifecycle；检查不存在的路径只能带 `PLANNED_FUTURE`，当前已编译的路径必须实际可解析。Generated-only 文件可由 Bootstrap owner 接管、不要求 Feature Task。
+2. **解析 anchors：** 从明确声明的适用 `manifest/contract file` 或版本化 anchor list 提取稳定 ID、kind、location、contract_ref 和有限 presence（`PRESENT|PLANNED_FUTURE`）；**不在 anchors 再存 owner 或实现状态**；写入 owner 从唯一 Task/Scaffold Work Item 的 binding/accepted Claim 推导；检查不存在的路径只能带 `PLANNED_FUTURE`，当前已编译的路径必须实际可解析。Generated-only 文件可由 Bootstrap owner 接管、不要求 Feature Task。
 3. **解析 Task：** 从唯一 Draft/Frozen DAG 事实读取 Task ID、Concern、范围、依赖、测试、`scaffold_bindings`；校验 Task ID 唯一、稳定；真实执行 Task 有可核对 Feature/Contract/Validation/Integration 责任，非每接口自动生成 Task。
 4. **联结：** 将 `task_id,anchor_id,relation,scope` 正向合并；同一组边反向派生 Anchor→Task，不复制/二次人工维护。关系只代表实现/消费/测试，不代表可自动添加 GitHub native blocked-by。
 5. **规范化输出：** 以稳定 ID/关系排序输出 UTF-8、固定字段、明示 `source_inputs`，记录 checker/generator 版本、当前来源 ref 与 `UNKNOWN`；同样输入产生 byte-identical 的派生索引（忽略时间戳/用户环境/随机顺序）。
 6. **局部迭代：** Draft 阶段按需增量生成、反馈 mismatch 给 Scaffold/DAG owner；只有 material anchor/currentness 变更才要求重新审查相关关联项。避免每次生成器调用都产生 PR、独立 Review 或新的 Feature Issue。
-7. **配对 Freeze：** 源码侧 SF 必须先有已接受的集成版本 SHA/tree。DAG 的最终 freeze checkpoint DF 再引用**这个 SF**。若该 DAG checkpoint 本身使 repo HEAD 前进，比较**Scaffold scope 的 subtree tree/hash**，不得因文档-only commit 改 HEAD 而误判 Scaffold 失效。存储元组 `(source_version_branch, SF_commit, SF_scaffold_tree, DF_checkpoint, mapping_digest_or_ref, L2_ref)`。无需人为追求两个不同文件有同一 SHA。
+7. **配对 Freeze：** 源码侧 SF 必须先满足 accepted Claim、适用 required Review 和 merge-ready 并实际授权合并。冻结不可变的 material-scope/allowlist 与 source tree；仅 **明确列出的非 material DAG-only 文件**可豁免，其余新增/修改/删除路径（包括 anchors/scope 列表）默认 material，UNKNOWN=HOLD。DAG 的最终 freeze checkpoint DF 再引用**这个 SF**。若该 DAG checkpoint 本身使 repo HEAD 前进，比较**Scaffold scope 的 subtree tree/hash**，不得因文档-only commit 改 HEAD 而误判 Scaffold 失效。存储元组 `(source_version_branch, SF_commit, SF_scaffold_tree, DF_checkpoint, mapping_digest_or_ref, L2_ref)`。无需人为追求两个不同文件有同一 SHA。
 8. **实施执行：** Freeze 后从该元组派生 Task Pack，materialize native GitHub Issues/Dependencies；Task 在允许的 write set 内新增私有文件时不要求重新创建完整 Scaffold。公共契约或 Task 拓扑实质变化仍走原 owner amendment/impact/currentness。
 
 ### D02.3 验证标准（V1，owner-aware、少测试）
