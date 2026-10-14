@@ -241,3 +241,36 @@ PRODUCT_FREEZE=NO
 **Reviewer interpretation:** P0 here means **important unresolved authority architecture that blocks declaring the revised workflow normative/ready**; it is **not a confirmed exploitable source defect in v4.11** and creates no new v4.11 Release blocker.
 
 `AUTHOR_LED_ADVERSARIAL_RESULT=PRODUCT_DIRECTION_COHERENT_BUT_AUTHORITY_DESIGN_OPEN`; `FROZEN_V412_PRD=NO`; `L2=NO`; `REAL_HOST=NOT_RUN`. Keep PR in Draft until normal Product Review/Freeze and L2 owner resolution.
+
+
+## C15 S.8 — Bidirectional scaffold↔DAG mapping adversarial review
+
+> R0 author-led **static** negative review of candidate C15 §S.8, not a Fresh Independent Review, not actual schema/reducer/Build Host conformance.
+
+**Red-team question:** Is a reversible *mapping* from project skeleton to planned Task concerns meaningful if the two graphs do not share cardinality or authority? **Yes if it is typed many-to-many traceability and two derived query directions; no if enforced as code-file↔Task bijection, inferred native blocker, or self-authorized code generation.** C15 §S.8 explicitly uses a single relation basis and two read projections without an independent writable mapping lifecycle.
+
+| ID | Failure trigger | Reviewer expected outcome | Current candidate |
+|---|---|---|---|
+| BMR01 P1 | One interface is consumed by six tasks; generator claims six owner writers | `CONSUMES` vs `IMPLEMENTS/MODIFIES` distinguished; contract owner isolated; no duplicate writers | Text covered §S.8.1/.2 |
+| BMR02 P1 | Source file imports another module, so mapper inserts mandatory GitHub `blocked_by` edge | No structural-to-authoritative DAG promotion; only genuine integrated prerequisites with authorized mutation | Text covered |
+| BMR03 P1 | Two independent Task descriptions both change composition root | Shared mutable collision and central integration ownership resolved before Freeze | Text covered |
+| BMR04 P1 | One Task has no code artifacts because it is a test/review/evidence task | No forced fake file or 1:1 mapping; cite relevant test/subject owner | Text covered |
+| BMR05 P1 | Public stub compiles, reverse mapping labels Task COMPLETE | Map structural presence, runtime proof separately; no validation PASS | Text covered |
+| BMR06 P1 | Frozen DAG SHA paired to one scaffold tree, trace index references older unmerged branch | Exact tuple consistency/currentness hold; no authoritative freeze | Text covered |
+| BMR07 P1 | Post-freeze Task legitimately introduces files not in scaffold | Task write set controls; optional refresh affected mapping, no artificial whole-DAG thaw | Text covered |
+| BMR08 P2 | Generated/readme/lockfile files create unmapped orphan alarms | Limit to *material* shared/contract/structural seams; explicit Bootstrap owner is enough | Text covered |
+| BMR09 P2 | 800 symbols produce 800 reverse links and PR/Review churn | Module/contract/test granularity first; lightweight same-reference relation; not a full-program cross-reference scanner | Text covered |
+| BMR10 P2 | A dynamic package is loaded by name at runtime and has no static import | Declare capability/package manifest or contract anchor and bounded ownership; no false claim that all runtime dependencies statically resolved | **OPEN L2 conformance** |
+| BMR11 P2 | Rename/redirect a contract file but preserve semantics; mapping key path-based and goes stale | Use stable contract identity and current source location; L2 decides file-move currentness adapter | **OPEN L2** |
+| BMR12 P1 | Mapping validator decides which Task/Schema to edit when it sees mismatch | **No autonomous owner selection or normative mutation.** Report finding, route to current L2/Task/Bootstrap owner and hold only actually material freeze/currentness | Text covered |
+
+**Residual unresolved (not a blocker to Product candidate prose, but required before normative or claimed functional proof):**
+
+1. **Canonical-link storage and versioning:** no independently written duplicate mapping; Task Pack/contract references vs a derived manifest. Validate source identity and permissions, not path strings alone.
+2. **True Task Dependency vs Code Dependency:** negative tests must show the mapper cannot mutate native `blocked_by` or invent a Task Freeze/Claim.
+3. **Dynamic runtime packages:** executable domain package, plugin discovery, generated sources, conditional execution and non-code work must be representable without comprehensive static call graph.
+4. **Materiality/economics:** low-risk task needs a few refs only; source-index maintenance must not outweigh intended agent-dispatchability benefit.
+5. **Current v4.11 boundary:** candidate mutual mapping does **not** authorize pre-DAG scaffold source writes; the existing SXR1-01 legal-bootstrap authority design blocker remains.
+6. **Paired Freeze:** ensure (scaffold exact source, frozen DAG revision, mapped critical anchors) are identity-consistent, while implementation outputs after freeze may lawfully evolve.
+
+**Verdict:** `S8_STATIC_REVIEW=PRODUCT_CANDIDATE_CONCEPT_COHERENT`; `MACHINE_MAPPING_CHECK=NOT_RUN`; `INDEPENDENT_REVIEW=NOT_RUN`; `BOOTSTRAP_PRE_DAG_AUTHORITY=L2_OPEN`; `SCAFFOLD_TASK_DAG_PAIRED_FREEZE=NOT_FROZEN`. Do not make a new independent Task DAG, syntax schema service or interface-per-Task mandate.
