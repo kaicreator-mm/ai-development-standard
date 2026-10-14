@@ -10,14 +10,17 @@ API = f"https://api.github.com/repos/{r.REPOSITORY}/issues/comments/"
 
 def comment(job, number, **changes):
     fields = {
-        "EVENT": r.OWNER_EVENT, "REPOSITORY": r.REPOSITORY,
-        "EXACT_SUBJECT": SHA, "JOB": job, "VERDICT": "PASS",
-        "OWNER_AUTHORITY_REF": "frozen/release-owner-ref",
-        "CURRENTNESS": "CURRENT", "OWNER_PROOF_REF": "signed:owner-stored-proof",
+        "schema": "ai-dev/event-v2", "event": r.OWNER_EVENT,
+        "actor_role": "validator", "operator_kind": "human",
+        "operator_id": "independent-validator", "repository": r.REPOSITORY,
+        "sha": SHA, "gate": job, "status": "PASS",
+        "owner_authority_ref": "frozen/release-owner-ref",
+        "currentness": "CURRENT", "environment": "local",
+        "command": "test", "exit_code": "0", "evidence": "ref:validated",
     }
     fields.update(changes)
-    body = "<!-- ai-dev:event:v2 -->\n" + chr(96) * 3 + "ini\n"
-    body += "\n".join(f"{k}={v}" for k, v in fields.items()) + "\n" + chr(96) * 3 + "\n"
+    body = "<!-- ai-dev:event:v2 -->\n" + chr(96) * 3 + "yaml\n"
+    body += "\n".join(f"{k}: {v}" for k, v in fields.items()) + "\n" + chr(96) * 3 + "\n"
     return {
         "id": number, "url": API + str(number),
         "user": {"login": "release-owner"}, "body": body,
@@ -71,8 +74,8 @@ class FailClosedReadback(unittest.TestCase):
         self.assertEqual(inspect(owner=None).reason, "OWNER_AUTHORITY_UNVERIFIED")
 
     def test_stale_or_wrong_subject_verdict(self):
-        for change in ({"EXACT_SUBJECT": "b"*40},
-                       {"CURRENTNESS": "STALE"}, {"VERDICT": "DENY"}):
+        for change in ({"sha": "b"*40},
+                       {"currentness": "STALE"}, {"status": "FAIL"}):
             with self.subTest(change=change):
                 def reader(n):
                     return comment(r.JOBS[n-100], n, **change) if n == 100 else comment(r.JOBS[n-100], n)
@@ -97,7 +100,7 @@ class FailClosedReadback(unittest.TestCase):
         def reader(n):
             item = comment(r.JOBS[n-100], n)
             if n == 100:
-                item["body"] += chr(96)*3 + "ini\nEVENT=V411_RELEASE_OWNER_PROOF\n" + chr(96)*3
+                item["body"] += chr(96)*3 + "yaml\nevent: VALIDATION_RESULT\n" + chr(96)*3
             return item
         self.assertEqual(inspect(reader=reader).reason,
                          "PROOF_UNADMITTED_EVENT_J09")
