@@ -1,5 +1,7 @@
 # ADS v4.12 — Consolidated Product Scope / 统一产品范围说明 R0
 
+> **R3 CURRENTNESS NOTE (2026-10-15):** This older overview is subordinate to exact v4.12 PRD R3. Corrected: no source creation before an **accepted Claim** on the planning Scaffold Work Item; applicable Stage 2.6 Review Policy and merge-ready remain required for the scaffold PR; GitHub anchors do **not** independently own `owner/lifecycle`; drift is material unless on an immutable exact-path exemption; A0/A1 manual proof must resolve Git tree/source identities; `version/v4.11.0@322e86845f78de8ea8cadb05ec624bfbb3a5de20` is an **unreleased candidate**. Historical T00 references describe project practice, not a v4.11 normative standard.
+>
 > **状态：PRODUCT INTAKE / NON-NORMATIVE / PRD_NOT_FROZEN / L2_NOT_FROZEN / IMPLEMENTATION_DAG_NOT_FROZEN。** 已有首版决策：[`V412_INITIAL_POLICY_DECISIONS_V01.md`](V412_INITIAL_POLICY_DECISIONS_V01.md)，后续 L2 负责最小实现投影。 此文件是 #1096、#1099、#1100 和 PR #1101 中已讨论方向的**阅读入口**，不是另一份 Product authority，不取代原 Issue 的证据、Review/Validation、具体 owner 或 Frozen 文档。事实源以固定版本和被批准的 GitHub 权威为准；文中“确定”表示用户认可的 **v4.12 Product direction**，不表示标准已生效。
 >
 > Parent intake [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) · ROI principle [#1099](https://github.com/kaicreator-mm/ai-development-standard/issues/1099) · Three-DAG intake [#1100](https://github.com/kaicreator-mm/ai-development-standard/issues/1100) · Cross-stage contract Draft [PR #1101](https://github.com/kaicreator-mm/ai-development-standard/pull/1101).
