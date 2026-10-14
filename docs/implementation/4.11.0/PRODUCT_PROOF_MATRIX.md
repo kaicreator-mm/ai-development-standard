@@ -117,3 +117,38 @@ NEXT=FRESH_PRODUCT_REVIEW_ON_DRAFT_V0_2;THEN_PRODUCT_AUTHORITY_PRODUCT_FREEZE_DI
 ```
 
 No native Task DAG expansion, v4.10 blocker, new scheduler, new mandatory gate or source mutation. These proposed Product-level requirements need genuinely fresh independent review and later L2/implementation/real-host falsification.
+
+## 5. v4.11 prospective Product proof-matrix v0.3.1 — exact human-authorized N08 + S08 split
+
+> **Future successor acceptance proposal only.** Governing Product decision #943@6167214986, source proposal PR #1102@4fd81ed and independent Product/Security reviews. Old original Frozen S08 positive real-human DENY requirement and four-way composite obligation are **not** retroactively altered for \`version/v4.11.0@322e86845f78de8ea8cadb05ec624bfbb3a5de20\`. No \`PASS\` stated in this annex implies completed execution. Companion PRD §10 is the only new Product delta; all S01–S18, X01–X08 and existing R01–R12 remain in the denominator.
+
+\`\`\`ini
+PRODUCT_SUCCESSOR_DECISION=#943@6167214986
+ORIGINAL_PRD_BLOB=d30f202e8ea662731ff8a4f2ad1ad88cfc5bb179
+ORIGINAL_MATRIX_BLOB=f59a6daf5430ece66103a830e392a04f71623ff0
+ORIGINAL_CANDIDATE=322e86845f78de8ea8cadb05ec624bfbb3a5de20
+N08_SOURCE_REVIEW=PR1102_R2_PASS_FOR_PRODUCT_CONSIDERATION
+S08_INDEPENDENT_SECURITY=#943@6165647665
+N08_REAL_OWNER_NEGATIVE=NOT_RUN
+S08_HISTORICAL_HUMAN_APPROVE=#1021@6163883456
+S08_HISTORICAL_HUMAN_DENY=NOT_ISSUED
+S08_SYNTHETIC_SAME_DB_A_B=NOT_RUN
+REAL_HUMAN_DENY_E2E=NOT_PROVEN
+RELEASE_OWNER_PROSPECTIVE_ACCEPTANCE=PENDING
+NEW_PRODUCT_FREEZE=PENDING
+\`\`\`
+
+| Proof item | Positive required oracle | Falsifying negative/behavior | Fidelity / admissibility | Current truth |
+| --- | --- | --- | --- | --- |
+| N08-E1 scoped eligibility | Both: no ADS-owned actual 4-job workload **and** L2+Release independently prove **no novel safety predicate** beyond executed owner/X coverage; accept residual risk | One owner missing, new revoke/license+incident+RQ currentness predicate, or stale exact-subject evidence ⇒ conditional exclusion **not effective** and \`UNKNOWN/HOLD\` | Current accountable Product/L2/Release evidence required; source text alone insufficient | \`NOT_PROVEN\` |
+| N08-E2 actual union admission | Existing authoritative owner effective-rule/Release admission evaluates actual J09/J10/J11/J12; observable HOLD/no effect/no release advancement on omission/stale/wrong actor/work subject/tenant/scope; under-declared applicable J12 detected | Declared 3 but actual 4 ⇒ real four-way UNKNOWN/HOLD. Truly only 3 ⇒ no invented J12, AND across the genuine 3, unknown new triple still HOLD | Real owner seam or independently reviewed exact-semantic equivalent; **not** T12 \`complete(facts)\` local metadata fixture | \`NOT_RUN/BLOCKED\` |
+| N08-E3 physical positive four-job campaign | Only **conditionally out of successor acceptance envelope** when N08-E1/E2 eligible, not a universal N/A | Consumer actually uses material four-job or novel risk ⇒ separate real proof or BLOCKED | No standards-only positive certificate for real four-way | \`MATERIAL_INTERSECTION_UNKNOWN\` |
+| S08-P1 actual operator *source existence* | Independently checked genuine human **APPROVE** historical old-subject decision and audit digest; original owner retains real decision; source not reinterpreted | Old APPROVE passed off as DENY, authenticated at new SHA, or superseding actual human DENY => reject | **Historical** \`322e868...\` only; no new-branch permission/effect | \`HISTORICAL_APPROVE_RECORDED\` |
+| S08-P2 synthetic guarded A→B | Isolated \`SYNTHETIC_TEST_ONLY_DENY\`, same real file-backed SQLite effect_id A CLAIMED then veto; subsequent distinct B READY/Claim generation veto; 2 blocked attempts, effect_count=0 after close/reopen | Fixture promoted to real human, stale/wrong actor/head/tenant/scope, forged human label, ACK loss replay, B/C succeeds when A denied or protected effect>0 => FAIL | Real file-backed local sink **only**, never real human, remote provider or release authority | \`NOT_RUN\` |
+| S08-P3 real human DENY end-to-end | **Not a claim of this reduced successor conformance envelope**; any real owner/deployment requiring it must prove genuine human DENY on exact current scope/effect and A→B | P1∧P2 reported as actual human veto PASS ⇒ reject/consumer BLOCKED | No waiver of actual human-denial supremacy; \`REAL_HUMAN_DENY_E2E_NOT_PROVEN\` mandatory published limitation | \`NOT_PROVEN\` |
+| S08 source isolation negatives | Synthetic receipt namespace/source class cannot be consumed as real; reject forged \`human:\`, stale authority, mismatched exact role/scope, unknown origin, unauthorized supersession, wrong-tenant and transport laundering | Any fixture admitted as production human authority ⇒ critical FAIL | Test/real source boundary and exact subject checked by owning Security/Release before acceptance | \`NOT_RUN\` |
+| Later version gates | Visible V01 exact candidate, V02 freeze, V03 Hidden, V04 Fresh, R01 Qualification, R02 integration sequentially, each with its own authority | Task/PR/fixture PASS or old human APPROVE treated as version-pass; original raw reds hidden | Current owned gate×subject and reviewed exact tested identity | \`NOT_RUN/BLOCKED\` |
+
+**Mandatory evidence tagging:** \`HUMAN_PROVENANCE_HISTORICAL_APPROVE\`; \`MECHANISM_SYNTHETIC_DENY_SQLITE_ONLY\`; \`REAL_HUMAN_DENY_E2E_NOT_PROVEN\`; \`FOURWAY_MATERIAL_INTERSECTION_UNKNOWN\`; \`OWNER_NEGATIVE_NOT_RUN\`. These epistemic labels **do not introduce** a sixth Validation Gate state; existing \`PASS/FAIL/BLOCKED/NOT_RUN/NOT_APPLICABLE\` remain authoritative. Every negative must be executed by the actual owner interface or honestly left NOT_RUN; a source-local boolean or generated label alone is no permission evidence.
+
+**Release impact:** only a lawful new exact candidate, fresh Release §11.5 prospective applicability decision and independently reviewed Product→L2→Task Pack→Implementation→V01 may consume this reduced *proof* acceptance. The old candidate and its material S08/N08 BLOCKED remain unchanged. Any consumer with irreversible/high-risk real operations must independently satisfy its genuine human veto evidence, never infer it from these fixtures.
