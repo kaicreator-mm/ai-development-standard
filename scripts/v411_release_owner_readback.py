@@ -125,15 +125,15 @@ def inspect_current_owner_proofs(
         return hold("BAD_EXACT_SUBJECT")
     if not declared_jobs:
         return hold("INVALID_DECLARED_JOBS")
+    if observed_jobs is None or not observed_jobs <= valid_jobs:
+        return hold("OBSERVED_MATERIALITY_UNKNOWN")
+    if not observed_jobs <= declared_jobs:
+        return hold("OBSERVED_JOB_MISSING_FROM_DECLARATION")
     # This P5 witness is specifically for material J09+J10+J11+J12.
     # Until a separately verified, owning inventory can prove applicability,
     # user-supplied declared/observed subsets CANNOT waive any member.
     if declared_jobs != valid_jobs or observed_jobs != valid_jobs:
         return hold("FOUR_WAY_OWNER_INVENTORY_NOT_VERIFIED")
-    if observed_jobs is None or not observed_jobs <= valid_jobs:
-        return hold("OBSERVED_MATERIALITY_UNKNOWN")
-    if not observed_jobs <= declared_jobs:
-        return hold("OBSERVED_JOB_MISSING_FROM_DECLARATION")
     if not owner_login or not isinstance(owner_authority_ref, str) or not owner_authority_ref.strip():
         return hold("OWNER_AUTHORITY_UNVERIFIED")
     if not isinstance(proof_urls, dict):
