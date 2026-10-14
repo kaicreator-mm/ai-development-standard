@@ -17,6 +17,8 @@ def comment(job, number, **changes):
         "owner_authority_ref": "frozen/release-owner-ref",
         "currentness": "CURRENT", "environment": "local",
         "command": "test", "exit_code": "0", "evidence": "ref:validated",
+        "requested_head_sha": SHA, "actual_checked_out_sha": SHA,
+        "validation_profile": "focused", "provider_state": "AVAILABLE",
     }
     fields.update(changes)
     body = "<!-- ai-dev:event:v2 -->\n" + chr(96) * 3 + "yaml\n"
@@ -56,6 +58,13 @@ class FailClosedReadback(unittest.TestCase):
                 self.assertEqual(inspect(proofs=urls).reason,
                                  f"PROOF_MISSING_OR_BAD_REF_{missing}")
 
+    def test_declared_and_observed_partial_4way_cannot_false_green(self):
+        result = inspect(jobs={"J09"}, observed={"J09"},
+                         proofs={"J09": API + "100"})
+        self.assertEqual(result.status, "BLOCKED")
+        self.assertEqual(result.reason, "FOUR_WAY_OWNER_INVENTORY_NOT_VERIFIED")
+        self.assertEqual(result.release_gate_state, "BLOCKED")
+
     def test_underdeclared_observed_j12_is_not_waived(self):
         x = inspect(jobs={"J09", "J10", "J11"}, observed=set(r.JOBS))
         self.assertEqual(x.reason, "OBSERVED_JOB_MISSING_FROM_DECLARATION")
@@ -80,6 +89,30 @@ class FailClosedReadback(unittest.TestCase):
                 def reader(n):
                     return comment(r.JOBS[n-100], n, **change) if n == 100 else comment(r.JOBS[n-100], n)
                 self.assertEqual(inspect(reader=reader).status, "BLOCKED")
+
+    def test_pass_requires_canonical_event_v2_pass_fields_and_types(self):
+        invalid = (
+            {"requested_head_sha": ""},
+            {"actual_checked_out_sha": "b" * 40},
+            {"provider_state": "INFRA_BLOCKED"},
+            {"validation_profile": ""},
+            {"operator_kind": "agent-invented-power"},
+            {"exit_code": '"0"'},
+        )
+        for change in invalid:
+            with self.subTest(change=change):
+                def reader(n):
+                    return comment(r.JOBS[n - 100], n, **change) if n == 100 else comment(r.JOBS[n - 100], n)
+                verdict = inspect(reader=reader)
+                self.assertEqual(verdict.status, "BLOCKED")
+                self.assertEqual(verdict.release_gate_state, "BLOCKED")
+
+    def test_redirect_handler_rejects_redirect_before_token_forward(self):
+        with self.assertRaises(ValueError):
+            r._RejectRedirect().redirect_request(
+                object(), None, 302, "Found", {},
+                "https://attacker.example/steal-token"
+            )
 
     def test_wrong_author_or_rebound_source_ref(self):
         for mode in ("user", "id", "url"):
