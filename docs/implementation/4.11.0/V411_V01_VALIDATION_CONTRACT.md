@@ -21,7 +21,7 @@ ACTUAL_HOST=#1021@6156596087
 LATEST_DISTINCT_VALIDATOR=#1021@6162591281
 RELEASE_OWNER_SCOPE=#1021@6160156287
 RELEASE_APPLICABILITY=#1021@6156172012
-S08_HUMAN_PROOF=#1021@6162459405_MISSING
+S08_HUMAN_PROOF=#1021@6163883456_GENUINE_APPROVE_RECEIVED_NOT_DENY;#1021@6163960062_FRESH_VALIDATOR_CONFIRMED_BLOCKED
 FOUR_WAY_PROPOSAL=PR_1102_DRAFT_NOT_AUTHORITY
 VERDICT=BLOCKED
 ```
@@ -39,7 +39,7 @@ V01 is independent, dependency-complete, **visible** version closure for one exa
 | exact_candidate_identity | REQUIRED_NOW | PASS (distinct Validator confirmed) | #1021@6162591281 |
 | visible_full_regression (executed) | REQUIRED_NOW | 139 invoked; 125 raw PASS, **14 raw FAIL**; Release owner accepted targeted *current semantic substitute oracles* and Validator treats current required scope PASS, subject to Fresh evidence Review | #1021@6156596087; #1021@6160156287; #1021@6162591281 |
 | T12 integrated conformance | REQUIRED_NOW | 52/52 owner assertions executed EXIT 0; **20 test-only PASS / 28 raw material BLOCKED / 4 future RELEASE NOT_RUN**; per-class Release/Validator fidelity equivalence is distinct | same refs |
-| S08± real human DENY | REQUIRED_NOW | **BLOCKED**, valid human authority source absent; negative absence probe EXIT 1; same SQLite A→B **real-human** witness NOT_RUN | #1021@6162459405 |
+| S08± real human DENY | REQUIRED_NOW | **BLOCKED**, genuine accountable human **APPROVE** is present (receipt SHA256 `d668f1bf...f507ea9`, verified), **not** the required DENY; official focused T09 test exits 1 at the `APPROVE != DENY` assertion **before any sink execution**; same-object A→B genuine-DENY witness NOT_RUN. Earlier absent-file EXIT 1 is separate historical negative. No decision may be retyped or coerced. | #1021@6162459405; #1021@6163883456; #1021@6163960062 |
 | A/B/C/D other S material sufficiency | REQUIRED_NOW | Source/host/negative evidence accepted by latest Validator at **actual standards-repository fidelity only**, with real-native/remote restrictions acknowledged | #1021@6162591281 |
 | actual J09+J10+J11+J12 four-way material positive | REQUIRED_NOW under unmodified Frozen Product | **BLOCKED / MATERIAL_INTERSECTION_UNKNOWN**; negative omission contract PASS but not real positive; Product successor packet PR #1102 is DRAFT not accepted | #943@6084264198; #1021@6162591281 |
 | representative X01–X08 test layer | REQUIRED_NOW | Test-only executed oracles at current SHA; real downstream J09/Hidden/RQ stages still NOT_RUN | #1021@6156596087 |
@@ -56,6 +56,6 @@ V01 is independent, dependency-complete, **visible** version closure for one exa
 
 ## 3. Author boundary / next actor
 
-This WEB evidence author **does not** issue a Fresh Validator verdict, a Product successor approval, native Review, or the human DENY. The authoritative current independent verdict remains **#1021@6162591281 = V01_BLOCKED**.
+This WEB evidence author **does not** issue a Fresh Validator verdict, a Product successor approval, native Review, or the human DENY. The authoritative full-scope verdict **#1021@6162591281 = V01_BLOCKED** remains effective; independent delta Validator **#1021@6163960062** verified the later genuine APPROVE refusal and preserved S08/V01 BLOCKED.
 
-Next: Product/L2/T12/V01 owners review prospective 4-way scope packet #1102, an actual authorized human supplies a **new** S08 DENY on the same candidate/operation (never edited by Agent), one focused real Host A→B safe sink execution, a current independent V01 Validator re-evaluates every gate, and a **different Fresh Reviewer** checks exact three evidence blobs/subject. Only then may V02 separately decide candidate freeze. No re-run of 139 merely for creating this documentation.
+Next: Product/L2/T12/V01 owners review prospective 4-way scope packet #1102. The accountable human **already decided APPROVE**; preserve that binding decision. A **new independently authorized DENY** may only be used if that person *freely makes a separate genuine subsequent decision*, not through Agent alteration, repeated prompts or reinterpretation; otherwise the frozen S08 gate remains BLOCKED or an expressly authorized **prospective** Product/L2/Pack scope amendment is needed. After lawful S08 proof (if any), distinct Validator re-evaluates all gates and a different Fresh Reviewer checks these exact evidence blobs before V02. No repeat 139 simply for docs.
