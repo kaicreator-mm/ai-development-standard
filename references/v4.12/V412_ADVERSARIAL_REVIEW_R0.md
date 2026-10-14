@@ -323,3 +323,46 @@ PRD_FREEZE=NO
 ```
 
 Author review sees a coherent initial minimal design to send to Product PRD/L2, with **specific trace/schema/currentness engineering not yet proven**. No claim of a successful conformance test, fresh human empirical dataset, source code implementation, GitHub native dependency mutation, or retroactive v4.11 compliance.
+
+
+## v4.12 PRD R1 — Author-led pre-freeze adversarial disposition
+
+**Reviewed exact PRD candidate subject:** `docs/product/PRD-v4.12.0-review-candidate.md`, source commit `f7e6e234697fdba7eed5e43094e48af0d3e81be0` and blob `f46ae82a6a77dbd2213298931a09300a7b83cbc4`. Review mode: **same-author static adversarial test**, not selected Fresh Independent Product Review and not runtime conformance. v4.11 Development Workflow/L1 stage semantics and the v0.1 five-project Issue evidence were used to test Product boundaries.
+
+| ID | Hostile interpretation / failure case | PRD R1 disposition |
+|---|---|---|
+| PF01 | Product owner treats PRD document existence as `Product Freeze=PASS`, proceeds to L2 without the actual owner decision | **COVERED:** header/§13 explicitly mark candidate, separate Product Authority Freeze. No claim of authorized Freeze |
+| PF02 | New project initialization is forbidden until final DAG because scaffolding writes Git files | **COVERED for future Product policy:** FR-03 explicitly grants v4.12 scoped planning-stage source creation without extra human Gate; existing v4.11 pin is not implicitly amended |
+| PF03 | Scoped bootstrap generator invokes a package postinstall script with unapproved network/privileged effects; “no Feature code” line used to permit it | **PARTIAL ENGINEERING GAP:** Current PRD bans irreversible/privileged effects and requires permitted writer; L2 MUST treat executed generator/package hooks and dependency installs as **real actions** subject to existing environment/trust/permissions and observability, not assume config-only edits are inert |
+| PF04 | Author maps source `import` to native Task Issue `blocked_by`, creating artificial deadlock | **COVERED:** FR-01/04 preserve GitHub native execution DAG owner; graph index is non-authoritative |
+| PF05 | Git index embeds its own final HEAD SHA; writing index advances HEAD, causing endless regeneration | **L2 OPEN / bounded:** FR-04/§12 reserve source-subtree + DAG checkpoint exact tuple, no volatile field; ensure derived index's digest excludes itself and use accepted input blob IDs |
+| PF06 | One API has six consumers; map assigns six public writers or splits into six artificial Task PRs | **COVERED:** many-to-many `CONSUMES != MODIFIES`, coherent concern and shared owner |
+| PF07 | Scaffold typed stub returns success but no feature path reaches the user | **COVERED:** FR-03/05 require not-implemented truth and actual end-to-end integration route |
+| PF08 | Real Host unavailable, mapping checker and CI pass, Release owner calls E3 PASS | **COVERED:** FR-05/06 and §13 separate actual E3/Version required evidence, unknown stays NOT_RUN |
+| PF09 | Three LLMs agree on author-created Gold, counted as independent human blind observation | **COVERED:** FR-02 separate hybrid/real-human oracle, no synthetic independent PASS |
+| PF10 | One forum thread produces 40 copies; Product declares 40 actual users and representative market prevalence | **COVERED:** source rights/sampling/bot/dedupe and subject-limited claims |
+| PF11 | New mandatory Steward service / three DAG files / approval Gate prevents A0/A1 existing-project adoption | **COVERED:** P0/P1/P2 split and §10/11 explicitly exclude new compulsory services and false-gate proliferation |
+| PF12 | Multi-module v4.12 implementation changes a previously frozen v4.11 Task DAG/Release gate retroactively | **COVERED:** frozen version pins and owner source keep authority, prospective policy only |
+| PF13 | Risk profile `FAST` masks Product/Trust/Review/Release hard requirement | **COVERED:** FR-02/05 explicitly prohibit waiver and keep old owner |
+| PF14 | Model-run critique by same Builder is called “Fresh Independent Review” for PRD itself | **COVERED/NOT_DONE:** current review is explicitly *author-led only*, selected independent Review status is NOT_RUN |
+| PF15 | P0 workstream table interpreted to require rebuilding all of W2/W3/W4 independent of already present v4.11 code | **COVERED:** §2.1 material delta only with exact evidence, defer optional automation |
+| PF16 | Version is marked READY because PRD/Task/PR checks pass, but real required Hidden/RQ absent | **COVERED:** FR-05 and Release subject separation |
+
+### Result and limits
+
+```ini
+REVIEW_CLASS=AUTHOR_LED_STATIC_ADVERSARIAL
+PRD_SUBJECT=docs/product/PRD-v4.12.0-review-candidate.md
+PRD_SOURCE_COMMIT=f7e6e234697fdba7eed5e43094e48af0d3e81be0
+PRD_BLOB=f46ae82a6a77dbd2213298931a09300a7b83cbc4
+P0_UNRESOLVED_PRODUCT_SCOPE=0_IDENTIFIED_IN_STATIC_REVIEW
+P1_UNRESOLVED_PRODUCT_SCOPE=0_IDENTIFIED_IN_STATIC_REVIEW
+L2_RISK_NOTE=PACKAGE_INSTALL_OR_GENERATOR_HOOKS_ARE_EXECUTED_EFFECTS
+L2_MAPPING_NOTE=GENERATED_INDEX_MUST_NOT_SELF_HASH_OR_SELF_AUTHORIZE
+INDEPENDENT_PRODUCT_REVIEW=NOT_RUN
+PRODUCT_FREEZE=NO
+MACHINE_CONFORMANCE=NOT_RUN
+VERDICT=R1_CONTENT_READY_FOR_APPLICABLE_PRODUCT_REVIEW_NOT_YET_FROZEN
+```
+
+**Reviewer caution:** `0_IDENTIFIED` is a bounded author-led finding count, not proof that no hidden gap exists. Normal appropriate Product reviewer/authority may raise additional findings. Do not demand another repetitive review loop without a new material predicate; an actual review finding must be dispositioned by its owner. Record immutable Product Freeze only when authorized decision references the exact reviewed PRD/L1 subject. L2 chooses schema/controller/event integration **after** Product Freeze and must not smuggle new UX/approval obligations into “implementation detail”.
