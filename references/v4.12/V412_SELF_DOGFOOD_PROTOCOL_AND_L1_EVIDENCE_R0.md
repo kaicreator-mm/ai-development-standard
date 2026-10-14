@@ -108,3 +108,80 @@ NO_NEW_AUTHORITY=YES
 NO_NEW_GATE=YES
 NO_PREMATURE_PRODUCTION_SCAFFOLD=YES
 ```
+
+
+## 6. L1 Self-Dogfood R1 — live owner alignment + 9 bounded shadow predicates (2026-10-15)
+
+**Objective:** During the user's `继续推进` instruction, actually apply v4.12 conditional DAG-P, source-bound proof reuse, cost-bounded stop and evidence-owner nonpromotion **to v4.12 itself**. This is a **read-only source-evaluation experiment**, not an independent review, not test execution on a real Build Host, and not a claim that a v4.12 generator exists. Author-owned currentness check uses actual GitHub results of this iteration; negative mock predicates verify desired rejection *logic only*, not production gate software.
+
+### R1 live source identity (new checkpoint; does not rewrite historical E01–E06)
+
+```ini
+PRD_SUBJECT=docs/product/PRD-v4.12.0-review-candidate.md
+PRD_R3_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
+PR_1101_HEAD=d275e62eadd443fbcbf9d64aaeff41fdade25d7d
+PR_1101_DRAFT=YES
+PR_1101_NATIVE_REVIEW_SUBMISSIONS=0
+V411_CANDIDATE_CURRENT=4924387815fa238382471e690fb169579767d9a1
+V411_VALIDATION_STANDARD_BLOB=1522b85f9e68cc4a1591ea5899b53c224998e5a8
+V411_RELEASE_STANDARD_BLOB=c4d72506253ca7f3d95e305dbd84aae0e1fbe2cb
+L1_PRIOR_ART_PR_1104=OPEN_DRAFT
+L1_PRIOR_ART_DOC_BLOB=3b4de3e63d7e32ac279f948ccd7f3d037b68f806
+PRACTICE_ISSUE_1111=CLOSED_INTAKE_COMPLETED_NO_IMPLEMENTATION
+PRODUCT_REVIEW_R3=NOT_RUN
+PRODUCT_FREEZE=NO
+```
+
+### Minimal actual DAG-P projection — no extra GitHub dependency edges
+
+| Work/evidence item | Relationship to PRD #1101 | Claim/phase boundary |
+|---|---|---|
+| #1096 Product version intake | `PARENT / SCOPE` | Contains Product requirements context; cannot freeze itself |
+| #1099 Risk-Bounded Value First | `INFORMS FR-02/07` | Optional ROI rule does not override mandatory Owner |
+| #1100 Conditional three graphs | `INFORMS FR-01/03` | L1 coordination view; does not create native `blocked_by` |
+| PR #1104 multi-agent prior-art | `INFORMS W1–W5; OPEN_DRAFT` | Source-pinned evidence proposed but not adopted as authority; does not block PRD Review |
+| #1111 validation evidence reuse | `INFORMS FR-05/07; INTAKE_COMPLETED` | Reconciled to existing Validation/Release owners; possible bounded L2 delta only, not new P0/mandatory Gate |
+| PR #1101 PRD R3 | `PRODUCT_REVIEW_SUBJECT` | Source unchanged; next decisive evidence is real independent Product Review on exact blob |
+| v4.11 candidate current `49243878` | `INFORMS AUTHORITY_CURRENTNESS` | Core 10 previously compared owner norm/prompt blobs unchanged vs `322e`; existing candidate not a released predecessor |
+
+**DAG-P depth selected:** `BOUNDED_WORKLIST`, not EXPLICIT_DAG. No new native Issue Dependency was created: these are mostly product evidence/reuse links, not proved execution blockers. The only real workflow blocker is an outstanding independent R3 Product Review before Product Freeze; the inability to release an unreleased v4.11 predecessor is later integration/release currentness, **not reason to discard the current R3 Product Review**.
+
+### R1 actual static shadow evaluations (not formal PASS)
+
+| Test | Source/example | Result | Correct interpretation |
+|---|---|---|---|
+| T01 | Live PRD R3 Git blob equals expected exact subject | EXPECTED | PRD source identity pinned |
+| T02 | Live PR #1101: `0` native Review submissions | EXPECTED DENY | R3 cannot inherit independent PASS or Product Freeze |
+| T03 | Independent R2 blob `3e6964...` differs from R3 `0bfbf7...` | EXPECTED DENY | Changed R3 requires exact-subject review |
+| T04 | #1111 `closed`, PRD blob unchanged | EXPECTED | Intake resolution does not force new P0, Product amendment or Review round |
+| T05 | PR #1104 `open draft` and pinned document blob `3b4de3...` | EXPECTED | Optional L1 prior art cannot self-authorize normative adoption |
+| T06 | `VALIDATION_STANDARD.md` §6 contains exact impact decision / affected-or-unknown rerun condition | EXPECTED | Existing owner covers base currentness, avoid implementing second policy |
+| T07 | `RELEASE_STANDARD.md` §11 retains per-gate × exact-subject and fail-closed UNKNOWN | EXPECTED | No evidence-reuse shortcut promotes a release verdict |
+| T08 | Synthetic negative: review exists for **different** source blob, not R3 | EXPECTED DENY (mock) | Previous-subject PASS cannot be retargeted |
+| T09 | Synthetic negative: upstream status `UNKNOWN` | EXPECTED DENY (mock) | No automatic version-integration admission without exact source |
+
+```ini
+SHADOW_STATIC_PROBES=9_OF_9_EXPECTED
+ACTUAL_SOURCE_PROBES=7
+MOCK_LOGICAL_NEGATIVES=2
+FORMAL_TEST_OR_CI_PASS=NO
+PRODUCT_REVIEW_PASS=NO
+NEW_NATIVE_DAG_EDGES=0
+NEW_IMPL_TASK_ISSUES=0
+NEW_REQUIRED_GATES=0
+SAVED_HOST_MINUTES=UNKNOWN
+SAVED_MODEL_COST=UNKNOWN
+```
+
+**Shadow checker limitation:** the experimental review/freeze boolean in T02/T08/T09 was a *minimal logical negative predicate* against retrieved GitHub facts and intentionally malicious mock cases. It is **not** the actual GitHub Gate Controller, did not exercise its lock/sweep/race paths, and must not be described as executed authoritative Freeze validation.
+
+### Result — three useful signals and one boundary correction
+
+1. **SUPPORTED (source-bound L1 only):** evidence reuse is already specified by `VALIDATION_STANDARD §6` and `RELEASE_STANDARD §11`; #1111's justified prospective delta is at most a missing assertion→obligation execution index. Reusing #1111 and #1104 without reopening PRD demonstrates **L1 stop condition** and reduces duplicate *planned* work (no quantified saved time).
+2. **SUPPORTED:** exact source differs per review R2/R3; preserving the same exact R3 PRD despite new evidence append can keep Reviewer target stable. Current candidate changes should invalidate only affected material proofs, not demand complete Product research reset.
+3. **SUPPORTED:** a few issue/PR relations are sufficient for this L1; a separate DAG-P graph DB or automatically generated native dependency edges would add ceremony with no proven decision value.
+4. **CORRECTION TO AVOID OVERCLAIM:** `EXPECTED` for these lightweight shadow predicates **must not** be reported as actual release/Review/PRD machine `PASS`. The v4.12 real source-evidence contract must label `OBSERVED | STATIC_SHADOW | EXECUTED` distinctly where adoption would otherwise conflate them. This is a future L2 representation concern, not a new Product P0 or approval Gate.
+
+### Next stage and stop rule
+
+**Stop L1 shadow loops now for unchanged R3 source.** Do not commission a third same-author adversarial Product review, rerun the same 9 mock predicates without changed inputs, or create a full-time Steward. **Remaining external dependency**: an independent Reviewer must evaluate exact R3 PRD blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`, closing R2 P0×1/P1×4 and any new regressions. After authoritative Product Freeze, switch to L2 architecture with minimal existing-owner gap matrix and the two P0 source-pinned project fixtures; then legal Scaffold Planning accepted Claim → Review/merge-ready → paired DAG Freeze. Actual implementation must follow the then-applicable pinned authority; v4.12 shadow rule alone never authorizes source writes.
