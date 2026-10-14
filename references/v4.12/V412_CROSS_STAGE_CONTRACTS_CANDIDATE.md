@@ -1,5 +1,7 @@
 # v4.12 Cross-Stage Execution Contracts — Product/L1 Candidate (R1)
 
+> **R3 SUPERSESSION NOTE (2026-10-15):** C15 historical clauses or samples that imply pre-DAG Scaffold source creation without accepted Claim, optional Review for public schema, independently writable anchor owner/lifecycle, or broad docs-only drift exemption are superseded by the exact PRD R3 in `docs/product/PRD-v4.12.0-review-candidate.md`. Existing Work Item + accepted Claim before source write, Stage 2.6 Review Policy and merge-ready are mandatory; only immutable explicit non-material path exemptions apply; Task ownership comes from one effective binding/Claim stream and `dag-mutation-record-v1`. v4.11 is a pinned **candidate** `version/v4.11.0@322e86845f78de8ea8cadb05ec624bfbb3a5de20`, not an integrated released baseline. This candidate reference is **not** an alternative authority.
+>
 > STATUS: **PROPOSED R1 after author-led adversarial R0, NON-NORMATIVE, NOT FROZEN.** This is a reviewed-issues synthesis plus an author-led draft for L1 Product adoption, **not** operative ADS rules. No version/v4.11.0 source/Task Pack/Release applicability changes. Parent: [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096). Three-DAG intake: [#1100](https://github.com/kaicreator-mm/ai-development-standard/issues/1100). Risk-bounded value: [#1099](https://github.com/kaicreator-mm/ai-development-standard/issues/1099). 
 
 ## 0. Authority and construction rules
