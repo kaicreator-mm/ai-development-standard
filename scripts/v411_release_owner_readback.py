@@ -59,26 +59,35 @@ class GitHubCommentReader:
 
 
 def _event_fields(body: object) -> dict[str, str] | None:
-    """Parse exactly one unquoted event block, reject duplicate/invalid keys."""
-    if not isinstance(body, str) or not body.startswith("<!-- ai-dev:event:v2 -->"):
+    """Parse a bounded subset of canonical event-v2 YAML, never INI claims.
+
+    This is still raw GitHub content. Only a separate owner-controlled
+    canonical admission may decide trust beyond this source syntax witness.
+    """
+    marker = "<!-- ai-dev:event:v2 -->"
+    if not isinstance(body, str) or not body.startswith(marker):
         return None
-    if body.count("```ini\n") != 1:
+    tail = body[len(marker):].lstrip()
+    if body.count("```yaml\n") > 1:
         return None
-    block = body.split("```ini\n", 1)[1].split("\n```", 1)
-    if len(block) != 2:
-        return None
+    if tail.startswith("```yaml\n"):
+        block = tail.split("```yaml\n", 1)[1].split("\n```", 1)
+        if len(block) != 2:
+            return None
+        tail = block[0]
+    else:
+        tail = tail.split("\n\n", 1)[0]
     result: dict[str, str] = {}
-    for line in block[0].splitlines():
+    for line in tail.splitlines():
         if not line or line.startswith("#"):
             continue
-        if "=" not in line:
+        if ": " not in line:
             return None
-        key, value = line.split("=", 1)
-        if not re.fullmatch(r"[A-Z][A-Z0-9_]*", key) or key in result or not value.strip():
+        key, value = line.split(": ", 1)
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", key) or key in result or not value.strip():
             return None
-        result[key] = value.strip()
+        result[key] = value.strip().strip('"')
     return result
-
 
 def inspect_current_owner_proofs(
     *,
@@ -135,15 +144,19 @@ def inspect_current_owner_proofs(
         if not isinstance(author, dict) or author.get("login") != owner_login:
             return hold(f"PROOF_UNVERIFIED_OWNER_{job}")
         fields = _event_fields(item.get("body"))
-        if fields is None or fields.get("EVENT") != OWNER_EVENT:
+        if fields is None or fields.get("event") != OWNER_EVENT:
             return hold(f"PROOF_UNADMITTED_EVENT_{job}")
         expected = {
-            "REPOSITORY": REPOSITORY, "EXACT_SUBJECT": subject,
-            "JOB": job, "VERDICT": "PASS", "OWNER_AUTHORITY_REF": owner_authority_ref,
+            "schema": "ai-dev/event-v2", "event": OWNER_EVENT,
+            "actor_role": "validator", "repository": REPOSITORY,
+            "sha": subject, "gate": job, "status": "PASS",
+            "owner_authority_ref": owner_authority_ref, "exit_code": "0",
         }
         if any(fields.get(k) != v for k, v in expected.items()):
             return hold(f"PROOF_STALE_OR_MISBOUND_{job}")
-        if fields.get("CURRENTNESS") != "CURRENT" or not fields.get("OWNER_PROOF_REF"):
+        if (fields.get("currentness") != "CURRENT" or not fields.get("evidence")
+                or not fields.get("operator_id") or not fields.get("operator_kind")
+                or not fields.get("environment") or not fields.get("command")):
             return hold(f"PROOF_CURRENTNESS_UNKNOWN_{job}")
         verified.append(comment_id)
     return SourceWitness(
