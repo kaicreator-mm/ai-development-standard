@@ -158,3 +158,36 @@ After R0, a revised **non-normative** contract candidate was written at `referen
 - Exact integration with #1100 DAG-P and C13 H3 classification: `O1/O2/O3` may be **human-origin historical evidence**, but not automatically a purpose-built `O5` or human decision/independent-review attestation.
 
 **Verdict:** `C14_ADDITION=PRODUCT_CANDIDATE_WITH_NEGATIVE_TESTS`; no operational crawling, actual sample, empirical Gold, legal advice, independent Product review, or L1 Product Freeze. No new implementation Task created.
+
+
+## Targeted adversarial extension: C15 scaffold baseline and HIGH_ASSURANCE escalation
+
+**Evidence:** author-led static reading of candidate `V412_CROSS_STAGE_CONTRACTS_CANDIDATE.md` §C15, pinned v4.11 DEVELOPMENT_WORKFLOW Stage2.3–2.5, TASK_DECOMPOSITION (one coherent concern, atomicity, central wiring), TASK_DAG_GOVERNANCE (native DAG mutation), ARCHITECTURE_DESIGN and EXECUTION_ARCHITECTURE (Claim and source-write authority), dogfood #775/#1072. Not independent architecture review, not compile/test evidence.
+
+### Attack matrix
+
+| ID | Failure hypothesis | Disposition |
+|---|---|---|
+| SX01 **P1** | Proposed **pre-DAG codegen** steals execution authority from current v4.11 Task DAG Freeze → materialization → Claim ordering | C15 §S.1 **A default** and conditional **B only after explicit Product/L2 governance amendment**, fail closed on source write. **CANDIDATE_TEXT_ADDRESSED**, no implemented authority change |
+| SX02 **P1** | "Interfaces are stable" is interpreted as a complete runnable feature; compile-green NotImplemented yields fake customer acceptance | C15 §S.3 limits checks to contract/build/import smoke, stubs clearly `UNIMPLEMENTED`, distinct functional/real-host gates. **CANDIDATE_TEXT_ADDRESSED** |
+| SX03 **P1** | Blanket HIGH_ASSURANCE on any private function or generated file induces endless reviews/Host runs; cost outweighs value | C15 §S.5 impact-based escalation, same-contract normal tests; current mandated security/rights gates remain. **CANDIDATE_TEXT_ADDRESSED** |
+| SX04 **P1** | Changed public security ABI silently migrates through a "small" scaffold edit without architecture/product owner | C15 §S.5 explicit Product/L2/compatibility authority and material negative proof; no Builder unilateral change. **CANDIDATE_TEXT_ADDRESSED** |
+| SX05 **P1** | Bootstrap consumes a stable contract but upgrades upstream/lockfile or generated license terms behind L2 | C15 §S.3/S.5 and SC10–SC11 demand provenance, rights, actual toolchain, L2 bounded amendment when required. **CANDIDATE_TEXT_ADDRESSED** |
+| SX06 **P1** | T00 is authorized but downstream Task DAG assumes shared interface freeze without actual legal acceptance/integration or exact SHA readback | C15 §S.1/S.3/S.4 require accepted exact source, actual integration, consumer JIT re-read; T00 PASS not Release PASS. **CANDIDATE_TEXT_ADDRESSED** |
+| SX07 **P2** | Apparent per-interface parallelism splits shared auth state and transactional invariants into invalid partial implementations | C15 §S.4/S.6 preserve atomic invariant; shared wiring owner and real DAG dependencies. **CANDIDATE_TEXT_ADDRESSED** |
+| SX08 **P2** | Dynamic domain package/plug-in architecture has no value in stubbing each possible Tool/Capability | C15 §S.2/S.4 and SC12 reject mandatory interface-per-Task abstractions. **CANDIDATE_TEXT_ADDRESSED** |
+| SX09 **P2** | Existing mature project has rich clean module structure but scaffold re-generation rewrites everything | REUSE_EXISTING/OMIT chosen before new source; explicit ROI. **CANDIDATE_TEXT_ADDRESSED** |
+| SX10 **P2** | Provisional DAG contains placeholder nodes, then user assumes they are frozen implementable Tasks | C15 distinguishes bounding provisional concern inventory vs frozen executable DAG, explicit per-Task identity/admission and lawful mutation. **CANDIDATE_TEXT_ADDRESSED** |
+| SX11 **P2** | During T00 scaffold import there is no real error-path test, while end-to-end failure safety depends on error semantics | Contract-specific minimal negative or failure check when inherent; real integration/functional paths stay pending. **CANDIDATE_TEXT_ADDRESSED** |
+| SX12 **P2** | Project wants multi-runtime or generated schemas, but scaffold only targets one environment and falsely declares platform matrix PASS | SC03/SC09/SC10 and source/currentness gate scope prohibit cross-platform proof extrapolation. **CANDIDATE_TEXT_ADDRESSED** |
+
+### Residual genuine Product/L2 decisions (not implementation facts)
+
+- **G1 authority ordering (highest priority):** Should v4.12 authorize path B (source bootstrap **before full** implementation DAG) as a prospective constrained planning path, or leave A as only normative? C15 correctly forbids pretending B already legal. Choose via PRD/L2, not incidental "helpful" builder.
+- **G2 scaffold minimality:** What must exist in accepted bootstrap for changed project characteristics? No universal FQN/file tree, language/runtime, smoke matrix or 1-interface/1-Task.
+- **G3 interface change and Freeze scope:** Which part of L2 is a truly frozen cross-team contract and which implementation seams remain private; adjust owner/compatibility/consumer matrix accordingly.
+- **G4 reference baseline identity:** Which exact merged bootstrap SHA/tree is bound into Task Pack/JIT and how to handle downstream rebind after independent PRs merge?
+- **G5 economics & operational proof:** Need dogfood evidence that executing code bootstrap ahead of **full** DAG lowers total wall clock and conflict repairs versus T00 as the first DAG node; no unsupported 30–50% savings claims.
+- **G6 real gate scope:** high risk may require real-host security/negative proof even if scaffold compiles; low-risk source-only scaffolding should not inherit whole-version Host/Hidden matrix.
+
+**Adversarial verdict:** `C15_R0_AUTHOR_LED_REVIEW=SEMANTIC_DESIGN_CANDIDATE_READY`; `P1_UNADDRESSED_SEMANTIC=0`; `P1_RUNTIME_MACHINE_PROOF=NOT_RUN`; `INDEPENDENT_ARCHITECTURE_REVIEW=NOT_RUN`; `L2_B_STAGED_BOOTSTRAP_AUTHORITY=OPEN`; `PRODUCT_FREEZE=NO`. No normative change to v4.11 execution/Task DAG, no E3, no completed version release.
