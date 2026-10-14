@@ -1,6 +1,6 @@
 # ADS v4.12 — Consolidated Product Scope / 统一产品范围说明 R0
 
-> **状态：PRODUCT INTAKE / NON-NORMATIVE / PRD_NOT_FROZEN / L2_NOT_FROZEN / IMPLEMENTATION_DAG_NOT_FROZEN。** 此文件是 #1096、#1099、#1100 和 PR #1101 中已讨论方向的**阅读入口**，不是另一份 Product authority，不取代原 Issue 的证据、Review/Validation、具体 owner 或 Frozen 文档。事实源以固定版本和被批准的 GitHub 权威为准；文中“确定”表示用户认可的 **v4.12 Product direction**，不表示标准已生效。
+> **状态：PRODUCT INTAKE / NON-NORMATIVE / PRD_NOT_FROZEN / L2_NOT_FROZEN / IMPLEMENTATION_DAG_NOT_FROZEN。** 已有首版决策：[`V412_INITIAL_POLICY_DECISIONS_V01.md`](V412_INITIAL_POLICY_DECISIONS_V01.md)，后续 L2 负责最小实现投影。 此文件是 #1096、#1099、#1100 和 PR #1101 中已讨论方向的**阅读入口**，不是另一份 Product authority，不取代原 Issue 的证据、Review/Validation、具体 owner 或 Frozen 文档。事实源以固定版本和被批准的 GitHub 权威为准；文中“确定”表示用户认可的 **v4.12 Product direction**，不表示标准已生效。
 >
 > Parent intake [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) · ROI principle [#1099](https://github.com/kaicreator-mm/ai-development-standard/issues/1099) · Three-DAG intake [#1100](https://github.com/kaicreator-mm/ai-development-standard/issues/1100) · Cross-stage contract Draft [PR #1101](https://github.com/kaicreator-mm/ai-development-standard/pull/1101).
 
@@ -36,7 +36,7 @@ Idea/Intake
  → L2 Architecture Evidence + DAG-A (按需)
     Architecture UNKNOWN、复用决策、边界/不变量、必要真实 Demo
  → explicit L2 Architecture Freeze
- → 受限且合法的 Bootstrap authorization [v4.12 normative design OPEN]
+ → v4.12 规划阶段明确允许的 NEW_PROJECT_INIT / Scaffold 创建（已有源/权限边界）
  → 项目 Scaffold S0 ↔ Draft Implementation DAG D0
     同步细化至 SF ↔ DF，按需编译/契约/入口/负例 smoke
  → 配对检查并记录 Scaffold SF exact merged SHA/Tree + DAG DF checkpoint
@@ -46,7 +46,7 @@ Idea/Intake
  → Candidate Freeze → required Hidden/Closeout/RQ → Repository Integration → Tag
 ```
 
-**注意:** v4.11 的源码写入顺序仍是 Frozen Task DAG → 正式授权 Task。v4.12 用户提出的“**完整** DAG Freeze 前生成**真实** Scaffold”需要**前瞻性**增加一个窄范围 Bootstrap Work Authorization（利用既有 Work Item + 互斥 Claim + source/currentness + gates），不能直接以 Product 意向写生产代码。旧 pin 项目维持原流程（可把 Bootstrap 当 T00）。
+**注意:** 对**从零新项目**，v4.12 的 Scaffold 生成是合法的 **Planning 阶段工程产物创建**，不是修改已冻结实现，不增设 Bootstrap 审批 Gate；其范围和真正 Feature 实施权限必须区分。需将阶段许可接入正式 v4.12 Development Workflow 与现有 GitHub/Writer 规则才能生效。现行 v4.11 旧 pin 项目维持其合法 Task DAG/T00 先行流程。详见 [首版决策 §D01](V412_INITIAL_POLICY_DECISIONS_V01.md#d01--bootstrap-是从零生成规划阶段完善项目骨架不是对已有冻结实现的非法修改)。
 
 ### 3.1 三个阶段图
 
@@ -138,9 +138,9 @@ Frozen Product ref + Frozen L2 ref
 | 状态 | 内容 |
 |---|---|
 | **已明确 Product 方向（待正式 PRD Freeze）** | 五大 Workstreams、Risk-Bounded Value First、三阶段图可选、L1/2 证据与权威分离、最低成本/人类证据法、Scaffold+DAG 共演进与配对 Freeze、双向多对多映射、动态按风险治理与 Task Learning |
-| **P0 未决，冻结前必须明确适用性/授权** | 如何**合法**在完整实施 DAG 冻结之前写入 Scaffold 生产源码——限定 Bootstrap source-write 工作、权限、互斥 Claim、范围、Review/Validation、失效与取消；同既有 v4.11 工作流保持前瞻性迁移 |
-| **Product/PRD 待裁决** | 何时需要 DAG-P/DAG-A 显式 Issue；哪些风险、证据与实验应自适应选路径；人类实验与授权不可省略的适用条件；部分成本优化收益/终止条件；对旧项目/不同业务类型的适用范围 |
-| **L2 待设计** | 最轻量映射承载方式、P/A work dependency semantics、paired-Freeze exact identities、source/Task 变更失效算法投影、Human/隐私证据引用、Steward read/propose/wake、环境资源 admission/cleanup、最小机器 conformance 和 Runner 能力 |
+| **已确定的 Bootstrap Product 规则** | L2 后 **NEW_PROJECT_INIT** 规划阶段可创建 Scaffold，无额外 Gate；限制工程/契约骨架而非业务功能实施；已有项目只增量适配，正式 v4.12 接线后前瞻生效 |
+| **已选首版 Product 默认规则** | DAG-P/DAG-A 按需 INLINE/WORKLIST/EXPLICIT；风险与未知正交、Owner 权威优先；多模型/工具替代不需要的真人程序；已有许可真人数据优先；旧项目不强制迁移。以真实项目案例优化，不再要求先推出新一轮独立研究项目 |
+| **L2 待实现/投影** | GitHub anchor + DAG scaffold_bindings → 生成只读双向 map、V01–V12；Scaffold subtree/tree 与 DAG checkpoint 配对；规划阶段写入范围的最小治理接线；现有 Steward/Env/Claim/Review 的 owner 复用与验证。不是新的 Product 权限悬案 |
 | **需要已有 owner 证实的内容** | v4.11 已完成的 Claim/Assurance/Task Learning/Review/CI 等，先查 exact source + tests + Case，证实 ALREADY_IMPLEMENTED/DELTA/DEFER，不能因为有旧 Issue 就当作新缺口 |
 
 **明确不做：** 第二个规范权威/状态库/Claim 生命周期/发布决策者；所有项目强制三张 DAG、每个接口一个 Task、每个 PR 三模型对抗审核/真人参与；所有源码变更 HIGH_ASSURANCE；脚手架通过代替功能验证；公开帖子自动等于合法真实人 Gold；用无新断言的测试/Research Demo 铺满 Issue。
@@ -148,8 +148,8 @@ Frozen Product ref + Frozen L2 ref
 ## 10. 推荐收敛顺序与可验收示例
 
 1. **现在（L1）**：对照已有 owner 做 bounded-gap disposition `ALREADY_SATISFIED | PARTIAL_DELTA | NET_NEW | L2_ONLY | DEFER`；用一个真正新项目和一个既有项目反例检查 ROI 与方法；把本 Summary 精炼成 Product requirements/acceptance，不立刻拆成 15 个 implementation Issues。
-2. **PRD**：明确 Bootstrap-before-full-DAG Product 授权期望、Hard floor 和最小真人/来源约束；对需要的 material normative 变更执行 selected Product Review 和显式 Product Freeze。
-3. **L2**：用现有 owner 串接合法 pre-full-DAG Bootstrap、共享 mapping/paired-freeze、Steward/Env/Task Learning 现有机制，按需静态或 Demo 证据；L2 Freeze。
+2. **PRD**：采纳 [v0.1 首版决策](V412_INITIAL_POLICY_DECISIONS_V01.md)（规划阶段新项目生成合法、GitHub 映射、已有项目首版策略），界定 Hard Floor 和实证权威，进行适用的 Product Review 后由 Product Authority 显式冻结。
+3. **L2**：把已确认的规划阶段 Scaffold 创建规则**接入现有 DEVELOPMENT_WORKFLOW 与 GitHub writer/Work Item**；实现最小 map 生成/验证约定（不重复事实源）；其余 Steward/Env/Task Learning 只补真实差距。
 4. **Implementation DAG**：按真实可实现的 concern/PR 组织，先建立合法 Bootstrap，协同规划至 paired Freeze；后续 JIT Task Packs/Claims 实施，必要时合法拆分、单一集成 owner。
 5. **Closure**：按现有 exact-source mandatory gates，核对 Release Owner × subject applicability，直到一份真正稳定版本候选可被 RQ 和 Release owner 合法接受。
 
@@ -166,7 +166,9 @@ AUTHOR_LED_ADVERSARIAL_REVIEW=DOCUMENTED_NON_INDEPENDENT
 INDEPENDENT_PRODUCT_REVIEW=NOT_RUN
 PRD_FREEZE=NO
 L2_FREEZE=NO
-PRE_FULL_DAG_BOOTSTRAP_AUTHORIZATION=NORMATIVE_DESIGN_OPEN
+PLANNING_SCAFFOLD_CREATE=PRODUCT_DIRECTION_DECIDED_NOT_YET_NORMATIVE
+GITHUB_BIDIRECTIONAL_MAPPING=V01_CONTRACT_DEFINED_IMPLEMENTATION_NOT_RUN
+OTHER_MECHANISMS=V01_DEFAULTS_SELECTED_WITH_PROJECT_EVIDENCE
 IMPLEMENTATION_TASK_DAG=NOT_CREATED
 MACHINE_CONFORMANCE=NOT_RUN
 RELEASE_AUTHORITY=NO
