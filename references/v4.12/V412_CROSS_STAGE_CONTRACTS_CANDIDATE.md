@@ -270,3 +270,55 @@ One real observation can satisfy several **logically equivalent** coverage rows 
 | F07 | R1-F07 strict evidence equivalence and eligibility | Existing gate owner must actually accept each equivalence |
 
 **After these repairs:** the draft can enter Product/L1 review as a **complete candidate model**, but it still cannot be called Product-Frozen or production-conformant. The R0 author-led adversarial review remains historical, not an independent PASS. P/A native materialization, mutation proof algorithm schema, Steward delivery, human/private evidence permissions, resource preflight, compatibility and ROI calibration remain explicit L2/product policy questions rather than fabricated settled implementation.
+
+
+## C13 — Human necessity classification and minimum necessary human evidence (W1/W2/W4/W5; Product/L1 candidate)
+
+**Product intent:** use the cheapest *lawful and epistemically adequate* combination of bounded multi-LLM adversarial analysis, deterministic tools and minimally necessary real-human involvement. This is a **default routing principle, not a forced three-stage gate**. Existing Human Decision Queue, Product/L2/Review/Validation/Release authority and applicable pre-registered empirical protocols remain owners. "Human as expensive" is never a reason to fabricate human observations.
+
+### H.1 First ask what specifically requires a person
+
+Before assigning any expensive human work, classify the **actual predicate**, evidence consumer and existing authority:
+
+| Class | What must be established | Lower-cost treatment | Genuine human obligation |
+|---|---|---|---|
+| `H0_MACHINE_PROVABLE` | Well-specified logic, schema, SHA/currentness, code/tests, reproducibility, access constraints | Deterministic scripts first; focused reproducible negative tests; optional AI analysis for gaps | **NONE** unless existing authority explicitly requires reviewer/human |
+| `H1_JUDGMENT_ADVICE` | Product alternatives, document quality, plausibility, competing design, test ideas | Distinct-role LLM author/critic/red-team, source-backed analysis and disagreement logging, bounded iterations | **NONE** if policy permits; owner still owns Product/L2/Review disposition, not the LLM consensus |
+| `H2_RESERVED_HUMAN_DECISION` | Product Freeze/thaw, explicit business acceptance, irreversible effects, privacy/consent, legal/regulatory/contract-authorized approval, any existing policy requiring a human | Prepare one short evidence-complete decision card, automate prerequisites and evidence verification | **REQUIRED authorized human**, not replaced by model votes or tools |
+| `H3_HUMAN_OBSERVATION` | Actual target-user behavior/preferences, representative study, independent-human review if specifically required, blind human Gold/oracle creation when method demands it | AI prepares protocol/materials and candidate labels; deterministic checks sampling/format/leakage; limit cohort to **credible minimum** justified by study validity | **REQUIRED real participant/qualified independent human** to produce the predicate; merely rubber-stamping AI labels is not equivalent to independently authored blind labels |
+| `H4_HUMAN_REAL_WORLD_ACTION` | Genuine participant consent, physical/device action, authorized manual recovery, human-in-the-loop approval/deny at effect boundary | Minimize interaction by prepared plan, dry-run, bound exact subject & consequences, one-tap accept/deny only when policy permits | **REQUIRED** for actual human action/effect; LLM cannot counterfeit it |
+| `H_UNKNOWN` | Owner/consent/independence/representativeness applicability unclear or private evidence inaccessible | Small preflight to clarify current source obligation; route to existing authority | **NO automatic downgrade** to H0/H1 or synthetic PASS |
+
+The classes are **routing labels only**, not a new canonical lifecycle state or mandatory schema. One concern can include several classes (e.g. H0 fixture checks + H3 empirical observations + H2 Product Freeze). A Project override cannot erase a binding H2/H3/H4 requirement.
+
+### H.2 Optional three-layer evidence pipeline; stop when lawful sufficiency is achieved
+
+1. **Bounded multi-LLM adversarial analysis (only when material semantic uncertainty exists):** separate author/critic/falsifier roles; different eligible models/prompts where cost-effective; blind candidate/protocol where experimental independence matters; cite source and exact subject; seek specific disconfirming examples, not score-based consensus. Record unresolved claims/alternatives. *Multiple models are correlated and cannot claim a genuine human observation, source truth, truly independent operator or actual Review PASS merely by agreeing.* 
+2. **Deterministic verification (where predicates are executable):** strict schema/parser, SHA/provenance, coverage denominator, test entrypoint, negative fixtures, reproducible comparisons, data/label leakage & train/test partition checks, numerical consistency, and observed real execution exit/status. A script proves **its asserted properties only**. It cannot determine subjective human preference, consent, legal authority, truth of unobserved empirical labels or population representativeness by itself.
+3. **Human minimum necessary involvement (only for remaining lawful predicate):** produce a short `DECISION_CARD` with exact subject, evidence, main alternatives, material unresolved disagreements, explicit risk/limitations, requested human role/qualification, the one decision/action/observation required, and audit receipt; batch genuinely compatible human requests while preserving blinding and independence; accept real disagreement rather than solicit another human until desired verdict. Only owning human/qualified reviewer/participant action is admissible where required. When no real human is available, return **BLOCKED / NOT_RUN / RESEARCH_LIMITATION** by owning policy, or prospectively amend Product/experiment design via authority. Never mark PASS/NOT_APPLICABLE from "AI consensus."
+4. **Stop-rule:** omit a layer with no expected unique evidence contribution. A low-risk fully deterministic task can go directly to correct machine owner terminal; a mandated physical/Human DENY test cannot be bypassed even if 20 LLMs agree. Revalidate when exact subject or binding conditions materially change; do not repeatedly convene agents/humans to restate unchanged facts.
+
+### H.3 Human cost minimization without empirical invalidation
+
+- Use one **human minute spent on decision-relevant uncertainty**, not "number of human sessions" as quality; prepare consent, instructions, gold candidate and deterministic sample summaries in advance, but preserve pre-registration, blindness, subject independence and representative cohort when required.
+- For empirical Gold: `AI_DRAFT_LABEL` plus human spot check is a **hybrid annotation scheme**, not a `HUMAN_AUTHORED_BLIND_GOLD` dataset. Change the experiment methodology with study/Product authority if necessary, disclose limitations and rerun validity analysis. Human-independent Reviewer also cannot be replaced by the Builder's own LLM personas if the current policy requires a fresh independent actor.
+- Human participant data, private or hidden truth must stay in lawful protected systems; GitHub contains only permitted evidence reference/redaction. An eligible source-bearing validator must actually verify protected truth before declaring current accepted evidence.
+- Avoid mandatory "two/three LLM reviewers" for each Task. Optimize over source-relevant independent perspectives, deterministic proof and targeted human decision, while observing existing assurance/Review policy.
+- Measure `HUMAN_REQUESTS_PLANNED, ACTUAL_HUMAN_ACTIONS, HUMAN_DECISION_LATENCY, MATERIAL_DISAGREEMENTS_ESCALATED, TOOL_PROVEN_PREDICATES, UNVERIFIABLE_HUMAN_PREDICATES, REAL_STUDY_COVERAGE, HUMAN_TIME_UNKNOWN_OR_OBSERVED`. Never invent cost savings, assign generic numerical minimum cohort, or turn metrics into mandatory extra Issues.
+
+### H.4 Falsifiable acceptance examples (not tested yet)
+
+| ID | Case | Required outcome |
+|---|---|---|
+| HT01 | Pure schema/contract/source proof + no human owner requirement | H0 deterministic verification; zero arbitrary human approvals |
+| HT02 | Three agreeing LLMs on user happiness with no real users | H3 remains unobserved; Product may choose a lawful bounded real study or declare uncertainty |
+| HT03 | Blinded independently authored human Gold required, LLM produces 48 candidate labels and one person rubber-stamps | Cannot claim 48 independent human-authored blind Gold; pre-registered study protocol must be preserved or formally amended |
+| HT04 | Human authorized DENY after a genuine external-effect proposal while models vote ALLOW | Human DENY retains authority; effected operation blocked |
+| HT05 | Reviewer identity must be fresh/independent, same Builder invokes several critique personas | Does not satisfy genuinely fresh independent Reviewer; route to qualified independent actor |
+| HT06 | Model proposes edge failures; deterministic checker reproduces one but others are not executable | Reproduced fact proven within test scope; untested ideas remain hypotheses, not PASS |
+| HT07 | A human study is expensive but real-user representativeness is a material Product unknown | Cannot automatically drop H3 on ROI; redesign scope/protocol by Product owner or honestly block |
+| HT08 | A low-risk issue's machine tests and existing authorized review gates are satisfied | Stop after current owner terminal, no redundant three-model contest or human meeting |
+| HT09 | Real-user samples include sensitive participation data not accessible to public agent | No public raw-data leak; authorized human/validator checks protected evidence, inaccessible observer cannot assert PASS |
+| HT10 | Two LLM reviewers disagree on normative obligation, tool checks cannot arbitrate | Escalate the exact unresolved owner decision once, with bounded competing evidence and a decision card |
+
+**Remaining policy decision for v4.12 PRD:** exact owner/qualification/independence triggers for H2/H3/H4 and minimum-permitted hybrid annotation changes must be mapped against current Product/Review/Human/Research authorities; decision-card schema/automation is optional L2 design, not mandated by this candidate. No new human review system, model voting authority or human substitution protocol is created.
