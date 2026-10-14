@@ -324,3 +324,82 @@ The classes are **routing labels only**, not a new canonical lifecycle state or 
 | HT10 | Two LLM reviewers disagree on normative obligation, tool checks cannot arbitrate | Escalate the exact unresolved owner decision once, with bounded competing evidence and a decision card |
 
 **Remaining policy decision for v4.12 PRD:** exact owner/qualification/independence triggers for H2/H3/H4 and minimum-permitted hybrid annotation changes must be mapped against current Product/Review/Human/Research authorities; decision-card schema/automation is optional L2 design, not mandated by this candidate. No new human review system, model voting authority or human substitution protocol is created.
+
+
+## C14 — Publicly observed human evidence before commissioned human studies (W1/W5/W4; Product/L1 candidate)
+
+**Product direction:** source-first L1: investigate existing **authentic human expressions and behavior traces** before commissioning expensive custom interviews, surveys, blinded gold or real-user tests, **but only when the precise Product predicate can be answered by that evidence type**. This is a default **evidence selection strategy**, not a universal scrape requirement, collection permission or authority to replace reserved H2/H3/H4 human predicates from C13.
+
+### O.1 Evidence kinds and what they can actually prove
+
+| Evidence class | Examples | Bounded positive claim | Cannot infer |
+|---|---|---|---|
+| `O1_PUBLIC_SELF_REPORT` | opt-in public forum/blog/product review: “I attempted X; Y failed” | a person publicly **reported** that experience, at an attributable time and scope | that it happened as stated, actual frequency among all users, actual UI completion, independent human-blind truth |
+| `O2_PUBLIC_BEHAVIOR_TRACE` | public issues/PR actions, timestamped community support interactions, bug reproduction with observable artifacts | that a **publicly observable action/artifact** occurred under source provenance | hidden user intent, full real-world population representativeness, legal identity or consent |
+| `O3_AUTHORIZED_PRODUCT_TELEMETRY` | first-party consented anonymized event log, permitted aggregate usage/support metrics | bounded observed behavior/frequency *within the known instrumented population* | unmeasured offline/non-instrumented users, causal effect absent controlled design, equivalent consent outside original purpose |
+| `O4_CURATED_RESEARCH_DATASET` | appropriately licensed survey/study/interview corpus with stated sampling frame, study report | the exact claims covered by the original valid method and use rights | new identity/current population truth automatically, reconstructed unpublished raw behavior |
+| `O5_PURPOSE_BUILT_REAL_HUMAN_STUDY` | prospective target-user session, representative sample, randomized usability comparison, truly human-authored blind labels | independently observed specific experimental predicate (if protocol, blinding, representativeness and privacy valid) | any effect or generalization beyond that protocol |
+| `O_UNKNOWN_OR_SYNTHETIC` | AI-generated persona/replies, suspected bot/marketing manipulation, inaccessible source, unknown license, unattributable dump | hypothesis-generation only; provenance cannot be claimed real | any true human observation/empirical or human Gold PASS |
+
+**No promotion by wording:** a forum post is usually an instance of **self-reported experience**, not direct verified action or a representative study. Even genuinely human posts need not correspond to the intended end-user population. Negative reports may be overrepresented, visible material may be curated, deleted, dated, translated, promotional, copied or AI-generated. Never substitute raw post count for an unbiased denominator, and do not assert human identity from a platform handle alone.
+
+### O.2 Source selection and rights gate BEFORE data collection or LLM upload
+
+Choose in order: currently held lawfully usable project/first-party research → licensed/public datasets and published study results → **platform-authorized** official research/API/search/exports → permitted bounded observation of public pages. Always check **current platform policy + robots/rate rules + copyright/license & permitted purpose + privacy/personal-data restrictions + region/jurisdiction + retention/deletion**. Public visibility != permission to scrape in bulk, train a model or republish content. No login bypass, CAPTCHA avoidance, forbidden scraping, collection from restricted/private communities without proper access and rights, or unauthorized content retention.
+
+Concrete contemporary counterexample: Reddit's 2026 Developer Platform guidance distinguishes permitted developer access from its **Reddit for Researchers** pathway and its Data API Terms impose specific restrictions including commercial uses; don't treat indexed Reddit pages or ordinary developer API as blanket research bulk-access rights. An independent public privacy regulator joint statement likewise warns that openly visible personal data can remain protected. Source policy references (verify at actual use):
+- https://support.reddithelp.com/hc/en-us/articles/14945211791892-Developer-Platform-Accessing-Reddit-Data
+- https://redditinc.com/policies/data-api-terms
+- https://ico.org.uk/media2/migrated/4026232/joint-statement-data-scraping-202308.pdf
+
+Prefer minimized analytical features and aggregated patterns over storing/republishing identifiable quoted content. Never pass restricted content, personal profiles, protected study data or hidden Gold to an unapproved LLM/model provider. Respect deletion/withdrawal, secure storage and research ethics where applicable. If permissions cannot be established, skip that source; look for lawfully available alternatives or acquire authorization, not a workaround.
+
+### O.3 Minimum evidence register (bounded; not a new mandatory DB)
+
+For each material externally sourced claim, enough information for an authorized consumer to check:
+```text
+PRODUCT_QUESTION / EXPECTED_DECISION
+CLAIM_SCOPE = observed self-report | public trace | instrumented behavior | existing research | prospective human study
+SOURCE_SITE_AND_SPECIFIC_REF / SOURCE_TYPE / COLLECTION_DATE_AND_TIME_WINDOW
+LEGAL_ACCESS_AND_USE_BASIS / DATA_PERMISSION / REDACTION_OR_AGGREGATION
+SEARCH_QUERY_OR_SAMPLING_FRAME / INCLUSION_EXCLUSION / LANGUAGE_REGION_PRODUCT_COHORT
+N_RAW_ITEMS / N_DISTINCT_CONTRIBUTORS_ESTIMATE_IF_VERIFIABLE / DEDUP_BOT_SPAM_CHECKS
+POSITIVE_AND_NEGATIVE_CASES / KNOWN_SELECTION_COVERAGE_VOICE_BIAS
+QUOTE_OR_EXTRACTION_METHOD / LLM_CLASSIFIER_LIMITATIONS / RECHECK_SAMPLE_AND_FINDINGS
+ACTUAL_CLAIM_AND_WHAT_NOT_PROVEN
+PRODUCT_DECISION_CONSUMER / REAL_HUMAN_STUDY_TRIGGER_OR_STOP_RATIONALE
+```
+Do not require this register for a trivial search; detailed entries are proportional to material Product decisions. If denominator, user identity, representativeness or collection legality is unknown, write `UNKNOWN` and narrow the claim.
+
+### O.4 Source-first escalation and study-method authority
+
+1. Define the *specific decision predicate* (e.g. "does this pain point exist?" vs "what fraction of Myanmar home users hit this obstacle?" vs "can a user complete this new UX in 3 minutes?" vs "is blinded independently authored Gold correct?").
+2. Search **lawfully accessible** existing evidence and diversify platforms, languages, participant communities, time periods and opposing observations when material. Do not scrape "everything" or let collection tools become an L1 infrastructure project.
+3. Deterministic provenance, rights, dedupe, sampling/coverage and data consistency checks; then **bounded multi-LLM adversarial extraction** (distinct source-backed accounts of patterns and disagreement), and reproduce spot checks without revealing protected personal content.
+4. Product evidence owner classifies `SUFFICIENT_FOR_THIS_PRODUCT_DECISION | PARTIAL_DECISION_SUPPORT | OBSERVATION_BIAS_MATERIAL | NOT_APPLICABLE_TO_PREDICATE | ACCESS_PROHIBITED | UNKNOWN` as **advisory sufficiency/limitations**, not new Product/Validation gate PASS.
+5. If evidence suffices to decide **L1 Product scope** at its required standard, cite it and stop; no prospective humans required by default. If objective requires observed task completion, causal comparison, quantified representative prevalence, experimental blindness, reserved human consent/denial or actual human independent review, **conduct only the necessary bounded real study/human action** unless existing Product/Research authority prospectively approves a different method. If too expensive, narrow/defer the Product claim honestly; do not manufacture approval.
+6. Explicitly distinguish *source method amended before Freeze* from *retroactively weakening a frozen experiment/Release gate*. Source data can answer L1 Product questions but never self-freeze PRD, create L2 PASS or establish software production E3.
+
+### O.5 Acceptance / negative tests (conceptual, not executed)
+
+| ID | Scenario | Expected bounded result |
+|---|---|---|
+| OT01 | 300 permitted support posts independently describe the same core pain with dated links | Substantial existence/problem-pattern evidence; no universal 300-person population denominator |
+| OT02 | 300 posts are copied from three marketing accounts/AI bots | Deduplicate/identify source limitation; no 300-user claim |
+| OT03 | Forum self-reports of a button confusing users, but no video/log of task | Product pain hypothesis supported; timed usability success **not proven** |
+| OT04 | 200 negative Reddit posts vs unknown whole-market sample | No "X% of all users" estimate; opt-in/coverage bias declared |
+| OT05 | Restricted login-only patient or child group, web crawler technically can access | Access is not lawful permission; privacy/source gate blocks unapproved collection |
+| OT06 | Official research/API channel restricts bulk export or commercial use | Respect current platform program/terms; no generic public-scrape workaround |
+| OT07 | New target-region UX not used yet; existing unrelated forum discussion | Need a lawful target-user study or limit Product claim; don't infer completion/causality |
+| OT08 | Existing approved blinded human Gold requires independently human-authored labels | Public discussions/LLM votes can't substitute; execute or formally amend method |
+| OT09 | Existing consented first-party telemetry shows cohort-specific task abandonment | Report instrumented cohort with known denominator; don't extrapolate untracked population |
+| OT10 | Forum dataset is pushed to external LLM despite restriction | Reject transfer; use permitted aggregate/redacted analysis or owner-approved tool |
+| OT11 | Published qualitative sample contains a genuine rare catastrophic security event | Low post prevalence doesn't downgrade mandatory risk assurance |
+| OT12 | Product/L1 evidence complete but L2 high-impact UNKNOWN remains | Product may freeze if authorized; Architecture still needs L2 evidence/decision |
+
+### O.6 Open decisions reserved to Product/Research/L2
+
+- Product **evidence sufficiency** depends on exact claim and intended user population; no fixed number of posts/users, global confidence cutoff, or universal permission to scrape.
+- When a sample is sufficient for L1 scope versus when original empirical study mandates purpose-built human observations is decided by the existing Product/Study owner with source methods and counterevidence, not the LLM majority.
+- Access/rights catalog, safe ingestion connector, sampling/dedupe algorithms and redacted proof storage are **L2 implementation choices** and may be satisfied by existing CrawlKit or other permitted research tooling. No new crawler, mandatory scraping job, P/A DAG node, independent human panel or universal data lake is requested.
+- No use of observed public forum behavior as normative PASS, independent-human-authored blind oracle or evidence of legally reserved human decisions without genuine source-method proof.
