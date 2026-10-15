@@ -263,7 +263,7 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/dogfood-audit-contract/owner_surfaces.json": "3efdb8bb52e8cce53a26379c24bfafc95895abc3",
         "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
         "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
-        "scripts/test_v49_dogfood_audit_contract.py": "be1c73ab5920996ee50ea2ccbfb5b0bc6b2e1913",
+        "scripts/test_v49_dogfood_audit_contract.py": "50ea120575ad5cfb42878809913c9fc98e0101c1",
     },
 }
 

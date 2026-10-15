@@ -61,7 +61,11 @@ T014_MERGED_BLOBS = {
     # because four owner surfaces it consumed read-only were re-bound from the
     # stale "unmutated since base" pin to exact integrated blobs (see
     # rebounded_since_base and the D08 disclosure below).
-    "fixtures/dogfood-audit-contract/owner_surfaces.json": "512c8328eb4cc7d35a0ae2afc734f672dd764cd6",
+    # I1122 re-bind (issue #1122; user process authorization 2026-10-15): the
+    # self-declared-executor policy lane moves RELEASE_STANDARD.md and the
+    # gate-currentness kernel into rebounded_since_base at their exact
+    # integrated blobs, so this fixture pin moves again (pin constants only).
+    "fixtures/dogfood-audit-contract/owner_surfaces.json": "3efdb8bb52e8cce53a26379c24bfafc95895abc3",
     "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
 }
 
