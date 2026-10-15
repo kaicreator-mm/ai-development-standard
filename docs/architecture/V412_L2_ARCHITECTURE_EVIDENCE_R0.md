@@ -1,4 +1,4 @@
-# ADS v4.12.0 — L2 Architecture Evidence R1 (Source-First, Not Frozen)
+# ADS v4.12.0 — L2 Architecture Evidence R2 (Source-First, Not Frozen)
 
 > **L2-0 ADMITTED / SOURCE-BASED ARCHITECTURE CANDIDATE.** This is the first Stage-2 self-dogfood after the user-approved **Product Freeze** [`PRODUCT-FREEZE-v4.12.0-R3.md`](../product/PRODUCT-FREEZE-v4.12.0-R3.md) at checkpoint commit `5820542ad1c092e09fae268f7e77a6db3421297b`, tree `a4e5b372b9a970579240689437f385a0fcef7058`, for PRD R3 Git blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`. **Not an L2 Freeze, formal Task DAG, implementation Source Claim, executed Demo, release or v4.12 normative adoption.** Owner choices and scoped executable verification remain to be decided through the existing Stage-2 authority.
 
@@ -242,4 +242,55 @@ REAL_CANDIDATE_BUILD_HOST=NOT_RUN
 PREDECESSOR_RELEASE=NOT_QUALIFIED
 L2_ARCHITECTURE_OWNER_FREEZE=NOT_RECORDED
 PRODUCT_FREEZE=UNCHANGED_EXACT_R3
+```
+
+## 9. L2 R2 — N10 adversarial scope-exemption eligibility correction
+
+**New material design falsifier found by self-dogfood adversarial readback:** R1's full Git path diff + frozen allowlist prevents **post-SF** writers from silently enlarging exemptions. But this alone cannot prove the *original accepted* scope was lawful: a planning author might pre-list an actual code path (e.g. `packages/new-adapter/index.ts`) as exempt and then modify it; an immutable-but-misclassified manifest would suppress the necessary material response. This is a **high-impact L2 checker admission gap**, not a new Product requirement or reason to reopen frozen PRD R3.
+
+**Bounded repair to ADR-03:** Before *accepting* SF / its material-scope manifest, enforce **explicit exact-path semantic exemption eligibility under the Frozen L2/source owner**; proof must distinguish `DAG_ONLY_INPUT` (always still covered by DF/MI), `DERIVED_NONAUTHORITATIVE_OUTPUT` (always byte/recompute checked if claimed), `FREEZE_RECORD_OUTPUT` (must carry independent Owner act), and ordinary source/build/manifest/contract paths (ineligible). An unclassified path or an exemption that masks public contracts, runtime code, lockfiles, build inputs, CI, anchor inventory, or its own scope manifest is **rejected or MATERIAL** irrespective of writer assertions. No `docs/**` wildcard and no new policy database.
+
+One L2 projection example (not a new mandatory schema):
+
+```json
+{
+  "scope_version": 1,
+  "material_selector": "ALL_TRACKED_MINUS_APPROVED_EXACT_NONMATERIAL_PATHS",
+  "exact_exemptions": [
+    {
+      "path": "docs/planning/task-dag.json",
+      "class": "DAG_ONLY_INPUT",
+      "exempts": "SF_TREE_ONLY",
+      "still_checked_by": ["DF_BLOB", "MI_DIGEST"]
+    },
+    {
+      "path": "docs/planning/scaffold-task-map.generated.json",
+      "class": "DERIVED_NONAUTHORITATIVE_OUTPUT",
+      "exempts": "SF_TREE_ONLY",
+      "still_checked_by": ["GENERATED_OUTPUT_RECOMPUTE"]
+    }
+  ],
+  "classification_authority": "FROZEN_L2_SOURCE_OWNER_REF",
+  "unknown_path_policy": "MATERIAL_OR_HOLD"
+}
+```
+
+This is a **small semantic classification rule in the existing source/Freeze owner**, not another human Gate. Repo/project-specific filenames are allowed **only when backed by frozen owner classification**, not based on the example path literals. The existing L2 design's complete versioned source manifest and Git object identities remain authoritative, with no extra writable owner.
+
+**Test evidence addition:** the in-session disposable Git/Python prototype was rerun with **N10: a source file listed as allegedly nonmaterial before SF acceptance → denied as an unapproved exemption**. Updated local prototype: **12/12 expected** (prior 11 + one new falsifier). The committed research fixture was amended at `references/v4.12/fixtures/v412_l2_git_pair_probe.py` (current Git blob `e360629cac23b481a0539b8c566f83f52e2b9e9b`). The fixture uses a **hardcoded synthetic role registry for its own sample files**; the *future actual checker* must use Frozen-L2/source-owner classifications and must not hardcode those example paths as universal legitimate exemptions. The GitHub-uploaded script's **exact bytes have not been separately executed**; its program text is a reproducible research asset, not formal CI PASS.
+
+**Revised source-first closeout:**
+- U02 structural feasibility: `E1_PROTOTYPE_SUPPORTED_12_CASES`, **not actual v4.12 production compliance**.
+- U01 source Claim, U03 real Issue binding/SPLIT, U04 assertion proof composition retain existing owner and future exact implementation negatives.
+- U05 unreleased predecessor remains a later Version Integration/Release constraint, **not** a reason to block source-only L2.
+- **L2 Freeze remains `NOT_RECORDED`** until existing Architecture authority accepts the ADR and material classification/currentness conditions. No new v4.12 mandatory Gate/issue or Product R4.
+
+```ini
+L2_R2=BOUNDED_SELF_DOGFOOD_REPAIR
+NEW_ARCHITECTURE_RISK=N10_PRE_FROZEN_ALLOWLIST_CLASSIFICATION
+N10_STATUS=TEXT_DESIGN_REPAIRED_AND_MATCHING_E1_PROTOTYPE_EXPECTED
+E1_LOCAL_SYNTHETIC_PROTOTYPE=12_OF_12_EXPECTED
+GITHUB_COMMITTED_SCRIPT_EXECUTION=NOT_RUN
+L2_FROZEN=NO
+PRODUCT_FREEZE=R3_UNCHANGED
 ```
