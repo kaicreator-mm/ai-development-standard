@@ -78,7 +78,8 @@ class GitConsumer(unittest.TestCase):
     def test_mature_existing_source_reused(self):
         write(self.repo, "README.md", "# Existing mature consumer\n")
         self.sf = commit(self.repo, "pre-existing mature source accepted")
-        self.df = commit(self.repo, "DF source at same content")
+        self.binding["writers"][0]["task_id"] = "T002"
+        self.set_df()
         self.assertEqual(self.check()["source_pair"], "PASS_E1")
 
     def test_binding_change_changes_mi_not_material_source(self):
@@ -107,7 +108,8 @@ class GitConsumer(unittest.TestCase):
         # Weird names must be enumerated as one Git path, never falsely split.
         write(self.repo, "app/weird\tname\nfile.txt", "weird")
         self.sf = commit(self.repo, "special path accepted")
-        self.df = commit(self.repo, "still unchanged")
+        self.binding["writers"][0]["task_id"] = "T002"
+        self.set_df()
         self.assertEqual(self.check()["source_pair"], "PASS_E1")
 
     def test_symlink_mode_change_material(self):
@@ -127,7 +129,8 @@ class GitConsumer(unittest.TestCase):
             "role": "DAG_ONLY_INPUT", "approved_l2_blob": self.l2, "approval_ref": "forged"}
         write(self.repo, "docs/scope.json", json.dumps(self.scope))
         self.sf = commit(self.repo, "malicious accepted scope")
-        self.df = commit(self.repo, "empty")
+        self.binding["writers"][0]["task_id"] = "T002"
+        self.set_df()
         with self.assertRaisesRegex(Reject, "SCOPE_MANIFEST_CANNOT_EXEMPT_SELF"):
             self.check()
 
@@ -189,7 +192,8 @@ class GitConsumer(unittest.TestCase):
             "role": "DAG_ONLY_INPUT", "approved_l2_blob": self.l2, "approval_ref": "forged"}
         write(self.repo, "docs/scope.json", json.dumps(self.scope))
         self.sf = commit(self.repo, "malicious scope")
-        self.df = commit(self.repo, "candidate")
+        self.binding["writers"][0]["task_id"] = "T002"
+        self.set_df()
         with self.assertRaisesRegex(Reject, "EXEMPTION_MAY_HIDE_MATERIAL_SOURCE"):
             self.check()
 
