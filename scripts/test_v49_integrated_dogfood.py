@@ -158,7 +158,15 @@ V49_TASK_OUTPUT_BLOBS = {
     "T-005": {
         "references/RELEASE_APPLICABILITY_REFERENCE.md": "4411d25300542f9d311b0dd4df6be346a0bbda0a",
         "scripts/test_v49_release_applicability.py": "7497f7b07f2086df48112783301cb43d4dbcc006",
-        "standards/RELEASE_STANDARD.md": "c4d72506253ca7f3d95e305dbd84aae0e1fbe2cb",
+        "standards/RELEASE_STANDARD.md": (
+            # I1122 re-bind (issue #1122; user process authorization
+            # 2026-10-15): the self-declared-executor policy lane lawfully
+            # mutates the Release standard (§11.1 basis wording + new §11.7
+            # standards-repository executor authority) inside its approved
+            # owner concern; this T-005 output pin moves to the exact
+            # integrated successor blob — pin constants only.
+            "da82aa7d387d8f190c4ddff88b4c8782af804ac4"
+        ),
     },
     "T-006": {
         "references/TASK_LEARNING_V2_COMPATIBILITY.json": "feda9fc12b17e91a14597a9130238734d8937c63",
@@ -248,7 +256,11 @@ V49_TASK_OUTPUT_BLOBS = {
     "T-014": {
         "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
         "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
-        "fixtures/dogfood-audit-contract/owner_surfaces.json": "512c8328eb4cc7d35a0ae2afc734f672dd764cd6",
+        # I1122 re-bind (issue #1122; user process authorization 2026-10-15):
+        # the policy lane moves RELEASE_STANDARD.md and the gate-currentness
+        # kernel into the D08 rebounded_since_base map at their exact
+        # integrated blobs, so this fixture pin moves to the resulting blob.
+        "fixtures/dogfood-audit-contract/owner_surfaces.json": "3efdb8bb52e8cce53a26379c24bfafc95895abc3",
         "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
         "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
         "scripts/test_v49_dogfood_audit_contract.py": "be1c73ab5920996ee50ea2ccbfb5b0bc6b2e1913",
