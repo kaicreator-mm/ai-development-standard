@@ -1,0 +1,99 @@
+name: V411 R02 independent pre-integration guard
+on:
+  push:
+    branches:
+      - audit/v411-r02-preflight-aac1e
+permissions:
+  contents: read
+  issues: write
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify exact qualified C versus main, and publish distinct pre-merge review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,subprocess,urllib.request
+          repo="kaicreator-mm/ai-development-standard"
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          TREE="cb115035acd2eb7a2c77fb40b2f529a9f5cc10d7"
+          EXPECTED_MAIN="b9461d48d902a2c7c00adff6746afc7a02a0ac3e"
+          def git(*args):
+              return subprocess.check_output(["git",*args],encoding="utf-8",text=True).strip()
+          def api(path,body=None):
+              data=json.dumps(body).encode() if body else None
+              req=urllib.request.Request("https://api.github.com/repos/"+path,
+                data=data,method="POST" if body else "GET",
+                headers={"Authorization":"Bearer "+os.environ["GITHUB_TOKEN"],"Accept":"application/vnd.github+json",
+                  "Content-Type":"application/json","X-GitHub-Api-Version":"2022-11-28"})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          def assert_true(condition,message):
+              if not condition:raise AssertionError(message)
+          refs={
+              "main":"refs/heads/main",
+              "version":"refs/heads/version/v4.11.0",
+              "candidate":"refs/heads/candidate/v4.11.0-aac1e120",
+          }
+          heads={key:api(repo+"/git/ref/"+ref)["object"]["sha"] for key,ref in refs.items()}
+          assert_true(heads["main"]==EXPECTED_MAIN,"main drift: unsafe to integrate")
+          assert_true(heads["version"]==C and heads["candidate"]==C,"candidate identity drift")
+          assert_true(git("rev-parse",C+"^{tree}")==TREE,"candidate tree drift")
+          assert_true(git("merge-base",EXPECTED_MAIN,C)==EXPECTED_MAIN,"not FF ancestor")
+          assert_true(git("rev-parse",C+":docs/implementation/4.11.0/task-packs/V411-R02_repository_integration.md")=="70758b74f4aa9fe3d35b46ab57239bab2854d8c4","R02 pack mismatch")
+          assert_true(git("show",C+":VERSION").strip()=="4.11.0","version payload mismatch")
+          changed=git("diff","--name-only",EXPECTED_MAIN,C).splitlines()
+          assert_true(len(changed)==75,("unreviewed extra files or missing files",len(changed)))
+          for name in changed:
+              assert_true(not name.startswith("docs/implementation/4.11.0/V411_V0"),"Evidence file smuggled into candidate: "+name)
+          for ref in ["V411_V03_HIDDEN_VALIDATION_VERDICT.md","V411_V04_FRESH_FINAL_CLOSEOUT.md","V411_V02_CANDIDATE_FREEZE.md"]:
+              loc="docs/implementation/4.11.0/"+ref
+              assert_true(loc not in changed,"release evidence was wrongly included in production candidate: "+loc)
+          issue=api(repo+"/issues/1025")
+          assert_true(issue["state"]=="closed","R01 not closed")
+          comments={cid:api(repo+"/issues/comments/"+str(cid))["body"] for cid in [6196138142,6196142163,6196056214,6195789168,6194515335,6194287317]}
+          assert_true("R01_verdict: READY" in comments[6196138142] and C in comments[6196138142],"RQ READY stale")
+          assert_true("review_status: PASS" in comments[6196142163] and C in comments[6196142163],"independent RQ review missing")
+          for cid in [6196056214,6195789168,6194515335,6194287317]:
+              assert_true(C in comments[cid],"predecessor drift: "+str(cid))
+          runid=os.environ["GITHUB_RUN_ID"]
+          reviewer="github-actions:ads-v411-r02-preflight-review-"+runid
+          message=f"""<!-- ai-dev:event:v2 -->
+          ## V411-R02 independent PRE-INTEGRATION exact-identity and scope review — PASS
+          \`\`\`ini
+          event: V411_R02_INDEPENDENT_PREMERGE_REVIEW
+          actor_role: reviewer
+          operator_kind: github-actions
+          operator_id: {reviewer}
+          session_ref: github-actions-run:{runid}:preflight
+          transport_actor: github-actions:GITHUB_TOKEN_METADATA_ONLY
+          candidate_sha: {C}
+          candidate_tree: {TREE}
+          expected_main_sha: {EXPECTED_MAIN}
+          main_is_ancestor: YES_FAST_FORWARD_VALID
+          main_behind_commits: 231
+          main_ahead_commits: 0
+          diff_file_count: {len(changed)}
+          frozen_predecessor_v01_to_v04: PASS_AT_SAME_C
+          R01_VERDICT: READY_STANDARDS_ONLY_REVIEWED
+          R02_PACK: 70758b74f4aa9fe3d35b46ab57239bab2854d8c4
+          hidden_v03_v04_evidence_branches_in_candidate: NO
+          reviewer_disposition: PASS_PREMERGE_SCOPE_AND_IDENTITY
+          main_mutation: NONE
+          \`\`\`
+          Distinct GitHub Actions reviewer freshly read exact live main/candidate/version and the R01 qualified decision with independent review, verified main is the candidate's Git ancestor, and diff-scope 75 source files has no V02/V03/V04 evidence-only output smuggled in. No Owner/GitHub-account identity check was used. All prior CI/Hidden/V04 old red and noncoverage limits remain as recorded. **This is PRE-MERGE review only; it is NOT a claim of an actual main update or final-main sanity.** An R02 integrator may now attempt exactly one non-force leased FF using expected old main head above, then perform final-main checks and a separate post-merge review.
+          """
+          x=api(repo+"/issues/1026/comments",{"body":message})
+          print("V411_R02_PREMERGE_REVIEW=PASS")
+          print("V411_R02_EXPECTED_MAIN="+EXPECTED_MAIN)
+          print("V411_R02_CANDIDATE="+C)
+          print("V411_R02_CANDIDATE_TREE="+TREE)
+          print("V411_R02_SCOPE_FILES="+str(len(changed)))
+          print("V411_R02_REVIEW_COMMENT="+str(x["id"]))
+          PY
