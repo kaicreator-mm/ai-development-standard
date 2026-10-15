@@ -92,24 +92,19 @@ def _event_fields(body: object) -> dict[str, str] | None:
         key, value = line.split(": ", 1)
         if not re.fullmatch(r"[a-z][a-z0-9_]*", key) or key in result:
             return None
-        # Restricted scalar grammar prevents YAML's implicit null, boolean,
-        # list/map, numeric and quoted-string coercions at ingestion time.
-        # A field named exit_code is the only numeric scalar we accept.
-        if not re.fullmatch(r"[A-Za-z0-9_./:@#-]+", value):
-            return None
-        if value.lower() in {"null", "~", "true", "false", "yes", "no", "on", "off", ".nan", ".inf"}:
-            return None
-        # Reject YAML implicit numeric/time shapes even in fields whose
-        # schema type is string. The supported unquoted language is a
-        # deliberately narrow subset; rejected valid YAML stays BLOCKED.
-        if (re.fullmatch(r"(?i:[+-]?(?:0x[0-9a-f]+|0o[0-7]+|0b[01]+|[0-9]+(?:\.[0-9]*)?(?:e[+-]?[0-9]+)?))", value)
-                or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value)):
-            if key != "exit_code" or value != "0":
-                return None
+        # Strict source witness subset: ALL typed string scalars start
+        # with a letter or underscore, apart from exact 40-hex SHA pins.
+        # This deliberately rejects otherwise valid YAML numeric-looking
+        # strings (timestamps, 0x, exponentials, date/time, null, flow/quote
+        # forms). A rejected genuine event stays BLOCKED, never falsely green.
         if key == "exit_code":
             if value != "0":
                 return None
-        elif value.isdecimal():
+        elif key in {"sha", "requested_head_sha", "actual_checked_out_sha"}:
+            if PIN.fullmatch(value) is None:
+                return None
+        elif (not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_./:@#-]*", value)
+                or value.lower() in {"null", "true", "false", "yes", "no", "on", "off"}):
             return None
         result[key] = value
     return result
