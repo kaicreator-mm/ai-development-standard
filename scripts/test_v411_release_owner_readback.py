@@ -98,6 +98,15 @@ class FailClosedReadback(unittest.TestCase):
             {"validation_profile": ""},
             {"operator_kind": "agent-invented-power"},
             {"exit_code": '"0"'},
+            {"environment": "null"},
+            {"operator_id": "null"},
+            {"validation_profile": "~"},
+            {"operator_id": "[]"},
+            {"environment": "{}"},
+            {"evidence": "[bad, value]"},
+            {"command": "true"},
+            {"operator_id": "0x10"},
+            {"validation_profile": "2026-10-15"},
         )
         for change in invalid:
             with self.subTest(change=change):
