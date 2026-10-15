@@ -85,6 +85,24 @@ Allowed dispositions are ordinary owner decisions `DO_MINIMAL | REUSE_EXISTING |
 
 **Task role separation:** S01 owns only Workflow's stage/authority contract. S04 owns project-local adoption examples, S05 owns shared verification/Release evidence projection; do not move Validation or Release rule ownership into Workflow. #1099 itself is an intake/decision source, not an executable Work Item or gate.
 
+## 3B. Shared GitHub transport ≠ logical Agent identity (#1099 adjacent source reuse)
+
+**Existing source already resolves the normative core**: `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §5–§8.1.1 and §9.2 (v4.11 source blob `8c8fc74bd6deaf6987f6cf6d4e8e8e84c2692b75`) distinguish `transport_actor` from `actor_role`, `operator_kind`, `operator_id`, `session_ref` and independently verifiable admission provenance. `prompts/independent-review-bootstrap.md` already permits a Reviewer in a fresh independent context to share a GitHub login with the Builder. This is `ALREADY_SATISFIED` unless exact source-gap inspection identifies an actual contradiction. **Do not create new identity state, database, reviewer account requirement or second approval gate.**
+
+At implementation time **audit actual existing admission tests and workflow references** for any hidden `github_login != builder_login` precondition (which wrongly blocks good shared-account reviews), and for any hidden `different_login ⇒ independent` shortcut (which wrongly accepts the same operator using multiple accounts). Resolve only the real gap within S01-owned normative files; script/schema/wiring deltas, if actually necessary, go to S05 exclusive owner, no cross-file ownership drift.
+
+**Correct logical split:** `transport_actor` answers *which account posted to GitHub*, while `operator_id` identifies the actual worker and `session_ref` identifies the source-verifiable context/run; `actor_role` specifies Builder/Reviewer/Validator. Independent Review requires **source-bound independently verified context separation** and accepted current exact-PR-HEAD result, not merely distinct self-authored strings. For real humans, two sessions under the same accountable person **do not constitute two different human beings** if the owner requires genuinely distinct persons. If a requirement is for reserved human authorization, distinct Agent sessions cannot provide it.
+
+**Bounded acceptance / counterexamples (existing native reviewer authority retained):**
+- `ID01 PASS_ELIGIBLE`: Builder `codex:run-17` and Reviewer `chatgpt-web:review-24` have distinct verified dispatch/session provenance and exact target, both posted through `github:kaicreator-mm`. Do not reject *solely* on common `transport_actor`.
+- `ID02 DENY`: the same Builder merely re-emits `operator_id=reviewer-2` from the same origin/context (or quotes a supposed Review event). String mismatch without independently verifiable execution provenance is not independence.
+- `ID03 DENY`: two GitHub accounts post the same Builder-origin review; distinct logins do not satisfy independent `review:required`.
+- `ID04 HOLD`: required real human/independent-person approver is absent while two models concur; never substitute model agreement for reserved owner/human sign-off.
+- `ID05 NATIVE_GITHUB_CONSTRAINT`: if the target branch protection requires a **GitHub-native approving review** by a distinct eligible account (GitHub forbids PR self-approval), ADS logical Reviewer `REVIEW_RESULT` is useful evidence **but not** a native GitHub `APPROVED`. Use genuinely eligible GitHub approval, or a legitimate owner-authorized ruleset change; no platform protection bypass.
+- `ID06 UNKNOWN`: missing trusted dispatcher/session/run issuance or conflicting attribution after context loss ⇒ refuse independent admission pending provenance; do not mint synthetic session ID to unblock.
+
+**Minimum evidence:** `task/PR + exact_head_sha + actor_role + operator_kind + operator_id + session_ref/run origin + transport_actor + accepted provenance ref + review_policy + decision`. Use already-supported structured event fields; origin/auth verification may be external to public comment where confidential, and absence of independently readable origin evidence remains UNKNOWN. Never publish tokens, session cookies, hidden test inputs or personal secrets as identity evidence.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): none (but absent dependency ≠ READY). Native issue edges require actual API mutation and readback; Markdown is advisory historical.
