@@ -35,8 +35,8 @@
 - v3.1+ 新 structured Agent events SHOULD 使用 `ai-dev:event:v2`，并记录 `actor_role / operator_kind / operator_id / session_ref / transport_actor`。
 - Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 - `actor_role` 表示流程职责；`operator_id/session_ref` 表示具体 Web 页面、Local Agent 或 run；`transport_actor` 表示向 GitHub 写入的账号/API identity。三者不得混为一谈。
-- 多个 Web/Local contexts 使用同一个 GitHub 账号时，必须通过不同的 `operator_id/session_ref` 保持可审计区分；动态 operator/session identity 不应做成 GitHub label。
-- required Independent Review 可以与 Builder 共用同一个 GitHub transport account，但 Reviewer 的 operator/context 必须与 Builder context 可审计地区分。
+- 执行体的 `actor_role/operator_kind/operator_id/session_ref` 由执行体自行声明，ADS 信任其逻辑身份与会话声明；不使用 GitHub 账号判断执行体相同、不同或是否有资格执行。动态身份不应做成 GitHub label，账号只是可选的传输出处。
+- required Independent Review 的 Reviewer 自行声明其独立执行上下文；ADS 接受该声明，不要求 GitHub 账号不同、人类身份/Session 真实性证明或额外 Owner 身份核验。Review 的真实内容与必要测试仍按原有验收标准判断。
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
 - Independent Review **不是所有 Task/Fix PR 的统一 mandatory gate**。每个 Task/PR 应根据权威来源与风险明确 `required / recommended / not-required` Review Policy。
 - `review:required` 时，当前 merge-candidate exact SHA 必须有 Independent Review PASS；`review:recommended` 可执行也可显式 SKIP；`review:not-required` 的 Review Gate 为 `NOT_APPLICABLE`。
