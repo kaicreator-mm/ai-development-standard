@@ -47,13 +47,15 @@
     "Qualified v4.11 predecessor and legitimate version/v4.12.0 source baseline are absent; historic-main PR #1101 is planning, not integration.",
     "Release S06 is existing type:release, not sixth Builder Task or native Task dependency edge.",
     "Each Pack's recorded exact Git blob is a source-snapshot candidate; updated Pack requires index regeneration and proper independent or owner admission as applicable.",
-    "Five Task packs and four edges; Task PACK Freeze requires separate legitimate Controller decision on exact subjects. No synthetic Claim or E3."
+    "Five Task packs and four edges; Task PACK Freeze requires separate legitimate Controller decision on exact subjects. No synthetic Claim or E3.",
+    "#1099 Risk-Bounded Value First integrated as planning-only, source-owned acceptance/negative cases in S01 Workflow, S04 Project Adoption and S05 Validation/Release conformance; S02/S03 frozen scope unchanged. Product R3/L2 R5/DAG Freeze unchanged. #1099 remains open until actual normative implementation and proof.",
+    "C13/C14 research/human evidence are scoped L1 source questions, not fabricated independent Reviewer or mandatory multi-LLM/human gates. Frozen REQUIRED_NOW never waived by ROI."
   ],
   "packs": [
     {
       "task_id": "V412-S01",
       "path": "docs/implementation/4.12.0/task-packs/V412-S01_phase_claim_authority.md",
-      "git_blob": "6f2850a01a449818fe507ec6915872b77ef29224",
+      "git_blob": "26b30ff6568ae0bf3e67ed75181129453f0f25c7",
       "predecessors": [],
       "review_policy": "required",
       "canonical_type": "type:task",
@@ -92,7 +94,7 @@
     {
       "task_id": "V412-S04",
       "path": "docs/implementation/4.12.0/task-packs/V412-S04_adoption_and_templates.md",
-      "git_blob": "b2f9cb1950b519dfd00772b4a4cccd3792a90ad0",
+      "git_blob": "79c7bf5503e3b7ed5bca3eec2dcb46ff7086eea0",
       "predecessors": [],
       "review_policy": "recommended",
       "canonical_type": "type:task",
@@ -104,7 +106,7 @@
     {
       "task_id": "V412-S05",
       "path": "docs/implementation/4.12.0/task-packs/V412-S05_ads_conformance_wiring.md",
-      "git_blob": "330d0387d2854f184ff3cf220ab5d2913ef9c5ef",
+      "git_blob": "374505444c224a72405f31afce545c69b41f3c33",
       "predecessors": [
         "V412-S03",
         "V412-S04"
