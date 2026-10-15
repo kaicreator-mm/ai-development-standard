@@ -99,6 +99,13 @@ def _event_fields(body: object) -> dict[str, str] | None:
             return None
         if value.lower() in {"null", "~", "true", "false", "yes", "no", "on", "off", ".nan", ".inf"}:
             return None
+        # Reject YAML implicit numeric/time shapes even in fields whose
+        # schema type is string. The supported unquoted language is a
+        # deliberately narrow subset; rejected valid YAML stays BLOCKED.
+        if (re.fullmatch(r"(?i:[+-]?(?:0x[0-9a-f]+|0o[0-7]+|0b[01]+|[0-9]+(?:\\.[0-9]*)?(?:e[+-]?[0-9]+)?))", value)
+                or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value)):
+            if key != "exit_code" or value != "0":
+                return None
         if key == "exit_code":
             if value != "0":
                 return None
