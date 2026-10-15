@@ -1,6 +1,6 @@
 # V411-V01 — exact-subject evidence inventory (new candidate; BLOCKED)
 
-> **No new test execution by this author.** Sources below are immutable GitHub commits/comments/runs or exact Git blob readbacks. They are not claims that previous Host commands ran on the newly merged `214f6a97…`.
+> **The WEB compiler initiated a separate Actions workflow at pinned current SHA; the **real GitHub-hosted runner** executed the targeted commands, not this author's local Host. This is not a complete V01 closure.** Sources below are immutable GitHub commits/comments/runs or exact Git blob readbacks. They are not claims that previous Host commands ran on the newly merged `214f6a97…`.
 
 ```ini
 CANDIDATE_SHA=214f6a97b1eed948e1afef8f5089eb4bf4b97d26
@@ -9,13 +9,14 @@ PREDECESSOR_SHA=e35b32bc3f1ae50921ed78004909630cdd2f51f9
 PREDECESSOR_TREE=5a1c3a546d05fd84f7154602949ca7bf8366e50c
 EVIDENCE_BRANCH=validation/v411-v01-v033-evidence-214f6a97
 EVIDENCE_ONLY_HEAD=NOT_SAME_AS_TESTED_CANDIDATE
-CURRENT_CANDIDATE_TESTED_SHA=NOT_RUN
+CURRENT_CANDIDATE_TESTED_SHA=214f6a97b1eed948e1afef8f5089eb4bf4b97d26_SCOPED_HOST_ONLY
 SOURCE_DIFF=FOUR_DOCS_ADDITIVE_PLUS38_MINUS0
 CURRENT_SOURCE_READBACK=GITHUB_CONNECTOR_SOURCE_ONLY
 PREDECESSOR_HOST_RUN1=38690952604_COMPLETED_FAILURE
 PREDECESSOR_HOST_RUN2=38691958203_COMPLETED_FAILURE
 PREMERGE_PR_CI=38691861939_SUCCESS
-CURRENT_POSTMERGE_REGISTERED_CI=NOT_CONFIRMED
+CURRENT_POSTMERGE_REGISTERED_CI=38694979271_SUCCESS
+CURRENT_SCOPED_HOST_RUN=38695039311_SUCCESS_WITH_ORIGINAL_T12_RAW_EXIT_1
 V01=BLOCKED
 ```
 
@@ -51,3 +52,16 @@ GitHub readback established unchanged code blobs on both commits: T01 `c4f2c42f1
 **Raw log provenance:** GitHub Actions run 38690952604 and 38691958203 are retrievable public provider records. Historic Windows raw logs are host-local and cited only via immutable Issue receipts; this author did not open those raw bytes. Evidence branch is not a protected tested/frozen candidate.
 
 **Disposition: EVIDENCE_ONLY_DRAFT / V01 BLOCKED.**
+
+
+## 4. NEW current-exact Host receipt — 38695039311 (bounded, not Closure PASS)
+
+- Runner: Ubuntu / Python 3.12.15; workflow-only commit `1a9693f74d06e07464b5da63f23984ea2a60cafd` checked out candidate `214f6a97b1eed948e1afef8f5089eb4bf4b97d26`, tree `51355178551b300b916355d4b952cd0fbdd919fe`, clean before/after. Actual commands and raw outputs are visible in [job 116289511021](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38695039311/job/116289511021).
+- `python -B scripts/verify_standard.py`: 0, manifest files 309.
+- `python -B scripts/test_v411_t01_effective_rules.py`: 61 tests, 3 expected skips, success.
+- `python -B scripts/test_v411_t10_untrusted_inputs.py`: 58 tests, success.
+- `python -B scripts/test_v411_s08_prospective_mechanism.py`: 6 tests, success; synthetic SQLite *only*.
+- T12 public-model **diagnostic (without historical authoring-head guard)**: 52 assertions, 0 semantic failure; ledger `PASS=20, BLOCKED=28, NOT_RUN=4`; `compound_coverage=PASS`, `material_truth=MATERIAL_INTERSECTION_UNKNOWN`, actual physical fourway `NOT_CERTIFIED`.
+- **Original** `python -B scripts/test_v411_t12_abc_conformance.py`: **raw EXIT=1**, `REGISTRY_OR_WRITESET_FAIL`. The branch-local workflow explicitly asserted this nonzero exit as a diagnostic and overall Actions outcome was success; it **did not turn this raw FAIL into PASS**.
+- Separate registered exact candidate [38694979271](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38694979271): `verify-standard` SUCCESS.
+- The original 139-census 125/14 is historical **at `322e868...`** and remains neither rerun nor replaced. V01 signed Validation Impact + current Release §11 + fresh independent Validator still NOT_ISSUED; source/execution truth is not a Gate pass by itself.
