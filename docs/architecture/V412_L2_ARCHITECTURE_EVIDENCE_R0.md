@@ -77,7 +77,7 @@ At the Product review the v4.11 candidate was `4924387815fa238382471e690fb169579
 
 ## 7. Minimal next actions and adoption boundary
 
-1. L2 owner first accepts/edits the **six Architecture Drivers** and five reviewer P2 dispositions by comparing against exact current owner references above. Do not replay complete L1/PRD reviews.
+1. L2 owner first accepts/edits the **seven Architecture Drivers** and five reviewer P2 dispositions by comparing against exact current owner references above. Do not replay complete L1/PRD reviews.
 2. Choose a minimal single-source mapping/evidence schema and material-source scope semantics; record a **small ADR/source write-set map** with 2 positive and 3 negative conceptual fixtures, no unbounded new test matrix.
 3. Resolve U02 via static git-object sketch; if a high-impact assumption remains unresolved *and executable evidence is necessary*, issue one genuinely scoped Research Demo with E1 and positive/negative tests. No fake demo PASS in this R0.
 4. When all material U01–U05 are lawfully classified, create a distinct exact-source **L2 Freeze** under existing Architecture Owner. **Only then** authorize scoped `PLANNING_SCAFFOLD` Work Item/Claim, DAG draft co-evolution, paired Freeze and actual implementation. Do not prematurely materialize the implementation Task DAG.
