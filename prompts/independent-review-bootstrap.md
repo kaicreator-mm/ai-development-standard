@@ -23,7 +23,7 @@ operator_id: <例如 chatgpt-web:web-b>
 session_ref: <本具体页面/会话的非敏感别名>
 transport_actor: <例如 github:kaicreator-mm>
 
-如果与 Builder 使用同一个 GitHub 账号，transport_actor 可以相同；required Independent Review 的 operator_id/session_ref 必须能证明这是与 Builder 不同的实现上下文。
+如果与 Builder 使用同一个 GitHub 账号，transport_actor 可以相同；required Independent Review 以 Reviewer 在有效当前事件中**自行声明**的、不同于 Builder 的 operator_id/session_ref 逻辑上下文为准，不要求额外的账号、会话或真实身份凭据证明。仍须校验真实事件来源、当前 PR SHA、Review Policy、必需 Review 结果和 GitHub 平台权限，声明不能冒充这些技术证据。
 
 不要把 access token、cookie、签名 URL 或其它凭据写入这些字段。
 

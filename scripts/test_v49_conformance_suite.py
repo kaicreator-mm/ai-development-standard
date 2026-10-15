@@ -142,6 +142,15 @@ T012_MERGED_BLOBS = {
     ".github/workflows/verify-standard.yml": "9fa6099f867b4ce68c0963fbd012f8970753c4d6",
 }
 
+# v4.12 S01 strict historical-source compatibility bridge. The original
+# T-012 merged owner pin above remains unchanged and MUST still hold outside
+# the precise approved v4.12 lineage and test-kernel successor. Controller
+# amendment: #1096@6200584408; existing claim rebind #1132@6200589875.
+V412_S01_QUALIFIED_BASE_SHA = "60f55e98a97e763ceeec9fe51f1bba47a17d31b1"
+V412_S01_GATE_TEST_PATH = "scripts/test_v49_gate_currentness.py"
+V412_S01_GATE_TEST_HISTORICAL = "049adb7c463d0baa4d391ed58917699709244948"
+V412_S01_GATE_TEST_SUCCESSOR = "a6ff6a212a574d8a09e17e7d4b98c30a05e81632"
+
 # The T-012 oracle identity of this kernel itself: the only lawful edit on top
 # of the merged T-012 content is the F1-style re-bind documented above, so the
 # kernel's C01-C13 oracle surface is pinned by these markers plus the green
@@ -227,6 +236,20 @@ def git(*args: str) -> str:
 
 def git_blob_sha(rev: str, rel_path: str) -> str:
     return git("rev-parse", f"{rev}:{rel_path}")
+
+
+def v412_s01_exact_test_successor_current() -> bool:
+    """Allow only the pinned v4.12 successor test on its qualified lineage."""
+    try:
+        git("merge-base", "--is-ancestor", V412_S01_QUALIFIED_BASE_SHA, "HEAD")
+        return (
+            git_blob_sha(V412_S01_QUALIFIED_BASE_SHA, V412_S01_GATE_TEST_PATH)
+            == V412_S01_GATE_TEST_HISTORICAL
+            and git_blob_sha("HEAD", V412_S01_GATE_TEST_PATH)
+            == V412_S01_GATE_TEST_SUCCESSOR
+        )
+    except subprocess.CalledProcessError:
+        return False
 
 
 def github_anchors(text: str) -> set[str]:
@@ -1301,7 +1324,16 @@ class C12CoverageManifest(ConformanceSuiteBase):
         # executing its C01-C13 oracles green in the same run).
         for rel_path, merged_blob in T012_MERGED_BLOBS.items():
             with self.subTest(t012_merged_output=rel_path):
-                self.assertEqual(merged_blob, git_blob_sha("HEAD", rel_path))
+                current_blob = git_blob_sha("HEAD", rel_path)
+                if (
+                    rel_path == V412_S01_GATE_TEST_PATH
+                    and v412_s01_exact_test_successor_current()
+                ):
+                    # The T-012 historical pin remains unchanged. Admit ONLY
+                    # this source-bound S01 kernel under exact v4.12 facts.
+                    self.assertEqual(V412_S01_GATE_TEST_SUCCESSOR, current_blob)
+                else:
+                    self.assertEqual(merged_blob, current_blob)
         kernel_source = Path(__file__).resolve().read_text(encoding="utf-8")
         for marker in T012_KERNEL_ORACLE_MARKERS:
             self.assertIn(marker, kernel_source, "T-012 kernel oracle marker missing")

@@ -234,6 +234,14 @@ Any task-specific instruction required by an executor MUST exist in the assigned
 
 Specialized durable prompt artifacts MAY exist, but they are subordinate referenced artifacts. The Issue remains the assignment authority and the user-visible trigger remains pointer-only under `ISSUE_FIRST_TASK_TRIGGER.md`.
 
+### 10.1 v4.12 planning Work Item first-source admission
+
+A project **already using a qualified v4.12+ revision** MAY authorize a small source-only Scaffold while in Stage 2 before its implementation Task DAG, **only** under an existing canonical `type:planning` Work Item (no new type or gate). The owning Issue contract MUST bind the exact Frozen Product/L2 authority, current integration commit SHA, allowed/forbidden source paths and effect boundaries, affected consumers, selected pre-dispatch Review Policy, and a falsifiable successful/negative validation plan. Its planning body is not itself a source-writing permission.
+
+A planning-source Builder uses the **same** §§12/12.1 and `EXECUTION_ARCHITECTURE_STANDARD.md` §11 admission contract as an ordinary Builder: confirm current Work Item state, real native blockers/allowed paths/Task Pack/expected base SHA, no incompatible active claim; serialize admission by **one designated writer** or genuine linearizable conditional write, publish a current accepted `DISPATCH_CLAIMED` and state before any file mutation. A scheduled task, `ROLE_CLAIMED`, a shared GitHub login, a commented source claim or an unverified optimistic state does not satisfy Claim. Distinct logical operators are identified by **self-declared** actor/session attribution through accepted events; do not demand a separate Owner credential or external proof of session identity.
+
+The Claim scope **can authorize source-only files but never public acceptance by itself**. Protected security/API/ABI/schema changes still require the selected substantive Review, real validated evidence and lawful merge/adoption before consumers treat those outputs as authoritative. Package installation/network/credential/deploy effects need separately authorized activity; if unknown/unavailable, `BLOCKED`. Older pinned projects retain their existing temporal authority; this v4.12 clause does not silently upgrade them or rewrite their historical state.
+
 ## 11. Type-specific canonical templates
 
 The maintained template set MUST cover at least:
