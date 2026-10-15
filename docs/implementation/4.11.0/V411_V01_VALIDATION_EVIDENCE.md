@@ -42,7 +42,7 @@ GitHub readback established unchanged code blobs on both commits: T01 `c4f2c42f1
 
 ## 3. Current truth and gap ledger
 
-- Supported modeled X classes: source declares bounded coverage; X01 actual positive/negative/constant-HOLD evidence at predecessor; other covered classes need case-by-case current evidence/impact, not an unsupported sweeping PASS.
+- Supported modeled X classes: current exact candidate Host 38697505818 exercised all 8 declared covered X01–X08 reference classes with 8 positives, 52 one-proof-removal negatives and 8 constant-HOLD mutant rejections, test-only fixture fidelity. An independent Release/Validation Impact decision remains outstanding.
 - Uncovered J09+J10+J11+J12: `UNVERIFIED_COVERAGE` in model, downstream real authorization **BLOCKED/NOT_CERTIFIED**; no real combined four-way positive executed.
 - S08: predecessor synthetic single file-backed SQLite A/B demonstrated two blocked attempts and zero protected effects after readback, 6 tests; it is a **test-only** model. No human veto service is produced.
 - T12: predecessor **52 assertions/zero semantic failure** with ledger 20 PASS, 28 BLOCKED, 4 NOT_RUN; guarded original script still literally `EXIT=1` due its task-head write-set check. That run's overall workflow remains FAILURE, not a false green.
@@ -65,3 +65,10 @@ GitHub readback established unchanged code blobs on both commits: T01 `c4f2c42f1
 - **Original** `python -B scripts/test_v411_t12_abc_conformance.py`: **raw EXIT=1**, `REGISTRY_OR_WRITESET_FAIL`. The branch-local workflow explicitly asserted this nonzero exit as a diagnostic and overall Actions outcome was success; it **did not turn this raw FAIL into PASS**.
 - Separate registered exact candidate [38694979271](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38694979271): `verify-standard` SUCCESS.
 - The original 139-census 125/14 is historical **at `322e868...`** and remains neither rerun nor replaced. V01 signed Validation Impact + current Release §11 + fresh independent Validator still NOT_ISSUED; source/execution truth is not a Gate pass by itself.
+
+
+## 5. Current exact-SHA all-declared-covered model non-vacuity receipt
+
+[Actions 38697505818](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38697505818), job `116297455732`, ran `scripts/test_v411_t01_effective_rules.py`'s real deterministic resolver at candidate `214f6a97…` / tree `51355178…`. The test definition was branch-local workflow-only and did not mutate the candidate source or any evidence file. Exact log marker `V411_DECLARED_COVERED_ANTI_VACUITY_PASS` contains one entry for each **X01–X08** in the declared `COVERED_JOB_CLASSES`. Each passed modeled `ADMITTED` at same subject and failed admission when each required fixture owner proof was removed; 52/52 negative flips. The same class-specific positive oracle **rejected constant-HOLD substitution 8/8**. This is **reference-only, shaped fixture proof identity**, NOT a verified real owner / human / Release authorization. A real J09–J12 job class remains unclaimed, `UNVERIFIED_COVERAGE` and *NOT_CERTIFIED* for live applications.
+
+Host profile result: SUCCESS for this bounded exact-candidate conformance diagnostic, **not** full 139 regression, overall Release PASS or §11 grant. Original T12 entrypoint observed exit1 at separate current Host 38695039311, unchanged and still a reported raw FAIL. Release §11 applicability and independent V01 closure remain NOT_ISSUED.
