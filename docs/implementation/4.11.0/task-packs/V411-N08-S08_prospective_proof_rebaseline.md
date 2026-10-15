@@ -117,3 +117,44 @@ Product scope §10 / proof matrix §5 [PR #1105], L2 existing-owner §14 [PR #11
 - Product PR #1105 exact source `7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f`, Product exact Freeze #943@6170435421; L2 source amended #1106@`c94a4fbf3383f07368ce6e9123d99c134f2ffdee` (new delta review/Architecture freeze pending).
 - Original T08 Pack `7999e5b2...`; T09 Pack `3b338da7...`; T12 Pack `a2af3ef4...`; V01 Pack `8885201a...`; original version candidate `322e868...`; Test runner T09 `scripts/test_v411_t09_effect_boundary.py@3e1d6a2d...`, T12 `scripts/test_v411_t12_abc_conformance.py@e66eaee2...`.
 - Honest Host status: V01 #1021@6156596087 (139 scripts 125 exit0/14 exit1; T12 52 assertions but material 28 BLOCKED/4 later NOT_RUN), independent V01 #1021@6162591281 = BLOCKED; historical human APPROVE #1021@6163883456 reviewed #1021@6163960062. No real human DENY proof. Current Draft #1103 evidence-only reviews PASS integrity **with** V01 BLOCKED.
+
+## 8. Prospective Product B — bounded standards-repository acceptance Task Pack supplement (DRAFT)
+
+> **NOT EXECUTION-ADMITTED** until independent new Product v0.3.2 source review and accountable exact Freeze (#1113), L2 v0.2.2 independent review/Freeze (#1114), this Task Pack delta review and accountable Pack freeze, plus later new-exact-candidate Release §11.2/§11.5 applicability. User direction #943@6184164350 chooses the new standards-only Product envelope; it does **not** retroactively change the current §3.2 P4b / §3.3 P5 true-runtime obligations on already-frozen candidates, nor grant release. Source before this §8 is immutable in its previously pinned `#1107@c470a7b1739b6f7dc46e7c82521ac2894122fede`.
+
+```ini
+B_TASKPACK_REVISION_PROPOSED=v0.3.2
+PRODUCT_B_PROPOSAL=#1113@53b27e1575f44c51d80d4f083168037ab28c4a73
+L2_B_PROPOSAL=#1114@4394d6d227cd40ed5885b993a9c7b8beeeed4a50
+ORIGINAL_PRODUCT_L2_PACK=FROZEN_HISTORY_UNMODIFIED
+B_PRODUCT_L2_PACK_ACCEPTANCE=PENDING_REVIEW_AND_OWNER_FREEZE
+N08_RUNTIME_NEGATIVE=NOT_PROVEN
+S08_NATIVE_CLAIM_READY=NOT_PROVEN
+S08_REAL_HUMAN_DENY_E2E=NOT_PROVEN
+STANDARDS_CONTRACT_TEST_EXECUTION=NOT_RUN_ON_SUCCESSOR
+RELEASE_OWNER_GATE_NEW_CANDIDATE=NOT_ISSUED
+V01=BLOCKED
+```
+
+### 8.1 Exactly what a **standards-only** Validator may count
+
+- **B-P01 N08 contract oracle** — consume existing canonical clauses from `standards/PROJECT_ADOPTION.md`, `standards/DEVELOPMENT_WORKFLOW.md`, `standards/RELEASE_STANDARD.md`, plus source-bound `scripts/test_v411_t01_effective_rules.py` and `scripts/test_v411_t12_abc_conformance.py` after review. In a clean current-HEAD process, *actually execute* deterministic negatives for **each** required J09/J10/J11/J12 absence and stale/forged/wrong exact subject owner proof, observed undeclared material J12, `UNKNOWN` vs current **inspected ABSENT** J12, simultaneous revoked license/J10 ACK uncertainty/J11 retirement/J09 release intent. Expected reference decision `BLOCKED/HOLD`; no fixture `PASS` can mint `RELEASE_QUALIFICATION`. Any missing negative remains `NOT_RUN`, not covered by textual similarity. Do not invent a production four-job deployment or new centralized policy engine. Accepted proof label *only after actual execution* `STANDARDS_CONTRACT_ORACLE_ONLY`.
+- **B-P02 S08 SQLite mechanism** — reuse existing `scripts/test_v411_s08_prospective_mechanism.py` from #1108 under legitimate Pack/current Product B integration. Execute one exact file-backed SQLite persistent effect identity with **test-only synthetic DENY**, fixture-mode A Claim then distinct modeled B READY/Claim generation and attempt IDs; assert A and B `BLOCKED`, reopen DB, `effects=0`, `compensations=0`, exactly two audit attempts; run source-spoof, wrong subject/actor/tenant/scope/currentness and unauthorized supersession negatives. This is **real SQLite test code**, not genuine native Claim or actual human-denial E2E. Even if already verified at prior byte-identical HEAD (#1108 prior 6/6), current candidate may reuse **only** if a current independent owning `VALIDATION_IMPACT_DECISION` explicitly establishes byte/config/contract equivalence and suitability under Product B; otherwise rerun focused.
+- **B-P03 transparent limits** — include `STANDARDS_ONLY_CONFORMANCE`, `MODEL_CLAIM_A_B_ONLY`, `MECHANISM_SYNTHETIC_DENY_SQLITE_ONLY`, `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN`, `REAL_HUMAN_DENY_E2E_NOT_PROVEN`, `ACTUAL_OWNER_COMPOUND_DENIAL_NOT_PROVEN`, `N08_PHYSICAL_FOURWAY_POSITIVE_NOT_PROVEN` in V01/Release consumer notes. Historical human APPROVE at #1021@6163883456 remains *old SHA only*, no successor authority.
+- **B-P04 actual owner Release applicability** — accountable Release Owner determines **each required Version Closure gate × one later exact candidate** under `RELEASE_STANDARD.md` §11.2/§11.5 after new Product/L2/Pack Freeze; explicitly decide applicability of **standards-repository** rather than production runtime proof. The earlier §10 C1/C2 conditional physical-positive exclusion remains **NOT_EFFECTIVE** unless independently satisfied; here physical runtime claims are not made, not waived by calling them `PASS` or `NOT_APPLICABLE` in an actual deployment. `UNKNOWN` current owners ⇒ `BLOCKED`.
+
+### 8.2 B-specific falsifiers and bounded code/test write set
+
+**N08 reference-case minimum:** 4 separate omitted owner facts, observed undeclared actual J12, genuinely inspected-absent J12 (legal three-way modeled conjunction), stale/wrong SHA/work/actor/tenant/scope, revoked/unknown source/license, concurrent J10 uncertain ACK + J11 retirement + J09 release intent + J12 revocation, absent/forged Release owner authority, no independent actor/decision currentness, and no false protected effect/release advancement. Strict default `BLOCKED/HOLD` in any unknown/missing/fraud case; the three-way case may only show a *reference allowed outcome* if genuine inspected absence AND other owning facts were valid in the test model. Do not ascribe actual real owner admission to T12 `complete()` or #1112 readback.
+
+**S08 reference-case minimum:** same effect A/B synthetic DENY with actual SQLite audit state, repeated/changed claim generation, forged REAL_AUTHORITY label, stale actor and same scope mismatch, conflict between test fixture and real authority source, lost/retried ACK; all protected effects zero. Never pass test fixture as an operator-supplied external human file or claim actual DENY.
+
+**Allowed source tests:** prioritize adding *missing* N08 dedicated negative cases within the existing T01/T12 focused test/fixture owner lane (or at most one bounded companion test under an independently reviewed one-concern PR if changing frozen older scripts is inappropriate); existing S08 test file is reused unchanged where possible. NO shared `schemas/**`, generic verifier, fresh policy engine, real Claim service, new event family, new native DAG Issue or third-party tenant side effect. Each implementation concern gets its own independent Review and exact-SHA current test evidence. Reuse existing prior research and S/X proofs where source-equivalent and owning impact accepted; do not repeat 139 scripts by default.
+
+### 8.3 Execution plan — no artificial runtime-owner gate
+
+1. Independent **new** Product #1113 and Security review → accountable Product B **exact source Freeze** (old §10 freeze intact).
+2. Independent new L2 #1114 delta review/Architecture owner acceptance → this Pack §8 independent delta review/Pack Owner admission. Both currently DRAFT, no actual builder gate promotion.
+3. WEB owner-local focused *standards contract* tests: audit existing N08 fixture negative coverage; implement only absent cases one-concern/one-PR; integrate the already exercised S08 source (no human/Claim forgery). #1112 pending R3 is **optional read-only source witness**, not a required real Release owner or P5 runtime proof.
+4. Clean Host run only impacted current scripts and genuine SQLite sink, record exact HEAD/tree/test hashes/commands/exit/raw adverse results; independent validator reports **standards-only fidelity** and conservative applicability. Retain historical 139-run 125 exit0 /14 exit1 verbatim, with scoped Validation Impact and Critical Journeys.
+5. Accountable Release owner records **new** §11.2/§11.5 gate×actual successor decision, including explicit downstream consumer restrictions; distinct V01 exact-subject Closure (PASS only if all actually required standard-repo evidence passes) → original V02→V03→V04→R01→R02 gate chain. An incomplete Product/L2/Pack/Release owner decision or unexecuted negative stays BLOCKED, not N/A.
