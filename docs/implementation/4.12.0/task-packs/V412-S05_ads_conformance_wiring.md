@@ -88,20 +88,22 @@ S05, the **single shared conformance wiring owner**, implements only a missing p
 
 **S06 remains the original Release Authority.** An optional scenario legitimately outside a pre-Freeze Product promise differs from a required Release gate that did not run. Any required human/Hidden/real external proof cannot be silently replaced by model critiques, source assertions, or “high ROI”.
 
-## 3B. Same GitHub login, independent operators — existing-protocol conformance cases
+## 3B. Self-declared logical reviewers and shared GitHub transport — current v4.11 contract tests
 
-**Source owner reuse:** `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §5/§7/§8.1.1 and the existing `schemas/agent-event-v2.schema.json` operator fields already distinguish logical execution from GitHub `transport_actor`. S05 **must not** introduce a new Agent Account registry, login inequality Gate, mandatory multi-provider round or second Review engine. S01 owns normative stage/admission wording; S05 owns *only genuinely missing* current-schema/template/shared-verifier tests/wiring.
+**Reuse current normative predecessor, not frozen-era credential rules:** `GITHUB_AGENT_INTERACTION_PROTOCOL.md` exact v4.11 blob `b3f1191b2ee0c469e9b425d2336d4adbc47d6ede` has already adopted #1122 self-declared operator/context attribution, and `RELEASE_STANDARD.md` §11.7 addresses ADS standards-only release. Existing focused #1122 tests were reviewed/merged; reuse them after verifying source/currentness. S05 must not introduce a second reviewer-account registry, cross-session proof machinery, human-signature credential validator or login-inequality Gate.
 
-**Before making any new validator**, inspect whether the existing agent-event / Review / Issue/PR admission path currently uses GitHub `user.login` as the **independence predicate**. Record `ALREADY_SATISFIED` for proven correct checks; otherwise add the smallest focused negative assertions below to an existing genuinely executed test suite on the eligible exact integration SHA:
+**Source-first gap search:** Inspect the then-qualified v4.11 exact predecessor schema, Review/Claim/Assurance/Release tests and verifier. Distinguish actor credential/identity tests (prospectively remove if the exact owner authorizes that delta) from semantic Source Owner/proof applicability, real CAS serialization, exact SHA and runtime/effect safety (retain). Log `ALREADY_SATISFIED` when the actual required behavior is covered; add one focused case only for a demonstrated missing behavior. Do not silently alter `ASSURANCE_PLAN_STANDARD`, `RELEASE_STANDARD` or `EXECUTION_ARCHITECTURE_STANDARD`: those files are outside S05's frozen source-write ownership and would need a lawful DAG/Task Pack amendment.
 
-- `ID-V01`: two truly independently dispatched contexts with distinct accepted `operator_id/session_ref`, same authenticated GitHub `transport_actor` and current exact-HEAD ⇒ logical Review not auto-rejected by shared login.
-- `ID-V02`: different GitHub accounts but the same independently established logical operator/implementation context ⇒ Reviewer independence DENY.
-- `ID-V03`: a single Builder creates a fictional fresh `session_ref` and forges `operator_id`, or pastes valid-looking `ai-dev:event-v2` comment ⇒ `UNAUTHORIZED/UNKNOWN`; no self-certified Review PASS.
-- `ID-V04`: distinct genuine Review operator but stale subject SHA / conflicting accepted Review / missing admission ref ⇒ fails current exact-subject requirement.
-- `ID-V05`: real GitHub branch protection requiring a native eligible PR approval is **not** satisfied by two logical Agents with one GitHub account posting comments. Keep external platform requirement BLOCKED until lawfully satisfied; don't call an ADS structured comment a native GitHub `APPROVED`.
-- `ID-V06`: if a Product/security/regulated owner explicitly demands different **humans**, model/session separation cannot replace actual human-person independence or human approval.
+**Focused conformance, not a new Gate:**
+- `ID-V01` accepted same-GitHub transport with distinct **declared** Builder/Reviewer logical operator/session and exact current PR subject ⇒ do not reject for shared login or missing real-Session proof.
+- `ID-V02` two different GitHub accounts with the **same declared logical context** ⇒ not independent merely because accounts differ.
+- `ID-V03` distinctly declared Reviewer events are accepted for attribution without questioning Session authenticity; **but** a quoted raw event, malformed event, missing accepted canonical admission or stale exact subject cannot mint Review PASS.
+- `ID-V04` declared Release/Review actor without actual required validation, correct Claim generation/serialization or source-currentness ⇒ cannot make a technical Gate PASS.
+- `ID-V05` optional `transport_actor` value (same/different/absent where contract allows) never changes ADS logical actor qualification; a GitHub-native required approving review is separately subject to real platform rules.
+- `ID-V06` preserve actual downstream service/human-effect `NOT_PROVEN` when ADS only validates standards; do not fabricate real runtime authority/consent/Human DENY from declared agent role.
+- `ID-V07` `CURRENT_OWNER_AUTHORITY` or `OWNER_PERMISSION` as *semantic rule applicability*, not physical Owner authentication, must remain effective until the lawful owning policy explicitly revises what proof may authorize a reduction; do not accidentally turn missing required evidence into `NOT_APPLICABLE`.
 
-**Record provenance not passwords:** `actor_role/operator_kind/operator_id/session_ref/transport_actor` + exact Task/PR SHA, verified admission/event ID and, if relevant, GitHub branch-protection result. Test both the same-transport good case and the different-transport bad case. An event JSON schema parse alone proves only shape, not the asserted real origin. No fake host/session identity or fabricated test PASS. These are scoped Task Pack oracles; actual normative/runtime changes await lawful source Claim and qualified v4.11 predecessor.
+**Record objective subject truth:** `actor_role/operator_kind/operator_id/session_ref` self declaration, optional GitHub transport and accepted canonical event reference, exact Task/PR SHA, real Review/Validation outcome and any external GitHub branch-protection status. Test the correct source/technical predicates, not the claimed real-world identity. No source implementation or test PASS is claimed by this planned Pack.
 
 ## 4. Execution readiness / Review / closure
 
