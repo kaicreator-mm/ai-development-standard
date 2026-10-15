@@ -112,6 +112,21 @@ class GitConsumer(unittest.TestCase):
         self.set_df()
         self.assertEqual(self.check()["source_pair"], "PASS_E1")
 
+    def test_renamed_tracked_source_material(self):
+        git(self.repo, "mv", "app/core.py", "app/moved.py")
+        self.df = commit(self.repo, "renamed module")
+        with self.assertRaisesRegex(Reject, "MATERIAL_SOURCE_DRIFT"):
+            self.check()
+
+    def test_gitlink_addition_material(self):
+        # An index-only Git link has mode 160000: not a regular blob.
+        git(self.repo, "update-index", "--add", "--cacheinfo",
+            "160000," + ("f" * 40) + ",third-party")
+        git(self.repo, "commit", "-qm", "added synthetic gitlink")
+        self.df = git(self.repo, "rev-parse", "HEAD")
+        with self.assertRaisesRegex(Reject, "MATERIAL_SOURCE_DRIFT"):
+            self.check()
+
     def test_symlink_mode_change_material(self):
         (self.repo / "shortcut").symlink_to("app/core.py")
         self.df = commit(self.repo, "new symlink")
