@@ -102,6 +102,20 @@ Allowed dispositions are ordinary owner decisions `DO_MINIMAL | REUSE_EXISTING |
 
 **No false Owner equivalence:** `owner` as *canonical semantic contract/source authority* (e.g. which standards file defines applicability or validation logic) is not a human credential predicate. Preserve semantic precedence, required evidence and gate-source currentness; remove only *actor/Owner credential validation* that contradicts the prospective #1123 policy after its scope is properly admitted. S01 may touch only its frozen DAG write-set until authorized amendment; other actual source owner changes require an explicit exact Task DAG amendment. This Pack is a candidate, not a new Product/L2/DAG approval.
 
+## 3C. User-approved #1123 v4.12 scope, **prospective** S01 source-write-set amendment
+
+**This addendum is a Task Pack candidate, not an accepted native source Claim.** It consumes [Product R4 #1123 candidate](../../../product/V412_I1123_PRODUCT_R4_DELTA_CANDIDATE.md) exact blob `847e707b78359f6e9de2901b2ea049557b7eb104`, [L2 R6 candidate](../../../architecture/V412_I1123_L2_R6_DELTA_CANDIDATE.md) `2e14870263f9b833628b06f1b5a27a48bc285e1e` and Task DAG R4 proposed write-set source blob `faf3bffffcf2d4e6a74faad5535a15ac9e7725f4`. They are **not yet frozen**. The exact Frozen R3 DAG still controls actual source write admission.
+
+**Proposed extra S01 single-writer surfaces (only after successor Freeze):**
+- `standards/EXECUTION_ARCHITECTURE_STANDARD.md`: §11/§28 and any *actually present* actor/Owner-credential-authentication blocker only. Preserve real single-writer/Claim CAS generation, provenance-as-event, dispatch/state readback and side effects.
+- `AGENTS.md`: top-level agent conduct pointers to existing #1122 source and any newly frozen protocol behavior; don't duplicate canonical norm.
+- `prompts/independent-review-bootstrap.md`: declared Reviewer context and same-transport handling, **if** the already merged v4.11 text still has a genuinely inconsistent expectation after source audit.
+- Original R3 S01 files unchanged as sole existing Workflow/Work Item/Interaction owners. S01 must NOT write Release Standard, Assurance Standard, S05 tests/schema/manifest/CI or S04 adoption guides.
+
+**Required focused source-oracles:** (i) same GitHub account/declared distinct operators allowed and no extra Owner credential check; (ii) different GitHub account/same declared actor is not independent; (iii) unadmitted quoted event rejected on event-source semantics (no physical identity challenge); (iv) stale Task/HEAD, duplicate Claim CAS generation or unsupported source-writing effect remains blocked; (v) no real human-deny production runtime PASS inferred from `operator_kind=human`; (vi) `ALREADY_SATISFIED` recorded when the current #1122 source already implements it. For ordinary ADS dev, the declaration is trusted without an additional cross-session reality/identity audit.
+
+**Admission rule:** No newly proposed file above is actually ALLOWED until **Product R4 Delta Freeze + L2 R6 Delta Freeze + R4 DAG write-set Freeze + Task Pack admission + correct real source Claim** on a release-qualified v4.11 version baseline. This scope amendment is not an actor credential or Owner verification gate; it is ordinary source write ownership/currentness. Any source content claim of “tested” needs an actual executed exact-HEAD test record.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): none (but absent dependency ≠ READY). Native issue edges require actual API mutation and readback; Markdown is advisory historical.
