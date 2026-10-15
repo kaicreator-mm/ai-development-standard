@@ -8,7 +8,7 @@ ISSUE=#1123
 PREDECESSOR_PRODUCT_R3_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
 PROPOSED_PRODUCT_R4_DELTA_BLOB=e924fa29d8fe3c846eeb7f6ca41131609b19b0ad
 PREDECESSOR_L2_R5_BLOB=68608ef6456334d627db1797ba2e023233c84ce7
-PROPOSED_L2_R6_DELTA_BLOB=580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2
+PROPOSED_L2_R6_DELTA_BLOB=aede88044697ba45f712ecfa49f615ce48e8af58
 FROZEN_DAG_R3_BLOB=adc9e522f3b734a59898091945b9c7545530565a
 SOURCE_SCOPE_CANDIDATE_BLOB=6d783ecb8b02a61d4e2d60174e1a12832f27b948
 VERSION=v4.12.0
@@ -90,7 +90,7 @@ V412_RELEASE=NOT_QUALIFIED
 
 ## 6. User-approved #1119 Option A — no new Task or edge, S04/S05 source scope only
 
-**Product/L2 source bindings updated before this DAG delta:** Product R4 current candidate blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`; L2 R6 current candidate blob `580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2`; #1119 approved Option A feasibility source blob `be7f0785083890b42aab5efb17d735df8a69adab`. User has **not** approved moving Class B automated cross-repository updater into v4.12. The preexisting Frozen Product R3/L2 R5/DAG R3 exact identities stay unchanged.
+**Product/L2 source bindings updated before this DAG delta:** Product R4 current candidate blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`; L2 R6 current candidate blob `aede88044697ba45f712ecfa49f615ce48e8af58`; #1119 approved Option A feasibility source blob `be7f0785083890b42aab5efb17d735df8a69adab`. User has **not** approved moving Class B automated cross-repository updater into v4.12. The preexisting Frozen Product R3/L2 R5/DAG R3 exact identities stay unchanged.
 
 **Write-set extension to be admitted ONLY after Product/L2/DAG successor Freezes:**
 - **S04** remains the sole `standards/PROJECT_ADOPTION.md`/uniquely owned adoption example writer. It adds the prospective opt-in `TRACK_LATEST_COMPATIBLE_STABLE` **selection preference** and immutable effective execution pin semantics, plus compatibility/consumer currentness examples. No additional paths, GitHub updater, other repository PRs or automatic pin mutation. `standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` is **READ ONLY source owner**; its existing compatibility-record-v1 predicates are reused.
