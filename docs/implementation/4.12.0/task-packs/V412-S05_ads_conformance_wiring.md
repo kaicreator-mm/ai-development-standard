@@ -67,6 +67,27 @@ Assemble approved S01–S04 into one ADS standard candidate with two source-pinn
 
 **References (immutable planning owner input):** frozen Product R3 blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`; frozen L2 R5 blob `68608ef6456334d627db1797ba2e023233c84ce7`; frozen DAG blob `adc9e522f3b734a59898091945b9c7545530565a`; checkpoint `7949caf630edbe83d1dff1ffb7cee8906b77c56f`; canonical `standards/DEVELOPMENT_WORKFLOW.md` §Stage2.4/2.5/2.6, `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §10/§12.1, `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `TASK_DAG_GOVERNANCE_STANDARD.md`, `VALIDATION_STANDARD.md`, `RELEASE_STANDARD.md`. Those are verified historical version owners, **not** an assertion that the current v4.11 branch released.
 
+## 3A. #1099 Review/Validation/Release convergence — verify once, never invent PASS
+
+S05, the **single shared conformance wiring owner**, implements only a missing projection of #1099 and the already Frozen FR-05/FR-07 onto existing `VALIDATION_STANDARD`, `RELEASE_STANDARD`, current Review/Workflow owners. The norm owner of Gate applicability remains the existing Release owner S06; **S05 may not invent waiver policy or amend frozen gates**.
+
+**Evidence economy / stage-aware verification:**
+- **Small mechanical repair:** review its exact diff, write-set, affected invariant and genuinely new negative/root failure classes, reuse unchanged earlier Review subject only where provenance/currentness allow. A prior source-only review **cannot** become an exact new-HEAD machine PASS. Material behavior/security/data/effect change may require focused actual negative execution before merge; subject-specific owner policy decides, not apparent patch size.
+- **One version candidate campaign:** run required full dependency-complete regression **once on the current exact candidate** (unless required extra distinct Host/Hidden/RQ/E3 and newly material source invalidation). One real executed log may support multiple evidence rows if their *entire material predicates*, actor/environment/identity/fidelity, negative and exact source subject actually match. Same script-name or old E1 fixture is not equivalent truth.
+- **No repetitive rounds:** no R4/R5 full-PR rereview after a 2-line fix unless a new material source/authority/semantic counterexample appears. Reuse `VALIDATION_IMPACT_DECISION` / currentness obligation with `REUSED_EXACT_EVIDENCE | DEFERRED_TO_CANDIDATE | NOT_RUN` as descriptive decisions, **not new Gate states**.
+- **Delivery type matters:** ADS is `STANDARDS_SPECIFICATION` with scripts as deterministic reference checks, not inherently a deployed multi-host Claim or Release service. Preserve scope and owner-qualified Release §11.2/11.5; the separate #1116 type-aware design can be source input, not silent replacement of frozen v4.11 mandatory E3/Hidden gates. Genuine later runtime adopters own their real-world Claim/Human/E3 proofs.
+- **No fabricated cost claims:** when actual logged CI/Host/review duration or comparable baseline is missing report `UNKNOWN` rather than asserting e.g. “75% saved”. If optional work is legally excluded, record only meaningful consumer impact and decision-owner disposition in existing Task Result metadata, no new tracking DB.
+
+**Required focused negatives (S05 integration test registration, not additional Gate):**
+- `ROI-V01`: two separately named validation rows with identical exact candidate+predicate+actor+Host/fidelity reuse one executed proof; changed permission/subject/required independent owner makes reuse fail.
+- `ROI-V02`: tiny repaired source diff may obtain legitimate current review, but unexecuted exact-HEAD test remains `NOT_RUN`, never Release PASS.
+- `ROI-V03`: new material side effect or security violation defeats Fast Path and triggers applicable focused negative now; no dangerous merge as mere cost savings.
+- `ROI-V04`: Frozen `REQUIRED_NOW` from older v4.11 candidate remains mandatory until lawful prospective owner rebaseline; a new v4.12 ROI rubric cannot retroactively waive it.
+- `ROI-V05`: repeated independent Review/Host run with no new predicate/impact is not *universally mandatory*; stop if owner policy permits and valid equivalent current evidence exists, else label the unresolved required predicate `BLOCKED/NOT_RUN`.
+- `ROI-V06`: version candidate source drift invalidates only affected reusable evidence where owner currentness allows, but full candidate rerun occurs when actually required by release policy; do not blindly treat historical 139 jobs as mandatory for a standards-only target.
+
+**S06 remains the original Release Authority.** An optional scenario legitimately outside a pre-Freeze Product promise differs from a required Release gate that did not run. Any required human/Hidden/real external proof cannot be silently replaced by model critiques, source assertions, or “high ROI”.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): V412-S03, V412-S04. Native issue edges require actual API mutation and readback; Markdown is advisory historical.
