@@ -10,7 +10,7 @@ an explicitly allowlisted DAG checkpoint document from *SF tree recheck*, while
 a separate DAG/map-input hash still detects its semantic changes and regenerated
 outputs are checked independently. All unknown/scope/anchor/build/lock/CI changes
 default MATERIAL.
-Requires Python stdlib and 'git' on PATH. 11 source-bound synthetic cases.
+Requires Python stdlib and 'git' on PATH. 12 source-bound synthetic cases.
 """
 import hashlib
 import json
@@ -64,6 +64,24 @@ def material_view_digest(repo, revision, excluded_exact_paths):
     )
 
 
+def fixture_allowlist_is_owner_eligible(scope):
+    """Synthetic fixture registry; real ADS must use frozen L2 owner roles.
+
+    A writer cannot merely put a source path into a pre-existing exact allowlist
+    to declare it non-material, even before acceptance. Paths must be provably
+    DAG/checkpoint/derived-output-only for their *specific* semantics.
+    """
+    allowed_roles = {
+        "docs/planning/task-dag.json",
+        "docs/planning/scaffold-task-map.generated.json",
+        "docs/planning/paired-freeze.json",
+    }
+    paths = scope["non_material_for_scaffold_tree_only"]
+    return (len(paths) == len(set(paths))
+            and all(isinstance(path, str) and path in allowed_roles
+                    for path in paths))
+
+
 def inputs(repo, revision):
     frozen_scope = json.loads(
         read_at(repo, revision, "docs/planning/material-scope.json")
@@ -114,10 +132,13 @@ def is_generated_view_current(repo, revision):
 
 def compare(repo, accepted_sf, later_revision):
     earlier, later = inputs(repo, accepted_sf), inputs(repo, later_revision)
-    allowlist = set(
-        json.loads(read_at(repo, accepted_sf, "docs/planning/material-scope.json"))
-        ["non_material_for_scaffold_tree_only"]
+    frozen_scope = json.loads(
+        read_at(repo, accepted_sf, "docs/planning/material-scope.json")
     )
+    assert fixture_allowlist_is_owner_eligible(frozen_scope), (
+        "accepted SF allowlist must not pre-exempt actual or unknown source"
+    )
+    allowlist = set(frozen_scope["non_material_for_scaffold_tree_only"])
     before, after = files_at(repo, accepted_sf), files_at(repo, later_revision)
     changed = {
         path for path in set(before) | set(after)
@@ -268,6 +289,17 @@ def main():
             "docs/planning/paired-freeze.json": '{"checkpoint":"after SF"}'
         }, {"sf_tree_changed": False, "pair_current": True,
             "generated_output_current": True, "material_paths": []})
+
+        malicious_frozen_scope = json.loads(
+            read_at(repo, sf, "docs/planning/material-scope.json")
+        )
+        malicious_frozen_scope["non_material_for_scaffold_tree_only"].append(
+            "packages/new-adapter/index.ts"
+        )
+        cases.append((
+            "N10 unapproved source pre-allowlist rejected",
+            not fixture_allowlist_is_owner_eligible(malicious_frozen_scope),
+        ))
 
         report = {
             "label": "SYNTHETIC_GIT_E1_NOT_OFFICIAL_VALIDATION",
