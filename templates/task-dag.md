@@ -59,6 +59,26 @@ Before freeze, summarize the intended concurrency plan:
 
 If the DAG is mostly serial, record why the dependencies are real rather than leaving parallelism unexplored.
 
+## Optional v4.12 Source Scaffold ↔ Task Binding (only when applicable)
+
+Use this section **only** for a project that actually adopts a qualified v4.12+ standard, has an accepted source-first SF checkpoint and needs an explicit DF mapping. It is a *planning snapshot*, not another writable authority or a new required metadata schema. The Task-side anchor binding is the single canonical mapping owner; reference the source facts, do not replicate an editable SF anchor ownership table.
+
+```text
+Product ref + blob: <actual frozen Product source>
+L2 ref + blob: <actual frozen Architecture source>
+Accepted SF commit: <40-char immutable SHA>
+SF material source inventory/ref/digest: <actual Git objects incl mode and path>
+Current DF blob: <exact Git blob>
+Separately recomputed MI digest and input refs: <digest / reproducible command>
+Known source-owner pre-approved exclusions: <none or exact paths + authority + reason>
+```
+
+| Anchor ID | Kind | Location (accepted SF) | Contract Ref | Canonical Task Issue | Task Pack Ref | Writer / Read-only Consumer |
+|---|---|---|---|---|---|---|
+| `<stable-id>` | `<structural-kind>` | `<exact-path>` | `<accepted-ref>` | `#<id>` | `<exact-ref>` | `writer` |
+
+Before DF Freeze, **independently recompute** both `anchor → Task` and `Task → anchor` from actual current source objects; reject missing important anchors, duplicate active writers, unexplained added/deleted/renamed files, symlink/gitlink/mode changes and any SF/DF/L2 contradiction. `DAG_ONLY_INPUT` is only a narrowly preauthorized SF-view exemption; it does **not** exclude that input from DF/MI checks. Generated `DERIVED_NONAUTHORITATIVE` indexes never certify themselves. A Task `SPLIT/MERGE/SUPERSEDE` that changes this binding requires the ordinary DAG mutation plus live native Issue Dependency update. If no accepted Scaffold exists, mark this section `NOT_APPLICABLE` with reason, rather than fabricate a source pair or new Task.
+
 ## Review Policy Planning
 
 Review is risk-based, not universally mandatory.
