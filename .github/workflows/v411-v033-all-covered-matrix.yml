@@ -1,0 +1,91 @@
+# Validation-only coverage oracle. Never merge this workflow into version or main.
+name: v411 v033 declared-covered all-X anti-vacuity evidence
+on:
+  push:
+    branches:
+      - validation/v411-v033-all-covered-model-214f6a97
+permissions:
+  contents: read
+jobs:
+  all-claimed-covered-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 214f6a97b1eed948e1afef8f5089eb4bf4b97d26
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: All declared-covered job-class model positives, one-proof negatives and constant-HOLD falsifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "214f6a97b1eed948e1afef8f5089eb4bf4b97d26"
+          test "$(git rev-parse HEAD^{tree})" = "51355178551b300b916355d4b952cd0fbdd919fe"
+          test -z "$(git status --porcelain)"
+          python -B - <<'PY'
+          import copy
+          import importlib.util
+          import json
+          import subprocess
+          from pathlib import Path
+          import unittest.mock as mock
+
+          spec = importlib.util.spec_from_file_location("refmodel", Path("scripts/test_v411_t01_effective_rules.py"))
+          model = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(model)
+          assert len(model.COVERED_JOB_CLASSES) == 8, "Coverage denominator changed; review explicitly"
+          all_classes = sorted(model.COVERED_JOB_CLASSES.items(), key=lambda kv: kv[1])
+          results = []
+          for jobs, class_id in all_classes:
+              fixture = model.service_x01_fixture(
+                  declared_jobs=set(jobs),
+                  owner_proofs=model.all_pass_proofs(),
+              )
+              assert fixture["exact_subject"] == model.SERVICE_X01_SUBJECT
+              def positive_oracle(f):
+                  result = model.resolve_effective_rules(f)
+                  assert result["resolution"] == "ADMITTED", (class_id, result["resolution"])
+                  assert all(row["gate_state"] == "PASS" for row in result["rules"])
+                  assert {row["trace"]["exact_subject"] for row in result["rules"]} == {model.SERVICE_X01_SUBJECT}
+                  return result
+              positive = positive_oracle(fixture)
+              required = sorted({r["obligation"] for r in positive["rules"]})
+              flips = 0
+              for obligation in required:
+                  negative = copy.deepcopy(fixture)
+                  assert obligation in negative["owner_proofs"], (class_id,obligation)
+                  del negative["owner_proofs"][obligation]
+                  result = model.resolve_effective_rules(negative)
+                  assert result["resolution"] != "ADMITTED", (class_id,obligation,"false-positive")
+                  assert model.gate_map(result)[obligation] != "PASS"
+                  flips += 1
+              with mock.patch.object(model, "resolve_effective_rules", return_value={
+                  "resolution":"UNVERIFIED_COVERAGE","rules":[],"conflict":False
+              }):
+                  rejected = False
+                  try:
+                      positive_oracle(fixture)
+                  except AssertionError:
+                      rejected = True
+                  assert rejected, (class_id,"constant-HOLD mutant escaped positive oracle")
+              results.append({"class":class_id,"jobs":sorted(jobs),"positive":"ADMITTED_MODEL_ONLY",
+                              "missing_proof_negatives":flips,"always_hold_mutant":"REJECTED"})
+          four = frozenset({"J09_RELEASE_QUALIFICATION","J10_INCIDENT_RECOVERY",
+                            "J11_DEPRECATION_RETIREMENT","J12_UPSTREAM_REUSE"})
+          assert four not in model.COVERED_JOB_CLASSES
+          unknown = model.resolve_effective_rules(model.service_x01_fixture(
+              declared_jobs=set(four),owner_proofs=model.all_pass_proofs()
+          ))
+          assert unknown["resolution"] == "UNVERIFIED_COVERAGE"
+          assert not any(row["gate_state"] == "PASS" for row in unknown["rules"])
+          print("V411_DECLARED_COVERED_ANTI_VACUITY_PASS="+json.dumps({
+              "tested_sha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+              "model_only":True,"declared_covered_classes":len(results),
+              "classes":results,"physical_owner_e2e":"NOT_CERTIFIED",
+              "unclaimed_fourway":"UNVERIFIED_COVERAGE","release_gate":"NOT_GRANTED",
+          },sort_keys=True))
+          PY
+          test -z "$(git status --porcelain)"
