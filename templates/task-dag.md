@@ -68,8 +68,8 @@ Product ref + blob: <actual frozen Product source>
 L2 ref + blob: <actual frozen Architecture source>
 Accepted SF commit: <40-char immutable SHA>
 SF material source inventory/ref/digest: <actual Git objects incl mode and path>
-Current DF blob: <exact Git blob>
-Separately recomputed MI digest and input refs: <digest / reproducible command>
+DF draft source: <candidate file path; NO self-referential final DF hash or MI output here>
+Pair Freeze record reference: <separate external attestation to be created AFTER DF Freeze>
 Known source-owner pre-approved exclusions: <none or exact paths + authority + reason>
 ```
 
@@ -77,7 +77,7 @@ Known source-owner pre-approved exclusions: <none or exact paths + authority + r
 |---|---|---|---|---|---|---|
 | `<stable-id>` | `<structural-kind>` | `<exact-path>` | `<accepted-ref>` | `#<id>` | `<exact-ref>` | `writer` |
 
-Before DF Freeze, **independently recompute** both `anchor → Task` and `Task → anchor` from actual current source objects; reject missing important anchors, duplicate active writers, unexplained added/deleted/renamed files, symlink/gitlink/mode changes and any SF/DF/L2 contradiction. `DAG_ONLY_INPUT` is only a narrowly preauthorized SF-view exemption; it does **not** exclude that input from DF/MI checks. Generated `DERIVED_NONAUTHORITATIVE` indexes never certify themselves. A Task `SPLIT/MERGE/SUPERSEDE` that changes this binding requires the ordinary DAG mutation plus live native Issue Dependency update. If no accepted Scaffold exists, mark this section `NOT_APPLICABLE` with reason, rather than fabricate a source pair or new Task.
+Before DF Freeze, verify for **every** `planned_task_id → canonical native GitHub Issue #` binding that the Issue exists and is current, `binding_writer_path_set ⊆ Issue Allowed changes` and `binding_writer_path_set ∩ Issue Forbidden changes = ∅`; missing/UNKNOWN Claim at execution, invalid Task-to-Issue mapping and widened write scope are `MATERIAL/HOLD`. **Do not insert the DF file's final Git blob or its MI digest into that same DF file.** Freeze the completed DF source first, then place its computed exact blob, SF material input identity, separately recomputed MI digest, proof command/input list and current Issue/Claim references into a **separate immutable pair Freeze record** outside the DF/SF/MI input digest; generated indexes and the attestation are never self-hashing inputs. Independently recompute both `anchor → Task` and `Task → anchor` from actual current source objects; reject missing important anchors, duplicate active writers, unexplained added/deleted/renamed files, symlink/gitlink/mode changes and any SF/DF/L2 contradiction. `DAG_ONLY_INPUT` is only a narrowly preauthorized SF-view exemption; it does **not** exclude that input from DF/MI checks. Generated `DERIVED_NONAUTHORITATIVE` indexes never certify themselves. A Task `SPLIT/MERGE/SUPERSEDE` that changes this binding requires the ordinary DAG mutation plus live native Issue Dependency update. If no accepted Scaffold exists, mark this section `NOT_APPLICABLE` with reason, rather than fabricate a source pair or new Task.
 
 ## Review Policy Planning
 
