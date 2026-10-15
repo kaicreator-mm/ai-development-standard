@@ -104,7 +104,7 @@ Allowed dispositions are ordinary owner decisions `DO_MINIMAL | REUSE_EXISTING |
 
 ## 3C. User-approved #1123 v4.12 scope, **prospective** S01 source-write-set amendment
 
-**This addendum is a Task Pack candidate, not an accepted native source Claim.** It consumes [Product R4 #1123 candidate](../../../product/V412_I1123_PRODUCT_R4_DELTA_CANDIDATE.md) exact blob `847e707b78359f6e9de2901b2ea049557b7eb104`, [L2 R6 candidate](../../../architecture/V412_I1123_L2_R6_DELTA_CANDIDATE.md) `2e14870263f9b833628b06f1b5a27a48bc285e1e` and Task DAG R4 proposed write-set source blob `faf3bffffcf2d4e6a74faad5535a15ac9e7725f4`. They are **not yet frozen**. The exact Frozen R3 DAG still controls actual source write admission.
+**This addendum is a Task Pack candidate, not an accepted native source Claim. #1119 Option A affects only S04 adoption and S05 read-only selector; **S01 actor/Claim scope stays unchanged**.** It consumes [Product R4 #1123 candidate](../../../product/V412_I1123_PRODUCT_R4_DELTA_CANDIDATE.md) exact blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, [L2 R6 candidate](../../../architecture/V412_I1123_L2_R6_DELTA_CANDIDATE.md) `580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2` and Task DAG R4 proposed write-set source blob `c52774f20642ca429b5b708ed4011e2e98dded3b`. They are **not yet frozen**. The exact Frozen R3 DAG still controls actual source write admission.
 
 **Proposed extra S01 single-writer surfaces (only after successor Freeze):**
 - `standards/EXECUTION_ARCHITECTURE_STANDARD.md`: §11/§28 and any *actually present* actor/Owner-credential-authentication blocker only. Preserve real single-writer/Claim CAS generation, provenance-as-event, dispatch/state readback and side effects.
