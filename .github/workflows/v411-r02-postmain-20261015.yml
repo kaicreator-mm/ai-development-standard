@@ -1,0 +1,98 @@
+name: V411 R02 final main independent release baseline review
+on:
+  push:
+    branches:
+      - audit/v411-r02-final-main-aac1e
+permissions:
+  contents: read
+  issues: write
+jobs:
+  final-baseline-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Distinct independent post-main exact baseline and sanity review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,json,subprocess,urllib.request
+          R="kaicreator-mm/ai-development-standard"
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          T="cb115035acd2eb7a2c77fb40b2f529a9f5cc10d7"
+          M="b9461d48d902a2c7c00adff6746afc7a02a0ac3e"
+          def git(*args):return subprocess.check_output(["git",*args],encoding="utf-8",text=True).strip()
+          def api(path,body=None):
+              b=json.dumps(body).encode() if body else None
+              req=urllib.request.Request("https://api.github.com/repos/"+path,
+                data=b,method="POST" if body else "GET",
+                headers={"Authorization":"Bearer "+os.environ["GITHUB_TOKEN"],"Accept":"application/vnd.github+json","Content-Type":"application/json","X-GitHub-Api-Version":"2022-11-28"})
+              with urllib.request.urlopen(req,timeout=30) as resp:return json.load(resp)
+          main=api(R+"/git/ref/heads/main")["object"]["sha"]
+          cand=api(R+"/git/ref/heads/candidate/v4.11.0-aac1e120")["object"]["sha"]
+          ver=api(R+"/git/ref/heads/version/v4.11.0")["object"]["sha"]
+          assert main==C and cand==C and ver==C,("final identity",main,cand,ver)
+          assert git("rev-parse",C+"^{tree}")==T
+          assert git("merge-base",M,C)==M,"non-FF history"
+          assert git("show",C+":VERSION")=="4.11.0"
+          assert git("rev-parse",C+":standards/RELEASE_STANDARD.md")=="da82aa7d387d8f190c4ddff88b4c8782af804ac4"
+          assert git("rev-parse",C+":docs/implementation/4.11.0/task-packs/V411-R02_repository_integration.md")=="70758b74f4aa9fe3d35b46ab57239bab2854d8c4"
+          assert git("rev-parse","HEAD")!=C,"audit workflow E cannot be tested candidate C"
+          r=api(R+"/actions/runs/38768070512")
+          assert r["head_sha"]==C and r["head_branch"]=="main" and r["event"]=="push" and r["conclusion"]=="success","final-main CI missing"
+          for issue in range(1021,1026):
+              assert api(R+"/issues/"+str(issue))["state"]=="closed","incomplete predecessor "+str(issue)
+          review=api(R+"/issues/comments/6196828958")["body"]
+          assert "reviewer_disposition: PASS_PREMERGE_SCOPE_AND_IDENTITY" in review and C in review
+          q=api(R+"/issues/comments/6196138142")["body"]
+          qr=api(R+"/issues/comments/6196142163")["body"]
+          assert "R01_verdict: READY" in q and "review_status: PASS" in qr
+          expected=set(["docs/implementation/4.11.0/V411_V02_CANDIDATE_FREEZE.md",
+            "docs/implementation/4.11.0/V411_V03_HIDDEN_VALIDATION_VERDICT.md",
+            "docs/implementation/4.11.0/V411_V04_FRESH_FINAL_CLOSEOUT.md"])
+          for p in expected:
+              test=subprocess.run(["git","cat-file","-e",C+":"+p],capture_output=True)
+              assert test.returncode!=0,"evidence-only change merged into C: "+p
+          reviewer="github-actions:ads-v411-r02-final-main-review-"+os.environ["GITHUB_RUN_ID"]
+          msg=f"""<!-- ai-dev:event:v2 -->
+          ## V411-R02 distinct independent final-main exact-baseline review — PASS
+          
+          \`\`\`ini
+          event: V411_R02_POSTMAIN_INDEPENDENT_REVIEW
+          actor_role: reviewer
+          operator_kind: github-actions
+          operator_id: {reviewer}
+          session_ref: github-actions-run:{os.environ["GITHUB_RUN_ID"]}:postmain-review
+          transport_actor: github-actions:GITHUB_TOKEN_METADATA_ONLY
+          identity_policy: SELF_DECLARED_NO_GITHUB_ACCOUNT_TEST
+          reviewed_candidate_sha: {C}
+          reviewed_final_main_sha: {main}
+          reviewed_final_tree: {T}
+          previous_main_sha: {M}
+          integration_mode: FAST_FORWARD
+          force_history_rewrite: NO
+          main_version_candidate_equal: YES
+          resulting_tree_candidate_equal: YES
+          preceding_R01: READY_STANDARDS_ONLY
+          preceding_R01_independent_review: PASS
+          preceding_R02_premerge_independent_review: PASS
+          final_main_CI_run: 38768070512_SUCCESS
+          hidden_V03_V04_evidence_merged_into_candidate: NO
+          review_disposition: PASS_FINALMAIN_BASELINE
+          release_tag: NOT_CREATED_OPTIONAL_ALIAS
+          \`\`\`
+          
+          Different declared GitHub Actions reviewer context independently inspected the live final main/version/frozen candidate refs and identical Git tree, checked that the previous main commit is ancestor of C, verified exact current RQ READY and independent review, checked v4.11 VERSION and Release/R02 Pack blobs, confirmed the actual main push CI run completed SUCCESS, and excluded V02–V04 evidence-only files from the qualified commit tree. No new main commits, release tag, hidden vector reads, Owner credentials or GitHub-login identity checks were performed by this review. The GitHub Actions workflow exists on a separate audit-only branch, NOT on qualified main. This is final-main review evidence for R02, not a new release verdict.
+          """
+          x=api(R+"/issues/1026/comments",{"body":msg})
+          assert api(R+"/git/ref/heads/main")["object"]["sha"]==C,"main drift after review publication"
+          print("V411_R02_FINALMAIN_REVIEW=PASS")
+          print("V411_R02_MAIN_SHA="+C)
+          print("V411_R02_TREE="+T)
+          print("V411_R02_CI=38768070512_SUCCESS")
+          print("V411_R02_REVIEW_COMMENT="+str(x["id"]))
+          PY
