@@ -50,14 +50,15 @@
     "Five Task packs and four edges; Task PACK Freeze requires separate legitimate Controller decision on exact subjects. No synthetic Claim or E3.",
     "#1099 Risk-Bounded Value First integrated as planning-only, source-owned acceptance/negative cases in S01 Workflow, S04 Project Adoption and S05 Validation/Release conformance; S02/S03 frozen scope unchanged. Product R3/L2 R5/DAG Freeze unchanged. #1099 remains open until actual normative implementation and proof.",
     "C13/C14 research/human evidence are scoped L1 source questions, not fabricated independent Reviewer or mandatory multi-LLM/human gates. Frozen REQUIRED_NOW never waived by ROI.",
-    "Shared GitHub login is TRANSPORT only, not logical Reviewer/Builder identity: existing Interaction §5/§7/§8.1.1 authorizes distinct independently verified operator_id/session_ref on same transport; neither distinct account nor two unverified alias strings proves independence. S01/S05 Packs carry ID01-ID06 / ID-V01-ID-V06 and current exact-subject/host-origin/protected-branch negative cases; core norm ALREADY_SATISFIED pending actual implementation gap audit.",
-    "GitHub native PR author self-approval is forbidden by GitHub, and branch protection native approval cannot be replaced by ADS structured Review evidence; real distinct native approver or owner-authorized lawful policy decision may be required. No new controller or Gate."
+    "Rebased self-declared actor identity/Review oracle wording to ACTUAL merged v4.11 #1122: Interaction exact blob b3f1191b2ee0c469e9b425d2336d4adbc47d6ede and Release Standard §11.7 blob da82aa7d387d8f190c4ddff88b4c8782af804ac4. Trust canonical self-declared operator/session/role and use GitHub transport only as metadata; no cross-session/person credential proof. Reuse existing covered normative behavior.",
+    "Future #1123 broad cross-project ASSURANCE/Claim/Release/Owner-credential removal beyond #1122 is NOT in Frozen R3 Product/L2/DAG scope. It requires exact-scoped v4.12 successor Product/L2/DAG authorization, or stays v4.13. Frozen v4.12 Task source owner write sets do not presently grant ASSURANCE_PLAN_STANDARD / RELEASE_STANDARD / EXECUTION_ARCHITECTURE_STANDARD rewrites. Never infer 1123 complete from Pack wording.",
+    "Preserve objectively observable currentness/Claim serialization/tests, true platform branch protection, source-of-event vs quoted text, and honest uncovered real-world human/effect facts. S06 Release authority checkpoint unchanged. Candidate Pack index remains NOT_FROZEN."
   ],
   "packs": [
     {
       "task_id": "V412-S01",
       "path": "docs/implementation/4.12.0/task-packs/V412-S01_phase_claim_authority.md",
-      "git_blob": "f7b643913e35a0b84d155c9d58ab74623b36b44e",
+      "git_blob": "41d5d33d33194756142614342a29ff7710a0fa18",
       "predecessors": [],
       "review_policy": "required",
       "canonical_type": "type:task",
@@ -108,7 +109,7 @@
     {
       "task_id": "V412-S05",
       "path": "docs/implementation/4.12.0/task-packs/V412-S05_ads_conformance_wiring.md",
-      "git_blob": "5e6e487c015af1fcd8c0728cb6532bb7f7512fd3",
+      "git_blob": "4d9b5728ee86d546767357ab00df8c1e6911cb41",
       "predecessors": [
         "V412-S03",
         "V412-S04"
