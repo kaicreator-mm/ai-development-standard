@@ -627,11 +627,22 @@ class SectionContractTests(unittest.TestCase):
         ):
             with self.subTest(heading=heading):
                 self.assertIn(heading, text)
-        # Scope discipline: the T06 delta adds exactly one subsection per
-        # owner section and no new top-level section.
+        # Integration-head scope discipline: T06 owns only the two
+        # additive subsections below. A later authorized owner may add a
+        # distinct top-level section (for example, T14's lawful §30);
+        # its existence does not retroactively change the T06 write set.
         self.assertNotIn("### 27.6", text)
         self.assertNotIn("### 28.6", text)
-        self.assertNotIn("## 30.", text)
+        self.assertEqual(text.count(S_27_5[0]), 1)
+        self.assertEqual(text.count(S_28_5[0]), 1)
+        self.assertLess(
+            text.index(S_27_5[0]),
+            text.index("## 28. Responsibility and control semantics for delegated execution"),
+        )
+        self.assertLess(
+            text.index(S_28_5[0]),
+            text.index("## 29. v4.9 proportional orchestration core"),
+        )
 
     def test_no_new_event_family_or_schema_is_declared(self) -> None:
         text = standard_text()
