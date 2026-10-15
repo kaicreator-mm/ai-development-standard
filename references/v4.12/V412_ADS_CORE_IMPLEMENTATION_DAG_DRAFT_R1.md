@@ -25,9 +25,7 @@ flowchart LR
   L2 --> S04[S04 Adoption guidance]
   S01 --> S03[S03 Pure mapping/checker + 2 fixtures]
   S02 --> S03
-  S01 --> S05[S05 ADS integration conformance]
-  S02 --> S05
-  S03 --> S05
+  S03 --> S05[S05 ADS integration conformance]
   S04 --> S05
   S05 --> S06[S06 Release qualification]
   BASE[Qualified predecessor] --> S06
@@ -44,7 +42,9 @@ flowchart LR
 | **S05** Integrated standards conformance | `scripts/verify_standard.py`, existing standard-manifest/golden index as truly necessary; one focused v4.12 test entry in existing verify workflow (only when absent), change notes | HIGH, **required** for conformance integration | S01–S04 exact accepted source; targeted negative tests run; one candidate full regression on qualified exact SHA (not once per evidence row); no inherited shallow-checkout false-regression: consume v4.11 #1038/#1040 `fetch-depth:0` via legal source inheritance; CI green alone is not final Release. |
 | **S06** Version qualification | Existing Release Controller + version integration owner; no new app repository; exact version branch, changelog/release/adoption evidence through current process | CRITICAL, **Release authority**, not a Builder self-review | Actual v4.11 Release-qualified predecessor and v4.12 S05 integrated source, mandatory Release owned checks/source readback, explicit release decision; otherwise HOLD. A consumer test-app Release is never substituted for an ADS standard Release. |
 
-**Write-collision resolution:** S01 owns canonical source phase/Claim semantics and publishes stable acceptance surface before S03 checker; S02 owns single mapping/paired-freeze semantics; S04 may draft/read in parallel but cannot edit S01/S02-owned files; S05 alone owns central `standard-manifest.json` / test registration so sibling tasks do not race. Task identities can be folded when an exact existing standard already satisfies an intended delta. Separate concern PRs only when truly independently mergeable; no automatic six-PR quota.
+**Minimal transitive reduction:** actual intended Task edges are `S01→S03`, `S02→S03`, `S03→S05`, `S04→S05`, `S05→S06` (five; no artificial direct `S01/S02→S05` because S03 already carries that precedence). External Architecture Freeze and qualified predecessor are gate/lineage prerequisites, not native Task edges. This reduces unnecessary dependency bookkeeping without changing executable order.
+
+**Write-collision resolution:** S01 owns canonical source phase/Claim semantics and publishes stable acceptance surface before S03 checker; S02 owns single mapping/paired-freeze semantics; S04 may draft/read in parallel but cannot edit S01/S02-owned files (in particular S04 MUST NOT edit `templates/task-dag.md` while S02 owns it); S05 alone owns central `standard-manifest.json` / test registration so sibling tasks do not race. Task identities can be folded when an exact existing standard already satisfies an intended delta. Separate concern PRs only when truly independently mergeable; no automatic six-PR quota.
 
 ## 3. Candidate checker input/output minimum (not a new normative schema)
 
