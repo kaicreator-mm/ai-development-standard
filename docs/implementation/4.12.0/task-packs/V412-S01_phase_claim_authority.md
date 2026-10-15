@@ -67,6 +67,24 @@ A project that explicitly and lawfully adopts v4.12 can write its first bounded 
 
 **References (immutable planning owner input):** frozen Product R3 blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`; frozen L2 R5 blob `68608ef6456334d627db1797ba2e023233c84ce7`; frozen DAG blob `adc9e522f3b734a59898091945b9c7545530565a`; checkpoint `7949caf630edbe83d1dff1ffb7cee8906b77c56f`; canonical `standards/DEVELOPMENT_WORKFLOW.md` §Stage2.4/2.5/2.6, `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §10/§12.1, `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `TASK_DAG_GOVERNANCE_STANDARD.md`, `VALIDATION_STANDARD.md`, `RELEASE_STANDARD.md`. Those are verified historical version owners, **not** an assertion that the current v4.11 branch released.
 
+## 3A. #1099 Risk-Bounded Value First — existing Workflow owner projection
+
+**Adopt within frozen FR-01/FR-02/FR-07 and current owner scope, without a new phase or normative document.** In `standards/DEVELOPMENT_WORKFLOW.md`'s phase-selection, Research/Demo and Stage2.6 sections, add only the genuinely missing guidance: before selecting an additional DAG-P/A node, research/demo, discretionary Reviewer/Host rerun or optional fringe scope, check **binding owner hard floor → new falsifiable decision benefit → whole-life cost (including Review/Host/waiting/maintenance) → asymmetric tail risk/reusable source evidence → lawful owner disposition and revisit trigger**. A one-paragraph qualitative rationale is enough for material defer/exclude decisions. **No mandatory form, ROI threshold, new Gate/Issue, or blanket multi-LLM rounds.**
+
+Allowed dispositions are ordinary owner decisions `DO_MINIMAL | REUSE_EXISTING | BATCH | TIMEBOX_RESEARCH | DEFER_WITH_TRIGGER | EXCLUDE_WITH_REASON | ESCALATE_OWNER` as prose labels, **not machine workflow/Gate states**. Real core obligations (Product promises, frozen scope, source Claim/Review, human DENY, trust/security, irreversible effects, valid licensing/ABI, required candidate tests/Release) are **never** downgraded by cost. Existing Owner-approved amendments and exact currentness remain necessary to drop formerly frozen mandatory work. Any non-core exclusion before Product Freeze must state actual consumer impact and source authority; post-Freeze exclusion uses lawful successor Product/L2/Pack decision, not this Pack.
+
+**#1099 C13/C14 minimum-human research handoff:** Choose source-first, lawful public/authorized observations when fit for a *specific L1 question*, classify self-report versus observed behavior versus real blinded human Gold, and preserve consent/privacy/model transfer restrictions. Use optional adversarial LLMs and deterministic checks **only when they add material decision evidence**; the actual reserved authenticated human decision/observation remains required when owned by Product/Human/Review. A model-generated approval or hybrid AI-labelled Gold may never be marked real independent human approval/Gold.
+
+**Bounded negative acceptance:**
+- `ROI01`: genuinely optional non-core study with no new decision predicate is excluded by the *correct Product owner before Freeze*, without a phantom Task or Release blocker.
+- `ROI02`: severe low-probability human-DENY, permission, compatibility or irreversible-effect case remains CORE/MATERIAL despite a very unfavorable naive benefit/cost number; no dropped Review/Claim/Release proof.
+- `ROI03`: previously Frozen Product/Task required case cannot become `NOT_APPLICABLE` due to a chat ROI opinion; owner amendment/current subject or BLOCKED.
+- `ROI04`: two assistant reviews without separate real actor provenance cannot impersonate Fresh Independent Review; required authenticated human approval still HOLD.
+- `ROI05`: public forum self-reports may inform bounded L1 choice but cannot certify population behavior, genuine blind Gold or lawful consent; insufficient/unsafe evidence is UNKNOWN.
+- `ROI06`: a scoped research/demo stops once a source-grounded owner decision is supported; do not demand new research just to fill a per-stage checklist.
+
+**Task role separation:** S01 owns only Workflow's stage/authority contract. S04 owns project-local adoption examples, S05 owns shared verification/Release evidence projection; do not move Validation or Release rule ownership into Workflow. #1099 itself is an intake/decision source, not an executable Work Item or gate.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): none (but absent dependency ≠ READY). Native issue edges require actual API mutation and readback; Markdown is advisory historical.
