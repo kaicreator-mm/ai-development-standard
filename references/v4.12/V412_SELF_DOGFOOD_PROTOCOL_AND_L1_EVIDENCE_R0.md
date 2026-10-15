@@ -217,3 +217,21 @@ CANONICAL_SOURCE_SCAFFOLD_CLAIM=NONE
 IMPLEMENTATION=NOT_STARTED
 RELEASE=NOT_QUALIFIED
 ```
+
+
+## 8. L2 self-dogfood R3 — adversarial N10 repair without Product thaw
+
+**Practice feedback, exact subject:** [L2 R2 candidate](../../docs/architecture/V412_L2_ARCHITECTURE_EVIDENCE_R0.md) blob `9dd12912550bbd0db30d1f391084ae058eae56db`, [reusable Git research fixture](../../references/v4.12/fixtures/v412_l2_git_pair_probe.py) blob `e360629cac23b481a0539b8c566f83f52e2b9e9b`. Historical R1 `11/11` and prior R2 source identities above remain **historical checkpoints**, not current file digests.
+
+**Genuine negative discovered during Stage2 work:** a frozen **writer-chosen** allowlist may already contain a material code path. Simply pinning the manifest SHA and forbidding its *subsequent* modification is **not sufficient**. `N10` adds an admitted-source owner/classification check before accepting the original SF tuple: only owner-classified exact nonmaterial DAG/derived/Freeze outputs can be excluded from **SF source tree** recheck, and the former two remain covered by independent DAG/map/derived-output proof. Unknown path/category → material or HOLD.
+
+**Result:** added N10 to matching local Git prototype, **12/12 expected**, updated GitHub fixture source, and repaired L2 text. No Product semantic change, no new gate, no full CI run or second all-workstream review. `GITHUB_COMMITTED_FIXTURE_EXACT_RUN=NOT_RUN`; `REAL_BUILD_HOST/ISSUE_CAS/L2_FREEZE=NOT_RUN`. This is a concrete iteration of v4.12 `Risk-Bounded Value First + Task Learning`: one new counterexample → one local contract fix → affected check only.
+
+```ini
+DOGFOOD_REAL_FINDING=N10_FROZEN_ALLOWLIST_CAN_PREEXEMPT_SOURCE
+FIX=SOURCE_OWNER_ELIGIBILITY_PROOF_BEFORE_SF_ACCEPTANCE
+E1_LOCAL_GIT_PROTOTYPE=12_OF_12_EXPECTED
+RUNTIME_MACHINE_CONFORMANCE=NOT_RUN
+L2_FREEZE=NOT_RECORDED
+PRODUCT_R3_FREEZE=UNCHANGED
+```
