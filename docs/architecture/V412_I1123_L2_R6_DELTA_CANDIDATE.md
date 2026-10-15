@@ -89,3 +89,56 @@ PRODUCT_DELTA_FREEZE=NOT_RECORDED
 DAG_WRITESET_AMENDMENT_FREEZE=NOT_RECORDED
 IMPLEMENTATION=NOT_ADMITTED
 ```
+
+## 6. #1119 Option A architectural extension — read-only qualified latest-compatible selection
+
+**New user-approved Product input:** #1119 scope source blob `be7f0785083890b42aab5efb17d735df8a69adab`; current *author-produced and still-unfrozen* Product R4 delta blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`. The extra scope is specifically **Class A only**. Neither implementation nor previous Product/L2/DAG Freezes change merely by this section.
+
+### A. One qualified-release resolver over existing authoritative source objects
+
+Use one bounded, **read-only** consumer-side resolution operation, not a new repository-scanning service:
+```text
+consumer existing exact .dev-standard/VERSION + optional TRACK_LATEST_COMPATIBLE_STABLE preference
+ + caller-supplied / source-read qualified ADS release candidates
+ + pinned compatibility-record-v1 (material wire/schema/source/behavior/actor/Claim/Review/Release windows)
+ + observable current commit/version/manifest/Release gate evidence
+ → eligible candidate set → deterministic compatible stable selection
+ → READ_ONLY_PROPOSAL / NO_SAFE_RECOMMENDATION (with exact sources, missing predicates, activation guidance)
+```
+
+**Trust boundary:** `release_qualified=true` inside an arbitrary JSON/claim, a tag name, a semver string or a newer `main` pointer is not the same as actually verified qualified Release identity. Inputs must carry durable immutable SHA/tree and *read-back verifiable* corresponding actual Release Qualification + canonical VERSION/manifest/standard revision. An offline resolver must require verified source snapshots/provenance from its caller and report `UNVERIFIED` rather than promoting unchecked source assertions; a live resolver must verify actual Git object currentness without changing any repository. No credentials or external project writes are required by the pure core.
+
+**Compatibility boundary:** Reuse the existing `schemas/compatibility-record-v1.schema.json` and `standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` as the semantic owners. Evaluate **only but all material dimensions** for the pinned actual consumer profile: source/wire/schema, behavioral/semantic, authority, self-declared logical actor/independent Review, Claim admission, Validation/Release applicability, supported producer/consumer windows. Unknown, stale, incomparable release branch, candidate with uncovered material semantic change or missing consumer-window evidence ⇒ `NO_SAFE_RECOMMENDATION` / explicit insufficiency. Do not invent a globally normative `protocol_version` parser/field to mask material dimensions.
+
+**Ordering:** only qualified *stable* releases from a comparable explicit revision/lineage ordering may be ranked; same version with distinct SHAs is not equal, downgrade/multiple incomparable head lines never silently resolve to an arbitrary 'latest'. A candidate is a proposal, not source authority. Existing `.dev-standard/VERSION` remains effective until a future correctly authorized project-local version checkpoint; active Task/Claim/Review/Release keep their old source pin.
+
+### B. Source ownership and API shape
+
+- **S04** owns **only** `standards/PROJECT_ADOPTION.md` and its original examples: optional `TRACK_LATEST_COMPATIBLE_STABLE` selection preference, immutable effective pin, historical evidence/currentness and manual/shadow suggestion. No central or external project updates, no modifications of protected consumer files.
+- **S05** is the sole implementation/code-writer concern for prospective `scripts/v412_ads_compatible_select.py` and `scripts/test_v412_ads_compatible_select.py`, along with *already S05-owned* `scripts/verify_standard.py`, `standard-manifest.json`, Golden registration if truly required. Pure function/CLI consumes explicit project-source snapshots, verified qualified-release and compatibility records and emits machine-readable recommendation or rejection with exact source refs. No GitHub project write token, GitHub PR creation, cron scheduler, mutable project pin update, cross-repo crawler or auto-merge in this Task.
+- **S01/S02/S03** unchanged by #1119. **S06** retains actual Release-owned gate truth, not source of guessed candidate PASS. Existing v4.11 compatibility standard is read-only source evidence; if current norm is sufficient, do not edit it simply to stamp protocol terminology.
+- The proposed new S05 filenames are **not permitted by the currently Frozen DAG R3**; they require this L2 delta's Freeze, corresponding R4 write-set amendment and updated S05 Pack admission before implementation. The five Task node graph and four native dependency edges stay unchanged.
+
+### C. Bounded positive/negative checker contract
+
+| ID | Expected result | Forbidden shortcut |
+|---|---|---|
+| L2-1119-01 | Verified qualified stable candidate + complete actual relevant compatibility + consumer opt-in ⇒ read-only exact-SHA recommendation | Write `.dev-standard/VERSION` or GitHub PR |
+| L2-1119-02 | Same semver and different SHA ⇒ compare exact objects/evidence | Treat as identical |
+| L2-1119-03 | Unchanged schema with behavior/actor/Review/Release policy changed ⇒ material compatibility proof or `UNKNOWN` | Schema green ≠ protocol green |
+| L2-1119-04 | Nonqualified, fabricated release PASS, unverified actual Git source, `main/latest`, stale Release record ⇒ reject | Trust candidate's `qualified=true` field |
+| L2-1119-05 | Consumer with live Claim or Frozen candidate ⇒ leave old effective immutable pin intact | Mid-task rebinding |
+| L2-1119-06 | No opt-in or ambiguous ranking/window ⇒ no recommendation, `PINNED`/unknown | Mandatory fleet-wide adoption |
+| L2-1119-07 | Exact consumer old/new pin source and compatibility refs stay in proposal ⇒ later authorized action can evaluate | Historical Gate rewrite |
+| L2-1119-08 | Resolver invocation receives no GitHub write authority and produces zero modified files ⇒ admissible read-only tool surface | Quiet updater disguised as selection |
+
+**Option B still v4.13:** actual opt-in project enumeration, GitHub update PR creation, authorized activation/rollback execution and fleet maintenance. The recommendation may describe a reversible *future action*, but may not perform or claim that action. No new Source Owner signer, ID system, Gate or extra implementation Task.
+
+```ini
+I1119_CLASS_A_ARCHITECTURE=AUTHORED_NOT_FROZEN
+PRODUCT_R4_CURRENT_CANDIDATE=e924fa29d8fe3c846eeb7f6ca41131609b19b0ad
+V412_S05_PROPOSED_NEW_RESOLVER_PATH=scripts/v412_ads_compatible_select.py
+V412_S05_PROPOSED_NEW_FOCUSED_TEST=scripts/test_v412_ads_compatible_select.py
+V412_DAG_FREEZE_R4=NOT_RECORDED
+CROSS_REPO_AUTO_UPDATER=v4.13_NOT_IN_SCOPE
+```
