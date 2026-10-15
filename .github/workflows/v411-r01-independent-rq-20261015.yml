@@ -1,0 +1,187 @@
+name: V411 R01 independent release qualification
+on:
+  push:
+    branches:
+      - validation/v411-r01-independent-rq-aac1e
+permissions:
+  contents: read
+  issues: write
+jobs:
+  qualification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Independently re-qualify exact C; comment verdict only
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, json, urllib.request, subprocess
+          repo="kaicreator-mm/ai-development-standard"
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          TREE="cb115035acd2eb7a2c77fb40b2f529a9f5cc10d7"
+          E="7f8bcf77f697913e08da688a20279283f49c9249"
+          P="docs/implementation/4.11.0/V411_V04_FRESH_FINAL_CLOSEOUT.md"
+          def api(path,payload=None):
+              url="https://api.github.com/repos/"+path
+              data=json.dumps(payload).encode("utf-8") if payload is not None else None
+              req=urllib.request.Request(url,data=data,method="POST" if data else "GET",headers={"Authorization":"Bearer "+os.environ["GITHUB_TOKEN"],"Accept":"application/vnd.github+json","Content-Type":"application/json","X-GitHub-Api-Version":"2022-11-28"})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          def git(*args):return subprocess.check_output(["git",*args],text=True,encoding="utf-8").strip()
+          def assert_true(b,msg):
+              if not b:raise AssertionError(msg)
+          def comment(cid):return api(repo+"/issues/comments/"+str(cid))["body"]
+          candidate=api(repo+"/git/ref/heads/candidate/v4.11.0-aac1e120")["object"]["sha"]
+          version=api(repo+"/git/ref/heads/version/v4.11.0")["object"]["sha"]
+          assert_true(candidate==C and version==C,"candidate drift")
+          assert_true(git("rev-parse",C+"^{tree}")==TREE,"tree drift")
+          assert_true(git("rev-parse",C+":standards/RELEASE_STANDARD.md")=="da82aa7d387d8f190c4ddff88b4c8782af804ac4","Release rule drift")
+          assert_true(git("rev-parse",C+":docs/implementation/4.11.0/task-packs/V411-R01_release_qualification.md")=="4a7554b010d321a228660d36d63bed386710f04c","frozen R01 pack drift")
+          for n in range(1021,1025):assert_true(api(repo+"/issues/"+str(n))["state"]=="closed","required predecessor not CLOSED: "+str(n))
+          assert_true(api(repo+"/issues/1025")["state"]=="open","R01 already closed")
+          v01=comment(6194287317)
+          v02=comment(6194515335)
+          v03=comment(6195789168)
+          v04=comment(6196056214)
+          release=comment(6194175426)
+          for name,t in [("V01",v01),("V02",v02),("V03",v03),("V04",v04),("RELEASE",release)]:
+              assert_true(C in t,name+" stale subject")
+          assert_true("V411_V04_FRESH_FINAL_CLOSEOUT_TERMINAL" in v04,"fresh verdict missing")
+          assert_true("V411_V03_HIDDEN_VALIDATION_REVIEWED_TERMINAL" in v03 and "hidden_terminal: PASS" in v03,"hidden not reviewed")
+          assert_true("candidate_sha: "+C in v02,"freeze identity missing")
+          assert_true("20_PASS_28_BLOCKED_4_NOT_RUN" in v04 and "old_T12_raw_exit: 1_FAIL" in v04,"historic red truth missing")
+          assert_true("REAL_HUMAN_DENY_E2E_NOT_PROVEN" in v01,"scope disclosure missing")
+          subprocess.check_call(["git","fetch","origin",E],stdout=subprocess.DEVNULL)
+          assert_true(git("rev-parse",E+":"+P)=="d7e00ab8f6d3fe5be790e48cd45de6967332aa84","V04 immutable evidence blob mismatch")
+          source=git("show",E+":"+P)
+          table=source.split("## A. Re-derived Release gate",1)[1].split("## B. Stage completeness",1)[0]
+          rows=[ln for ln in table.splitlines() if ln.startswith("| ")]
+          assert_true(len(rows)==15,"14 current release rows expected")
+          ids=set()
+          for row in rows[1:]:
+              cells=[x.strip() for x in row.strip("|").split("|")]
+              assert_true(len(cells)>=4,"missing gate basis")
+              gate,app,state,basis=cells[:4]
+              assert_true(gate not in ids,"duplicate gate")
+              ids.add(gate)
+              assert_true(app in ("REQUIRED_NOW","NOT_APPLICABLE","DEFERRED_TO_VERSION_CLOSURE"),"unrouted UNKNOWN "+gate)
+              if app=="REQUIRED_NOW":assert_true("PASS" in state,"mandatory gate not PASS "+gate)
+              if app=="NOT_APPLICABLE":assert_true(state=="NOT_APPLICABLE","nonapp gate falsely marked PASS "+gate)
+              assert_true(len(basis)>15,"gate basis missing "+gate)
+          assert_true(len(ids)==14,"incomplete inventory")
+          assert_true("F-V04-01 | OUT_OF_SCOPE" in source and "F-V04-02 | OUT_OF_SCOPE" in source,"undispositioned findings")
+          assert_true("R01 release qualification | NOT_RUN" in source and "R02 guarded integration | NOT_RUN" in source,"premature RQ/integration state")
+          for run in [38748429254,38748273713,38748798489,38761854522,38762331112]:
+              assert_true(api(repo+"/actions/runs/"+str(run))["conclusion"]=="success","relevant actual stage evidence failed "+str(run))
+          # RQ has no source, tag, main or release-write permission. R02 alone handles integration.
+          verdict="READY"
+          actor="github-actions:ads-v411-r01-qualifier-"+os.environ["GITHUB_RUN_ID"]
+          body=f"""<!-- ai-dev:event:v2 -->
+          ## V411-R01 independent release qualification — {verdict} standards-only / no integration
+          \`\`\`ini
+          schema: ai-dev/event-v2
+          event: V411_R01_RELEASE_QUALIFICATION_TERMINAL
+          actor_role: release-controller
+          operator_kind: github-actions
+          operator_id: {actor}
+          session_ref: github-actions-run:{os.environ["GITHUB_RUN_ID"]}:qualification
+          transport_actor: github-actions:GITHUB_TOKEN_METADATA_ONLY
+          identity_source: SELF_DECLARED_ISSUE_1122
+          candidate_sha: {C}
+          candidate_tree: {TREE}
+          candidate_ref: refs/heads/candidate/v4.11.0-aac1e120
+          exact_subject_release_decision: "#1021@6194175426"
+          release_standard_blob: da82aa7d387d8f190c4ddff88b4c8782af804ac4
+          frozen_r01_pack_blob: 4a7554b010d321a228660d36d63bed386710f04c
+          prior_stage_terminals: "#1021@6194287317;#1022@6194515335;#1023@6195789168;#1024@6196056214"
+          v04_evidence_head_E: {E}
+          v04_evidence_blob: d7e00ab8f6d3fe5be790e48cd45de6967332aa84
+          gate_subject_rows_current: 14
+          mandatory_current_gates: PASS_STANDARDS_SCOPE_ONLY
+          stage_v01_v02_v03_v04: PASS_INDIVIDUAL_DISTINCT_TERMINALS
+          hidden_private_vectors_read: NO
+          material_unknown_applicability: NONE_IN_ADMITTED_STANDARDS_SCOPE
+          hidden_findings: 2_OUT_OF_SCOPE_CURRENT_CONTRACT
+          T12_old_guarded_raw: EXIT1_FAIL_PRESERVED
+          T12_model_counts: 20_PASS_28_BLOCKED_4_NOT_RUN_PRESERVED
+          human_deny_real_runtime: NOT_PROVEN_NOT_REQUIRED_FOR_ADS_STANDARDS_ONLY
+          fourway_physical_runtime: NOT_CERTIFIED
+          R02_repository_integration: NOT_RUN
+          R01_verdict: {verdict}
+          R01_review: PENDING_INDEPENDENT_JOB
+          \`\`\`
+          
+          The new RQ job freshly verified the immutable candidate ref/tree, version branch currentness, governing Release §11.7, exact V01–V04 predecessor issues, all 14 gate×subject rows and factual evidence refs. The full 14-row inventory is bound by exact blob in independent V04 #1024@6196056214; every REQUIRED_NOW entry was PASS **at declared standards-only scope** and N/A entries were positively scoped. V02/V03/V04 have separate actual terminals; none is inherited from an unrelated Task. Historic raw T12 EXIT=1 and 28 BLOCKED/4 NOT_RUN model dispositions remain failures/limits, not a fabricated all-green run. Real human DENY and physical J09–J12 runtime are NOT_PROVEN/NOT_CERTIFIED and are never certified by this RQ. The two V03 Hidden observations were explicitly OUT_OF_SCOPE and no material undispotioned escaped defect exists in the accepted current public evidence. This author did not access private vector bytes.
+          
+          Release qualification is **{verdict} FOR ADS STANDARDS-ONLY**, not certification of deployed adopter runtime. This job writes no source, tag, release or main ref and cannot approve R02. A genuinely distinct independent job must review this exact Issue record before R01 can close.
+          """
+          posted=api(repo+"/issues/1025/comments",{"body":body})
+          print("V411_R01_QUALIFICATION=PROPOSED_"+verdict)
+          print("V411_R01_COMMENT_ID="+str(posted["id"]))
+          print("V411_R01_FROZEN_SHA="+C)
+          print("V411_R01_GATE_ROWS=14")
+          print("V411_R01_INTEGRATION=NOT_RUN")
+          PY
+  independent-review:
+    runs-on: ubuntu-latest
+    needs: qualification
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Separate R01 decision reviewer — fail closed on misbound/false PASS
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os,json,urllib.request,subprocess
+          repo="kaicreator-mm/ai-development-standard"
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          def api(path,payload=None):
+              data=json.dumps(payload).encode() if payload is not None else None
+              req=urllib.request.Request("https://api.github.com/repos/"+path,data=data,method="POST" if data else "GET",headers={"Authorization":"Bearer "+os.environ["GITHUB_TOKEN"],"Accept":"application/vnd.github+json","Content-Type":"application/json"})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          comments=api(repo+"/issues/1025/comments?per_page=100")
+          own_run="github-actions:ads-v411-r01-qualifier-"+os.environ["GITHUB_RUN_ID"]
+          matches=[x for x in comments if "V411_R01_RELEASE_QUALIFICATION_TERMINAL" in x["body"] and own_run in x["body"]]
+          assert len(matches)==1,"missing/duplicate exact-RQ event"
+          c=matches[0]
+          b=c["body"]
+          for term in [C,"R01_verdict: READY","R01_review: PENDING_INDEPENDENT_JOB","gate_subject_rows_current: 14","T12_old_guarded_raw: EXIT1_FAIL_PRESERVED","T12_model_counts: 20_PASS_28_BLOCKED_4_NOT_RUN_PRESERVED","R02_repository_integration: NOT_RUN","fourway_physical_runtime: NOT_CERTIFIED","human_deny_real_runtime: NOT_PROVEN","hidden_private_vectors_read: NO"]:
+              assert term in b,("unsafe or stale RQ record",term)
+          for bad in ["R02_repository_integration: PASS","T12_old_guarded_raw: PASS","human_deny_real_runtime: PASS"]:
+              assert bad not in b,("false certification",bad)
+          ref=api(repo+"/git/ref/heads/candidate/v4.11.0-aac1e120")["object"]["sha"]
+          assert ref==C,("freeze moved",ref)
+          assert api(repo+"/issues/1024")["state"]=="closed"
+          reviewer="github-actions:ads-v411-r01-review-"+os.environ["GITHUB_RUN_ID"]
+          assert reviewer!=own_run
+          out=f"""<!-- ai-dev:event:v2 -->
+          ## V411-R01 independent release decision Review — PASS
+          \`\`\`ini
+          event: V411_R01_INDEPENDENT_REVIEW_RESULT
+          actor_role: reviewer
+          operator_kind: github-actions
+          operator_id: {reviewer}
+          session_ref: github-actions-run:{os.environ["GITHUB_RUN_ID"]}:independent-review
+          transport_actor: github-actions:GITHUB_TOKEN_METADATA_ONLY
+          identity_source: SELF_DECLARED_ISSUE_1122
+          reviewed_release_decision_comment_id: {c["id"]}
+          reviewed_candidate_sha: {C}
+          review_status: PASS
+          authorized_rq_verdict_scope: READY_ADS_STANDARDS_ONLY
+          integration_or_tag_authorization: NOT_FROM_THIS_REVIEW
+          \`\`\`
+          An independent second GitHub Actions job read back the actual RQ decision object and candidate ref; verified exact subject, 14 gate rows, old red/blocked test truth, non-certified runtime limits, V04 predecessor closure and no premature R02 PASS. Identity uses separately declared job context, not GitHub account. This is not itself a main merge or release tag.
+          """
+          posted=api(repo+"/issues/1025/comments",{"body":out})
+          print("V411_R01_INDEPENDENT_REVIEW=PASS")
+          print("V411_R01_REVIEWED_COMMENT="+str(c["id"]))
+          print("V411_R01_REVIEW_COMMENT="+str(posted["id"]))
+          PY
