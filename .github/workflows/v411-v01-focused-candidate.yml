@@ -37,7 +37,54 @@ jobs:
         run: python -B scripts/test_v411_t10_untrusted_inputs.py
       - name: Verify synthetic-only durable SQLite S08
         run: python -B scripts/test_v411_s08_prospective_mechanism.py
-      - name: Verify 52-record T12 conformance truth (not all 52 material PASS)
+      - name: Diagnostic T12 semantic assertion ledger (WITHOUT task-head write-set admission)
+        shell: bash
+        run: |
+          python -B - <<'PY'
+          import collections
+          import importlib.util
+          import json
+          import subprocess
+          from pathlib import Path
+
+          sha = "e35b32bc3f1ae50921ed78004909630cdd2f51f9"
+          tested = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          assert tested == sha
+          spec = importlib.util.spec_from_file_location(
+              "v411_t12_model", Path("scripts/test_v411_t12_abc_conformance.py")
+          )
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          doc = module.load_registry()
+          issues = module.validate_registry(doc)
+          if issues:
+              print("T12_DIAGNOSTIC_REGISTRY_FAIL", json.dumps(issues))
+              raise SystemExit(1)
+          records = [
+              module.run_record(doc["scenarios"][case][polarity], tested, tree)
+              for case in sorted(module.EXPECTED_IDS)
+              for polarity in ("positive", "negative")
+          ]
+          compound = module.run_compound(doc["compound"], tested, tree)
+          counts = collections.Counter(x["gate_disposition"] for x in records)
+          assert len(records) == 52, len(records)
+          assert not [x for x in records if x["exit"] != 0]
+          assert compound["contract_coverage_oracle"] == "PASS"
+          print("T12_DIAGNOSTIC_ONLY_" + json.dumps({
+              "tested_sha": tested,
+              "tested_tree": tree,
+              "method": "run_record+run_compound_without_task_head_guard",
+              "record_count": len(records),
+              "owner_assertion_failures": 0,
+              "disposition_counts": dict(counts),
+              "compound_test_oracle": compound["contract_coverage_oracle"],
+              "compound_material_disposition": compound["material_disposition"],
+              "real_runtime_owner": "NOT_PROVEN",
+              "guarded_whole_T12_status": "FAIL_RECORDED_SEPARATELY"
+          }, sort_keys=True))
+          PY
+      - name: Verify 52-record T12 conformance truth (original guarded script; exit preserved)
         run: python -B scripts/test_v411_t12_abc_conformance.py
       - name: Verify tested source remained clean
         shell: bash
