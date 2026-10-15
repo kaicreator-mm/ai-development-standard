@@ -28,7 +28,7 @@ V02_R02=NOT_ADMITTED
 | T01–T14 implementation | 14/14 native implementation tasks previously closed |
 | v0.3.3 Product/scope fix | #1117 source-reviewed, Product source disposition #943@6186019457, merged at `214f6a97…` |
 | Full-four Product contradiction | Resolved *at claimed deliverable scope*: unsupported J09–J12 is not a falsely covered model; real adopters remain fail-closed. Not a physical positive PASS |
-| Reference X01 anti-vacuity | Predecessor exact-host supported positive + always-HOLD mutant rejected (38691958203); source blob unchanged on successor |
+| Declared X01–X08 reference anti-vacuity | Current exact-host 38697505818: 8 covered positives, 52 one-proof missing negatives and 8 always-HOLD mutants detected; **fixture model only** |
 | S08 persistent SQLite | 6 predecessor Host tests PASS at synthetic-only fidelity (38690952604); human DENY E2E NOT_CERTIFIED |
 | Historical red tests | 139:125 exit0/14 exit1 (old SHA); source-based old authoring-head guard precedents recorded at #1021@6160156287; no green relabelling |
 
@@ -61,3 +61,8 @@ Use existing current-sha source equivalence, executed exact predecessor host log
 Execution recorded at [Actions 38695039311](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38695039311), pinned `214f6a97…`: `verify_standard` PASS, T01 61/3 skips PASS, T10 58 PASS, S08 synthetic 6 PASS, T12 semantic assertions 52/0 with 20 PASS/28 BLOCKED/4 NOT_RUN. **Original T12 guarded raw exit remains 1** and is printed verbatim in the host job; no full 139 rerun. Registered exact-current CI [38694979271](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38694979271) PASS. Only B1 Release-owned applicability, B2 independent impact, B3 independent evidence integrity, B4 V01 terminal remain; they cannot be replaced by this compiler or a green diagnostic workflow.
 
 **V01 BLOCKED, native DAG 14/20.**
+
+
+## 6. Exact-current declared coverage completed at reference-model fidelity
+
+[Run 38697505818](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38697505818) exercised **8 / 8** claimed-covered reference job-set classes at current SHA, with 52 adversarial owner-proof removals and 8 always-HOLD mutant rejections. J09–J12 full-four remains explicitly unclaimed and fail-closed. Runtime side effects, genuinely attributable human DENY, native multi-agent Claim and external Release remain NOT_CERTIFIED. The run clears a **bounded deterministic positive/negative coverage evidence gap**, not the Release/Validator signature gap. No repeated 139 census is required solely for this result.
