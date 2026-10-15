@@ -75,7 +75,7 @@ A mutation decision is current only for the topology/Task Pack/evidence subject 
 
 Unauthorized, incomplete or ambiguous mutations fail closed and preserve the prior live DAG. If native mutation cannot be performed, the work remains blocked until an authorized controller executes and reads back the exact graph.
 
-## 11. v4.12 source Scaffold / Task DAG binding pair (SF ↔ DF)
+## 10A. v4.12 source Scaffold / Task DAG binding pair (SF ↔ DF)
 
 A qualified v4.12+ project MAY freeze a **source-first Scaffold** (`SF`) and a subsequent **Task-side DAG binding** (`DF`) as one source-pinned, cycle-free pair. The canonical writer of each mapping lives on the **Task-side** binding; the frozen SF is structural evidence, not a second mutable Task owner and not an authority for the GitHub live dependency graph.
 
@@ -100,7 +100,7 @@ The **source view** can narrowly exclude a path only if a current source-owning 
 
 A material `SPLIT`, `MERGE`, `SUPERSEDE`, contract or writer change must use the existing `dag-mutation-record-v1` authority and rebind DF/MI and native Issue Dependencies as applicable. The frozen planning DAG is immutable history; GitHub native Issue Dependencies remain live execution truth. A pair verified with only static source/fixtures is **E1 source conformance**, not proof of a running feature, human approval, real-world effects or Version Release. Existing Product/L2 authority and real Claim/Review/Validation/Release requirements remain binding.
 
-## 12. Non-goals
+## 11. Non-goals
 
 This standard does not create:
 
