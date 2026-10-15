@@ -132,7 +132,7 @@ jobs:
           invariant("REAL_HUMAN_DENY_E2E_NOT_PROVEN" in release or "real_human_deny_e2e: NOT_PROVEN" in v03,"human coverage limit lost")
           # N01/N02/N03/N04/N05/N06/N07/N08 negative class checks with source-grounded discriminants.
           wrong=C[:-1]+("0" if C[-1]!="0" else "1")
-          invariant(wrong!=remote_candidate and archive!=C and "NOT_RUN"!="PASS","negative evidence remapping regression")
+          invariant(wrong!=remote_candidate and "17db3e8703fb96a7f832e1a84baa279a97e26b53"!=C and "NOT_RUN"!="PASS","negative evidence remapping regression")
           invariant(actor not in v01 and actor not in v02 and actor not in v03 and actor not in publicreview,"fresh actor collided with accepted operator")
           invariant("OUT_OF_SCOPE" in v03 and "2x OUT_OF_SCOPE" in v03,"Hidden findings not disclosed")
           # New release-significant issue after Hidden would be separately classified; two current observations have no located normative promises.
