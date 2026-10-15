@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Focused pure-Git, offline v4.12 source-pair checker regression cases."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -105,7 +106,10 @@ class GitConsumer(unittest.TestCase):
                     self.check()
 
     def test_tab_newline_paths_nul_safe(self):
-        # Weird names must be enumerated as one Git path, never falsely split.
+        # Win32 forbids control characters in filesystem paths. Only an
+        # actual POSIX Git object can validate the end-to-end NUL-safe scan.
+        if os.name == "nt":
+            self.skipTest("Windows cannot create Git-tracked tab/newline paths; run on Linux")
         write(self.repo, "app/weird\tname\nfile.txt", "weird")
         self.sf = commit(self.repo, "special path accepted")
         self.binding["writers"][0]["task_id"] = "T002"
@@ -128,8 +132,13 @@ class GitConsumer(unittest.TestCase):
             self.check()
 
     def test_symlink_mode_change_material(self):
-        (self.repo / "shortcut").symlink_to("app/core.py")
-        self.df = commit(self.repo, "new symlink")
+        # Set Git index mode 120000 directly; Windows does not require
+        # SeCreateSymbolicLinkPrivilege to assert Git-object drift.
+        blob = git(self.repo, "hash-object", "-w", "app/core.py")
+        git(self.repo, "update-index", "--add", "--cacheinfo",
+            "120000," + blob + ",shortcut")
+        git(self.repo, "commit", "-qm", "new index-only symlink")
+        self.df = git(self.repo, "rev-parse", "HEAD")
         with self.assertRaisesRegex(Reject, "MATERIAL_SOURCE_DRIFT"):
             self.check()
 
