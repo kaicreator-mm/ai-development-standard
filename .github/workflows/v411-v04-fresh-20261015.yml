@@ -21,7 +21,7 @@ jobs:
           python-version: '3.12'
       - name: New independent executor - exact frozen candidate + full gate evidence
         env:
-          GITHUB_TOKEN: \${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
