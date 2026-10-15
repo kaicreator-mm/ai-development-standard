@@ -41,7 +41,7 @@ jobs:
               "version":"refs/heads/version/v4.11.0",
               "candidate":"refs/heads/candidate/v4.11.0-aac1e120",
           }
-          heads={key:api(repo+"/git/ref/"+ref)["object"]["sha"] for key,ref in refs.items()}
+          heads={key:api(repo+"/git/ref/"+ref.removeprefix("refs/"))["object"]["sha"] for key,ref in refs.items()}
           assert_true(heads["main"]==EXPECTED_MAIN,"main drift: unsafe to integrate")
           assert_true(heads["version"]==C and heads["candidate"]==C,"candidate identity drift")
           assert_true(git("rev-parse",C+"^{tree}")==TREE,"candidate tree drift")
