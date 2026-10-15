@@ -8,11 +8,12 @@ CANDIDATE_SHA=214f6a97b1eed948e1afef8f5089eb4bf4b97d26
 TREE=51355178551b300b916355d4b952cd0fbdd919fe
 PRODUCT_SCOPED_SUCCESSOR=#943@6186019457
 V033_SCOPE_PR=#1117_MERGED
-CURRENT_CANDIDATE_TARGETED_HOST=NOT_RUN
+CURRENT_CANDIDATE_TARGETED_HOST=38695039311_SUCCESS_BOUNDED_DIAGNOSTIC_RAW_T12_EXIT_1
 SOURCE_EQUIVALENCE_FOCUSED=T01_S08_T12_IDENTICAL
 RAW_HISTORICAL_REGRESSION=139_EXECUTED_125_EXIT0_14_EXIT1
 FOCUSED_PREDECESSOR_T12=52_ASSERTIONS_0_SEMANTIC_FAILURE_20_PASS_28_BLOCKED_4_NOT_RUN
 ORIGINAL_T12_GUARDED_ENTRYPOINT=FAIL_EXIT_1
+REGISTERED_CURRENT_CI=38694979271_SUCCESS
 RELEASE_S11_NEW_SUBJECT=NOT_ISSUED
 VALIDATION_IMPACT_NEW_SUBJECT=NOT_ISSUED
 INDEPENDENT_V01_NEW_SUBJECT=NOT_RUN
@@ -53,3 +54,10 @@ If V01 becomes PASS by its actual authority, V02 must freeze **the exact tested 
 Use existing current-sha source equivalence, executed exact predecessor host logs and one owner impact adjudication. Run at most a **targeted** current-host smoke if required by a particular failed equivalence claim, not a 139-census by default. A genuine new current contract defect goes to a focused source-owner repair; it is not automatically another R1–R8 cycle.
 
 **Current outcome: V01 BLOCKED; native DAG remains 14/20.**
+
+
+## 5. Bounded new-candidate Host completion — not a version milestone
+
+Execution recorded at [Actions 38695039311](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38695039311), pinned `214f6a97…`: `verify_standard` PASS, T01 61/3 skips PASS, T10 58 PASS, S08 synthetic 6 PASS, T12 semantic assertions 52/0 with 20 PASS/28 BLOCKED/4 NOT_RUN. **Original T12 guarded raw exit remains 1** and is printed verbatim in the host job; no full 139 rerun. Registered exact-current CI [38694979271](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38694979271) PASS. Only B1 Release-owned applicability, B2 independent impact, B3 independent evidence integrity, B4 V01 terminal remain; they cannot be replaced by this compiler or a green diagnostic workflow.
+
+**V01 BLOCKED, native DAG 14/20.**
