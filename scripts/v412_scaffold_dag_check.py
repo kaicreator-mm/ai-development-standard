@@ -113,11 +113,24 @@ def validate_scope(scope: dict, sf_files: dict, scope_path: str) -> set[bytes]:
     ignored = scope.get("exemptions", {})
     if not isinstance(ignored, dict):
         raise Reject("INVALID_EXEMPTIONS")
+    anchors = scope.get("anchors")
+    if not isinstance(anchors, list):
+        raise Reject("INVALID_STRUCTURAL_ANCHORS")
+    # An accepted structural anchor denotes material source regardless of its
+    # directory name. A static prefix blacklist alone cannot cover app/, pkg/
+    # or a consumer's own domain-specific source root.
+    material_anchor_paths = set()
+    for anchor in anchors:
+        if not isinstance(anchor, dict) or not isinstance(anchor.get("location"), str):
+            raise Reject("INVALID_STRUCTURAL_ANCHOR_LOCATION")
+        material_anchor_paths.add(path_bytes(anchor["location"]))
     excluded = set()
     for path, info in ignored.items():
         raw = path_bytes(path)
         if raw == path_bytes(scope_path) or not isinstance(info, dict):
             raise Reject("SCOPE_MANIFEST_CANNOT_EXEMPT_SELF")
+        if raw in material_anchor_paths:
+            raise Reject("EXEMPTION_MAY_HIDE_MATERIAL_SOURCE")
         if info.get("role") not in EXEMPT:
             raise Reject("UNAPPROVED_ROLE_CLASS")
         if not HEX.fullmatch(str(info.get("approved_l2_blob", ""))) or info["approved_l2_blob"] != scope["l2_blob"]:
