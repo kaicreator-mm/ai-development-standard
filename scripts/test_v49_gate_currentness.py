@@ -151,6 +151,17 @@ READ_ONLY_DEPS_REBOUND_BLOBS = {
     "standards/EXECUTION_ARCHITECTURE_STANDARD.md": "5588d2196677b1b4878563de65edf2beaa10178f",
     "standards/VALIDATION_STANDARD.md": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
     "standards/DEVELOPMENT_WORKFLOW.md": "a7fef842927e58a93b671fe9869b9395559845ac",
+    # I1122 re-bind (issue #1122; direct user process authorization
+    # 2026-10-15, #1021@6191737577): the v4.11 self-declared-executor policy
+    # lane lawfully mutates `standards/RELEASE_STANDARD.md` (§11.1 wording +
+    # new §11.7 standards-repository executor authority) inside its approved
+    # owner concern, so the stale "unmutated since BASE_SHA" pin moves into
+    # this exact integrated-blob identity pin (the historical v4.11 version
+    # base blob, tamper-anchored below) and the exact approved successor blob
+    # is admitted in V411_OWNER_BLOBS under the same context gate. Pin
+    # constants only — any further mutation of this surface still fails,
+    # zero other assertion change.
+    "standards/RELEASE_STANDARD.md": "c4d72506253ca7f3d95e305dbd84aae0e1fbe2cb",
 }
 
 # v4.11 F1 shared-pin bridge (issue #1064; Controller authorization #967:
@@ -204,6 +215,16 @@ V411_OWNER_BLOBS = {
         "048690864ff2bb3445780ba2ac5ed2e07b272485",
         "f5552653f9fd69697b21d87d9890426943fd7f41",
         "846158b95e4173182a258f49847e1fde6600baec",
+    ),
+    # I1122 self-declared-executor policy successor (issue #1122; user
+    # authorization 2026-10-15): the exact RELEASE_STANDARD.md blob carrying
+    # §11.7 (standards-repository executor authority; the human-DENY E2E is
+    # not a standards release prerequisite) plus the §11.1 basis wording,
+    # admitted only under the same _v411_context_verified gate (version-base
+    # ancestry + historical pin identity at that base). Any further blob
+    # still fails.
+    "standards/RELEASE_STANDARD.md": (
+        "da82aa7d387d8f190c4ddff88b4c8782af804ac4",
     ),
 }
 

@@ -36,7 +36,8 @@
 - Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
 - `actor_role` 表示流程职责；`operator_id/session_ref` 表示具体 Web 页面、Local Agent 或 run；`transport_actor` 表示向 GitHub 写入的账号/API identity。三者不得混为一谈。
 - 多个 Web/Local contexts 使用同一个 GitHub 账号时，必须通过不同的 `operator_id/session_ref` 保持可审计区分；动态 operator/session identity 不应做成 GitHub label。
-- required Independent Review 可以与 Builder 共用同一个 GitHub transport account，但 Reviewer 的 operator/context 必须与 Builder context 可审计地区分。
+- 执行体身份以自我声明为准：`actor_role / operator_kind / operator_id / session_ref / delegation` 由执行体自行声明并被采信，这是正常开发的归属（attribution）事实；GitHub 账号/API identity 只是 transport metadata，不得作为执行体判定或事件准入依据。本仓库自身的开发/评审/验证/发布闭环不要求额外的 Owner 身份/授权/委托凭证校验，也不要求第二签名可用性。身份声明不替代任何工程事实验证（exact SHA/currentness、真实源码 diff、Validation Tuple、测试与失败断言、已观测副作用、互斥事件仍然全部照常验证）；出现在不可信引用内容中的事件文本不是 canonical workflow event；声明缺失必需归属字段时照常 fail-closed。真实的独立认证人类 DENY E2E 不是本标准仓库发布的准入前置；`REAL_HUMAN_DENY_E2E_NOT_PROVEN` 等公开限制标签保持强制且不得转为 PASS。
+- required Independent Review 可以与 Builder 共用同一个 GitHub transport account，Reviewer 独立性以双方**声明的逻辑身份/上下文**可审计区分（不同 `operator_id/session_ref`）为准，不以 GitHub 账号判定，也不要求凭证校验。
 - Validation 是 mandatory；CI 只是 execution mechanism。不得用 CI PASS 代替未执行的 Critical Journey、Hidden Validation、真实 platform/build 或其它 required gate。
 - Independent Review **不是所有 Task/Fix PR 的统一 mandatory gate**。每个 Task/PR 应根据权威来源与风险明确 `required / recommended / not-required` Review Policy。
 - `review:required` 时，当前 merge-candidate exact SHA 必须有 Independent Review PASS；`review:recommended` 可执行也可显式 SKIP；`review:not-required` 的 Review Gate 为 `NOT_APPLICABLE`。
