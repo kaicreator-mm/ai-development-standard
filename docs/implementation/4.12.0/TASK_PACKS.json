@@ -52,13 +52,15 @@
     "C13/C14 research/human evidence are scoped L1 source questions, not fabricated independent Reviewer or mandatory multi-LLM/human gates. Frozen REQUIRED_NOW never waived by ROI.",
     "Rebased self-declared actor identity/Review oracle wording to ACTUAL merged v4.11 #1122: Interaction exact blob b3f1191b2ee0c469e9b425d2336d4adbc47d6ede and Release Standard §11.7 blob da82aa7d387d8f190c4ddff88b4c8782af804ac4. Trust canonical self-declared operator/session/role and use GitHub transport only as metadata; no cross-session/person credential proof. Reuse existing covered normative behavior.",
     "Future #1123 broad cross-project ASSURANCE/Claim/Release/Owner-credential removal beyond #1122 is NOT in Frozen R3 Product/L2/DAG scope. It requires exact-scoped v4.12 successor Product/L2/DAG authorization, or stays v4.13. Frozen v4.12 Task source owner write sets do not presently grant ASSURANCE_PLAN_STANDARD / RELEASE_STANDARD / EXECUTION_ARCHITECTURE_STANDARD rewrites. Never infer 1123 complete from Pack wording.",
-    "Preserve objectively observable currentness/Claim serialization/tests, true platform branch protection, source-of-event vs quoted text, and honest uncovered real-world human/effect facts. S06 Release authority checkpoint unchanged. Candidate Pack index remains NOT_FROZEN."
+    "Preserve objectively observable currentness/Claim serialization/tests, true platform branch protection, source-of-event vs quoted text, and honest uncovered real-world human/effect facts. S06 Release authority checkpoint unchanged. Candidate Pack index remains NOT_FROZEN.",
+    "User approved #1123 remaining scope for v4.12; Product R4 delta, L2 R6 delta and DAG R4 write-set successor are separate unfrozen sources. S01/S04/S05 Pack candidates bind proposed blobs, with no new native Task/edge/Claim. Earlier v4.13 routing of #1123 is superseded prospectively; historical observations unchanged.",
+    "Already merged v4.11 #1122 actor role/session rule reused, not reimplemented. Keep current exact CAS/Claim/Review results, semantic policy Owner, actual tests, native GitHub branch protections and downstream real effects."
   ],
   "packs": [
     {
       "task_id": "V412-S01",
       "path": "docs/implementation/4.12.0/task-packs/V412-S01_phase_claim_authority.md",
-      "git_blob": "41d5d33d33194756142614342a29ff7710a0fa18",
+      "git_blob": "d49f2f99db8043129ad34fdd83c1dd3915c3750a",
       "predecessors": [],
       "review_policy": "required",
       "canonical_type": "type:task",
@@ -97,7 +99,7 @@
     {
       "task_id": "V412-S04",
       "path": "docs/implementation/4.12.0/task-packs/V412-S04_adoption_and_templates.md",
-      "git_blob": "79c7bf5503e3b7ed5bca3eec2dcb46ff7086eea0",
+      "git_blob": "7987f329a976150daaf47e61104f71b6caa334f7",
       "predecessors": [],
       "review_policy": "recommended",
       "canonical_type": "type:task",
@@ -109,7 +111,7 @@
     {
       "task_id": "V412-S05",
       "path": "docs/implementation/4.12.0/task-packs/V412-S05_ads_conformance_wiring.md",
-      "git_blob": "4d9b5728ee86d546767357ab00df8c1e6911cb41",
+      "git_blob": "cba698782522671773a47e2f13e3274403b6242d",
       "predecessors": [
         "V412-S03",
         "V412-S04"
@@ -121,5 +123,34 @@
       "accepted_claim": null,
       "task_ready": false
     }
-  ]
+  ],
+  "prospective_i1123_successor": {
+    "scope_approved_by_user": true,
+    "approved_scope_source_blob": "6d783ecb8b02a61d4e2d60174e1a12832f27b948",
+    "product_r4_delta_candidate_blob": "847e707b78359f6e9de2901b2ea049557b7eb104",
+    "l2_r6_delta_candidate_blob": "2e14870263f9b833628b06f1b5a27a48bc285e1e",
+    "dag_r4_delta_candidate_blob": "faf3bffffcf2d4e6a74faad5535a15ac9e7725f4",
+    "product_r4_frozen": false,
+    "l2_r6_frozen": false,
+    "dag_r4_frozen": false,
+    "proposed_additional_writers": {
+      "S01": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "AGENTS.md",
+        "prompts/independent-review-bootstrap.md"
+      ],
+      "S04": [],
+      "S05": [
+        "standards/ASSURANCE_PLAN_STANDARD.md",
+        "standards/RELEASE_STANDARD.md",
+        "schemas/agent-event-v2.schema.json",
+        "schemas/assurance-plan-v2.schema.json",
+        "schemas/dispatch.schema.json",
+        "scripts/test_v411_i1122_self_declared_executor.py",
+        "scripts/test_v411_t05_event_authority.py",
+        "scripts/test_v412_actor_trust.py"
+      ]
+    },
+    "note": "All additions prospective only. Frozen DAG R3 remains active until lawful R4 write-set Freeze/Pack admission. Semantic rule-owner provenance and objective actual evidence are not human/Agent credential checks."
+  }
 }
