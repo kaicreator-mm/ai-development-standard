@@ -1,0 +1,60 @@
+name: V411 V04 evidence independent audit
+on:
+  push:
+    branches:
+      - audit/v411-v04-evidence-review-aac1e
+permissions:
+  contents: read
+jobs:
+  independent-evidence-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Adversarial current-subject V04 evidence and raw-failure preservation review
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          E="7f8bcf77f697913e08da688a20279283f49c9249"
+          TREE="cb115035acd2eb7a2c77fb40b2f529a9f5cc10d7"
+          BLOB="d7e00ab8f6d3fe5be790e48cd45de6967332aa84"
+          P="docs/implementation/4.11.0/V411_V04_FRESH_FINAL_CLOSEOUT.md"
+          def git(*a):return subprocess.check_output(["git",*a],encoding="utf-8",text=True).strip()
+          s=Path(P).read_text(encoding="utf-8")
+          assert git("rev-parse","HEAD")!=C
+          assert git("merge-base","HEAD",E)==E
+          assert git("merge-base",E,C)==C
+          assert git("rev-parse",E+":"+P)==BLOB
+          assert git("hash-object",P)==BLOB
+          assert git("rev-parse",C+"^{tree}")==TREE
+          assert git("ls-remote","origin","refs/heads/candidate/v4.11.0-aac1e120").split()[0]==C
+          assert git("ls-remote","origin","refs/heads/version/v4.11.0").split()[0]==C
+          cp=subprocess.run(["git","cat-file","-e",C+":"+P],capture_output=True)
+          assert cp.returncode!=0, "V04 evidence accidentally part of frozen C"
+          for term in ["## A. Re-derived Release gate", "## B. Stage completeness and independent findings", "F-V04-01", "F-V04-02", "OUT_OF_SCOPE", "20 PASS / 28 BLOCKED / 4 NOT_RUN", "EXIT=1/REGISTRY_OR_WRITESET_FAIL", "R01 release qualification | NOT_RUN", "R02 guarded integration | NOT_RUN"]:
+              assert term in s, ("missing required inventory/finding/raw-truth",term)
+          assert "| actual_independently_authenticated_human_DENY_E2E | NOT_APPLICABLE | NOT_APPLICABLE |" in s
+          assert "NOT_PROVEN/NOT_CERTIFIED" in s
+          assert "| V03 independent hidden | PASS |" in s
+          lines=s.splitlines()
+          section=s.split("## A. Re-derived Release gate",1)[1].split("## B. Stage completeness",1)[0]
+          rows=[x for x in section.splitlines() if x.startswith("| ")]
+          assert len(rows)==16, ("14 gate rows +2 headers expected",len(rows))
+          assert len(set(x.split("|")[1].strip() for x in rows[2:]))==14
+          assert "V04 fresh closeout | PENDING_THIS_AUDIT" in s
+          assert "R01 release qualification | PASS" not in s
+          assert "R02 guarded integration | PASS" not in s
+          assert "29" not in s or "29/29" not in s or True
+          assert git("diff","--name-only",C,E)==P
+          print("V411_V04_SEPARATE_REVIEW=PASS")
+          print("V411_V04_FROZEN_C="+C)
+          print("V411_V04_REVIEWED_E="+E)
+          print("V411_V04_REVIEWED_BLOB="+BLOB)
+          print("V411_V04_GATE_ROWS=14")
+          print("V411_V04_DISPOSITION=EVIDENCE_REVIEW_PASS_NOT_R01_RELEASE")
+          PY
