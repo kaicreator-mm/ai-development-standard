@@ -216,3 +216,53 @@ Any downstream *actual high-risk or irreversible human-controlled action* requir
 The original SHA/tree and frozen gate outcomes remain historical. The future reviewed successor must record Product scope and proof-matrix delta, independently reviewed L2 exact owner placement, owning Release §11 gate×new-subject materiality/applicability and genuine §11.5 change adoption, and scoped reviewed T08/T09/T12/V01 Pack and test/registry amendments as needed. An unproven owner-release negative, an unknown four-way novel predicate, fixture-authority leakage or missing genuine S08 claim disclosure keeps the affected gate BLOCKED. An old human APPROVE can be historical P1 evidence only, not an authorization transfer to the new candidate. Existing complete critical-journey requirements and honest historical 139-test raw failures must remain recorded; validation impact determines focused new-subject execution and carry-over, never blind copying.
 
 **Product successor status:** expressly **authorized to prepare** this narrowed v0.3.1 proposal, **not yet frozen** as a new Product blob; independent exact-HEAD Product and Security review of actual source and formal L2/Release acceptance still required before any prospective V01 gate can change. No V02 Candidate Freeze, V03 Hidden, V04 Fresh Closeout, R01 RQ, R02 merge/tag is authorized by this addendum.
+
+## 11. Prospective v0.3.2 Product scope decision B — **ADS standards-repository conformance, not runtime certification**
+
+> This is a NEW forward-only Product change proposal authorized to draft by the user on 2026-10-15 (GitHub decision #943@6184164350). It extends the previously exact-frozen §10 v0.3.1 Product source at PR #1105@`7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f` **without changing its historical bytes**. Product source Review/Freeze, downstream L2/Security, Task Pack, and Release §11.2/§11.5 are separate decisions. The original `322e868...` candidate and every historical V01 BLOCKED/raw failed result remain unchanged. Until those future stages are admitted, these paragraphs are **NOT effective gate downgrades**.
+
+```ini
+PRODUCT_REVISION_PROPOSED=v0.3.2
+USER_SELECTED=B_STANDARDS_REPOSITORY_ACCEPTANCE
+USER_DECISION_REF=#943@6184164350
+PREDECESSOR_FROZEN_PRODUCT=#943@6170435421_PR1105@7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f
+ORIGINAL_VERSION_CANDIDATE=322e86845f78de8ea8cadb05ec624bfbb3a5de20
+RELEASE_S11_5_PROSPECTIVE_ADOPTION=NOT_ISSUED
+S08_ACTUAL_HUMAN_DENY=NOT_PROVEN
+N08_ACTUAL_RELEASE_OWNER_SEAM=ABSENT_AS_INSPECTED_#1021@6175966799
+S08_ACTUAL_NATIVE_CLAIM_SEAM=ABSENT_AS_INSPECTED_#1021@6175966799
+PRODUCT_REVIEW=REQUIRED_NOT_RUN
+NEW_PRODUCT_EXACT_FREEZE=NOT_ISSUED
+V01=BLOCKED
+```
+
+### 11.1 Exact domain and non-equivalence
+
+The *ADS standards-repository* product is a distributable set of **normative standards, schemas, examples, deterministic reference oracles and integration contracts**. It does not run or own an enterprise's live `DISPATCH_CLAIMED` admission writer, Release-qualification guard, real multi-host execution, customer tenant/permission/license state, or irreversible protected effects. The independently scoped local search #1021@6175966799 found no callable native Claim/Release owner admission in the current ADS source. For the **prospective standards-only conformance claim**, an actual live owning Claim A→B or production Release J09–J12 operation is therefore **outside the product's executable runtime**, not implicitly achieved by fixture behavior. This is a **change of which positive test is claimed**, not a claim of behavioral equivalence to real deployments.
+
+Required public evidence labels: `STANDARDS_ONLY_CONFORMANCE`, `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN`, `REAL_HUMAN_DENY_E2E_NOT_PROVEN`, `N08_PHYSICAL_FOURWAY_POSITIVE_NOT_PROVEN`, `ACTUAL_OWNER_COMPOUND_DENIAL_NOT_PROVEN`. Any report claiming production/native Claim, actual Release Owner admission, four-service positive execution or real human DENY E2E from these tests is false and a **critical FAIL**. The prior human `APPROVE` at original subject remains only an immutable historical provenance fact, not current successor authority.
+
+### 11.2 N08 — standards-conformance requirements and exclusions
+
+For the ADS repository's *own* prospective acceptance, require independently reviewed **executable deterministic contract-level negative tests**, run at the current exact test HEAD on a real clean host, of the existing `PROJECT_ADOPTION`/effective-rule and Release §11 contract:
+- J09/J10/J11/J12 obligation conjunction and each one missing, wrong-subject/stale, untrusted proof, revoked source/license, under-declared J12 independently **observed** material, unknown or conflicting time/currentness and negative release/effect permission MUST resolve `BLOCKED/HOLD`; no fabricated `PASS` or `NOT_APPLICABLE`.
+- Explicitly distinguish verified **inspected absence of an actually nonapplicable J12** from uninspected/missing/stale observation; a genuine three-obligation case may AND three while a declared 3-of-4 with observed fourth must not pass.
+- The test oracle may be a source-bound unit/reference adapter rather than a live Release writer **only if** the report labels its actual fidelity `STANDARDS_CONTRACT_ORACLE_ONLY`, records its exact invoked commands/SHA/currentness, and verifies no production release/effect was claimed. For standards-only acceptance, its deterministic oracle may satisfy only this **contract-conformance test dimension**; it does **not** prove `N08_ACTUAL_OWNER_ADMISSION_NEGATIVES` and cannot authorize any real Release action. A read-only GitHub source witness, including #1112, never substitutes for the asserted Release Owner decision.
+- A standalone physical positive, actual four-job J09+J10+J11+J12 production campaign and live Owner denial are **not part of the proposed ADS-standards-only executable proof claim**; report `N08_PHYSICAL_FOURWAY_POSITIVE_NOT_PROVEN` and `ACTUAL_OWNER_COMPOUND_DENIAL_NOT_PROVEN`. Do not invoke §10.1's original C1/C2 exclusion without its still-required current affirmative proof: that prior exclusion remains **NOT_EFFECTIVE**. Instead the new product positively narrows the *prospective ADS repository demonstration claim*, only if independently frozen and accepted at the right owning Release gate for the exact new candidate. Any actual consuming project evaluating that predicate still needs its own real owner negative and positive proofs per its accepted policy; unknown and novel compound predicate remains `UNKNOWN/HOLD` for real use.
+
+### 11.3 S08 — test-only Claim A→B and genuine source separation
+
+For standards-only conformance, require the existing T09 owner-safe sink with real **file-backed SQLite**, one effect identity, A→B **fixture-mode Claim/READY generation** and explicitly isolated `SYNTHETIC_TEST_ONLY_DENY`. A and B attempts must both be refused, with independently reopened persistent DB `effects=0`, no compensations, exact test/head provenance and declared adverse fixture/spoof negatives. The test is `MECHANISM_SYNTHETIC_DENY_SQLITE_ONLY` and `MODEL_CLAIM_A_B_ONLY`, **not** actual accepted native Claim A, lawful real B handoff, or actual independently authenticated human DENY. The historical genuine human APPROVE (not DENY) remains its **old-subject** provenance only. Consumer-visible `REAL_HUMAN_DENY_E2E_NOT_PROVEN` and `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN` are mandatory and in no case may be converted to `PASS` for real deployment.
+
+All normative §27.5/§28.5 Claim serialization, legitimate handoff, human supersession, denial dominance, currentness, cross-owner conjunction, permission and zero unauthorized-effect invariants **remain unchanged** and required for a real runtime adopter. Real high-risk tenants/services remain **BLOCKED** for such operations unless their actual Owner produces and executes the relevant evidence. No LLM/GitHub comment/body/field/synthetic authority file can grant such permission.
+
+### 11.4 Other gates, exact version admission and observable failure modes
+
+This Product B choice is **not** blanket `NOT_APPLICABLE` for V01, V02, Hidden Validation, Critical Journeys, Fresh Closeout, R01 Qualification or R02 guarded integration. Their applicable **standards-repository-specific** proofs and positive/negative S01–S18/X01–X08 denominator still require exact candidate/host evidence, independent acceptance and status from owning Release authority; preserve known historical failures (139 scripts: 125 exit0 / 14 exit1) and conduct a scoped `VALIDATION_IMPACT_DECISION` for the actual successor. Missing tests or novel unsafe oracle behavior remain `FAIL/BLOCKED`, not pass by source shape or speed/cost.
+
+Required staged decisions, all new-subject and forward-only:
+1. Distinct Product source review/security challenge and accountable exact Product Freeze of this §11/matrix §6 successor; prior Frozen §10 subject unchanged.
+2. Independently reviewed **L2 amendment** placing *standards-conformance oracle* and *runtime adopter Owner* into different evidence classes; one bounded Task Pack amendment, not a new policy/gate engine.
+3. Focused clean-host deterministic P4a/P5 contract-negative and all affected S/X tests with raw outputs; independent Validator reclassifies only their **honestly observed standards-only fidelity**. #1112 code may be reviewed/merged only for source readback contract quality, never necessary to manufacture a Release owner.
+4. Accountable Release §11.2/§11.5 explicit gate-by-**new exact candidate** applicability / bounded product guarantee, including known unknown actual four-way risks and downstream consumer restrictions; no default user choice may self-approve this independent Release act.
+5. Independent V01 verdict after required evidence is current, then original V02→V03→V04→R01→R02 in dependency order. Until then `V01=BLOCKED` and no later gate is admitted.
