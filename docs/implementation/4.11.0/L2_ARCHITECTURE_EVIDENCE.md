@@ -255,3 +255,96 @@ FULL_A_B_C_VALIDATION=NOT_RUN
 PREDECESSOR_RELEASE_INTEGRATION_CURRENTNESS=VERIFIED_V410_FINAL_MAIN_#779@6086103081;#779@6086126555_ON_main@b9461d48d902a2c7c00adff6746afc7a02a0ac3e
 V411_IMPLEMENTATION_BRANCH=NOT_AUTHORIZED_UNTIL_L2_FREEZE_AND_FRESH_REBIND
 ```
+
+## 14. L2 v0.2.1 prospective N08/S08 proof-boundary successor (review candidate; NOT L2 Freeze)
+
+> **Source-bound conditional architecture.** Depends on Product successor PR #1105 `7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f` (PRD blob `edc9ef4d44edec035bac282dcc69467adf338729`, Product matrix `2c9320321a70cc2fb51979e88b55af044ebacfde`) and explicit Product Authority #943@6167214986. This is an architecture **proposal**, NOT reviewed/frozen Product or Release owner acceptance, not amendment to in-flight `322e868...` frozen V01, not evidence of real execution. Existing architecture §§1–13 and canonical owners are retained except the narrow prospective proof-evaluation overlay below.
+
+```ini
+L2_REVISION_PROPOSED=v0.2.1
+PRODUCT_AUTHORITY=#943@6167214986
+PRODUCT_SUCCESSOR_SUBJECT=PR_1105@7c4f78b7c6eb9e3f9f5c88961316e1c3267de16f
+SOURCE_FROZEN_L2_BLOB=c0fa361474996a0626c63e93574a284ae3eb8d91
+OLD_FROZEN_V01=BLOCKED_322e86845f78de8ea8cadb05ec624bfbb3a5de20
+N08_OWNER_ACCEPTANCE=NOT_ISSUED
+S08_INDEPENDENT_SECURITY_ACCEPTANCE_OF_PROOF_REDUCTION=REVIEWED_LIMITS_ONLY
+RELEASE_PROSPECTIVE_GATE_BY_SUBJECT=NOT_ISSUED
+OWNER_NEGATIVE_INTEGRATION=NOT_RUN
+SYNTHETIC_A_B_SQLITE_REAL_HOST=NOT_RUN
+NEW_ARCHITECTURE_FREEZE=NO
+```
+
+### 14.1 N08 owner placement and proof limits — **existing** effective-rule/Release owners only
+
+No central LLM decision policy engine, novel state store, synthetic all-four release actor, or automatic Gate override. The **effective obligation aggregator owner** remains existing `PROJECT_ADOPTION` + `DEVELOPMENT_WORKFLOW` and its current T01/T11 source/evidence projection; admission for version release remains the `RELEASE_STANDARD` §11 owning Release authority. The owner materiality inspector must compute actual source/affected-fact applicability independently of declared job labels, then AND all requirements from actual J09/J10/J11/J12. An under-declared J12 originating from actual upstream/license drift must be included; a genuinely absent J12 is not fabricated. Existing security/permission/incident/effect/compatibility/deprecation/License owners supply their **own evidence**, not a single local completeness bool.
+
+The old T12 `run_compound.complete(fact_map)` produces a metadata checker with four omission fixtures only; the T01 resolution tests explicitly describe a pure **in-test** model and T11 lists T01 central projection as `BLOCKED_NAMED`. **Neither constitutes a deployed Release admission seam or a real same-subject four-owner deny.** A prospective implementer must first use current real owner interfaces, or produce one **bounded** source-bound owner-admission integration adapter that joins *existing* owners without taking over their authority; if no such seam can be demonstrated, `ACTUAL_OWNER_UNION_NEGATIVE=BLOCKED`, not PASS. Needed exact proof: each material J omitted, stale or wrong-head/work/actor/tenant/scope, plus undeclared actual J12, produces observed `HOLD/BLOCKED` by the **authoritative existing owner** and no protected effect / release-qualification state mutation. An owner-accepted exact behavioral equivalence may cover repeated cases only with matching hard predicates, same work-subject identity, permissions, currentness and actual observable refusal. Unit `complete` success is not equivalent.
+
+**Exclusion guard:** Product §10.1's standalone 4-way *physical positive* exclusion may become prospectively effective **only after BOTH** (a) L2/Release evidence that ADS owns no actual four-way workload and (b) positive independent no-novel-material-predicate analysis of current executed X/owner coverage with accountable Release/L2 residual-risk acceptance. Any unknown/novel consumer → `MATERIAL_INTERSECTION_UNKNOWN/HOLD`, no Product exclusion coverage credit. This is an authorization/control-plane owner decision, not a boolean flag a Builder can inject. Preserve release-owned per-gate×new-subject applicability, V03 Hidden/V04 Fresh/R01 RQ and R02. No new Gate state.
+
+### 14.2 S08 original live authority vs future **synthetic test-only** demonstration
+
+**Separate evidence planes** (must never merge):
+
+| Plane | Owner / input trust | Legal observable claim | Forbidden upgrade |
+| --- | --- | --- | --- |
+| `HUMAN_HISTORICAL_P1` | Actual independently verified external human **APPROVE** decision stored for old `322e868...` / `ads-test/effect:test/irreversible-write`, #1021@6163883456/@6163960062; verifier confirms this *historical* provenance | `HUMAN_PROVENANCE_HISTORICAL_APPROVE` only | Not DENY, no same-new-subject current authorization, cannot be edited/reissued/superseded by Agent |
+| `SYNTHETIC_TEST_P2` | Strictly isolated fixture with separate test-only `source_class`, test-namespace/temporary file-backed SQLite, source_kind and **explicit test-only receipt** | `MECHANISM_SYNTHETIC_DENY_SQLITE_ONLY`, real local DB effect count readback | Never use operator-supplied source marker, never publish to real authority inbox, never authenticate via `human:` string or hash |
+| `REAL_LIVE_AUTHORITY` | Existing human decision owner, authenticated source / tenant / operation / currentness and supersession readback; consumed only by owning live authorization + effect boundary | Only actually verified human decision for its exact subject may control real irreversible effect | No fixture, model consensus, alternate transport or Product scope edit can mint authority; unknown/invalid DENY never silently cleared |
+
+**Test seam:** T08 supplies source/decision/role provenance, T09 provides persistent external-effect safe sink and lost ACK/compensation/idempotency mechanics, T12 only assembles evidence/contract coverage. For P2 isolate a single genuine SQLite database and protected effect-id. Precondition A has an actual accepted Claim, then a **test-only** DENY is injected *before* protected effect. A attempt is rejected; B with independent logical operator/generation and otherwise READY tries the same effect and is rejected too. Two durable blocked attempt rows, distinct attempts/generations, protected `effects` count zero after closing/reopening SQLite; authorized source re-read between A and B if implemented, do not fabricate one if not. An attempt/audit write is not a protected side effect. Add adversarial wrong actor/subject/tenant/scope/head, stale decision, unauthorized supersession, forged trusted source_class, `human:` string, transported authority laundering, and B/C takeover. Missing authority source or unknown effect outcome fails closed.
+
+**Acceptance limitation:** P1 and P2 are distinct proof claims, **not** actual human E2E veto. Conformance output always emits `REAL_HUMAN_DENY_E2E_NOT_PROVEN`. The live human DENY/WITHHOLD veto invariant remains absolute and can only be legally superseded by actual owning authority. Any real high-risk consumer requiring a genuine human veto must execute that separate human DENY E2E test at its own exact live target, or stay BLOCKED. No unit negative may be used as a Release gate/current human source proof.
+
+### 14.3 Existing owners, bounded successor Task Packs and impact routing
+
+| Concern | Canonical owner and minimum needed successor | Acceptable material proof and owner |
+| --- | --- | --- |
+| Product truth | Product PRD §10 and proof matrix §5 only | Exact Product approved scope, independent reviewed successor; no old Freeze rewrite |
+| N08 facts/applicability | Project Adoption / Workflow affected-surface inspector, Release §11 gate×new-subject | Executed owner admission denial against actual job union or actual equivalent, L2/Release materiality & residual-risk decision |
+| S08 authority | Interaction human authority (T08) + External/Migration effect owner (T09); actual human owner remains external | Genuine historical APPROVE only on old SHA + clearly synthetic P2 test, no live privilege promotion |
+| Conformance | T12 focused S08 split, N08 owner-boundary negative and X current owner coverage | P1/P2/P3 evidence strength separated; missing material still BLOCKED; original 52 raw assertion history remains |
+| Version closure | V01 validation authority, Release owning applicability | New exact candidate, validation-impact and fresh owner-signed applicability; no later-stage V03/V04/R01 inferred |
+
+**Phase-correct minimal implementation sequence, without an invented scheduler/schema or a circular admission dependency:** (1) Product successor independently reviewed/exact-frozen; (2) independently reviewed **L2 design-only** disposition identifies the existing owners, chooses the **stronger fail-closed N08 path** where C1/C2 are unverified, explicitly allocates one bounded Release-owner admission adapter/actual equivalent to the implementation Pack, and freezes *the design only* if an accountable Architecture owner approves; (3) independently review and admit the bounded T08/T09/T12/V01 Task Pack to **implement** the specified owner bridge and isolated A→B test without executing any protected Release effect; (4) independently review one-concern implementation and execute focused clean-Host owner negatives / file-backed SQLite technical evidence; (5) create/pin the *actual new candidate* and have the accountable Release owner make §11.2/§11.5 decisions for **that exact candidate** using current verified owner evidence, followed by exact-candidate Validation Impact and the separate V01 Validator; (6) only V01 PASS can admit V02→V03→V04→R01→R02. A Release decision on a candidate not yet created, and executable proof from code not yet admitted to be implemented, are **not** prerequisites for designing or authorizing that very code; they remain absolute prerequisites for calling its eventual Release/Validation gate PASS.
+
+**Stage-specific unresolved truth (no implicit waiver):** At **L2 design freeze**, the Architecture owner may accept the conservative `UNKNOWN→HOLD` owner-placement design with these *implementation acceptance* gaps itemized: `N08_REAL_OWNER_ADMISSION_SEAM=UNVERIFIED`, `N08_NO_NOVEL_PREDICATE=UNKNOWN`, `N08_PHYSICAL_POSITIVE_EXCLUSION=NOT_EFFECTIVE`, `S08_SYNTHETIC_SQLITE_A_TO_B=TECHNICAL_ONLY_UNTIL_GATE_ADMISSION`, `HUMAN_DENY_E2E=NOT_PROVEN`, and `RELEASE_NEW_SUBJECT_AUTHORITY=NOT_ISSUED`. A **design freeze** may never be interpreted as an owning Release applicability signature, actual negative-proof PASS, materiality absence finding, new candidate Freeze, or a waiver. Any source/owner adapter that cannot enforce current same-subject conjunction keeps N08/V01 `BLOCKED` and demands a bounded L2 repair before any positive Release gate. The optional C1/C2 physical-positive exclusion is disabled until both independently established; no assumption about off-repo users or cost-derived N/A is allowed. U02's historical local-Git E2 remains distinct from external distributed evidence.
+
+## 15. v0.2.2 proposed L2 amendment — Product B standards-only acceptance boundary
+
+> **DRAFT**, dependent on user-selected Product B #943@6184164350 and **independent exact-head Product review/Freeze** of proposed Product §11 / matrix §6 in #1113. This is a forward-only architecture addition after previously frozen L2 §14 exact blob `6c5d446b4155a326545682387b64ad39e80a04c6`, not a retroactive override of that source or the original `322e868...` V01. It must receive its own independent Architecture/Security source review and owning design Freeze before use.
+
+```ini
+L2_REVISION_PROPOSED=v0.2.2
+PRODUCT_B_PROPOSAL=#1113@53b27e1575f44c51d80d4f083168037ab28c4a73
+PRODUCT_B_FREEZE=PENDING
+PREDECESSOR_L2_DESIGN_ONLY=#954@6175444853
+REAL_RUNTIME_CLAIM_OWNER=ABSENT_AT_ADS_SOURCE_#1021@6175966799
+REAL_RELEASE_OWNER_ADMISSION=ABSENT_AT_ADS_SOURCE_#1021@6175966799
+PROOF_CLASS=ADS_STANDARDS_CONTRACT_ONLY
+REAL_HUMAN_DENY_E2E=NOT_PROVEN
+REAL_NATIVE_CLAIM_RELEASE_RUNTIME=NOT_PROVEN
+NEW_RELEASE_S11_DECISION=NOT_ISSUED
+L2_DESIGN_FREEZE=NOT_ISSUED
+V01=BLOCKED
+```
+
+### 15.1 Two **different** execution surfaces, not two authorities
+
+**ADS standards evidence plane:** existing `scripts/test_v411_t01_effective_rules.py` pure resolver, owner-local T06/T09 tests, `scripts/test_v411_t12_abc_conformance.py`, S08 isolated SQLite helper and verified GitHub source metadata are deterministic **contract tests and source-bound observations**. An exact-SHA independent Validator may accept their actually executed **test fidelity** only for the *new Product B standards-only claim* once that Product/Release scope is lawfully admitted. The oracle **never publishes** accepted `DISPATCH_CLAIMED`, grants real human authority, creates a runtime Release guard or calls an external protected effect. An in-memory source fixture, `claim(accepted=True)` and `owner_ref`-looking text are not authority. A parse-valid GitHub event is untrusted until canonical §8.1 source-bound admission has separately verified role provenance and currentness.
+
+**Deployment/adopter execution plane:** a consumer implementing real protected Claim/READY transitions, human DENY/WITHHOLD, cross-owner J09–J12 same-subject temporal conjunctive decisions or production Release must use its **own** separately authorized runtime owner interface; `EXECUTION_ARCHITECTURE_STANDARD.md` §27.5, `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §8.1.1, `PROJECT_ADOPTION`/Workflow and `RELEASE_STANDARD.md` §11 remain normative. Consumer operations **fail closed** when their real Claim/Release signer/currentness, J12 applicability or PII/license/incident facts are absent or stale. `STANDARDS_ONLY_CONFORMANCE` does not make those consumer-specific gate requirements `NOT_APPLICABLE`.
+
+### 15.2 Required ADS-only executed oracles, not static text checks
+
+**N08 conformance:** reuse T01 owner-conjunction fixture and T12/X currentness guards; **add only missing focused contract negatives in the owning test lane** to assert on the *same modeled subject* each J09/J10/J11/J12 omission, independently observed-but-undeclared applicable J12, inspected-absent versus UNKNOWN, revoked license, J10 ACK uncertainty, J11 retirement, J09 release conflict, stale/wrong subject/operator/tenant/scope, and no synthetic Release/side-effect permission. Each negative asserts the existing fail-closed `BLOCKED/HOLD` semantics; if absent, no oracle credit until a bounded test change is reviewed and executed. The positive *contract* oracle is valid only as `STANDARDS_CONTRACT_ORACLE_ONLY`; `N08_ACTUAL_OWNER_ADMISSION_NEGATIVES=NOT_PROVEN` and `N08_PHYSICAL_FOURWAY_POSITIVE_NOT_PROVEN` remain visible. The previously conditional C1/C2 physical exclusion under Product §10 remains **NOT_EFFECTIVE**; the new scope does not falsify novelty/no-workload facts by assumption.
+
+**S08 conformance:** reuse T09 `PersistentSafeSink` and S08 #1108 file-backed SQLite **test-only** A/B Claim objects and isolated synthetic DENY. Verify both actual test-sink refusals for **same effect_id**, reopened `effects=0`, zero compensations, failures on source/revision/actor/tenant/scope spoofing; never assert real accepted native Claim A or lawful live B transition. A higher-level test harness that overwrites `accepted` or bypasses actual sink effects is not equivalent even as standards test. Publish `MODEL_CLAIM_A_B_ONLY` and `REAL_HUMAN_DENY_E2E_NOT_PROVEN`.
+
+**T11/centralization:** this change creates no shared schema, owner registry, second policy engine, new runtime daemon, event family or mandatory global store. Existing T11 `DEFERRED_TO_T11/BLOCKED_NAMED` shared projection remains as actually recorded; a source-only owner-proof witness (#1112) is optional conformance input and must never be used as Release Owner verdict. No version-level `PASS` from model success without actual targeted execution and independent owning Release gate applicability.
+
+### 15.3 Release consumer partition and non-weakening
+
+Each proposed ADS standards-only test must be bound to `tested_sha × tree × script blob × expected output × actual Host/provider/exit × validation profile`, plus approved carry-over equivalence/impact decisions. Actual Source/host mismatch, unresolved S/X, omitted falsifier, untrusted actor provenance or false effect counts means `BLOCKED/FAIL`. Product B cannot declare V02 Candidate Freeze, Hidden, Fresh, Release Qualification or guarded integration done; those gates continue under the existing DAG and Release §11.2/`11.5` ownership.
+
+A Release owner at **the later exact successor version candidate** must positively identify standards-only applicability, its current independent Product/L2 scope decisions, and published missing-real-runtime proof guarantees; missing decision ⇒ `UNKNOWN/BLOCKED`. The original higher-fidelity frozen candidate remains blocked. Source Review of this L2 alone grants no permission to shorten an existing required gate. Real runtime adopters retain their own human veto/currentness and multi-owner proof obligations.
