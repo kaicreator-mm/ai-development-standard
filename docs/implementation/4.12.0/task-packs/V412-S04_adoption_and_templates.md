@@ -87,12 +87,25 @@ The user's #1123 change intake is accepted **for v4.12 successor planning**, but
 **Bounded adoption acceptance:**
 - Same account can transport events from several **self-declared** distinct Agents; GitHub `user.login` is not actor role or reviewer-identity eligibility.
 - New v4.12 behavior cannot silently replace consumer pins on v4.11/v4.10: `operator_id/session_ref` trust semantics, owner-identity credential behavior and required technical admission are compatibility dimensions, even with unchanged `agent-event-v2` JSON fields. Select the actually supported prospective protocol/adoption migration; don't infer semantic backward compatibility from syntactically valid schema.
-- The distinct future [#1119](https://github.com/kaicreator-mm/ai-development-standard/issues/1119) **rolling compatible latest** updater is not implemented in S04. No proactive changes to other repositories or unqualified release pins.
+- **#1119 Option A read-only latest-compatible selection is now included as a *prospective* S04 adoption contract below; only its real cross-project GitHub PR updater remains v4.13 Class B.** No proactive changes to other repositories or unqualified release pins.
 - Retain consumer-side real security credentials, actual GitHub branch rulesets, human participant consent, performed effect / negative case validation where the external product actually requires them. A declared `human` executor does not claim that an off-repo participant consent event occurred.
 
 **Focused counterexamples:** incompatible legacy consumer pin must remain authoritative (NOT auto-adopt); “new protocol but same schema” cannot be declared compatible without behavioral basis; two reviewers via one GitHub transport are not auto-collapsed; absence of actual required user-permission/consent/effect proof remains NOT_RUN. No new Task/Gold/Study required for the ADS standards artifact.
 
 **Current status:** Product scope intake approved, detailed delta candidates not frozen, S04 `review:recommended` remains unchanged; no source PR or implemented migration is claimed.
+
+
+## 3C. #1119 Option A — qualified compatible ADS selection policy without auto-updates
+
+**Scope approval/source pins:** User approved **only Option A** on 2026-10-15; feasibility source Git blob `be7f0785083890b42aab5efb17d735df8a69adab`. Current unfrozen Product R4 delta `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 delta `580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2`, DAG R4 write-set delta `c52774f20642ca429b5b708ed4011e2e98dded3b`. These candidate pins **do not** themselves change the original Frozen R3 Task DAG or authorize a live source write.
+
+**S04 existing path ownership only:** In `standards/PROJECT_ADOPTION.md` and already uniquely assigned S04 examples, define opt-in `TRACK_LATEST_COMPATIBLE_STABLE` as **read-only selection intent**, distinct from `PINNED/MANUAL` default and actual effective immutable `.dev-standard/VERSION`. The project's current Task/Review/Claim/Release source uses **only** the existing actual SHA, never mutable `main/latest`. Require a genuinely **RELEASE_QUALIFIED** ADS source, actual revision/manifest/currentness and full material `compatibility-record-v1` evidence for the consumer's source/wire/schema/behavior/authority windows before suggesting a newer pin. Unknown material compatibility ⇒ `UNKNOWN/NO_SAFE_RECOMMENDATION`, not “probably compatible”. No separate globally normative `protocol_version` field is presumed.
+
+The user requested source-grounded **version vs protocol/behavior** distinction: source code, Claim/reviewer/human/Release applicability may be behaviorally breaking **without any schema change** (including #1123 actor policy); semantic version equality with different SHAs is not sameness. Older immutable consumer pins, active Tasks, existing Claims, frozen candidates and historical Gate facts are not auto-rebound. Suggestions state verified old/current vs suggested new SHA, comparison refs, reason/risk, next authorized checkpoint and how a future project-local actor may apply/rollback. The suggestion **does not** create a project PR, mutate a project, send GitHub writes, or count as adoption or Release PASS. The actual opted-in project updater and GitHub update PR bot remain #1119 **v4.13 Class B**.
+
+**Proportionate negative acceptance:** (A) not opted-in means no automatic upgrade; (B) tag exists but Release Qualification/manifest proof unavailable ⇒ no candidate; (C) same semver/different commit identity ⇒ distinct versions; (D) unproven material schema-identical actor/Review changes ⇒ no recommendation; (E) active Task with older pin ⇒ no rebinding; (F) only read-only source snapshot/fixture path ⇒ no project mutation; (G) actual v4.12 standards release not blocked merely because adopter was not upgraded. Reuse existing `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` **read-only**; S05 separately owns any genuine deterministic resolver/test. S04 does not write shared script/verifier/manifest and does not start cross-repo automation.
+
+**Status:** author-side source candidate only. Actual S04 code/standard implementation and test exit remain `NOT_RUN` until qualified v4.11 predecessor, successor freezes, native Issue/Claim and accepted PR.
 
 ## 4. Execution readiness / Review / closure
 
