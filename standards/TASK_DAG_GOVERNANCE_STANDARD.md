@@ -75,6 +75,31 @@ A mutation decision is current only for the topology/Task Pack/evidence subject 
 
 Unauthorized, incomplete or ambiguous mutations fail closed and preserve the prior live DAG. If native mutation cannot be performed, the work remains blocked until an authorized controller executes and reads back the exact graph.
 
+## 11. v4.12 source Scaffold / Task DAG binding pair (SF ↔ DF)
+
+A qualified v4.12+ project MAY freeze a **source-first Scaffold** (`SF`) and a subsequent **Task-side DAG binding** (`DF`) as one source-pinned, cycle-free pair. The canonical writer of each mapping lives on the **Task-side** binding; the frozen SF is structural evidence, not a second mutable Task owner and not an authority for the GitHub live dependency graph.
+
+An accepted binding includes exact, independently verifiable identities for:
+
+- Frozen Product and L2 source pins, the **actual accepted SF commit SHA** (not merely a branch name), its source-root/ref and a material Git-object inventory or reproducible material-view digest; file modes, symlinks and gitlinks are material, and unknown added/deleted/renamed/moved paths fail closed.
+- Each structurally relevant SF anchor as a stable tuple `{anchor_id, kind, location, contract_ref}`. `location` must resolve inside the currently accepted material SF source, `contract_ref` to the accepted architectural semantics. A syntactically plausible path is not proof of an existing accepted anchor.
+- A **single effective active writing Task** per anchor, its canonical Task Issue / frozen Task Pack identity and immutable DF Git blob; explicitly accepted read-only consumers MAY reference an anchor without becoming co-writers. Any overlap in active writers, dangling material anchor, malformed ID or unbound important output is `MATERIAL/HOLD`, not silently accepted.
+- A distinct **mapping-integrity (`MI`) proof/digest**, independently computed from the canonical SF+DF input identities and structural relationships. DF hash and MI digest are different subjects. The output pair must be recomputed from both directions (`anchor → task` and `task → anchor`); the writer cannot accept its own generated JSON/index merely because it carries a self-declared hash.
+
+```text
+Frozen Product/L2 (exact)  →  accepted SF commit + material-view identity
+                                          ↓ independently inspect
+                           structural anchor_id/kind/location/contract_ref
+                                          ↓ bind in one DF owner
+Frozen planning DF blob + actual GitHub Task Issue identities
+                                          ↓ independently recompute
+                      SF→DF and DF→SF + separate MI proof
+```
+
+The **source view** can narrowly exclude a path only if a current source-owning authority approved the exact exclusion *before* the candidate is evaluated. `DAG_ONLY_INPUT` exempts genuinely DF-only inputs from the **SF material-view digest only**, while their DF/MI mappings are still validated; `DERIVED_NONAUTHORITATIVE` excludes regenerable indexes as source of authority but requires fresh independent regeneration/currentness proof. Never accept a writer-chosen post-hoc path exclusion, auto-ignore `.lock`/CI/manifests, broad wildcard carve-out, path rename, symlink/gitlink substitution or missing Git-object read. Material UNKNOWN → `HOLD`.
+
+A material `SPLIT`, `MERGE`, `SUPERSEDE`, contract or writer change must use the existing `dag-mutation-record-v1` authority and rebind DF/MI and native Issue Dependencies as applicable. The frozen planning DAG is immutable history; GitHub native Issue Dependencies remain live execution truth. A pair verified with only static source/fixtures is **E1 source conformance**, not proof of a running feature, human approval, real-world effects or Version Release. Existing Product/L2 authority and real Claim/Review/Validation/Release requirements remain binding.
+
 ## 11. Non-goals
 
 This standard does not create:
