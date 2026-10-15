@@ -235,3 +235,28 @@ RUNTIME_MACHINE_CONFORMANCE=NOT_RUN
 L2_FREEZE=NOT_RECORDED
 PRODUCT_R3_FREEZE=UNCHANGED
 ```
+
+
+## 9. L2 self-dogfood R4 — exact source-owner choice + inherited CI root cause (2026-10-15)
+
+**New actual Stage-2 finding:** L2 R2 `9dd12912550bbd0db30d1f391084ae058eae56db` correctly required canonical accepted Claim but left a pre-DAG `type:planning | type:task` writer selection ambiguity. Two operators could make different admission choices for one scoped planning Scaffold concern. Targeted **author-side source audit** (not independent Review) compared Work Item blob `196f7d9372bcffd6ff801a70e1c1fffb204f4336`, Agent Interaction blob `8c8fc74bd6deaf6987f6cf6d4e8e8e84c2692b75` and Workflow blob `28c537e12c03f3f0cef501b8b5505e8ee28ca532` against Product R3.
+
+**One bounded resolution:** [L2 R3 addendum](../../docs/architecture/V412_L2_ARCHITECTURE_EVIDENCE_R0.md) @ Git blob `c38d3bcfb2e56e060c509e3317843bf03957a81a` selects only `type:planning` for the *prospective* pre-DF source-writing Scaffold concern; `type:task` remains post-DF implementation authority. Existing Issue/Claim/Review/Controller stay owners, and source write remains `DENY` until prospective owner-standard adoption and accepted claim. The N10 eligibility rule becomes Frozen-L2 semantic class + source-owner exact-path acceptance (not a writer-chosen role registry); none of this claims an L2 owner Freeze.
+
+**Actual CI triage, no artificial v4.12 regression finding:** PR #1101 old-main-based draft head `46a5ee29c47b57267aec7ef33c543123a2cd59c2` ran `verify-standard` run `38676053618`, job `116229787039`: 28 earlier steps succeeded, `scripts/test_v49_execution_core.py` failed 11 Git historic-ref reads (`4fb3363...`, `1fa88bc...`) under shallow checkout; later steps skipped. Compare actual workflow Git blobs: `main`/planning `6e81b4d0b767cabb7c06440633a029cd94b17817` uses default shallow checkout; `version/v4.11.0` `9fa6099f867b4ce68c0963fbd012f8970753c4d6` contains `fetch-depth: 0` from existing Issue #1038 / PR #1040. **Action**: preserve CI FAIL as current truth, defer reusing fix until legitimate qualified predecessor baseline; no duplicate CI fix Issue or unrelated docs-PR source change.
+
+**v4.12 process verification:** one source-grounded ambiguity → affected-scope L2 decision only; one CI failure → compare known owner branch/config before dispatching a new repair. The experiment supports bounded DAG-A and nonduplicative research/validation selection, but savings in time/host minutes remain unmeasured. New norm implementation/Build Host/real CAS/actual SF/paired Freeze **NOT_RUN**.
+
+```ini
+DOGFOOD_STAGE=L2_SOURCE_FIRST
+L2_R3_BLOB=c38d3bcfb2e56e060c509e3317843bf03957a81a
+TARGETED_AUTHOR_SOURCE_REVIEW=PERFORMED_NOT_INDEPENDENT
+WORK_ITEM_PRE_DF_TYPE=type:planning_PROSPECTIVE
+CI_ROOT_CAUSE=INHERITED_SHALLOW_CHECKOUT_MISSING_HISTORICAL_COMMITS
+CI_RESULT=FAIL_NOT_WAIVED
+DUPLICATE_CI_ISSUES_CREATED=0
+ADDITIONAL_MANDATORY_GATES=0
+EXACT_COMMITTED_E1_SCRIPT_EXECUTION=NOT_RUN
+L2_FREEZE=NOT_RECORDED
+SOURCE_SCAFFOLD_CLAIM=NONE
+```
