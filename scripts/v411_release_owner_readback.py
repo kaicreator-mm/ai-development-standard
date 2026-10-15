@@ -78,9 +78,9 @@ def _event_fields(body: object) -> dict[str, str] | None:
     if not isinstance(body, str) or not body.startswith(marker):
         return None
     tail = body[len(marker):].lstrip()
-    if body.count("```yaml\\n") != 1 or not tail.startswith("```yaml\\n"):
+    if body.count("```yaml\n") != 1 or not tail.startswith("```yaml\n"):
         return None
-    block = tail.split("```yaml\\n", 1)[1].split("\\n```", 1)
+    block = tail.split("```yaml\n", 1)[1].split("\n```", 1)
     if len(block) != 2:
         return None
     result: dict[str, str] = {}
