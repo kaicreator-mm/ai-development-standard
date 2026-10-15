@@ -86,3 +86,50 @@ ARCHITECTURE_SUCCESSOR=NOT_FROZEN
 DAG_SUCCESSOR=NOT_FROZEN
 RELEASE=NOT_QUALIFIED
 ```
+
+## 5. User-approved #1119 **Option A only** — latest-compatible ADS selection (same pending R4 Product delta)
+
+> User explicitly approved #1119 **Option A** on 2026-10-15, accepting the source-grounded feasibility blob `be7f0785083890b42aab5efb17d735df8a69adab`: add protocol/normative behavioral compatibility, choose the latest **already released and evidenced-compatible** ADS, retain exact SHA binding, and emit **read-only upgrade recommendations** in v4.12; keep the *actual cross-project automatic update PR executor* in v4.13. This is scope authorization **to author this changed R4 candidate**, not a Product Delta Freeze or claim that a resolver has already run.
+
+### P1119-A1 — Qualified release vs semantic compatibility
+
+ADS Release identity is a qualified `version + immutable commit SHA/tree + release/manifest evidence`, not a mutable branch/tag suggestion. The compatibility profile is *separate*: source/wire/schema, operator attribution, Claim/Review/Validation/Release behavior, project-authority consumption, and all **actually material consumer semantics**. The existing `compatibility-record-v1` and `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` are reused; do not assert a `protocol_version` schema field or new global protocol registry that does not exist.
+
+A project MAY opt in to `TRACK_LATEST_COMPATIBLE_STABLE` as a **candidate-selection preference**, but any actual Task/Claim/Review/Release always reads the **current immutable** `.dev-standard/VERSION` (or lawfully adopted successor) and its exact revision. Latest-compatible discovery NEVER becomes a live unpinned execution source.
+
+### P1119-A2 — Deterministic, read-only selection and recommendation
+
+On **explicit opt-in**, a read-only consumer of source-pinned inputs enumerates ADS candidates for which *actual current Release Qualification and canonical distribution/manifest/commit readback* are evidenced; filters on the relevant evidence-backed multi-dimensional `compatibility-record-v1` against the consumer's exact existing pin and supported contract windows; orders only eligible stable releases by an explicitly specified comparable version/lineage rule. If compatibility, release state, required source objects, relevant material dimensions, or ordering comparability are unknown, return `UNKNOWN/NO_SAFE_RECOMMENDATION` with missing evidence and **do not assert latest eligible**. A self-declared `release_qualified=true` JSON property or mere Git tag is not verified Release evidence.
+
+Output a **non-authoritative read-only recommendation**: current immutable pin, suggested *qualified* new immutable pin, compatibility evidence refs, activation only at the next authorized work/version checkpoint, risks and commands/PR guidance for a future authorized actor. Do not edit repositories, create PRs, change `.dev-standard/VERSION`, rewrite current Task/Claim/candidate provenance, use unqualified `main/latest`, or treat the recommendation as a migration approval.
+
+Projects without opt-in remain `PINNED/MANUAL`; the recommendation is not a universal Release Gate. The true cross-repo updater/discovery/PR creator and optional activation automation stays as remaining Class B in open #1119 **v4.13**. No new Owner identity credential check, task scheduler, daemon or cross-repo registry.
+
+### P1119-A3 — Non-regression on #1123 and frozen consumers
+
+The #1123 self-declared Agent/Reviewer/Owner-credential policy shift is a **material authority/behavior compatibility input** even if the JSON schema has no changed required fields. Schema parity, semver equality, new consumer positive tests or a single model claim cannot prove backward compatibility. Preserve old exact consumer pin and its current Task/Review/Release proof; no in-flight rebinding or retroactive PASS. A recommendation is safe only when all material consumer dimensions, provenance and release qualifications have actual current evidence; otherwise `NOT_AUTO_UPGRADE/UNKNOWN`.
+
+### P1119-A4 — Acceptance of Option A, not Option B
+
+| Test | Actual decision expected |
+|---|---|
+| A1119-01 | Newer ADS stable release with current qualified commit + manifest + complete relevant compatibility evidence, opted-in consumer ⇒ source-true read-only recommendation for next checkpoint |
+| A1119-02 | Same semver / different commit SHA, absent lineage evidence ⇒ distinct identities, no collapse |
+| A1119-03 | Schema unchanged but Owner/Reviewer/Claim/Release semantic behavior changed ⇒ material/UNKNOWN, not eligible by default |
+| A1119-04 | Mutable `main/latest`, stale ref, unsigned/unqualified tag, unsupported release lineage ⇒ no recommendation |
+| A1119-05 | Existing active Claim, frozen Task, Review or candidate ⇒ retain historical exact pin even if new recommendation exists |
+| A1119-06 | No opt-in, unavailable compatibility dimension/consumer permission/source ⇒ `PINNED/UNKNOWN`, no project change or invented compatibility PASS |
+| A1119-07 | Any read-only selector result ⇒ **zero cross-repository writes**, zero Github project PRs, zero new auto-release Gate |
+| A1119-08 | Identity and rollback instructions include both verified old and proposed new immutable revisions; an actually applied upgrade requires later independent project-local authorized action |
+| A1119-09 | ADS standards-only v4.12 can Release qualify without any external adopter being updated; field rollout is later evidence |
+
+**Owner routing / delivery floor:** S04 owns the existing `PROJECT_ADOPTION.md` selection policy and project-facing examples; S05 uniquely owns the smallest deterministic **read-only resolver/checker** and exact eligible tests or manifest registration if real source inspection confirms they are missing, using a fresh uniquely owned `scripts/v412_ads_compatible_select.py` + `scripts/test_v412_ads_compatible_select.py` rather than a new Task. `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` remains **read-only** unless a separate source-grounded material gap justifies a lawful writer-scope amendment. S01/S02/S03/S06 unchanged; no sixth Builder concern or altered existing 4 native DAG edges. The resolver cannot assert success until executable source and tests are actually present on an eligible version branch.
+
+```ini
+I1119_OPTION_A_SCOPE_APPROVED_BY_USER=YES
+I1119_SOURCE_SCOPE_BLOB=be7f0785083890b42aab5efb17d735df8a69adab
+I1119_OPTION_B_CROSS_REPO_PR_UPDATER=v4.13_DEFERRED
+I1119_REAL_PROJECT_WRITES=NONE
+I1119_RESOLVER_IMPLEMENTATION=NOT_STARTED
+PRODUCT_R4_DELTA_FREEZE=NOT_RECORDED
+```
