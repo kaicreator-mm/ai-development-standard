@@ -1,0 +1,51 @@
+name: V411 V02 immutable candidate evidence audit
+on:
+  push:
+    branches:
+      - audit/v411-v02-freeze-aac1e120
+permissions:
+  contents: read
+jobs:
+  exact-ref-and-record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Independent deterministic review of V02 exact candidate and evidence records
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          from pathlib import Path
+          C="aac1e1206e4033601616c295e768e51fbc16efb1"
+          TREE="cb115035acd2eb7a2c77fb40b2f529a9f5cc10d7"
+          paths={
+            "docs/implementation/4.11.0/V411_V02_CANDIDATE_FREEZE.md":"d2adb0fcfeed75a336703d2668fc0fa6e7974459",
+            "docs/implementation/4.11.0/V411_V02_FREEZE_REF_TRANSITION_EVIDENCE.md":"d9452fda4d04697b583916b1509d32c88b14e3a0"
+          }
+          def git(*args):
+              return subprocess.check_output(["git",*args],text=True).strip()
+          live=git("ls-remote","origin","refs/heads/candidate/v4.11.0-aac1e120").split()[0]
+          version=git("ls-remote","origin","refs/heads/version/v4.11.0").split()[0]
+          actual_tree=git("rev-parse",C+"^{tree}")
+          assert live==C,(live,C)
+          assert version==C,("version advanced",version)
+          assert actual_tree==TREE,(actual_tree,TREE)
+          assert git("merge-base","HEAD",C)==C
+          for path,expected_blob in paths.items():
+              text=Path(path).read_text(encoding="utf-8")
+              assert C in text and TREE in text,path
+              assert git("hash-object",path)==expected_blob,path
+              cp=subprocess.run(["git","cat-file","-e",C+":"+path],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+              assert cp.returncode!=0,("evidence file included in tested candidate",path)
+          assert "REAL_HUMAN_DENY_E2E_NOT_PROVEN" in Path(next(iter(paths))).read_text(encoding="utf-8") or "human DENY E2E" in Path(next(iter(paths))).read_text(encoding="utf-8")
+          assert live!="0"*40
+          assert live!=C[:-1]+"0"
+          print("V411_V02_DETERMINISTIC_REVIEW=PASS")
+          print("V411_V02_TESTED_CANDIDATE="+C)
+          print("V411_V02_TREE="+TREE)
+          print("V411_V02_AUDITED_EVIDENCE_BLOBS="+str(paths))
+          print("V411_V02_AUDIT_BRANCH_HEAD="+git("rev-parse","HEAD")+" IS_NOT_TESTED_CANDIDATE")
+          PY
