@@ -107,7 +107,7 @@ S05, the **single shared conformance wiring owner**, implements only a missing p
 
 ## 3C. #1123 proposed assurance/release conformance — source-owned S05 delta
 
-**Proposed only, not yet admitted.** Consume Product R4 delta candidate blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 `580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2`, and DAG R4 proposed scope blob `c52774f20642ca429b5b708ed4011e2e98dded3b`. Existing Frozen R3 exact files and `PACK_FREEZE=NOT_RECORDED` remain unchanged. No v4.12 normative source write now.
+**Proposed only, not yet admitted.** Consume Product R4 delta candidate blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 `aede88044697ba45f712ecfa49f615ce48e8af58`, and DAG R4 proposed scope blob `421378b8329f51c46697485f57fc9920cfaefed6`. Existing Frozen R3 exact files and `PACK_FREEZE=NOT_RECORDED` remain unchanged. No v4.12 normative source write now.
 
 **Proposed extra S05 single-writer source surfaces (only after actual successor Freeze, and only proven clauses):**
 - `standards/ASSURANCE_PLAN_STANDARD.md` §§9–10: remove a *physical Owner/credential* check **if present**, never remove or silently bypass semantic rule authority, source-current proof and `REQUIRED_PREDICATE_PROOFS_PRESENT` for real assurance reduction.
@@ -122,7 +122,7 @@ S05, the **single shared conformance wiring owner**, implements only a missing p
 
 ## 3D. #1119 Option A — read-only qualified latest-compatible ADS deterministic selector
 
-**New prospective source pins:** user-approved feasibility blob `be7f0785083890b42aab5efb17d735df8a69adab`; unfrozen Product R4 `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 `580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2`, DAG R4 proposed writer scope `c52774f20642ca429b5b708ed4011e2e98dded3b`. Original Frozen Product R3/L2 R5/DAG R3 remain the actual historical authority until lawful successors are frozen. This Pack is **not** an execution license or executable checker now.
+**New prospective source pins:** user-approved feasibility blob `be7f0785083890b42aab5efb17d735df8a69adab`; unfrozen Product R4 `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 `aede88044697ba45f712ecfa49f615ce48e8af58`, DAG R4 proposed writer scope `421378b8329f51c46697485f57fc9920cfaefed6`. Original Frozen Product R3/L2 R5/DAG R3 remain the actual historical authority until lawful successors are frozen. This Pack is **not** an execution license or executable checker now.
 
 **S05 exclusive new proposed write paths:** `scripts/v412_ads_compatible_select.py` and `scripts/test_v412_ads_compatible_select.py`. These names are **not** part of Frozen DAG R3 write permissions and require actual DAG R4 successor Freeze + accepted Task Pack/Claim first. They are the smallest bounded genuine implementation of #1119 Option A; do **not** pretend `standards/PROJECT_ADOPTION.md` prose already delivers an operational resolver. S04 only owns adoption policy/examples; `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` / `schemas/compatibility-record-v1.schema.json` are existing **read-only semantic/schema inputs**, not an automatically granted writer set. Existing S05 manifest, `scripts/verify_standard.py`, Golden index and CI are conditional registration/wiring if the actual tool is shipped.
 
