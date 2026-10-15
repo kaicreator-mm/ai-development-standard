@@ -105,6 +105,20 @@ S05, the **single shared conformance wiring owner**, implements only a missing p
 
 **Record objective subject truth:** `actor_role/operator_kind/operator_id/session_ref` self declaration, optional GitHub transport and accepted canonical event reference, exact Task/PR SHA, real Review/Validation outcome and any external GitHub branch-protection status. Test the correct source/technical predicates, not the claimed real-world identity. No source implementation or test PASS is claimed by this planned Pack.
 
+## 3C. #1123 proposed assurance/release conformance — source-owned S05 delta
+
+**Proposed only, not yet admitted.** Consume Product R4 delta candidate blob `847e707b78359f6e9de2901b2ea049557b7eb104`, L2 R6 `2e14870263f9b833628b06f1b5a27a48bc285e1e`, and DAG R4 proposed scope blob `faf3bffffcf2d4e6a74faad5535a15ac9e7725f4`. Existing Frozen R3 exact files and `PACK_FREEZE=NOT_RECORDED` remain unchanged. No v4.12 normative source write now.
+
+**Proposed extra S05 single-writer source surfaces (only after actual successor Freeze, and only proven clauses):**
+- `standards/ASSURANCE_PLAN_STANDARD.md` §§9–10: remove a *physical Owner/credential* check **if present**, never remove or silently bypass semantic rule authority, source-current proof and `REQUIRED_PREDICATE_PROOFS_PRESENT` for real assurance reduction.
+- `standards/RELEASE_STANDARD.md` §§11.1–11.7: reuse actual #1122 §11.7 for ADS standard-only self-declared release process, remove leftover identity-specific signer verification only where genuinely present. Keep true Release gate-by-subject, qualifying evidence and `NOT_PROVEN` source vs deployed-runtime limits. S06 still performs existing Release decision.
+- If demonstrably necessary after exact source gap review, explicitly add scoped tests to `scripts/test_v411_i1122_self_declared_executor.py`, `scripts/test_v411_t05_event_authority.py` (new v4.12 tests may prefer a uniquely named `scripts/test_v412_actor_trust.py`), and exact affected schema `schemas/agent-event-v2.schema.json`, `schemas/assurance-plan-v2.schema.json`, `schemas/dispatch.schema.json`. These are **candidate eligible exact paths**, not broad `schemas/**` or `scripts/**` carte blanche. Avoid needless schema format churn; version behavior/protocol change may require an explicit semantic compatibility statement without a schema change.
+- S05 retains already owned `standard-manifest.json`, `scripts/verify_standard.py`, `templates/GOLDEN_INDEX.md` and relevant CI wiring only when adding actual source requires registration. Does **not** touch `AGENTS.md`, S01 Interaction/Execution Architecture, review prompt, S04 PROJECT_ADOPTION, S02 DAG template or S03 checker.
+
+**Focused real validation when eligible:** recheck merged v4.11 #1122 source/tests by exact SHA, then test same-transport distinct **declared** contexts accepted, two accounts/same logical declaration not independent, no Session reality proof requirement, raw quoted fake event rejected, missing/failed required executable tests cannot PASS, Claim CAS race remains one-winner, semantic `OWNER_PERMISSION` cannot be deleted to make source/proof Gate vanish, Release executor self-declared yet still has actual source-current candidate Gate evidence, GitHub native approving Review still follows external branch ruleset. Only run additional tests when source gap is real. One candidate-scoped Release conformance campaign, no copy of a historical 139-case suite merely for ceremony.
+
+**No identity suspicion or false PASS:** the executor declaration is trusted for *actor attribution*; executable test truth, security/effect authorization, currentness and approval facts are not the same as physical actor identity. This source-task proposal is NOT an Assurance reduction decision, source PR, Reviewer PASS, native Claim, Hidden test or S06 Release PASS.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): V412-S03, V412-S04. Native issue edges require actual API mutation and readback; Markdown is advisory historical.
