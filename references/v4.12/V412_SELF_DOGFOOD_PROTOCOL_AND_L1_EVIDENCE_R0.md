@@ -185,3 +185,35 @@ SAVED_MODEL_COST=UNKNOWN
 ### Next stage and stop rule
 
 **Stop L1 shadow loops now for unchanged R3 source.** Do not commission a third same-author adversarial Product review, rerun the same 9 mock predicates without changed inputs, or create a full-time Steward. **Remaining external dependency**: an independent Reviewer must evaluate exact R3 PRD blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`, closing R2 P0×1/P1×4 and any new regressions. After authoritative Product Freeze, switch to L2 architecture with minimal existing-owner gap matrix and the two P0 source-pinned project fixtures; then legal Scaffold Planning accepted Claim → Review/merge-ready → paired DAG Freeze. Actual implementation must follow the then-applicable pinned authority; v4.12 shadow rule alone never authorizes source writes.
+
+
+## 7. L2 self-dogfood R2 — actual Stage-2 source study & bounded Git fixture (2026-10-15)
+
+**Stage authorization changed since historic R0/R1:** Product Freeze is **now** recorded by direct user Product Authority decision (commit `5820542ad1c092e09fae268f7e77a6db3421297b`, PRD blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`). This moves v4.12 legitimately from Stage1 into **L2 source-first**, not into executable Scaffold source writing or L2 Freeze. Historical `PRODUCT_FREEZE=NO` lines above refer to older observation times and are not current.
+
+**Real tasks this session:**
+- Read actual v4.11 Work Item, GitHub Interaction, Task DAG Governance, Validation/Release/Adoption and Stage2 L2 Research owner sources at pinned candidate `4924387815fa238382471e690fb169579767d9a1`, not floating main.
+- Refined [L2 R1 source-evidence/ADR](../../docs/architecture/V412_L2_ARCHITECTURE_EVIDENCE_R0.md) (blob `3b9fc0ee5866bb805f24874856787cda24e8f931`): **ADR-01** existing canonical `type:planning|task` + accepted Claim, pre-dispatch Review Policy, original merge-ready; **ADR-02** one structural anchor + one current Task binding, canonical Issue write-set and SPLIT; **ADR-03** separate source material Git-object view, immutable exact allowlist, DF/MI digest and rebuilt non-authoritative index.
+- Source-pinned [isolated research Git fixture](../../references/v4.12/fixtures/v412_l2_git_pair_probe.py), blob `9e162804467a9c6e7abdb95df1ad5bbd8bd3cc90`. A matching in-session disposable Git/Python algorithm prototype ran **11/11 synthetic cases** (2 positive, 9 negative) on an actual scratch Git repository. **GitHub committed script exact bytes were not separately executed**; no real Build Host, CI, GitHub Claim, Reviewer/Validator or release execution occurred.
+- Verified no Product PRD/Freeze byte drift, no new mandatory owner/Gate, no new executable Task Issues. Draft PR #1101 remains unmerged pending legitimate v4.11 predecessor release/integration.
+
+**Concrete v4.12 standard/process feedback:**
+1. `SUPPORTED`: Select `BOUNDED_WORKLIST` DAG-A for three actual source-analysis lanes, without synthetic native Issue dependencies; no need for a graph DB/second live scheduler.
+2. `SUPPORTED_AT_E1_ONLY`: Pair-freeze hashing can distinguish unchanged SF source with changed DF/MI; scope and anchors default material, generated outputs excluded from own digest but **must be recomputed**. This supports the L2 design choice, **not** production checker PASS.
+3. `SUPPORTED`: Existing Work Item/Claim/Review authority supports proposed source-write ownership; a new Bootstrap human Gate/type would duplicate existing mechanism. **Actual pre-DAG source admission remains prospective and not executed.**
+4. `LIMITATION_NOT_A_PRODUCT_DEFECT`: Test evidence strength is independently dimensional: `LOCAL_SYNTHETIC_E1` is not `REAL_GITHUB_CAS`, `REAL_HOST_E3`, `INDEPENDENT_REVIEW` or `VERSION_RELEASE`. The R1+R2 user-facing claims must not collapse them.
+5. `UNKNOWN_COST`: User benefit is fewer *planned* redundant components, Issues and full suite retries; actual saved tokens/Host minutes/time-to-merge have no controlled baseline and remain `UNKNOWN`.
+
+**Next risk-bounded step:** the Architecture Owner reviews the *exact* L2 R1 and its high-impact U01/U02/U03 facts. If accepted and no new genuine material UNKNOWN, move to formal L2 Freeze; if an actual unresolved critical source effect/owner condition appears, resolve narrowly before Freeze. Do **not** create a redundant Product R4, a second research service, repeat 11 scenarios unaltered, or start Scaffold production before legitimate Claim and L2 authority.
+
+```ini
+DOGFOOD_STAGE=L2_SOURCE_FIRST
+PRODUCT_FREEZE=PASS_EXACT_R3
+L2_R1_BLOB=3b9fc0ee5866bb805f24874856787cda24e8f931
+SYNTHETIC_PROTOTYPE=11_OF_11_EXPECTED
+COMMITTED_FIXTURE_EXACT_EXECUTION=NOT_RUN
+L2_AUTHORITY_FREEZE=NO
+CANONICAL_SOURCE_SCAFFOLD_CLAIM=NONE
+IMPLEMENTATION=NOT_STARTED
+RELEASE=NOT_QUALIFIED
+```
