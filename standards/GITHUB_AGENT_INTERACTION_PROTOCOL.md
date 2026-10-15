@@ -209,7 +209,9 @@ Semantics:
 - `operator_kind` = execution surface/system;
 - `operator_id` = logical executor identity;
 - `session_ref` = concrete page/session/process/run alias;
-- `transport_actor` = transport provenance, not logical authorship.
+- `transport_actor` = optional transport provenance, never a source of logical actor identity or role eligibility.
+
+Logical actor/role/session attribution is **self-declared by the executor and trusted as declared**. A GitHub username, API token principal, email address, organization membership or comment author MUST NOT be compared to, substituted for, or used to challenge `actor_role`, `operator_kind`, `operator_id` or `session_ref`. Equal transport accounts do not imply equal logical agents; different transport accounts do not imply distinct logical agents. Normal task admission MAY validate field shape and task/dispatch/currentness facts but MUST NOT introduce actor/Owner identity authentication or cross-session proof checks.
 
 Dynamic operator/session identities MUST remain in structured events rather than GitHub labels.
 
@@ -257,7 +259,7 @@ When Review is performed:
 - publish material findings and required routing;
 - request real validation instead of guessing runtime facts.
 
-For required Review, Reviewer MUST be attributable to a context independent from the Builder context. The same GitHub `transport_actor` is allowed, but `operator_id/session_ref` must make the separation auditable.
+For required Review, the Reviewer **self-declares** its independent review context through the existing logical operator/session fields. The workflow accepts that declaration without external identity proof, Github-account comparison, human signature, or Owner verification. The declaration is attribution, not a claim that substantive Review findings or unexecuted Validation tests are automatically PASS.
 
 Acceptable independent contexts include another ChatGPT session, another coding/review agent, a human reviewer, or the same model in a fresh context that reconstructs facts from GitHub.
 
