@@ -56,13 +56,14 @@
     "User approved #1123 remaining scope for v4.12; Product R4 delta, L2 R6 delta and DAG R4 write-set successor are separate unfrozen sources. S01/S04/S05 Pack candidates bind proposed blobs, with no new native Task/edge/Claim. Earlier v4.13 routing of #1123 is superseded prospectively; historical observations unchanged.",
     "Already merged v4.11 #1122 actor role/session rule reused, not reimplemented. Keep current exact CAS/Claim/Review results, semantic policy Owner, actual tests, native GitHub branch protections and downstream real effects.",
     "User explicitly approved #1119 Option A for v4.12 (feasibility blob be7f0785083890b42aab5efb17d735df8a69adab); combine with already pending #1123 scoped Product R4/L2 R6/DAG R4 unfrozen successors, not separate duplicate planning version. S04 adoption, S05 read-only deterministic selector scripts, no cross-repo update authority; v4.13 retains updater Class B.",
-    "Do not claim that option A resolver was implemented by editing Task Packs. Exact actual source + focused tests require qualified predecessor, accepted successor freezes, native Issue/deps/CAS Claim and eligible real version branch."
+    "Do not claim that option A resolver was implemented by editing Task Packs. Exact actual source + focused tests require qualified predecessor, accepted successor freezes, native Issue/deps/CAS Claim and eligible real version branch.",
+    "Exact Product→L2→DAG→S01/S04/S05 successor refs refreshed after #1119 Option A; author check must reconfirm current blobs. No separate Freeze/Review/readiness/Claim created by a hash re-pin."
   ],
   "packs": [
     {
       "task_id": "V412-S01",
       "path": "docs/implementation/4.12.0/task-packs/V412-S01_phase_claim_authority.md",
-      "git_blob": "4abefa32a80eca8d730f76f210572e478e15c644",
+      "git_blob": "fcad84f441453952ce06f45889cb8a582a7d457e",
       "predecessors": [],
       "review_policy": "required",
       "canonical_type": "type:task",
@@ -101,7 +102,7 @@
     {
       "task_id": "V412-S04",
       "path": "docs/implementation/4.12.0/task-packs/V412-S04_adoption_and_templates.md",
-      "git_blob": "99e3dbb73491f859e6a44e65b0db5d98645a31e3",
+      "git_blob": "1787523090f89c15b31112c287d016fe4a20e67f",
       "predecessors": [],
       "review_policy": "recommended",
       "canonical_type": "type:task",
@@ -113,7 +114,7 @@
     {
       "task_id": "V412-S05",
       "path": "docs/implementation/4.12.0/task-packs/V412-S05_ads_conformance_wiring.md",
-      "git_blob": "75e1112b7899a7bd8f5978d3611b192f51f695ee",
+      "git_blob": "db6560f172c16baeeb02393dbbb33d857f05184e",
       "predecessors": [
         "V412-S03",
         "V412-S04"
@@ -130,8 +131,8 @@
     "scope_approved_by_user": true,
     "approved_scope_source_blob": "6d783ecb8b02a61d4e2d60174e1a12832f27b948",
     "product_r4_delta_candidate_blob": "e924fa29d8fe3c846eeb7f6ca41131609b19b0ad",
-    "l2_r6_delta_candidate_blob": "580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2",
-    "dag_r4_delta_candidate_blob": "c52774f20642ca429b5b708ed4011e2e98dded3b",
+    "l2_r6_delta_candidate_blob": "aede88044697ba45f712ecfa49f615ce48e8af58",
+    "dag_r4_delta_candidate_blob": "421378b8329f51c46697485f57fc9920cfaefed6",
     "product_r4_frozen": false,
     "l2_r6_frozen": false,
     "dag_r4_frozen": false,
@@ -161,8 +162,8 @@
     "user_approved": true,
     "original_scope_decision_blob": "be7f0785083890b42aab5efb17d735df8a69adab",
     "product_delta_current_blob": "e924fa29d8fe3c846eeb7f6ca41131609b19b0ad",
-    "l2_delta_current_blob": "580aa8fbbcb8c388ce0de89a10fae79ac3cd0da2",
-    "dag_delta_current_blob": "c52774f20642ca429b5b708ed4011e2e98dded3b",
+    "l2_delta_current_blob": "aede88044697ba45f712ecfa49f615ce48e8af58",
+    "dag_delta_current_blob": "421378b8329f51c46697485f57fc9920cfaefed6",
     "scope": "qualified stable release/protocol-compatibility selection + exact immutable task pin + read-only upgrade recommendation",
     "writer_S04": [
       "standards/PROJECT_ADOPTION.md",
