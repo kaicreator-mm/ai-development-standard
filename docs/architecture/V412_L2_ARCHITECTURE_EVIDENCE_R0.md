@@ -383,3 +383,25 @@ ARCHITECTURE_OWNER_FREEZE=NOT_RECORDED
 PRODUCT_R3_FROZEN_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
 NO_NEW_GATE=YES
 ```
+
+
+## 12. L2 R5 — ADS-first delivery order, consumer proof after standard availability
+
+**User delivery-priority direction:** Complete ADS v4.12's *own* standards/workflow/templates/reference checker and run its required **internal source-pinned conformance fixtures** before scheduling other products' live v4.12 adoption/dogfood. This is a sequencing clarification consistent with frozen PRD §10: the minimal `one new + one mature` fixture requirement **remains inside the ADS product acceptance**; it does not require constructing and releasing a standalone business application before publishing ADS.
+
+**[Concrete bounded candidate six-concern handoff](../../references/v4.12/V412_ADS_FIRST_DELIVERY_PACK_R0.md)** is the proposed producer-only implementation map: `S01 Workflow/Claim phase`, `S02 canonical bindings`, `S03 deterministic reference checker + two source-pinned fixtures`, `S04 project adoption/templates`, `S05 ADS conformance`, `S06 qualified version integration/Release`. These are **draft Task identities**, not GitHub native Tasks or a frozen DAG. After actual Architecture Owner Freeze and an eligible qualified version predecessor, convert only the source-justified Tasks into a lawful frozen DAG and Issue/Claim execution. New and mature external projects are the **consumers** of that qualified output; they may supply feedback after adoption.
+
+**Architecture acceptance split:** `ADS_RELEASE_ACCEPTANCE` = normative owner projection + deterministic reference checker exercised on minimal required internal fixtures + ADS integration/Review/Validation/Release truth. `EXTERNAL_DOGFOOD_FEEDBACK` = post-qualification project-local observations that may prompt later ADS patches but do not retroactively become a mandatory gate in the v4.12 closure. Synthetic fixture E1 must remain labeled E1, never fake real GitHub CAS/physical Host/independent human evidence where such proof is required.
+
+**Known scheduling blocker:** current #1101 is a historic-main based **planning PR**, not an executable v4.12 version release branch. L2 source-only study can finish on it now, but actual standards-source edits/PR merge/Release must follow required Architecture/Work Item/Claim/review and the legitimately qualified predecessor (v4.11 candidate currently unresolved). The already-fixed shallow-checkout configuration is to be reused on the lawful descendant, not treated as a new product behavior requirement.
+
+**No added gate/service/consumer-app generator.** This addendum proposes no PRD thaw and no authority or implementation PASS. Current L2 awaits a real Architecture Owner exact-subject Freeze.
+
+```ini
+L2_R5_ADS_DELIVERY=STANDARD_FIRST_INTERNAL_FIXTURES_INCLUDED
+DRAFT_IMPL_WORKLIST=V412_ADS_FIRST_DELIVERY_PACK_R0
+CONSUMER_REAL_APPLICATION_RELEASE=AFTER_ADS_STANDARD_QUALIFICATION
+L2_OWNER_FREEZE=NOT_RECORDED
+SCAFFOLD_PRODUCTION_CLAIM=NONE
+V412_VERSION_RELEASE=NOT_QUALIFIED
+```
