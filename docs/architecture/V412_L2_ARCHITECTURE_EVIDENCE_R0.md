@@ -342,3 +342,44 @@ COMMITTED_PROTOTYPE_EXACT_RUN=NOT_RUN
 CI_PREDECESSOR_MISSING_HISTORY=KNOWN_REUSE_PR1040_AFTER_LEGAL_REBASE
 RELEASE=NOT_QUALIFIED
 ```
+
+
+## 11. L2 R4 — ADS standard producer vs external conformance project (2026-10-15)
+
+> **Owner-scope correction from user Product clarification.** ADS itself is a **development standard and workflow product**. Its primary deliverables are adopted documentation/owner rules, procedures, templates, schema/contract checks, lightweight reference tooling and evidence; it is **not** the generated application. This L2 interpretation is consistent with frozen PRD R3's acceptance on **one new-project and one mature-project case**. Frozen Product R3 blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9` remains unchanged. This author-produced addendum is NOT L2 Owner Freeze.
+
+### Separate the subjects; never conflate their Task DAGs or release truth
+
+| Subject | Real deliverable and execution authority | What its PASS demonstrates |
+|---|---|---|
+| **ADS v4.12 standard development (producer)** | Changes to ADS normative owner documents, workflow, contracts, templates, optional reusable checkers and ADS's own conformance harness; its **own** ADS-version Task DAG / GitHub Issues / Claims / Review / Validation / Release | Whether **the ADS standards release** was lawfully authored and qualifies under ADS's own applicable version procedure; documentation-only changes do not require an invented application Scaffold |
+| **Fresh conformance project (consumer, NEW_PROJECT_INIT)** | An isolated small, actually buildable multi-module reference app/repo, its **own** planning Scaffold SF, Implementation DAG DF, Task Issues, native dependencies, accepted Claims, contract/integration tests, real packaging/user journey and release exercise | Whether the **ADS procedure being tested** produces an executable, source-current, verifiable consumer project; this consumer's PASS is not ADS release PASS |
+| **Existing-project conformance case (consumer, EXISTING_PROJECT_ADAPT)** | Pinned existing-project source/repo or isolated faithful copy, minimal adaptation and bounded DAG/contract/claim/validation flow; do not regenerate its whole structure | Whether ADS handles incremental adoption/reuse without extra mandatory scaffold or DAG ceremony |
+| **Algorithmic / static research fixture (supporting only)** | Disposable synthetic Git/Python cases like `v412_l2_git_pair_probe.py`, checked against exact source | Only the specific E1 predicate executed; **not** real GitHub CAS, independent Review, Build Host, or final user/release behavior |
+
+**Correction to §7/§10 wording:** 'ADS v4.12 self-dogfood' means **ADS standard development exercises existing governance**, while prospective *Scaffold↔DAG co-evolution is tested on a separate conformance consumer*, not by treating the `ai-development-standard` repository itself as the greenfield generated application. ADR-01 R3's proposed pre-DF `type:planning` route applies to a consumer **only after that project's applicable adopted ADS owner rule** admits it. It must NOT be used to bypass ADS's own Task/Claim authority or to force creation of an ADS internal application skeleton. A conformance fixture committed to the ADS repository is an ADS testing asset governed by ADS implementation work; its embedded sample DAG/claims do not become ADS's actual execution DAG.
+
+### Minimal test architecture (one concern, risk-bounded)
+
+- **Static conformance layer:** run ADS schema/document/owner-cross-reference checks and deterministic negative fixtures under ADS's existing test commands; reproduce only exact invariants, avoid a new always-on graph server or universal full OS/CI matrix.
+- **Consumer reference layer:** maintain the smallest **two** representative project cases already required by FR-04/AC-04: one clean-slate multi-module project and one pinned mature project. They may be isolated temporary repositories or fixture directories, provided actual file identities are preserved and output never writes into ADS normative directories. Avoid making sample application functionality part of ADS's public API/product promises.
+- **Real workflow layer (when necessary for claimed behavior):** perform bounded GitHub Issue/Claim/PR/Review/merge/currentness flow in a separately authorized **test repository** (or an eligible isolated test target) to prove predicates that scratch fixtures cannot. Source-writing admission, policy adoption, real execution side effects and any Build Host/CI claims are subject to that consumer project's **own** lawful authority, not permission borrowed from an ADS planning document.
+- **Release truth:** keep `ADS_STANDARD_RELEASE`, `CONSUMER_PROJECT_CONFORMANCE` and `SYNTHETIC_FIXTURE_E1` as three independent evidence subjects. Never project a test app's released status as the ADS standards release; never use ADS documentation CI PASS as proof of a functioning consumer.
+
+### Acceptance and stop rule
+
+**Needed v4.12 P0 proof:** adopted standard clauses + lightweight structural checker + one fresh and one mature project trace demonstrating source/Task bindings and required negative admission/currentness oracles. Exercise at least one actual consumer build/integration journey where required; reserve expensive GitHub/Host/Release repetitions only for unproven higher-risk behaviors. Record source exact SHA, actual execution/log and skipped or UNKNOWN assertions separately. No requirement to build a general-purpose app generator, application hosting service, or new product runtime in ADS.
+
+**No new stage Gate, mandatory third project, or Product PRD amendment** is proposed. Existing Architecture Owner must decide this exact distinction before L2 Freeze; if any prior R0–R3 passage implies `ADS standard repository == generated Scaffold consumer`, **this §11 interpretation supersedes only that target conflation**, not the source/Claim/Review/three-way-pair requirements for real consumer projects. Product Freeze remains scoped to the already accepted R3 requirements.
+
+```ini
+L2_R4=ADS_STANDARD_VS_CONFORMANCE_CONSUMER_SUBJECT_CORRECTION
+ADS_DELIVERABLE=NORMATIVE_DOCUMENTS_WORKFLOW_TEMPLATES_CHECKERS
+ADS_OWN_TASK_DAG=STANDARD_DEVELOPMENT_GOVERNANCE_ONLY
+SCAFFOLD_DF_TEST_SUBJECT=ISOLATED_CONFORMANCE_CONSUMER
+CONSUMER_CASES=NEW_PROJECT_INIT;EXISTING_PROJECT_ADAPT
+REAL_GITHUB_WORKFLOW_PROOF=NOT_RUN
+ARCHITECTURE_OWNER_FREEZE=NOT_RECORDED
+PRODUCT_R3_FROZEN_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
+NO_NEW_GATE=YES
+```
