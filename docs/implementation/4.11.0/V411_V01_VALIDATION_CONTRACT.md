@@ -9,8 +9,9 @@ CANDIDATE_REF=refs/heads/version/v4.11.0
 CANDIDATE_SHA=214f6a97b1eed948e1afef8f5089eb4bf4b97d26
 CANDIDATE_TREE=51355178551b300b916355d4b952cd0fbdd919fe
 EVIDENCE_ONLY_HEAD=PR_HEAD_SEPARATE_NOT_TESTED
-NEW_CANDIDATE_EXACT_HOST=NOT_RUN
+NEW_CANDIDATE_EXACT_HOST=38695039311_SUCCESS_SCOPED_ONLY_RAW_ORIGINAL_T12_EXIT_1
 PREDECESSOR_EXACT_HOST=e35b32bc3f1ae50921ed78004909630cdd2f51f9
+CURRENT_REGISTERED_CI=38694979271_SUCCESS
 PRODUCT_V033=#943@6186019457
 SOURCE_SCOPE_REVIEW=#1117@5529073608
 CURRENT_IMPACT_HANDOFF=#1021@6186064514
@@ -34,12 +35,12 @@ The original Product, Release §11, Gate state enum, and native 20-node DAG reta
 | Gate / candidate subject | Proposed Release applicability | Evidence state on exact new SHA | Outstanding owner condition |
 | --- | --- | --- | --- |
 | SHA/tree/version identity | REQUIRED_NOW | Source GitHub readback PASS (identity only) | Validator must pin same subject |
-| standards verifier, manifest, docs/reference/schema | REQUIRED_NOW | Earlier runner PASS at predecessor; **current exact execution NOT_RUN** | Bounded source-equivalence impact and current CI/readback |
-| supported X01/X02/X05+ affected S/X conformance | REQUIRED_NOW | Predecessor focused Host and X01 anti-HOLD evidence available; current exact execution NOT_RUN | Independent impact accepts equivalence, or focused current Host |
+| standards verifier, manifest, docs/reference/schema | REQUIRED_NOW | Current exact Host run 38695039311 `verify_standard` PASS | Bounded source-equivalence impact and current CI/readback |
+| supported X01/X02/X05+ affected S/X conformance | REQUIRED_NOW | Current exact Host T01 61 tests (3 skips), T10 58; predecessor X01 always-HOLD mutant rejected (not rerun on current) | Independent impact accepts equivalence, or focused current Host |
 | unsupported full-four J09–J12 behavior | REQUIRED_NOW for **negative conformance + disclosure** | Source coverage negative inspected; old host witness, current impact not signed | No claim of real positive/permission; consumer BLOCKED |
-| S08 reference SQLite A/B | REQUIRED_NOW for synthetic model | 6 predecessor Host cases PASS; current test blob identical | Impact/Validator rebind; human E2E not claimed |
-| visible regression & Critical Journeys | REQUIRED_NOW | Historic 139:125 exit0/14 exit1; predecessor T12 diagnostic 52 assertions/0 semantic failures and 20/28/4 truth statuses | Exact impact decision; raw guard FAIL retained |
-| CI required profile | REQUIRED_NOW | PR verify-standard successful before merge; postmerge current-subject result NOT_CONFIRMED | Owner/Validator check exact current provider result |
+| S08 reference SQLite A/B | REQUIRED_NOW for synthetic model | 6 current exact Host test cases PASS, same SQLite source blob | Impact/Validator rebind; human E2E not claimed |
+| visible regression & Critical Journeys | REQUIRED_NOW | Historic 139:125 exit0/14 exit1; current Host diagnostic T12 52 assertions/0 semantic failures and 20/28/4 truth statuses; original current T12 entrypoint still literal exit1 | Exact impact decision; raw guard FAIL retained |
+| CI required profile | REQUIRED_NOW | Postmerge exact candidate `verify-standard` SUCCESS 38694979271; independent focused workflow 38695039311 SUCCESS for *scoped* profile only | Owner/Validator check exact current provider result |
 | binary build/package/install | UNKNOWN pending new Release §11 owner | No compiled product identified at historical scope | Positively decide, may be N/A to standards artifact |
 | live customer tenant/external deployment | UNKNOWN pending new Release §11 owner | ADS delivered artifact is documentation + in-process tests | Positively decide without weakening test oracles |
 | V01 docs reconciliation and independent evidence Review | REQUIRED_NOW | 3 evidence drafts in separate branch; no independent current review | Fresh current-head evidence verification |
@@ -54,3 +55,12 @@ An accountable Release owner must bind each applicable gate to **`214f6a97…`**
 A *distinct* Validation Impact decision must decide current source-equivalent prior test acceptance and how the original guarded T12/14 inherited failures are classified **without converting their executed exit code**. A genuinely independent V01 Validator then independently resolves the complete V01 evidence/required-gates record and issues terminal `PASS | FAIL | BLOCKED`. This compiler is neither the Release signer nor independent Validator.
 
 **Current terminal: V01 BLOCKED, V02 NOT_ADMITTED.**
+
+
+## 4. Exact-current Ubuntu scoped execution received after initial draft
+
+GitHub Actions [38695039311](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38695039311) executed on Ubuntu/Python 3.12.15 with pinned **actual checkout** `214f6a97b1eed948e1afef8f5089eb4bf4b97d26` and tree `51355178551b300b916355d4b952cd0fbdd919fe`, proved clean worktree before/after. Runner workflow lives separately at `validation/v411-v01-v033-host-214f6a97@1a9693f...` and is **not** the tested source SHA.
+
+The run completed SUCCESS as a **bounded diagnostic workflow**, not a whole-version PASS: standard verifier 0; T01 61 (3 skipped), T10 58, synthetic S08 6; T12 independently invoked `run_record/run_compound` against all 52 scenarios and asserted 0 semantic failures (20 PASS / 28 BLOCKED / 4 NOT_RUN, `MATERIAL_INTERSECTION_UNKNOWN`). It **also executed the original T12 guarded script** and preserved `REGISTRY_OR_WRITESET_FAIL` with literal `EXIT=1` as a *known expected nonzero diagnostic*, not a PASS.
+
+The registered workflow [38694979271](https://github.com/kaicreator-mm/ai-development-standard/actions/runs/38694979271) is successful at the actual candidate SHA. Fresh Release-owner gate applicability, historical guards' authoritative substitution, independent V01 review and V01 terminal are still missing. All prior `NOT_RUN` claims for the *targeted current suite* above are superseded by the executed receipt only for these exact test methods.
