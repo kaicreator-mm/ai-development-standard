@@ -49,7 +49,7 @@ jobs:
           assert "V04 fresh closeout | PENDING_THIS_AUDIT" in s
           assert "R01 release qualification | PASS" not in s
           assert "R02 guarded integration | PASS" not in s
-          assert "29" not in s or "29/29" not in s or True
+          assert "V03 private archive identity and private visibility consumed" in s
           assert git("diff","--name-only",C,E)==P
           print("V411_V04_SEPARATE_REVIEW=PASS")
           print("V411_V04_FROZEN_C="+C)
