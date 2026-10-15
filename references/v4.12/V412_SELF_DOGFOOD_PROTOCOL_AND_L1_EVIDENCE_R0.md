@@ -2,6 +2,8 @@
 
 > **非规范性试验方案 + 首次真实 GitHub L1 观察记录。** 归属 #1096 / Draft PR #1101。并非 v4.12 先行生效、独立审核、Product Freeze、L2 Freeze、可执行 Scaffold 或新的 Gate。严禁用“试验”覆盖项目既有合法 Work Item/Claim/Review/Version Release 权威。**当前 PRD 精确对象：** `docs/product/PRD-v4.12.0-review-candidate.md` **Git blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`**（R3；正文不在本轮修改）。
 
+> **Current target boundary (L2 R4 clarification, 2026-10-15):** ADS is the **standard producer**. Its self-dogfood exercises ADS document/workflow governance; it is **not** the scaffold-generated application. Scaffold/SF↔DF, app build and consumer release must be exercised on isolated new/mature **conformance test projects** with their own Task DAG/Issue/Claim/release subjects. Historical R0 wording below is preserved as provenance but is superseded on this distinction by [L2 §11](../../docs/architecture/V412_L2_ARCHITECTURE_EVIDENCE_R0.md). Neither synthetic fixture PASS nor a consumer app Release is ADS standard Release.
+
 ## 1. 决策：一条权威轨道 + 一条观察轨道
 
 **YES — 允许以 ADS v4.12 作为 v4.12 自己的第一个试点项目**，覆盖 L1、L2、Scaffold↔Task DAG、Implementation/CI/Review、Release；但过程是“**现有规则合法执行，v4.12 候选在旁边做影子验证**”，不是自举地让尚未批准的 v4.12 规定立即拥有写入/Gate/发布效力。
@@ -259,4 +261,25 @@ ADDITIONAL_MANDATORY_GATES=0
 EXACT_COMMITTED_E1_SCRIPT_EXECUTION=NOT_RUN
 L2_FREEZE=NOT_RECORDED
 SOURCE_SCAFFOLD_CLAIM=NONE
+```
+
+
+## 10. Dogfood R5 — separate ADS producer DAG and conformance consumer DAG (2026-10-15)
+
+**User Product/Architecture clarification:** ADS v4.12's core shipped product is its standards, workflow, reusable templates/checker and their release evidence, **not a generated business application**. Scaffold, detailed DAG, Task execution, tests, build and release simulation are **conformance consumer fixtures** used to test the ADS standard. In previous R0 `YES ADS itself as first pilot` and §5 `Implementation-0`, interpret `self-dogfood` narrowly as ADS's own **standards-development** governance: its real implementation Task DAG tracks standard/document/test-harness changes only. It does **not** make the ADS repository a `NEW_PROJECT_INIT` Scaffold consumer.
+
+**Concrete correction made:** [L2 R4 §11](../../docs/architecture/V412_L2_ARCHITECTURE_EVIDENCE_R0.md) at exact blob `794f8e6374c2cda88cfc54cb284a1838ea67cddc` distinguishes the ADS producer release from a fresh conformance project, one pinned mature project and synthetic proof assets. Test-project GitHub Claim/Review/build/Release truth stays bound to **its own repo/source/authority**. Synthetic Git checks cannot stand in for real native Issues and CAS. No new ADS product scope, service, mandatory gate, or duplicate all-suite validation is introduced.
+
+**Minimum next execution, after lawful L2 Architecture Freeze and proper per-repo authorization:** author ADS normative source deltas + deterministic static checks under ADS's own Issue/DAG; execute a compact fresh consumer and reuse a mature-source consumer for FR03–FR05/AC03–AC04; keep evidence tagged `ADS_STANDARD` vs `CONFORMANCE_CONSUMER` vs `SYNTHETIC_E1`; run a bounded real GitHub Claim/PR/Review/merge probe only where this behavior is required but unproven. No pretend application Scaffold acceptance or consumer Release PASS was performed here.
+
+```ini
+DOGFOOD_R5_TARGET_CORRECTION=ADS_STANDARD_PRODUCER_VS_CONFORMANCE_TEST_CONSUMER
+L2_R4_BLOB=794f8e6374c2cda88cfc54cb284a1838ea67cddc
+ADS_INTERNAL_DAG=STANDARD_DELIVERY_WORK_ONLY
+CONSUMER_DAG=ISOLATED_REFERENCE_PROJECT_ONLY
+NEW_CONSUMER_BUILD=NOT_RUN
+MATURE_CONSUMER_REUSE_PROBE=NOT_RUN
+REAL_GITHUB_CAS=NOT_RUN
+L2_FREEZE=NOT_RECORDED
+PRODUCT_R3_FREEZE=UNCHANGED
 ```
