@@ -80,6 +80,20 @@ S04 is the **project-facing adoption** owner for the already frozen cross-cuttin
 
 **Acceptance negatives:** a low-cost `A0` path never downgrades a required gate; a self-declared `LOW_ROI` cannot turn `NOT_RUN` into `NOT_APPLICABLE`; Task utility extraction is optional unless actual cross-code semantics/maintenance benefit supports it. If current v4.11 adoption owner already supplies a specific clause, classify it `ALREADY_SATISFIED` and link rather than rewrite.
 
+## 3B. #1123 prospective adopter protocol migration — existing S04 owner
+
+The user's #1123 change intake is accepted **for v4.12 successor planning**, but its Product R4/L2 R6/DAG R4 specific sources are not yet Frozen. This S04 documentation task adds no new writer surface: `standards/PROJECT_ADOPTION.md` and S04-owned examples remain its *only* normative prospective target, after lawful Claim.
+
+**Bounded adoption acceptance:**
+- Same account can transport events from several **self-declared** distinct Agents; GitHub `user.login` is not actor role or reviewer-identity eligibility.
+- New v4.12 behavior cannot silently replace consumer pins on v4.11/v4.10: `operator_id/session_ref` trust semantics, owner-identity credential behavior and required technical admission are compatibility dimensions, even with unchanged `agent-event-v2` JSON fields. Select the actually supported prospective protocol/adoption migration; don't infer semantic backward compatibility from syntactically valid schema.
+- The distinct future [#1119](https://github.com/kaicreator-mm/ai-development-standard/issues/1119) **rolling compatible latest** updater is not implemented in S04. No proactive changes to other repositories or unqualified release pins.
+- Retain consumer-side real security credentials, actual GitHub branch rulesets, human participant consent, performed effect / negative case validation where the external product actually requires them. A declared `human` executor does not claim that an off-repo participant consent event occurred.
+
+**Focused counterexamples:** incompatible legacy consumer pin must remain authoritative (NOT auto-adopt); “new protocol but same schema” cannot be declared compatible without behavioral basis; two reviewers via one GitHub transport are not auto-collapsed; absence of actual required user-permission/consent/effect proof remains NOT_RUN. No new Task/Gold/Study required for the ADS standards artifact.
+
+**Current status:** Product scope intake approved, detailed delta candidates not frozen, S04 `review:recommended` remains unchanged; no source PR or implemented migration is claimed.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): none (but absent dependency ≠ READY). Native issue edges require actual API mutation and readback; Markdown is advisory historical.
