@@ -67,35 +67,46 @@ class GitHubCommentReader:
 
 
 def _event_fields(body: object) -> dict[str, str] | None:
-    """Parse a bounded subset of canonical event-v2 YAML, never INI claims.
+    """Fail-closed strict *subset* of canonical event-v2 YAML scalars.
 
-    This is still raw GitHub content. Only a separate owner-controlled
-    canonical admission may decide trust beyond this source syntax witness.
+    This is a raw-comment SOURCE witness, never full YAML/schema admission.
+    By design we reject valid-but-complex YAML rather than risk typing a null,
+    sequence, mapping, boolean or stringified integer as a required string.
+    Only a flat mapping of safe unquoted plain scalars is accepted.
     """
     marker = "<!-- ai-dev:event:v2 -->"
     if not isinstance(body, str) or not body.startswith(marker):
         return None
     tail = body[len(marker):].lstrip()
-    if body.count("```yaml\n") > 1:
+    if body.count("```yaml\\n") != 1 or not tail.startswith("```yaml\\n"):
         return None
-    if tail.startswith("```yaml\n"):
-        block = tail.split("```yaml\n", 1)[1].split("\n```", 1)
-        if len(block) != 2:
-            return None
-        tail = block[0]
-    else:
-        tail = tail.split("\n\n", 1)[0]
+    block = tail.split("```yaml\\n", 1)[1].split("\\n```", 1)
+    if len(block) != 2:
+        return None
     result: dict[str, str] = {}
-    for line in tail.splitlines():
+    for line in block[0].splitlines():
         if not line or line.startswith("#"):
             continue
         if ": " not in line:
             return None
         key, value = line.split(": ", 1)
-        if not re.fullmatch(r"[a-z][a-z0-9_]*", key) or key in result or not value.strip():
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", key) or key in result:
             return None
-        result[key] = value.strip()
+        # Restricted scalar grammar prevents YAML's implicit null, boolean,
+        # list/map, numeric and quoted-string coercions at ingestion time.
+        # A field named exit_code is the only numeric scalar we accept.
+        if not re.fullmatch(r"[A-Za-z0-9_./:@#-]+", value):
+            return None
+        if value.lower() in {"null", "~", "true", "false", "yes", "no", "on", "off", ".nan", ".inf"}:
+            return None
+        if key == "exit_code":
+            if value != "0":
+                return None
+        elif value.isdecimal():
+            return None
+        result[key] = value
     return result
+
 
 def inspect_current_owner_proofs(
     *,
