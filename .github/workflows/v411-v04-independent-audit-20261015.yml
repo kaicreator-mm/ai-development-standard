@@ -44,8 +44,8 @@ jobs:
           lines=s.splitlines()
           section=s.split("## A. Re-derived Release gate",1)[1].split("## B. Stage completeness",1)[0]
           rows=[x for x in section.splitlines() if x.startswith("| ")]
-          assert len(rows)==16, ("14 gate rows +2 headers expected",len(rows))
-          assert len(set(x.split("|")[1].strip() for x in rows[2:]))==14
+          assert len(rows)==15, ("14 gate rows +1 header expected",len(rows))
+          assert len(set(x.split("|")[1].strip() for x in rows[1:]))==14
           assert "V04 fresh closeout | PENDING_THIS_AUDIT" in s
           assert "R01 release qualification | PASS" not in s
           assert "R02 guarded integration | PASS" not in s
