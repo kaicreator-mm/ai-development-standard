@@ -158,7 +158,15 @@ V49_TASK_OUTPUT_BLOBS = {
     "T-005": {
         "references/RELEASE_APPLICABILITY_REFERENCE.md": "4411d25300542f9d311b0dd4df6be346a0bbda0a",
         "scripts/test_v49_release_applicability.py": "7497f7b07f2086df48112783301cb43d4dbcc006",
-        "standards/RELEASE_STANDARD.md": "c4d72506253ca7f3d95e305dbd84aae0e1fbe2cb",
+        "standards/RELEASE_STANDARD.md": (
+            # I1122 re-bind (issue #1122; user process authorization
+            # 2026-10-15): the self-declared-executor policy lane lawfully
+            # mutates the Release standard (§11.1 basis wording + new §11.7
+            # standards-repository executor authority) inside its approved
+            # owner concern; this T-005 output pin moves to the exact
+            # integrated successor blob — pin constants only.
+            "da82aa7d387d8f190c4ddff88b4c8782af804ac4"
+        ),
     },
     "T-006": {
         "references/TASK_LEARNING_V2_COMPATIBILITY.json": "feda9fc12b17e91a14597a9130238734d8937c63",
@@ -203,7 +211,12 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/gate-currentness/stale_pass.json": "f6b4addc27e7b591e55027e1509042c4be99005b",
         "fixtures/gate-currentness/successor_chain.json": "51338b2ab39a1e145976dda55e4d1b61715746c7",
         "references/GATE_EVIDENCE_CURRENTNESS_MATRIX.md": "0c2538db15784ac0f7200ee4537eecec3e43b27f",
-        "scripts/test_v49_gate_currentness.py": "f34d2c2d35a911afaaa58456da0ef2e1714abf3f",
+        # I1122 re-bind (issue #1122; user process authorization 2026-10-15):
+        # the self-declared-executor policy lane lawfully edits the T-010
+        # gate-currentness kernel (RELEASE_STANDARD.md rebound pin + exact
+        # successor-blob admission), so this pin moves to the resulting
+        # kernel blob; every other T-010 output stays pinned.
+        "scripts/test_v49_gate_currentness.py": "049adb7c463d0baa4d391ed58917699709244948",
     },
     "T-011": {
         ".github/workflows/verify-standard.yml": "9fa6099f867b4ce68c0963fbd012f8970753c4d6",
@@ -226,7 +239,11 @@ V49_TASK_OUTPUT_BLOBS = {
         "fixtures/conformance-suite/selector_independence.json": "f0d8b63d48065211f2b5c36668f24dbd7200cbf9",
         "fixtures/conformance-suite/task_learning_compat.json": "88b2ed6ec5832dc01ab19fdc19bc0814a85bbc9f",
         "scripts/test_v48_integration_closure.py": "7c4393a4b021b0a65484191532d7e4c53c1378b9",
-        "scripts/test_v49_conformance_suite.py": "a0eb9e1e6198888291c0f96be0f15d676023d849",
+        # I1122 re-bind (issue #1122): the policy lane re-binds the T-012
+        # kernel's own gate-currentness pin (see T-010 above), so the T-012
+        # kernel blob moves to the resulting composed blob; every other
+        # T-012 output stays pinned.
+        "scripts/test_v49_conformance_suite.py": "0ec8aab2d8791cd05c9c680713d01c274c04de73",
     },
     "T-013": {
         "fixtures/manual-reference-flow/derived_projections.json": "b47170194258a74bc72fac9b7e04da974a7506f4",
@@ -239,10 +256,14 @@ V49_TASK_OUTPUT_BLOBS = {
     "T-014": {
         "fixtures/dogfood-audit-contract/auditor_eligibility.json": "f7eee94f0fc3e79f0ff5629ab6a2e6a75e032008",
         "fixtures/dogfood-audit-contract/fail_closed.json": "5079cda3341dc98f30d648f1ca91f4e6074d2d02",
-        "fixtures/dogfood-audit-contract/owner_surfaces.json": "512c8328eb4cc7d35a0ae2afc734f672dd764cd6",
+        # I1122 re-bind (issue #1122; user process authorization 2026-10-15):
+        # the policy lane moves RELEASE_STANDARD.md and the gate-currentness
+        # kernel into the D08 rebounded_since_base map at their exact
+        # integrated blobs, so this fixture pin moves to the resulting blob.
+        "fixtures/dogfood-audit-contract/owner_surfaces.json": "3efdb8bb52e8cce53a26379c24bfafc95895abc3",
         "fixtures/dogfood-audit-contract/report_acceptance.json": "4dc7b68105488eea256518761b0067357dc3bae1",
         "references/DOWNSSTREAM_DOGFOOD_AUDIT_CONTRACT_V49.md": "8c4f6512d44019742957cd99a7a0eca70bc91a1f",
-        "scripts/test_v49_dogfood_audit_contract.py": "be1c73ab5920996ee50ea2ccbfb5b0bc6b2e1913",
+        "scripts/test_v49_dogfood_audit_contract.py": "50ea120575ad5cfb42878809913c9fc98e0101c1",
     },
 }
 

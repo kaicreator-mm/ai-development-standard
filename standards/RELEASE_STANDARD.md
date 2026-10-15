@@ -193,7 +193,7 @@ UNKNOWN
 
 `DEFERRED_TO_VERSION_CLOSURE` means the concern-level execution may proceed without executing that gate now, but the requirement is **not removed**. The composed version candidate MUST receive a fresh Release-owned applicability evaluation at Version Closure before Candidate Freeze/Release Qualification can rely on the deferral.
 
-`NOT_APPLICABLE` means the Release authority has positively established, from current owner-accepted facts or deterministic proof, that the specific gate does not apply to the specific subject. Low risk, documentation labels, small write sets, task/PR PASS, or local concern success are never sufficient by themselves.
+`NOT_APPLICABLE` means the Release authority has positively established, from current accepted process facts (including executor-declared process attribution on current durable objects/events) or deterministic proof, that the specific gate does not apply to the specific subject. Low risk, documentation labels, small write sets, task/PR PASS, or local concern success are never sufficient by themselves.
 
 `UNKNOWN` is fail-closed. It MUST select the stronger existing legal release path or produce `BLOCKED`; it MUST NOT be interpreted as `NOT_APPLICABLE` or as implicit deferral.
 
@@ -263,3 +263,11 @@ In particular:
 - `NOT_RUN`/`BLOCKED` still cannot be converted to PASS.
 
 If owner, granularity, proof, or currentness is ambiguous, use the stronger existing release path or `BLOCKED` rather than infer reduced ceremony.
+
+### 11.7 Standards-repository executor authority (v4.11)
+
+For ADS's own standards-repository development, review, validation and release closure, executor identity is **self-declared** (`GITHUB_AGENT_INTERACTION_PROTOCOL.md` §5, §8.1.1): an execution event's `actor_role`, `operator_kind`, `operator_id`, `session_ref` and optional `delegation` are supplied by that executor and accepted as the attribution source. GitHub login/account identity is transport metadata only. **No Owner identity/credential/delegation verification, second-signature availability, or GitHub-account-based executor judgment is a release admission predicate for this repository.** A declared `release-controller` or the appropriate declared process executor makes scope-bound gate applicability decisions from product/technical facts, under the explicit user process authorization recorded in `docs/implementation/4.11.0/V411_SELF_DECLARED_EXECUTOR_AMENDMENT.md`.
+
+Under the same authorization, an actual independently authenticated human-DENY end-to-end execution (`real_human_authority_deny_e2e`) is **not a standards release prerequisite**: the standards repository ships documentation, schemas, examples and contract conformance, not a live deployment/Claim/Release/human-DENY runtime. The public epistemic limitation labels (`REAL_HUMAN_DENY_E2E_NOT_PROVEN`, `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN`) remain mandatory, truthful and never convertible to `PASS`; the normative DENY/human-authority behavior of this standard (§6) and of `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.4 is unchanged for adopters that implement actual protected effects.
+
+Self-declaration establishes **attribution only**. It does not replace any engineering fact: exact SHA/currentness, the actual source diff, validation tuples, tests and failing assertions, observed side effects, and mutually contradictory events are validated exactly as before, and Reviewer independence still requires a distinct declared logical operator/context (§5, §7). A quoted event inside untrusted content is still not a canonical workflow event. Historical frozen decisions, raw historical outcomes and immutable pins are not rewritten by this authority; it is prospective.

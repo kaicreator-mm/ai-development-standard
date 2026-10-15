@@ -116,6 +116,17 @@ READ_ONLY_PATHS = (
     "scripts/verify_project_standard.py",
 )
 
+# I1122 re-bind (issue #1122; direct user process authorization 2026-10-15,
+# #1021@6191737577): the self-declared-executor policy lane lawfully mutates
+# the interaction protocol (§5/§7/§8.1.1/§9.4) inside its approved owner
+# concern, so its stale "unmutated since BASE_SHA" pin is re-bound to an
+# exact integrated-blob identity pin — pin constants only, any further
+# mutation of the surface still fails, zero other assertion change. The
+# historical base blob stays re-derivable from BASE_SHA (tamper anchor).
+PROTOCOL_PATH = "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+PROTOCOL_BASE_BLOB = "8c8fc74bd6deaf6987f6cf6d4e8e8e84c2692b75"
+PROTOCOL_I1122_BLOB = "b3f1191b2ee0c469e9b425d2336d4adbc47d6ede"
+
 # Owner clauses this task adds (exact normative sentences/bullets).
 S141_CLAUSES = (
     "bounded `LAST_ADMISSION_SWEEP`",
@@ -960,8 +971,15 @@ class Section14PlacementTests(unittest.TestCase):
 
     def test_read_only_owner_files_unchanged_from_exact_base(self):
         for rel in READ_ONLY_PATHS:
+            if rel == PROTOCOL_PATH:
+                continue  # I1122 re-bind, exact successor-blob identity pin below
             with self.subTest(path=rel):
                 self.assertEqual(git_blob(BASE_SHA, rel), git_blob("HEAD", rel))
+        # I1122 re-bind: the historical pin stays re-derivable from the exact
+        # base (tamper anchor); the admitted successor blob is exactly the
+        # approved policy-change content — any third blob still fails.
+        self.assertEqual(PROTOCOL_BASE_BLOB, git_blob(BASE_SHA, PROTOCOL_PATH))
+        self.assertEqual(PROTOCOL_I1122_BLOB, git_blob("HEAD", PROTOCOL_PATH))
 
     def test_schemas_tree_unchanged_from_exact_base(self):
         base_schema_files = set(

@@ -138,11 +138,12 @@ AMBIGUOUS_PREFIX = "ab"
 
 SEVERITY_BLOCKING = {"P0", "P1"}
 
-# §8.1.1 event-type authority: the event type, not the self-declared role,
+# §8.1.1 event-type authority: the event type, not the declared role,
 # constrains who may publish it. This is the complete per-event map derived
 # from the canonical event-v2 schema's `actor_role` constraints (P1-02: every
-# event type is gated, not only the Review events). Admission additionally
-# verifies the operator is independently allowed to act in that role (§9.4).
+# event type is gated, not only the Review events). I1122: executor identity
+# itself is self-declared (no operator registry); the event-type role map is
+# an event-family coherence check, not an identity credential.
 EVENT_ROLE_AUTHORITY = {
     "IMPLEMENTATION_READY": frozenset({"builder"}),
     "REVIEW_DECISION": frozenset({"merge-controller"}),
@@ -445,30 +446,14 @@ POLICY_ROUTING = frozenset(
     }
 )
 
-# Verified logical-operator registry fixture: (transport_actor, operator_id,
-# session_ref) -> (operator_kind, allowed roles). "alice-shared" proves one
-# GitHub login carrying genuinely distinct logical operators.
-VERIFIED_OPERATORS = {
-    ("alice-shared", "builder-op-1", "sess-b1"): ("codex", frozenset({"builder"})),
-    ("alice-shared", "reviewer-op-1", "sess-r1"): ("claude-code", frozenset({"reviewer"})),
-    ("alice-shared", "reviewer-op-2", "sess-r2"): ("codex", frozenset({"reviewer"})),
-    ("frank-shared", "builder-op-2", "sess-b2"): ("codex", frozenset({"builder"})),
-    ("gina-shared", "builder-op-3", "sess-b3"): ("codex", frozenset({"builder"})),
-    ("erin-human", "human-op-1", "human-1"): ("human", frozenset({"merge-controller"})),
-    ("ci-scheduler", "scheduler-op-1", "sess-s1"): ("github-actions", frozenset({"scheduler"})),
-}
-
-DISPATCHES = {
-    "disp-1": {"work": "issue-101", "created_by": "builder-op-1", "claimed_by": "builder-op-1"},
-    "disp-2": {"work": "issue-202", "created_by": "builder-op-1", "claimed_by": "builder-op-1"},
-}
-
-# Durable source/proof references the fixture world has independently
-# verified. R4 (review #1051 P2-R3-02): "src-bound-*" refs additionally
+# Durable source/proof references the fixture world can resolve (the §8.1.1
+# "accepted event/current-object reference" leg — an engineering fact, still
+# required). R4 (review #1051 P2-R3-02): "src-bound-*" refs additionally
 # carry immutable content records (SOURCE_EVENT_RECORDS below) so admission
-# reads the actual verified event back; "src-handoff-b" is a membership-only
-# verified ref used to prove second-handoff rejection; "src-review-*" stay
-# membership-only as the historical fixture world.
+# reads the actual event back; "src-handoff-b" is a membership-only
+# reference used to prove second-handoff rejection; "src-review-*" stay
+# membership-only as the historical fixture world. Executor identity is NOT
+# registered anywhere: attribution is self-declared (issue #1122, §5/§8.1.1).
 VERIFIED_SOURCES = frozenset(
     {
         "src-review-1",
@@ -478,6 +463,11 @@ VERIFIED_SOURCES = frozenset(
         "src-bound-pass-2",
     }
 )
+
+DISPATCHES = {
+    "disp-1": {"work": "issue-101", "created_by": "builder-op-1", "claimed_by": "builder-op-1"},
+    "disp-2": {"work": "issue-202", "created_by": "builder-op-1", "claimed_by": "builder-op-1"},
+}
 
 
 @dataclass
@@ -495,7 +485,17 @@ class AdmissionBoundary:
     active_claims: dict = field(default_factory=dict)  # protected claim key -> operator
     active_handoffs: dict = field(default_factory=dict)  # work identity -> owning operator
     human_acts: list = field(default_factory=list)
+    # I1122: durable human acts are never minted from a declared
+    # operator_kind. An actual human act is an externally executed
+    # engineering fact; this standards fixture has no channel that produces
+    # one, so the surface stays empty and negative cases can assert that a
+    # declaration alone records attribution only.
     verified_source_refs: set = field(default_factory=lambda: set(VERIFIED_SOURCES))
+    # §7 declared-context independence: subject -> the declared Builder
+    # logical context (operator_id, session_ref) durably recorded from
+    # accepted builder-role events. A REVIEW_RESULT declaring this same
+    # context is not an independent reviewer.
+    subject_builder_contexts: dict = field(default_factory=dict)
     # P1-03: durable proof/source reference -> the digest of the exact
     # immutable canonical event identity it grounds. Published event refs are
     # bound in the same map, so a later event-ref reuse is checked against the
@@ -526,6 +526,7 @@ class AdmissionBoundary:
             tuple(sorted(self.pending_handoffs.items())),
             tuple(sorted(self.dispatch_claims.items())),
             tuple(sorted(self.workflow_state.items())),
+            tuple(sorted(self.subject_builder_contexts.items())),
         )
 
     def resolve_subject(self, claimed: str) -> tuple[str, str]:
@@ -548,27 +549,37 @@ class AdmissionBoundary:
         if not intent.proof_ref or intent.proof_ref not in self.verified_source_refs:
             return Decision("REJECTED", "UNKNOWN")
         payload = intent.to_payload(subject)
+        # I1122 (issue #1122, user authorization 2026-10-15): executor
+        # attribution is SELF-DECLARED and accepted as such (§5, §8.1.1).
+        # There is no operator credential registry and no kind cross-check:
+        # the declared operator_kind/operator_id/session_ref ARE the
+        # attribution source. A declaration missing a required attribution
+        # field still fails closed — there is no attribution to accept.
+        # (Checked before schema: declaration completeness is an intent-level
+        # precondition, §8.1 "identity resolves unambiguously".)
+        if not (intent.operator_kind and intent.operator_id and intent.session_ref):
+            return Decision("REJECTED", "UNKNOWN")
+        builder_context = self.subject_builder_contexts.get(subject)
+        if (
+            intent.event == "REVIEW_RESULT"
+            and builder_context is not None
+            and (intent.operator_id, intent.session_ref) == builder_context
+        ):
+            # §7: reviewer independence is established by distinct DECLARED
+            # logical contexts, never GitHub identity. Re-declaring the
+            # durably recorded Builder context as a reviewer creates no
+            # independent reviewer (zero mutation).
+            return Decision("REJECTED", "UNAUTHORIZED")
         if canonical_schema_errors(payload):
             # P2-01: the REAL canonical schema drives INVALID_SCHEMA; there is
             # no synthetic schema_valid boolean anywhere on the path.
             return Decision("REJECTED", "INVALID_SCHEMA")
-        verified = VERIFIED_OPERATORS.get(
-            (intent.transport_actor, intent.operator_id, intent.session_ref)
-        )
-        if verified is None:
-            return Decision("REJECTED", "UNAUTHORIZED")
-        verified_kind, allowed_roles = verified
-        if intent.operator_kind != verified_kind:
-            # A self-declared operator_kind (e.g. "human") without a verified
-            # source record is never admitted as a human act.
-            return Decision("REJECTED", "UNAUTHORIZED")
-        if intent.actor_role not in allowed_roles:
-            return Decision("REJECTED", "UNAUTHORIZED")
         required_roles = EVENT_ROLE_AUTHORITY.get(intent.event)
         if required_roles is not None and intent.actor_role not in required_roles:
-            # P1-02: every event type constrains authority, not only the
-            # Review events; a verified operator acting in another role
-            # cannot mint the event by self-declaring one (§8.1.1, §9.4).
+            # P1-02: every event type constrains the DECLARED role, not only
+            # the Review events — the event family, not the declaration,
+            # decides which role may publish it (§8.1.1, §9.4; identity
+            # itself is self-declared per I1122).
             return Decision("REJECTED", "UNAUTHORIZED")
         identity = canonical_event_identity(payload)
         prior_binding = self.source_bindings.get(intent.proof_ref)
@@ -740,13 +751,23 @@ class AdmissionBoundary:
             )
         )
         self.verified_source_refs.add(event_ref)
+        if intent.actor_role == "builder":
+            # §7: durably record the declared Builder logical context of the
+            # subject so a required Review can verify that the declared
+            # reviewer context is distinct from it (no credential check — a
+            # declared-context comparison only).
+            self.subject_builder_contexts.setdefault(
+                subject, (intent.operator_id, intent.session_ref)
+            )
         # P1-03: the proof is anchored to the immutable identity at first
         # admission; the published event ref is bound to the same identity so
         # its later reuse resolves through the same read-back.
         self.source_bindings[intent.proof_ref] = identity
         self.source_bindings[event_ref] = identity
-        if intent.operator_kind == "human":
-            self.human_acts.append((event_ref, intent.operator_id))
+        # I1122: a declared operator_kind="human" records ATTRIBUTION only.
+        # It never mints a human act here — an actual human act requires its
+        # own externally executed evidence (§8.1.1/§9.4; the standards
+        # fixture has no channel for one, see the `human_acts` field note).
         if intent.responsibility_mode == "RESPONSIBILITY_HANDOFF":
             # R4 (review #1051 P1-R3-02): the authorization opens the
             # handoff and moves nothing; the receiving operator's own claim
@@ -1076,9 +1097,15 @@ class SectionContractTests(unittest.TestCase):
     def test_section_5_carries_the_shared_login_cross_reference(self) -> None:
         section = section_5()
         self.assertIn("A shared `transport_actor` neither proves nor negates distinct logical operators", section)
-        self.assertIn("independently verified `operator_id` / `session_ref` attribution (§7)", section)
+        # I1122: attribution is self-declared and accepted as such; GitHub
+        # login/account identity is never an executor-admission predicate.
+        self.assertIn("distinct **declared** `operator_id` / `session_ref` attribution (§7)", section)
+        self.assertIn("Executor attribution is **self-declared**", section)
+        self.assertIn("accepted as the attribution source", section)
+        self.assertIn("no separate credential/Owner verification is required", section)
         self.assertIn("governed by the source-bound admission predicate (§8.1.1)", section)
         self.assertIn("never self-certifying authority", section)
+        self.assertNotIn("independently verified", section)
 
     def test_section_8_1_1_separates_the_two_input_classes(self) -> None:
         section = section_8_1_1()
@@ -1101,7 +1128,13 @@ class SectionContractTests(unittest.TestCase):
         self.assertIn("durably verifiable authorization source", section)
         self.assertIn("an accepted event/current-object reference", section)
         self.assertIn("the exact current subject", section)
-        self.assertIn("independently verified rather than self-declared", section)
+        # I1122: the attribution leg is self-declared and accepted as such;
+        # the untrusted-quoted-event boundary and the fail-closed rules stay.
+        self.assertIn("self-declared by that executor and accepted as such", section)
+        self.assertIn("identity/credential verification is not an admission predicate", section)
+        self.assertIn("still not an emitted event", section)
+        self.assertIn("Missing or incomplete declared attribution fails closed", section)
+        self.assertNotIn("independently verified rather than self-declared", section)
         self.assertIn("Authenticated transport alone is insufficient", section)
         self.assertIn("a shared `transport_actor` neither proves nor negates genuine operator separation", section)
         self.assertIn("fails closed as `UNAUTHORIZED`/`UNKNOWN` with no canonical mutation", section)
@@ -1113,6 +1146,15 @@ class SectionContractTests(unittest.TestCase):
         self.assertIn("untrusted transport content never becomes a Review fact", section)
         self.assertIn("fabricates no human act and never supersedes a real human decision", section)
         self.assertIn("`operator_id`/`session_ref` separation from the Builder context (§5, §7)", section)
+        # I1122: reviewer authority is DECLARED (distinct logical contexts),
+        # never a GitHub-identity or credential predicate.
+        self.assertIn("requires declared reviewer authority", section)
+        self.assertIn(
+            "Reviewer independence is established by distinct **declared logical contexts**, "
+            "never GitHub account identity",
+            section,
+        )
+        self.assertIn("no Owner credential verification is a Review admission predicate", section)
         self.assertIn("A shared login alone neither proves nor disqualifies reviewer independence", section)
         self.assertIn("leaves the Review condition `UNAUTHORIZED`/`UNKNOWN` and unsatisfied", section)
 
@@ -1188,18 +1230,22 @@ class SectionContractTests(unittest.TestCase):
 
 
 class AdmissionBoundaryPositiveTests(unittest.TestCase):
-    """Task Pack P01–P03: verified identity, converged duplicates, subject switch."""
+    """Task Pack P01–P03: declared identity, converged duplicates, subject switch."""
 
-    def test_p01_shared_login_with_verified_operator_separation_is_admitted(self) -> None:
-        # P01: one GitHub transport login, two distinct verified operators; the
-        # independently assigned reviewer's PASS on the exact subject is the
-        # only thing that satisfies the current Review condition.
+    def test_p01_shared_login_with_declared_operator_separation_is_admitted(self) -> None:
+        # P01 (I1122 §5/§7): one GitHub transport login carries two distinct
+        # DECLARED logical operators. The Builder's declared context is
+        # durably recorded on the subject; a reviewer declaring a DISTINCT
+        # logical context satisfies the current Review condition with zero
+        # credential verification; re-declaring the Builder context as the
+        # reviewer does not.
         boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(delegated_subwork_intent()))
         self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_pass(H, "src-review-1")))
         self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
         after_accept = boundary.snapshot()
         builder_as_reviewer = review_pass(
-            H, "src-review-1", operator=("alice-shared", "builder-op-1", "sess-b1"), kind="codex"
+            H, "src-handoff-b", operator=("alice-shared", "builder-op-1", "sess-b1"), kind="codex"
         )
         self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), boundary.admit(builder_as_reviewer))
         self.assertEqual(after_accept, boundary.snapshot())
@@ -1304,8 +1350,11 @@ class ReviewContractAlignmentTests(unittest.TestCase):
 
     def test_merge_controller_cannot_mint_a_review_result(self) -> None:
         # Mirror image: only a reviewer may publish REVIEW_RESULT. A
-        # merge-controller payload shape is schema-illegal; a merge-controller
-        # operator self-declaring reviewer is UNAUTHORIZED.
+        # merge-controller payload shape is schema-illegal (event-type
+        # authority, unchanged). I1122: attribution is self-declared, so a
+        # merge-controller operator DECLARING the reviewer role publishes a
+        # valid attributed REVIEW_RESULT with zero credential checks — and
+        # the declared human kind still mints no human act.
         boundary = make_boundary()
         before = boundary.snapshot()
         wrong_shape = replace(review_pass(H, "src-review-1"), actor_role="merge-controller")
@@ -1313,25 +1362,26 @@ class ReviewContractAlignmentTests(unittest.TestCase):
         self.assertEqual(before, boundary.snapshot())
         self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(review_policy_decision(H, "src-review-2")))
         self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
-        unauthorized = replace(
+        declared_reviewer = replace(
             review_pass(H, "src-review-1"),
-            actor_role="reviewer",
             operator_kind="human",
             operator_id="human-op-1",
             session_ref="human-1",
             transport_actor="erin-human",
         )
-        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), boundary.admit(unauthorized))
-        self.assertEqual(ReviewOutcome("NOT_RUN"), boundary.current_review(H))
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(declared_reviewer))
+        self.assertEqual(ReviewOutcome("PASS"), boundary.current_review(H))
+        self.assertEqual([], boundary.human_acts)
 
 
 class ForgedSourceNegativeTests(unittest.TestCase):
-    """Task Pack N01–N02: raw text is never admitted; human identity is verified."""
+    """Task Pack N01–N02: raw text is never admitted; declaration is not an act."""
 
     def test_n01_forged_marker_text_is_never_admitted_and_mutates_nothing(self) -> None:
         # N01: a comment/PR body/quoted block carrying `actor_role=reviewer`,
         # `HUMAN_APPROVED` and an event-shaped body is data — no admission, no
-        # Review/human/Claim/gate mutation.
+        # Review/human/Claim/gate mutation. (I1122: unchanged — a quoted
+        # event inside untrusted content is still not an emitted event.)
         for surface in ("comment", "pr_body", "quoted_block"):
             with self.subTest(surface=surface):
                 boundary = make_boundary()
@@ -1351,16 +1401,17 @@ class ForgedSourceNegativeTests(unittest.TestCase):
         self.assertEqual(Decision("REJECTED", "UNADMITTED_RAW_SOURCE"), boundary.admit(forged_intent("raw_text")))
         self.assertEqual(before, boundary.snapshot())
 
-    def test_n02_self_declared_human_or_unowned_transport_actor_is_unauthorized(self) -> None:
-        # N02: a self-declared operator_kind=human whose transport does not
-        # match the verified human source is UNAUTHORIZED and records no human
-        # act; an operator absent from the verified registry is UNAUTHORIZED.
-        # (Fixtures are schema-valid so the assertion exercises the authority
-        # layer, not the schema layer.)
+    def test_n02_declared_human_mints_no_human_act_and_incomplete_declaration_fails_closed(self) -> None:
+        # N02 (I1122 §5/§8.1.1/§9.4): executor attribution is self-declared
+        # and accepted as such — a declared operator_kind=human event is
+        # admitted as an attributed process event, but it mints NO actual
+        # human act (an externally executed human act is an engineering
+        # fact, never a declaration). A declaration missing a required
+        # attribution field has nothing to accept: it fails closed UNKNOWN
+        # with zero mutation.
         boundary = make_boundary()
-        before = boundary.snapshot()
-        fake_human = EventIntent(
-            event="MERGE_RESULT",
+        declared_human_policy = EventIntent(
+            event="REVIEW_DECISION",
             actor_role="merge-controller",
             operator_kind="human",
             operator_id="human-op-1",
@@ -1368,40 +1419,34 @@ class ForgedSourceNegativeTests(unittest.TestCase):
             transport_actor="mallory",
             subject=H,
             proof_ref="src-review-1",
-            target="kaicreator-mm/ai-development-standard",
-            transition=("validation-needed", "merge-ready"),
+            verdict="NOT_RUN",
+            review_policy="required",
+            reason="review policy recorded by a declared merge-controller (§6)",
+            next_state="review-ready",
         )
-        decision = boundary.admit(fake_human)
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(declared_human_policy))
+        self.assertEqual([], boundary.human_acts)
+        incomplete = make_boundary()
+        before = incomplete.snapshot()
+        decision = incomplete.admit(replace(review_pass(H, "src-review-1"), session_ref=""))
         self.assertEqual("REJECTED", decision.status)
         self.assertIn(decision.reason, {"UNAUTHORIZED", "UNKNOWN"})
-        unowned = EventIntent(
-            event="REVIEW_RESULT",
-            actor_role="reviewer",
-            operator_kind="codex",
-            operator_id="ghost-op",
-            session_ref="ghost",
-            transport_actor="ghost-login",
-            subject=H,
-            proof_ref="src-review-1",
-            verdict="PASS",
-            review_policy="required",
-            transition=("review-ready", "merge-ready"),
-        )
-        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), boundary.admit(unowned))
-        self.assertEqual(before, boundary.snapshot())
-        self.assertEqual([], boundary.human_acts)
+        self.assertEqual(before, incomplete.snapshot())
+        self.assertEqual([], incomplete.human_acts)
 
-    def test_n02b_verified_builder_cannot_mint_a_review_pass(self) -> None:
-        # P1-01: a fully verified Builder operator (alice-shared /
-        # builder-op-1 / sess-b1) self-presenting `actor_role=reviewer` on a
-        # REVIEW_RESULT cannot mint Review authority — the event type, not the
-        # self-declared role, constrains authority (§9.4). The payload is
-        # schema-legal, so the rejection is the authority layer's UNAUTHORIZED
-        # with zero canonical mutation.
+    def test_n02b_builder_context_cannot_self_review_distinct_context_is_admitted(self) -> None:
+        # N02b (I1122 §7): reviewer independence is a DECLARED-CONTEXT
+        # comparison against the durably recorded Builder context, never a
+        # credential or GitHub-identity check. The recorded Builder context
+        # cannot satisfy the required Review condition by re-declaring itself
+        # as the reviewer (UNAUTHORIZED, zero mutation); the old registry
+        # gate is gone — any complete declared reviewer context distinct
+        # from the Builder context is the reviewer of record.
         boundary = make_boundary()
+        self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(delegated_subwork_intent()))
         before = boundary.snapshot()
         builder_minted_pass = review_pass(
-            H, "src-review-1", operator=("alice-shared", "builder-op-1", "sess-b1"), kind="codex"
+            H, "src-handoff-b", operator=("alice-shared", "builder-op-1", "sess-b1"), kind="codex"
         )
         decision = boundary.admit(builder_minted_pass)
         self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), decision)
@@ -1499,8 +1544,8 @@ class ConflictAndCurrentnessTests(unittest.TestCase):
 
     def test_n04b_review_without_transition_is_still_checked_for_subject_currentness(self) -> None:
         # P1-03: the exact live-subject check applies to every Review event
-        # shape. With live_subject=H2, an independently verified reviewer's
-        # REVIEW_RESULT on H — even with transition=None (the canonical
+        # shape. With live_subject=H2, a declared reviewer's REVIEW_RESULT on
+        # H — even with transition=None (the canonical
         # next_state is carried directly) — is STALE_IDENTITY, not ACCEPTED.
         # Zero mutation.
         boundary = make_boundary()
@@ -1667,14 +1712,17 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
     illegal responsibility transfer."""
 
     def test_n05_unauthorized_invalid_or_illegal_input_is_rejected_atomically(self) -> None:
-        # N05: unauthorized reviewer, schema-invalid status and illegal
-        # transition all fail closed with no partial canonical mutation. The
-        # invalid-schema case is a real canonical-schema violation (the legacy
-        # judgment token is not a REVIEW_RESULT status); the illegal
-        # transition is schema-legal but owner-workflow-illegal.
+        # N05: an incomplete identity declaration, a schema-invalid status and
+        # an illegal transition all fail closed with no partial canonical
+        # mutation. (I1122: an arbitrary complete declared reviewer is
+        # accepted — attribution is self-declared — so the identity negative
+        # is now the MISSING declaration; the invalid-schema case is a real
+        # canonical-schema violation (the legacy judgment token is not a
+        # REVIEW_RESULT status); the illegal transition is schema-legal but
+        # owner-workflow-illegal.)
         cases = {
-            "unauthorized_reviewer": review_pass(
-                H, "src-review-1", operator=("mallory", "mallory-op", "mallory-1")
+            "incomplete_declaration": replace(
+                review_pass(H, "src-review-1"), operator_id="", session_ref=""
             ),
             "invalid_schema": replace(review_pass(H, "src-review-1"), verdict="CHANGES_REQUESTED"),
             "illegal_transition": replace(
@@ -1717,16 +1765,17 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
         # N06 (P1-02): delegation without a durably named parent dispatch is
         # schema-invalid, an unknown parent is UNKNOWN, and — the new oracle —
         # a delegation over a KNOWN parent by an operator who is not its
-        # current owner is UNAUTHORIZED. Role amplification stays
-        # UNAUTHORIZED. In every case: no owner transfer, no role
-        # amplification, zero mutation.
+        # current owner is UNAUTHORIZED. (I1122: the old registry-based
+        # "role amplification" negative is gone with the registry — the
+        # declared role is trusted; the durable owner check is the
+        # protection that remains.) In every case: no owner transfer, zero
+        # mutation.
         cases = {
             "missing_parent_ref": replace(delegated_subwork_intent(), parent_dispatch_ref=""),
             "unknown_parent_ref": delegated_subwork_intent(parent="disp-ghost"),
             "non_owner_delegation": delegated_subwork_intent(
                 operator=("frank-shared", "builder-op-2", "sess-b2")
             ),
-            "role_amplification": delegated_subwork_intent(actor="reviewer"),
         }
         for label, intent in cases.items():
             with self.subTest(case=label):
@@ -1776,11 +1825,13 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
         self.assertEqual(after_transfer, boundary.snapshot())
 
     def test_n06c_self_claim_and_unverifiable_receiver_transfer_nothing(self) -> None:
-        # P1-02 (R4 review #1051 P1-R3-02): the transferor completing his own
-        # open handoff records no change of ownership — an illegal ownership
-        # transition; an unverifiable receiver cannot become the recorded
-        # owner (the generic verified-operator gate fails closed UNAUTHORIZED
-        # before the responsibility check runs). Zero mutation in both.
+        # P1-02 (R4 review #1051 P1-R3-02; I1122 receiver half): the
+        # transferor completing his own open handoff records no change of
+        # ownership — an illegal ownership transition. Receiver identity is
+        # self-declared: an arbitrary complete declared receiver IS the
+        # recorded owner of record after claiming (no credential check);
+        # ownership still moves only through the authorized two-fact A→B
+        # sequence, never by the claimer's own assertion alone.
         boundary = make_boundary()
         self.assertEqual(Decision("ACCEPTED", ""), boundary.admit(handoff_intent()))
         before = boundary.snapshot()
@@ -1792,13 +1843,12 @@ class AtomicRejectionAndHandoffTests(unittest.TestCase):
         self.assertEqual(before, boundary.snapshot())
         ghost_boundary = make_boundary()
         self.assertEqual(Decision("ACCEPTED", ""), ghost_boundary.admit(handoff_intent()))
-        ghost_before = ghost_boundary.snapshot()
         ghost = handoff_claim_intent(
             receiver=("ghost-login", "ghost-op", "ghost-session"), proof="src-review-2"
         )
-        self.assertEqual(Decision("REJECTED", "UNAUTHORIZED"), ghost_boundary.admit(ghost))
-        self.assertEqual({}, ghost_boundary.active_handoffs)
-        self.assertEqual(ghost_before, ghost_boundary.snapshot())
+        self.assertEqual(Decision("ACCEPTED", ""), ghost_boundary.admit(ghost))
+        self.assertEqual("ghost-op", ghost_boundary.active_handoffs["issue-202"])
+        self.assertEqual("ghost-op", ghost_boundary.dispatch_claims["disp-2"])
 
     def test_n06d_handoff_initiated_by_non_owner_is_unauthorized_and_transfers_nothing(self) -> None:
         # P1-02: disp-2 is created/claimed by builder-op-1 with no active

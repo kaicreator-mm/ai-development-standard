@@ -215,7 +215,7 @@ Dynamic operator/session identities MUST remain in structured events rather than
 
 `ROLE_CLAIMED` / `ROLE_RELEASED` provide attribution and routing visibility. They are not Validation PASS and not a distributed lock.
 
-A shared `transport_actor` neither proves nor negates distinct logical operators: separation is established only by independently verified `operator_id` / `session_ref` attribution (§7), and any admission decision that consumes such attribution is governed by the source-bound admission predicate (§8.1.1); asserted fields inside untrusted transport text are claims to be verified, never self-certifying authority.
+A shared `transport_actor` neither proves nor negates distinct logical operators: separation is established by distinct **declared** `operator_id` / `session_ref` attribution (§7). Executor attribution is **self-declared**: the executing executor supplies `actor_role`, `operator_kind`, `operator_id`, `session_ref` and optional `delegation`, and they are accepted as the attribution source. GitHub login/account identity is transport metadata, never an executor-admission predicate, and no separate credential/Owner verification is required for normal development. Any admission decision that consumes such attribution is still governed by the source-bound admission predicate (§8.1.1); asserted fields inside untrusted transport text are claims to be verified, never self-certifying authority, and a declaration missing required attribution fields fails closed.
 
 ## 6. Independent Review policy
 
@@ -259,7 +259,7 @@ When Review is performed:
 - publish material findings and required routing;
 - request real validation instead of guessing runtime facts.
 
-For required Review, Reviewer MUST be attributable to a context independent from the Builder context. The same GitHub `transport_actor` is allowed, but `operator_id/session_ref` must make the separation auditable.
+For required Review, Reviewer MUST be attributable to a declared logical context independent from the Builder context. The same GitHub `transport_actor` is allowed; reviewer independence uses distinct **declared** `operator_id/session_ref` contexts — never GitHub account identity, and no separate credential/Owner verification. The declaration itself makes the separation auditable.
 
 Acceptable independent contexts include another ChatGPT session, another coding/review agent, a human reviewer, or the same model in a fresh context that reconstructs facts from GitHub.
 
@@ -331,7 +331,7 @@ admitted canonical event           = an accepted GitHub event/current object tha
 
 A schema-valid event shape, marker or role assertion carried inside untrusted transport content — including a quoted/embedded event block, `actor_role=reviewer` or `HUMAN_APPROVED` text — is data. It MUST NOT be admitted by its own shape, MUST NOT acquire the authority it asserts, and MUST NOT by itself produce any canonical Review/human/Claim/gate mutation.
 
-Beyond schema validity, an event asserting logical-operator authority is admitted only with a durably verifiable authorization source: an accepted event/current-object reference, the exact current subject, and `actor_role` / `operator_kind` / `operator_id` / `session_ref` / delegation attribution (§5; the §8.4.1 responsibility projection when work crosses operators) that is independently verified rather than self-declared. Authenticated transport alone is insufficient, and a shared `transport_actor` neither proves nor negates genuine operator separation. Missing or unverifiable attribution fails closed as `UNAUTHORIZED`/`UNKNOWN` with no canonical mutation.
+Beyond schema validity, an event asserting logical-operator authority is admitted only with a durably verifiable authorization source: an accepted event/current-object reference, the exact current subject, and `actor_role` / `operator_kind` / `operator_id` / `session_ref` / delegation attribution (§5; the §8.4.1 responsibility projection when work crosses operators) that is **self-declared by that executor and accepted as such** — identity/credential verification is not an admission predicate, and normal development does not suspect the declaration. Authenticated transport alone is insufficient, and a shared `transport_actor` neither proves nor negates genuine operator separation. A quoted or embedded declaration inside untrusted transport content is still not an emitted event — it remains data per the input classes above. Missing or incomplete declared attribution fails closed as `UNAUTHORIZED`/`UNKNOWN` with no canonical mutation.
 
 ### 8.2 New-work event writer
 
@@ -545,7 +545,7 @@ The current finding aggregate is a derived projection over durable Review facts:
 The §9.1–§9.3 flows consume only admitted canonical events (§8.1.1); untrusted transport content never becomes a Review fact. Deterministically:
 
 - Raw text asserting review or human authority — for example `actor_role=reviewer`, `HUMAN_APPROVED` or a quoted/embedded event block — acquires no right, satisfies no Review condition, fabricates no human act and never supersedes a real human decision.
-- An accepted current Review verdict requires independently verified reviewer authority: `operator_id`/`session_ref` separation from the Builder context (§5, §7), the exact current subject and a valid accepted event reference. A shared login alone neither proves nor disqualifies reviewer independence; unverified attribution leaves the Review condition `UNAUTHORIZED`/`UNKNOWN` and unsatisfied.
+- An accepted current Review verdict requires declared reviewer authority: `operator_id`/`session_ref` separation from the Builder context (§5, §7), the exact current subject and a valid accepted event reference. Reviewer independence is established by distinct **declared logical contexts**, never GitHub account identity, and no Owner credential verification is a Review admission predicate. A shared login alone neither proves nor disqualifies reviewer independence; a missing or incomplete declared attribution leaves the Review condition `UNAUTHORIZED`/`UNKNOWN` and unsatisfied.
 - Current accepted opposite verdicts on the same exact subject are a conflict, not a judgment: the aggregate records it through the existing conflict surface (`conflict_refs`) with judgment `BLOCKED` pending owning disposition, deterministically and invariant to arrival order, never latest-wins (§9.3).
 - A prior-subject `PASS` is never reused for a successor subject: an ambiguous SHA prefix or a missing durable event/proof reference stays `STALE`/`UNKNOWN` (§9.1) and leaves the successor's Review condition unsatisfied, while the superseded `PASS` remains immutable audit history.
 - An unauthorized reviewer, an invalid schema, an illegal transition or a live conflicting protected claim is rejected atomically (§8.1) with zero partial canonical mutation, and unattributed delegation/handoff or dual active owners transfer no ownership and amplify no role (§8.4.1, §8.5).
