@@ -1,12 +1,12 @@
 # ADS v4.12 — #1123 L2 R6 Scoped Identity/Authority Architecture Delta Candidate
 
-> **STATE: AUTHOR-SIDE ARCHITECTURE DELTA, NOT FROZEN.** Bounded successor based on user-authorized #1123 intake [Product R4 Delta Candidate](../product/V412_I1123_PRODUCT_R4_DELTA_CANDIDATE.md) exact blob `847e707b78359f6e9de2901b2ea049557b7eb104`, and separately Frozen Product R3/L2 R5. Does not change old frozen Git objects, existing runtime/Claim/Gate authority or grant a normative implementation branch.
+> **STATE: AUTHOR-SIDE ARCHITECTURE DELTA, NOT FROZEN.** Bounded successor based on user-authorized #1123 intake [Product R4 Delta Candidate](../product/V412_I1123_PRODUCT_R4_DELTA_CANDIDATE.md) exact blob `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, and separately Frozen Product R3/L2 R5. Does not change old frozen Git objects, existing runtime/Claim/Gate authority or grant a normative implementation branch.
 
 ```ini
 EVENT=ADS_V412_I1123_L2_R6_AUTHOR_SCOPED_DELTA
 USER_SCOPE_AUTHORIZATION=CURRENT_CHAT_2026_10_15
 CHANGE_SOURCE_BLOB=6d783ecb8b02a61d4e2d60174e1a12832f27b948
-PRODUCT_DELTA_CANDIDATE_BLOB=847e707b78359f6e9de2901b2ea049557b7eb104
+PRODUCT_DELTA_CANDIDATE_BLOB=e924fa29d8fe3c846eeb7f6ca41131609b19b0ad
 PRODUCT_R3_FROZEN_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
 L2_R5_FROZEN_BLOB=68608ef6456334d627db1797ba2e023233c84ce7
 DAG_R3_FROZEN_BLOB=adc9e522f3b734a59898091945b9c7545530565a
