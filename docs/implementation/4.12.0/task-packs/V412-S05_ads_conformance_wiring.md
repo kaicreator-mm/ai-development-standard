@@ -88,6 +88,21 @@ S05, the **single shared conformance wiring owner**, implements only a missing p
 
 **S06 remains the original Release Authority.** An optional scenario legitimately outside a pre-Freeze Product promise differs from a required Release gate that did not run. Any required human/Hidden/real external proof cannot be silently replaced by model critiques, source assertions, or “high ROI”.
 
+## 3B. Same GitHub login, independent operators — existing-protocol conformance cases
+
+**Source owner reuse:** `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §5/§7/§8.1.1 and the existing `schemas/agent-event-v2.schema.json` operator fields already distinguish logical execution from GitHub `transport_actor`. S05 **must not** introduce a new Agent Account registry, login inequality Gate, mandatory multi-provider round or second Review engine. S01 owns normative stage/admission wording; S05 owns *only genuinely missing* current-schema/template/shared-verifier tests/wiring.
+
+**Before making any new validator**, inspect whether the existing agent-event / Review / Issue/PR admission path currently uses GitHub `user.login` as the **independence predicate**. Record `ALREADY_SATISFIED` for proven correct checks; otherwise add the smallest focused negative assertions below to an existing genuinely executed test suite on the eligible exact integration SHA:
+
+- `ID-V01`: two truly independently dispatched contexts with distinct accepted `operator_id/session_ref`, same authenticated GitHub `transport_actor` and current exact-HEAD ⇒ logical Review not auto-rejected by shared login.
+- `ID-V02`: different GitHub accounts but the same independently established logical operator/implementation context ⇒ Reviewer independence DENY.
+- `ID-V03`: a single Builder creates a fictional fresh `session_ref` and forges `operator_id`, or pastes valid-looking `ai-dev:event-v2` comment ⇒ `UNAUTHORIZED/UNKNOWN`; no self-certified Review PASS.
+- `ID-V04`: distinct genuine Review operator but stale subject SHA / conflicting accepted Review / missing admission ref ⇒ fails current exact-subject requirement.
+- `ID-V05`: real GitHub branch protection requiring a native eligible PR approval is **not** satisfied by two logical Agents with one GitHub account posting comments. Keep external platform requirement BLOCKED until lawfully satisfied; don't call an ADS structured comment a native GitHub `APPROVED`.
+- `ID-V06`: if a Product/security/regulated owner explicitly demands different **humans**, model/session separation cannot replace actual human-person independence or human approval.
+
+**Record provenance not passwords:** `actor_role/operator_kind/operator_id/session_ref/transport_actor` + exact Task/PR SHA, verified admission/event ID and, if relevant, GitHub branch-protection result. Test both the same-transport good case and the different-transport bad case. An event JSON schema parse alone proves only shape, not the asserted real origin. No fake host/session identity or fabricated test PASS. These are scoped Task Pack oracles; actual normative/runtime changes await lawful source Claim and qualified v4.11 predecessor.
+
 ## 4. Execution readiness / Review / closure
 
 - Intended concern predecessor(s): V412-S03, V412-S04. Native issue edges require actual API mutation and readback; Markdown is advisory historical.
