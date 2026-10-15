@@ -1232,7 +1232,8 @@ class SectionContractTests(unittest.TestCase):
 class AdmissionBoundaryPositiveTests(unittest.TestCase):
     """Task Pack P01–P03: declared identity, converged duplicates, subject switch."""
 
-    def test_p01_shared_login_with_declared_operator_separation_is_admitted(self) -> None:
+    # Historical S17/T12 callable ID; assertion now tests declared context, not verified identity.
+    def test_p01_shared_login_with_verified_operator_separation_is_admitted(self) -> None:
         # P01 (I1122 §5/§7): one GitHub transport login carries two distinct
         # DECLARED logical operators. The Builder's declared context is
         # durably recorded on the subject; a reviewer declaring a DISTINCT
