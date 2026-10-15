@@ -294,3 +294,51 @@ GITHUB_COMMITTED_SCRIPT_EXECUTION=NOT_RUN
 L2_FROZEN=NO
 PRODUCT_FREEZE=R3_UNCHANGED
 ```
+
+
+## 10. L2 R3 — deterministic pre-DF Work Item choice and owner-classified scope (2026-10-15)
+
+> **Bounded L2 design closure, NOT Architecture Freeze or source-write permission.** This addendum resolves a material author-choice ambiguity in R2 ADR-01 and makes R2 N10's pre-acceptance owner evidence explicit. Frozen Product R3 and its blob remain unchanged. Prior R2 blob `9dd12912550bbd0db30d1f391084ae058eae56db` remains the reviewed source checkpoint; this R3 has a new exact blob.
+
+### ADR-01 R3 — one canonical planning path, prospective adoption only
+
+1. **Before Implementation DAG Freeze**, a planned `PLANNING_SCAFFOLD` source-writing concern is **one canonical `type:planning` Work Item** under the current Work Item Contract; `PLANNING_SCAFFOLD` is its concern/profile label, **not** an Issue type or an independent Claim. One appointed owner owns the overlapping source write set. Do not let the scaffold author dynamically choose `type:task` as a second admission route for this same pre-DF concern. Planning-only read/research evidence can remain inline or in an existing planning Issue when no actual source write is needed.
+2. A `type:task` implementation Work Item is used **after the legitimate Implementation DAG Freeze/materialization** for feature or repair execution. An already-materialized project-local Task cannot silently be reclassified as pre-DF planning. If a project's frozen higher-authority override genuinely requires a different role/type, classify it as an **authority conflict requiring existing owner disposition before dispatch**, not as writer discretion.
+3. The prospective **v4.12 Workflow/Work Item/Agent Interaction projection must explicitly authorize this single planning-source case at its correct phase**; the v4.11 Stage-2→Task-DAG→Stage-3 ordering is not retroactively changed. Until that prospective owner projection is lawfully adopted, a canonical planning Issue and Product/L2 drafts **do not permit a real Scaffold source write**. A complete scoped Issue, resolved pre-dispatch Review Policy, owner-approved allowed/forbidden source set, actual `READY`, accepted CAS `DISPATCH_CLAIMED` Start Record and readback remain mandatory. New source files, PRs, merged SF and executed external effects remain distinct authorities.
+4. Actual DAG-I Task Issues are materialized only through their own authoritative DF checkpoint and GitHub-native dependencies; planning Issue history is provenance, **not** a substitute Task or an extra native dependency. A single immutable `SF→DF` link later binds the accepted merged planning source to canonical Task bindings. No second controller, claim ledger, Bootstrap Gate or equivalent approval role is introduced.
+
+**Admission falsifiers:** `type:task` masquerading as pre-DF `PLANNING_SCAFFOLD` without an adopted phase rule → HOLD; `type:planning` with no accepted Claim → DENY source write; accepted Claim but unresolved required Review Policy or unapproved public contract semantics → SF NOT_ACCEPTED; a valid planning Claim authorizing file creation alone → still DENY unknown package install, postinstall, network, secret or remote effects until separately admitted under existing effect/environment policy.
+
+### ADR-03 R3 — L2-owned exemption eligibility and exact SF acceptance
+
+The Frozen L2/source-owner rule must define **eligible semantic classes and independent checking obligations**; future project-specific actual exact paths are classified at **SF source-review/acceptance time** against that already-frozen rule. A planning author may propose paths but cannot self-certify their exemption. Keep the original full tracked Git path inventory, file mode/kind/OID, scope-manifest identity and accepted-SF immutable tuple. Use NUL-safe Git path handling in a production checker.
+
+| Exact-path class proposed at SF | May omit from SF material-view digest? | Separate obligatory proof |
+|---|---|---|
+| `DAG_ONLY_INPUT` | Only if *exact* path is approved as DAG-only by existing source owner | Current DF blob, MI canonical semantic digest and Task-binding validity |
+| `DERIVED_NONAUTHORITATIVE_OUTPUT` | Only if the path cannot act as a canonical source/config/contract | Regenerate independently from trusted committed inputs and compare output |
+| `FREEZE_RECORD_OUTPUT` | Only if the path is exclusively the record output | Real owner act + accepted immutable pair-input reference, no self-attestation |
+| Source, ABI/contract/schema, build/lock/CI, anchor/scope manifest, Git symlink/gitlink/external reference with executable/material impact, or UNKNOWN | **No** | MATERIAL or HOLD; applicable owner validation/rebaseline |
+
+The accepted SF's immutable exemption **path + class + checking obligation** must be verifiable from the source owner and fixed before the initial pair checkpoint. The eventual checker must not treat this document's example paths or the research fixture's hardcoded synthetic role registry as universal permissions. Subsequent additions/removals/renames must be evaluated using the accepted SF manifest, not a proposed successor's expanded list. The DAG/derived/record paths remain excluded from **SF-tree hashing only**, never from their distinct currentness/authority checks.
+
+**Targeted negative oracles for implementation:** (a) preaccepted but unauthorized source file included in exemption registry → `SF_ACCEPTANCE=DENY`; (b) legitimate DAG-only successor with unchanged material Git objects → `SF_MV_REUSE=YES` while `DF_MI_RECHECK=REQUIRED` and stale derived output → `HOLD`. These are **design-level requirements, not newly executed tests**; historic E1 research evidence remains `12/12 EXPECTED`, with committed fixture exact execution and real native CAS `NOT_RUN`.
+
+### L2 stop and owner decision packet
+
+- **Design resolved for owner's acceptance:** U01 = unique `type:planning` pre-DF source concern, no source write until explicit prospective Workflow adoption and accepted Claim; U02 = scoped Git-object identity + preaccepted owner-classified exemptions; U03 = one current binding from canonical Issue scope, lawfully updated after SPLIT; U04 = reuse existing Validation/Release exact assertion evidence.
+- **Known and not disguised:** U05 = v4.11 unreleased predecessor blocks eventual version integration/release, **not** current Architecture source study. The planning PR inherits historic `main` CI with a shallow checkout, while `version/v4.11.0` already carries the owner-reviewed `fetch-depth: 0` fix (Issue #1038 / PR #1040); its missing-history v4.9 kernel failure is a baseline lineage issue, not proof of v4.12 behavior. Reuse the qualified predecessor's CI fix at legal integration; do not open a duplicate v4.12 CI concern solely for this inherited failure.
+- **Architecture Owner decision requested:** review and accept/adjust ADR-01/02/03 against frozen Product R3, the exact R3 blob and existing v4.11 owner standards; then record a *separate legitimate exact L2 Freeze* if no material contradiction remains. Do not silently mint approval from this author's analysis. No other all-workstream R4 audit, extra gate, real Build Host run or artificial Task materialization is warranted for these source-first facts.
+
+```ini
+L2_R3=SOURCE_DESIGN_DECISION_PACKET
+PRODUCT_FREEZE=UNCHANGED_R3_EXACT_BLOB
+U01_PRE_DF_CANONICAL_TYPE=type:planning_PROSPECTIVE
+N10_EXEMPTION_POLICY=FROZEN_OWNER_CLASSIFICATION_AND_EXACT_SF_ACCEPTANCE
+ARCHITECTURE_OWNER_DECISION=NOT_RECORDED
+L2_FREEZE=NOT_RECORDED
+IMPLEMENTATION_SOURCE_CLAIM=NONE
+COMMITTED_PROTOTYPE_EXACT_RUN=NOT_RUN
+CI_PREDECESSOR_MISSING_HISTORY=KNOWN_REUSE_PR1040_AFTER_LEGAL_REBASE
+RELEASE=NOT_QUALIFIED
+```
