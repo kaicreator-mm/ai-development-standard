@@ -23,7 +23,7 @@ operator_id: <例如 chatgpt-web:web-b>
 session_ref: <本具体页面/会话的非敏感别名>
 transport_actor: <例如 github:kaicreator-mm>
 
-如果与 Builder 使用同一个 GitHub 账号，transport_actor 可以相同；required Independent Review 的 operator_id/session_ref 必须能证明这是与 Builder 不同的实现上下文。
+Reviewer 自行声明当前独立 Review 上下文及 operator_id/session_ref；以此自声明为准，不要求证明现实身份、Session 归属或使用不同 GitHub 账号。GitHub 账号仅用于提交事件，不得用来推断逻辑执行体。
 
 不要把 access token、cookie、签名 URL 或其它凭据写入这些字段。
 
@@ -35,7 +35,7 @@ transport_actor: <例如 github:kaicreator-mm>
 4. 阅读 PROJECT_OVERRIDES（若存在）。
 5. 读取 PR 关联的 Task Issue。
 6. 读取 Task Issue 的 Milestone、labels/state、Review Policy、Issue Dependencies、相关 sub-issues。
-7. 读取已有 ROLE_CLAIMED / Agent events，确认 Builder/其它 Reviewer 的 operator attribution，避免误把同一 GitHub author 当成同一逻辑 Agent。
+7. 读取已有 ROLE_CLAIMED / Agent events 了解 Task/Review 进度；采信 Builder/Reviewer 各自自声明的逻辑执行体身份，不使用 GitHub author 做同一执行体、独立性或 Owner 资格校验。
 8. 读取 Frozen PRD / Architecture / Task DAG / L3 references。
 9. 读取 PR baseline、target branch、diff、当前 HEAD SHA、已有 Validation Evidence 与 review threads。
 10. 如果 PR 是 stacked PR，确认其 base branch/parent PR 与 Task Issue dependency 语义是否一致；不要把 stack 本身当成 canonical Task DAG。
