@@ -1,0 +1,46 @@
+# Validation-only workflow. Branch-local, never merged to version/main.
+# It checks out the EXACT v4.11 candidate SHA rather than the workflow commit.
+name: v411 V01 standards candidate scoped real-host validation
+on:
+  push:
+    branches:
+      - validation/v411-v01-focused-host-20261015
+permissions:
+  contents: read
+jobs:
+  standards-focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout pinned version candidate
+        uses: actions/checkout@v4
+        with:
+          ref: e35b32bc3f1ae50921ed78004909630cdd2f51f9
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Assert exact candidate and clean source
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "e35b32bc3f1ae50921ed78004909630cdd2f51f9"
+          test -z "$(git status --porcelain)"
+          echo "TESTED_SHA=$(git rev-parse HEAD)"
+          echo "TESTED_TREE=$(git rev-parse HEAD^{tree})"
+          python --version
+      - name: Verify normative standard and manifest
+        run: python -B scripts/verify_standard.py
+      - name: Verify effective-rule/reference conformance (T01)
+        run: python -B scripts/test_v411_t01_effective_rules.py
+      - name: Verify untrusted channel/secret semantics (T10)
+        run: python -B scripts/test_v411_t10_untrusted_inputs.py
+      - name: Verify synthetic-only durable SQLite S08
+        run: python -B scripts/test_v411_s08_prospective_mechanism.py
+      - name: Verify 52-record T12 conformance truth (not all 52 material PASS)
+        run: python -B scripts/test_v411_t12_abc_conformance.py
+      - name: Verify tested source remained clean
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "e35b32bc3f1ae50921ed78004909630cdd2f51f9"
+          test -z "$(git status --porcelain)"
