@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/organization-development-environment-profile-v1.schema.json",
+  "title": "AI Development Organization Development Environment Profile v1",
+  "description": "Organization defaults only; no project requirements, installed host state, certification, credentials or runtime authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "organization",
+    "preferred_toolchains"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preferred_toolchains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "preferred_version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          },
+          "preferred_version": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Advisory organization preference, not project compatibility or certification"
+          },
+          "preferred_provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "policy_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "environment_hints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cache_policy": {
+          "enum": [
+            "shared_reconstructible_only",
+            "project_isolated",
+            "unspecified"
+          ]
+        },
+        "workspace_policy": {
+          "enum": [
+            "per_task_isolated",
+            "project_local",
+            "unspecified"
+          ]
+        },
+        "offline": {
+          "enum": [
+            "allow_exact_cached_sources_only",
+            "require_live_resolution",
+            "unspecified"
+          ]
+        },
+        "mirror_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "host_capability_hints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source_policy_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

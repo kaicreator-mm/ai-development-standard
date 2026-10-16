@@ -146,6 +146,7 @@
       "schemas/local-agent-handoff.schema.json",
       "schemas/maintenance-policy-v1.schema.json",
       "schemas/migration-transition-v1.schema.json",
+      "schemas/organization-development-environment-profile-v1.schema.json",
       "schemas/operation-binding-v1.schema.json",
       "schemas/operation-v1.schema.json",
       "schemas/repository-integration-v4-precondition.schema.json",

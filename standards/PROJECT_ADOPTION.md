@@ -89,6 +89,61 @@ The deterministic read-only eligible-candidate selection and its focused negativ
 - Already active Task or open Claim under old revision → keep the old **effective** SHA until lawful project-local version checkpoint; a discovery suggestion never rebinds it.
 - Evidence-only/low-automation A0/A1 consumer → no extra machine agent requirement or missing-E3 PASS; required substantive checks are identical to A2–A4.
 
+### 2.1B v4.13 — source-proven prospective planning, opted-in PR, and safe activation
+
+The **v4.12 read-only safe recommendation selector and its refusal semantics remain unchanged.** Current `scripts/v412_ads_compatible_select.py` conservatively reports `NO_SAFE_RECOMMENDATION` with `ACTIVE_OR_UNCLASSIFIED_WORK_ITEM` when a target project has any open Issue/PR. Such refusal is **not** evidence that a release is compatible, and MUST NOT be transformed into `SAFE` or used as authorization for a consumer update PR. This clause adds a **distinct, non-SAFE prospective planning contract** for an adopting project under a qualified v4.13+ effective standard; it does not retrofit the already-published v4.12 selector or invent a new Gate/workflow state.
+
+#### Source-bound prospective evidence (read-only, never activation)
+
+A consumer implementation MAY describe a newer ADS revision as `EVIDENCE_BACKED_COMPATIBLE_PROPOSAL` **only** after independently establishing all of:
+
+1. Current project's effective `.dev-standard/VERSION` exact immutable source and its actual project-local adoption/compatibility requirements.
+2. Proposed ADS exact SHA with observed **published stable Release Qualification**, frozen candidate/merge/published identity and actual current source references. Semver, a tag alone, a green PR or mere reachability are not sufficient.
+3. Affirmative project-specific compatibility evidence for actual impacted **source/schema, behavior, actor/authority, Claim/Review, Validation/Release, migration and external effects** according to `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` and applicable source records. A parser or schema-only comparison is not affirmative semantic compatibility.
+4. A current, auditable source/compatibility evidence reference set for both project and proposed ADS release.
+
+This proposal is a **non-SAFE advisory description**; it does **not** assert that the active project can yet apply the new revision or that its accepted Tasks are isolated. If any material qualification/compatibility/source evidence is missing, stale, contradictory or unknown, return `PROSPECTIVE_UNVERIFIED/UNKNOWN` with evidence gap. A possible candidate may be listed for investigation but MUST NOT be called compatible, `SAFE`, ready-to-merge or the basis for an actual version-update PR. These descriptive labels are **not** new global Gate states; canonical Validation remains `PASS|FAIL|BLOCKED|NOT_RUN|NOT_APPLICABLE`.
+
+The current v4.12 selector may **simultaneously** refuse a safe recommendation while a *separately proved* prospective compatible proposal is available. Neither evaluator can promote the other's unproven result. Unrelated open GitHub Issues are not by themselves proof of active Task conflict; equally, a lack of classified Claim evidence cannot be invented from open Issue counts.
+
+#### Independent checkpoints: plan → project PR → pre-merge activation
+
+```text
+PROSPECTIVE_READ_ONLY_PLAN
+  real published candidate + consumer compatibility proofs OR explicit UNKNOWN
+  source output only; current effective pin and accepted Task pins unchanged
+        ↓
+OPTED_IN_PROJECT_UPDATE_PR
+  project explicitly opts in; exact old/new SHA, allowed write-set, current
+  target branch HEAD/CAS, deduplicated PR, GitHub rights and readback
+  missing qualification/compatibility ⇒ NO PR
+  PR prepared/open does not change effective pin
+        ↓
+PROJECT_CHECKPOINT_ACTIVATION (BEFORE PR MERGE)
+  re-read target HEAD/effective project pin & overrides, real permission,
+  native Issue Dependencies/accepted Claim/current Task frozen versions,
+  required Review/Validation/Release obligations and material source impact
+  UNKNOWN/conflict/stale base ⇒ HOLD PR without merge
+  proof complete ⇒ authorized merge; new effective pin applies only to
+  eligible new/checkpointed Tasks, accepted old Task stays on old SHA
+        ↓
+ROLLBACK IF NECESSARY
+  new project-authorized, source-bound reversal PR/current checks/readback;
+  no historical Evidence/Claim/Review/Task re-label
+```
+
+**Do not merge first and 'activate later'.** Merging a PR that writes effective `.dev-standard/VERSION` **itself changes** the project's effective pin. Thus the real affected Task/Claim/frozen candidate/permission/readback and selected check/Review conditions must be satisfied **before the merge**. Where accepted in-flight Tasks cannot retain their original immutable ADS revision across that transition, activation must fail closed. A prepared update PR does not grant authority to bypass branch protection, currentness, platform rights or external-effect gates.
+
+A project without explicit opt-in remains `PINNED/MANUAL` by default. The updater MAY be built by an external consumer such as Tally v2; its **actual** organization discovery, repository writes/PR creation, Agent or Host orchestration, approval execution and rollback runtime are **not implemented by the ADS standards repository**. ADS v4.13 owns only the qualified evidence/authority contract. No background scan, update service or CLI becomes mandatory for standalone ADS adopters.
+
+**Focused counterexamples (contract-level, not real updater E2E):**
+
+- **Positive prospective only:** Project has unrelated open Issues, an accepted Task pinned to ADS A, and independently verified qualified/compatible ADS B. The unchanged v4.12 safe selector still returns `NO_SAFE_RECOMMENDATION`, while a source-proven **non-SAFE** `EVIDENCE_BACKED_COMPATIBLE_PROPOSAL(A→B)` may be emitted. Effective project pin and accepted Task pin remain A until lawful checkpoint; accepted prior Task stays on A after.
+- **Unknown candidate:** Same active project but qualification or behavior/authority compatibility unverified ⇒ `PROSPECTIVE_UNVERIFIED/UNKNOWN`, not compatible or safe; no update PR.
+- **No opt-in / wrong base / permission denied:** Proposal is not an executable PR authorization. No source change, no fabricated GitHub acceptance.
+- **Merge/activation unknown:** Missing Task-isolation proof, native blocker/Claim source currentness or required Review/Validation ⇒ update PR remains unmerged; an unauthorized merge cannot be reported as legitimate activation.
+- **Rollback/historical:** A new source-bound rollback never rewrites the ADS SHA of previously accepted/validated Tasks or projects' historic Release/Review outcomes.
+
 ### 2.2 v4 Progressive Adoption（A0–A4）
 
 v4 adoption level 只描述项目采用多少 Operation / Assurance / machine-contract / automation 能力，**不改变 mandatory truth floor**。低 adoption level 代表实现更轻，不代表 required gate 更少。

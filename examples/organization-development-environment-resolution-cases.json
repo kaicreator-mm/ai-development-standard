@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "fixture_purpose": "FR01/AC01 deterministic source-only preferred-toolchain precedence; real host/runtime selector is not implemented by ADS",
+  "organization_profile_path": "examples/organization-development-environment-profile.json",
+  "organization_profile_git_blob": "e81fcf5a71824f9b1ce7053ebb29f2c83d971b7e",
+  "cases": [
+    {
+      "id": "AC01-P1-compatible-org-node",
+      "project_source_ref": "fixture:AC01-P1-compatible-org-node",
+      "project": {
+        "toolchain": "node",
+        "compatible_versions": [
+          "22",
+          "24"
+        ]
+      },
+      "host": {
+        "observed_version": "24"
+      },
+      "expected": {
+        "resolution": "SELECTED",
+        "preferred_source": "organization",
+        "selected_version": "24",
+        "reason": "ORG_PREFERENCE_COMPATIBLE"
+      }
+    },
+    {
+      "id": "AC01-P2-project-preference-python",
+      "project_source_ref": "fixture:AC01-P2-project-preference-python",
+      "project": {
+        "toolchain": "python",
+        "compatible_versions": [
+          "3.11",
+          "3.12"
+        ],
+        "project_preferred_version": "3.11"
+      },
+      "host": {
+        "observed_version": "3.11"
+      },
+      "expected": {
+        "resolution": "SELECTED",
+        "preferred_source": "project",
+        "selected_version": "3.11",
+        "reason": "PROJECT_PREFERENCE_OVERRIDES_ORG"
+      }
+    },
+    {
+      "id": "AC01-N1-incompatible-org-node",
+      "project_source_ref": "fixture:AC01-N1-incompatible-org-node",
+      "project": {
+        "toolchain": "node",
+        "compatible_versions": [
+          "18",
+          "20"
+        ]
+      },
+      "host": {
+        "observed_version": "20"
+      },
+      "expected": {
+        "resolution": "CONFLICT",
+        "preferred_source": null,
+        "selected_version": null,
+        "reason": "ORG_VERSION_OUTSIDE_PROJECT_COMPATIBILITY"
+      }
+    },
+    {
+      "id": "AC01-N2-lock-and-host-mismatch",
+      "project_source_ref": "fixture:AC01-N2-lock-and-host-mismatch",
+      "project": {
+        "toolchain": "node",
+        "compatible_versions": [
+          "22",
+          "24"
+        ],
+        "locked_version": "22"
+      },
+      "host": {
+        "observed_version": "24"
+      },
+      "expected": {
+        "resolution": "BLOCKED",
+        "preferred_source": "project_lock",
+        "selected_version": "22",
+        "reason": "HOST_INCOMPATIBLE_WITH_PROJECT_LOCK"
+      }
+    }
+  ]
+}

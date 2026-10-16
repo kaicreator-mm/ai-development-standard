@@ -144,3 +144,37 @@ Minimal/Fast-Path work need not materialize a full Dependency & Toolchain Profil
 - `RELEASE_STANDARD.md` owns release qualification.
 - `CONFIGURATION_SECRETS_STANDARD.md`, `GIT_EXECUTION_STANDARD.md`, `WORKSPACE_ARTIFACT_STANDARD.md` and `EXTERNAL_SYSTEM_EXECUTION_STANDARD.md` own their respective v4.1 concerns.
 - T07 owns central manifest/adoption wiring; this standard does not edit those surfaces.
+
+
+## 15. v4.13 organization development environment defaults (prospective)
+
+For an ADS adopter using the qualified v4.13+ contract, an organization MAY publish a versioned **Organization Development Environment Profile** as a machine-readable **defaults/hints** declaration. Its optional canonical JSON Schema is `schemas/organization-development-environment-profile-v1.schema.json`, with a **non-normative** sample at `examples/organization-development-environment-profile.json`. This profile is **not** the repository/project `dependency-toolchain-profile-v1` contract: it does not own authoritative project manifests, compatibility requirements, lock/resolution sources, certification evidence, deployment identity, or actual Host runtime inventory.
+
+### 15.1 Effective precedence and source attribution
+
+A standards consumer (including Tally) MUST resolve under the **project's effective immutable ADS revision**, and keep each winning/ignored value attributable to a current source reference:
+
+1. Frozen project Product/Architecture and authoritative runtime ranges, package-manager constraints, manifests and lockfiles establish the **actual compatibility requirement**; an organization's preference cannot narrow, replace, or waive them.
+2. A documented project-specific preference or exception MAY select its own compatible development toolchain. An exception MUST NOT waive mandatory source, security or actually required certification/test constraints.
+3. Compatible organization `preferred_toolchains` apply only **when the project has not already selected a higher-authority compatible choice**. An out-of-range organization suggestion is **ignored/CONFLICT** with explicit reason, not auto-installed or silently used.
+4. Host/runtime availability is an **observed fact**, not permission to rewrite source or assume project compatibility; if an eligible version is unavailable, the required execution remains `BLOCKED/NOT_RUN` under its existing owning Validation rules.
+5. Certification and deployment are independent evidence dimensions from §4. An organization preferred version, example file, cache hint, successful syntax check or Agent-installed binary MUST NOT be reported as an actually certified tuple or Release/Validation PASS.
+
+The consumer SHOULD produce a read-only trace naming `project_requirement_ref`, `project_preference_ref` if present, `org_profile_revision`, `observed_host_ref`, `effective_preferred_version` (when proved compatible) and `resolution=SELECTED|IGNORED_INCOMPATIBLE|UNKNOWN|BLOCKED` with human-readable reason. These are **illustrative projection fields**, not a new mandatory global Event/Gate status enum and not a new standard claim/activation authority. Where compatibility or precedence is materially unknown, do not guess from lexicographic version strings or mutable latest aliases. Project manifest/lock truth always remains unchanged unless separately authorized through the existing workflow.
+
+### 15.2 Resource hints, secrets and execution boundary
+
+`preferred_provider` (such as mise), `environment_hints` (cache, workspace, offline, mirrors and Host capability hints) are **advisory**, not mandatory tool choices, executable instructions, runtime certification or platform test evidence. Sharing should be limited to source-verified immutable Git objects and safely reconstructible downloads/caches; mutable virtual environments and dependency installations remain project/task-isolated unless independently proven safe.
+
+Org policy and sample material MUST NOT embed tokens, credentials, private proxy authentication, bearer URLs or broader Host security exclusions. Store machine-local secrets only through existing secret owners and local references. Profile source/currentness MUST be immutable or otherwise bound to an auditable exact version at every consequential execution; a mutable configuration ref is not an accepted pin merely because a parser reads it. Actual Host Bootstrap, installer, Git mirror/Worktree/cleanup, Agent Skills/MCP, runtime selection and multi-project execution are **Tally (or another consumer implementation)**, not ADS standard repository features.
+
+### 15.3 Bounded positive and negative interpretations
+
+- **Positive:** project requirement `Node 22–24`, no higher-authority project preference, org preferred `24` → effective compatible *preference*, not proof that Node 24 is installed.
+- **Positive:** project requirement `Python 3.11–3.13`, project preferred `3.11`, org preferred `3.12` → project preferred remains effective.
+- **Negative:** project requirement `Node 18–20`, org preferred `24` → organization preference is ignored as incompatible; do not mutate the project lock or claim test PASS.
+- **Negative:** Host happens to have Node 24 while project requires Node 20 → Host observation does not override project requirement; actual execution is held until compatible toolchain exists.
+- **Negative:** no actual certification record → organization Profile cannot fabricate a `certification_tuple` or release-readiness claim.
+- **Negative:** parser accepts an organization Profile with example cache/mirror hints → no automatic download, network access, system security exclusion, Git mutation, Task Claim or external authorization.
+
+This section is additive and prospective. Existing §4 compatibility/preferred/certification/deployment distinctions, project-specific adoption rules, actual Claim/Review/Validation/Release gates and frozen consumer revisions remain in force.
