@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""S05 source-pinned new/mature synthetic consumer and fail-closed selector tests."""
+"""ADS v4.12 S05: executable Git + mocked GitHub provenance boundary tests.
+
+Positive mocks model an actual release, independent review, executed CI jobs
+and an empty project task graph. They do NOT qualify a real published release.
+"""
 import copy
 import json
 from pathlib import Path
@@ -13,15 +17,20 @@ from v412_ads_compatible_select import REQUIRED_DIMENSIONS, parse_version, selec
 
 
 def git(repo, *args):
-    p = subprocess.run(["git", "-C", str(repo), *args], check=True,
-                       capture_output=True, text=True)
-    return p.stdout.strip()
+    return subprocess.run(["git", "-C", str(repo), *args], check=True,
+                          capture_output=True, text=True).stdout.strip()
 
 
 def put(repo, path, data):
-    target = repo / path
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(data, encoding="utf-8")
+    p = repo / path
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(data, encoding="utf-8")
+
+
+def commit(repo, message):
+    git(repo, "add", "-A")
+    git(repo, "commit", "-qm", message)
+    return git(repo, "rev-parse", "HEAD")
 
 
 class SelectorTests(unittest.TestCase):
@@ -30,216 +39,261 @@ class SelectorTests(unittest.TestCase):
         self.repo = Path(self.tmp.name) / "ads"
         self.repo.mkdir()
         git(self.repo, "init", "-q")
-        git(self.repo, "config", "user.name", "ADS Test")
-        git(self.repo, "config", "user.email", "ads@example.invalid")
-        self.manifest = {"schema_version": 1, "sections": {"normative_standards": [
-            "standards/PROJECT_ADOPTION.md", "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md"]}}
-        put(self.repo, "standard-manifest.json", json.dumps(self.manifest))
+        git(self.repo, "config", "user.name", "ADS Synthetic")
+        git(self.repo, "config", "user.email", "test@example.invalid")
+        put(self.repo, "standard-manifest.json", json.dumps(
+            {"schema_version": 1, "sections": {"normative_standards": [
+                "standards/PROJECT_ADOPTION.md",
+                "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md"]}}))
         put(self.repo, "VERSION", "4.11.0\n")
-        git(self.repo, "add", "-A")
-        git(self.repo, "commit", "-qm", "predecessor")
-        self.current = git(self.repo, "rev-parse", "HEAD")
+        self.current = commit(self.repo, "current")
         put(self.repo, "VERSION", "4.12.0\n")
-        put(self.repo, "standards/PROJECT_ADOPTION.md", "source change")
-        git(self.repo, "add", "-A")
-        git(self.repo, "commit", "-qm", "candidate")
-        self.candidate = git(self.repo, "rev-parse", "HEAD")
+        put(self.repo, "standards/PROJECT_ADOPTION.md", "new prospective policy")
+        self.candidate = commit(self.repo, "candidate")
         git(self.repo, "tag", "v4.12.0", self.candidate)
-        self.issue = 1096
-        self.comment = 987654321
-        self.run_id = 1234567
+        self.issue, self.comment, self.review = 1096, 987654321, 987654333
         self.project = {"preference": "TRACK_LATEST_COMPATIBLE_STABLE",
-                        "current_revision": self.current, "current_version": "4.11.0",
+                        "project_repository": "synthetic/example",
+                        "consumer_window": "supported-synthetic-A0-A4",
+                        "current_revision": self.current,
+                        "current_version": "4.11.0",
                         "active_task": False, "frozen_candidate": False}
         self.record = {
-            "schema_version": 1, "record_id": "fixture-v412-compat",
-            "contract": {"kind": "ADS", "identity": "consumer"},
-            "baseline": {"version_ref": "4.11.0", "sha_or_digest": self.current},
-            "candidate": {"version_ref": "4.12.0", "sha_or_digest": self.candidate},
+            "schema_version": 1, "record_id": "synthetic", "contract": {
+                "kind": "ADS", "identity": "source-consumer"},
+            "baseline": {"sha_or_digest": self.current},
+            "candidate": {"sha_or_digest": self.candidate},
             "change_operations": ["MODIFIED"],
-            "producer_refs": ["ADS-source-check"], "consumer_refs": ["consumer-check"],
-            "dimensions": [{"name": d, "outcome": "COMPATIBLE",
-                            "evidence_refs": ["test:proof:" + d]} for d in sorted(REQUIRED_DIMENSIONS)]}
-        self.candidates = [{"sha": self.candidate, "release_tag": "v4.12.0",
-                            "qualification_issue": self.issue, "qualification_comment": self.comment,
-                            "compatibility_record": self.record}]
-        self.network_calls = []
+            "producer_refs": ["immutable-source"], "consumer_refs": ["synthetic/example"],
+            "compatibility_window_ref": self.project["consumer_window"],
+            "dimensions": [
+                {"name": d, "outcome": "COMPATIBLE",
+                 "evidence_refs": [f"actions:1234567:{200001 + i}"]}
+                for i, d in enumerate(sorted(REQUIRED_DIMENSIONS))
+            ]}
+        self.path = "docs/compatibility/consumer.json"
+        self.candidates = [{
+            "sha": self.candidate, "release_tag": "v4.12.0",
+            "qualification_issue": self.issue, "qualification_comment": self.comment,
+            "compatibility_record_path": self.path}]
+        self.save_proof()
+        self.calls = []
+        self.live_issues = []
+        self.live_pulls = []
+        self.release_prerelease = False
+        self.release_target_sha = self.candidate
+        self.tag_target_sha = self.candidate
+        self.ci_conclusion = "success"
+        self.ci_subject = self.candidate
 
     def tearDown(self):
         self.tmp.cleanup()
 
+    def save_proof(self):
+        # Explicit source successor avoids self-referential candidate SHA.
+        put(self.repo, self.path, json.dumps(self.record))
+        self.candidates[0]["compatibility_source_sha"] = commit(self.repo, "evidence")
+
     def fetch(self, url):
-        self.network_calls.append(url)
+        self.calls.append(url)
+        if url.endswith("/issues?state=open&per_page=100"):
+            return self.live_issues
+        if url.endswith("/pulls?state=open&per_page=100"):
+            return self.live_pulls
+        if "/git/ref/tags/" in url:
+            return {"ref": "refs/tags/v4.12.0",
+                    "object": {"sha": self.tag_target_sha, "type": "commit"}}
         if "/releases/tags/" in url:
-            return {"tag_name": "v4.12.0", "draft": False, "prerelease": False,
-                    "html_url": "https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0"}
+            return {"tag_name": "v4.12.0", "draft": False,
+                    "prerelease": self.release_prerelease,
+                    "target_commitish": self.release_target_sha,
+                    "published_at": "2026-10-16T00:00:00Z",
+                    "html_url": "https://github.com/synthetic/release"}
+        if url.endswith("/issues/1096"):
+            return {"number": 1096, "state": "closed", "title": "ADS v4.12.0"}
         if url.endswith("/issues/comments/987654321"):
             return {"id": self.comment,
-                    "html_url": f"https://github.com/kaicreator-mm/ai-development-standard/issues/{self.issue}#issuecomment-{self.comment}",
+                    "html_url": f"https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-{self.comment}",
                     "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_QUALIFICATION\n"
-                             f"candidate_sha={self.candidate}\n"
                              "qualification=RELEASE_QUALIFIED\n"
+                             f"candidate_sha={self.candidate}\n"
+                             f"release_integrated_sha={self.candidate}\n"
+                             "release_tag=v4.12.0\n"
+                             "required_gate_results=PASS\n"
                              "actor_role=release-controller\n"
-                             "operator_kind=chatgpt-web\n"
-                             "operator_id=reviewed-release-context-01\n"
-                             "session_ref=release-session-01\n"
-                             "canonical_admission_ref=#1096@admitted\n"
+                             "operator_id=release-agent\noperator_kind=chatgpt-web\n"
+                             "session_ref=release-1\ncanonical_admission_ref=#1096@admitted\n"
+                             "review_comment_id=987654333\n"
                              "gate_evidence_refs=actions:1234567")}
+        if url.endswith("/issues/comments/987654333"):
+            return {"id": self.review,
+                    "body": ("<!-- ai-dev:event:v2 -->\nactor_role=reviewer\n"
+                             "operator_id=independent-reviewer\nsession_ref=review-2\n"
+                             "review_verdict=PASS\n"
+                             f"reviewed_sha={self.candidate}\n")}
         if url.endswith("/actions/runs/1234567"):
-            return {"id": 1234567, "head_sha": self.candidate,
-                    "status": "completed", "conclusion": "success", "name": "verify-standard"}
-        raise RuntimeError("unexpected API URL: " + url)
+            return {"id": 1234567, "head_sha": self.ci_subject,
+                    "status": "completed", "conclusion": self.ci_conclusion}
+        if "/actions/jobs/" in url:
+            job_id = int(url.rsplit("/", 1)[1])
+            i = job_id - 200001
+            names = sorted(REQUIRED_DIMENSIONS)
+            if i not in range(len(names)):
+                raise AssertionError("unknown job")
+            dimension = names[i]
+            return {"id": job_id, "run_id": 1234567, "status": "completed",
+                    "conclusion": "success",
+                    "name": f"ads-compat:{self.current[:12]}:{dimension}",
+                    "steps": [{"name": f"probe:{self.current[:12]}:{dimension}:{self.project['consumer_window']}",
+                               "conclusion": "success"}]}
+        raise AssertionError("Unexpected mocked endpoint: " + url)
 
     def assess(self):
         return select(self.repo, self.project, self.candidates, self.fetch)
 
-    def test_new_consumer_positive_exact_sha_recommendation(self):
-        decision = self.assess()
-        self.assertEqual(decision["decision"], "READ_ONLY_RECOMMENDATION")
-        self.assertEqual(decision["proposed_revision"], self.candidate)
-        self.assertFalse(decision["effective_pin_changed"])
-        self.assertEqual(len(self.network_calls), 3)
-
-    def test_mature_consumer_positive_with_extra_source(self):
-        put(self.repo, "consumer/legacy-surface.json", "{}")
-        # Existing material consumer file is not silently modified by this selector.
-        self.assertEqual(self.assess()["decision"], "READ_ONLY_RECOMMENDATION")
-
-    def test_no_opt_in_stays_pinned(self):
-        self.project["preference"] = "PINNED/MANUAL"
-        self.assertEqual(self.assess()["reason"], "PROJECT_NOT_OPTED_IN")
-        self.assertFalse(self.network_calls)
-
-    def test_active_task_or_frozen_candidate_cannot_rebind(self):
-        for name in ("active_task", "frozen_candidate"):
-            with self.subTest(name=name):
-                self.project[name] = True
-                self.assertEqual(self.assess()["decision"], "NO_SAFE_RECOMMENDATION")
-                self.project[name] = False
-
-    def test_missing_release_evidence_ref_never_self_certifies(self):
-        del self.candidates[0]["qualification_comment"]
-        self.assertEqual(self.assess()["reason"], "MISSING_QUALIFICATION_EVENT_REFERENCE")
-
-    def test_qualified_boolean_is_not_canonical_proof(self):
-        self.candidates[0]["qualified"] = True
-        original = self.fetch
-        self.fetch = lambda url: {**original(url), "body": "qualified=true"} if "/comments/" in url else original(url)
-        self.assertEqual(self.assess()["reason"], "UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
-
-    def test_release_gate_exit_must_be_real_success(self):
-        old = self.fetch
-
-        def failed_ci(url):
-            value = old(url)
-            if "/actions/runs/" in url:
-                return {**value, "conclusion": "failure"}
-            return value
-
-        self.fetch = failed_ci
-        self.assertEqual(self.assess()["reason"], "RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
-
-    def test_source_stale_ci_head_cannot_prove_release(self):
-        old = self.fetch
-
-        def stale_ci(url):
-            value = old(url)
-            if "/actions/runs/" in url:
-                return {**value, "head_sha": self.current}
-            return value
-
-        self.fetch = stale_ci
-        self.assertEqual(self.assess()["reason"], "RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
-
-    def test_nonqualified_github_release_refused(self):
-        old = self.fetch
-        self.fetch = lambda url: {**old(url), "prerelease": True} if "/releases/" in url else old(url)
-        self.assertEqual(self.assess()["reason"], "NOT_PUBLISHED_STABLE_RELEASE")
-
-    def test_mutable_branch_and_wrong_git_tag_refused(self):
-        self.candidates[0]["release_tag"] = "main"
-        self.assertEqual(self.assess()["reason"], "UNPINNED_RELEASE_TAG")
-
-    def test_wrong_candidate_blob_same_semver_is_not_identity(self):
-        self.candidates[0]["sha"] = self.current
-        self.assertEqual(self.assess()["reason"], "NO_NEW_ELIGIBLE_RELEASE")
-        self.candidates[0]["sha"] = self.candidate
-        self.record["candidate"]["sha_or_digest"] = self.current
-        self.assertEqual(self.assess()["reason"], "INVALID_SOURCE_COMPATIBILITY_RECORD")
-
-    def test_source_schema_compatible_but_behavior_unknown(self):
-        for dim in self.record["dimensions"]:
-            if dim["name"] == "behavior":
-                dim["outcome"] = "UNKNOWN"
-        self.assertEqual(self.assess()["reason"], "MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
-
-    def test_authority_change_without_review_evidence_refused(self):
-        for dim in self.record["dimensions"]:
-            if dim["name"] == "authority":
-                dim["evidence_refs"] = []
-        self.assertEqual(self.assess()["reason"], "MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
-
-    def test_malformed_nested_compat_record_fails_closed(self):
-        self.record["baseline"] = None
+    def rejected(self, reason):
         result = self.assess()
         self.assertEqual(result["decision"], "NO_SAFE_RECOMMENDATION")
-        self.assertEqual(result["reason"], "MISSING_OR_INVALID_SOURCE_EVIDENCE")
+        self.assertEqual(result["reason"], reason)
+        self.assertFalse(result["effective_pin_changed"])
 
-    def test_missing_material_claim_review_dim_refused(self):
+    def test_source_verified_new_project_positive(self):
+        out = self.assess()
+        self.assertEqual(out["decision"], "READ_ONLY_RECOMMENDATION")
+        self.assertEqual(out["proposed_revision"], self.candidate)
+        self.assertEqual(len(out["compatibility_evidence_refs"]), 10)
+        self.assertFalse(out["effective_pin_changed"])
+
+    def test_mature_project_extra_local_files_unchanged(self):
+        put(self.repo, "consumer/legacy.txt", "old")
+        old = git(self.repo, "status", "--porcelain")
+        self.assertEqual(self.assess()["decision"], "READ_ONLY_RECOMMENDATION")
+        self.assertEqual(git(self.repo, "status", "--porcelain"), old)
+
+    def test_no_opt_in(self):
+        self.project["preference"] = "PINNED/MANUAL"
+        self.rejected("PROJECT_NOT_OPTED_IN")
+        self.assertFalse(self.calls)
+
+    def test_missing_active_or_frozen_state_fails_closed(self):
+        for key in ("active_task", "frozen_candidate"):
+            with self.subTest(field=key):
+                old = self.project.pop(key)
+                self.rejected("UNKNOWN_ACTIVE_OR_FROZEN_CHECKPOINT")
+                self.project[key] = old
+
+    def test_discovery_false_does_not_override_live_task(self):
+        self.live_issues = [{"number": 4, "labels": [{"name": "type:task"}]}]
+        self.rejected("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
+
+    def test_discovery_false_does_not_override_live_pr(self):
+        self.live_pulls = [{"number": 9}]
+        self.rejected("ACTIVE_SUBJECT_CANNOT_REBIND")
+
+    def test_unclassified_task_and_pagination_unknown(self):
+        self.live_issues = [{"number": 3, "labels": []}]
+        self.rejected("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
+        self.live_issues = [{}] * 100
+        self.rejected("UNKNOWN_PROJECT_LIVE_STATE_OR_PAGINATION")
+
+    def test_missing_live_project_repo(self):
+        self.project["project_repository"] = None
+        self.rejected("MISSING_VERIFIABLE_PROJECT_REPOSITORY")
+
+    def test_missing_qualification_ref(self):
+        self.candidates[0].pop("qualification_comment")
+        self.rejected("MISSING_QUALIFICATION_EVENT_REFERENCE")
+
+    def test_fake_inline_record_not_accepted_as_evidence(self):
+        self.candidates[0]["compatibility_record"] = copy.deepcopy(self.record)
+        self.candidates[0].pop("compatibility_source_sha")
+        self.rejected("INVALID_EXACT_COMMIT")
+
+    def test_wrong_compatibility_record_candidate_identity(self):
+        self.record["candidate"]["sha_or_digest"] = self.current
+        self.save_proof()
+        self.rejected("INVALID_SOURCE_COMPATIBILITY_RECORD")
+
+    def test_unknown_behavior_forces_no_recommendation(self):
+        self.record["dimensions"][0]["outcome"] = "UNKNOWN"
+        self.save_proof()
+        self.rejected("MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
+
+    def test_pseudo_proof_refs_rejected(self):
+        self.record["dimensions"][0]["evidence_refs"] = ["test:fake"]
+        self.save_proof()
+        self.rejected("INDEPENDENT_COMPATIBILITY_PROOF_MISSING")
+
+    def test_missing_material_claim_dimension(self):
         self.record["dimensions"] = [d for d in self.record["dimensions"] if d["name"] != "claim"]
-        self.assertEqual(self.assess()["reason"], "MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
+        self.save_proof()
+        self.rejected("MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
 
-    def test_incomparable_branch_rejected(self):
-        git(self.repo, "checkout", "-q", "--detach", self.current)
-        put(self.repo, "VERSION", "4.12.1\n")
-        git(self.repo, "add", "VERSION")
-        git(self.repo, "commit", "-qm", "sibling release line")
-        sibling = git(self.repo, "rev-parse", "HEAD")
-        git(self.repo, "tag", "v4.12.1", sibling)
-        other_record = copy.deepcopy(self.record)
-        other_record["candidate"]["sha_or_digest"] = sibling
-        self.candidates.append({"sha": sibling, "release_tag": "v4.12.1",
-                                "qualification_issue": self.issue, "qualification_comment": self.comment + 1,
-                                "compatibility_record": other_record})
+    def test_unsupported_consumer_window(self):
+        self.project["consumer_window"] = "unsupported-new-window"
+        self.rejected("UNSUPPORTED_OR_UNVERIFIED_CONSUMER_WINDOW")
+
+    def test_release_prerelease_or_wrong_target_sha(self):
+        self.release_prerelease = True
+        self.rejected("PUBLISHED_RELEASE_IDENTITY_UNVERIFIED")
+        self.release_prerelease = False
+        self.release_target_sha = self.current
+        self.rejected("PUBLISHED_RELEASE_IDENTITY_UNVERIFIED")
+
+    def test_remote_tag_must_equal_candidate(self):
+        self.tag_target_sha = self.current
+        self.rejected("REMOTE_RELEASE_TAG_IDENTITY_UNVERIFIED")
+
+    def test_release_ci_real_exit_required(self):
+        self.ci_conclusion = "failure"
+        self.rejected("EXECUTED_GATE_NOT_PROVEN")
+
+    def test_release_ci_subject_must_equal_exact_candidate(self):
+        self.ci_subject = self.current
+        self.rejected("EXECUTED_GATE_NOT_PROVEN")
+
+    def test_failed_dimensional_job_proof_refused(self):
         original = self.fetch
 
-        def sibling_proof(url):
-            if "/releases/tags/v4.12.1" in url:
-                return {"tag_name": "v4.12.1", "draft": False, "prerelease": False,
-                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.1"}
-            if url.endswith("/issues/comments/987654322"):
-                return {"id": 987654322,
-                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654322",
-                        "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_QUALIFICATION\n"
-                                 f"candidate_sha={sibling}\nqualification=RELEASE_QUALIFIED\n"
-                                 "actor_role=release-controller\n"
-                                 "operator_kind=chatgpt-web\n"
-                                 "operator_id=reviewed-release-context-02\n"
-                                 "session_ref=release-session-02\n"
-                                 "canonical_admission_ref=#1096@admitted\n"
-                                 "gate_evidence_refs=actions:1234568")}
-            if url.endswith("/actions/runs/1234568"):
-                return {"id": 1234568, "head_sha": sibling,
-                        "status": "completed", "conclusion": "success", "name": "verify-standard"}
-            return original(url)
+        def broken_job(url):
+            result = original(url)
+            if url.endswith("/actions/jobs/200001"):
+                return {**result, "conclusion": "failure"}
+            return result
+        self.fetch = broken_job
+        self.rejected("COMPATIBILITY_TEST_NOT_EXECUTED_ON_EXACT_SUBJECT")
 
-        self.fetch = sibling_proof
-        self.assertEqual(self.assess()["reason"], "MULTIPLE_INCOMPARABLE_LATEST_RELEASES")
+    def test_unqualified_word_not_release_qualification(self):
+        old = self.fetch
 
-    def test_missing_local_sha_object_refused(self):
-        self.candidates[0]["sha"] = "f" * 40
-        self.assertEqual(self.assess()["reason"], "GIT_SOURCE_UNAVAILABLE")
+        def fake_event(url):
+            result = old(url)
+            if url.endswith("/issues/comments/987654321"):
+                return {**result, "body": "<!-- ai-dev:event:v2 -->\nqualified=true"}
+            return result
+        self.fetch = fake_event
+        self.rejected("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
 
-    def test_sha_and_version_pin_shape(self):
-        raw = ("repository=kaicreator-mm/ai-development-standard\n"
-               "version=4.11.0\nrevision=" + self.current + "\n")
-        self.assertEqual(parse_version(raw)["revision"], self.current)
+    def test_reviewer_must_be_independent_and_exact_source(self):
+        old = self.fetch
+
+        def fake_review(url):
+            result = old(url)
+            if url.endswith("/issues/comments/987654333"):
+                return {**result, "body": result["body"].replace("independent-reviewer", "release-agent")}
+            return result
+        self.fetch = fake_review
+        self.rejected("INDEPENDENT_RELEASE_REVIEW_NOT_PROVEN")
+
+    def test_immutable_version_pin_shape(self):
+        pin = "repository=kaicreator-mm/ai-development-standard\nversion=4.11.0\nrevision=" + self.current
+        self.assertEqual(parse_version(pin)["revision"], self.current)
         self.assertEqual(self.assess()["decision"], "READ_ONLY_RECOMMENDATION")
 
-    def test_actual_git_and_input_objects_untouched(self):
-        before = git(self.repo, "status", "--porcelain")
+    def test_no_repo_mutations_after_selection(self):
+        old = git(self.repo, "status", "--porcelain")
         self.assertEqual(self.assess()["decision"], "READ_ONLY_RECOMMENDATION")
-        self.assertEqual(before, git(self.repo, "status", "--porcelain"))
+        self.assertEqual(git(self.repo, "status", "--porcelain"), old)
 
 
 if __name__ == "__main__":
