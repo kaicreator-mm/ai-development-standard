@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.13.0 — ADS Foundation for Tally v2
+
+**源码范围说明：** 这个条目描述 v4.13.0 的标准与契约内容；正式 Release Qualification、Tag 与公开发布必须以精确候选证据和真实 GitHub Release 为准，**不得仅从本文件或 VERSION 推断已发布**。
+
+- **Organization Profile：** 新增独立于项目级兼容/认证证据的组织开发环境偏好 Profile Schema、非规范示例、Manifest 注册，以及 4 个固定输入、源 Blob 绑定的项目/组织/Host 优先级正反验收案例；现有 `verify-standard` 工作流执行其 Schema/测试。
+- **Tally/通用消费者互操作：** `references/v4.13/ADS_EXECUTION_INTEROP_CONTRACT.md` 仅映射现有项目 immutable ADS pin、GitHub native Task/Claim/PR/Review/Release 事实与执行平台 Agent/Host/Attempt 投影，不引入另一个 Task 状态权威。
+- **兼容升级三阶段：** `PROJECT_ADOPTION.md` §2.1B 明确 v4.12 已发布安全推荐选择器保持 fail-closed；新增独立 source-proven **non-SAFE** prospective proposal、项目 opt-in PR、**合并前**权限/Task/Claim/currentness 激活检查与源绑定回滚。未知证据不得产生兼容 PR 或安全授权。实际跨项目更新器由 Tally 实施。
+- **验证裁剪：** #1116 现有 `VALIDATION_STANDARD.md` / `RELEASE_STANDARD.md` 已覆盖当前真实交付类型，故不重复构建验证矩阵；开发任务只在实际源码变更处定向测试/独立 Review，版本候选在收口时进行一次适用的整体资格验证。
+- **严格边界：** 不在 ADS 实现 devkit、CLI、Skills/MCP、多 Agent 或 Portfolio，不做 Tally 运行时/Build Host 验收。历史 v4.12.0 公布证据不更改，v4.12.1 已并入的源补丁在 v4.13 当前候选内接受真实验证，并不借用虚构的 v4.12.1 Release PASS。
+
+关联：Product/Architecture/Task DAG 冻结记录在 [#1147](https://github.com/kaicreator-mm/ai-development-standard/issues/1147)；具体实施 [#1151](https://github.com/kaicreator-mm/ai-development-standard/issues/1151)、[#1152](https://github.com/kaicreator-mm/ai-development-standard/issues/1152)、[#1153](https://github.com/kaicreator-mm/ai-development-standard/issues/1153)；版本关闭 [#1157](https://github.com/kaicreator-mm/ai-development-standard/issues/1157)。
+
 ## v4.12.1 — Maintenance patch
 
 **版本记录说明：** 本条记录本版补丁变更，不以静态文本断言当前 GitHub Tag、Release 或 Release Qualification 状态；请以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 与相关精确源码证据核验公开状态。单一修复：使 `scripts/v412_ads_compatible_select.py` 能识别实际 v4.12.0 发布证据中的「冻结候选 SHA → 同 Tree main 合并 SHA → 公开 Tag/Release」谱系，同时验证原有冻结/可见门禁记录、实际版本 CI、独立源码审核和正式集成记录。不存在真实 Consumer 十维兼容性证明时，仍返回 `NO_SAFE_RECOMMENDATION`。原始 v4.12.0 Tag 不变。

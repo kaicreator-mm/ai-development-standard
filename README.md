@@ -1,6 +1,11 @@
 # AI Development Standard
 
-当前版本：`v4.12.1`（维护补丁；**源码版本身份不等于发布资格**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 的最新记录为准，而不是此静态 README 的生成时刻。已核验的上一正式版本 [v4.12.0](https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0) 指向 `ee8258106547abd2c2d7b9f5e87af9965e430bd2`，其 Git Tree 与已取得资格的冻结候选 `33af53fa03fa4a2da638bd1107ca596143bab70e` 相同。
+当前版本：`v4.13.0`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+
+> **v4.13.0 范围：ADS Foundation for Tally v2**。本版本仅提供 Organization Development Environment Profile、对外可消费的 GitHub Task/Claim/Agent Attempt 互操作参考、以及源证据约束下的 ADS 兼容升级预备提案 → 项目 opt-in PR → 合并前激活/回滚规范。ADS 保持独立标准仓库；实际 Toolkit、mise/Worktrunk、CLI/Skills/MCP、Agent/多项目调度与跨项目更新器均在 [Tally 项目](https://github.com/kaicreator-mm/tally/issues/55) 独立开发、验证和发布，不作为 ADS v4.13 的发布门槛。FR04 按交付能力验证的现行规范已满足要求，因此没有另增验证引擎。
+
+> **版本历史**：v4.12.1 是已并入源码的维护补丁，但不能仅凭 VERSION/README/CHANGELOG 推断它曾独立 Tag/Release。最近已确认的先前正式发布版本为 [v4.12.0](https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0)，发布 SHA `ee8258106547abd2c2d7b9f5e87af9965e430bd2`。v4.13 源码候选保留 v4.12.1 修复，并在本版实际验证中覆盖其适用性。
+
 
 > **v4.12.1 补丁范围**：修复只读兼容选择器将冻结候选 SHA 错当成发布 Tag SHA、以及对已完成 v4.12.0 Release 记录使用不存在字段的错误；保留实际发布版本、冻结、门禁、CI、独立源码审核与 Consumer 兼容证明的硬约束。复用既有 S05 单元测试并补少量发布形态正反例，不新增 CI Workflow、Owner 身份门禁或功能 Task。本段只解释补丁范围，不声明本次补丁是否已发布；请按实际 Tag、Release 和源身份核验。
 
