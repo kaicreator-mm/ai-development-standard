@@ -186,7 +186,13 @@ def compatible(repo: Path, item: dict, current: str, candidate: str,
     if (not isinstance(path, str) or not path.startswith("docs/compatibility/")
             or not path.endswith(".json")):
         raise Unsafe("COMPATIBILITY_SOURCE_NOT_PINNED")
-    record = json.loads(at(repo, candidate, path))
+    # Compatibility records carry candidate SHA and therefore cannot live
+    # inside the same self-referential candidate commit. Pin a distinct exact
+    # successor evidence commit containing that record (S02 cycle-free rule).
+    evidence_sha = exact_commit(repo, item.get("compatibility_source_sha", ""))
+    if not ancestor(repo, candidate, evidence_sha):
+        raise Unsafe("COMPATIBILITY_PROOF_NOT_FROM_CANDIDATE_LINEAGE")
+    record = json.loads(at(repo, evidence_sha, path))
     if (not isinstance(record, dict) or record.get("schema_version") != 1
             or not isinstance(record.get("baseline"), dict)
             or not isinstance(record.get("candidate"), dict)
