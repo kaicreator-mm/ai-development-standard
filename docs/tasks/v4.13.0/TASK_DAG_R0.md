@@ -3,14 +3,14 @@
 > **STATUS: PLANNING_DAG_CANDIDATE / NOT YET FROZEN / NOT MATERIALIZED.** GitHub Task Issues and actual native Issue Dependencies become the live execution DAG only after lawful materialization. This file is not a live state card or a Task Claim.  
 > **Frozen Product:** `docs/product/v4.13.0/ADS_V413_PRD_R0_TALLY_FOUNDATION.md` blob `702bcf562b4292487fa8409cd17dee2d42aae9b3`, Product Freeze checkpoint `3123d7d4bd5ef7b8f9236119537ff9226d6bd3a9`.  
 > **Frozen L2:** `docs/architecture/V413_L2_ARCHITECTURE_EVIDENCE_R0.md` blob `86b9243c065ab909f82d52d1d7b7f945791d3696`, L2 Freeze checkpoint `91bb0378b0516367177c1570bd8f09cf1878ec4b`.  
-> **Version base safety:** current main source `VERSION=4.12.1` but actual qualified published predecessor SHA is **NOT YET VERIFIED**. That is a **version-source implementation admission prerequisite**; this planning draft does not authorize normative source writes, accepted Task Claim or merge.
+> **Version base safety (updated exact evidence):** latest confirmed qualified **public stable** predecessor is **v4.12.0 Tag/Release** at commit `ee8258106547abd2c2d7b9f5e87af9965e430bd2` (Release RQ #1143@6210278828, publication readback #1143@6210620486). Current `main@4465e291df4e60e09af634a25ab7eed546b2915b` has `VERSION=4.12.1` source hotfix PR #1146 merged, but **tag `v4.12.1` absent**; it is not asserted as an independently published qualified predecessor. A v4.13 integration branch may carry these current-main hotfix changes only with explicit source/change-impact account and affected candidate validation; exact source-currentness and version-lineage admission remain required before normative source writing.
 
 ## 1. Scope and minimal topology
 
 ```text
 Product R0 FROZEN + L2 R0 FROZEN
              |
-   actual qualified predecessor
+   v4.12.0 qualified tag + explicit main hotfix-lineage admission
              |
              +------------------+------------------+
              |                  |                  |
@@ -31,7 +31,7 @@ Product R0 FROZEN + L2 R0 FROZEN
 
 | Task | Scope and exact write-set target | Frozen inputs | Dependencies | Review | Parallelism |
 |---|---|---|---|---|---|
-| **V413-S02** | `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` **only additive org defaults section**; new `schemas/organization-development-environment-profile-v1.schema.json`; one `examples/organization-development-environment-profile.json`; focused deterministic positive/negative fixture if needed | FR01, L2 A1; existing `schemas/dependency-toolchain-profile-v1.schema.json` | Predecessor qualification/accepted Claim; **none on S03/S04** | **required** if new normative schema/compat contract is material, otherwise actual policy | Can parallel S03/S04 |
+| **V413-S02** | `standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md` **only additive org defaults section**; new `schemas/organization-development-environment-profile-v1.schema.json`; one `examples/organization-development-environment-profile.json`; focused deterministic positive/negative fixture if needed | FR01, L2 A1; existing `schemas/dependency-toolchain-profile-v1.schema.json` | v4.12.0 published predecessor + current-main hotfix-impact disposition/accepted Claim; **none on S03/S04** | **required** if new normative schema/compat contract is material, otherwise actual policy | Can parallel S03/S04 |
 | **V413-S03** | New `references/v4.13/ADS_EXECUTION_INTEROP_CONTRACT.md`; at most one targeted existing owner-reference update if necessary **after checking current source**, no new workflow state/schema | FR02/FR05, L2 A2; `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `TASK_DAG_GOVERNANCE_STANDARD.md` | Predecessor qualification/accepted Claim; **none on S02/S04** | **required** for changed Task/Claim/actor/GitHub authority semantics, source review focused on delta | Can parallel S02/S04 |
 | **V413-S04** | `standards/PROJECT_ADOPTION.md` additive #1119 FR03 three-checkpoint contract; selected `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` cross-ref **only if true owner gap**. #1116 capability table only after proving missing material case, do not automatically edit VALIDATION/RELEASE | FR03/FR04, L2 A3/A4, #1119/#1116; existing `scripts/v412_ads_compatible_select.py` read-only | Predecessor qualification/accepted Claim; **none on S02/S03** | **required** for update/Claim/merge/authority-semantic delta, independent exact-head review | Can parallel S02/S03 |
 | **V413-CLOSURE** | Existing version candidate evidence source, `VERSION`/README/CHANGELOG minimal actual release metadata only when qualified, actual Release qualification/handoff records | S02/S03/S04 accepted merged source; Product/L2 freezes; exact current candidate SHA/tree | All material concerns closed and no materially required proof unknown | Existing Release/Reviewer/Controller applicable policy | After S02–S04, no premature Release PASS |
@@ -90,7 +90,7 @@ Product R0 FROZEN + L2 R0 FROZEN
 
 ## 4. Admission, claims and issue materialization
 
-1. **Before source writing:** verify one actual qualified predecessor Release SHA and legal version integration branch/currentness. Current `main@4465e291...` has source `VERSION=4.12.1`, **not itself a Release Qualification proof**; known historical v4.12.0 qualified publication may be used only with actual tag/release/source readback. If qualified predecessor ambiguous, keep Tasks PLANNED/BLOCKED; no forced writing from guessed `main`.
+1. **Before source writing:** qualified predecessor is positively established as **v4.12.0**: published tag `v4.12.0` resolves to version 4.12.0, RQ #1143@6210278828 and publication #1143@6210620486 bind published commit `ee8258106547abd2c2d7b9f5e87af9965e430bd2`. The current main SHA `4465e291df4e60e09af634a25ab7eed546b2915b` contains *unreleased/unqualified as a separate version* v4.12.1 source delta via merged PR #1146. Before constructing v4.13 version integration branch, explicitly verify ancestry/current Git objects plus the exact patch write set and required affected-source checks; carry-forward is subject to v4.13 candidate validation and cannot inherit a fictional v4.12.1 Release PASS. If that evidence is missing, keep source-writing Tasks PLANNED/BLOCKED; never build on guessed branch/tag.
 2. Freeze this **exact DAG blob** under own Task DAG authority only after source-owner/write-set and predecessor admission disposition, then materialize Task Issues via canonical `type:task`, `state:planned`, scope and exact current Task Pack, selected review policy, acceptance, validation and executor identity.
 3. No implementation dependencies among S02/S03/S04: do **not invent** native `blocked_by` edges just for serial process staging. Version Closure is a separate release prerequisite, recorded in Version/Release authority; it may use GitHub Issue dependencies if actually materialized and supported by connector, but text alone never claims native edges.
 4. Actual source modification needs own valid `state:ready` dispatch and accepted CAS Builder Claim on qualified version baseline. `PRD_FREEZE/L2_FREEZE/DAG_FREEZE` alone never permits source byte.
@@ -120,7 +120,9 @@ TASK_DAG_SOURCE_STATE=CANDIDATE_NOT_FROZEN
 NATIVE_IMPLEMENTATION_ISSUES=NOT_MATERIALIZED
 IMPLEMENTATION_DEPENDENCY_EDGES=ZERO_PROPOSED
 VERSION_CLOSURE=NOT_RUN
-QUALIFIED_VERSION_PREDECESSOR=UNVERIFIED_AT_VERSION_ADMISSION
+QUALIFIED_RELEASED_PREDECESSOR=v4.12.0@ee8258106547abd2c2d7b9f5e87af9965e430bd2
+CURRENT_MAIN_SOURCE_DELTA=v4.12.1_UNPUBLISHED_HOTFIX_PR1146
+SOURCE_INTEGRATION_HOTFIX_CURRENTNESS=REQUIRES_ADMISSION_AND_AFFECTED_CHECK
 CLAIM_STATUS=NONE
 IMPLEMENTATION=NOT_STARTED
 TALLY_V2_IMPL=OWNED_BY_TALLY_ONLY
