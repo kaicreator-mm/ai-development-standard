@@ -179,6 +179,12 @@ class SelectorTests(unittest.TestCase):
                 dim["evidence_refs"] = []
         self.assertEqual(self.assess()["reason"], "MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
 
+    def test_malformed_nested_compat_record_fails_closed(self):
+        self.record["baseline"] = None
+        result = self.assess()
+        self.assertEqual(result["decision"], "NO_SAFE_RECOMMENDATION")
+        self.assertEqual(result["reason"], "MISSING_OR_INVALID_SOURCE_EVIDENCE")
+
     def test_missing_material_claim_review_dim_refused(self):
         self.record["dimensions"] = [d for d in self.record["dimensions"] if d["name"] != "claim"]
         self.assertEqual(self.assess()["reason"], "MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
