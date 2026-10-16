@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前版本源码：`v4.12.1`（维护补丁；**源码版本身份不等于发布资格**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 的最新记录为准，而不是此静态 README 的生成时刻。已核验的上一正式版本 [v4.12.0](https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0) 指向 `ee8258106547abd2c2d7b9f5e87af9965e430bd2`，其 Git Tree 与已取得资格的冻结候选 `33af53fa03fa4a2da638bd1107ca596143bab70e` 相同。
+当前版本：`v4.12.1`（维护补丁；**源码版本身份不等于发布资格**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 的最新记录为准，而不是此静态 README 的生成时刻。已核验的上一正式版本 [v4.12.0](https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0) 指向 `ee8258106547abd2c2d7b9f5e87af9965e430bd2`，其 Git Tree 与已取得资格的冻结候选 `33af53fa03fa4a2da638bd1107ca596143bab70e` 相同。
 
 > **v4.12.1 补丁范围**：修复只读兼容选择器将冻结候选 SHA 错当成发布 Tag SHA、以及对已完成 v4.12.0 Release 记录使用不存在字段的错误；保留实际发布版本、冻结、门禁、CI、独立源码审核与 Consumer 兼容证明的硬约束。复用既有 S05 单元测试并补少量发布形态正反例，不新增 CI Workflow、Owner 身份门禁或功能 Task。本段只解释补丁范围，不声明本次补丁是否已发布；请按实际 Tag、Release 和源身份核验。
 
