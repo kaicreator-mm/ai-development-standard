@@ -189,6 +189,134 @@ class SelectorTests(unittest.TestCase):
                                "conclusion": "success"}]}
         raise AssertionError("Unexpected mocked endpoint: " + url)
 
+    def setup_published_candidate_fixture(self, diverged_tree=False):
+        """A real-shaped freeze SHA + distinct merge SHA; only API is mocked."""
+        frozen = self.candidate
+        tree = git(self.repo, "rev-parse", frozen + "^{tree}")
+        if diverged_tree:
+            put(self.repo, "docs/unreviewed.txt", "unsafe source drift")
+            published = commit(self.repo, "different publication source")
+        else:
+            git(self.repo, "commit", "--allow-empty", "-qm", "main merge identity")
+            published = git(self.repo, "rev-parse", "HEAD")
+        git(self.repo, "tag", "-d", "v4.12.0")
+        git(self.repo, "tag", "v4.12.0", published)
+        self.candidate = published
+        self.ci_subject = published
+        self.tag_target_sha = published
+        self.release_target_sha = published
+        self.record["candidate"]["sha_or_digest"] = published
+        self.save_proof()
+        self.candidates[0]["integration_comment"] = 987654358
+        original = self.fetch
+
+        def event(comment_id, payload):
+            return {
+                "id": comment_id,
+                "html_url": ("https://github.com/kaicreator-mm/ai-development-standard/"
+                             f"issues/1096#issuecomment-{comment_id}"),
+                "body": "<!-- ai-dev:event:v2 -->\n" + payload,
+            }
+
+        proof = {
+            "candidate_sha": frozen, "candidate_tree": tree,
+            "source_review": "PR1142_COMMENTED_PASS_ON_IDENTICAL_TREE",
+        }
+
+        def actual_shape(url):
+            if url.endswith("/issues/comments/987654321"):
+                return event(987654321, (
+                    "event=RELEASE_QUALIFICATION\nqualification=RELEASE_QUALIFIED\n"
+                    "actor_role=release-controller\noperator_id=release-agent\n"
+                    "version=4.12.0\nrelease_verdict=READY\n"
+                    "required_gate_results=PASS\n"
+                    f"candidate_sha={frozen}\ncandidate_tree={tree}\n"
+                    "gate_applicability_ref=#1096@987654355\n"
+                    "candidate_freeze_ref=#1096@987654356\n"
+                    "final_closeout_ref=#1096@987654357\n"
+                    "exact_ci_run=1234568\n"
+                    "candidate_source_review=PR1142_COMMENTED_PASS_ON_IDENTICAL_TREE\n"))
+            if url.endswith("/issues/comments/987654355"):
+                return event(987654355, (
+                    "event=ADS_V412_S06_VERSION_VISIBLE_GATE_APPLICABILITY\n"
+                    f"candidate_sha={frozen}\ncandidate_tree={tree}\n"
+                    "source_consistency_result=PASS\n"
+                    "self_dogfood_result=PASS_SOURCE_PROCESS_SCOPE\n"
+                    "full_visible_regression_result=PASS_CURRENT_HEAD\n"
+                    "current_version_ci_run=1234568\n"))
+            if url.endswith("/issues/comments/987654356"):
+                return event(987654356, (
+                    "event=ADS_V412_S06_CANDIDATE_FROZEN\n"
+                    f"candidate_sha={frozen}\ncandidate_tree={tree}\n"
+                    "freeze_state=FROZEN_OPERATIVE\n"))
+            if url.endswith("/issues/comments/987654357"):
+                return event(987654357, (
+                    "event=ADS_V412_S06_FINAL_CLOSEOUT\n"
+                    f"candidate_sha={frozen}\ncandidate_tree={tree}\n"
+                    "closeout=READY_FOR_RELEASE_QUALIFICATION\n"))
+            if url.endswith("/issues/comments/987654358"):
+                return event(987654358, (
+                    "event=ADS_V412_S06_RELEASE_INTEGRATED_BASELINE\n"
+                    f"frozen_candidate_sha={frozen}\nfinal_main_sha={published}\n"
+                    f"final_main_tree={tree}\n"
+                    "release_qualification=#1096@987654321_READY\n"
+                    "tree_equivalence=CANDIDATE_EQUALS_MAIN\n"
+                    "main_integration_pr=#1144_MERGED\n"
+                    "post_main_ci=1234567_COMPLETED_SUCCESS\n"))
+            if url.endswith("/pulls/1142/reviews?per_page=100"):
+                return [{"state": "COMMENTED", "body": (
+                    "<!-- ai-dev:event:v2 -->\n"
+                    "review_subject=PR_1142\nsource_review_verdict=PASS\n"
+                    f"reviewed_head={frozen}\noperator_id=other-reviewer\n")}]
+            if url.endswith("/pulls/1144"):
+                return {"merged_at": "2026-10-16T00:00:00Z",
+                        "merge_commit_sha": published}
+            if url.endswith("/actions/runs/1234568"):
+                return {"id": 1234568, "status": "completed",
+                        "conclusion": "success", "name": "verify-standard",
+                        "head_sha": frozen}
+            if url.endswith("/actions/runs/1234567"):
+                return {**original(url), "name": "verify-standard"}
+            return original(url)
+
+        self.fetch = actual_shape
+        self.release_fixture = proof
+
+    def test_published_real_shape_frozen_sha_differs_but_tree_matches(self):
+        self.setup_published_candidate_fixture()
+        result = self.assess()
+        self.assertEqual(result["decision"], "READ_ONLY_RECOMMENDATION")
+        self.assertEqual(result["proposed_revision"], self.candidate)
+        self.assertFalse(result["effective_pin_changed"])
+
+    def test_published_real_shape_rejects_changed_main_tree(self):
+        self.setup_published_candidate_fixture(diverged_tree=True)
+        self.rejected("PUBLISHED_RELEASE_LINEAGE_MISMATCH")
+
+    def test_published_real_shape_missing_integration_proof_fails_closed(self):
+        self.setup_published_candidate_fixture()
+        del self.candidates[0]["integration_comment"]
+        self.rejected("PUBLISHED_RELEASE_INTEGRATION_REF_MISSING")
+
+    def test_published_real_shape_wrong_freeze_is_not_release_proof(self):
+        self.setup_published_candidate_fixture()
+        original = self.fetch
+
+        def not_frozen(url):
+            obj = original(url)
+            if url.endswith("/issues/comments/987654356"):
+                return {**obj, "body": obj["body"].replace(
+                    "freeze_state=FROZEN_OPERATIVE", "freeze_state=NOT_RUN")}
+            return obj
+
+        self.fetch = not_frozen
+        self.rejected("PUBLISHED_RELEASE_SOURCE_GATE_UNPROVEN")
+
+    def test_published_real_shape_failed_final_main_ci_fails_closed(self):
+        self.setup_published_candidate_fixture()
+        self.ci_conclusion = "failure"
+        self.rejected("EXECUTED_GATE_NOT_PROVEN")
+
     def assess(self):
         return select(self.repo, self.project, self.candidates, self.fetch)
 
