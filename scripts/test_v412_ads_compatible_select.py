@@ -193,6 +193,10 @@ class SelectorTests(unittest.TestCase):
         """A real-shaped freeze SHA + distinct merge SHA; only API is mocked."""
         frozen = self.candidate
         tree = git(self.repo, "rev-parse", frozen + "^{tree}")
+        # Initial fixture setUp appended its separate compatibility evidence
+        # commit; published source must start from the frozen candidate, not
+        # from that evidence successor (otherwise its tree really differs).
+        git(self.repo, "checkout", "-q", "--detach", frozen)
         if diverged_tree:
             put(self.repo, "docs/unreviewed.txt", "unsafe source drift")
             published = commit(self.repo, "different publication source")
