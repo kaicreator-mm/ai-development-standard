@@ -327,6 +327,10 @@
       "scripts/verify_project_execution_profile.py",
       "scripts/verify_project_standard.py",
       "scripts/verify_runner_capability_reference.py",
+      "scripts/v412_ads_compatible_select.py",
+      "scripts/v412_scaffold_dag_check.py",
+      "scripts/test_v412_ads_compatible_select.py",
+      "scripts/test_v412_scaffold_dag_check.py",
       "scripts/verify_standard.py"
     ],
     "discovery_standards": [
