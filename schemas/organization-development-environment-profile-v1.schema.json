@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/organization-development-environment-profile-v1.schema.json",
   "title": "AI Development Organization Development Environment Profile v1",
-  "description": "Organization-level defaults and capability hints only; not a project compatibility, certification, host observation, credential or installation authority.",
+  "description": "Organization defaults only; no project requirements, installed host state, certification, credentials or runtime authority.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -24,32 +24,32 @@
       "minLength": 1
     },
     "preferred_toolchains": {
-      "type": "object",
-      "minProperties": 1,
-      "propertyNames": {
-        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
-      },
-      "additionalProperties": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
         "type": "object",
         "additionalProperties": false,
         "required": [
+          "name",
           "preferred_version"
         ],
         "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          },
           "preferred_version": {
             "type": "string",
             "minLength": 1,
-            "description": "Advisory org preferred version, not a project compatibility range or certified version"
+            "description": "Advisory organization preference, not project compatibility or certification"
           },
           "preferred_provider": {
             "type": "string",
-            "minLength": 1,
-            "description": "Advisory tool manager, never mandatory for independent ADS adoption"
+            "minLength": 1
           },
           "policy_ref": {
             "type": "string",
-            "minLength": 1,
-            "description": "Non-secret source/provenance reference; no execution effect"
+            "minLength": 1
           }
         }
       }
@@ -81,16 +81,13 @@
         },
         "mirror_refs": {
           "type": "array",
-          "uniqueItems": true,
           "items": {
             "type": "string",
-            "minLength": 1,
-            "description": "Public/non-secret mirror identifiers only; not URLs containing credentials"
+            "minLength": 1
           }
         },
         "host_capability_hints": {
           "type": "array",
-          "uniqueItems": true,
           "items": {
             "type": "string",
             "minLength": 1
@@ -100,8 +97,7 @@
     },
     "source_policy_ref": {
       "type": "string",
-      "minLength": 1,
-      "description": "Versioned organization policy reference for audit; not permission to adopt mutable latest"
+      "minLength": 1
     }
   }
 }
