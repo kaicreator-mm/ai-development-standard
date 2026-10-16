@@ -169,6 +169,40 @@ class ProtocolSchemaTests(unittest.TestCase):
                 self.assertTrue(schema.get("required"))
                 assert_supported_schema(schema)
 
+    def test_v413_organization_profile_example_and_negatives(self) -> None:
+        # FR01: an organization default is not a project requirement,
+        # certified tuple or installed host fact. Reuse the existing schema
+        # checker, not a new validation framework.
+        schema = load_schema("organization-development-environment-profile-v1.schema.json")
+        example = json.loads(
+            (ROOT / "examples/organization-development-environment-profile.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(validate_subset(example, schema), [])
+
+        missing_profile = json.loads(json.dumps(example))
+        del missing_profile["profile_id"]
+        self.assertTrue(validate_subset(missing_profile, schema))
+
+        missing_toolchains = json.loads(json.dumps(example))
+        missing_toolchains["preferred_toolchains"] = []
+        self.assertTrue(validate_subset(missing_toolchains, schema))
+
+        invalid_toolchain_shape = json.loads(json.dumps(example))
+        invalid_toolchain_shape["preferred_toolchains"] = {"node": {"preferred_version": "24"}}
+        self.assertTrue(validate_subset(invalid_toolchain_shape, schema))
+
+        illicit_project_certification = json.loads(json.dumps(example))
+        illicit_project_certification["certification_tuples"] = [
+            {"toolchain": "node", "version": "24", "platform": "linux", "validation_profile": "fake"}
+        ]
+        self.assertTrue(validate_subset(illicit_project_certification, schema))
+
+        host_is_not_authority = json.loads(json.dumps(example))
+        host_is_not_authority["installed_host_version"] = "24"
+        self.assertTrue(validate_subset(host_is_not_authority, schema))
+
     def test_schema_subset_fails_closed(self) -> None:
         with self.assertRaises(ValueError):
             assert_supported_schema({"type": "string", "oneOf": []})
