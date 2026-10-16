@@ -2,6 +2,34 @@
 
 > **User Product direction recorded 2026-10-16. SOURCE-ONLY; NON-NORMATIVE; NOT PRD/L2/DAG FROZEN.** Related: [v4.13 #1147](https://github.com/kaicreator-mm/ai-development-standard/issues/1147), [Tally integration #55](https://github.com/kaicreator-mm/tally/issues/55). This is a **successor to prior ADS implementation allocation** in Draft PR [#1148](https://github.com/kaicreator-mm/ai-development-standard/pull/1148) and a scope refinement to Draft PR [#1149](https://github.com/kaicreator-mm/ai-development-standard/pull/1149). It does not discard their reusable research findings, but their implied ADS-hosted CLI/Updater/Steward runtime is superseded.
 
+## Product scope decision — Tally preparation only (user confirmed 2026-10-16)
+
+This is now the **operative planning direction** (not a PRD/L2/Task DAG Freeze), recorded in the **main body** of [v4.13 #1147](https://github.com/kaicreator-mm/ai-development-standard/issues/1147) rather than only in Issue comments.
+
+**Version decision:** Keep the already-unfrozen **ADS v4.13**, do not introduce a special intermediate ADS version just to prepare Tally v2. ADS v4.13 is independently deliverable **before** Tally v2 ships. A subsequent ADS standard update is optional and based on real Tally field evidence, not automatically required.
+
+**All executable work belongs to `kaicreator-mm/tally`.** In particular, no ADS-owned devkit copy/port, host Bootstrap, mise/Worktrunk/native Git Worktree adapter, `ads dev` runtime CLI, Agent Skill/MCP server, multi-Agent scheduler/Portfolio/Steward service, actual multi-repo PR writer, Task learning process or actual Tally Build Host validation. Those are **Tally Product/Architecture/Task DAG/Release scope** under [tally #55](https://github.com/kaicreator-mm/tally/issues/55) and [tally Draft PR #56](https://github.com/kaicreator-mm/tally/pull/56).
+
+### Corrected ADS v4.13 deliverable matrix
+
+| Contract | ADS v4.13 acceptance | Not an ADS v4.13 release condition |
+|---|---|---|
+| Organization Development Environment Profile | Versioned org defaults + project/host/compatibility precedence, minimal schema/examples, deterministic conflicting-project case | Real installation of mise/Node/Python, Windows/Ubuntu deployment |
+| ADS exact-revision consumer contract | Tally-readable immutable effective pin, project overrides, source-currentness, Claim/Role/Review/Validation/Release provenance | Working Tally policy resolver, database or production Agent scheduling |
+| GitHub project fact/Attempt distinction | Precise native Issue Dependency/PR/current SHA vs local Agent Attempt/Host/scheduler semantics and counterexamples | Tally Portfolio screen, actual cross-project Ready queue |
+| #1119 compatible ADS adoption | Qualified-release compatibility proof and scoped plan → opted-in PR → approved activation/rollback *semantic contract* | Real downstream PR creation or cross-repo updater runtime |
+| #1116 proportional assurance | Only genuinely missing capability/delivery-based normative delta + standards-repo actual applicable source/schema checks | Tally CLI/SSH/Docker/Agent actual Full Regression/Hidden Validation |
+| Release | Applicable exact-source coherence and final candidate qualification under existing ADS gates | Tally v2's own end-to-end tests, CI/Host actions, feature completion or release qualification |
+
+### Explicit owner/requirement boundary
+
+1. **Tally's ADS-native redesign is prospective.** Existing Tally v1.5.x frozen source and `.dev-standard/VERSION` historical YAML must not be rewritten retroactively or falsely interpreted as the newer canonical pin; Tally implements an explicit local migration when independently admitted.
+2. **A normative ADS contract is not a second implementation.** Where v4.12 canonical `standards/*`, `schemas/*` and `scripts/v412_ads_compatible_select.py` already cover a predicate, v4.13 references that exact owner and emits no duplicate global schema, Task DAG engine, validation service or CLI.
+3. **Runtime identity**: Tally may store internal Agent Session/Attempt state, but ADS-native GitHub project Task/Issue Dependencies and accepted Claim/PR/Git observations remain externally source-bound facts. Self-declared logical Agent role/identity is separate from GitHub authorization transport; actual policy/Claim/CAS/verification proof remains real.
+4. **Rollout**: `qualified_ADS_predecessor -> ADS_v4.13_standards_Release -> Tally_v2_exact_PIN_and_build/release -> optional_new_ADS_feedback`. No mutual release Gate or dependency cycle.
+5. **Minimal actual ADS Task split** after L1/L2: source gap audit, org Profile/precedence, interoperability contracts, bounded #1119/#1116 semantics where unimplemented, existing source-only release closure. Merge/drop concerns already satisfied. Draft #1148/#1149 are research history, not executable PRs.
+6. **Proof states**: `PRODUCT_FREEZE=NO; L2_FREEZE=NO; DAG_FREEZE=NO; ADS_V413_IMPLEMENTATION=NOT_STARTED; TALLY_V2_REAL_EXECUTION=NOT_RUN`. No claim of Tally runtime conformance from standards-only examples.
+
 ## 1. Decision
 
 **ADS = standalone internal Engineering Standard and Organization Configuration Contract.**  
