@@ -1,6 +1,10 @@
 # AI Development Standard
 
-当前版本：`v4.11.0`（**未发布 version-branch candidate；此身份声明本身不等于 V01、冻结或发布 PASS**）
+当前版本候选：`v4.12.0`（**version branch，尚未 Release Qualified，也未合并 `main`、打 Tag 或发布 GitHub Release**）。`VERSION=4.12.0` 是候选源码身份，**不是发布资格证明**；以 [v4.12 控制 Issue #1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) 的最新精确 SHA 验证与最终裁决为准。
+
+> **v4.12 候选快照**：五个实现 Task S01–S05 对应 #1132–#1136 已完成实际 PR 合并和 Issue 关闭；S03 20 项、S05 34 项定向测试在最新已合并 S05 PR 的 CI #38860456605 执行成功。S06 仍需对正式版本候选的新 HEAD 验证、候选冻结、适用 Release 门禁和独立复审；上述实现证据不能直接复用为新的 Release PASS。外部实际项目采用验证可在合格发布后反馈迭代。
+
+> **v4.11 历史记录（非现行状态）**：以下旧的 v4.11.0 候选叙述属于当时源码历史，不表示今天 v4.11 或 v4.12 仍在当时的阻断状态，也不生成任何新证据。
 
 > **v4.11.0 当前候选姿态**：`version/v4.11.0` 已集成冻结 Task DAG 的 T01–T14（14/14；T12 PR #1086 合并提交 `eb8ffb8bc7b462894972137569375222df153add`）。V01 #1021 曾在初始候选 `eb8ffb8bc7b462894972137569375222df153add` 上执行真实可见验证，并于 #1021@6148175429 给出 **V01_BLOCKED**（RC-1 历史 Exact-State 属主裁决、RC-2 版本身份不一致）；这是绑定旧 SHA 的历史回执，不代表任何后继候选的现行验证结论。此说明不产生 Candidate Freeze、Hidden Validation、Release Qualification、`main` 合并、tag、GitHub Release 或任何发布 PASS。
 >
