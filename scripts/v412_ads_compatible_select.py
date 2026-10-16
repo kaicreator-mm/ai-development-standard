@@ -112,6 +112,115 @@ def successful_run(fetch, run_id: str, sha: str) -> None:
         raise Unsafe("EXECUTED_GATE_NOT_PROVEN")
 
 
+def qualified_integrated_release(repo: Path, published: str, version: str,
+                                 item: dict, facts: dict, issue_id: int,
+                                 rq_id: int, fetch, base: str) -> None:
+    """Actual S06: frozen candidate and published main differ in SHA, not tree."""
+    frozen = exact_commit(repo, facts.get("candidate_sha", ""))
+    tree = facts.get("candidate_tree", "")
+    if (not SHA.fullmatch(tree) or frozen == published
+            or not ancestor(repo, frozen, published)
+            or git(repo, "rev-parse", frozen + "^{tree}") != tree
+            or git(repo, "rev-parse", published + "^{tree}") != tree
+            or at(repo, frozen, "VERSION") != version
+            or facts.get("version") != version
+            or facts.get("release_verdict") != "READY"
+            or facts.get("required_gate_results") != "PASS"
+            or facts.get("actor_role") != "release-controller"):
+        raise Unsafe("PUBLISHED_RELEASE_LINEAGE_MISMATCH")
+
+    def linked(key: str, expected: str) -> dict:
+        m = re.fullmatch(r"#([1-9]\d*)@([1-9]\d*)", facts.get(key, ""))
+        if not m or int(m.group(1)) != issue_id:
+            raise Unsafe("PUBLISHED_RELEASE_EVIDENCE_REF_MISSING")
+        ident = int(m.group(2))
+        evidence = fetch(base + f"issues/comments/{ident}")
+        if (not isinstance(evidence, dict) or evidence.get("id") != ident
+                or f"/issues/{issue_id}#issuecomment-{ident}" not in str(evidence.get("html_url", ""))):
+            raise Unsafe("PUBLISHED_RELEASE_EVIDENCE_REF_STALE")
+        fields = checked_event(evidence.get("body", ""))
+        if fields.get("event") != expected or fields.get("candidate_sha") != frozen:
+            raise Unsafe("PUBLISHED_RELEASE_EVIDENCE_SUBJECT_MISMATCH")
+        return fields
+
+    gate = linked("gate_applicability_ref", "ADS_V412_S06_VERSION_VISIBLE_GATE_APPLICABILITY")
+    freeze = linked("candidate_freeze_ref", "ADS_V412_S06_CANDIDATE_FROZEN")
+    closure = linked("final_closeout_ref", "ADS_V412_S06_FINAL_CLOSEOUT")
+    if (gate.get("candidate_tree") != tree
+            or gate.get("source_consistency_result") != "PASS"
+            or gate.get("self_dogfood_result") != "PASS_SOURCE_PROCESS_SCOPE"
+            or gate.get("full_visible_regression_result") != "PASS_CURRENT_HEAD"
+            or freeze.get("candidate_tree") != tree
+            or freeze.get("freeze_state") != "FROZEN_OPERATIVE"
+            or closure.get("candidate_tree") != tree
+            or closure.get("closeout") != "READY_FOR_RELEASE_QUALIFICATION"):
+        raise Unsafe("PUBLISHED_RELEASE_SOURCE_GATE_UNPROVEN")
+
+    def real_ci(run_id: str, sha: str) -> None:
+        if not re.fullmatch(r"[1-9]\d*", str(run_id)):
+            raise Unsafe("PUBLISHED_RELEASE_CI_MISSING")
+        successful_run(fetch, run_id, sha)
+        executed = fetch(base + "actions/runs/" + run_id)
+        if not isinstance(executed, dict) or executed.get("name") != "verify-standard":
+            raise Unsafe("PUBLISHED_RELEASE_CI_NOT_STANDARD_VERIFIER")
+
+    real_ci(gate.get("current_version_ci_run"), frozen)
+    if gate.get("current_version_ci_run") != facts.get("exact_ci_run"):
+        raise Unsafe("PUBLISHED_RELEASE_CI_SUBJECT_MISMATCH")
+
+    reviewer = re.fullmatch(r"PR([1-9]\d*)_COMMENTED_PASS_ON_IDENTICAL_TREE",
+                            facts.get("candidate_source_review", ""))
+    if not reviewer:
+        raise Unsafe("PUBLISHED_RELEASE_SOURCE_REVIEW_MISSING")
+    reviews = fetch(base + "pulls/" + reviewer.group(1) + "/reviews?per_page=100")
+    if not isinstance(reviews, list) or len(reviews) >= 100:
+        raise Unsafe("PUBLISHED_RELEASE_SOURCE_REVIEW_UNKNOWN")
+    reviewed = False
+    for entry in reviews:
+        if not isinstance(entry, dict) or entry.get("state") != "COMMENTED":
+            continue
+        fields = checked_event(entry.get("body", ""))
+        reviewed_head = fields.get("reviewed_head", "")
+        if (fields.get("source_review_verdict") == "PASS"
+                and fields.get("review_subject") == "PR_" + reviewer.group(1)
+                and SHA.fullmatch(reviewed_head)
+                and git(repo, "rev-parse", reviewed_head + "^{tree}") == tree
+                and fields.get("operator_id")
+                and fields["operator_id"] != facts.get("operator_id")):
+            reviewed = True
+            break
+    if not reviewed:
+        raise Unsafe("PUBLISHED_RELEASE_SOURCE_REVIEW_UNPROVEN")
+
+    integration_id = item.get("integration_comment")
+    if type(integration_id) is not int or integration_id < 1:
+        raise Unsafe("PUBLISHED_RELEASE_INTEGRATION_REF_MISSING")
+    event = fetch(base + f"issues/comments/{integration_id}")
+    if (not isinstance(event, dict) or event.get("id") != integration_id
+            or f"/issues/{issue_id}#issuecomment-{integration_id}" not in str(event.get("html_url", ""))):
+        raise Unsafe("PUBLISHED_RELEASE_INTEGRATION_NOT_ON_VERSION")
+    integrated = checked_event(event.get("body", ""))
+    if (integrated.get("event") != "ADS_V412_S06_RELEASE_INTEGRATED_BASELINE"
+            or integrated.get("frozen_candidate_sha") != frozen
+            or integrated.get("final_main_sha") != published
+            or integrated.get("final_main_tree") != tree
+            or integrated.get("release_qualification") != f"#{issue_id}@{rq_id}_READY"
+            or integrated.get("tree_equivalence") != "CANDIDATE_EQUALS_MAIN"):
+        raise Unsafe("PUBLISHED_RELEASE_INTEGRATION_UNVERIFIED")
+    merge = re.fullmatch(r"#([1-9]\d*)_MERGED", integrated.get("main_integration_pr", ""))
+    if not merge:
+        raise Unsafe("PUBLISHED_RELEASE_MERGE_MISSING")
+    native = fetch(base + "pulls/" + merge.group(1))
+    if (not isinstance(native, dict) or not native.get("merged_at")
+            or native.get("merge_commit_sha") != published):
+        raise Unsafe("PUBLISHED_RELEASE_MERGE_UNVERIFIED")
+    main_run = re.fullmatch(r"([1-9]\d*)_COMPLETED_SUCCESS",
+                            integrated.get("post_main_ci", ""))
+    if not main_run:
+        raise Unsafe("PUBLISHED_RELEASE_MAIN_CI_MISSING")
+    real_ci(main_run.group(1), published)
+
+
 def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
     """Published identity and Release gates are distinct from passing PR CI."""
     if not isinstance(item, dict) or not has_source_manifest(repo, sha):
@@ -145,6 +254,13 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
             or f"/issues/{issue_id}#issuecomment-{comment_id}" not in str(event.get("html_url", ""))):
         raise Unsafe("RELEASE_EVENT_OUTSIDE_CANONICAL_VERSION")
     facts = checked_event(event.get("body"))
+    if (facts.get("event") != "RELEASE_QUALIFICATION"
+            or facts.get("qualification") != "RELEASE_QUALIFIED"):
+        raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
+    if facts.get("candidate_tree") is not None:
+        qualified_integrated_release(repo, sha, version, item, facts, issue_id,
+                                     comment_id, fetch, base)
+        return base + f"issues/comments/{comment_id}"
     if (facts.get("event") != "RELEASE_QUALIFICATION"
             or facts.get("qualification") != "RELEASE_QUALIFIED"
             or facts.get("candidate_sha") != sha
