@@ -216,12 +216,21 @@ class SelectorTests(unittest.TestCase):
         self.rejected("PROJECT_NOT_OPTED_IN")
         self.assertFalse(self.calls)
 
-    def test_missing_active_or_frozen_state_fails_closed(self):
-        for key in ("active_task", "frozen_candidate"):
-            with self.subTest(field=key):
-                old = self.project.pop(key)
-                self.rejected("UNKNOWN_ACTIVE_OR_FROZEN_CHECKPOINT")
-                self.project[key] = old
+    def test_missing_checkpoint_state_fails_closed(self):
+        self.status["active_claim"] = "CLAIM_PENDING"
+        self.status["checked_parent_sha"] = self.consumer_head
+        put(self.consumer, ".dev-standard/ADOPTION_STATUS.json", json.dumps(self.status))
+        self.consumer_head = commit(self.consumer, "new adoption snapshot")
+        self.rejected("ACTIVE_FROZEN_OR_UNVERIFIED_CHECKPOINT")
+
+    def test_discovery_false_false_cannot_override_source_frozen(self):
+        self.project["active_task"] = False
+        self.project["frozen_candidate"] = False
+        self.status["frozen_candidate"] = "frozen-candidate-1"
+        self.status["checked_parent_sha"] = self.consumer_head
+        put(self.consumer, ".dev-standard/ADOPTION_STATUS.json", json.dumps(self.status))
+        self.consumer_head = commit(self.consumer, "current known frozen snapshot")
+        self.rejected("ACTIVE_FROZEN_OR_UNVERIFIED_CHECKPOINT")
 
     def test_discovery_false_does_not_override_live_task(self):
         self.live_issues = [{"number": 4, "labels": [{"name": "type:task"}]}]
@@ -236,6 +245,18 @@ class SelectorTests(unittest.TestCase):
         self.rejected("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
         self.live_issues = [{}] * 100
         self.rejected("UNKNOWN_PROJECT_LIVE_STATE_OR_PAGINATION")
+
+    def test_arbitrary_non_task_label_open_issue_is_not_trusted(self):
+        self.live_issues = [{"number": 55, "labels": [{"name": "triage:active"}]}]
+        self.rejected("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
+
+    def test_stale_local_checkout_rejects_project_inactive_claim(self):
+        self.consumer_head = self.current
+        self.rejected("PROJECT_REMOTE_CHECKPOINT_STALE")
+
+    def test_dirty_consumer_worktree_unknown(self):
+        put(self.consumer, "scratch.txt", "pending")
+        self.rejected("PROJECT_WORKTREE_NOT_CLEAN")
 
     def test_missing_live_project_repo(self):
         self.project["project_repository"] = None
@@ -254,6 +275,17 @@ class SelectorTests(unittest.TestCase):
         self.record["candidate"]["sha_or_digest"] = self.current
         self.save_proof()
         self.rejected("INVALID_SOURCE_COMPATIBILITY_RECORD")
+
+    def test_consumer_a_proof_does_not_qualify_consumer_b(self):
+        # Both projects may declare the same support window.
+        self.record["consumer_refs"] = ["synthetic/other-consumer"]
+        self.save_proof()
+        self.rejected("CONSUMER_IDENTITY_NOT_TESTED")
+
+    def test_producer_must_be_actual_ads_source(self):
+        self.record["producer_refs"] = ["some-producer"]
+        self.save_proof()
+        self.rejected("CONSUMER_IDENTITY_NOT_TESTED")
 
     def test_unknown_behavior_forces_no_recommendation(self):
         self.record["dimensions"][0]["outcome"] = "UNKNOWN"
@@ -295,6 +327,43 @@ class SelectorTests(unittest.TestCase):
             return result
         self.fetch = fake_admission
         self.rejected("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
+
+    def test_required_s06_gate_cannot_be_not_run_with_green_ci(self):
+        old = self.fetch
+
+        def fake_gate(url):
+            result = old(url)
+            if url.endswith("/issues/comments/987654356"):
+                return {**result, "body": result["body"].replace("decision=PASS", "decision=NOT_RUN")}
+            return result
+
+        self.fetch = fake_gate
+        self.rejected("REQUIRED_RELEASE_GATE_NOT_PASSED")
+
+    def test_required_s06_gate_job_not_equivalent_to_ordinary_ci(self):
+        old = self.fetch
+
+        def ordinary_ci_only(url):
+            result = old(url)
+            if url.endswith("/actions/jobs/300002"):
+                return {**result, "name": "verify-standard"}
+            return result
+
+        self.fetch = ordinary_ci_only
+        self.rejected("REQUIRED_RELEASE_GATE_PROOF_NOT_EXECUTED")
+
+    def test_review_from_different_issue_not_release_subject(self):
+        old = self.fetch
+
+        def unowned_review(url):
+            result = old(url)
+            if url.endswith("/issues/comments/987654333"):
+                return {**result,
+                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/999#issuecomment-987654333"}
+            return result
+
+        self.fetch = unowned_review
+        self.rejected("MISSING_INDEPENDENT_RELEASE_REVIEW")
 
     def test_release_ci_real_exit_required(self):
         self.ci_conclusion = "failure"
