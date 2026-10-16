@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile_id": "example.organization.development",
+  "organization": "example",
+  "preferred_toolchains": [
+    {
+      "name": "node",
+      "preferred_version": "24",
+      "preferred_provider": "mise",
+      "policy_ref": "example/org-profile@IMMUTABLE_REVISION"
+    },
+    {
+      "name": "python",
+      "preferred_version": "3.12",
+      "preferred_provider": "mise"
+    }
+  ],
+  "environment_hints": {
+    "cache_policy": "shared_reconstructible_only",
+    "workspace_policy": "per_task_isolated",
+    "offline": "allow_exact_cached_sources_only",
+    "mirror_refs": [
+      "example-public-mirror"
+    ],
+    "host_capability_hints": [
+      "linux",
+      "windows"
+    ]
+  },
+  "source_policy_ref": "example/org-profile@IMMUTABLE_REVISION"
+}
