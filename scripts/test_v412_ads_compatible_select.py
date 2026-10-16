@@ -202,6 +202,7 @@ class SelectorTests(unittest.TestCase):
         git(self.repo, "tag", "-d", "v4.12.0")
         git(self.repo, "tag", "v4.12.0", published)
         self.candidate = published
+        self.candidates[0]["sha"] = published
         self.ci_subject = published
         self.tag_target_sha = published
         self.release_target_sha = published
