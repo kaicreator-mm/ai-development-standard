@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前版本候选：`v4.12.0`（**version branch，尚未 Release Qualified，也未合并 `main`、打 Tag 或发布 GitHub Release**）。`VERSION=4.12.0` 是候选源码身份，**不是发布资格证明**；以 [v4.12 控制 Issue #1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) 的最新精确 SHA 验证与最终裁决为准。
+当前版本：`v4.12.0`（**version branch，尚未 Release Qualified，也未合并 `main`、打 Tag 或发布 GitHub Release**）。`VERSION=4.12.0` 是候选源码身份，**不是发布资格证明**；以 [v4.12 控制 Issue #1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) 的最新精确 SHA 验证与最终裁决为准。
 
 > **v4.12 候选快照**：五个实现 Task S01–S05 对应 #1132–#1136 已完成实际 PR 合并和 Issue 关闭；S03 20 项、S05 34 项定向测试在最新已合并 S05 PR 的 CI #38860456605 执行成功。S06 仍需对正式版本候选的新 HEAD 验证、候选冻结、适用 Release 门禁和独立复审；上述实现证据不能直接复用为新的 Release PASS。外部实际项目采用验证可在合格发布后反馈迭代。
 
