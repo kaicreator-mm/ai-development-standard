@@ -122,9 +122,14 @@ class SelectorTests(unittest.TestCase):
                              "required_gate_results=PASS\n"
                              "actor_role=release-controller\n"
                              "operator_id=release-agent\noperator_kind=chatgpt-web\n"
-                             "session_ref=release-1\ncanonical_admission_ref=#1096@admitted\n"
+                             "session_ref=release-1\ncanonical_admission_ref=#1096@987654344\n"
                              "review_comment_id=987654333\n"
                              "gate_evidence_refs=actions:1234567")}
+        if url.endswith("/issues/comments/987654344"):
+            return {"id": 987654344,
+                    "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654344",
+                    "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_CANDIDATE_ADMISSION\n"
+                             f"candidate_sha={self.candidate}\nadmission=ACCEPTED\n")}
         if url.endswith("/issues/comments/987654333"):
             return {"id": self.review,
                     "body": ("<!-- ai-dev:event:v2 -->\nactor_role=reviewer\n"
@@ -243,6 +248,17 @@ class SelectorTests(unittest.TestCase):
     def test_remote_tag_must_equal_candidate(self):
         self.tag_target_sha = self.current
         self.rejected("REMOTE_RELEASE_TAG_IDENTITY_UNVERIFIED")
+
+    def test_release_canonical_admission_must_be_accepted(self):
+        old = self.fetch
+
+        def fake_admission(url):
+            result = old(url)
+            if url.endswith("/issues/comments/987654344"):
+                return {**result, "body": result["body"].replace("admission=ACCEPTED", "admission=PENDING")}
+            return result
+        self.fetch = fake_admission
+        self.rejected("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
 
     def test_release_ci_real_exit_required(self):
         self.ci_conclusion = "failure"
