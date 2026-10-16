@@ -67,14 +67,15 @@ def parse_version(blob: str) -> dict:
 
 
 def api_json(url: str) -> dict:
-    if not url.startswith("https://api.github.com/repos/kaicreator-mm/ai-development-standard/"):
-        raise Unsafe("UNTRUSTED_RELEASE_API")
+    if (not url.startswith("https://api.github.com/repos/kaicreator-mm/ai-development-standard/")
+            and not re.fullmatch(r"https://api[.]github[.]com/repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/(?:issues|pulls)[?]state=open&per_page=100", url)):
+        raise Unsafe("UNTRUSTED_READ_ONLY_GITHUB_API")
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "ADS-v412-read-only-selector"}
     if os.environ.get("GITHUB_TOKEN"):
         headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
     with urlopen(Request(url, headers=headers), timeout=8) as response:
         data = json.load(response)
-    if not isinstance(data, dict):
+    if not isinstance(data, (dict, list)):
         raise Unsafe("INVALID_API_RECORD")
     return data
 
@@ -283,8 +284,10 @@ def select(repo: Path, project: dict, candidates: list, fetch=api_json) -> dict:
     try:
         if project.get("preference") != CURRENT_PROFILE:
             raise Unsafe("PROJECT_NOT_OPTED_IN")
-        if project.get("active_task") or project.get("frozen_candidate"):
-            raise Unsafe("ACTIVE_SUBJECT_CANNOT_REBIND")
+        # Never convert missing or discovery-supplied "false" into live safety.
+        live_project_state(project, fetch)
+        if project.get("active_task") is not False or project.get("frozen_candidate") is not False:
+            raise Unsafe("UNKNOWN_ACTIVE_OR_FROZEN_CHECKPOINT")
         current = exact_commit(repo, project.get("current_revision", ""))
         cv = at(repo, current, "VERSION")
         if not VERSION.fullmatch(cv) or project.get("current_version") != cv:
@@ -304,7 +307,7 @@ def select(repo: Path, project: dict, candidates: list, fetch=api_json) -> dict:
             if not VERSION.fullmatch(ver) or not ancestor(repo, current, sha):
                 raise Unsafe("INCOMPARABLE_OR_UNRELEASED_CANDIDATE")
             proof = qualified(repo, sha, ver, item, fetch)
-            refs = compatible(item.get("compatibility_record"), current, sha)
+            refs = compatible(repo, item, current, sha, project.get("consumer_window"), fetch)
             valid.append({"revision": sha, "version": ver, "qualification_ref": proof, "compatibility_refs": refs})
         if not valid:
             raise Unsafe("NO_NEW_ELIGIBLE_RELEASE")
@@ -337,8 +340,18 @@ def main() -> int:
         data = json.loads(Path(args.candidates).read_text(encoding="utf-8"))
         if not isinstance(data, dict):
             raise Unsafe("INVALID_DISCOVERY_INPUT")
+        origin = git(project_root, "remote", "get-url", "origin")
+        match = re.fullmatch(
+            r"(?:https://github[.]com/|git@github[.]com:)([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:[.]git)?",
+            origin,
+        )
+        if not match:
+            raise Unsafe("UNVERIFIED_PROJECT_GIT_REMOTE")
+        window = re.search(r"(?m)^ads_consumer_window=([^\s]+)\s*$", overrides)
         project = {"preference": opted.group(1) if opted else "PINNED/MANUAL",
                    "current_revision": pin["revision"], "current_version": pin["version"],
+                   "project_repository": match.group(1),
+                   "consumer_window": window.group(1) if window else None,
                    "active_task": data.get("active_task"), "frozen_candidate": data.get("frozen_candidate")}
         result = select(Path(args.ads_repo), project, data.get("candidates", []))
     except (Unsafe, ValueError, TypeError, OSError, json.JSONDecodeError) as err:
