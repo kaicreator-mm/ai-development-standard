@@ -238,7 +238,7 @@ class SelectorTests(unittest.TestCase):
 
     def test_discovery_false_does_not_override_live_pr(self):
         self.live_pulls = [{"number": 9}]
-        self.rejected("ACTIVE_SUBJECT_CANNOT_REBIND")
+        self.rejected("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
 
     def test_unclassified_task_and_pagination_unknown(self):
         self.live_issues = [{"number": 3, "labels": []}]
