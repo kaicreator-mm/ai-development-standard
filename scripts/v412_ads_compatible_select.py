@@ -193,7 +193,7 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
 
 
 def compatible(repo: Path, item: dict, current: str, candidate: str,
-               consumer_window: str, fetch) -> list[str]:
+               consumer_repo: str, consumer_window: str, fetch) -> list[str]:
     """Git-source record + actual exact-subject executed per-dimension test jobs.
 
     JSON supplied directly by discovery is NOT an evidence authority.
@@ -221,6 +221,10 @@ def compatible(repo: Path, item: dict, current: str, candidate: str,
             or not isinstance(record.get("consumer_refs"), list)
             or not record["consumer_refs"]):
         raise Unsafe("INVALID_SOURCE_COMPATIBILITY_RECORD")
+    if (not isinstance(consumer_repo, str) or not REPO.fullmatch(consumer_repo)
+            or record["consumer_refs"] != [consumer_repo]
+            or record["producer_refs"] != ["kaicreator-mm/ai-development-standard"]):
+        raise Unsafe("CONSUMER_IDENTITY_NOT_TESTED")
     if (not isinstance(consumer_window, str) or not consumer_window
             or record.get("compatibility_window_ref") != consumer_window):
         raise Unsafe("UNSUPPORTED_OR_UNVERIFIED_CONSUMER_WINDOW")
@@ -239,6 +243,9 @@ def compatible(repo: Path, item: dict, current: str, candidate: str,
         raise Unsafe("MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
     prefix = "https://api.github.com/repos/kaicreator-mm/ai-development-standard/"
     refs = []
+    # Bind every probe to the actual local project repository, not merely to a
+    # reused support-window label shared by unrelated consumers.
+    consumer_key = consumer_repo.replace("/", "__")
     for name in sorted(REQUIRED_DIMENSIONS):
         dim = by_name[name]
         ev = dim.get("evidence_refs")
@@ -256,11 +263,11 @@ def compatible(repo: Path, item: dict, current: str, candidate: str,
                 or job.get("run_id") != int(run_id)
                 or job.get("status") != "completed"
                 or job.get("conclusion") != "success"
-                or job.get("name") != f"ads-compat:{current[:12]}:{name}"
+                or job.get("name") != f"ads-compat:{current[:12]}:{consumer_key}:{name}"
                 or not isinstance(job.get("steps"), list)
                 or not any(
                     isinstance(st, dict)
-                    and st.get("name") == f"probe:{current[:12]}:{name}:{consumer_window}"
+                    and st.get("name") == f"probe:{current[:12]}:{consumer_key}:{name}:{consumer_window}"
                     and st.get("conclusion") == "success"
                     for st in job["steps"])):
             raise Unsafe("COMPATIBILITY_TEST_NOT_EXECUTED_ON_EXACT_SUBJECT")
@@ -329,7 +336,8 @@ def select(repo: Path, project: dict, candidates: list, fetch=api_json) -> dict:
             if not VERSION.fullmatch(ver) or not ancestor(repo, current, sha):
                 raise Unsafe("INCOMPARABLE_OR_UNRELEASED_CANDIDATE")
             proof = qualified(repo, sha, ver, item, fetch)
-            refs = compatible(repo, item, current, sha, project.get("consumer_window"), fetch)
+            refs = compatible(repo, item, current, sha, project.get("project_repository"),
+                              project.get("consumer_window"), fetch)
             valid.append({"revision": sha, "version": ver, "qualification_ref": proof, "compatibility_refs": refs})
         if not valid:
             raise Unsafe("NO_NEW_ELIGIBLE_RELEASE")
