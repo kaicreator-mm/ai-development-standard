@@ -47,6 +47,7 @@ class SelectorTests(unittest.TestCase):
         git(self.repo, "tag", "v4.12.0", self.candidate)
         self.issue = 1096
         self.comment = 987654321
+        self.run_id = 1234567
         self.project = {"preference": "TRACK_LATEST_COMPATIBLE_STABLE",
                         "current_revision": self.current, "current_version": "4.11.0",
                         "active_task": False, "frozen_candidate": False}
@@ -78,8 +79,15 @@ class SelectorTests(unittest.TestCase):
                     "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_QUALIFICATION\n"
                              f"candidate_sha={self.candidate}\n"
                              "qualification=RELEASE_QUALIFIED\n"
+                             "actor_role=release-controller\n"
+                             "operator_kind=chatgpt-web\n"
+                             "operator_id=reviewed-release-context-01\n"
+                             "session_ref=release-session-01\n"
                              "canonical_admission_ref=#1096@admitted\n"
-                             "gate_evidence_refs=ci:real-123;review:independent-456")}
+                             "gate_evidence_refs=actions:1234567")}
+        if url.endswith("/actions/runs/1234567"):
+            return {"id": 1234567, "head_sha": self.candidate,
+                    "status": "completed", "conclusion": "success", "name": "verify-standard"}
         raise RuntimeError("unexpected API URL: " + url)
 
     def assess(self):
@@ -90,7 +98,7 @@ class SelectorTests(unittest.TestCase):
         self.assertEqual(decision["decision"], "READ_ONLY_RECOMMENDATION")
         self.assertEqual(decision["proposed_revision"], self.candidate)
         self.assertFalse(decision["effective_pin_changed"])
-        self.assertEqual(len(self.network_calls), 2)
+        self.assertEqual(len(self.network_calls), 3)
 
     def test_mature_consumer_positive_with_extra_source(self):
         put(self.repo, "consumer/legacy-surface.json", "{}")
@@ -118,6 +126,30 @@ class SelectorTests(unittest.TestCase):
         original = self.fetch
         self.fetch = lambda url: {**original(url), "body": "qualified=true"} if "/comments/" in url else original(url)
         self.assertEqual(self.assess()["reason"], "UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
+
+    def test_release_gate_exit_must_be_real_success(self):
+        old = self.fetch
+
+        def failed_ci(url):
+            value = old(url)
+            if "/actions/runs/" in url:
+                return {**value, "conclusion": "failure"}
+            return value
+
+        self.fetch = failed_ci
+        self.assertEqual(self.assess()["reason"], "RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
+
+    def test_source_stale_ci_head_cannot_prove_release(self):
+        old = self.fetch
+
+        def stale_ci(url):
+            value = old(url)
+            if "/actions/runs/" in url:
+                return {**value, "head_sha": self.current}
+            return value
+
+        self.fetch = stale_ci
+        self.assertEqual(self.assess()["reason"], "RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
 
     def test_nonqualified_github_release_refused(self):
         old = self.fetch
@@ -172,10 +204,17 @@ class SelectorTests(unittest.TestCase):
             if url.endswith("/issues/comments/987654322"):
                 return {"id": 987654322,
                         "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654322",
-                        "body": ("event=RELEASE_QUALIFICATION\n"
+                        "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_QUALIFICATION\n"
                                  f"candidate_sha={sibling}\nqualification=RELEASE_QUALIFIED\n"
+                                 "actor_role=release-controller\n"
+                                 "operator_kind=chatgpt-web\n"
+                                 "operator_id=reviewed-release-context-02\n"
+                                 "session_ref=release-session-02\n"
                                  "canonical_admission_ref=#1096@admitted\n"
-                                 "gate_evidence_refs=ci:real-123;review:independent-456")}
+                                 "gate_evidence_refs=actions:1234568")}
+            if url.endswith("/actions/runs/1234568"):
+                return {"id": 1234568, "head_sha": sibling,
+                        "status": "completed", "conclusion": "success", "name": "verify-standard"}
             return original(url)
 
         self.fetch = sibling_proof
