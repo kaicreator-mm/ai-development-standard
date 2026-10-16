@@ -156,6 +156,22 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
                                                "canonical_admission_ref", "gate_evidence_refs",
                                                "review_comment_id"))):
         raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
+    # An arbitrary nonempty "admission" string is not a canonical accepted
+    # freeze. Read its actual existing Issue comment and exact source subject.
+    admitted_ref = re.fullmatch(r"#([1-9]\d*)@([1-9]\d*)",
+                                facts["canonical_admission_ref"])
+    if not admitted_ref or int(admitted_ref.group(1)) != issue_id:
+        raise Unsafe("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
+    admission_id = int(admitted_ref.group(2))
+    admission = fetch(base + f"issues/comments/{admission_id}")
+    if (not isinstance(admission, dict) or admission.get("id") != admission_id
+            or f"/issues/{issue_id}#issuecomment-{admission_id}" not in str(admission.get("html_url", ""))):
+        raise Unsafe("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
+    admitted = checked_event(admission.get("body", ""))
+    if (admitted.get("event") != "RELEASE_CANDIDATE_ADMISSION"
+            or admitted.get("candidate_sha") != sha
+            or admitted.get("admission") != "ACCEPTED"):
+        raise Unsafe("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
     m = re.fullmatch(r"actions:([1-9][0-9]*)", facts["gate_evidence_refs"])
     if not m:
         raise Unsafe("RELEASE_GATE_EXECUTION_REFERENCE_MISSING")
