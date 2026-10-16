@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前源码版本：`v4.13.0`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+当前版本：`v4.13.0`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
 
 > **v4.13.0 范围：ADS Foundation for Tally v2**。本版本仅提供 Organization Development Environment Profile、对外可消费的 GitHub Task/Claim/Agent Attempt 互操作参考、以及源证据约束下的 ADS 兼容升级预备提案 → 项目 opt-in PR → 合并前激活/回滚规范。ADS 保持独立标准仓库；实际 Toolkit、mise/Worktrunk、CLI/Skills/MCP、Agent/多项目调度与跨项目更新器均在 [Tally 项目](https://github.com/kaicreator-mm/tally/issues/55) 独立开发、验证和发布，不作为 ADS v4.13 的发布门槛。FR04 按交付能力验证的现行规范已满足要求，因此没有另增验证引擎。
 
