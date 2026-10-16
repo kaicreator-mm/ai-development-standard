@@ -64,20 +64,45 @@ ADS SHALL prefer referencing existing schemas/protocol owners and provide at mos
 
 ### FR03 — Qualified compatible ADS adoption and activation rules (P0)
 
-ADS v4.13 SHALL **reuse** qualified-release proof, effective exact SHA pin and read-only compatibility selector shipped in v4.12. It SHALL clarify a portable **three-action contract**:
+ADS v4.13 SHALL **reuse the exact-source release-qualification proof, immutable pin and semantic/authority compatibility policies delivered by v4.12**, but SHALL NOT treat the existing `scripts/v412_ads_compatible_select.py` selector as a successful *prospective* recommender when its own live-project checkpoint denies the request.
+
+**Unmodified v4.12 behavior:** The published selector is a conservative **read-only safe recommendation** evaluator; `live_project_state()` currently rejects any open Issue/PR as `ACTIVE_OR_UNCLASSIFIED_WORK_ITEM` and `select()` returns `NO_SAFE_RECOMMENDATION`. That result **remains a failure to prove safe recommendation**, not proof that a candidate is compatible, not authority to create an update PR, and not an activation/merge permission. v4.13 does not loosen or reinterpret the published selector in place. It reuses the existing underlying **source-bound immutable-release and compatibility obligations**, which must be positively proved afresh by any prospective adapter.
+
+**Prospective discovery is a distinct, lower-authority *description of evidence*, not a new Gate state or a `SAFE` selector outcome.** Tally v2 implements any real prospective resolver and PR writer. Its proposal envelope (semantics contract only, no mandatory new global schema) must distinguish:
+
+- `EVIDENCE_BACKED_COMPATIBLE_PROPOSAL`: affirmative (1) exact current project pin and project compatibility requirements, (2) an exact immutable ADS released candidate with **current independently verified Release Qualification/publication evidence**, (3) source/schema **and behavior/actor/authority/Claim/Review/Validation/Release** compatibility proof for this project, and (4) all relevant proposal-revision source references/currentness. This permits **read-only planning**, not a blanket statement that a running project is safe to activate.
+- `PROSPECTIVE_UNVERIFIED/UNKNOWN`: if any of the above qualification, compatibility or source evidence is missing, contradictory, stale or uninspected. The system MAY list a candidate with a reason/evidence gap for investigation, but MUST NOT label it compatible, safe, ready-to-merge or activate. The existing selector's `NO_SAFE_RECOMMENDATION` is not upgraded by this descriptive envelope.
+
+The v4.13 portable execution contract distinguishes three actions and their **independent checkpoints**:
 
 ```text
-READ_ONLY_COMPATIBLE_PLAN  (no project write, can examine prospective updates)
-→ OPTED_IN_PROJECT_UPDATE_PR  (source-scoped proposal only, effective pin unchanged)
-→ PROJECT_CHECKPOINT_ACTIVATION (re-check exact source/permissions/compatibility/Claim/freeze facts)
-→ optional bounded ROLLBACK as a fresh project-authorized operation
+1. READ_ONLY_PROSPECTIVE_PLAN
+   verified candidate release + project material compatibility, or explicit UNKNOWN
+   output = source-bound proposal / advisory; effective pin unchanged
+
+2. OPTED_IN_PROJECT_UPDATE_PR
+   actual project opt-in + qualified compatible proposal + exact target-HEAD/CAS,
+   bounded write-set, existing PR dedup, actual GitHub permission/readback
+   output = proposed GitHub PR, not acceptance; effective pin unchanged until merge
+   no PR creation based on UNKNOWN qualification/compatibility
+
+3. PROJECT_CHECKPOINT_ACTIVATION
+   re-read latest project target HEAD, effective pin/overrides, permission,
+   materially affected native Task/Claim/Issue dependencies, active accepted
+   Task revision boundaries, frozen candidate/release and required checks/Review
+   output = authorized merge/effective new pin for eligible new/checkpointed tasks
+   unknown material state/conflict => HOLD, not approval
+
+4. optional ROLLBACK
+   new source-bound project-authorized PR and actual tests/readback;
+   historical Task/Claim proofs preserve their original exact pin
 ```
 
-This distinction avoids equating any unrelated open GitHub Issue/PR with a conflicting active Task, **without** weakening the existing v4.12 fail-closed source validation or silently mutating its published selector. Unknown relevant Task/Claim/currentness blocks **activation**, though an accurately labeled *prospective plan* may exist. Projects have default `PINNED/MANUAL`, cross-repository PR creation is opted-in, and an in-flight Task retains its old effective ADS revision. Human-authored project overrides, historical evidence and frozen PRD/L2/DAG/candidates are unchanged.
+Unrelated open Issues/PRs do not alone prove an activation conflict; conversely their presence can never be used as an assertion that live Tasks are isolated. A project update PR MUST NOT be merged as a shortcut to activation: **merging a PR that writes effective `.dev-standard/VERSION` itself changes the repository's effective pin**, so eligibility/revalidation/actual project authorization MUST be proven **before merge**, and accepted in-flight Tasks retain their separately recorded prior immutable effective revision. Where this isolation cannot be proven, activation/merge is blocked. A PR may remain open/pending without changing the effective project pin. Project opt-in defaults to `PINNED/MANUAL`; no cross-repository polling/update runtime is shipped in ADS.
 
-**AC04:** A qualified compatible ADS revision can be *proposed* for an active project with unrelated open Issues while an accepted running Task still pins its original revision and activation is disallowed if relevant source evidence is unknown.
+**AC04 (one source-pinned adversarial fixture bundle):** A repository has (a) unrelated open Issues and (b) an accepted in-flight Task fixed to ADS SHA A, while an ADS SHA B is qualified/published and affirmatively compatible. The **unchanged v4.12 selector** returns `NO_SAFE_RECOMMENDATION/ACTIVE_OR_UNCLASSIFIED_WORK_ITEM`; an **independently source-proven prospective contract** can report `EVIDENCE_BACKED_COMPATIBLE_PROPOSAL(A→B)` without calling this `SAFE`. Before actual GitHub update PR merge the effective project pin remains A and the accepted Task pin remains A; PR preparation requires opt-in and an exact current target. At activation, unknown Task isolation/Claim/freeze/currentness produces HOLD, and unauthorized PR merge MUST NOT be described as lawful activation. After lawful activation, only eligible future/checkpointed Tasks adopt B; accepted prior Task retains A.
 
-**AC05:** Unqualified tag, semver-only assertion, compatibility UNKNOWN, unpublished Release, missing opt-in, stale base, failed GitHub permission or irreversible frozen-Task mutation cannot become activation or fabricated read-only `SAFE`. This ADS release shall **not** actually create downstream PRs; Tally v2 is the writer/Host runtime.
+**AC05 (negative counterexamples):** (i) same active repository, but candidate qualification or project behavior/actor/authority compatibility unknown → `PROSPECTIVE_UNVERIFIED`, no compatible/safe proposal and no update PR; (ii) unqualified tag/semver assertion → not compatible; (iii) opt-in absent, PR base stale, permissions missing → no PR; (iv) approval/actual checks/source currentness or isolation unknown at activation → no authorized merge/effective-pin activation; (v) historic frozen Task/PRD/L2/DAG/Claim evidence cannot be silently rebound. No test output may equate a source-only contract fixture with real Tally GitHub updater execution.
 
 ### FR04 — Minimal capability-aware validation / release interop (P1 where genuinely missing)
 
