@@ -107,13 +107,34 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
     event = fetch(url)
     body = event.get("body", "")
     if (event.get("id") != comment or f"/issues/{issue}#" not in str(event.get("html_url", ""))
-            or not isinstance(body, str)
-            or "event=RELEASE_QUALIFICATION" not in body
-            or f"candidate_sha={sha}" not in body
-            or "qualification=RELEASE_QUALIFIED" not in body
-            or "canonical_admission_ref=" not in body
-            or "gate_evidence_refs=" not in body):
+            or not isinstance(body, str) or not body.startswith("<!-- ai-dev:event:v2 -->\\n".replace("\\n", "\n"))):
         raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
+    fields = {}
+    for line in body.splitlines()[1:]:
+        match = re.fullmatch(r"([a-z_]+)=([^\r\n]+)", line.strip())
+        if match:
+            key, value = match.groups()
+            if key in fields:
+                raise Unsafe("CONFLICTING_RELEASE_EVENT_FIELDS")
+            fields[key] = value
+    required = ("actor_role", "operator_kind", "operator_id", "session_ref",
+                "canonical_admission_ref", "gate_evidence_refs")
+    if (fields.get("event") != "RELEASE_QUALIFICATION"
+            or fields.get("candidate_sha") != sha
+            or fields.get("qualification") != "RELEASE_QUALIFIED"
+            or fields.get("actor_role") != "release-controller"
+            or any(not fields.get(key) for key in required)):
+        raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
+    # A release decision comment cannot itself prove that a test was run.
+    # Bind one actual objective CI run to this exact candidate via GitHub API.
+    runs = re.findall(r"(?:^|;)actions:(\d+)(?:;|$)", fields["gate_evidence_refs"])
+    if len(runs) != 1:
+        raise Unsafe("RELEASE_GATE_EXECUTION_REFERENCE_MISSING")
+    ci = fetch("https://api.github.com/repos/kaicreator-mm/ai-development-standard/actions/runs/" + runs[0])
+    if (ci.get("id") != int(runs[0]) or ci.get("head_sha") != sha
+            or ci.get("conclusion") != "success" or ci.get("status") != "completed"
+            or ci.get("name") != "verify-standard"):
+        raise Unsafe("RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
     return url
 
 
