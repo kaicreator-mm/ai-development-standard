@@ -149,6 +149,15 @@ class SelectorTests(unittest.TestCase):
                     "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_CANDIDATE_ADMISSION\n"
                              f"candidate_sha={self.candidate}\nadmission=ACCEPTED\n"
                              "required_gate_ids=SOURCE_CONSISTENCY;SELF_DOGFOOD\n")}
+        for gid, gate in ((987654355, "SOURCE_CONSISTENCY"),
+                          (987654356, "SELF_DOGFOOD")):
+            if url.endswith("/issues/comments/" + str(gid)):
+                jid = 300001 if gate == "SOURCE_CONSISTENCY" else 300002
+                return {"id": gid,
+                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-" + str(gid),
+                        "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_GATE_DECISION\n"
+                                 f"gate_id={gate}\ncandidate_sha={self.candidate}\n"
+                                 "decision=PASS\n" + f"proof_ref=actions:1234567:{jid}\n")}
         if url.endswith("/issues/comments/987654333"):
             return {"id": self.review,
                     "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654333",
@@ -162,6 +171,12 @@ class SelectorTests(unittest.TestCase):
                     "status": "completed", "conclusion": self.ci_conclusion}
         if "/actions/jobs/" in url:
             job_id = int(url.rsplit("/", 1)[1])
+            if job_id in (300001, 300002):
+                gate = "SOURCE_CONSISTENCY" if job_id == 300001 else "SELF_DOGFOOD"
+                return {"id": job_id, "run_id": 1234567, "status": "completed",
+                        "conclusion": "success", "name": "ads-release:" + gate,
+                        "steps": [{"name": "release-proof:" + gate + ":" + self.candidate,
+                                   "conclusion": "success"}]}
             i = job_id - 200001
             names = sorted(REQUIRED_DIMENSIONS)
             if i not in range(len(names)):
