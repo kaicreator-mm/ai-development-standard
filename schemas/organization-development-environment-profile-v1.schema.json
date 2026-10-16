@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/organization-development-environment-profile-v1.schema.json",
+  "title": "AI Development Organization Development Environment Profile v1",
+  "description": "Organization-level defaults and capability hints only; not a project compatibility, certification, host observation, credential or installation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "organization",
+    "preferred_toolchains"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "organization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preferred_toolchains": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "preferred_version"
+        ],
+        "properties": {
+          "preferred_version": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Advisory org preferred version, not a project compatibility range or certified version"
+          },
+          "preferred_provider": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Advisory tool manager, never mandatory for independent ADS adoption"
+          },
+          "policy_ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Non-secret source/provenance reference; no execution effect"
+          }
+        }
+      }
+    },
+    "environment_hints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cache_policy": {
+          "enum": [
+            "shared_reconstructible_only",
+            "project_isolated",
+            "unspecified"
+          ]
+        },
+        "workspace_policy": {
+          "enum": [
+            "per_task_isolated",
+            "project_local",
+            "unspecified"
+          ]
+        },
+        "offline": {
+          "enum": [
+            "allow_exact_cached_sources_only",
+            "require_live_resolution",
+            "unspecified"
+          ]
+        },
+        "mirror_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Public/non-secret mirror identifiers only; not URLs containing credentials"
+          }
+        },
+        "host_capability_hints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source_policy_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Versioned organization policy reference for audit; not permission to adopt mutable latest"
+    }
+  }
+}
