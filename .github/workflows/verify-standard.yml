@@ -57,3 +57,6 @@ jobs:
       - run: python scripts/test_v49_assurance_owner.py
       - run: python scripts/test_v49_release_applicability.py
       - run: python scripts/test_v49_conformance_suite.py
+      # ADS v4.12 S05: one focused executed proof per shipped checker; no new gate.
+      - run: python -B scripts/test_v412_scaffold_dag_check.py
+      - run: python -B scripts/test_v412_ads_compatible_select.py
