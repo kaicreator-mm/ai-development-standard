@@ -172,6 +172,49 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
             or admitted.get("candidate_sha") != sha
             or admitted.get("admission") != "ACCEPTED"):
         raise Unsafe("CANONICAL_RELEASE_ADMISSION_NOT_ACCEPTED")
+    # Resolve the applicability matrix admitted for THIS exact candidate.
+    # Text "required_gate_results=PASS" and one arbitrary green PR run do not
+    # establish the two standards-only Release closure obligations.
+    required = ("SOURCE_CONSISTENCY", "SELF_DOGFOOD")
+    if admitted.get("required_gate_ids") != ";".join(required):
+        raise Unsafe("REQUIRED_RELEASE_APPLICABILITY_NOT_ADMITTED")
+    decisions = facts.get("gate_decision_refs", "").split(";")
+    if len(decisions) != len(required):
+        raise Unsafe("REQUIRED_RELEASE_GATE_DECISIONS_MISSING")
+    for gate, ref in zip(required, decisions):
+        mdec = re.fullmatch(r"([A-Z_]+):#([1-9]\d*)@([1-9]\d*)", ref)
+        if not mdec or mdec.group(1) != gate or int(mdec.group(2)) != issue_id:
+            raise Unsafe("REQUIRED_RELEASE_GATE_DECISIONS_MISSING")
+        did = int(mdec.group(3))
+        decision = fetch(base + f"issues/comments/{did}")
+        if (not isinstance(decision, dict) or decision.get("id") != did
+                or f"/issues/{issue_id}#issuecomment-{did}" not in str(decision.get("html_url", ""))):
+            raise Unsafe("REQUIRED_RELEASE_GATE_DECISIONS_MISSING")
+        gatefacts = checked_event(decision.get("body", ""))
+        if (gatefacts.get("event") != "RELEASE_GATE_DECISION"
+                or gatefacts.get("gate_id") != gate
+                or gatefacts.get("candidate_sha") != sha
+                or gatefacts.get("decision") != "PASS"):
+            raise Unsafe("REQUIRED_RELEASE_GATE_NOT_PASSED")
+        proof = re.fullmatch(r"actions:([1-9]\d*):([1-9]\d*)",
+                             gatefacts.get("proof_ref", ""))
+        if not proof:
+            raise Unsafe("REQUIRED_RELEASE_GATE_PROOF_MISSING")
+        run_id, job_id = proof.groups()
+        successful_run(fetch, run_id, sha)
+        gatejob = fetch(base + "actions/jobs/" + job_id)
+        if (not isinstance(gatejob, dict)
+                or gatejob.get("id") != int(job_id)
+                or gatejob.get("run_id") != int(run_id)
+                or gatejob.get("status") != "completed"
+                or gatejob.get("conclusion") != "success"
+                or gatejob.get("name") != "ads-release:" + gate
+                or not isinstance(gatejob.get("steps"), list)
+                or not any(isinstance(st, dict)
+                           and st.get("name") == "release-proof:" + gate + ":" + sha
+                           and st.get("conclusion") == "success"
+                           for st in gatejob["steps"])):
+            raise Unsafe("REQUIRED_RELEASE_GATE_PROOF_NOT_EXECUTED")
     m = re.fullmatch(r"actions:([1-9][0-9]*)", facts["gate_evidence_refs"])
     if not m:
         raise Unsafe("RELEASE_GATE_EXECUTION_REFERENCE_MISSING")
@@ -180,10 +223,13 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
     if not re.fullmatch(r"[1-9][0-9]*", rid):
         raise Unsafe("MISSING_INDEPENDENT_RELEASE_REVIEW")
     review = fetch(base + "issues/comments/" + rid)
-    if not isinstance(review, dict) or review.get("id") != int(rid):
+    if (not isinstance(review, dict) or review.get("id") != int(rid)
+            or f"/issues/{issue_id}#issuecomment-{rid}" not in str(review.get("html_url", ""))):
         raise Unsafe("MISSING_INDEPENDENT_RELEASE_REVIEW")
     rf = checked_event(review.get("body"))
-    if (rf.get("actor_role") != "reviewer" or rf.get("review_verdict") != "PASS"
+    if (rf.get("event") != "INDEPENDENT_RELEASE_REVIEW"
+            or rf.get("review_subject") != "S06_RELEASE_QUALIFICATION"
+            or rf.get("actor_role") != "reviewer" or rf.get("review_verdict") != "PASS"
             or rf.get("reviewed_sha") != sha
             or not rf.get("operator_id") or not rf.get("session_ref")
             or rf["operator_id"] == facts["operator_id"]
