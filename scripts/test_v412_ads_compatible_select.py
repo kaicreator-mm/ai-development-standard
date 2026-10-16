@@ -158,11 +158,28 @@ class SelectorTests(unittest.TestCase):
         git(self.repo, "commit", "-qm", "sibling release line")
         sibling = git(self.repo, "rev-parse", "HEAD")
         git(self.repo, "tag", "v4.12.1", sibling)
+        other_record = copy.deepcopy(self.record)
+        other_record["candidate"]["sha_or_digest"] = sibling
         self.candidates.append({"sha": sibling, "release_tag": "v4.12.1",
-                                "qualification_issue": self.issue, "qualification_comment": self.comment,
-                                "compatibility_record": copy.deepcopy(self.record)})
-        self.assertEqual(self.assess()["reason"], "MULTIPLE_INCOMPARABLE_LATEST_RELEASES" if False else "UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
-        # The local Git ancestry itself is valid; live event mismatch fails closed first.
+                                "qualification_issue": self.issue, "qualification_comment": self.comment + 1,
+                                "compatibility_record": other_record})
+        original = self.fetch
+
+        def sibling_proof(url):
+            if "/releases/tags/v4.12.1" in url:
+                return {"tag_name": "v4.12.1", "draft": False, "prerelease": False,
+                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.1"}
+            if url.endswith("/issues/comments/987654322"):
+                return {"id": 987654322,
+                        "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654322",
+                        "body": ("event=RELEASE_QUALIFICATION\n"
+                                 f"candidate_sha={sibling}\nqualification=RELEASE_QUALIFIED\n"
+                                 "canonical_admission_ref=#1096@admitted\n"
+                                 "gate_evidence_refs=ci:real-123;review:independent-456")}
+            return original(url)
+
+        self.fetch = sibling_proof
+        self.assertEqual(self.assess()["reason"], "MULTIPLE_INCOMPARABLE_LATEST_RELEASES")
 
     def test_missing_local_sha_object_refused(self):
         self.candidates[0]["sha"] = "f" * 40
