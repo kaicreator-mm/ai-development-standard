@@ -2,17 +2,19 @@
   "schema_version": 1,
   "profile_id": "example.organization.development",
   "organization": "example",
-  "preferred_toolchains": {
-    "node": {
+  "preferred_toolchains": [
+    {
+      "name": "node",
       "preferred_version": "24",
       "preferred_provider": "mise",
       "policy_ref": "example/org-profile@IMMUTABLE_REVISION"
     },
-    "python": {
+    {
+      "name": "python",
       "preferred_version": "3.12",
       "preferred_provider": "mise"
     }
-  },
+  ],
   "environment_hints": {
     "cache_policy": "shared_reconstructible_only",
     "workspace_policy": "per_task_isolated",
