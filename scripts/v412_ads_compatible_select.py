@@ -87,55 +87,92 @@ def has_source_manifest(repo: Path, sha: str) -> bool:
             and "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md" in norm)
 
 
+def checked_event(blob: str) -> dict:
+    if not isinstance(blob, str) or not blob.startswith("<!-- ai-dev:event:v2 -->\n"):
+        raise Unsafe("INVALID_CANONICAL_EVENT")
+    fields = {}
+    for line in blob.splitlines()[1:]:
+        m = re.fullmatch(r"([a-z_]+)=([^\r\n]+)", line)
+        if m:
+            key, value = m.groups()
+            if key in fields or not value.strip():
+                raise Unsafe("CONFLICTING_CANONICAL_EVENT")
+            fields[key] = value
+    return fields
+
+
+def successful_run(fetch, run_id: str, sha: str) -> None:
+    if not re.fullmatch(r"[1-9][0-9]*", str(run_id)):
+        raise Unsafe("INVALID_EXECUTION_RUN_REF")
+    run = fetch("https://api.github.com/repos/kaicreator-mm/ai-development-standard/actions/runs/" + str(run_id))
+    if not isinstance(run, dict) or (run.get("id") != int(run_id)
+            or run.get("head_sha") != sha or run.get("status") != "completed"
+            or run.get("conclusion") != "success"):
+        raise Unsafe("EXECUTED_GATE_NOT_PROVEN")
+
+
 def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
-    """Verify exact immutable local tag, published stable release and live canonical event."""
+    """Published identity and Release gates are distinct from passing PR CI."""
     if not isinstance(item, dict) or not has_source_manifest(repo, sha):
         raise Unsafe("MISSING_SOURCE_MANIFEST")
     tag = "v" + version
-    if item.get("release_tag") != tag or git(repo, "rev-parse", "--verify",
-                                                "refs/tags/" + tag + "^{commit}") != sha:
+    if (item.get("release_tag") != tag or
+            git(repo, "rev-parse", "--verify", "refs/tags/" + tag + "^{commit}") != sha):
         raise Unsafe("UNPINNED_RELEASE_TAG")
-    release = fetch("https://api.github.com/repos/kaicreator-mm/ai-development-standard/releases/tags/" + tag)
-    if (release.get("tag_name") != tag or release.get("draft") is not False
-            or release.get("prerelease") is not False or not release.get("html_url")):
-        raise Unsafe("NOT_PUBLISHED_STABLE_RELEASE")
-    issue, comment = item.get("qualification_issue"), item.get("qualification_comment")
-    if type(issue) is not int or issue < 1 or type(comment) is not int or comment < 1:
+    base = "https://api.github.com/repos/kaicreator-mm/ai-development-standard/"
+    tag_obj = fetch(base + "git/ref/tags/" + tag)
+    if (not isinstance(tag_obj, dict) or tag_obj.get("ref") != "refs/tags/" + tag
+            or not isinstance(tag_obj.get("object"), dict)
+            or tag_obj["object"].get("type") != "commit"
+            or tag_obj["object"].get("sha") != sha):
+        raise Unsafe("REMOTE_RELEASE_TAG_IDENTITY_UNVERIFIED")
+    release = fetch(base + "releases/tags/" + tag)
+    if (not isinstance(release, dict) or release.get("tag_name") != tag
+            or release.get("draft") is not False or release.get("prerelease") is not False
+            or release.get("target_commitish") != sha
+            or not release.get("published_at") or not release.get("html_url")):
+        raise Unsafe("PUBLISHED_RELEASE_IDENTITY_UNVERIFIED")
+    issue_id, comment_id = item.get("qualification_issue"), item.get("qualification_comment")
+    if type(issue_id) is not int or issue_id < 1 or type(comment_id) is not int or comment_id < 1:
         raise Unsafe("MISSING_QUALIFICATION_EVENT_REFERENCE")
-    url = ("https://api.github.com/repos/kaicreator-mm/ai-development-standard/"
-           f"issues/comments/{comment}")
-    event = fetch(url)
-    body = event.get("body", "")
-    if (event.get("id") != comment or f"/issues/{issue}#" not in str(event.get("html_url", ""))
-            or not isinstance(body, str) or not body.startswith("<!-- ai-dev:event:v2 -->\\n".replace("\\n", "\n"))):
+    issue = fetch(base + f"issues/{issue_id}")
+    if (not isinstance(issue, dict) or issue.get("number") != issue_id
+            or issue.get("state") != "closed" or version not in str(issue.get("title", ""))):
+        raise Unsafe("RELEASE_VERSION_NOT_CLOSED")
+    event = fetch(base + f"issues/comments/{comment_id}")
+    if (not isinstance(event, dict) or event.get("id") != comment_id
+            or f"/issues/{issue_id}#issuecomment-{comment_id}" not in str(event.get("html_url", ""))):
+        raise Unsafe("RELEASE_EVENT_OUTSIDE_CANONICAL_VERSION")
+    facts = checked_event(event.get("body"))
+    if (facts.get("event") != "RELEASE_QUALIFICATION"
+            or facts.get("qualification") != "RELEASE_QUALIFIED"
+            or facts.get("candidate_sha") != sha
+            or facts.get("release_integrated_sha") != sha
+            or facts.get("release_tag") != tag
+            or facts.get("required_gate_results") != "PASS"
+            or facts.get("actor_role") != "release-controller"
+            or any(not facts.get(k) for k in ("operator_id", "session_ref", "operator_kind",
+                                               "canonical_admission_ref", "gate_evidence_refs",
+                                               "review_comment_id"))):
         raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
-    fields = {}
-    for line in body.splitlines()[1:]:
-        match = re.fullmatch(r"([a-z_]+)=([^\r\n]+)", line.strip())
-        if match:
-            key, value = match.groups()
-            if key in fields:
-                raise Unsafe("CONFLICTING_RELEASE_EVENT_FIELDS")
-            fields[key] = value
-    required = ("actor_role", "operator_kind", "operator_id", "session_ref",
-                "canonical_admission_ref", "gate_evidence_refs")
-    if (fields.get("event") != "RELEASE_QUALIFICATION"
-            or fields.get("candidate_sha") != sha
-            or fields.get("qualification") != "RELEASE_QUALIFIED"
-            or fields.get("actor_role") != "release-controller"
-            or any(not fields.get(key) for key in required)):
-        raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
-    # A release decision comment cannot itself prove that a test was run.
-    # Bind one actual objective CI run to this exact candidate via GitHub API.
-    runs = re.findall(r"(?:^|;)actions:(\d+)(?:;|$)", fields["gate_evidence_refs"])
-    if len(runs) != 1:
+    m = re.fullmatch(r"actions:([1-9][0-9]*)", facts["gate_evidence_refs"])
+    if not m:
         raise Unsafe("RELEASE_GATE_EXECUTION_REFERENCE_MISSING")
-    ci = fetch("https://api.github.com/repos/kaicreator-mm/ai-development-standard/actions/runs/" + runs[0])
-    if (ci.get("id") != int(runs[0]) or ci.get("head_sha") != sha
-            or ci.get("conclusion") != "success" or ci.get("status") != "completed"
-            or ci.get("name") != "verify-standard"):
-        raise Unsafe("RELEASE_GATE_EVIDENCE_STALE_OR_NOT_EXECUTED")
-    return url
+    successful_run(fetch, m.group(1), sha)
+    rid = facts["review_comment_id"]
+    if not re.fullmatch(r"[1-9][0-9]*", rid):
+        raise Unsafe("MISSING_INDEPENDENT_RELEASE_REVIEW")
+    review = fetch(base + "issues/comments/" + rid)
+    if not isinstance(review, dict) or review.get("id") != int(rid):
+        raise Unsafe("MISSING_INDEPENDENT_RELEASE_REVIEW")
+    rf = checked_event(review.get("body"))
+    if (rf.get("actor_role") != "reviewer" or rf.get("review_verdict") != "PASS"
+            or rf.get("reviewed_sha") != sha
+            or not rf.get("operator_id") or not rf.get("session_ref")
+            or rf["operator_id"] == facts["operator_id"]
+            or rf["session_ref"] == facts["session_ref"]):
+        raise Unsafe("INDEPENDENT_RELEASE_REVIEW_NOT_PROVEN")
+    return base + f"issues/comments/{comment_id}"
 
 
 def compatible(record: dict, current: str, candidate: str) -> list[str]:
