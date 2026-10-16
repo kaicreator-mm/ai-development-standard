@@ -57,6 +57,38 @@ read AGENTS / concern-specific standards from same revision
 4. 因网络/权限/工具无法解析时为 `BLOCKED`；未执行为 `NOT_RUN`。
 5. commit identity 或 VERSION 不一致为 `FAIL`。
 
+### 2.1A v4.12 — latest compatible stable selection is advisory, not a mutable pin
+
+For projects **explicitly adopting the released v4.12+ contract**, the preferred discovery policy MAY be `TRACK_LATEST_COMPATIBLE_STABLE`; the default remains `PINNED/MANUAL`. This is a **read-only recommendation preference**, not an alternative effective revision, a claim admission predicate, a repository updater, an additional workflow gate or a permission for running Tasks to migrate.
+
+The owning project can express its intent in its `PROJECT_OVERRIDES.md` (project-local policy text or a project-recognized key, without inventing a new required global schema field):
+
+```text
+standard_update_preference=PINNED/MANUAL
+# optional on projects that explicitly opt in:
+# standard_update_preference=TRACK_LATEST_COMPATIBLE_STABLE
+```
+
+A recommendation MAY be emitted only when all of the following **independently inspected** evidence is current and affirmative:
+
+1. The current project's effective `.dev-standard/VERSION` parses and verifies against the **exact 40-character immutable commit SHA** (§2.1); the selected recommendation names **both** the current and proposed exact revisions, their source refs, and the observed release/compatibility evidence. Equal semver labels with unequal Git SHA are distinct identities; `main`, `latest`, a floating tag or a merely reachable commit is not release proof.
+2. The proposed ADS revision is a genuinely **RELEASE_QUALIFIED** published stable standard, with current immutable candidate / actual release integration identity and separately checked release-qualification evidence; `PR PASS`, passing CI, an unsigned tag, an unqualified candidate or an unverified branch head does not meet this requirement. If its provenance is absent or incomplete, the result is `UNKNOWN / NO_SAFE_RECOMMENDATION`, not a guessed upgrade.
+3. The current project declares or can prove its *material compatibility requirements*. Check the existing `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` and canonical `compatibility-record-v1` inputs as applicable to **source, wire/schema, behavior, actor/authority, Claim/Review, Validation/Release and external effects**. Compatibility is not implied by major-version equality, JSON-schema equality, a passing parser or declared executor identity. In particular, the v4.11 → v4.12 self-declared logical actor / Owner credential changes require **behavioral and authority compatibility** inspection even if no record schema changed.
+4. The project's authorized adoption/checkpoint procedure can evaluate the proposed change, including any project-specific `PROJECT_OVERRIDES.md`, security, consent, permission, required reviewer, test and release floor. Unknown material evidence, incompatible obligations or absent consumer decisions fail closed to `UNKNOWN / NO_SAFE_RECOMMENDATION` while leaving the existing pin intact.
+
+A safe read-only suggestion states `current_revision`, `proposed_revision`, actual qualified release identifier/subject, relevant compatibility evidence refs, source of uncertainty, behavioral risks, and the **next authorized project-local upgrade checkpoint**. It MAY include a manual migration and rollback *plan*. It MUST NOT silently change `.dev-standard/VERSION`, source/manifest files, Issue/Claim facts, live Task pins, frozen Product/L2/DAG/Candidate subjects, historical PASS, or release qualification. Only an **explicit project-local** version-upgrade PR/Task following §6 may adopt the new immutable revision after its real validations and authorization.
+
+The deterministic read-only eligible-candidate selection and its focused negative tests belong to v4.12 S05. This S04 source contract **does not claim that selector has been implemented or run**. A cross-project PR writer, auto-apply, roll-forward or rollback executor is **out of scope until v4.13**; merely declaring the preference starts no background process.
+
+**Focused counterexamples (normative outcomes):**
+
+- No opt-in → remain `PINNED/MANUAL`; no automatic version advancement.
+- Candidate tag/CI exists but **no trustworthy Release Qualification** → `NO_SAFE_RECOMMENDATION`.
+- Compatible `compatibility-record-v1` *schema* but changed source permissions, logical Reviewer context or human-approval semantics not evaluated → `UNKNOWN`, not safe.
+- Same version string on two commits → preserve both SHA identities; do not treat them as interchangeable.
+- Already active Task or open Claim under old revision → keep the old **effective** SHA until lawful project-local version checkpoint; a discovery suggestion never rebinds it.
+- Evidence-only/low-automation A0/A1 consumer → no extra machine agent requirement or missing-E3 PASS; required substantive checks are identical to A2–A4.
+
 ### 2.2 v4 Progressive Adoption（A0–A4）
 
 v4 adoption level 只描述项目采用多少 Operation / Assurance / machine-contract / automation 能力，**不改变 mandatory truth floor**。低 adoption level 代表实现更轻，不代表 required gate 更少。
@@ -319,6 +351,14 @@ v4.fast_path
 11. 声明的 job label 是 multi-label set，只是识别义务的辅助证据：obligation closure 由 declared job set 与 independently observed material facts（permission / security / migration / deploy / external-effect，含 observation ref 与时效）共同推导；MUST NOT 因删除某个 label 而解除已检视事实对应的义务。
 12. override MUST NOT 以风险 label、profile、adoption level 或更低 authority 削弱其它 owner 已要求的 gate；跨 owner 合取中一个 owner 的合法 `NOT_APPLICABLE` 不解除其它 owner 的 required gate；与更高 authority 矛盾时为 `CONFLICT`，受影响 gate 保持 `BLOCKED`。
 13. 事实维度只有 `PRESENT` / `ABSENT_WITH_INSPECTED_SCOPE` / `UNKNOWN` 三种 epistemic 状态：observation 缺失或来自过期 HEAD 为 `UNKNOWN`，fail closed，MUST NOT 记为 `PASS`；这三种状态不是新增 gate 枚举。
+
+### 3.7A v4.12 — risk-bounded value and least-ceremony adoption
+
+Before proposing *optional* Scaffold/DAG work, another independent review/Host rerun, a new template, large-scale empirical research or non-core features, classify actual obligations from frozen Product/Architecture, security/permission/external effects and observed source facts: `CORE_MANDATORY`, `CONDITIONAL_MATERIAL`, `NONCORE_OPTIONAL` or `UNKNOWN` (descriptive reasoning labels, **not** new workflow states). For truly optional work, compare falsifiable consumer benefit with whole-life implementation, review/Host/CI, delay, maintenance and opportunity cost; prefer existing reusable source/tests and the smallest discriminating check. A compact source-grounded explanation is enough; **no required ROI score/form, extra Task, three-LLM vote or human sign-off** is created.
+
+Permitted advice includes `DO_MINIMAL`, `REUSE_EXISTING`, `BATCH`, `TIMEBOX_RESEARCH`, `DEFER_WITH_TRIGGER` or `EXCLUDE_WITH_REASON`, only within the actually authorized product scope. Record owner decision, user impact, residual risk and reconsideration trigger when excluding material work. A low expected ROI, a Fast/A0 label or a model opinion **never** downgrades frozen commitments, required independent Review, a real human-deny/external consent obligation, security/permission, accepted CAS Claim, executed validation or Release Qualification. `NOT_RUN` may not become `NOT_APPLICABLE` just to cut cost; a post-Freeze mandatory change requires the proper authority-bound amendment.
+
+New projects may generate a **bounded** Scaffold only after valid version adoption and an actual accepted source Claim; mature projects SHOULD reuse existing source, data and fixtures instead of regenerating a full Task DAG. A0/A1 manual fact collection and A2+ automation share the same technical admission and Release truth requirements. LLM-generated Gold or forum self-reports do not become blinded human empirical evidence by declaration.
 
 ### 3.8 v4.5 独立适用性：runtime / incident / maintenance
 

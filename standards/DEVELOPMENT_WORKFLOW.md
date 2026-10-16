@@ -264,6 +264,21 @@ Task DAG 至少明确：
 Tests → Contract/Interface → Core Implementation → Failure Handling → Examples/Docs
 ```
 
+#### Stage 2.4A — Phase-scoped, source-only planning Scaffold (v4.12)
+
+The default sequence remains **Frozen Product → L2 Freeze → Task DAG / L3 → implementation Task Claim**. A project that deliberately and lawfully pins a *qualified v4.12+* ADS release MAY allow a **bounded source-only Scaffold** during Stage 2, after sufficient frozen Product/L2 source authority and *before* a full implementation Task DAG exists. This is a conditional existing-workflow permission, **not** a mandatory new Stage, a generic pre-DF Builder bypass or a retroactive change to earlier standard pins.
+
+Before the **first Scaffold source write**, all must hold:
+
+1. An existing canonical `type:planning` GitHub Work Item names the exact frozen Product/L2 inputs, target integration version/ref, source-only purpose, **exact allowed and forbidden paths**, ownership, Review Policy, risk, acceptance and negative cases. `type:planning` is already a known Work Item type; do not invent `type:scaffold` or a new approval service.
+2. Its actual native dependency and current workflow facts permit dispatch; a **single current accepted Builder CAS Claim**, using the existing serialized admission/dispatch protocol, binds that planning item and the exact integration base/Task Pack. A prose permission, Task/PR label, scheduler reservation, `ROLE_CLAIMED` alone or a failed/lost-ACK/UNKNOWN claim **does not authorize the first source byte**.
+3. A selected pre-dispatch Review Policy exists (risk and higher Product/L2 authority govern it); any **material public ABI, schema, security, migration or external-effect source** needs the genuinely required independent PR Review and actual authorized merge *before* the consumer may treat the Scaffold as accepted contract. Generated text or plausible machine output is not acceptance evidence.
+4. Only preauthorized source-only structural seams/fixtures may be written, with exact currentness and traceable owner. Generating a package manifest or dependency plan never authorizes `postinstall`, network, secrets, deployment, user-data migration, credential calls or irreversible effect without their **separate** real authority, tool policy and validation.
+
+Result: a source-pinned Scaffold checkpoint and its explicit accepted/not-accepted status. Subsequent Task DAG/L3 derives from the actual accepted contract, preserving native Task dependencies; an unmerged or unreviewed Scaffold does not silently become frozen Product/L2. Where the project remains on v4.11/earlier, has no accepted Claim, or cannot prove phase authority, stay with the existing post-DAG execution rule (`HOLD` / `NOT_RUN`), never reinterpret its old pin. For source admission details use `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §§9–12 and the canonical `GITHUB_AGENT_INTERACTION_PROTOCOL.md`; this clause does not redefine their state/Claim authority.
+
+**Risk-bounded decision:** Before adding an *optional* architecture demo, extra planning DAG, reviewer/Host rerun or exploratory Task, distinguish binding core/conditional obligations from genuinely non-core scope. Evaluate a **falsifiable new decision benefit** against reusing already current evidence, entire implementation/Review/Host/delay/maintenance cost, rare severe/irreversible tails, and the permitted authority disposition. `DO_MINIMAL`, `REUSE_EXISTING`, `BATCH`, `TIMEBOX_RESEARCH`, `DEFER_WITH_TRIGGER` and `EXCLUDE_WITH_REASON` are **prose advice**, not machine states or a new Gate. A compact explanation is sufficient. Never waive frozen Product/L2 requirements, actual protected human authority/consent, security, Claim, required Review/Validation or Release on cost grounds; material post-Freeze exclusions require a lawful owning-authority amendment.
+
 #### Stage 2 Checkpoint
 
 L2、被 L2 采用的 Research Demo Evidence、Task DAG、L3 在成为 implementation dependency 时 MUST 形成 remote checkpoint。

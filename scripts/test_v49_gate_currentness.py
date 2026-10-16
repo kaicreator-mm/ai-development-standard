@@ -228,6 +228,24 @@ V411_OWNER_BLOBS = {
     ),
 }
 
+# v4.12 S01 exact-blob compatibility bridge (controller Task writer-scope amendment
+# #1096@6200483594; S01 Claim rebind #1132@6200491079). It preserves every
+# historical v4.9/v4.11 pin above. An authorized v4.12 source-owned change
+# cannot be rejected merely because its byte identity is not a 4.9-era blob.
+# This is an *exact* known-successor exception, NOT a generic version bypass.
+V412_S01_QUALIFIED_BASE_SHA = "60f55e98a97e763ceeec9fe51f1bba47a17d31b1"
+V412_S01_SOURCE_BLOBS = {
+    "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md": (
+        "196f7d9372bcffd6ff801a70e1c1fffb204f4336",
+        "ce191ddeade78ff822895b0eb8dd2eff48bbf2a6",
+    ),
+    "standards/DEVELOPMENT_WORKFLOW.md": (
+        "28c537e12c03f3f0cef501b8b5505e8ee28ca532",
+        "8d14b25dff70991b07d6ea2d963c86bf0e5a6286",
+    ),
+}
+
+
 # The routing vocabulary of this wiring engine. It deliberately contains no
 # verdict: routing dispositions only decide whether an owner-issued record may
 # be consulted for the current subject (or what must happen instead).
@@ -296,6 +314,27 @@ def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
         return False
     try:
         return git_blob_sha(VERSION_BASE_SHA, rel_path) == historical_blob
+    except subprocess.CalledProcessError:
+        return False
+
+
+def _v412_s01_exact_successor_verified(rel_path: str) -> bool:
+    """Admit only the reviewed v4.12 S01 source successor on its pinned lineage.
+
+    A changed third blob, missing ancestor, tampered qualified base, or
+    unrecognized owner path does not qualify. Earlier frozen pin cases remain
+    checked by the original v4.9/v4.11 predicates.
+    """
+    pair = V412_S01_SOURCE_BLOBS.get(rel_path)
+    if pair is None:
+        return False
+    expected_base, exact_successor = pair
+    try:
+        git("merge-base", "--is-ancestor", V412_S01_QUALIFIED_BASE_SHA, "HEAD")
+        return (
+            git_blob_sha(V412_S01_QUALIFIED_BASE_SHA, rel_path) == expected_base
+            and git_blob_sha("HEAD", rel_path) == exact_successor
+        )
     except subprocess.CalledProcessError:
         return False
 
@@ -1035,7 +1074,17 @@ class GateCurrentnessKernel(unittest.TestCase):
             if rel_path in READ_ONLY_DEPS_REBOUND_BLOBS:
                 continue
             with self.subTest(read_only=rel_path):
-                self.assertEqual(git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path))
+                if _v412_s01_exact_successor_verified(rel_path):
+                    # Only the pinned v4.12 Task S01 successor passes;
+                    # all historical/non-S01 objects use original proof.
+                    self.assertEqual(
+                        V412_S01_SOURCE_BLOBS[rel_path][1],
+                        git_blob_sha("HEAD", rel_path),
+                    )
+                else:
+                    self.assertEqual(
+                        git_blob_sha(BASE_SHA, rel_path), git_blob_sha("HEAD", rel_path)
+                    )
         # Tamper evidence for every recorded rebound pin (v4.11 F1 bridge,
         # issue #1064): each historical constant must stay re-derivable from
         # the immutable v4.11 version base object — independent of, and
@@ -1054,6 +1103,8 @@ class GateCurrentnessKernel(unittest.TestCase):
                 for v411_blob in V411_OWNER_BLOBS.get(rel_path, ()):
                     if _v411_context_verified(rel_path, pinned_blob):
                         admitted.add(v411_blob)
+                if _v412_s01_exact_successor_verified(rel_path):
+                    admitted.add(V412_S01_SOURCE_BLOBS[rel_path][1])
                 self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST

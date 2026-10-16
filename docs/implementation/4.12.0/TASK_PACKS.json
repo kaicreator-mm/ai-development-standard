@@ -1,0 +1,190 @@
+{
+  "kind": "ADS_V412_ADS_CORE_TASK_PACK_INDEX_REBOUND_CANDIDATE",
+  "version": "4.12.0",
+  "repository": "kaicreator-mm/ai-development-standard",
+  "status": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+  "authority": {
+    "product_r3_blob": "0bfbf782c8859e79df52c9b57904ad80bcd718e9",
+    "architecture_l2_r5_blob": "68608ef6456334d627db1797ba2e023233c84ce7",
+    "frozen_dag_blob": "adc9e522f3b734a59898091945b9c7545530565a",
+    "dag_freeze_commit": "7949caf630edbe83d1dff1ffb7cee8906b77c56f",
+    "dag_freeze_record_blob": "f0a998a73c9319564b239026220ee44934778153",
+    "predecessor_version_release_qualified": true,
+    "version_implementation_baseline": "version/v4.12.0@da5a5bf70a79ec76e0cf9cf7eecc5686dc39e6d5",
+    "qualified_predecessor_sha": "aac1e1206e4033601616c295e768e51fbc16efb1",
+    "product_r4_scoped_blob": "e924fa29d8fe3c846eeb7f6ca41131609b19b0ad",
+    "l2_r6_scoped_blob": "aede88044697ba45f712ecfa49f615ce48e8af58",
+    "dag_r4_scoped_blob": "421378b8329f51c46697485f57fc9920cfaefed6",
+    "product_r4_freeze_commit": "bb3e8bafe459c9fb735b390894a9df24c3d155d0",
+    "l2_r6_freeze_commit": "6f9c13bc607ac098a2a35493cba57dc6e9e1b6b3",
+    "dag_r4_freeze_commit": "0d6c58230e180cd2fbadbe18d3b12c9d651c0447"
+  },
+  "implementation_native_dependency_edges": [
+    [
+      "V412-S01",
+      "V412-S03"
+    ],
+    [
+      "V412-S02",
+      "V412-S03"
+    ],
+    [
+      "V412-S03",
+      "V412-S05"
+    ],
+    [
+      "V412-S04",
+      "V412-S05"
+    ]
+  ],
+  "release_checkpoint": {
+    "id": "V412-S06",
+    "type": "type:release",
+    "authority": "EXISTING_RELEASE_OWNER",
+    "admission_predecessor": "V412-S05",
+    "native_implementation_task": false,
+    "release_pass": false
+  },
+  "source_write_admission": "HOLD_PENDING_PACK_FREEZE_NATIVE_TASK_ISSUES_DEPS_AND_ACCEPTED_CURRENT_CAS_CLAIM",
+  "pack_freeze": "NOT_RECORDED",
+  "review_provenance": "R4_R6_DAG_SCOPE_REVIEW_PASS_PACK_REBIND_REVIEW_PENDING",
+  "notes": [
+    "Do not infer READY or a source Claim from exact Pack blobs: five native Issues/four dependency edges and accepted CAS Claims remain NOT_MATERIALIZED; the next actual version branch HEAD must be re-read at claim.",
+    "CURRENT 2026-10-16: v4.11 qualified/integrated main@aac1e120; version/v4.12.0 entered and source/record scopes ported via PR #1129 then R4 Product/L2 R6/DAG R4 freeze records merged PR #1130 at da5a5bf. Current Pack index and all five Packs are rebound candidates only, not frozen. Original R3/R5/DAG R3 unchanged.",
+    "Source-bound Task Packs can be reviewed/frozen as planning only; no source writing authority is granted by this index.",
+    "No native Task Issues / dependencies / accepted Claims; explicit admission and accurate readback required before execution.",
+    "Release S06 is existing type:release, not sixth Builder Task or native Task dependency edge.",
+    "Each Pack's recorded exact Git blob is a source-snapshot candidate; updated Pack requires index regeneration and proper independent or owner admission as applicable.",
+    "Five Task packs and four edges; Task PACK Freeze requires separate legitimate Controller decision on exact subjects. No synthetic Claim or E3.",
+    "#1099 Risk-Bounded Value First integrated as planning-only, source-owned acceptance/negative cases in S01 Workflow, S04 Project Adoption and S05 Validation/Release conformance; S02/S03 frozen scope unchanged. Product R3/L2 R5/DAG Freeze unchanged. #1099 remains open until actual normative implementation and proof.",
+    "C13/C14 research/human evidence are scoped L1 source questions, not fabricated independent Reviewer or mandatory multi-LLM/human gates. Frozen REQUIRED_NOW never waived by ROI.",
+    "Rebased self-declared actor identity/Review oracle wording to ACTUAL merged v4.11 #1122: Interaction exact blob b3f1191b2ee0c469e9b425d2336d4adbc47d6ede and Release Standard §11.7 blob da82aa7d387d8f190c4ddff88b4c8782af804ac4. Trust canonical self-declared operator/session/role and use GitHub transport only as metadata; no cross-session/person credential proof. Reuse existing covered normative behavior.",
+    "Preserve objectively observable currentness/Claim serialization/tests, true platform branch protection, source-of-event vs quoted text, and honest uncovered real-world human/effect facts. S06 Release authority checkpoint unchanged. Candidate Pack index remains NOT_FROZEN.",
+    "Already merged v4.11 #1122 actor role/session rule reused, not reimplemented. Keep current exact CAS/Claim/Review results, semantic policy Owner, actual tests, native GitHub branch protections and downstream real effects.",
+    "Exact Product→L2→DAG→S01/S04/S05 successor refs refreshed after #1119 Option A; author check must reconfirm current blobs. No separate Freeze/Review/readiness/Claim created by a hash re-pin."
+  ],
+  "packs": [
+    {
+      "task_id": "V412-S01",
+      "path": "docs/implementation/4.12.0/task-packs/V412-S01_phase_claim_authority.md",
+      "git_blob": "b23bce19cf0bd020a92de9026f3972897f1d322d",
+      "predecessors": [],
+      "review_policy": "required",
+      "canonical_type": "type:task",
+      "pack_state": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+      "native_issue": null,
+      "accepted_claim": null,
+      "task_ready": false
+    },
+    {
+      "task_id": "V412-S02",
+      "path": "docs/implementation/4.12.0/task-packs/V412-S02_scaffold_task_binding_pair.md",
+      "git_blob": "51e50b08ed5854e47ca63398a9e4391288c3514b",
+      "predecessors": [],
+      "review_policy": "required",
+      "canonical_type": "type:task",
+      "pack_state": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+      "native_issue": null,
+      "accepted_claim": null,
+      "task_ready": false
+    },
+    {
+      "task_id": "V412-S03",
+      "path": "docs/implementation/4.12.0/task-packs/V412-S03_reference_pair_checker.md",
+      "git_blob": "e2446ba2d11895e0d0d5d8463bd6b81e1ef93236",
+      "predecessors": [
+        "V412-S01",
+        "V412-S02"
+      ],
+      "review_policy": "required",
+      "canonical_type": "type:task",
+      "pack_state": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+      "native_issue": null,
+      "accepted_claim": null,
+      "task_ready": false
+    },
+    {
+      "task_id": "V412-S04",
+      "path": "docs/implementation/4.12.0/task-packs/V412-S04_adoption_and_templates.md",
+      "git_blob": "578912ca37cd845f5dcdc78fc44a703d1f0b556e",
+      "predecessors": [],
+      "review_policy": "recommended",
+      "canonical_type": "type:task",
+      "pack_state": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+      "native_issue": null,
+      "accepted_claim": null,
+      "task_ready": false
+    },
+    {
+      "task_id": "V412-S05",
+      "path": "docs/implementation/4.12.0/task-packs/V412-S05_ads_conformance_wiring.md",
+      "git_blob": "10669d99b591dd53386e94afb6ff976c583735af",
+      "predecessors": [
+        "V412-S03",
+        "V412-S04"
+      ],
+      "review_policy": "required",
+      "canonical_type": "type:task",
+      "pack_state": "REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN",
+      "native_issue": null,
+      "accepted_claim": null,
+      "task_ready": false
+    }
+  ],
+  "prospective_i1123_successor": {
+    "scope_approved_by_user": true,
+    "approved_scope_source_blob": "6d783ecb8b02a61d4e2d60174e1a12832f27b948",
+    "product_r4_delta_candidate_blob": "e924fa29d8fe3c846eeb7f6ca41131609b19b0ad",
+    "l2_r6_delta_candidate_blob": "aede88044697ba45f712ecfa49f615ce48e8af58",
+    "dag_r4_delta_candidate_blob": "421378b8329f51c46697485f57fc9920cfaefed6",
+    "product_r4_frozen": true,
+    "l2_r6_frozen": true,
+    "dag_r4_frozen": true,
+    "proposed_additional_writers": {
+      "S01": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "AGENTS.md",
+        "prompts/independent-review-bootstrap.md"
+      ],
+      "S04": [],
+      "S05": [
+        "standards/ASSURANCE_PLAN_STANDARD.md",
+        "standards/RELEASE_STANDARD.md",
+        "schemas/agent-event-v2.schema.json",
+        "schemas/assurance-plan-v2.schema.json",
+        "schemas/dispatch.schema.json",
+        "scripts/test_v411_i1122_self_declared_executor.py",
+        "scripts/test_v411_t05_event_authority.py",
+        "scripts/test_v412_actor_trust.py",
+        "scripts/v412_ads_compatible_select.py",
+        "scripts/test_v412_ads_compatible_select.py"
+      ]
+    },
+    "note": "All additions prospective only. Frozen DAG R3 remains active until lawful R4 write-set Freeze/Pack admission. Semantic rule-owner provenance and objective actual evidence are not human/Agent credential checks. The successor candidates now also include separately user-approved #1119 Option A in S04/S05, not cross-project updater Option B."
+  },
+  "prospective_i1119_option_a": {
+    "user_approved": true,
+    "original_scope_decision_blob": "be7f0785083890b42aab5efb17d735df8a69adab",
+    "product_delta_current_blob": "e924fa29d8fe3c846eeb7f6ca41131609b19b0ad",
+    "l2_delta_current_blob": "aede88044697ba45f712ecfa49f615ce48e8af58",
+    "dag_delta_current_blob": "421378b8329f51c46697485f57fc9920cfaefed6",
+    "scope": "qualified stable release/protocol-compatibility selection + exact immutable task pin + read-only upgrade recommendation",
+    "writer_S04": [
+      "standards/PROJECT_ADOPTION.md",
+      "existing uniquely owned adoption examples"
+    ],
+    "writer_S05_new": [
+      "scripts/v412_ads_compatible_select.py",
+      "scripts/test_v412_ads_compatible_select.py"
+    ],
+    "future_v413_scope": "actual cross-repository opt-in GitHub updater/PR creation and applied activation/rollback",
+    "cross_repo_write_permitted": false,
+    "project_pins_modified": 0,
+    "implementation_not_started": true,
+    "product_delta_frozen": true,
+    "l2_delta_frozen": true,
+    "dag_delta_frozen": true,
+    "no_new_tasks": true,
+    "no_new_native_edges": true
+  }
+}

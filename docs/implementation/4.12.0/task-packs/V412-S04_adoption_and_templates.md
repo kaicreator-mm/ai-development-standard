@@ -1,0 +1,135 @@
+# V412-S04 — Compact adoption guide and golden reusable templates
+
+> **CURRENT 2026-10-16 REBIND:** v4.11 standards baseline is now qualified/integrated `main@aac1e1206e4033601616c295e768e51fbc16efb1`; the dedicated `version/v4.12.0` checkpoint is `da5a5bf70a79ec76e0cf9cf7eecc5686dc39e6d5`. User-scoped Product R4 `e924fa29...`, L2 R6 `aede8804...`, Task DAG R4 writer-scope `421378b8...` now have sequential freeze checkpoints (Product `bb3e8baf`, L2 `6f9c13bc`, DAG `0d6c5823`; PR #1130). Earlier statements that the v4.11 predecessor is unqualified, or that R4/R6/DAG-R4 scope is only prospective, describe **earlier authorship history**; they do not govern the current task. This rebind **does not** constitute Pack Freeze, native Issue/Dependency materialization, accepted CAS Claim, implementation execution, or Release PASS. Validate current version HEAD again immediately before any real Task Claim.
+
+> **TASK PACK PLANNING DRAFT (NOT FROZEN / NOT EXECUTABLE).** Read-only author preparation on the v4.12 planning branch. The *Task DAG* itself is exact-owner-frozen, but this Pack is not Task/Claim admission. No baseline release or source writer granted.
+
+```ini
+TASK_ID=V412-S04
+CANONICAL_TYPE=type:task
+ONE_CONCERN=ADOPTION_AND_TEMPLATES
+PRODUCT_R3_BLOB=0bfbf782c8859e79df52c9b57904ad80bcd718e9
+L2_R5_BLOB=68608ef6456334d627db1797ba2e023233c84ce7
+FROZEN_DAG_BLOB=adc9e522f3b734a59898091945b9c7545530565a
+PRODUCT_R4_SCOPED_BLOB=e924fa29d8fe3c846eeb7f6ca41131609b19b0ad
+L2_R6_SCOPED_BLOB=aede88044697ba45f712ecfa49f615ce48e8af58
+DAG_R4_SCOPED_BLOB=421378b8329f51c46697485f57fc9920cfaefed6
+PRODUCT_R4_FREEZE_COMMIT=bb3e8bafe459c9fb735b390894a9df24c3d155d0
+L2_R6_FREEZE_COMMIT=6f9c13bc607ac098a2a35493cba57dc6e9e1b6b3
+DAG_R4_FREEZE_COMMIT=0d6c58230e180cd2fbadbe18d3b12c9d651c0447
+V411_QUALIFIED_MAIN_SHA=aac1e1206e4033601616c295e768e51fbc16efb1
+V412_INITIAL_SCOPED_INTEGRATION_SHA=da5a5bf70a79ec76e0cf9cf7eecc5686dc39e6d5
+DAG_FREEZE_CHECKPOINT=7949caf630edbe83d1dff1ffb7cee8906b77c56f
+DAG_FREEZE_RECORD_BLOB=f0a998a73c9319564b239026220ee44934778153
+TARGET_VERSION=4.12.0
+REAL_V411_RELEASE_PREDECESSOR=QUALIFIED_MAIN_aac1e1206e4033601616c295e768e51fbc16efb1
+REAL_V412_IMPL_BASELINE=version/v4.12.0@da5a5bf70a79ec76e0cf9cf7eecc5686dc39e6d5
+PACK_STATUS=REBIND_CANDIDATE_REVIEW_PENDING_NOT_FROZEN
+NATIVE_TASK_ISSUE=NOT_MATERIALIZED
+NATIVE_DEPENDENCIES=NOT_MATERIALIZED
+READY=NO
+ACCEPTED_CAS_CLAIM=NONE
+TASK_PR_SOURCE=NOT_CREATED
+TASK_VALIDATION=NOT_RUN
+TASK_REVIEW=NOT_RUN
+TASK_MERGE=NOT_DONE
+FROZEN_DAG_PREDECESSORS=NONE
+REVIEW_POLICY=recommended
+RISK=medium
+L3_REQUIRED=NO
+ALLOWED_CHANGES=ONLY_EXACT_PATHS_AND_SCOPES_BELOW_ON_LAWFUL_IMPLEMENTATION_BASELINE
+FORBIDDEN_CHANGES=ALL_OTHERS_INCLUDING_FROZEN_PRD_L2_DAG_CLAIM_RELEASE
+```
+
+## 1. Goal / source evidence reuse
+
+A new or mature project can adopt the qualified immutable ADS standard using one clear entrypoint without gratuitous Scaffold/DAG generation, unnecessary reviewer loops or a second Task/Release authority.
+
+**Inspect first, build only missing delta.** Read qualified predecessor *exact* relevant normative owner/git blobs and tests and compare to Frozen R3/L2 before implementation. Reuse source-true contracts; no second claim service, graph scheduler, review/gate controller, app generator, or mandatory redundant verification.
+
+## 2. Allowed and forbidden source changes
+
+- **Allowed after legal admission:** `standards/PROJECT_ADOPTION.md`: additive v4.12 adoption, immutable pin, manual A0/A1 vs actual machine A2+ only
+- **Allowed after legal admission:** Only uniquely assigned `templates/`/`checklists/` where source-first gap exists; never `templates/task-dag.md`, `templates/GOLDEN_INDEX.md` or shared verifier
+- **Allowed after legal admission:** Promote/adapt existing `references/v4.12/V412_PROJECT_ADOPTION_GUIDE_CANDIDATE_R0.md` prose when legally qualified; do not duplicate canonical owners
+
+**Forbidden by default:** all files not specifically assigned above; frozen Product/L2/DAG and research frozen source; shared canonical metadata/manifest/CI unless specifically owned above; other Task writer paths; release/tag/Claim manipulation; external network/secrets/irreversible side effects without separate current authority. Reconcile exact glob and section write sets against the *qualified* version integration tree before Task READY/Claim.
+
+## 3. Tests → Contract → Implementation → Failure Handling → Reference
+
+**Focused executable or source-verifiable acceptance oracles** (a planned oracle is not an executed PASS):
+
+- P01 new project uses v4.12 after explicit adopting-project pin and source/Claim ownership, not before
+- P02 mature project reuses checked-in code/contracts/fixtures with bounded source changes and no empty DAG requirement
+- P03 A0/A1 WEB/manual evidence has same Gate/trust/currentness floor as A2+, while A2+ machines attach actual executed script proof
+- N01 unqualified v4.12 candidate silently used as immutable released pin or older frozen project retro-migrated → reject
+- N02 missing/UNKNOWN/NOT_RUN proof mapped to PASS or `NOT_APPLICABLE` without reason → reject
+- N03 builder self-review, changing exact allowlist after acceptance or docs-only claim of E3/Release → reject
+
+**Contract.** Adoption never modifies original source-owner Gate enum, Claim CAS or Task DAG dependencies; project-specific immutable `.dev-standard/VERSION` is actual adoption record; FAST/STANDARD/EXPLORATORY/HIGH_ASSURANCE and INLINE/BOUNDED_WORKLIST/EXPLICIT_DAG are proportional planning modes, not new required interfaces.
+
+**Implementation strategy.** Prefer short links to existing v4.11 authoritative standards and Golden examples. Only add v4.12 deltas missing from source; use one-concern patch with targeted doc/golden tests. Offer meaningful Task Learning facts without inventing metrics.
+
+**Failure handling.** Missing version tag/qualified source or project owner adoption → SHADOW-only/non-normative guidance; no change to the project's current pinned permissions.
+
+
+
+**References (immutable planning owner input):** frozen Product R3 blob `0bfbf782c8859e79df52c9b57904ad80bcd718e9`; frozen L2 R5 blob `68608ef6456334d627db1797ba2e023233c84ce7`; frozen DAG blob `adc9e522f3b734a59898091945b9c7545530565a`; checkpoint `7949caf630edbe83d1dff1ffb7cee8906b77c56f`; canonical `standards/DEVELOPMENT_WORKFLOW.md` §Stage2.4/2.5/2.6, `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` §10/§12.1, `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `TASK_DAG_GOVERNANCE_STANDARD.md`, `VALIDATION_STANDARD.md`, `RELEASE_STANDARD.md`. Those are verified historical version owners, **not** an assertion that the current v4.11 branch released.
+
+## 3A. #1099 Project Adoption Fast Path — real net value rather than ceremony count
+
+S04 is the **project-facing adoption** owner for the already frozen cross-cutting principle. Reconcile with current `standards/PROJECT_ADOPTION.md` (existing A0–A4 and Fast Path) and reuse `TASK_DECOMPOSITION_STANDARD` (atomic concern) rather than duplicating another ROI standard. The minimum additional project guidance is:
+
+- **Scope first:** distinguish `CORE_MANDATORY | CONDITIONAL_MATERIAL | NONCORE_OPTIONAL | UNKNOWN` as source-grounded *descriptions*, not GitHub labels/Gate enums. Inspect actual user outcome, contract/security/side-effect/consumer reach and aggregated small-risk impact; a “docs-only / small fix / Fast” filename is not self-proof of optionality.
+- **Qualitative value/cost decision:** for truly optional scope compare net expected outcome against **implementation + Review + Host/CI + waiting + maintenance + opportunity cost** and alternative reuse/simplification. Say `FAR_EXCEEDS | JUSTIFIED | MARGINAL | NEGATIVE | UNKNOWN` only as supported, non-numeric judgment—no fake savings percentages, centralized telemetry requirement or mandatory decision-card form.
+- **Legal stop/defer:** `DO_MINIMAL`, `REUSE_EXISTING`, `BATCH`, `DEFER_WITH_TRIGGER`, `EXCLUDE_WITH_REASON` are allowable *planning advice* when the original owning authority permits; for any material exclusion note who decided, what user promise/test is no longer covered, remaining risk and revisit trigger. An already Frozen Product/mandatory gate cannot be waived by a Task-level ROI note; require proper prospective owner migration.
+- **Right-sized people and evidence:** many simple A0/WEB Tasks need no human review beyond the applicable current owner rules; where reserved real-human authority or independently human-authored Gold is genuinely material, minimal real authorized action is non-substitutable. LLM/tool analysis can prepare the short decision evidence and detect negatives; public self-reports are not independent empirical observation or real approval. Do not mandate three LLMs or record forged human consensus.
+- **Existing vs new project:** mature projects reuse source/fixtures without generating a new full Scaffold; new projects may use bounded Scaffold only after *qualified adoption and accepted source Claim*. A0/A1 and A2+ share the same currentness/security/Review/Release floor even when evidence collection differs.
+
+**Golden adoption examples (within already owned S04 files, no separate issue):** (A) optional peripheral project feature excluded before Product Freeze with explicit non-user-impact and original Owner; (B) deceptively rare severe auth/human DENY case retained; (C) already Frozen mandatory scenario proposed for deferral and refused pending lawful amendment; (D) duplicate Task/Review proposals merged into one coherent concern with real dependency truth; (E) prior public research reused with sample/region/rights limits and no fake representative human study.
+
+**Acceptance negatives:** a low-cost `A0` path never downgrades a required gate; a self-declared `LOW_ROI` cannot turn `NOT_RUN` into `NOT_APPLICABLE`; Task utility extraction is optional unless actual cross-code semantics/maintenance benefit supports it. If current v4.11 adoption owner already supplies a specific clause, classify it `ALREADY_SATISFIED` and link rather than rewrite.
+
+## 3B. #1123 prospective adopter protocol migration — existing S04 owner
+
+The user's #1123 change intake is accepted **for v4.12 successor planning**, but its Product R4/L2 R6/DAG R4 specific sources are not yet Frozen. This S04 documentation task adds no new writer surface: `standards/PROJECT_ADOPTION.md` and S04-owned examples remain its *only* normative prospective target, after lawful Claim.
+
+**Bounded adoption acceptance:**
+- Same account can transport events from several **self-declared** distinct Agents; GitHub `user.login` is not actor role or reviewer-identity eligibility.
+- New v4.12 behavior cannot silently replace consumer pins on v4.11/v4.10: `operator_id/session_ref` trust semantics, owner-identity credential behavior and required technical admission are compatibility dimensions, even with unchanged `agent-event-v2` JSON fields. Select the actually supported prospective protocol/adoption migration; don't infer semantic backward compatibility from syntactically valid schema.
+- **#1119 Option A read-only latest-compatible selection is now included as a *prospective* S04 adoption contract below; only its real cross-project GitHub PR updater remains v4.13 Class B.** No proactive changes to other repositories or unqualified release pins.
+- Retain consumer-side real security credentials, actual GitHub branch rulesets, human participant consent, performed effect / negative case validation where the external product actually requires them. A declared `human` executor does not claim that an off-repo participant consent event occurred.
+
+**Focused counterexamples:** incompatible legacy consumer pin must remain authoritative (NOT auto-adopt); “new protocol but same schema” cannot be declared compatible without behavioral basis; two reviewers via one GitHub transport are not auto-collapsed; absence of actual required user-permission/consent/effect proof remains NOT_RUN. No new Task/Gold/Study required for the ADS standards artifact.
+
+**Current status:** Product scope intake approved, detailed delta candidates not frozen, S04 `review:recommended` remains unchanged; no source PR or implemented migration is claimed.
+
+
+## 3C. #1119 Option A — qualified compatible ADS selection policy without auto-updates
+
+**Scope approval/source pins:** User approved **only Option A** on 2026-10-15; feasibility source Git blob `be7f0785083890b42aab5efb17d735df8a69adab`. Current unfrozen Product R4 delta `e924fa29d8fe3c846eeb7f6ca41131609b19b0ad`, L2 R6 delta `aede88044697ba45f712ecfa49f615ce48e8af58`, DAG R4 write-set delta `421378b8329f51c46697485f57fc9920cfaefed6`. These candidate pins **do not** themselves change the original Frozen R3 Task DAG or authorize a live source write.
+
+**S04 existing path ownership only:** In `standards/PROJECT_ADOPTION.md` and already uniquely assigned S04 examples, define opt-in `TRACK_LATEST_COMPATIBLE_STABLE` as **read-only selection intent**, distinct from `PINNED/MANUAL` default and actual effective immutable `.dev-standard/VERSION`. The project's current Task/Review/Claim/Release source uses **only** the existing actual SHA, never mutable `main/latest`. Require a genuinely **RELEASE_QUALIFIED** ADS source, actual revision/manifest/currentness and full material `compatibility-record-v1` evidence for the consumer's source/wire/schema/behavior/authority windows before suggesting a newer pin. Unknown material compatibility ⇒ `UNKNOWN/NO_SAFE_RECOMMENDATION`, not “probably compatible”. No separate globally normative `protocol_version` field is presumed.
+
+The user requested source-grounded **version vs protocol/behavior** distinction: source code, Claim/reviewer/human/Release applicability may be behaviorally breaking **without any schema change** (including #1123 actor policy); semantic version equality with different SHAs is not sameness. Older immutable consumer pins, active Tasks, existing Claims, frozen candidates and historical Gate facts are not auto-rebound. Suggestions state verified old/current vs suggested new SHA, comparison refs, reason/risk, next authorized checkpoint and how a future project-local actor may apply/rollback. The suggestion **does not** create a project PR, mutate a project, send GitHub writes, or count as adoption or Release PASS. The actual opted-in project updater and GitHub update PR bot remain #1119 **v4.13 Class B**.
+
+**Proportionate negative acceptance:** (A) not opted-in means no automatic upgrade; (B) tag exists but Release Qualification/manifest proof unavailable ⇒ no candidate; (C) same semver/different commit identity ⇒ distinct versions; (D) unproven material schema-identical actor/Review changes ⇒ no recommendation; (E) active Task with older pin ⇒ no rebinding; (F) only read-only source snapshot/fixture path ⇒ no project mutation; (G) actual v4.12 standards release not blocked merely because adopter was not upgraded. Reuse existing `INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md` **read-only**; S05 separately owns any genuine deterministic resolver/test. S04 does not write shared script/verifier/manifest and does not start cross-repo automation.
+
+**Status:** author-side source candidate only. Actual S04 code/standard implementation and test exit remain `NOT_RUN` until qualified v4.11 predecessor, successor freezes, native Issue/Claim and accepted PR.
+
+## 4. Execution readiness / Review / closure
+
+- Intended concern predecessor(s): none (but absent dependency ≠ READY). Native issue edges require actual API mutation and readback; Markdown is advisory historical.
+- Risk: **medium**. Stage 2.6 pre-dispatch Review Policy candidate: **recommended**, subject to stronger authority. A Builder cannot self-prove `review:required`.
+- Source implementation base: v4.11 is qualified and version/v4.12.0 exists. **TASK still HOLD** until this Pack's exact source/index is frozen, canonical native Task/dependencies are read back, and a valid current accepted CAS Claim precedes the first normative source write. Do not implement on historic-main planning PR #1101.
+- Author/responsible executor shall acquire a current accepted CAS Claim for the *real native Task Issue* before any implementation-source write; a GitHub comment/status alone is insufficient.
+- Verification must report exact subject/commit/tree, real command/exit/skip, provenance and strength E1/E2/E3. Only the owning gate/Release actor may promote a result; PR-local PASS ≠ version Release PASS.
+- Closeout when authorized source PR is merged on current version integration branch after required Review/validation and canonical readback; otherwise state BLOCKED/NOT_RUN with minimal owning remedy, no duplicate Task Issue/hidden test program.
+
+```ini
+TASK_IMPLEMENTATION=NOT_STARTED
+TASK_REVIEW=NOT_RUN
+TASK_CLAIM=NONE
+PACK_FREEZE=NOT_RECORDED
+REAL_INTEGRATION_BASE=VERSION_BRANCH_AT_da5a5bf70a79ec76e0cf9cf7eecc5686dc39e6d5
+```

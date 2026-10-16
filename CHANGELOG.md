@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.12.0 — Unreleased version-branch candidate
+
+**状态：S06 VERSION_CANDIDATE_PREPARED / RELEASE_QUALIFICATION=NOT_RUN / NOT_PUBLISHED。** `version/v4.12.0` 已集成五项实施 Task（#1132–#1136），本条目用于形成版本源码身份，**不代表候选冻结、Hidden PASS、资格裁决、main 合并、Tag 或 GitHub Release**。发布状态与当前精确 SHA 以 [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) 的最新合法记录为准。
+
+**主要变更：** S01 将阶段化 Product Scaffold 与真实 Task 写入准入/自声明执行上下文分离；S02 约束 Scaffold/DF/MI 双向绑定、不可自指的 Freeze 证据与 Issue 写入范围；S03 提供只读 NUL-safe Git 源对象与 Scope/Anchor 检查器；S04 提供可选择性采用最新兼容已发布 ADS 的只读建议政策；S05 提供源证据、Consumer 窗口、公开 Release Qualification 和项目活动状态均需真实核验的兼容选择器，且将 S03/S05 定向检查接入现有 verifier，继承 v4.9 精确工作流历史 pin。
+
+**现有技术证据：** S03 专项 20/20 与 S05 专项 34/34 在合并前有效的 CI #38860456605 实际执行通过，S05 最终独立 R3 Review 对精确源 HEAD `886fd1df691e09087a83853c598dee88205f9e1e` 记录 PASS，集成 SHA `6a0148b943020fead4856824f5543ab8d20608e3`。这些属于历史实施候选的真实测试/审核输入，**不自动等于本版本身份新 SHA 的 Release 证据**。
+
+**限定与后续：** ADS 是 `STANDARDS_SPECIFICATION`，不虚构真实已部署 Domain App、外部人类 DENY、其它项目发布成功或跨项目自动更新执行。S06 仍必须按照适用性完成同一最终候选的自洽与自我验证、真实 Gate 判定以及发布资格；跨项目自动更新器留待 v4.13，实际项目采用可以发布后形成反馈。
+
 ## v4.11.0 — Unreleased version-branch candidate
 
 **当前准确姿态（未发布）**：冻结 v4.11 Product（#943）、L2（#954）和 20-node/30-edge Task DAG（#966）保持不变。T01–T14 的 14 项实现均已通过各自属主门禁并集成至 `version/v4.11.0`；其中 T12 PR #1086 在 `eb8ffb8bc7b462894972137569375222df153add` 合并，合并源 Tree 与已验证 R8 Tree 完全一致，postmerge CI #38407398929 SUCCESS。
