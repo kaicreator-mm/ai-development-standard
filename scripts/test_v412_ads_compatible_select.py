@@ -52,19 +52,34 @@ class SelectorTests(unittest.TestCase):
         self.candidate = commit(self.repo, "candidate")
         git(self.repo, "tag", "v4.12.0", self.candidate)
         self.issue, self.comment, self.review = 1096, 987654321, 987654333
+        self.consumer = Path(self.tmp.name) / "consumer"
+        self.consumer.mkdir()
+        git(self.consumer, "init", "-q")
+        git(self.consumer, "config", "user.name", "Synthetic Project")
+        git(self.consumer, "config", "user.email", "test@example.invalid")
+        git(self.consumer, "branch", "-M", "main")
+        git(self.consumer, "remote", "add", "origin", "https://github.com/synthetic/example.git")
+        put(self.consumer, "README.md", "synthetic consumer")
+        consumer_parent = commit(self.consumer, "before adoption checkpoint")
         self.project = {"preference": "TRACK_LATEST_COMPATIBLE_STABLE",
                         "project_repository": "synthetic/example",
+                        "project_root": self.consumer,
                         "consumer_window": "supported-synthetic-A0-A4",
                         "current_revision": self.current,
-                        "current_version": "4.11.0",
-                        "active_task": False, "frozen_candidate": False}
+                        "current_version": "4.11.0"}
+        self.status = {"schema_version": 1, "project_repository": "synthetic/example",
+                       "checked_parent_sha": consumer_parent,
+                       "effective_ads_revision": self.current,
+                       "active_claim": "NONE", "frozen_candidate": "NONE"}
+        put(self.consumer, ".dev-standard/ADOPTION_STATUS.json", json.dumps(self.status))
+        self.consumer_head = commit(self.consumer, "current scoped adoption status")
         self.record = {
             "schema_version": 1, "record_id": "synthetic", "contract": {
                 "kind": "ADS", "identity": "source-consumer"},
             "baseline": {"sha_or_digest": self.current},
             "candidate": {"sha_or_digest": self.candidate},
             "change_operations": ["MODIFIED"],
-            "producer_refs": ["immutable-source"], "consumer_refs": ["synthetic/example"],
+            "producer_refs": ["kaicreator-mm/ai-development-standard"], "consumer_refs": ["synthetic/example"],
             "compatibility_window_ref": self.project["consumer_window"],
             "dimensions": [
                 {"name": d, "outcome": "COMPATIBLE",
@@ -96,6 +111,8 @@ class SelectorTests(unittest.TestCase):
 
     def fetch(self, url):
         self.calls.append(url)
+        if url.endswith("/git/ref/heads/main"):
+            return {"ref": "refs/heads/main", "object": {"type": "commit", "sha": self.consumer_head}}
         if url.endswith("/issues?state=open&per_page=100"):
             return self.live_issues
         if url.endswith("/pulls?state=open&per_page=100"):
@@ -124,15 +141,19 @@ class SelectorTests(unittest.TestCase):
                              "operator_id=release-agent\noperator_kind=chatgpt-web\n"
                              "session_ref=release-1\ncanonical_admission_ref=#1096@987654344\n"
                              "review_comment_id=987654333\n"
+                             "gate_decision_refs=SOURCE_CONSISTENCY:#1096@987654355;SELF_DOGFOOD:#1096@987654356\n"
                              "gate_evidence_refs=actions:1234567")}
         if url.endswith("/issues/comments/987654344"):
             return {"id": 987654344,
                     "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654344",
                     "body": ("<!-- ai-dev:event:v2 -->\nevent=RELEASE_CANDIDATE_ADMISSION\n"
-                             f"candidate_sha={self.candidate}\nadmission=ACCEPTED\n")}
+                             f"candidate_sha={self.candidate}\nadmission=ACCEPTED\n"
+                             "required_gate_ids=SOURCE_CONSISTENCY;SELF_DOGFOOD\n")}
         if url.endswith("/issues/comments/987654333"):
             return {"id": self.review,
-                    "body": ("<!-- ai-dev:event:v2 -->\nactor_role=reviewer\n"
+                    "html_url": "https://github.com/kaicreator-mm/ai-development-standard/issues/1096#issuecomment-987654333",
+                    "body": ("<!-- ai-dev:event:v2 -->\nevent=INDEPENDENT_RELEASE_REVIEW\n"
+                             "review_subject=S06_RELEASE_QUALIFICATION\nactor_role=reviewer\n"
                              "operator_id=independent-reviewer\nsession_ref=review-2\n"
                              "review_verdict=PASS\n"
                              f"reviewed_sha={self.candidate}\n")}
@@ -148,8 +169,8 @@ class SelectorTests(unittest.TestCase):
             dimension = names[i]
             return {"id": job_id, "run_id": 1234567, "status": "completed",
                     "conclusion": "success",
-                    "name": f"ads-compat:{self.current[:12]}:{dimension}",
-                    "steps": [{"name": f"probe:{self.current[:12]}:{dimension}:{self.project['consumer_window']}",
+                    "name": f"ads-compat:{self.current[:12]}:synthetic__example:{dimension}",
+                    "steps": [{"name": f"probe:{self.current[:12]}:synthetic__example:{dimension}:{self.project['consumer_window']}",
                                "conclusion": "success"}]}
         raise AssertionError("Unexpected mocked endpoint: " + url)
 
