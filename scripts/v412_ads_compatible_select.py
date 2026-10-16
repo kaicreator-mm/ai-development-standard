@@ -247,13 +247,21 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
         raise Unsafe("MISSING_QUALIFICATION_EVENT_REFERENCE")
     issue = fetch(base + f"issues/{issue_id}")
     if (not isinstance(issue, dict) or issue.get("number") != issue_id
-            or issue.get("state") != "closed" or version not in str(issue.get("title", ""))):
+            or issue.get("state") != "closed"):
         raise Unsafe("RELEASE_VERSION_NOT_CLOSED")
     event = fetch(base + f"issues/comments/{comment_id}")
     if (not isinstance(event, dict) or event.get("id") != comment_id
             or f"/issues/{issue_id}#issuecomment-{comment_id}" not in str(event.get("html_url", ""))):
         raise Unsafe("RELEASE_EVENT_OUTSIDE_CANONICAL_VERSION")
     facts = checked_event(event.get("body"))
+    # The actual canonical S06 issue is titled "v4.12", not "v4.12.0".
+    # Its trusted exact patch version comes from the bound qualification event.
+    title = str(issue.get("title", ""))
+    family = "v" + version.rsplit(".", 1)[0]
+    if (version not in title and not (
+            facts.get("candidate_tree") is not None
+            and family in title and facts.get("version") == version)):
+        raise Unsafe("RELEASE_VERSION_NOT_CLOSED")
     if (facts.get("event") != "RELEASE_QUALIFICATION"
             or facts.get("qualification") != "RELEASE_QUALIFIED"):
         raise Unsafe("UNVERIFIED_CURRENT_RELEASE_QUALIFICATION")
