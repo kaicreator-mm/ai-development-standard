@@ -1,10 +1,10 @@
 # Changelog
 
-## v4.12.1 — Unreleased maintenance candidate
+## v4.12.1 — Maintenance patch
 
-**状态：补丁实现与定向测试中，尚未冻结或发布。** 单一修复：使 `scripts/v412_ads_compatible_select.py` 能识别实际 v4.12.0 发布证据中的「冻结候选 SHA → 同 Tree main 合并 SHA → 公开 Tag/Release」谱系，同时验证原有冻结/可见门禁记录、实际版本 CI、独立源码审核和正式集成记录。不存在真实 Consumer 十维兼容性证明时，仍返回 `NO_SAFE_RECOMMENDATION`。原始 v4.12.0 Tag 不变。
+**版本记录说明：** 本条记录本版补丁变更，不以静态文本断言当前 GitHub Tag、Release 或 Release Qualification 状态；请以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 与相关精确源码证据核验公开状态。单一修复：使 `scripts/v412_ads_compatible_select.py` 能识别实际 v4.12.0 发布证据中的「冻结候选 SHA → 同 Tree main 合并 SHA → 公开 Tag/Release」谱系，同时验证原有冻结/可见门禁记录、实际版本 CI、独立源码审核和正式集成记录。不存在真实 Consumer 十维兼容性证明时，仍返回 `NO_SAFE_RECOMMENDATION`。原始 v4.12.0 Tag 不变。
 
-**回归约束：** 仅新增五个与真实发布形态相关的正反例，复用原有 S05 测试及已有 `verify-standard` 工作流；不增加 CI、Review 或发布门禁轮次。README 和 Changelog 同步记录 v4.12.0 已发布事实与 v4.12.1 未发布候选事实。
+**回归约束：** 仅新增五个与真实发布形态相关的正反例，复用原有 S05 测试及已有 `verify-standard` 工作流；不增加 CI、Review 或发布门禁轮次。README 和 Changelog 同步记录 v4.12.0 的已发布历史及 v4.12.1 的补丁内容；不会把源文件本身当成已发布证据。
 
 ## v4.12.0 — Released 2026-10-16
 
