@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "standard-manifest.json"
@@ -282,6 +283,27 @@ if errors:
     for error in errors:
         print(f"- {error}")
     sys.exit(1)
+
+# v4.12 S05 focused executable registration. Keep the exact historic CI
+# workflow blob (v4.9 T-012 oracle) intact; this owned verifier is already
+# invoked by that workflow on every new candidate. Unlike manifest presence,
+# the new checker tests must ACTUALLY execute and a failed exit is fatal.
+for _v412_test in (
+    "scripts/test_v412_scaffold_dag_check.py",
+    "scripts/test_v412_ads_compatible_select.py",
+):
+    _run = subprocess.run(
+        [sys.executable, "-B", str(ROOT / _v412_test)],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    print(f"v4.12 focused {_v412_test}: exit={_run.returncode}")
+    if _run.returncode:
+        print(_run.stdout[-5000:])
+        print("standard verification: FAIL (v4.12 focused checker)")
+        sys.exit(1)
 
 print("standard verification: PASS")
 print(f"manifest files: {len(manifest_paths)}")
