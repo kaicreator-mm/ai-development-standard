@@ -68,7 +68,7 @@ def parse_version(blob: str) -> dict:
 
 def api_json(url: str) -> dict:
     if (not url.startswith("https://api.github.com/repos/kaicreator-mm/ai-development-standard/")
-            and not re.fullmatch(r"https://api[.]github[.]com/repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/(?:issues|pulls)[?]state=open&per_page=100", url)):
+            and not re.fullmatch(r"https://api[.]github[.]com/repos/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/(?:(?:issues|pulls)[?]state=open&per_page=100|git/ref/heads/main)", url)):
         raise Unsafe("UNTRUSTED_READ_ONLY_GITHUB_API")
     headers = {"Accept": "application/vnd.github+json", "User-Agent": "ADS-v412-read-only-selector"}
     if os.environ.get("GITHUB_TOKEN"):
@@ -322,27 +322,57 @@ def compatible(repo: Path, item: dict, current: str, candidate: str,
 
 
 def live_project_state(project: dict, fetch) -> None:
-    """GitHub live state, never discovery's inactive booleans, is authoritative."""
-    repo = project.get("project_repository")
-    if not isinstance(repo, str) or not REPO.fullmatch(repo):
+    """Conjunct a locally source-pinned checkpoint with current GitHub truth.
+
+    Discovery JSON is never evidence that a Claim or frozen candidate is absent.
+    This strict optional advisory may decline projects lacking an adoption state
+    snapshot. It does not add a Task or Gate to their normal development.
+    """
+    repo_name = project.get("project_repository")
+    project_root = project.get("project_root")
+    if (not isinstance(repo_name, str) or not REPO.fullmatch(repo_name)
+            or not isinstance(project_root, (str, Path)) or not str(project_root)):
         raise Unsafe("MISSING_VERIFIABLE_PROJECT_REPOSITORY")
-    base = "https://api.github.com/repos/" + repo
-    issues = fetch(base + "/issues?state=open&per_page=100")
-    pulls = fetch(base + "/pulls?state=open&per_page=100")
+    root = Path(project_root)
+    if git(root, "status", "--porcelain"):
+        raise Unsafe("PROJECT_WORKTREE_NOT_CLEAN")
+    if git(root, "branch", "--show-current") != "main":
+        raise Unsafe("PROJECT_CHECKPOINT_NOT_MAIN")
+    current_head = exact_commit(root, git(root, "rev-parse", "HEAD"))
+    prior = exact_commit(root, git(root, "rev-parse", "HEAD^"))
+    # The adoption checkpoint itself is the exact latest source commit; the
+    # event binds its predecessor, avoiding self-referential SHA literals.
+    if ".dev-standard/ADOPTION_STATUS.json" not in git(
+        root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"
+    ).splitlines():
+        raise Unsafe("PROJECT_CHECKPOINT_NOT_CURRENT")
+    try:
+        status = json.loads(at(root, current_head, ".dev-standard/ADOPTION_STATUS.json"))
+    except (ValueError, TypeError) as error:
+        raise Unsafe("PROJECT_CHECKPOINT_INVALID") from error
+    if (not isinstance(status, dict) or status.get("schema_version") != 1
+            or status.get("project_repository") != repo_name
+            or status.get("checked_parent_sha") != prior
+            or status.get("effective_ads_revision") != project.get("current_revision")
+            or status.get("active_claim") != "NONE"
+            or status.get("frozen_candidate") != "NONE"):
+        raise Unsafe("ACTIVE_FROZEN_OR_UNVERIFIED_CHECKPOINT")
+    prefix = "https://api.github.com/repos/" + repo_name
+    remote = fetch(prefix + "/git/ref/heads/main")
+    if (not isinstance(remote, dict) or remote.get("ref") != "refs/heads/main"
+            or not isinstance(remote.get("object"), dict)
+            or remote["object"].get("type") != "commit"
+            or remote["object"].get("sha") != current_head):
+        raise Unsafe("PROJECT_REMOTE_CHECKPOINT_STALE")
+    issues = fetch(prefix + "/issues?state=open&per_page=100")
+    pulls = fetch(prefix + "/pulls?state=open&per_page=100")
     if (not isinstance(issues, list) or not isinstance(pulls, list)
             or len(issues) >= 100 or len(pulls) >= 100):
         raise Unsafe("UNKNOWN_PROJECT_LIVE_STATE_OR_PAGINATION")
-    if pulls:
-        raise Unsafe("ACTIVE_SUBJECT_CANNOT_REBIND")
-    for issue in issues:
-        if not isinstance(issue, dict) or not isinstance(issue.get("labels"), list):
-            raise Unsafe("UNKNOWN_PROJECT_LIVE_STATE")
-        labels = {label["name"] for label in issue["labels"]
-                  if isinstance(label, dict) and isinstance(label.get("name"), str)}
-        if (not labels or "type:task" in labels or "state:claimed" in labels
-                or "state:implementing" in labels or "state:review-ready" in labels
-                or issue.get("pull_request")):
-            raise Unsafe("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
+    # Do not guess the Task type from labels: project-specific labels may vary.
+    # Any open Issue/PR makes the advisory wait for a project-local checkpoint.
+    if pulls or issues:
+        raise Unsafe("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
 
 
 def ancestor(repo: Path, older: str, newer: str) -> bool:
@@ -359,10 +389,9 @@ def select(repo: Path, project: dict, candidates: list, fetch=api_json) -> dict:
     try:
         if project.get("preference") != CURRENT_PROFILE:
             raise Unsafe("PROJECT_NOT_OPTED_IN")
-        # Never convert missing or discovery-supplied "false" into live safety.
+        # Source checkpoint and live GitHub currentness are required; discovery
+        # booleans are ignored even when they claim "false".
         live_project_state(project, fetch)
-        if project.get("active_task") is not False or project.get("frozen_candidate") is not False:
-            raise Unsafe("UNKNOWN_ACTIVE_OR_FROZEN_CHECKPOINT")
         current = exact_commit(repo, project.get("current_revision", ""))
         cv = at(repo, current, "VERSION")
         if not VERSION.fullmatch(cv) or project.get("current_version") != cv:
@@ -427,8 +456,8 @@ def main() -> int:
         project = {"preference": opted.group(1) if opted else "PINNED/MANUAL",
                    "current_revision": pin["revision"], "current_version": pin["version"],
                    "project_repository": match.group(1),
-                   "consumer_window": window.group(1) if window else None,
-                   "active_task": data.get("active_task"), "frozen_candidate": data.get("frozen_candidate")}
+                   "project_root": project_root,
+                   "consumer_window": window.group(1) if window else None}
         result = select(Path(args.ads_repo), project, data.get("candidates", []))
     except (Unsafe, ValueError, TypeError, OSError, json.JSONDecodeError) as err:
         result = {"decision": "NO_SAFE_RECOMMENDATION", "effective_pin_changed": False,
