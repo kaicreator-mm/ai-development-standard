@@ -1,8 +1,14 @@
 # Changelog
 
-## v4.12.0 — Unreleased version-branch candidate
+## v4.12.1 — Unreleased maintenance candidate
 
-**状态：S06 VERSION_CANDIDATE_PREPARED / RELEASE_QUALIFICATION=NOT_RUN / NOT_PUBLISHED。** `version/v4.12.0` 已集成五项实施 Task（#1132–#1136），本条目用于形成版本源码身份，**不代表候选冻结、Hidden PASS、资格裁决、main 合并、Tag 或 GitHub Release**。发布状态与当前精确 SHA 以 [#1096](https://github.com/kaicreator-mm/ai-development-standard/issues/1096) 的最新合法记录为准。
+**状态：补丁实现与定向测试中，尚未冻结或发布。** 单一修复：使 `scripts/v412_ads_compatible_select.py` 能识别实际 v4.12.0 发布证据中的「冻结候选 SHA → 同 Tree main 合并 SHA → 公开 Tag/Release」谱系，同时验证原有冻结/可见门禁记录、实际版本 CI、独立源码审核和正式集成记录。不存在真实 Consumer 十维兼容性证明时，仍返回 `NO_SAFE_RECOMMENDATION`。原始 v4.12.0 Tag 不变。
+
+**回归约束：** 仅新增五个与真实发布形态相关的正反例，复用原有 S05 测试及已有 `verify-standard` 工作流；不增加 CI、Review 或发布门禁轮次。README 和 Changelog 同步记录 v4.12.0 已发布事实与 v4.12.1 未发布候选事实。
+
+## v4.12.0 — Released 2026-10-16
+
+**已发布：2026-10-16。** S06 [#1143](https://github.com/kaicreator-mm/ai-development-standard/issues/1143) 完成冻结候选 `33af53fa03fa4a2da638bd1107ca596143bab70e` 的 READY 裁决；`main` 通过 PR #1144 以相同 Git Tree `bf5873b82a30a7b373f1dfea5dea8367d2bc93f8` 合并，CI #38866683387 通过；公开 `v4.12.0` Tag/Release 指向最终 `main@ee8258106547abd2c2d7b9f5e87af9965e430bd2`。标准仓库源码发布完成，不代表消费者项目已通过兼容性验证。
 
 **主要变更：** S01 将阶段化 Product Scaffold 与真实 Task 写入准入/自声明执行上下文分离；S02 约束 Scaffold/DF/MI 双向绑定、不可自指的 Freeze 证据与 Issue 写入范围；S03 提供只读 NUL-safe Git 源对象与 Scope/Anchor 检查器；S04 提供可选择性采用最新兼容已发布 ADS 的只读建议政策；S05 提供源证据、Consumer 窗口、公开 Release Qualification 和项目活动状态均需真实核验的兼容选择器，且将 S03/S05 定向检查接入现有 verifier，继承 v4.9 精确工作流历史 pin。
 
