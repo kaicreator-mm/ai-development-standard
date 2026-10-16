@@ -175,35 +175,98 @@ def qualified(repo: Path, sha: str, version: str, item: dict, fetch) -> str:
     return base + f"issues/comments/{comment_id}"
 
 
-def compatible(record: dict, current: str, candidate: str) -> list[str]:
+def compatible(repo: Path, item: dict, current: str, candidate: str,
+               consumer_window: str, fetch) -> list[str]:
+    """Git-source record + actual exact-subject executed per-dimension test jobs.
+
+    JSON supplied directly by discovery is NOT an evidence authority.
+    """
+    path = item.get("compatibility_record_path")
+    if (not isinstance(path, str) or not path.startswith("docs/compatibility/")
+            or not path.endswith(".json")):
+        raise Unsafe("COMPATIBILITY_SOURCE_NOT_PINNED")
+    record = json.loads(at(repo, candidate, path))
     if (not isinstance(record, dict) or record.get("schema_version") != 1
-            or record.get("baseline", {}).get("sha_or_digest") != current
-            or record.get("candidate", {}).get("sha_or_digest") != candidate
+            or not isinstance(record.get("baseline"), dict)
+            or not isinstance(record.get("candidate"), dict)
+            or record["baseline"].get("sha_or_digest") != current
+            or record["candidate"].get("sha_or_digest") != candidate
             or not isinstance(record.get("change_operations"), list)
             or not record["change_operations"]
-            or not record.get("producer_refs") or not record.get("consumer_refs")):
+            or not isinstance(record.get("producer_refs"), list)
+            or not record["producer_refs"]
+            or not isinstance(record.get("consumer_refs"), list)
+            or not record["consumer_refs"]):
         raise Unsafe("INVALID_SOURCE_COMPATIBILITY_RECORD")
-    dimensions = record.get("dimensions", [])
-    if not isinstance(dimensions, list):
-        raise Unsafe("MISSING_MATERIAL_DIMENSIONS")
-    seen = set()
-    refs = []
-    for dim in dimensions:
+    if (not isinstance(consumer_window, str) or not consumer_window
+            or record.get("compatibility_window_ref") != consumer_window):
+        raise Unsafe("UNSUPPORTED_OR_UNVERIFIED_CONSUMER_WINDOW")
+    ds = record.get("dimensions")
+    if not isinstance(ds, list) or len(ds) != len(REQUIRED_DIMENSIONS):
+        raise Unsafe("MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
+    by_name = {}
+    for dim in ds:
         if not isinstance(dim, dict) or not isinstance(dim.get("name"), str):
             raise Unsafe("BAD_COMPATIBILITY_DIMENSION")
         name = dim["name"]
-        if name in seen:
-            raise Unsafe("DUPLICATE_COMPATIBILITY_DIMENSION")
-        seen.add(name)
-        if (dim.get("outcome") != "COMPATIBLE"
-                or not isinstance(dim.get("evidence_refs"), list)
-                or not dim["evidence_refs"]
-                or not all(isinstance(e, str) and e.strip() for e in dim["evidence_refs"])):
-            raise Unsafe("MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
-        refs.extend(dim["evidence_refs"])
-    if not REQUIRED_DIMENSIONS <= seen:
+        if name in by_name or name not in REQUIRED_DIMENSIONS:
+            raise Unsafe("DUPLICATE_OR_UNKNOWN_COMPATIBILITY_DIMENSION")
+        by_name[name] = dim
+    if set(by_name) != REQUIRED_DIMENSIONS:
         raise Unsafe("MATERIAL_COMPATIBILITY_DIMENSIONS_MISSING")
-    return sorted(set(refs))
+    prefix = "https://api.github.com/repos/kaicreator-mm/ai-development-standard/"
+    refs = []
+    for name in sorted(REQUIRED_DIMENSIONS):
+        dim = by_name[name]
+        ev = dim.get("evidence_refs")
+        if (dim.get("outcome") != "COMPATIBLE"
+                or not isinstance(ev, list) or len(ev) != 1
+                or not isinstance(ev[0], str)):
+            raise Unsafe("MATERIAL_COMPATIBILITY_UNKNOWN_OR_UNPROVEN")
+        m = re.fullmatch(r"actions:([1-9]\d*):([1-9]\d*)", ev[0])
+        if not m:
+            raise Unsafe("INDEPENDENT_COMPATIBILITY_PROOF_MISSING")
+        run_id, job_id = m.groups()
+        successful_run(fetch, run_id, candidate)
+        job = fetch(prefix + "actions/jobs/" + job_id)
+        if (not isinstance(job, dict) or job.get("id") != int(job_id)
+                or job.get("run_id") != int(run_id)
+                or job.get("status") != "completed"
+                or job.get("conclusion") != "success"
+                or job.get("name") != f"ads-compat:{current[:12]}:{name}"
+                or not isinstance(job.get("steps"), list)
+                or not any(
+                    isinstance(st, dict)
+                    and st.get("name") == f"probe:{current[:12]}:{name}:{consumer_window}"
+                    and st.get("conclusion") == "success"
+                    for st in job["steps"])):
+            raise Unsafe("COMPATIBILITY_TEST_NOT_EXECUTED_ON_EXACT_SUBJECT")
+        refs.append(ev[0])
+    return refs
+
+
+def live_project_state(project: dict, fetch) -> None:
+    """GitHub live state, never discovery's inactive booleans, is authoritative."""
+    repo = project.get("project_repository")
+    if not isinstance(repo, str) or not REPO.fullmatch(repo):
+        raise Unsafe("MISSING_VERIFIABLE_PROJECT_REPOSITORY")
+    base = "https://api.github.com/repos/" + repo
+    issues = fetch(base + "/issues?state=open&per_page=100")
+    pulls = fetch(base + "/pulls?state=open&per_page=100")
+    if (not isinstance(issues, list) or not isinstance(pulls, list)
+            or len(issues) >= 100 or len(pulls) >= 100):
+        raise Unsafe("UNKNOWN_PROJECT_LIVE_STATE_OR_PAGINATION")
+    if pulls:
+        raise Unsafe("ACTIVE_SUBJECT_CANNOT_REBIND")
+    for issue in issues:
+        if not isinstance(issue, dict) or not isinstance(issue.get("labels"), list):
+            raise Unsafe("UNKNOWN_PROJECT_LIVE_STATE")
+        labels = {label["name"] for label in issue["labels"]
+                  if isinstance(label, dict) and isinstance(label.get("name"), str)}
+        if (not labels or "type:task" in labels or "state:claimed" in labels
+                or "state:implementing" in labels or "state:review-ready" in labels
+                or issue.get("pull_request")):
+            raise Unsafe("ACTIVE_OR_UNCLASSIFIED_WORK_ITEM")
 
 
 def ancestor(repo: Path, older: str, newer: str) -> bool:
