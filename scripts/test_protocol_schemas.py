@@ -203,6 +203,113 @@ class ProtocolSchemaTests(unittest.TestCase):
         host_is_not_authority["installed_host_version"] = "24"
         self.assertTrue(validate_subset(host_is_not_authority, schema))
 
+    def test_v413_org_precedence_four_source_pinned_cases(self) -> None:
+        # This is a deliberately small reference interpretation of FR01/AC01,
+        # not a Tally resolver, semver library or toolchain installer.
+        import hashlib
+
+        def git_blob_sha(raw: bytes) -> str:
+            return hashlib.sha1(
+                b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+            ).hexdigest()
+
+        example_path = ROOT / "examples/organization-development-environment-profile.json"
+        fixture_path = ROOT / "examples/organization-development-environment-resolution-cases.json"
+        example_raw = example_path.read_bytes()
+        fixture_raw = fixture_path.read_bytes()
+        self.assertEqual(
+            git_blob_sha(example_raw), "e81fcf5a71824f9b1ce7053ebb29f2c83d971b7e"
+        )
+        self.assertEqual(
+            git_blob_sha(fixture_raw), "7d5c2f0a43908ce0408b9c809e5524ebec4e79dc"
+        )
+        org = json.loads(example_raw)
+        fixture = json.loads(fixture_raw)
+        self.assertEqual(
+            fixture["organization_profile_git_blob"],
+            git_blob_sha(example_raw),
+        )
+        self.assertEqual(fixture["schema_version"], 1)
+        cases = fixture["cases"]
+        self.assertEqual(len(cases), 4)
+        self.assertEqual(len({case["id"] for case in cases}), 4)
+
+        preferred = {
+            item["name"]: item["preferred_version"]
+            for item in org["preferred_toolchains"]
+        }
+
+        def interpret(project: dict, observed_version: str) -> dict:
+            # These fixtures use explicit project-supported version sets,
+            # intentionally avoiding an invented generic semver resolver.
+            versions = project["compatible_versions"]
+            org_choice = preferred.get(project["toolchain"])
+            locked = project.get("locked_version")
+            selected_by_project = project.get("project_preferred_version")
+
+            if locked is not None:
+                if locked not in versions:
+                    return {
+                        "resolution": "CONFLICT",
+                        "preferred_source": None,
+                        "selected_version": None,
+                        "reason": "PROJECT_LOCK_OUTSIDE_COMPATIBILITY",
+                    }
+                selected, source, reason = (
+                    locked, "project_lock", "PROJECT_LOCK_WINS",
+                )
+            elif selected_by_project is not None:
+                if selected_by_project not in versions:
+                    return {
+                        "resolution": "CONFLICT",
+                        "preferred_source": None,
+                        "selected_version": None,
+                        "reason": "PROJECT_PREFERENCE_OUTSIDE_COMPATIBILITY",
+                    }
+                selected, source, reason = (
+                    selected_by_project, "project",
+                    "PROJECT_PREFERENCE_OVERRIDES_ORG",
+                )
+            elif org_choice in versions:
+                selected, source, reason = (
+                    org_choice, "organization", "ORG_PREFERENCE_COMPATIBLE",
+                )
+            else:
+                return {
+                    "resolution": "CONFLICT",
+                    "preferred_source": None,
+                    "selected_version": None,
+                    "reason": "ORG_VERSION_OUTSIDE_PROJECT_COMPATIBILITY",
+                }
+
+            if observed_version != selected:
+                return {
+                    "resolution": "BLOCKED",
+                    "preferred_source": source,
+                    "selected_version": selected,
+                    "reason": (
+                        "HOST_INCOMPATIBLE_WITH_PROJECT_LOCK"
+                        if source == "project_lock"
+                        else "HOST_LACKS_SELECTED_TOOLCHAIN"
+                    ),
+                }
+            return {
+                "resolution": "SELECTED",
+                "preferred_source": source,
+                "selected_version": selected,
+                "reason": reason,
+            }
+
+        for case in cases:
+            with self.subTest(case=case["id"]):
+                self.assertEqual(
+                    case["project_source_ref"], f"fixture:{case['id']}"
+                )
+                observed = interpret(
+                    case["project"], case["host"]["observed_version"]
+                )
+                self.assertEqual(observed, case["expected"])
+
     def test_schema_subset_fails_closed(self) -> None:
         with self.assertRaises(ValueError):
             assert_supported_schema({"type": "string", "oneOf": []})
