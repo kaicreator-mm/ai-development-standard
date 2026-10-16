@@ -229,6 +229,9 @@ class SelectorTests(unittest.TestCase):
         }
 
         def actual_shape(url):
+            if url.endswith("/issues/1096"):
+                return {"number": 1096, "state": "closed",
+                        "title": "V412-S06 — v4.12 Release Qualification"}
             if url.endswith("/issues/comments/987654321"):
                 return event(987654321, (
                     "event=RELEASE_QUALIFICATION\nqualification=RELEASE_QUALIFIED\n"
