@@ -217,7 +217,7 @@ def select(repo: Path, project: dict, candidates: list, fetch=api_json) -> dict:
                        "proposed_version": best["version"], "release_qualification_ref": best["qualification_ref"],
                        "compatibility_evidence_refs": best["compatibility_refs"],
                        "next_step": "PROJECT_LOCAL_AUTHORIZED_CHECKPOINT_ONLY"})
-    except (Unsafe, ValueError, KeyError, TypeError, OSError, HTTPError, URLError, json.JSONDecodeError) as error:
+    except (Unsafe, ValueError, KeyError, TypeError, AttributeError, IndexError, OSError, HTTPError, URLError, json.JSONDecodeError) as error:
         output["reason"] = str(error) if isinstance(error, Unsafe) else "MISSING_OR_INVALID_SOURCE_EVIDENCE"
     return output
 
