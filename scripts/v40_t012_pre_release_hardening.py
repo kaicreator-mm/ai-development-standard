@@ -109,7 +109,7 @@ def validate_aggregation_judgment(aggregate: dict) -> list[str]:
     if not isinstance(aggregate, dict):
         return ["review aggregation must be an object"]
     judgment = aggregate.get("judgment")
-    if judgment not in JUDGMENTS:
+    if not isinstance(judgment, str) or judgment not in JUDGMENTS:
         return [f"review aggregation judgment must be one of {sorted(JUDGMENTS)}"]
     return []
 
