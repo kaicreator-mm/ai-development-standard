@@ -33,19 +33,27 @@ def operative_markdown_lines(text: str) -> list[str]:
     """Exclude fenced examples and quotations, which are not live overrides."""
     result: list[str] = []
     fenced = False
-    delimiter = ""
+    marker = ""
+    opening_length = 0
     for line in text.splitlines():
-        match = re.match(r"^\s*(`{3,}|~{3,})", line)
-        if match:
-            kind = match.group(1)[0]
-            if not fenced:
+        # CommonMark fences may use at most three leading spaces. A closing
+        # fence must use the same marker, at least the opener's run length,
+        # and contain no trailing content other than whitespace.
+        fence = re.match(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$", line)
+        if not fenced:
+            if fence:
                 fenced = True
-                delimiter = kind
-            elif kind == delimiter:
+                marker = fence.group(1)[0]
+                opening_length = len(fence.group(1))
+                continue
+            if not line.lstrip().startswith((">", "<!--", "#")):
+                result.append(line)
+        elif fence:
+            run, trailing = fence.group(1), fence.group(2)
+            if run[0] == marker and len(run) >= opening_length and not trailing.strip():
                 fenced = False
-            continue
-        if not fenced and not line.lstrip().startswith((">", "<!--", "#")):
-            result.append(line)
+                marker = ""
+                opening_length = 0
     return result
 
 
