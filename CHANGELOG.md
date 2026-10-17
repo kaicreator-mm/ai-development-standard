@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.13.1 — Bounded consumer workflow acceptance hardening
+
+- Enforce the pre-existing `v4.adoption_level` A0–A4 MUST in the existing root-adopter verifier for pinned v4 projects, with five focused positive/negative regression cases; v1/v3 unchanged.
+- For v4.13.1+ enabled CI profiles, require predeclared actual `Required CI checks`, not a post-hoc decision based on which provider passed; no globally mandated CI provider.
+- Clarify existing native GitHub Issue Dependencies readback before materialized DAG Task admission; no Markdown substitution or false PASS from merely waiting for an Issue to close.
+- Keep the original field-validation objective separate from Release's narrowly scoped source artifact eligibility; a source-only READY does not imply native DAG/standalone adopter/Tally/Host/full field conformance.
+- Source-only additive guardrail maintenance; ADS v4.13.0 history is unchanged. No new gate state, operator identity/Owner requirement, model scheduler, real cross-repo updater or Tally runtime.
+
 ## v4.13.0 — ADS Foundation for Tally v2
 
 **源码范围说明：** 这个条目描述 v4.13.0 的标准与契约内容；正式 Release Qualification、Tag 与公开发布必须以精确候选证据和真实 GitHub Release 为准，**不得仅从本文件或 VERSION 推断已发布**。

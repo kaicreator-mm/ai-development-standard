@@ -37,6 +37,58 @@ def run(text: str) -> subprocess.CompletedProcess[str]:
 
 
 class Tests(unittest.TestCase):
+    def test_v4131_requires_selected_provider_checks(self) -> None:
+        valid = BASE + "- Required CI checks: ci/woodpecker/push/ci\n"
+        def run_versioned(text: str) -> subprocess.CompletedProcess[str]:
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                d = root / ".dev-standard"
+                d.mkdir()
+                (d / "PROJECT_OVERRIDES.md").write_text(text, encoding="utf-8")
+                (d / "VERSION").write_text(
+                    "repository=kaicreator-mm/ai-development-standard\n"
+                    "version=4.13.1\n"
+                    "revision=0123456789abcdef0123456789abcdef01234567\n",
+                    encoding="utf-8",
+                )
+                return subprocess.run(
+                    [sys.executable, str(SCRIPT), str(root)],
+                    text=True, capture_output=True, check=False
+                )
+        self.assertEqual(run_versioned(valid).returncode, 0)
+        for value in (BASE, BASE + "- Required CI checks: UNKNOWN\n",
+                      BASE + "- Required CI checks: NONE\n"):
+            result = run_versioned(value)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Required CI checks", result.stdout)
+
+    def test_v4131_rejects_status_and_conflicting_required_checks(self) -> None:
+        def run_v4(override: str) -> subprocess.CompletedProcess[str]:
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                d = root / ".dev-standard"
+                d.mkdir()
+                (d / "PROJECT_OVERRIDES.md").write_text(override, encoding="utf-8")
+                (d / "VERSION").write_text(
+                    "repository=kaicreator-mm/ai-development-standard\n"
+                    "version=4.13.1\n"
+                    "revision=0123456789abcdef0123456789abcdef01234567\n",
+                    encoding="utf-8"
+                )
+                return subprocess.run(
+                    [sys.executable, str(SCRIPT), str(root)],
+                    capture_output=True, text=True, check=False
+                )
+        for bad in ("SUCCESS", "PASS", "ci/woodpecker/push/ci\n"
+                    "- Required CI checks: github-actions/source"):
+            result = run_v4(BASE + "- Required CI checks: " + bad + "\n")
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("Required CI checks", result.stdout)
+        good = run_v4(
+            BASE + "- Required CI checks: ci/woodpecker/push/ci, github-actions/source\n"
+        )
+        self.assertEqual(good.returncode, 0, good.stdout + good.stderr)
+
     def test_enabled_profile_passes(self) -> None:
         result = run(BASE)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
