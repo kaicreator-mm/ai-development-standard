@@ -1,0 +1,25 @@
+# L1 competitor-discovery bounded dogfood — #929
+
+> NON_NORMATIVE / SOURCE-BOUND REFERENCE; 2026-10-17. This file tests whether the *procedure* exposes a missing category without preloading its exact project name. It does **not** certify the market or provide Product Freeze, a search-count gate, or a new research lifecycle. Canonical execution projection: `prompts/L1_PRODUCT_EVIDENCE.md`.
+
+## Falsification setup
+
+For each case, begin with the **left** framing alone, then independently derive user-Job, input and output-interface families; use vocabulary found in a strong comparator to perform a second-hop/category check. A procedure fails when it allows a strong “no direct competitor / novel gap” conclusion while material adjacent categories remain uninspected and undisclosed. A `UNKNOWN` or narrowed Product claim is a *legitimate* result, not a failed research run. The project names below are evidence anchors checked **after** deriving the families, not suggested search keywords for the first pass.
+
+| Scenario | Constrained first-pass framing | Different vocabulary derived from Job/input/output | Evidence anchor for the missed/adjacent category | Expected safe disposition |
+| --- | --- | --- | --- | --- |
+| app8 product discovery incident | “software → MCP / Skill exporter / registry” | “make existing software controllable by an Agent”; source desktop/GUI app, output typed CLI/command harness; neighboring family GUI-to-CLI / agent-native CLI | [HKUDS/CLI-Anything](https://github.com/HKUDS/CLI-Anything): software-to-agent-native command-line harness generator. This closely overlaps the broader Agent-enablement Job even though its output vocabulary differs from MCP/Skill. | Add GUI-to-CLI to inspected search space; compare Job/input/output/core implementation; do **not** claim a unique unified product gap from the MCP/Skill-only scan. |
+| unrelated xDownload concept | “LLM-generated DownloadPlan / intelligent downloads” | “download a set of web/media assets reliably”; source URL/site/browser request, output local artifact + resumable transfer; neighboring families conventional download manager, site-specific extractors, browser-integrated capture | [AB Download Manager](https://github.com/amir1376/ab-download-manager) represents traditional download management; [yt-dlp](https://github.com/yt-dlp/yt-dlp) represents source-specific media retrieval. Both must be **considered as adjacent alternatives**, not automatically treated as complete DownloadPlan substitutes. | Inspect transfer/extraction reuse and non-goals before claiming “no existing alternative”; retain `UNKNOWN` for Recipe/Harness equivalence until a real contract-level comparison. |
+
+### Counterexample assertions (reasoned prompt walk-through; NOT executed search coverage or integration tests)
+
+1. **Vocabulary bias:** If the first case searches only “MCP exporter / Skill generator” and declares no direct competitor, the new Job→interface family requires checking GUI-to-CLI; absence of that family is recorded as `UNKNOWN`, so the strong novelty conclusion is refused. This does not depend on the literal name CLI-Anything.
+2. **Independent framing:** For xDownload, starting with an LLM-first term still yields conventional managers and media extractors from the **user Job and input/output**, not an invented second LLM tool. The procedure avoids concluding those alternatives equal a DownloadPlan; exact capability gaps remain evidence-dependent.
+3. **Second hop:** Each strong comparator's actual README/category vocabulary supplies a next-hop adjacent-category probe; a preliminary search with only solution-technology terms is insufficient for a *material* differentiation claim. No universal query-count or exhaustive internet-coverage requirement follows.
+4. **Salience:** High visibility is a reminder to inspect/explicitly exclude an adjacent comparator, not evidence of quality, product differentiation or an obligation to rank by GitHub stars.
+5. **Product reframe:** If a candidate changes its output from MCP wrappers to CLI harnesses, the prior MCP-focused landscape cannot be reused without scope review and targeted refresh. Older citations remain historical, not newly current.
+6. **Small/known scope:** For a narrowly scoped non-market change with accepted existing evidence and `NO_RESEARCH_REQUIRED`, this process generates **zero required external queries, new issues, or new gates**.
+
+## Evidence limits and future check
+
+The links establish *existing adjacent classes* and a plausible way a broadened query family would surface them. No dated search-log transcript, independent field study, full competitor matrix, revenue/quality ranking, or product-level differentiation decision is claimed here. A later genuine Product Research should record its own executed search sources/time, strongest-comparator evidence, second-hop disposition and unresolved gaps in the existing L1 output. Any L1 finding remains input to the preexisting Product authority rather than a Product Freeze or Implementation Task license.
