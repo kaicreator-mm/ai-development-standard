@@ -25,8 +25,55 @@ V4_ADOPTION_LEVELS = {
     "A4_FULL_ORCHESTRATION",
 }
 V4_LEVEL_LINE_RE = re.compile(
-    r"^\s*(?:-\s*)?\`?v4\.adoption_level\`?\s*:\s*(.*?)\s*$", re.MULTILINE
+    r"^\s*-\s*\`?v4\.adoption_level\`?\s*:\s*(.*?)\s*$"
 )
+
+
+def operative_markdown_lines(text: str) -> list[str]:
+    """Exclude fenced examples and quotations, which are not live overrides."""
+    result: list[str] = []
+    fenced = False
+    delimiter = ""
+    for line in text.splitlines():
+        match = re.match(r"^\s*(`{3,}|~{3,})", line)
+        if match:
+            kind = match.group(1)[0]
+            if not fenced:
+                fenced = True
+                delimiter = kind
+            elif kind == delimiter:
+                fenced = False
+            continue
+        if not fenced and not line.lstrip().startswith((">", "<!--", "#")):
+            result.append(line)
+    return result
+
+
+def verify_v4_root_binding(root: Path, identity: dict[str, str]) -> list[str]:
+    """Bind v4.13.1+ root claims to actual Git topology, with explicit monorepo exception."""
+    version = identity.get("version", "")
+    match = re.match(r"^(\d+)\.(\d+)\.(\d+)", version)
+    if not match or tuple(map(int, match.groups())) < (4, 13, 1):
+        return []
+    probe = _run_git(root, "rev-parse", "--show-toplevel")
+    if probe.returncode != 0 or not probe.stdout.strip():
+        return ["v4.13.1 project root needs a real Git worktree identity"]
+    git_root = Path(probe.stdout.strip()).resolve()
+    if root.resolve() == git_root:
+        return []
+    try:
+        rel = root.resolve().relative_to(git_root).as_posix()
+    except ValueError:
+        return ["project root is outside its Git repository"]
+    owner = git_root / ".dev-standard" / "PROJECT_OVERRIDES.md"
+    if not (git_root / "AGENTS.md").is_file() or not (git_root / ".dev-standard" / "VERSION").is_file() or not owner.is_file():
+        return ["nested project root requires approved monorepo root adoption files"]
+    settings = operative_markdown_lines(owner.read_text(encoding="utf-8"))
+    profile = [s.partition(":")[2].strip() for s in settings if s.strip().startswith("- Repository profile:")]
+    allowed = [s.partition(":")[2].strip() for s in settings if s.strip().startswith("- v4.approved_subroots:")]
+    if profile != ["monorepo"] or len(allowed) != 1 or rel not in [x.strip() for x in allowed[0].split(",")]:
+        return ["nested project root not explicitly approved by Git-root monorepo overrides"]
+    return []
 
 
 def verify_v4_adoption_level(identity: dict[str, str], override_file: Path) -> list[str]:
@@ -41,7 +88,8 @@ def verify_v4_adoption_level(identity: dict[str, str], override_file: Path) -> l
         return [f"cannot read .dev-standard/PROJECT_OVERRIDES.md: {exc}"]
     values = [
         found.group(1).strip().strip("\`").strip()
-        for found in V4_LEVEL_LINE_RE.finditer(content)
+        for line in operative_markdown_lines(content)
+        if (found := V4_LEVEL_LINE_RE.fullmatch(line))
     ]
     if len(values) != 1:
         return [
@@ -206,6 +254,7 @@ def verify_project(
 
     if not errors:
         errors.extend(verify_v4_adoption_level(identity, override_file))
+        errors.extend(verify_v4_root_binding(root, identity))
 
     if errors:
         return errors

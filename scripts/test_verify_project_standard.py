@@ -183,6 +183,22 @@ CASES = [
         diagnostic="invalid v4.adoption_level",
     ),
 
+    Case(
+        name="v4 only fenced example adoption rejected",
+        version_text=("repository=kaicreator-mm/ai-development-standard\\n"
+            "version=4.13.1\\n"
+            f"revision={VALID_REVISION}\\n"),
+        override_text="# Project Overrides\\n```yaml\\n- v4.adoption_level: A0_COMPATIBILITY\\n```\\n",
+        expected_code=1, expected_status="FAIL",
+        diagnostic="requires exactly one explicit v4.adoption_level",
+    ),
+    Case(
+        name="v4 real level plus fenced example accepted",
+        version_text=("repository=kaicreator-mm/ai-development-standard\\n"
+            "version=4.13.1\\n"
+            f"revision={VALID_REVISION}\\n"),
+        override_text="# Project Overrides\\n- v4.adoption_level: A0_COMPATIBILITY\\n```md\\n- v4.adoption_level: A3_DERIVED_AUTOMATION\\n```\\n",
+    ),
 ]
 
 
@@ -190,6 +206,14 @@ def write_project(root: Path, case: Case) -> None:
     standard_dir = root / ".dev-standard"
     standard_dir.mkdir()
     (standard_dir / "VERSION").write_text(case.version_text, encoding="utf-8")
+    # New v4.13.1 Git-root precondition; old v1/v3 tests stay standalone.
+    if "version=4.13.1" in case.version_text:
+        existing = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+            capture_output=True, check=False
+        )
+        if existing.returncode != 0:
+            subprocess.run(["git", "-C", str(root), "init", "-q"], check=True)
     if case.include_overrides:
         (standard_dir / "PROJECT_OVERRIDES.md").write_text(
             case.override_text, encoding="utf-8"
@@ -232,6 +256,50 @@ def create_standard_repo(root: Path, version: str = "3.1.0") -> str:
 
 
 class ProjectVerifierRegressionTests(unittest.TestCase):
+    def test_v4131_nested_fixture_rejected_and_approved_monorepo_allowed(self) -> None:
+        version = (
+            "repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"
+        )
+        case = Case(
+            name="nested fixture",
+            version_text=version,
+            override_text="# Project Overrides\n- v4.adoption_level: A0_COMPATIBILITY\n",
+        )
+        with tempfile.TemporaryDirectory(prefix="v4131-monorepo-") as temp:
+            root = Path(temp)
+            subprocess.run(["git", "-C", str(root), "init", "-q"], check=True)
+            nested = root / "samples" / "demo"
+            nested.mkdir(parents=True)
+            write_project(nested, case)
+            def verify():
+                return subprocess.run(
+                    [sys.executable, str(SCRIPT), str(nested)],
+                    text=True, capture_output=True, check=False
+                )
+            result = verify()
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("nested project root requires approved", result.stdout)
+            (root / "AGENTS.md").write_text("# Git-root adoption\n", encoding="utf-8")
+            (root / ".dev-standard").mkdir()
+            (root / ".dev-standard" / "VERSION").write_text(version, encoding="utf-8")
+            (root / ".dev-standard" / "PROJECT_OVERRIDES.md").write_text(
+                "# Root monorepo config\n"
+                "- Repository profile: monorepo\n"
+                "- v4.approved_subroots: samples/demo\n"
+                "- v4.adoption_level: A0_COMPATIBILITY\n", encoding="utf-8"
+            )
+            result = verify()
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            (root / ".dev-standard" / "PROJECT_OVERRIDES.md").write_text(
+                "# Root monorepo config\n- Repository profile: monorepo\n"
+                "- v4.approved_subroots: another/directory\n", encoding="utf-8"
+            )
+            result = verify()
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("not explicitly approved", result.stdout)
+
     def test_structural_regression_cases(self) -> None:
         for case in CASES:
             with self.subTest(case=case.name):

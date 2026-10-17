@@ -76,16 +76,27 @@ def verify(root: Path) -> list[str]:
         and tuple(map(int, version_match.groups())) >= (4, 13, 1)
     )
     if needs_required_checks and profile in {"minimal", "custom"}:
-        selected = bullet(text, "Required CI checks")
-        if (
-            not selected
-            or placeholder(selected)
-            or na(selected)
-            or selected.strip().upper() in {"UNKNOWN", "NONE", "TBD", "PENDING"}
-        ):
-            errors.append(
-                "v4.13.1 enabled CI requires concrete predeclared Required CI checks"
-            )
+        import re
+        lines = [line for line in text.splitlines()
+                 if line.startswith("- Required CI checks:")]
+        # Every selected check must be a concrete provider/check identity. There
+        # is no globally mandated provider and no truth claim about timestamps.
+        if len(lines) != 1:
+            errors.append("v4.13.1 requires exactly one Required CI checks declaration")
+        else:
+            selected = lines[0].partition(":")[2].strip()
+            names = [name.strip() for name in selected.split(",")]
+            if (
+                placeholder(selected) or na(selected)
+                or not names or len(set(names)) != len(names)
+                or any(not re.fullmatch(
+                    r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.: -]+)+", name
+                ) for name in names)
+            ):
+                errors.append(
+                    "v4.13.1 enabled CI requires concrete provider/check names "
+                    "in Required CI checks"
+                )
 
     return errors
 
