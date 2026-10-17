@@ -203,6 +203,14 @@ v4 不要求把 v3.4 durable history 重写成新协议：
 
 历史 v3.4 PASS / FAIL / CHANGES_REQUESTED 必须保留原始 subject identity 与 status。迁移到 v4 不得把历史 evidence 宣称为“已经经过 v4 machine contract”。完整迁移矩阵见 `docs/implementation/4.0.0/MIGRATION_ADOPTION_GUIDE.md`。
 
+### 2.3A v4.13.1 — Executable adopter admission (bounded maintenance)
+
+A consumer claiming **repository-root ADS v4 adoption** MUST run the pinned source's `scripts/verify_project_standard.py <project-root>` (or an equivalent verifier) against the actual *adopted project root* and reject missing, ambiguous, placeholder or unsupported `v4.adoption_level`. A merely present `PROJECT_OVERRIDES.md` or an embedded sample under another repository does not satisfy root adoption. The parser accepts one explicit `v4.adoption_level` A0–A4 declaration; unqualified v1/v3 historical pins retain their previous structural contract. Exact revision resolution remains separate and is `NOT_RUN` unless actually performed. An adapter MAY support explicit independently approved monorepo roots, but MUST bind the declared root to a real project/repository identity instead of assuming nested fixture proof applies to the enclosing repository.
+
+This is an enforcement of the existing §2.2 MUST, not a new gate status, adoption level or Tally runtime requirement.
+
+**Field-validation acceptance identity:** A consumer's original whole-process `verification_objective`, its required evidence matrix, and the narrower source-only `release_subject` MUST be recorded separately before executing tests. A release-controller MAY qualify an isolated source artifact under existing `RELEASE_STANDARD.md` §6/§11, but MUST NOT describe that as a full adopter/native DAG/CI-provider/Tally validation PASS if the original objective included unexecuted cases. Unknown original acceptance remains `HOLD / NOT_PROVEN` in the report; no new gate state or retrospective v4.13.0 change is introduced.
+
 ### 2.4 Fast Path 与 adoption level 正交
 
 Fast Path 可以在 A0–A4 任一级使用：

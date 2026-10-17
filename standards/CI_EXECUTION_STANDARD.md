@@ -21,6 +21,8 @@ A workflow can have correct validation commands but still be invalid for a selec
 
 Every project whose CI profile is `minimal` or `custom` SHOULD declare an auditable CI Execution Profile in `.dev-standard/PROJECT_OVERRIDES.md`.
 
+**v4.13.1 provider-selection currentness:** an adopting project using a required CI gate MUST identify the **required provider/check names** in its project CI profile **before** consuming the result. The canonical `- Required CI checks: <concrete provider/check name(s)>` field is enforced for v4.13.1+ enabled profiles by the existing project execution-profile verifier. Explicitly classify other observed contexts as informational or separately required under project authority; never infer applicability retrospectively from which provider was green or from an unprotected GitHub branch with zero required status contexts. A failed required provider is `FAIL` and a pending required provider is `NOT_RUN/BLOCKED` per actual predicate, even if another runner passed. A failing provider **not previously required** is not automatically a release Gate; its real failure remains recorded and investigation is not optional if it affects project/product safety. This rule adds no globally mandatory Woodpecker, GitHub Actions or additional CI run.
+
 At minimum the profile SHOULD identify:
 
 ```text
