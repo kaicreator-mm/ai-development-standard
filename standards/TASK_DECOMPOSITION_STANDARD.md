@@ -176,6 +176,15 @@ Before freezing a Task, ask:
 
 ## 14. Failure handling
 
+### 14.1 JIT oversized Task discovered after ACTIVE Claim (#1072)
+
+Before splitting an already ACTIVE Task because of newly discovered independent concerns, the controller MUST first re-read accepted current Claim/operator/Task Pack, all overlapping open PR heads, precise source write sets, native Issue Dependency edges and selected integration candidate. **No second conflicting writer may start** while the original active write ownership is ambiguous. Parallel CI-green PRs are not evidence that multiple overlapping implementations are simultaneously mergeable; source/currentness and actual accepted owning Claim select at most one effective integration writer. Other PRs remain source-bound, read-only historical/reusable evidence unless independently re-admitted on a non-overlapping concern.
+
+The owner decides `PRESERVE_ATOMIC | SPLIT | PARALLEL_EVIDENCE_ONLY` against one actual dependency/write-set map, not a universal file-count threshold. `PRESERVE_ATOMIC` is appropriate when mid-flight split would invalidate frozen contracts, duplicate an active writer, or cost more than continuing one coherent fix. If `SPLIT` is materially warranted: (1) stop/supersede the original writing admission through existing Claim/authority protocol before successor writers start; (2) preserve accepted source/Review/CI identities as immutable historical evidence (not generalized new-SHA PASS); (3) use `TASK_DAG_GOVERNANCE_STANDARD.md` material SPLIT/MERGE/SUPERSEDE mutation, including source-bound Task Packs and **real native GitHub blocked-by forward/reverse readback**; (4) only then issue disjoint Claims/PR concerns; (5) perform one bounded integration/currentness convergence with affected Review/Validation. An inaccessible native mutation keeps the new execution admission `HOLD`, not Markdown-derived READY.
+
+Do not split independent Review/Hidden/Release qualification into Builder authority merely to reduce Task count. Stop repeating expensive full-suite runs on unchanged unrelated work; targeted deltas may reuse genuinely current evidence, while previously required intrinsic security/E3/integration gates remain required. Track unmeasured time/turns as `UNKNOWN` rather than inventing efficiency gains.
+
+
 If concern ownership or atomicity is ambiguous, keep the work unresolved or together until planning authority decides; do not force parallelism.
 
 If removing a dependency would fabricate readiness, reject the decomposition change and use the applicable DAG mutation governance path.
