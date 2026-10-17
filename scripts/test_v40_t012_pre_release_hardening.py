@@ -4,6 +4,7 @@ import copy
 import unittest
 
 from test_protocol_schemas import load_schema, validate_subset
+from v40_t012_pre_release_hardening import validate_aggregation_judgment
 from v40_semantics import (
     validate_assurance_aggregation,
     validate_assurance_semantics,
@@ -133,6 +134,13 @@ class T012PreReleaseHardeningTests(unittest.TestCase):
         a["judgment"] = "MAYBE_PASS"
         self.assertTrue(any("judgment" in error for error in validate_assurance_aggregation(p, a, [])))
         self.assertTrue(any("judgment" in error for error in validate_review_aggregation(a, [], plan=p)))
+
+    def test_u7b_unhashable_judgments_return_structured_refusal(self) -> None:
+        for malformed in ([], {}, ["PASS"], {"status": "PASS"}, None, 1):
+            with self.subTest(malformed=malformed):
+                errors = validate_aggregation_judgment({"judgment": malformed})
+                self.assertTrue(any("judgment" in error for error in errors), errors)
+        self.assertEqual(validate_aggregation_judgment({"judgment": "PASS"}), [])
 
     def test_u8_single_composite_mda_enforces_every_declared_basis(self) -> None:
         cases = {
