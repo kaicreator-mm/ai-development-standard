@@ -525,6 +525,32 @@ class ProtocolSchemaTests(unittest.TestCase):
 class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
     """W9 extension: A11 byte-stable couplings + additive dispatch/state/event fields."""
 
+    def test_dispatch_prepublish_rejects_unknown_profile_and_role_mismatch(self) -> None:
+        # #783: schema-valid-looking transport text cannot be published as
+        # canonical dispatch when the *enriched* object is not schema-valid.
+        schema = load_schema("dispatch.schema.json")
+        for value in (
+            _dispatch_fixture(execution_profile="BUILDER"),
+            _dispatch_fixture(execution_profile="LOCAL_REVIEWER"),
+            _dispatch_fixture(role="builder", execution_profile="WEB_REVIEWER"),
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(validate_subset(value, schema))
+
+    def test_dispatch_prepublish_accepts_canonical_profile_and_preserves_history(self) -> None:
+        # Syntax only. A real producer MUST separately bind pinned schema revision,
+        # serial admission and immutable history before durable publication.
+        schema = load_schema("dispatch.schema.json")
+        original = _dispatch_fixture(execution_profile="LOCAL_BUILDER")
+        self.assertEqual(validate_subset(original, schema), [])
+        invalid_historical = dict(original, execution_profile="BUILDER")
+        self.assertTrue(validate_subset(invalid_historical, schema))
+        corrected = dict(invalid_historical, dispatch_id="D-B", execution_profile="LOCAL_BUILDER")
+        self.assertEqual(validate_subset(corrected, schema), [])
+        # Never normalize or rewrite the already-emitted invalid record in place.
+        self.assertEqual(invalid_historical["execution_profile"], "BUILDER")
+        self.assertNotEqual(corrected["dispatch_id"], invalid_historical["dispatch_id"])
+
     def test_a11_profile_enum_and_role_couplings_are_byte_stable(self) -> None:
         schema = load_schema("dispatch.schema.json")
         assert_supported_schema(schema)
