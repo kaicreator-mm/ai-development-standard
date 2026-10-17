@@ -87,7 +87,7 @@ def verify_v4_adoption_level(identity: dict[str, str], override_file: Path) -> l
     except OSError as exc:
         return [f"cannot read .dev-standard/PROJECT_OVERRIDES.md: {exc}"]
     values = [
-        found.group(1).strip().strip("\`").strip()
+        found.group(1).strip().strip("`").strip()
         for line in operative_markdown_lines(content)
         if (found := V4_LEVEL_LINE_RE.fullmatch(line))
     ]
