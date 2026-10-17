@@ -10,6 +10,12 @@
 - Deployment / team / cost / security constraints
 - Existing research / demo evidence and exact SHAs when available
 
+## 消费 L1 上游证据与向 L3 传递决策（按需）
+
+如果 L1 已保存相关 prior-art/竞品证据，优先 **按原 durable ref** 消费，而非从零重复搜索；逐条核对所需上游 revision、claim 类型、时间敏感性和 Product Freeze 后的适用性。失效/不可读取的证据标记 `STALE/UNKNOWN` 并定向补充，不因“L1 已看过”而推断当前架构证据合格。L1 的产品重叠判断不自动产生架构复用许可。
+
+对确实影响架构的上游能力切片，输出有界 handoff：上游身份/精确检视 ref、可证伪的机制事实或故障案例、采纳的模式/重建/直接复用/自研决定及依据、license/security/compatibility 限制与未知、local contract/边界、预期 L3 测试/反例，绑定本次 Frozen Product 和 L2 当前决策。只选择影响实际 Task 的来源；禁止第二套通用 Research 生命周期或强制全量 history mining。
+
 ## 研究要求
 
 1. 提取最关键的 architecture drivers、invariants 与 **Architecture UNKNOWNs**。

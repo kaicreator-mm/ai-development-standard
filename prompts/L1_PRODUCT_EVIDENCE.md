@@ -87,4 +87,10 @@ Idea/Intent
 - Research selection disposition（`selected` / `inline` / `NO_RESEARCH_REQUIRED`，含所依据的既有证据身份）
 - Decision relevance（这条证据支撑哪个确切 PRD 决策）
 
+### 向 L2 传递上游证据（仅当 prior-art 实质影响 Product）
+
+对本次 Product 决策真正用到的上游项目/竞品，随已有 `Alternatives / Competitors` 输出保留可复用的 **source-bound evidence spine**：项目/官方来源、检视时点与可得的 release/commit/path、单条有界事实与来源（项目声明、源码观察、真实执行/用户证据须区分）、当前性与许可/限制未知、L1 比较/排除结论、尚需在 L2 决策的问题。已有 source ref/Review 可直接引用；**不要**为所有搜索结果创建通用数据库、独立 Artifact 或额外 Gate。
+
+L1 的 `REUSE_CANDIDATE` / 竞争关系只是产品判断，**不得**当作 L2 复用授权、L3 测试 PASS、许可证清除或最新上游源码保证。后续产品方向改变须先按本 prompt 的定向 refresh 规则重估相关证据，不重写历史。
+
 所有时间敏感事实应有可验证来源。不要为了支持既定 idea 过滤反证。
