@@ -209,6 +209,8 @@ A consumer claiming **repository-root ADS v4 adoption** MUST run the pinned sour
 
 This is an enforcement of the existing §2.2 MUST, not a new gate status, adoption level or Tally runtime requirement.
 
+**Field-validation acceptance identity:** A consumer's original whole-process `verification_objective`, its required evidence matrix, and the narrower source-only `release_subject` MUST be recorded separately before executing tests. A release-controller MAY qualify an isolated source artifact under existing `RELEASE_STANDARD.md` §6/§11, but MUST NOT describe that as a full adopter/native DAG/CI-provider/Tally validation PASS if the original objective included unexecuted cases. Unknown original acceptance remains `HOLD / NOT_PROVEN` in the report; no new gate state or retrospective v4.13.0 change is introduced.
+
 ### 2.4 Fast Path 与 adoption level 正交
 
 Fast Path 可以在 A0–A4 任一级使用：
