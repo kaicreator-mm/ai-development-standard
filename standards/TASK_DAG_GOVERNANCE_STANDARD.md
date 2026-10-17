@@ -61,6 +61,8 @@ Before dispatch after a removal, re-evaluate the resulting Task Pack/currentness
 
 Only an executor with the required GitHub/native mutation capability and task authority may change live Issue Dependencies. If that capability is unavailable, create an explicit controller/local handoff. Textual dependency lists are not an acceptable fallback for canonical topology.
 
+**v4.13.1 execution clarification:** for a frozen materialized Task dependency, the native `blocked_by` graph must be both written and *read back* at the current GitHub Issue before dispatch. An empty native list plus a Markdown `BLOCKED_BY` line, two Issues' open/closed states, a local controller reservation, or review of a static fixture is **not** proof of the approved live DAG. With no native write/read capability, record `NATIVE_DAG_NOT_PROVEN` and HOLD affected Task admission; provide one exact scoped GitHub UI/CLI handoff. A controller that incidentally waits for A to close has not thereby qualified the native dependency contract.
+
 ## 8. PR stacks and code ancestry
 
 Stacked PRs are appropriate only for a real unmerged code-baseline dependency. They do not replace Task DAG dependencies.

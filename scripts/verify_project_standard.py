@@ -17,6 +17,42 @@ SEMVER_RE = re.compile(
 SHA40_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
+V4_ADOPTION_LEVELS = {
+    "A0_COMPATIBILITY",
+    "A1_MANUAL_PROTOCOL",
+    "A2_MACHINE_CONTRACTS",
+    "A3_DERIVED_AUTOMATION",
+    "A4_FULL_ORCHESTRATION",
+}
+V4_LEVEL_LINE_RE = re.compile(
+    r"^\s*(?:-\s*)?\`?v4\.adoption_level\`?\s*:\s*(.*?)\s*$", re.MULTILINE
+)
+
+
+def verify_v4_adoption_level(identity: dict[str, str], override_file: Path) -> list[str]:
+    """Check the published v4 MUST only for v4+ adopters, not historic v1/v3."""
+    version = identity.get("version", "")
+    match = re.match(r"^(\d+)\.", version)
+    if not match or int(match.group(1)) < 4:
+        return []
+    try:
+        content = override_file.read_text(encoding="utf-8")
+    except OSError as exc:
+        return [f"cannot read .dev-standard/PROJECT_OVERRIDES.md: {exc}"]
+    values = [
+        found.group(1).strip().strip("\`").strip()
+        for found in V4_LEVEL_LINE_RE.finditer(content)
+    ]
+    if len(values) != 1:
+        return [
+            "v4 adoption requires exactly one explicit v4.adoption_level in "
+            ".dev-standard/PROJECT_OVERRIDES.md"
+        ]
+    if values[0] not in V4_ADOPTION_LEVELS:
+        return [f"invalid v4.adoption_level: {values[0]!r} (expected A0–A4)"]
+    return []
+
+
 def parse_version_identity(path: Path) -> tuple[dict[str, str], list[str]]:
     errors: list[str] = []
     identity: dict[str, str] = {}
@@ -167,6 +203,9 @@ def verify_project(
     if version_file.is_file():
         identity, identity_errors = parse_version_identity(version_file)
         errors.extend(identity_errors)
+
+    if not errors:
+        errors.extend(verify_v4_adoption_level(identity, override_file))
 
     if errors:
         return errors

@@ -1,8 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.13.0`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+当前版本：`v4.13.1`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
 
-> **v4.13.0 范围：ADS Foundation for Tally v2**。本版本仅提供 Organization Development Environment Profile、对外可消费的 GitHub Task/Claim/Agent Attempt 互操作参考、以及源证据约束下的 ADS 兼容升级预备提案 → 项目 opt-in PR → 合并前激活/回滚规范。ADS 保持独立标准仓库；实际 Toolkit、mise/Worktrunk、CLI/Skills/MCP、Agent/多项目调度与跨项目更新器均在 [Tally 项目](https://github.com/kaicreator-mm/tally/issues/55) 独立开发、验证和发布，不作为 ADS v4.13 的发布门槛。FR04 按交付能力验证的现行规范已满足要求，因此没有另增验证引擎。
+> **v4.13.1 范围：v4.13.0 消费项目流程验收定向修复**。仅修复项目接入必需字段校验、原生 DAG 准入事实、CI Provider 预声明与模拟项目验收范围污染；不改变协议/schema，也不新增 Tally Runtime。\n\n> **v4.13.0 范围：ADS Foundation for Tally v2**。本版本仅提供 Organization Development Environment Profile、对外可消费的 GitHub Task/Claim/Agent Attempt 互操作参考、以及源证据约束下的 ADS 兼容升级预备提案 → 项目 opt-in PR → 合并前激活/回滚规范。ADS 保持独立标准仓库；实际 Toolkit、mise/Worktrunk、CLI/Skills/MCP、Agent/多项目调度与跨项目更新器均在 [Tally 项目](https://github.com/kaicreator-mm/tally/issues/55) 独立开发、验证和发布，不作为 ADS v4.13 的发布门槛。FR04 按交付能力验证的现行规范已满足要求，因此没有另增验证引擎。
 
 > **版本历史**：v4.12.1 是已并入源码的维护补丁，但不能仅凭 VERSION/README/CHANGELOG 推断它曾独立 Tag/Release。最近已确认的先前正式发布版本为 [v4.12.0](https://github.com/kaicreator-mm/ai-development-standard/releases/tag/v4.12.0)，发布 SHA `ee8258106547abd2c2d7b9f5e87af9965e430bd2`。v4.13 源码候选保留 v4.12.1 修复，并在本版实际验证中覆盖其适用性。
 

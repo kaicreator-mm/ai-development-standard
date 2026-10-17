@@ -65,6 +65,28 @@ def verify(root: Path) -> list[str]:
             elif placeholder(value) or na(value):
                 errors.append(f"enabled CI requires concrete field: {label}")
 
+    # v4.13.1+: bind selected required checks before any provider result is known.
+    version_path = root / ".dev-standard" / "VERSION"
+    version_match = None
+    if version_path.is_file():
+        import re
+        version_match = re.search(r"^version=(\d+)\.(\d+)\.(\d+)", version_path.read_text(encoding="utf-8"), re.M)
+    needs_required_checks = bool(
+        version_match
+        and tuple(map(int, version_match.groups())) >= (4, 13, 1)
+    )
+    if needs_required_checks and profile in {"minimal", "custom"}:
+        selected = bullet(text, "Required CI checks")
+        if (
+            not selected
+            or placeholder(selected)
+            or na(selected)
+            or selected.strip().upper() in {"UNKNOWN", "NONE", "TBD", "PENDING"}
+        ):
+            errors.append(
+                "v4.13.1 enabled CI requires concrete predeclared Required CI checks"
+            )
+
     return errors
 
 

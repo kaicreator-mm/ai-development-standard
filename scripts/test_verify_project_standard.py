@@ -23,6 +23,7 @@ class Case:
     include_agents: bool = True
     include_overrides: bool = True
     extra_args: tuple[str, ...] = ()
+    override_text: str = "# Project Overrides\n"
     expected_code: int = 0
     expected_status: str = "PASS"
     diagnostic: str = "project standard verification: PASS"
@@ -135,6 +136,53 @@ CASES = [
         expected_status="FAIL",
         diagnostic="missing key in .dev-standard/VERSION: repository",
     ),
+    Case(
+        name="v4 explicit A0 adoption accepted",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n- v4.adoption_level: A0_COMPATIBILITY\n",
+    ),
+    Case(
+        name="v4 without adoption level rejected",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="requires exactly one explicit v4.adoption_level",
+    ),
+    Case(
+        name="v4 placeholder adoption rejected",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n- `v4.adoption_level`: `<A0_COMPATIBILITY | A1_MANUAL_PROTOCOL>`\\n",
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="invalid v4.adoption_level",
+    ),
+    Case(
+        name="v4 duplicate adoption rejected",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n- v4.adoption_level: A0_COMPATIBILITY\n- v4.adoption_level: A1_MANUAL_PROTOCOL\n",
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="requires exactly one explicit v4.adoption_level",
+    ),
+    Case(
+        name="v4 unknown adoption rejected",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n- v4.adoption_level: A5_FAKE\n",
+        expected_code=1,
+        expected_status="FAIL",
+        diagnostic="invalid v4.adoption_level",
+    ),
+
 ]
 
 
@@ -144,7 +192,7 @@ def write_project(root: Path, case: Case) -> None:
     (standard_dir / "VERSION").write_text(case.version_text, encoding="utf-8")
     if case.include_overrides:
         (standard_dir / "PROJECT_OVERRIDES.md").write_text(
-            "# Project Overrides\n", encoding="utf-8"
+            case.override_text, encoding="utf-8"
         )
     if case.include_agents:
         (root / "AGENTS.md").write_text("# AGENTS\n", encoding="utf-8")
