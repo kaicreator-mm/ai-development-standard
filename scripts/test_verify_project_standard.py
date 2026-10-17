@@ -185,19 +185,19 @@ CASES = [
 
     Case(
         name="v4 only fenced example adoption rejected",
-        version_text=("repository=kaicreator-mm/ai-development-standard\\n"
-            "version=4.13.1\\n"
-            f"revision={VALID_REVISION}\\n"),
-        override_text="# Project Overrides\\n```yaml\\n- v4.adoption_level: A0_COMPATIBILITY\\n```\\n",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n```yaml\n- v4.adoption_level: A0_COMPATIBILITY\n```\n",
         expected_code=1, expected_status="FAIL",
         diagnostic="requires exactly one explicit v4.adoption_level",
     ),
     Case(
         name="v4 real level plus fenced example accepted",
-        version_text=("repository=kaicreator-mm/ai-development-standard\\n"
-            "version=4.13.1\\n"
-            f"revision={VALID_REVISION}\\n"),
-        override_text="# Project Overrides\\n- v4.adoption_level: A0_COMPATIBILITY\\n```md\\n- v4.adoption_level: A3_DERIVED_AUTOMATION\\n```\\n",
+        version_text=("repository=kaicreator-mm/ai-development-standard\n"
+            "version=4.13.1\n"
+            f"revision={VALID_REVISION}\n"),
+        override_text="# Project Overrides\n- v4.adoption_level: A0_COMPATIBILITY\n```md\n- v4.adoption_level: A3_DERIVED_AUTOMATION\n```\n",
     ),
 ]
 
