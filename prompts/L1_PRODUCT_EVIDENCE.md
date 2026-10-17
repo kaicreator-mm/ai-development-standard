@@ -28,6 +28,21 @@ Idea/Intent
 - `NO_RESEARCH_REQUIRED` 与 inline 都必须是**如实**结论，不是 waiver：**applicable policy 要求的证据不得因 compact/inline 而被跳过**；已存在等价证据时 MUST 引用其 durable 身份（exact ref/sha），而不是凭印象声称“已足够”。
 - **不得为了形式制造 research ceremony**（空 Research Issue、空 research 分支、为“看起来完整”而补齐的清单）。选择适用性 UNKNOWN 或相互矛盾时 **fail closed**，交给 authority/risk disposition，**不得静默降级**。
 
+## 多项依赖研究时的 L1 收敛（有界、按需）
+
+当 L1 确实包含多个相互阻断的研究/访谈/实验执行项，SHOULD 在已有 Product evidence/Issue 中**显式列出轻量依赖映射**：每项要回答的 Product 问题、现有 source/protocol、前置依赖、实际可用执行方/环境、预期可证伪的 study terminal、当前证据状态和下一项会解锁什么；复杂场景 MAY 用 `L1 Evidence DAG` 作为**阶段投影**，但不强制创建新 DAG 文件/Issue/Review Gate，不得与 Frozen implementation Task DAG 或 GitHub 实际 Task 依赖共用权威。简单 L1 保持 `inline / NO_RESEARCH_REQUIRED`。
+
+为了防止实验基础工具无限加固，只对**影响本次研究真实性/有效性的缺陷**升级其关键路径，按以下四种实质性质做定向 disposition（可用自然语言，不新增机器 Gate 枚举）：
+
+- `EVIDENCE_VALIDITY_BLOCKER`：若不修正，会影响盲法/样本/输入绑定、结果真实性或评分。须在研究结论前修复，或如实 `BLOCKED`。
+- `EXECUTION_BLOCKER`：阻止 frozen protocol 的真实研究执行。修复最小可执行阻碍，或 `BLOCKED`。
+- `OPTIONAL_HARDENING`：仅提升重试效率/扩展功能、不影响此研究有效性；SHOULD defer，不得靠一次额外“可能更稳”的 Review 使研究永久不可结束。
+- `IMPLEMENTATION_CONCERN`：产品/架构之外的通用工具产品化或生产实现；交由后续适用阶段，不得在 L1 偷跑。
+
+**充分性与停止规则：** 已能在现有真实执行环境运行 preregistered protocol、维护真正要求的独立性/输入 currentness、拒绝有效性相关损坏、留存 raw evidence 并产生所需评分输入时，进一步实验平台加固不应自动阻止研究开展。新的、真正可能使结论无效的 P0/P1 发现仍必须处理，不能被“省时间”豁免。
+
+复杂 L1 在决定 Product Freeze 前保留一份可内联的 **convergence snapshot**：`Study/Question | actual status | blocking A/B fact | next minimal evidence | responsible execution capability | deferred C/D | expected Product decision`。这仅提升可观测性，**不会**从“工具 CI 已绿”自动推导 `STUDY_PASS` / Product Freeze / L2 许可。需要真实人或 Host 的原始研究仍是 `NOT_RUN`，不存在虚构 substitute PASS。
+
 ## Product Research 与 Architecture Research 的边界
 
 - **Product Research** 属于 **Stage 1**，发生在 Product Freeze **之前**，回答产品范围/acceptance 层面的 UNKNOWN。
