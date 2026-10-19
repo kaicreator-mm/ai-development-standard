@@ -335,12 +335,12 @@ Beyond schema validity, an event asserting logical-operator authority is admitte
 
 ### 8.2 Current canonical event writer — one Markdown/YAML envelope
 
-All newly emitted structured Agent events MUST use the single latest-only GitHub v2 wrapper, not an older wire marker. **New writers MUST NOT emit v1** (nor any earlier wrapper); the semantic Agent Event v2 payload remains the machine schema within the envelope.
+All newly emitted structured Agent events MUST use the single latest-only GitHub v3 wrapper, not an older wire marker. **New writers MUST NOT emit v1** (nor any earlier wrapper); the semantic Agent Event v2 payload remains the machine schema within the envelope.
 
-**Latest ADS writer contract:** new machine-readable Issue/PR comments MUST use the common first-line marker `<!-- ads:github:v2 -->`, followed by a single fenced YAML mapping with `schema: ads/github/v2`, `kind: event` and `data` containing an existing `ai-dev/event-v2` payload. No separate outer mutation intent is required to publish a canonical event: the authorized writer performs the existing §8.1 source admission and posts this **single event comment** only after admission succeeds.
+**Latest ADS writer contract:** new machine-readable Issue/PR comments MUST use the common first-line marker `<!-- ads:github -->`, followed by a single fenced YAML mapping with `schema: ads/github/v3`, `kind: event` and `data` containing an existing `ai-dev/event-v2` payload. No separate outer mutation intent is required to publish a canonical event: the authorized writer performs the existing §8.1 source admission and posts this **single event comment** only after admission succeeds.
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -351,7 +351,7 @@ data:
   task: "#120"
 ```
 
-The payload is verified by `schemas/agent-event-v2.schema.json`; the common envelope is verified by `schemas/github-document-v2.schema.json`. The self-declared Agent attribution belongs **only to the event payload**, not a redundant wrapper identity. Current data encoding is governed by §16. Format validation alone still grants no Claim, Review, Validation or Gate PASS. **Old `<!-- ai-dev:event:v2 -->` wrapper is not a current writer or reader format**, even though the underlying `ai-dev/event-v2` *payload schema* continues to be reused without a semantic fork.
+The payload is verified by `schemas/agent-event-v2.schema.json`; the common envelope is verified by `schemas/github/v4.14/structured-interaction.schema.json`. The self-declared Agent attribution belongs **only to the event payload**, not a redundant wrapper identity. Current data encoding is governed by §16. Format validation alone still grants no Claim, Review, Validation or Gate PASS. **Old `<!-- ai-dev:event:v2 -->` wrapper is not a current writer or reader format**, even though the underlying `ai-dev/event-v2` *payload schema* continues to be reused without a semantic fork.
 
 ### 8.3 Latest-only reader posture
 
@@ -359,7 +359,7 @@ Historical `ai-dev:event:v1` comments remain valid history and are read-only com
 
 This historical evidence statement does **not** require a v1 decoder in current writer/read tooling.
 
-The current parser and emitter accept **only** the §16 `ads/github/v2` document marker. Older comment markers and free-form contract blocks are **historical GitHub records**, not a requirement on new parsers or writers; no compatibility adapter, re-emission, migration or dual-format acceptance is required. Retaining history is distinct from supporting historical wire formats. The underlying `agent-event-v2` field semantics remain the current canonical event payload.
+The current parser and emitter accept **only** the §16 `ads/github/v3` document marker. Older comment markers and free-form contract blocks are **historical GitHub records**, not a requirement on new parsers or writers; no compatibility adapter, re-emission, migration or dual-format acceptance is required. Retaining history is distinct from supporting historical wire formats. The underlying `agent-event-v2` field semantics remain the current canonical event payload.
 
 ### 8.4 Event families
 
@@ -664,7 +664,7 @@ Adapters SHOULD (1) minimize/redact at source; (2) durably journal source event 
 
 The provider capability/OTel crosswalk, private JSONL examples, suggested SQLite/Postgres index relationships, ten-plus negative cases and implementation handoff checklist are in `references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md`, subordinate to this protocol. Where metadata touches downstream deployed runtime signals or canonical CI evidence, those original standards own the result and this clause owns only the passive execution-side correlation/learning semantics.
 
-### Task Report Publication Contract (immutable manifest v1; Issue comment v2; #1179/#1185)
+### Task Report Publication Contract (immutable manifest v1; Issue comment v3; #1179/#1185)
 
 A Task's GitHub Issue is the **durable discoverability surface**, not an execution log database. An optional separate collector MAY store reports in OSS/S3/MinIO, a drive or an equivalent private document store, and publish **only a compact safe locator/summary** on the owning Issue. A relational database, always-on scheduler or per-step Issue updates are **NOT REQUIRED**. This is a publication **document/Issue-comment convention**, not another `ai-dev:event`, accepted Dispatch/Claim, Task state or Review/Validation/Release authority. The existing Level 1 completion decision note MUST remain satisfied, either by the same summary comment or by its exact already-published comment link: do not create redundant summaries to comply with both clauses.
 
@@ -682,7 +682,7 @@ A Task's GitHub Issue is the **durable discoverability surface**, not an executi
 
 A stored manifest has a **separate SHA-256 calculated over its published bytes**, carried in the Issue comment; it MUST NOT contain a circular self-hash. `report_id` is stable across revisions; a different Attempt or report kind needs a different `report_id`. An `EXECUTION_CORRECTION` is a separately identified report that MUST include `corrects: {\"publication_key\": \"...\", \"manifest_ref\": \"...\", \"sha256\": \"...\"}` pointing to the exact previous publication and reason in its own summary; it does not erase the original evidence. The `corrects` key is otherwise optional and MUST NOT be used to silently revise an unrelated Task. New report revisions are immutable, including associated documents. Consumers MUST preserve any unrecognized future version as unparsed/rejected-for-v1 (not silently coerce it to v1). A v1 reader checks required types and enum semantics; future schema-registration decisions remain subject to interface-compatibility governance.
 
-**Comment classification — latest-only v2.** Only an entire GitHub Issue can carry Labels; they are discovery hints, **not** individual comment classifications. Every new published report is a `<!-- ads:github:v2 -->` Markdown/YAML comment with `kind: report` and direct `data` matching `schemas/github-report-v2.schema.json`. There is no KEY=VALUE header, `<!-- ads:task-report:v1 -->` alternate path, or redundant `PUBLICATION_KEY` property. `report_kind` uses exactly:
+**Comment classification — latest-only v3.** Only an entire GitHub Issue can carry Labels; they are discovery hints, **not** individual comment classifications. Every new published report is a `<!-- ads:github -->` Markdown/YAML comment with `kind: report` and direct `data` matching `schemas/github/v4.14/structured-interaction.schema.json`. There is no KEY=VALUE header, `<!-- ads:task-report:v1 -->` alternate path, or redundant `PUBLICATION_KEY` property. `report_kind` uses exactly:
 
 - `EXECUTION_SUMMARY`: normally one primary summary per terminal Attempt, satisfying or exactly linking the Level 1 decision note;
 - `TASK_LEARNING`: material-only link to actual Task Learning v1/v2;
@@ -759,26 +759,29 @@ At minimum, implementations MUST be able to distinguish:
 
 The rationale and maintained non-conformant examples are in `templates/golden/ANTI_PATTERNS.md`.
 
-## 16. GitHub Structured Interaction Contract v2 — latest-only
+## 16. GitHub Structured Interaction Contract v3 — v4.14 latest-only
 
 **Canonical publication form:** Every **new normalized** GitHub Issue body, canonical Agent Event comment, Task Report comment, or native Issue mutation intent uses one Markdown document form:
 
 ```text
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```
 
-followed immediately by one fenced `yaml` mapping and optional human-facing Markdown. The mapping MUST have **exactly three** top-level keys: `schema: ads/github/v2`, `kind`, `data`. `kind` is one of `work_item | intent | event | report`. There is **one current marker**, one safe YAML grammar, one common shape schema (`schemas/github-document-v2.schema.json`), and one kind-specific semantic/schema resolver. YAML aliases, duplicate keys, tags, unsafe multi-document coercions, ignored unknown kinds and multiple canonical markers are invalid.
+followed immediately by one fenced `yaml` mapping and optional human-facing Markdown. The mapping MUST have **exactly three** top-level keys: `schema: ads/github/v3`, `kind`, `data`. `kind` is one of `work_item | intent | event | report`. There is **one current marker**, one safe YAML loader, one complete discriminated Draft 2020-12 Schema (`schemas/github/v4.14/structured-interaction.schema.json`), and one kind-specific semantic/schema resolver. YAML aliases, duplicate keys, tags, unsafe multi-document coercions, ignored unknown kinds and multiple canonical markers are invalid.
 
 ### 16.1 Typed payload profiles — no double wrapper
 
 | Kind | GitHub surface | Data contract / schema |
 | --- | --- | --- |
 | `work_item` | Canonical Issue body, stable task contract | `data.profile` selects the canonical Issue type; `data.contract` obeys its required profile. `type:task` validates the existing `schemas/task-contract.schema.json`; other Issue types have bounded profile-required fields, checked by the registered verifier. Human context/long acceptance stays Markdown. |
-| `intent` | Agent/tool **request** for a GitHub native Issue mutation | `schemas/github-intent-v2.schema.json` plus operation-specific checks and currentness. The only six actions are `ISSUE_CREATE`, `ISSUE_CONTRACT_UPDATE`, `ISSUE_METADATA_CHANGE`, `ISSUE_DEPENDENCY_CHANGE`, `ISSUE_CLOSE`, `ISSUE_REOPEN`. No separate event/report append operation is permitted. |
+| `intent` | Agent/tool **request** for a GitHub native Issue mutation | `schemas/github/v4.14/structured-interaction.schema.json` plus operation-specific checks and currentness. The only six actions are `ISSUE_CREATE`, `ISSUE_CONTRACT_UPDATE`, `ISSUE_METADATA_CHANGE`, `ISSUE_DEPENDENCY_CHANGE`, `ISSUE_CLOSE`, `ISSUE_REOPEN`. No separate event/report append operation is permitted. |
 | `event` | **One canonical Agent Event comment**, posted by admitted writer | `data` directly satisfies the existing `schemas/agent-event-v2.schema.json`, with the **same** self-declared actor identity and source refs as previously specified. No nested `event` or duplicate operator fields. |
-| `report` | **One Task Report comment** referencing immutable external documents | `data` validates `schemas/github-report-v2.schema.json` with report type/id/revision, attempt ref, durable manifest ref/digest and capture coverage; publication key is derived from owning Issue + report_id + revision, **not duplicated** in YAML. |
+| `report` | **One Task Report comment** referencing immutable external documents | `data` validates `schemas/github/v4.14/structured-interaction.schema.json` with report type/id/revision, attempt ref, durable manifest ref/digest and capture coverage; publication key is derived from owning Issue + report_id + revision, **not duplicated** in YAML. |
 
-The latest parser/CLI `scripts/verify_github_structured_interaction.py` handles the four kinds, rejects older format markers and returns `SHAPE_VALID_ONLY` or `INVALID_SCHEMA` for declared normative records. Plain unmarked discussion is not an operation. It supports a bounded, deterministic safe YAML mapping and scalar-list profile; richer syntax is not implicitly accepted. `scripts/test_github_structured_interaction.py` covers all kinds and six mutation actions with negative cases. See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md`.
+The latest parser/CLI `scripts/verify_github_structured_interaction.py` uses PyYAML SafeLoader + a standard `jsonschema.Draft202012Validator` with **offline** local `$ref` registry for the existing Task/Event source Schemas; it rejects older format markers and returns `SHAPE_VALID_ONLY` or `INVALID_SCHEMA` for declared normative records. Plain unmarked discussion is not an operation. It supports a safe nested YAML mapping/list profile (duplicate keys/anchors/unsafe tags rejected); richer syntax is not implicitly accepted. `scripts/test_github_structured_interaction.py` covers all kinds and six mutation actions with negative cases. See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md`.
+
+
+**v4.14 Schema/authority boundary:** The single `schemas/github/v4.14/structured-interaction.schema.json` contains the full structural `oneOf` dispatch, ten Work Item contract profiles, six typed Issue mutation payloads and conditional correction report. The strict source-only validator **does not copy** their field lists in Python. `SHAPE_VALID_ONLY` is not an admitted operation. Equality against live native GitHub state, true source-currentness, self-dependency cycles, no-op changes, authorized Claim and review/CI/release facts are **dynamic rules that JSON Schema cannot prove**, hence remain in the existing GitHub owner/currentness checks. Neither side may silently substitute for the other.
 
 ### 16.2 GitHub facts and authority are never in a second writable YAML state
 
