@@ -335,6 +335,8 @@ Beyond schema validity, an event asserting logical-operator authority is admitte
 
 ### 8.2 Current canonical event writer — one Markdown/YAML envelope
 
+All newly emitted structured Agent events MUST use the single latest-only GitHub v2 wrapper, not an older wire marker. **New writers MUST NOT emit v1** (nor any earlier wrapper); the semantic Agent Event v2 payload remains the machine schema within the envelope.
+
 **Latest ADS writer contract:** new machine-readable Issue/PR comments MUST use the common first-line marker `<!-- ads:github:v2 -->`, followed by a single fenced YAML mapping with `schema: ads/github/v2`, `kind: event` and `data` containing an existing `ai-dev/event-v2` payload. No separate outer mutation intent is required to publish a canonical event: the authorized writer performs the existing §8.1 source admission and posts this **single event comment** only after admission succeeds.
 
 ```yaml
