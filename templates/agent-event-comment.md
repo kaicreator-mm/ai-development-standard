@@ -4,33 +4,36 @@ Use this format for machine-readable Planner / Builder / Reviewer / Validator / 
 
 ## Event schema version
 
-New events under standard v3.1+ SHOULD use:
+All newly authored Agent Event comments on current ADS MUST use the **single latest-only** GitHub v2 document wrapper. The original Event v2 payload schema is retained within `data` (no double event-intent). Emit the marker as the first line of the actual comment:
 
 ```html
-<!-- ai-dev:event:v2 -->
+<!-- ads:github:v2 -->
 ```
 
-Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
+These examples are event payloads wrapped in a current Markdown/YAML document. Historical markers are **not** current parser inputs; GitHub existing records remain historical facts without a parser compatibility obligation.
 
 ## Actor / operator attribution
 
 GitHub comment author is a **transport identity** and may be the same account for ChatGPT Web, Local Agent and human actions. Every v2 event therefore separates workflow role from logical operator identity.
 
 ```yaml
-schema: ai-dev/event-v2
-event: <EVENT_TYPE>
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: <EVENT_TYPE>
 
-actor_role: <planner | builder | reviewer | validator | scheduler | merge-controller | release-controller | repository-integration-controller>
-operator_kind: <chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other>
-operator_id: "<kind>:<project-local-operator-id>"
-session_ref: "<opaque session/page/run alias>" # SHOULD be present when concurrent sessions are possible
-transport_actor: "github:<account>"            # SHOULD be present when one GitHub account fronts multiple operators
+  actor_role: <planner | builder | reviewer | validator | scheduler | merge-controller | release-controller | repository-integration-controller>
+  operator_kind: <chatgpt-web | codex | claude-code | human | github-actions | woodpecker | other>
+  operator_id: "<kind>:<project-local-operator-id>"
+  session_ref: "<opaque session/page/run alias>" # SHOULD be present when concurrent sessions are possible
+  transport_actor: "github:<account>"            # SHOULD be present when one GitHub account fronts multiple operators
 
-task: "#<issue>"                               # omit when not applicable
-pr: "#<pr>"                                    # omit when not applicable
-sha: "<40-char-sha>"                           # omit only when no exact code identity applies
-status: <PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE>
-next_state: <planned | ready | implementing | review-ready | reviewing | changes-requested | validation-needed | merge-ready | blocked | done> # omit when not applicable
+  task: "#<issue>"                               # omit when not applicable
+  pr: "#<pr>"                                    # omit when not applicable
+  sha: "<40-char-sha>"                           # omit only when no exact code identity applies
+  status: <PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE>
+  next_state: <planned | ready | implementing | review-ready | reviewing | changes-requested | validation-needed | merge-ready | blocked | done> # omit when not applicable
 ```
 
 Identity rules:
@@ -68,18 +71,21 @@ The same operator MAY act in different roles on different work items. Role and o
 For substantial or concurrent work, publish a role claim before beginning:
 
 ```yaml
-schema: ai-dev/event-v2
-event: ROLE_CLAIMED
-actor_role: reviewer
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-b"
-session_ref: "reviewer-b-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<head-sha>"
-status: NOT_RUN
-next_state: reviewing
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: ROLE_CLAIMED
+  actor_role: reviewer
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-b"
+  session_ref: "reviewer-b-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<head-sha>"
+  status: NOT_RUN
+  next_state: reviewing
 ```
 
 When intentionally handing off or abandoning the role before a normal result event, publish `ROLE_RELEASED` with a short reason.
@@ -93,23 +99,26 @@ When intentionally handing off or abandoning the role before a normal result eve
 For a Task whose Review Policy routes to a Reviewer:
 
 ```yaml
-schema: ai-dev/event-v2
-event: IMPLEMENTATION_READY
-actor_role: builder
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-a"
-session_ref: "builder-a-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<head-sha>"
-status: PASS
-review_policy: required
-validation:
-  unit: PASS
-  contract: PASS
-  integration: NOT_APPLICABLE
-next_state: review-ready
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: IMPLEMENTATION_READY
+  actor_role: builder
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-a"
+  session_ref: "builder-a-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<head-sha>"
+  status: PASS
+  review_policy: required
+  validation:
+    unit: PASS
+    contract: PASS
+    integration: NOT_APPLICABLE
+  next_state: review-ready
 ```
 
 For `review:not-required`, or `review:recommended` when optional review is explicitly skipped, the Task may route directly toward merge readiness once all other required prerequisites are satisfied. Record the policy/decision rather than fabricating a Review PASS.
@@ -119,41 +128,47 @@ For `review:not-required`, or `review:recommended` when optional review is expli
 Recommended review explicitly skipped:
 
 ```yaml
-schema: ai-dev/event-v2
-event: REVIEW_DECISION
-actor_role: merge-controller
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-a"
-session_ref: "builder-a-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<head-sha>"
-review_policy: recommended
-decision: skipped
-status: NOT_RUN
-reason: <why optional review is not being invoked for this merge candidate>
-next_state: merge-ready
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: REVIEW_DECISION
+  actor_role: merge-controller
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-a"
+  session_ref: "builder-a-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<head-sha>"
+  review_policy: recommended
+  decision: skipped
+  status: NOT_RUN
+  reason: <why optional review is not being invoked for this merge candidate>
+  next_state: merge-ready
 ```
 
 Review not required by declared policy:
 
 ```yaml
-schema: ai-dev/event-v2
-event: REVIEW_DECISION
-actor_role: merge-controller
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-a"
-session_ref: "builder-a-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<head-sha>"
-review_policy: not-required
-decision: not-applicable
-status: NOT_APPLICABLE
-reason: <authority/risk rationale or Task policy reference>
-next_state: merge-ready
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: REVIEW_DECISION
+  actor_role: merge-controller
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-a"
+  session_ref: "builder-a-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<head-sha>"
+  review_policy: not-required
+  decision: not-applicable
+  status: NOT_APPLICABLE
+  reason: <authority/risk rationale or Task policy reference>
+  next_state: merge-ready
 ```
 
 `next_state: merge-ready` is valid only when all other required merge prerequisites are satisfied.
@@ -161,42 +176,45 @@ next_state: merge-ready
 ## REVIEW_RESULT example
 
 ```yaml
-schema: ai-dev/event-v2
-event: REVIEW_RESULT
-actor_role: reviewer
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-b"
-session_ref: "reviewer-b-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<reviewed-head-sha>"
-review_policy: required
-status: FAIL
-findings:
-  p0: 0
-  p1: 1
-  p2: 2
-  p3: 0
-  records:
-    - finding_id: "RV-1"
-      severity: P1
-      root_defect_class: IMPLEMENTATION_DEFECT
-      evidence_refs:
-        - "<PR comment / file:line / evidence ref>"
-    - finding_id: "RV-2"
-      severity: P2
-      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
-      evidence_refs:
-        - "<PR comment / file:line / evidence ref>"
-    - finding_id: "RV-3"
-      severity: P2
-      root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
-      evidence_refs:
-        - "<PR comment / file:line / evidence ref>"
-      duplicate_of: "RV-2"
-local_validation_required: false
-next_state: changes-requested
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: REVIEW_RESULT
+  actor_role: reviewer
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-b"
+  session_ref: "reviewer-b-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<reviewed-head-sha>"
+  review_policy: required
+  status: FAIL
+  findings:
+    p0: 0
+    p1: 1
+    p2: 2
+    p3: 0
+    records:
+      - finding_id: "RV-1"
+        severity: P1
+        root_defect_class: IMPLEMENTATION_DEFECT
+        evidence_refs:
+          - "<PR comment / file:line / evidence ref>"
+      - finding_id: "RV-2"
+        severity: P2
+        root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+        evidence_refs:
+          - "<PR comment / file:line / evidence ref>"
+      - finding_id: "RV-3"
+        severity: P2
+        root_defect_class: TEST_FIXTURE_EVIDENCE_DEFECT
+        evidence_refs:
+          - "<PR comment / file:line / evidence ref>"
+        duplicate_of: "RV-2"
+  local_validation_required: false
+  next_state: changes-requested
 ```
 
 `findings.records` is the machine projection for material findings in newly emitted `REVIEW_RESULT` events and is REQUIRED for new material findings (`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.2): stable `finding_id`, `severity` (`P0`–`P3`), `root_defect_class` (the `DEVELOPMENT_WORKFLOW.md` §4 projection), `evidence_refs`, and `duplicate_of` linkage when the same logical defect was already reported under a different finding id. The bucket counts of a newly emitted event MUST equal the per-severity record counts (`p1: 1` + `p2: 2` ⇔ exactly one `P1` record and two `P2` records above); duplicate records count in the emitting event's buckets. A later reconciliation of independently emitted findings uses the existing `review-finding-v1` durable `DUPLICATE` disposition, not a rewritten event. Historical payloads without `records` remain valid history but never satisfy the new-writer contract.
@@ -218,21 +236,24 @@ For required Independent Review, Reviewer attribution MUST identify a context in
 ## FIX_APPLIED example
 
 ```yaml
-schema: ai-dev/event-v2
-event: FIX_APPLIED
-actor_role: builder
-operator_kind: codex
-operator_id: "codex:ubuntu-build-01"
-session_ref: "codex-run-20260918-01"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<new-head-sha>"
-previous_sha: "<previous-reviewed-sha>"
-addresses:
-  - P1-1
-status: PASS
-next_state: review-ready
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: FIX_APPLIED
+  actor_role: builder
+  operator_kind: codex
+  operator_id: "codex:ubuntu-build-01"
+  session_ref: "codex-run-20260918-01"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<new-head-sha>"
+  previous_sha: "<previous-reviewed-sha>"
+  addresses:
+    - P1-1
+  status: PASS
+  next_state: review-ready
 ```
 
 When Review Policy is `not-required`, or optional review will not be resumed, `next_state` SHOULD follow the actual workflow instead of mechanically returning to `review-ready`.
@@ -240,43 +261,49 @@ When Review Policy is `not-required`, or optional review will not be resumed, `n
 ## VALIDATION_REQUEST example
 
 ```yaml
-schema: ai-dev/event-v2
-event: VALIDATION_REQUEST
-actor_role: reviewer
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-b"
-session_ref: "reviewer-b-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<target-sha>"
-status: BLOCKED
-gate: platform
-environment: windows
-reason: <why static review cannot establish the fact>
-next_state: validation-needed
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: VALIDATION_REQUEST
+  actor_role: reviewer
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-b"
+  session_ref: "reviewer-b-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<target-sha>"
+  status: BLOCKED
+  gate: platform
+  environment: windows
+  reason: <why static review cannot establish the fact>
+  next_state: validation-needed
 ```
 
 ## VALIDATION_RESULT example
 
 ```yaml
-schema: ai-dev/event-v2
-event: VALIDATION_RESULT
-actor_role: validator
-operator_kind: codex
-operator_id: "codex:windows-build-01"
-session_ref: "codex-run-20260918-02"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<tested-sha>"
-status: PASS
-gate: platform
-environment: windows
-command: <exact command or canonical entrypoint>
-exit_code: 0
-evidence: <report/log/ref>
-next_state: review-ready
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: VALIDATION_RESULT
+  actor_role: validator
+  operator_kind: codex
+  operator_id: "codex:windows-build-01"
+  session_ref: "codex-run-20260918-02"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<tested-sha>"
+  status: PASS
+  gate: platform
+  environment: windows
+  command: <exact command or canonical entrypoint>
+  exit_code: 0
+  evidence: <report/log/ref>
+  next_state: review-ready
 ```
 
 After validation, route back to `review-ready` only when the Task Review Policy still requires/resumes review. Otherwise route according to the remaining required gates and merge policy.
@@ -284,19 +311,22 @@ After validation, route back to `review-ready` only when the Task Review Policy 
 ## MERGE_RESULT example
 
 ```yaml
-schema: ai-dev/event-v2
-event: MERGE_RESULT
-actor_role: merge-controller
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-a"
-session_ref: "builder-a-20260918"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-sha: "<merged/integration-sha>"
-status: PASS
-target: version/v0.1.0
-next_state: done
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: MERGE_RESULT
+  actor_role: merge-controller
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-a"
+  session_ref: "builder-a-20260918"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  sha: "<merged/integration-sha>"
+  status: PASS
+  target: version/v0.1.0
+  next_state: done
 ```
 
 ## DISPATCH_CLAIMED example (v3.4 pull workers)
@@ -304,20 +334,23 @@ next_state: done
 A pull worker claims a READY dispatch and verifies exact identity before executing. `dispatch_state` is `CLAIMED`; `actor_role` is the claiming worker role.
 
 ```yaml
-schema: ai-dev/event-v2
-event: DISPATCH_CLAIMED
-actor_role: validator
-operator_kind: claude-code
-operator_id: "claude-code:windows-01"
-session_ref: "validator-run-20260922"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-pr: "#42"
-dispatch_id: "<dispatch-id>"
-dispatch_state: CLAIMED
-execution_profile: LOCAL_VALIDATOR
-sha: "<requested-head-sha>"
-requested_head_sha: "<requested-head-sha>"
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: DISPATCH_CLAIMED
+  actor_role: validator
+  operator_kind: claude-code
+  operator_id: "claude-code:windows-01"
+  session_ref: "validator-run-20260922"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  pr: "#42"
+  dispatch_id: "<dispatch-id>"
+  dispatch_state: CLAIMED
+  execution_profile: LOCAL_VALIDATOR
+  sha: "<requested-head-sha>"
+  requested_head_sha: "<requested-head-sha>"
 ```
 
 Duplicate claims from a different logical operator are rejected; the same operator re-claiming is idempotent.
@@ -333,39 +366,45 @@ When a dispatch carries delegated subwork or a responsibility handoff (`EXECUTIO
 Delegated child dispatch (`DELEGATED_SUBWORK` — delegator retains responsibility):
 
 ```yaml
-schema: ai-dev/event-v2
-event: DISPATCH_CLAIMED
-actor_role: builder
-operator_kind: claude-code
-operator_id: "claude-code:windows-01"
-session_ref: "builder-child-20261006"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-dispatch_id: "<child-dispatch-id>"
-dispatch_state: CLAIMED
-execution_profile: LOCAL_BUILDER
-sha: "<requested-head-sha>"
-parent_dispatch_ref: "<parent-dispatch-id>"
-responsibility_mode: DELEGATED_SUBWORK
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: DISPATCH_CLAIMED
+  actor_role: builder
+  operator_kind: claude-code
+  operator_id: "claude-code:windows-01"
+  session_ref: "builder-child-20261006"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  dispatch_id: "<child-dispatch-id>"
+  dispatch_state: CLAIMED
+  execution_profile: LOCAL_BUILDER
+  sha: "<requested-head-sha>"
+  parent_dispatch_ref: "<parent-dispatch-id>"
+  responsibility_mode: DELEGATED_SUBWORK
 ```
 
 Responsibility handoff claim (`RESPONSIBILITY_HANDOFF` — active responsibility/control transfers; the dispatch object durably names transferor `created_by` and receiver `claimed_by`):
 
 ```yaml
-schema: ai-dev/event-v2
-event: DISPATCH_CLAIMED
-actor_role: builder
-operator_kind: codex
-operator_id: "codex:ubuntu-build-01"
-session_ref: "codex-run-20261006-01"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-dispatch_id: "<handoff-dispatch-id>"
-dispatch_state: CLAIMED
-execution_profile: LOCAL_BUILDER
-sha: "<requested-head-sha>"
-parent_dispatch_ref: "<transferor-dispatch-id>"
-responsibility_mode: RESPONSIBILITY_HANDOFF
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: DISPATCH_CLAIMED
+  actor_role: builder
+  operator_kind: codex
+  operator_id: "codex:ubuntu-build-01"
+  session_ref: "codex-run-20261006-01"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  dispatch_id: "<handoff-dispatch-id>"
+  dispatch_state: CLAIMED
+  execution_profile: LOCAL_BUILDER
+  sha: "<requested-head-sha>"
+  parent_dispatch_ref: "<transferor-dispatch-id>"
+  responsibility_mode: RESPONSIBILITY_HANDOFF
 ```
 
 A `RESPONSIBILITY_HANDOFF` without transferor, receiver, scope and exact work identity durably named is invalid and fails closed; a second active handoff of the same work identity is rejected like any incompatible second claim. These fields create no authority.
@@ -375,17 +414,20 @@ A `RESPONSIBILITY_HANDOFF` without transferor, receiver, scope and exact work id
 Derived Execution Pack classification change (`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`), published by scheduler or the claiming builder. Fail closed; never silently rewrite `base_sha`.
 
 ```yaml
-schema: ai-dev/event-v2
-event: EXECUTION_PACK_STATE_CHANGED
-actor_role: scheduler
-operator_kind: chatgpt-web
-operator_id: "chatgpt-web:web-a"
-transport_actor: "github:kaicreator-mm"
-task: "#31"
-execution_pack_ref: "<pack-id>"
-pack_state: PACK_STALE_MATERIAL
-reason: "integration advanced; delta overlaps pack material inputs"
-next_state: blocked
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: EXECUTION_PACK_STATE_CHANGED
+  actor_role: scheduler
+  operator_kind: chatgpt-web
+  operator_id: "chatgpt-web:web-a"
+  transport_actor: "github:kaicreator-mm"
+  task: "#31"
+  execution_pack_ref: "<pack-id>"
+  pack_state: PACK_STALE_MATERIAL
+  reason: "integration advanced; delta overlaps pack material inputs"
+  next_state: blocked
 ```
 
 Important history SHOULD be append-oriented. Publish a corrective event instead of silently rewriting a materially wrong prior event.
