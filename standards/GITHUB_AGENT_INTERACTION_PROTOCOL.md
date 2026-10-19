@@ -769,7 +769,7 @@ The rationale and maintained non-conformant examples are in `templates/golden/AN
 
 ## 16. GitHub Structured Interaction Contract v1 — typed Markdown/YAML carrier (#1181)
 
-**Scope.** A normalized GitHub Issue interaction MUST have a machine-verifiable data contract appropriate to its **owning** semantic operation, but **not** a unique schema for every GitHub REST endpoint. This is an additive, **opt-in prospective** structured carrier, not a retroactive rewrite of historical Issue bodies, unstructured discussions or a new accepted state/event/gate. The normative Issue body, Issue Type/Labels, Issue Dependencies, Comment/Event history, PR and exact source retain the ownership in ``2–12.
+**Scope.** A normalized GitHub Issue interaction MUST have a machine-verifiable data contract appropriate to its **owning** semantic operation, but **not** a unique schema for every GitHub REST endpoint. This is an additive, **opt-in prospective** structured carrier, not a retroactive rewrite of historical Issue bodies, unstructured discussions or a new accepted state/event/gate. The normative Issue body, Issue Type/Labels, Issue Dependencies, Comment/Event history, PR and exact source retain the ownership in the existing GitHub Work Item Contract §§2–12.
 
 ### 16.1 Machine contract layers
 
@@ -785,10 +785,10 @@ The rationale and maintained non-conformant examples are in `templates/golden/AN
 | --- | --- | --- |
 | `ISSUE_CREATE` | Work Item v1 type/contract; absent prior Issue/currentness | Work Item type/contract, actual GitHub create result |
 | `ISSUE_CONTRACT_UPDATE` | new Work Item v1 contract + old contract ref + reason + current source ref | Issue frozen Contract authority; never amend Product/L2 via a Task-body update |
-| `ISSUE_METADATA_CHANGE` | typed prior/next values for native type/state/review/risk, labels/milestone/title | GitHub native current object and ``4–7/12 protected workflow state, especially `ready→claimed` |
+| `ISSUE_METADATA_CHANGE` | typed prior/next values for native type/state/review/risk, labels/milestone/title | GitHub native current object and the existing Work Item Contract §§4–7/12 protected workflow state, especially `ready→claimed` |
 | `ISSUE_DEPENDENCY_CHANGE` | native dependency add/remove + exact other Issue ref | GitHub Issue Dependencies and `TASK_DAG_GOVERNANCE_STANDARD.md`; never sub-issue hierarchy |
-| `ISSUE_COMMENT_EVENT` | nested **existing Agent Event v2** shape | `GITHUB_AGENT_INTERACTION_PROTOCOL.md` `8 source admission / event writer / actual Issue event |
-| `ISSUE_COMMENT_REPORT` | existing Task Report Publication v1 fields and manifest digest | `GITHUB_AGENT_INTERACTION_PROTOCOL.md` `10 publication/Level 1; no new result owner |
+| `ISSUE_COMMENT_EVENT` | nested **existing Agent Event v2** shape | this protocol's §8 source admission / event writer / actual Issue event |
+| `ISSUE_COMMENT_REPORT` | existing Task Report Publication v1 fields and manifest digest | this protocol's §10 publication/Level 1; no new result owner |
 | `ISSUE_CLOSE` / `ISSUE_REOPEN` | exact issue/currentness, reason and evidence refs | Current Work Item+Gate+merge result and native Issue state; no fabricated PASS |
 | Ordinary untagged Issue discussion | no normalized-operation declaration | Free Markdown; never a Task mutation/event. |
 
