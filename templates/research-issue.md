@@ -1,3 +1,16 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:research
+  contract:
+    question: "Falsifiable question"
+    scope: "Bounded research question and evidence"
+    acceptance:
+      - "Source-linked research result"
+```
+
 # Research — <question>
 
 ## Contract
