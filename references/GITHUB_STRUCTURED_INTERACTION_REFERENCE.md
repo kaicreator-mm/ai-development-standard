@@ -1,133 +1,156 @@
-# GitHub Structured Interaction Contract v1 — Markdown + YAML reference
+# GitHub Structured Interaction — latest-only v2
 
-**Scope:** ADS opt-in machine-readable *intent* / *Work Item* carriers and read-only validators; this reference is not new GitHub authority, a mandatory migration, a modified Agent Event v2 schema, or a new Task status.
+**Current source:** [GitHub Agent Interaction Protocol `16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). New ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. This source deliberately has **no legacy format read path** and no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
 
-Normative transport/schema owner is [GitHub Agent Interaction Protocol](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) §16, with existing event writer §8 and publication §10; [GitHub Work Item Contract](../standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md) retains native Issue contract/type/state/dependency authority. Machine envelopes: [GitHub operation intent v1](../schemas/github-structured-interaction-v1.schema.json), [Work Item document v1](../schemas/github-work-item-document-v1.schema.json); existing [Agent Event v2](../schemas/agent-event-v2.schema.json), [Task Contract](../schemas/task-contract.schema.json) and [Task Report Publication v1](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) retain their schemas/meaning.
+## 1. One document wrapper for four kinds
 
-## 1. Parser profile, version binding and migration
-
-- Text remains normal Markdown. An **opt-in authoritative-form candidate** has exactly one first-line literal marker, followed by exactly one bounded `yaml` fenced block and then any human-readable Markdown. The marker is evidence of *intent to emit*, not proof of admission.
-- `<!-- ads:work-item:v1 -->` maps to `ads/work-item/v1` (body contract snapshot); `<!-- ads:github-interaction:v1 -->` maps to `ads/github-structured-interaction/v1` (mutation *intent*). A parser checks marker/source schema and operation-specific payload; it MUST NOT act upon a parser result alone.
-- Existing `<!-- ai-dev:event:v2 -->` continues with YAML `ai-dev/event-v2` and the original admitted event writer/Claim/Review rules. Existing `<!-- ads:task-report:v1 -->` remains original KEY=VALUE report comment syntax. No silent rewrite of either into a new event family.
-- The reference CLI `python scripts/verify_github_structured_interaction.py example.md --surface intent` checks static shape and prints `SHAPE_VALID_ONLY` or `INVALID_SCHEMA`. A plain unmarked comment is `UNSTRUCTURED_DISCUSSION`, never a normative executable operation.
-- The bounded dependency-free YAML profile used by the reference CLI supports two-space nested **mappings**, lists of scalar strings/numbers, quoted/unquoted YAML 1.2-like scalars, bool, int and null; rejects duplicate keys, anchors, aliases, tags, multiline scalars, flow collections, implicit timestamps and complex/list-of-map syntax. For a full YAML producer, use a **safe parser** and reject anything outside the common supported profile. Do not infer unsupported YAML semantics. The subset makes basic typed operation examples verifiable with Python stdlib + ADS's existing Schema subset checker.
-- Prose and illustrative YAML embedded *without the top-level marker* are untrusted text, even if they happen to match a Schema. Existing historical Issue bodies/comments **do not need migration**. A consumer selects the explicitly pinned ADS version and historical record type; it does not infer that post-tag main retroactively applies.
-
-## 2. Work Item Markdown — positive type:task
-
-The following is a **fictional document-shape example**. All refs and hashes are placeholders rather than actual current evidence.
+Every current normalized surface starts at line 1 with \`<!-- ads:github:v2 -->\`, followed by one \`yaml\` fenced block:
 
 ~~~~markdown
-<!-- ads:work-item:v1 -->
+<!-- ads:github:v2 -->
 ```yaml
-schema_version: ads/work-item/v1
-work_item_type: type:task
-contract:
-  task_id: T02
-  goal: Capture source-qualified Agent usage without secret tool input
-  integration_target: version/v0.1
-  baseline_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-  review_policy: recommended
-  required_gates:
-    - concern
-  acceptance:
-    - Real source event with per-source timestamp and no invented cost
-  task_pack_ref: task-pack:T02
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:task
+  contract:
+    task_id: T02
+    goal: Capture trustworthy usage without raw tool arguments
+    integration_target: version/v0.1
+    baseline_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    review_policy: recommended
+    required_gates:
+      - concern
+    acceptance:
+      - Source-backed model/token observation or honest UNKNOWN
 ```
-
-# T02 — Collect usage
 
 ## Scope
-Collect metadata-only events and preserve provider-native request IDs.
 
-## Acceptance
-- [ ] One real invocation has an externally resolvable source ref.
-- [ ] Missing provider usage is UNKNOWN, never a zero.
-
-## Limitations
-This Issue body is the *stable contract*; GitHub labels/dependencies remain live native objects.
+The issue body explains the task in normal Markdown. Exact Title, native Issue Type, State, Risk, Review Policy, Milestone and GitHub Dependencies must still be checked against current native GitHub facts.
 ~~~~
 
-The inner example is shown as a Markdown block for visibility. An actual Issue starts at the marker **without** an outer Markdown fence. Work Item YAML `work_item_type` MUST agree with canonical native Issue Type / `type:*` label when read; a snapshot mismatch requires reconciliation, not a new authoritative status. For type:task, `contract` MUST satisfy existing `task-contract.schema.json`. For other current Issue types the v1 profile enforces the bounded required keys in `scripts/verify_github_structured_interaction.py`, **only for opted-in new documents**, not frozen historical prose templates.
+\`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. \`schema\` is fixed \`ads/github/v2\`. The minimal common envelope is validated by \`schemas/github-document-v2.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles have a bounded required-field map in the verifier; no arbitrary empty-contract fallback. Historical Issue bodies need not be rewritten.
 
-## 3. Normalized mutation intent — positive label/state metadata
+The reference verifier uses a **strict bounded subset** of YAML: two-space nested dictionaries, scalar arrays, strings, integer, boolean and null. It refuses duplicate keys, flow collections, tags, aliases, anchors, inferred timestamps and ambiguous syntax, rather than pretending to interpret a broad, unpinned YAML dialect. Long human explanations belong after the structured block as Markdown.
+
+## 2. Intent — native Issue changes only
+
+The \`intent\` kind covers exactly six native mutation operations: create, contract update, metadata change, dependency change, close and reopen.
 
 ~~~~markdown
-<!-- ads:github-interaction:v1 -->
+<!-- ads:github:v2 -->
 ```yaml
-schema_version: ads/github-structured-interaction/v1
-intent_id: request:example:1
-operation: ISSUE_METADATA_CHANGE
-target:
-  repository: example-org/example-repo
-  issue_ref: "#120"
-actor:
-  actor_role: builder
-  operator_kind: codex
-  operator_id: codex:worker-01
-expected_source_ref: github:example-org/example-repo#120@revision-4
-payload:
-  field: state
-  before: state:ready
-  after: state:claimed
+schema: ads/github/v2
+kind: intent
+data:
+  id: request:example:123
+  operation: ISSUE_METADATA_CHANGE
+  target:
+    repository: example-org/example-repo
+    issue: "#42"
+  actor:
+    role: builder
+    operator_kind: codex
+    operator_id: "codex:worker-01"
+  expected_ref: github:example-org/example-repo#42@revision-2
+  change:
+    field: state
+    before: state:ready
+    after: state:claimed
 ```
 
-Reason: propose admission for a ready Task. This document is **not** the accepted Claim.
+## Rationale
 
+Propose a current-source-bound state mutation. The reader must verify actual Claim/CAS and native GitHub state before any API write.
 ~~~~
 
-Before a writer mutates native Issue state, it MUST read the real current Work Item, dependencies, admitted Claim/Dispatch and exact source, check expected revision/currentness, actor's **self-declared** role, the lawful state transition and original owner rules, and refuse on conflict. Valid YAML is **not** enough to enter `claimed`. No new credential/Owner check is inferred from the GitHub transport login. The existing v4.12 Claim protocol still supplies the atomic compare-and-set admission source.
+Schema/format validation is \`SHAPE_VALID_ONLY\`, **never \`ADMITTED\`**. The real writer still checks role scope, source/currentness and the original ADS GitHub workflow authority. GitHub login does not determine the self-declared logical Agent. \`ISSUE_CREATE\` uses \`issue: null\` and \`expected_ref: null\` with a typed \`change.work_item\`; all changes to an existing Issue require an exact Issue and expected currentness. Native live Type, Label, State, dependency and Milestone are **not** shadowed by writable YAML.
 
-## 4. Operation→schema→authority matrix
+## 3. Event — one direct canonical comment, no append-intent wrapper
 
-| v1 operation | Typed payload (static checker) | Existing GitHub/ADS authority to verify **after shape** |
-| --- | --- | --- |
-| `ISSUE_CREATE` | `work_item` object with `ads/work-item/v1`; Issue target and expected ref are null | body readability, source inputs, canonical type and native labels, Work Item completeness |
-| `ISSUE_CONTRACT_UPDATE` | new `work_item` + `previous_contract_ref` + `change_reason` | source-bound Issue body amendment, frozen Product/L2/Task Pack authority and current revisions |
-| `ISSUE_METADATA_CHANGE` | `field`, `before`, `after`; fields type/state/review_policy/risk/labels/milestone/title | native type/label/state owner; exact currently observed values and legal state/Claim transition; labels not evidence PASS |
-| `ISSUE_DEPENDENCY_CHANGE` | `dependency_issue_ref` and `change: ADD/REMOVE` | **native Issue Dependencies** and DAG mutation/currentness/cycle/scope rules; sub-issues are not edges |
-| `ISSUE_COMMENT_EVENT` | nested existing `agent-event-v2.schema.json` | *existing* event-v2 marker/writer/identity and Review/Validation/CI source, never comment text alone |
-| `ISSUE_COMMENT_REPORT` | Task Report v1 kind, report ID/revision/Attempt, publication key, manifest locator/checksum | existing `ads:task-report:v1` comment and immutable OSS source checks, no raw trace/comment spam |
-| `ISSUE_CLOSE` / `ISSUE_REOPEN` | reason and actual `evidence_refs` | canonical Task result/gates/merge/currentness and lawful native Issue state; reopening does not erase history |
-| Ordinary discussion/comment reply | No normative marker or operation | plain Markdown; no schema/Claim/Gate authority |
-
-Additional GitHub API operations remain bound by their existing owners; this registry covers **normative Issue mutations**, not raw HTTP verbs nor new GitHub API permissions. This contract DOES NOT silently add an active native label that makes a Task PASS.
-
-## 5. Two independent verdicts
-
-```text
-raw Markdown text → marker/version parse → bounded YAML parse
-                  → JSON Schema + operation-specific payload validation
-                  = SHAPE_VALID_ONLY or INVALID_SCHEMA
-SHAPE_VALID_ONLY + current GitHub source readback + appropriate authoritative
-dispatch/claim/dependency/gate rules + lawful write
-                  = a separately proven accepted native mutation / canonical event
+~~~~markdown
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: IMPLEMENTATION_READY
+  actor_role: builder
+  operator_kind: codex
+  operator_id: "codex:worker-01"
+  task: "#42"
+  sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  status: PASS
+  next_state: review-ready
 ```
 
-Unverified source, missing authorization, stale HEAD, missing CAS, wrong dependencies or unresolved permissions **remain blocked by their original owner** even if the YAML is perfect. A completed tool API request doesn't grant its own review/validation/release truth. The validator has **no write function**.
+## Evidence
 
-## 6. Negative and backward-compatibility cases
+PR #N and real targeted tests/CI refs (not an independent PASS by virtue of this comment).
+~~~~
 
-| Case | Expected disposition |
-| --- | --- |
-| Marker appears halfway down a normal Markdown discussion or quoted sample | Not admitted; strict parser rejects if treated as structured |
-| Repeated top-level marker, two YAML keys of same name or unsupported YAML feature | `INVALID_SCHEMA`; never accept last duplicate key |
-| Unknown `operation`, contradictory target/ref, absent actor ID or expected source revision on edits | `INVALID_SCHEMA` |
-| `ISSUE_CREATE` pretends to modify existing #N | `INVALID_SCHEMA` |
-| `ISSUE_METADATA_CHANGE` has fabricated `state:validated` or equates label to Gate PASS | `INVALID_SCHEMA` or later owner refusal |
-| `ISSUE_DEPENDENCY_CHANGE` self-links or invents closure from prose | reject shape or later DAG owner |
-| `ISSUE_COMMENT_EVENT` missing actual event-v2 required fields | `INVALID_SCHEMA`; schema-valid raw comment still not an admitted event |
-| `ISSUE_COMMENT_REPORT` has mismatched publication key, unsupported kind or checksum | `INVALID_SCHEMA`; manifest validity and GitHub publication require separate I/O |
-| Two concurrent agents send individually valid `ISSUE_METADATA_CHANGE` intents from the same old revision | first lawful writer only; second stale/refused by native source/Claim rule |
-| Old valid `ai-dev:event:v2`/`ads:task-report:v1` comment | continue reading under its **original** marker/schema; do not reemit a different event-v3 |
-| Ordinary public user discussion with no marker | `UNSTRUCTURED_DISCUSSION`, not mandatory Schema |
-| Executable new Work Item with incomplete required Task Contract | reject opt-in work-item shape; no READY/Dispatch |
-| Forged `HUMAN_APPROVED`, hidden reasoning or untrusted YAML copied into chat | no authority through formatting; protected source decision rules prevail |
+Event v2 is the reused **payload schema**, not the obsolete document marker. When a canonical event is admitted by the `8.1 writer it emits exactly one \`kind: event\` comment, not \`kind: intent\` → another legacy comment. Do not duplicate Agent identity in an outer event record.
 
-## 7. Adoption and limitations
+## 4. Report — single typed YAML comment and derived dedupe key
 
-- **Prospective opt-in:** a project may start writing the new markers after explicitly adopting an appropriate exact ADS source version. Templates for older pinned versions are unchanged. Existing Markdown metadata not emitted with the new marker stays historical.
-- **Scope of machine checks:** the bundled script proves deterministic **format** validation for the supported YAML subset and the schema/rule lookup. It does *not* integrate with GitHub mutation API, independently fetch canonical remote currentness, grant Agent permissions, read CI/Review evidence, implement CAS or atomically publish comments.
-- **Not full YAML:** a full versioned safe YAML library could be introduced by the consumer for extended syntax only after a compatibility decision, rather than silently accepting flow/anchor semantics the reference verifier cannot reproduce.
-- **Not every prose report a machine event:** normalized reporting needs a recognized marker/contract. Unstructured brainstorming/Issue discussion remains allowed and is never a Task state transition.
-- **Migration:** a subsequent project may choose a template generator or explicit migration plan for all Issue types. Rewriting thousands of previous Issue bodies is not required to make the v1 contract available.
+~~~~markdown
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: report
+data:
+  report_id: task-meta:example:42:attempt-1:summary
+  report_kind: EXECUTION_SUMMARY
+  revision: 1
+  attempt_ref: collector:example:attempt-1
+  manifest_ref: object:private-reports/example/tasks/42/attempt-1/r1/manifest.json
+  manifest_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  coverage: PARTIAL
+  source_refs:
+    - github:example-org/example-repo#42
+```
+
+## Execution summary
+
+DECISION=Reused existing parsing helper (source/ref required).
+EVIDENCE=Exact PR/CI source refs or NOT_RUN.
+LIMITS=PARTIAL collection; unreported billing UNKNOWN.
+TASK_LEARNING=NONE_MATERIAL.
+~~~~
+
+The object Manifest retains the stable \`ads/task-report-manifest/v1\` JSON document format: **v1 is the object dialect, v2 is the single current GitHub comment wrapper**. The comment is not a second event stream. The GitHub Issue + \`report_id\` + \`revision\` determine the idempotency key; don't serialize it redundantly. The immutable manifest checksum validates bytes, not source authority. An \`EXECUTION_CORRECTION\` includes a \`corrects_ref\`. Private files need a stable authorized resolver, not a temporary signed URL. Do not post raw prompts, trace or per-step Issue comments.
+
+## 5. Machine-checkable operation and authority boundaries
+
+| \`kind\` | Current data contract | Last authority/source check |
+| --- | --- | --- |
+| \`work_item\` | Profile-required keys; Task Contract Schema for task | Owning Issue body plus GitHub native Type/Labels/Dependencies/Claim |
+| \`intent\` | \`github-intent-v2.schema.json\`, operation-specific payload, prior source ref | Existing GitHub Work Item transition/DAG/Claim rules; API write outcome |
+| \`event\` | Direct existing Agent Event v2 schema | Existing `8.1 admission and source-specific Review/Validation truth |
+| \`report\` | \`github-report-v2.schema.json\`, object manifest ref/hash | OSS/object readback/ACL, real GitHub comment readback, published revisions |
+
+The parser never invokes a GitHub API mutation. Its CLI is:
+
+\`\`\`text
+python scripts/verify_github_structured_interaction.py file.md --kind work_item
+python scripts/verify_github_structured_interaction.py file.md --kind event --issue "#42"
+\`\`\`
+
+## 6. Failure and optimization oracles
+
+1. New work item/event/report/intent with v2 marker and correct kind → \`SHAPE_VALID_ONLY\`; never \`PASS\` or \`MUTATED\`.
+2. Wrong first-line marker, old wrapper, duplicate marker, unknown kind, arbitrary YAML aliases/tags/duplicate keys or invalid nested value → \`INVALID_SCHEMA\`.
+3. Old free-text Markdown discussion is still just \`UNSTRUCTURED_DISCUSSION\`, **not** an alternative normative operation.
+4. Task Contract missing baseline/goal/gates or other profile missing required keys → invalid, even if Markdown prose mentions those values.
+5. Existing Issue mutation without source-currentness/ref, malformed canonical native state, forbidden \`gate:pass\` label, no-op status, self-dependency → invalid.
+6. \`kind: intent\` with \`ISSUE_COMMENT_EVENT\` or \`ISSUE_COMMENT_REPORT\` → invalid. Canonical comments are direct kinds, not separate operation proposals.
+7. Event \`data\` lacks required original Event v2 fields or mismatches the actual Issue target → invalid.
+8. Report contains duplicate arbitrary publication key field, invalid digest, unsupported report kind, correction without \`corrects_ref\` or short-lived signing secret in locator → invalid.
+9. Two apparently valid simultaneous source-change intents → static shape can pass **both**; only the existing authorized GitHub writer may commit one from the current state; other must be rejected or retried after re-read.
+10. Report comment POST timeout/duplicate after actual GitHub acceptance → derive key from source Issue/id/revision, read back real comments, reuse identical manifest digest or detect conflict. No false exactly-once guarantee.
+11. A malicious quoted YAML block in human prose is merely untrusted content, not a canonical admitted event.
+12. No old adapter/readback implementation, bulk migration, per-tool Issue spam or duplicate Task status storage is required.
+
+**Intentional limit:** real GitHub source admission and OSS write/retry are implementation responsibilities (e.g. future task-meta), not proven by schema shape/CI. A consumer choosing this source revision adopts v2 directly, not v1 compatibility behavior.
