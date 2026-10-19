@@ -241,12 +241,12 @@ A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2
 
 ### 7.2 Latest-only v2 Issue comment example (object Manifest remains v1)
 
-The GitHub **comment** now uses the common \`<!-- ads:github:v2 -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github-report-v2.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
+The GitHub **comment** now uses the common \`<!-- ads:github -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: report
 data:
   report_id: task-report:example-repo:120:attempt-001:execution-summary
