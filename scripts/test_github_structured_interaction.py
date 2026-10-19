@@ -113,7 +113,7 @@ class LatestOnlyContract(unittest.TestCase):
         })), "SHAPE_VALID_ONLY")
 
     def test_work_item_shape_and_all_profiles(self):
-        fail(render("work_item", {"profile": "type:task", "contract": {}}), "task-contract")
+        fail(render("work_item", {"profile": "type:task", "contract": {}}), "missing nested YAML value")
         fail(render("work_item", {"profile": "type:invented", "contract": WORK["contract"]}))
         for profile, fields in {
             "type:version": {"version": "v1", "goal": "Deliver v1", "closure_criteria": ["CI"]},
