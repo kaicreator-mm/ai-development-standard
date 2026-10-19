@@ -1,15 +1,15 @@
-# GitHub Structured Interaction — latest-only v2
+# GitHub Structured Interaction — latest-only v3
 
 **Current source:** [GitHub Agent Interaction Protocol `16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). New ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. This source deliberately has **no legacy format read path** and no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
 
 ## 1. One document wrapper for four kinds
 
-Every current normalized surface starts at line 1 with \`<!-- ads:github:v2 -->\`, followed by one \`yaml\` fenced block:
+Every current normalized surface starts at line 1 with \`<!-- ads:github -->\`, followed by one \`yaml\` fenced block:
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: work_item
 data:
   profile: type:task
@@ -30,18 +30,18 @@ data:
 The issue body explains the task in normal Markdown. Exact Title, native Issue Type, State, Risk, Review Policy, Milestone and GitHub Dependencies must still be checked against current native GitHub facts.
 ~~~~
 
-\`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. \`schema\` is fixed \`ads/github/v2\`. The minimal common envelope is validated by \`schemas/github-document-v2.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles have a bounded required-field map in the verifier; no arbitrary empty-contract fallback. Historical Issue bodies need not be rewritten.
+\`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. \`schema\` is fixed \`ads/github/v3\`. The minimal common envelope is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles use declared `oneOf` contract definitions in the canonical Draft 2020-12 Schema, not Python-only required-field maps. Historical Issue bodies need not be rewritten.
 
-The reference verifier uses a **strict bounded subset** of YAML: two-space nested dictionaries, scalar arrays, strings, integer, boolean and null. It refuses duplicate keys, flow collections, tags, aliases, anchors, inferred timestamps and ambiguous syntax, rather than pretending to interpret a broad, unpinned YAML dialect. Long human explanations belong after the structured block as Markdown.
+The reference verifier uses **safe nested YAML mappings/lists** with duplicate-key, alias, anchor, unsafe-tag, timestamp and input-size checks, rather than a hand-built YAML dialect. It refuses duplicate keys, flow collections, tags, aliases, anchors, inferred timestamps and ambiguous syntax, rather than pretending to interpret a broad, unpinned YAML dialect. Long human explanations belong after the structured block as Markdown.
 
 ## 2. Intent — native Issue changes only
 
 The \`intent\` kind covers exactly six native mutation operations: create, contract update, metadata change, dependency change, close and reopen.
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: intent
 data:
   id: request:example:123
@@ -70,9 +70,9 @@ Schema/format validation is \`SHAPE_VALID_ONLY\`, **never \`ADMITTED\`**. The re
 ## 3. Event — one direct canonical comment, no append-intent wrapper
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -96,9 +96,9 @@ Event v2 is the reused **payload schema**, not the obsolete document marker. Whe
 ## 4. Report — single typed YAML comment and derived dedupe key
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: report
 data:
   report_id: task-meta:example:42:attempt-1:summary
