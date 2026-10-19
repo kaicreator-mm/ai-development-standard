@@ -1,6 +1,6 @@
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: work_item
 data:
   profile: type:research
