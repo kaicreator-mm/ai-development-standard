@@ -219,6 +219,24 @@ Type-specific templates MAY add required sections but MUST NOT remove a common f
 
 The Issue body SHOULD remain stable. Claims, runtime state changes, validation/review results, and merge history belong in metadata plus append-oriented structured events/comments.
 
+### 9.1 Structured Issue contract projection (GitHub Structured Interaction Contract v1; #1182)
+
+The cross-surface **GitHub Structured Interaction Contract** is owned by `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §8.6. This subsection owns only the optional **Issue body / Work Item** profile: GitHub's native Issue Type (or `type:*` fallback), `state:*`, `review:*`, Milestone and native Issue Dependencies remain canonical wherever this standard assigns them authority. A Markdown/YAML block cannot establish a Claim, live dependency, state transition, Gate result or Agent permission.
+
+A new writer MAY opt into a structured **Task Issue** body with the exact marker `<!-- ads:work-item-structured:v1 -->`, followed by exactly one fenced `yaml` mapping under `## Contract Data`. The mapping MUST contain:
+
+- `format: ads/work-item-markdown-yaml/v1` (document envelope selector, **not** a second Work Item state);
+- `schema_ref: schemas/task-contract.schema.json` (existing machine owner for a Task's stable contract core);
+- the real `task_id`, `goal`, `integration_target`, exact `baseline_sha`, `review_policy`, nonempty `required_gates` and `acceptance` required by that existing schema, plus applicable optional fields under the same schema.
+
+The envelope's `format` and `schema_ref` are checked by the structured-interaction reader and stripped **only for selection/validation** before the remaining mapping is evaluated against the pinned `schemas/task-contract.schema.json` (whose `additionalProperties: true` is historical). A reader MUST NOT infer any new status or authority merely from additional fields; reserved GitHub-native dimensions `state`, `workflow_state`, `issue_type`, `labels`, `milestone`, `dependency_state`, `claimed_by`, `review_result`, `validation_result` and `release_result` MUST NOT be authored as competing operative facts inside this Task YAML block. Applicable review policy must agree with the native `review:*` routing attribute and the actual frozen Task contract, otherwise reject the write/admission. If `goal` or acceptance is repeated in Markdown prose, YAML owns the chosen structured value *within this opt-in document*; contradictory normative prose is a `CONTRACT_CONFLICT` to correct before admission, not two coequal contracts.
+
+Retain normal readable Markdown `## Goal`, `## In Scope`, `## Out of Scope`, `## Frozen Inputs`, `## Acceptance`, `## Failure / Blocker Handling` and `## Completion` sections where applicable; exact evidence, acceptance and change constraints may be referenced instead of copied. Do not replace the mandatory human-readable Task Pack/PRD/Architecture/ref rules with a YAML-only record. A new Task is not `state:ready` until this standard's §10 full executable contract is satisfied, **independently** of schema syntax.
+
+Non-Task Issue types (Version, Planning, Research, Bug/Fix, Validation Request, Blocker, Release) currently keep the maintained type-specific Markdown templates and existing owner constraints. A writer MUST NOT advertise `schemas/task-contract.schema.json` as the JSON Schema for those types. Their **future** typed YAML profiles require a bounded schema and compatibility decision, not a guessed schema alias. Already-open legacy Markdown Issues, historical Agent comments and existing Project Intake Issues remain valid under their pinned semantics; this opt-in envelope does not mandate retrospective migration. A consumer cannot reject an older complete Issue solely for lacking this new marker.
+
+See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md` for an example, correct native authority mapping and negative tests.
+
 ## 10. Issue Contract readiness
 
 No executable work item becomes `state:ready` until the durable contract is complete enough for the assigned role.
