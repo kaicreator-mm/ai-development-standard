@@ -1,16 +1,26 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:task
+  contract:
+    task_id: T-ID
+    goal: "Describe bounded outcome in the Goal section"
+    integration_target: version/v0.1
+    baseline_sha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    review_policy: recommended
+    required_gates:
+      - concern
+    acceptance:
+      - "Actual, falsifiable acceptance criterion"
+```
+
 # Task — <ID> <title>
 
 ## Contract
 
-- Target version/milestone: `<version>`
-- Canonical type: `type:task`
-- Canonical state: `<state:planned|state:ready|...>`
-- Integration target: `<branch>`
-- Baseline SHA: `<40-char-sha>`
-- Review Policy: `<required|recommended|not-required>`
-- Risk: `<low|medium|high|critical>`
-- Validation scope: `<concern|integration|closure>`
-- Validation owner: `<this task|task/ref|version closure>`
+The YAML block is the **sole machine-readable stable Task contract**. Replace all example values, satisfy `schemas/task-contract.schema.json` and GitHub's *actual* native Work Item Type/State/Review Policy/Dependencies; do **not** add writable YAML live state or duplicate the contract fields below.
 
 ## Goal
 
