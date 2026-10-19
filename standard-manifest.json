@@ -10,6 +10,7 @@
       "standard-manifest.json"
     ],
     "normative_standards": [
+      "standards/AGENT_EXECUTION_METADATA_STANDARD.md",
       "standards/ARCHITECTURE_DESIGN_STANDARD.md",
       "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
       "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md",
@@ -174,6 +175,8 @@
       "profiles/archetypes/cli.md"
     ],
     "references": [
+      "references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md",
+      "references/AGENT_TASK_FEEDBACK_METADATA_REFERENCE.md",
       "references/AI_NATIVE_EXISTING_OWNER_INTEGRATION.md",
       "references/ARCHITECTURE_DECISION_REFERENCE.md",
       "references/ASSURANCE_PLAN_OWNER_REFERENCE.md",
