@@ -387,7 +387,7 @@ def test_github_structured_interaction_v1_source_and_schema_routing() -> None:
         "schemas/agent-event-v2.schema.json",
         "schemas/task-contract.schema.json",
         "duplicate keys", "anchors/aliases", "UNAUTHORIZED",
-        "Two-stage validation", "plain", "Opt-in",
+        "Two-stage validation", "Ordinary Markdown", "Opt-in",
     )
     require(ref,
         "## 2. Opt-in structured Task Issue",
