@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check ADS tagged Markdown/YAML against existing schemas; never admit GitHub mutations."""
+"""Validate the latest-only tagged ADS GitHub v2 document; never mutate GitHub."""
 from __future__ import annotations
 
 import argparse
@@ -8,10 +8,8 @@ import re
 from pathlib import Path
 from test_protocol_schemas import load_schema, validate_subset
 
-MARKERS = {"<!-- ads:github-interaction:v1 -->": "intent",
-           "<!-- ads:work-item:v1 -->": "work-item",
-           "<!-- ai-dev:event:v2 -->": "event-v2",
-           "<!-- ads:task-report:v1 -->": "report-v1"}
+MARKER = "<!-- ads:github:v2 -->"
+LEGACY = ("<!-- ai-dev:event:v2 -->", "<!-- ads:task-report:v1 -->", "<!-- ads:work-item:v1 -->", "<!-- ads:github-interaction:v1 -->")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ISSUE = re.compile(r"^#[1-9][0-9]*$")
 KIND_KEYS = {
@@ -104,166 +102,164 @@ def parse_yaml(text):
 
 def check_schema(value, name):
     errors = validate_subset(value, load_schema(name))
-    if errors: raise ContractError(name + ": " + "; ".join(errors[:6]))
+    if errors:
+        raise ContractError(name + ": " + "; ".join(errors[:6]))
 
 
-def require(obj, names):
-    if not isinstance(obj, dict):
-        raise ContractError("payload must be a mapping")
-    for name in names:
-        if name not in obj or obj[name] is None or obj[name] == "":
-            raise ContractError("missing required field " + name)
+def require(value, names):
+    if not isinstance(value, dict):
+        raise ContractError("expected a typed mapping")
+    for key in names:
+        if key not in value or value[key] is None or value[key] == "":
+            raise ContractError("missing required field " + key)
 
 
-def check_work_item(obj):
-    check_schema(obj, "github-work-item-document-v1.schema.json")
-    kind, contract = obj["work_item_type"], obj["contract"]
-    if kind == "type:task":
+def refs(value):
+    if not isinstance(value, list) or not value or any(not isinstance(x, str) or not x for x in value):
+        raise ContractError("expected nonempty durable evidence_refs list")
+
+
+def work_item(data):
+    require(data, ("profile", "contract"))
+    profile, contract = data["profile"], data["contract"]
+    if profile not in KIND_KEYS:
+        raise ContractError("unsupported Work Item profile")
+    if profile == "type:task":
         check_schema(contract, "task-contract.schema.json")
     else:
-        require(contract, KIND_KEYS[kind])
+        require(contract, KIND_KEYS[profile])
         for key in ("acceptance", "expected_checks", "closure_criteria"):
-            if key in contract and (not isinstance(contract[key], list) or not contract[key]):
-                raise ContractError(key + ": nonempty list required")
-
-
-def check_intent(obj):
-    check_schema(obj, "github-structured-interaction-v1.schema.json")
-    op, target, payload = obj["operation"], obj["target"], obj["payload"]
-    if op == "ISSUE_CREATE":
-        if target["issue_ref"] is not None or obj["expected_source_ref"] is not None:
-            raise ContractError("ISSUE_CREATE must not claim existing Issue/currentness")
-    else:
-        if not isinstance(target["issue_ref"], str) or not ISSUE.fullmatch(target["issue_ref"]):
-            raise ContractError("exact Issue required")
-        if not isinstance(obj["expected_source_ref"], str) or not obj["expected_source_ref"]:
-            raise ContractError("source-currentness precondition ref required")
-
-    if op in ("ISSUE_CREATE", "ISSUE_CONTRACT_UPDATE"):
-        require(payload, ("work_item",))
-        check_work_item(payload["work_item"])
-        if op == "ISSUE_CONTRACT_UPDATE":
-            require(payload, ("previous_contract_ref", "change_reason"))
-    elif op == "ISSUE_METADATA_CHANGE":
-        require(payload, ("field", "before", "after"))
-        vocab = {
-          "type": set(KIND_KEYS),
-          "state": {"state:" + v for v in ("planned", "ready", "claimed", "implementing", "review-ready",
-                "reviewing", "validation-needed", "validating", "changes-requested", "merge-ready",
-                "blocked", "done", "superseded", "cancelled")},
-          "review_policy": {"review:required", "review:recommended", "review:not-required"},
-          "risk": {"risk:low", "risk:medium", "risk:high", "risk:critical"},
-        }
-        field = payload["field"]
-        if field not in (*vocab.keys(), "labels", "milestone", "title"):
-            raise ContractError("unrecognized native metadata field")
-        if field in vocab and (payload["before"] not in vocab[field] or payload["after"] not in vocab[field]):
-            raise ContractError("illegal metadata vocabulary")
-        if field == "labels" and (not isinstance(payload["before"], list) or not isinstance(payload["after"], list)):
-            raise ContractError("before/after labels must be lists")
-        if payload["before"] == payload["after"]:
-            raise ContractError("no-op change")
-    elif op == "ISSUE_DEPENDENCY_CHANGE":
-        require(payload, ("dependency_issue_ref", "change"))
-        if (payload["change"] not in ("ADD", "REMOVE")
-            or not ISSUE.fullmatch(str(payload["dependency_issue_ref"]))
-            or payload["dependency_issue_ref"] == target["issue_ref"]):
-            raise ContractError("illegal dependency mutation")
-    elif op == "ISSUE_COMMENT_EVENT":
-        require(payload, ("event",))
-        event = payload["event"]
-        check_schema(event, "agent-event-v2.schema.json")
-        for outer, inner in (("actor_role", "actor_role"), ("operator_kind", "operator_kind"), ("operator_id", "operator_id")):
-            if event.get(inner) != obj["actor"].get(outer):
-                raise ContractError("nested Event v2 actor attribution conflicts with outer intent")
-        for issue_field in ("task", "issue"):
-            if event.get(issue_field) is not None and event[issue_field] != target["issue_ref"]:
-                raise ContractError("nested Event v2 work-item target conflicts with outer Issue")
-    elif op == "ISSUE_COMMENT_REPORT":
-        require(payload, ("report_kind", "report_id", "revision", "attempt_ref", "publication_key",
-                          "manifest_ref", "manifest_sha256"))
-        if payload["report_kind"] not in REPORT_KINDS or type(payload["revision"]) is not int or payload["revision"] < 1:
-            raise ContractError("unknown report kind/revision")
-        if not SHA256.fullmatch(str(payload["manifest_sha256"])):
-            raise ContractError("invalid manifest checksum")
-        key = f"github:{target['repository']}{target['issue_ref']} | {payload['report_id']} | {payload['revision']}"
-        if payload["publication_key"] != key:
-            raise ContractError("publication key mismatch")
-    elif op in ("ISSUE_CLOSE", "ISSUE_REOPEN"):
-        require(payload, ("reason", "evidence_refs"))
-        refs = payload["evidence_refs"]
-        if not isinstance(refs, list) or not refs or any(not isinstance(r, str) or not r for r in refs):
-            raise ContractError("close/reopen requires durable reason evidence refs")
-    else:
-        raise ContractError("unknown operation")
+            if key in contract:
+                refs(contract[key])
     return "SHAPE_VALID_ONLY"
 
 
-def _yaml_data(lines):
+STATES = {"state:" + x for x in ("planned", "ready", "claimed", "implementing",
+          "review-ready", "reviewing", "validation-needed", "validating",
+          "changes-requested", "merge-ready", "blocked", "done", "superseded", "cancelled")}
+CANONICAL = {
+    "type": set(KIND_KEYS), "state": STATES,
+    "review_policy": {"review:required", "review:recommended", "review:not-required"},
+    "risk": {"risk:low", "risk:medium", "risk:high", "risk:critical"},
+}
+FORBIDDEN_TRUTH_LABELS = {"gate:pass", "gate:fail", "validation:passed",
+                          "validation:failed", "validation:pass", "validation:fail"}
+
+
+def intent(data):
+    check_schema(data, "github-intent-v2.schema.json")
+    op, target, change = data["operation"], data["target"], data["change"]
+    issue, prior = target["issue"], data["expected_ref"]
+    if op == "ISSUE_CREATE":
+        if issue is not None or prior is not None:
+            raise ContractError("create cannot claim an existing Issue/currentness")
+    elif not isinstance(issue, str) or not ISSUE.fullmatch(issue) or not isinstance(prior, str) or not prior:
+        raise ContractError("existing Issue mutation requires exact issue and currentness ref")
+
+    if op in ("ISSUE_CREATE", "ISSUE_CONTRACT_UPDATE"):
+        require(change, ("work_item",))
+        work_item(change["work_item"])
+        if op == "ISSUE_CONTRACT_UPDATE":
+            require(change, ("previous_ref", "reason"))
+    elif op == "ISSUE_METADATA_CHANGE":
+        require(change, ("field", "before", "after"))
+        field = change["field"]
+        if field not in ("type", "state", "review_policy", "risk", "labels", "milestone", "title"):
+            raise ContractError("unsupported native Issue metadata dimension")
+        if field in CANONICAL and (change["before"] not in CANONICAL[field]
+                                    or change["after"] not in CANONICAL[field]):
+            raise ContractError("unknown canonical metadata vocabulary")
+        if field == "labels":
+            for name in ("before", "after"):
+                value = change[name]
+                if (not isinstance(value, list) or not all(isinstance(x, str) and x for x in value)
+                    or len(value) != len(set(value)) or FORBIDDEN_TRUTH_LABELS.intersection(value)):
+                    raise ContractError("invalid labels or unsupported Gate truth label")
+        if change["before"] == change["after"]:
+            raise ContractError("no-op metadata change")
+    elif op == "ISSUE_DEPENDENCY_CHANGE":
+        require(change, ("dependency", "action"))
+        if (change["action"] not in ("ADD", "REMOVE") or
+                not ISSUE.fullmatch(str(change["dependency"])) or
+                change["dependency"] == issue):
+            raise ContractError("invalid Issue dependency edge or self-loop")
+    elif op in ("ISSUE_CLOSE", "ISSUE_REOPEN"):
+        require(change, ("reason", "evidence_refs"))
+        refs(change["evidence_refs"])
+    else:
+        raise ContractError("unsupported Issue operation")
+    return "SHAPE_VALID_ONLY"
+
+
+def event(data, repository=None, issue=None):
+    check_schema(data, "agent-event-v2.schema.json")
+    if issue:
+        for name in ("task", "issue"):
+            if name in data and data[name] != issue:
+                raise ContractError("event target does not match actual Issue")
+    return "SHAPE_VALID_ONLY"
+
+
+def report(data):
+    check_schema(data, "github-report-v2.schema.json")
+    if data["report_kind"] == "EXECUTION_CORRECTION" and not data.get("corrects_ref"):
+        raise ContractError("correction requires exact previous publication reference")
+    if any(key in data["manifest_ref"].lower() for key in ("x-amz-signature=", "x-oss-signature=", "token=", "sig=")):
+        raise ContractError("temporary signed URL/secret is not a durable report locator")
+    return "SHAPE_VALID_ONLY"
+
+
+CHECKS = {"work_item": work_item, "intent": intent, "event": event, "report": report}
+
+
+def verify_markdown(source, expected_kind=None, *, repository=None, issue=None):
+    lines = source.splitlines()
+    first = next((x.strip() for x in lines if x.strip()), "")
+    if first != MARKER:
+        if first in LEGACY or any(x.strip() == MARKER for x in lines):
+            raise ContractError("latest-only: unsupported old or non-leading structured marker")
+        if expected_kind:
+            raise ContractError("required latest-only structured document missing")
+        return "UNSTRUCTURED_DISCUSSION"
+    if not lines or lines[0].strip() != MARKER or sum(x.strip() == MARKER for x in lines) != 1:
+        raise ContractError("exactly one first-line v2 marker required")
+    for old in LEGACY:
+        if any(x.strip() == old for x in lines):
+            raise ContractError("mixed old/new marker prohibited")
+
     index = 1
-    while index < len(lines) and not lines[index].strip(): index += 1
+    while index < len(lines) and not lines[index].strip():
+        index += 1
     if index >= len(lines) or lines[index].strip() != "```yaml":
-        raise ContractError("expected fenced YAML immediately after marker")
+        raise ContractError("expected exactly one fenced yaml mapping after marker")
     try:
         end = lines.index("```", index + 1)
     except ValueError as exc:
-        raise ContractError("unclosed YAML fence") from exc
-    return parse_yaml("\n".join(lines[index + 1:end]))
-
-
-def _report_data(lines):
-    header = {}
-    for line in lines[1:]:
-        m = re.fullmatch(r"([A-Z][A-Z0-9_]+)=(.*)", line)
-        if m:
-            if m.group(1) in header: raise ContractError("duplicate report header")
-            header[m.group(1)] = m.group(2).strip()
-        elif header:
-            break
-        elif line.strip():
-            raise ContractError("expected report KEY=VALUE header")
-    require(header, ("REPORT_KIND", "REPORT_ID", "REPORT_REVISION", "ATTEMPT_REF", "PUBLICATION_KEY",
-                     "MANIFEST_REF", "MANIFEST_SHA256"))
-    if header["REPORT_KIND"] not in REPORT_KINDS or not header["REPORT_REVISION"].isdigit() or int(header["REPORT_REVISION"]) < 1:
-        raise ContractError("invalid legacy report header")
-    if not SHA256.fullmatch(header["MANIFEST_SHA256"]):
-        raise ContractError("invalid legacy manifest SHA-256")
-
-
-def verify_markdown(source, expected_surface=None):
-    lines = source.splitlines()
-    first = next((l.strip() for l in lines if l.strip()), "")
-    if first not in MARKERS:
-        if any(l.strip() in MARKERS for l in lines):
-            raise ContractError("embedded/quoted marker is not an admitted record")
-        if expected_surface: raise ContractError("required structured surface not present")
-        return "UNSTRUCTURED_DISCUSSION"
-    surface = MARKERS[first]
-    if expected_surface and surface != expected_surface:
-        raise ContractError("incorrect structured surface: " + surface)
-    if not lines or lines[0].strip() != first or sum(l.strip() == first for l in lines) != 1:
-        raise ContractError("unique marker must be first line")
-    if surface == "report-v1":
-        _report_data(lines)
-    else:
-        obj = _yaml_data(lines)
-        if surface == "intent": check_intent(obj)
-        elif surface == "work-item": check_work_item(obj)
-        else: check_schema(obj, "agent-event-v2.schema.json")
-    return "SHAPE_VALID_ONLY"
+        raise ContractError("unclosed yaml block") from exc
+    envelope = parse_yaml("\n".join(lines[index + 1:end]))
+    check_schema(envelope, "github-document-v2.schema.json")
+    kind, data = envelope["kind"], envelope["data"]
+    if expected_kind and kind != expected_kind:
+        raise ContractError("wrong kind for requested Issue surface")
+    if kind == "event":
+        return event(data, repository, issue)
+    return CHECKS[kind](data)
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("file", type=Path)
-    p.add_argument("--surface", choices=sorted(MARKERS.values()))
+    p.add_argument("--kind", choices=sorted(CHECKS))
+    p.add_argument("--repository", help="actual GitHub repository for source-bound checks")
+    p.add_argument("--issue", help="actual GitHub Issue number, e.g. #42")
     args = p.parse_args()
     try:
-        verdict = verify_markdown(args.file.read_text(encoding="utf-8"), args.surface)
+        result = verify_markdown(args.file.read_text(encoding="utf-8"), args.kind,
+                                 repository=args.repository, issue=args.issue)
     except (ContractError, OSError) as exc:
         print("INVALID_SCHEMA: " + str(exc))
         raise SystemExit(1) from exc
-    print(verdict + ": GitHub admission/currentness/authorization must be checked separately")
+    print(result + ": source/currentness/write admission must be verified by GitHub owner")
 
 
 if __name__ == "__main__":
