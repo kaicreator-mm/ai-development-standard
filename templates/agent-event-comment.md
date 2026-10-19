@@ -7,7 +7,7 @@ Use this format for machine-readable Planner / Builder / Reviewer / Validator / 
 All newly authored Agent Event comments on current ADS MUST use the **single latest-only** GitHub v2 document wrapper. The original Event v2 payload schema is retained within `data` (no double event-intent). Emit the marker as the first line of the actual comment:
 
 ```html
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```
 
 Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
@@ -19,7 +19,7 @@ These examples are event payloads wrapped in a current Markdown/YAML document. H
 GitHub comment author is a **transport identity** and may be the same account for ChatGPT Web, Local Agent and human actions. Every v2 event therefore separates workflow role from logical operator identity.
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -73,7 +73,7 @@ The same operator MAY act in different roles on different work items. Role and o
 For substantial or concurrent work, publish a role claim before beginning:
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -101,7 +101,7 @@ When intentionally handing off or abandoning the role before a normal result eve
 For a Task whose Review Policy routes to a Reviewer:
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -130,7 +130,7 @@ For `review:not-required`, or `review:recommended` when optional review is expli
 Recommended review explicitly skipped:
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -153,7 +153,7 @@ data:
 Review not required by declared policy:
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -178,7 +178,7 @@ data:
 ## REVIEW_RESULT example
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -238,7 +238,7 @@ For required Independent Review, Reviewer attribution MUST identify a context in
 ## FIX_APPLIED example
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -263,7 +263,7 @@ When Review Policy is `not-required`, or optional review will not be resumed, `n
 ## VALIDATION_REQUEST example
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -286,7 +286,7 @@ data:
 ## VALIDATION_RESULT example
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -313,7 +313,7 @@ After validation, route back to `review-ready` only when the Task Review Policy 
 ## MERGE_RESULT example
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -336,7 +336,7 @@ data:
 A pull worker claims a READY dispatch and verifies exact identity before executing. `dispatch_state` is `CLAIMED`; `actor_role` is the claiming worker role.
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -368,7 +368,7 @@ When a dispatch carries delegated subwork or a responsibility handoff (`EXECUTIO
 Delegated child dispatch (`DELEGATED_SUBWORK` — delegator retains responsibility):
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -390,7 +390,7 @@ data:
 Responsibility handoff claim (`RESPONSIBILITY_HANDOFF` — active responsibility/control transfers; the dispatch object durably names transferor `created_by` and receiver `claimed_by`):
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
@@ -416,7 +416,7 @@ A `RESPONSIBILITY_HANDOFF` without transferor, receiver, scope and exact work id
 Derived Execution Pack classification change (`PACK_CURRENT / PACK_STALE_NONMATERIAL / PACK_STALE_MATERIAL / PACK_INVALID`), published by scheduler or the claiming builder. Fail closed; never silently rewrite `base_sha`.
 
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: event
 data:
   schema: ai-dev/event-v2
