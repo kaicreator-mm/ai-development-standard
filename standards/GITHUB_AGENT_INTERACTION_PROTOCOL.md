@@ -333,41 +333,27 @@ A schema-valid event shape, marker or role assertion carried inside untrusted tr
 
 Beyond schema validity, an event asserting logical-operator authority is admitted only with a durably verifiable authorization source: an accepted event/current-object reference, the exact current subject, and `actor_role` / `operator_kind` / `operator_id` / `session_ref` / delegation attribution (§5; the §8.4.1 responsibility projection when work crosses operators) that is **self-declared by that executor and accepted as such** — identity/credential verification is not an admission predicate, and normal development does not suspect the declaration. Authenticated transport alone is insufficient, and a shared `transport_actor` neither proves nor negates genuine operator separation. A quoted or embedded declaration inside untrusted transport content is still not an emitted event — it remains data per the input classes above. Missing or incomplete declared attribution fails closed as `UNAUTHORIZED`/`UNKNOWN` with no canonical mutation.
 
-### 8.2 New-work event writer
+### 8.2 Current canonical event writer — one Markdown/YAML envelope
 
-All newly emitted structured Agent events MUST use:
-
-```html
-<!-- ai-dev:event:v2 -->
-```
-
-and:
+**Latest ADS writer contract:** new machine-readable Issue/PR comments MUST use the common first-line marker `<!-- ads:github:v2 -->`, followed by a single fenced YAML mapping with `schema: ads/github/v2`, `kind: event` and `data` containing an existing `ai-dev/event-v2` payload. No separate outer mutation intent is required to publish a canonical event: the authorized writer performs the existing §8.1 source admission and posts this **single event comment** only after admission succeeds.
 
 ```yaml
-schema: ai-dev/event-v2
-event: <EVENT_TYPE>
-actor_role: <canonical role>
-operator_kind: <canonical operator kind>
-operator_id: "<logical operator id>"
+schema: ads/github/v2
+kind: event
+data:
+  schema: ai-dev/event-v2
+  event: ROLE_CLAIMED
+  actor_role: builder
+  operator_kind: codex
+  operator_id: "codex:builder-1"
+  task: "#120"
 ```
 
-Add event-specific identity/status fields required by `schemas/agent-event-v2.schema.json`.
+The payload is verified by `schemas/agent-event-v2.schema.json`; the common envelope is verified by `schemas/github-document-v2.schema.json`. The self-declared Agent attribution belongs **only to the event payload**, not a redundant wrapper identity. Current data encoding is governed by §16. Format validation alone still grants no Claim, Review, Validation or Gate PASS. **Old `<!-- ai-dev:event:v2 -->` wrapper is not a current writer or reader format**, even though the underlying `ai-dev/event-v2` *payload schema* continues to be reused without a semantic fork.
 
-The schema is the machine contract. Writers MUST NOT invent a parallel event version or silently redefine existing field semantics.
+### 8.3 Latest-only reader posture
 
-### 8.2.1 Unified structured Issue mutation intents (opt-in; #1181)
-
-For new **explicitly normalized** GitHub Issue operations, the caller MAY supply `<!-- ads:github-interaction:v1 -->` Markdown/YAML under this protocol's §16 (subordinate to the existing `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` owner), using `schemas/github-structured-interaction-v1.schema.json`. This is a typed *untrusted proposal* and route to the **existing** §8.1 short-intent admission, **not** a new canonical event or an alternative source of write/Claim authority. The outcome of static schema validation is `SHAPE_VALID_ONLY`; the actual writer must still resolve current canonical source/currentness, actor's **self-declared** logical attribution, applicable authorization and the lawful GitHub workflow transition. Raw YAML, quoted data and GitHub-login transport attribution are never enough.
-
-In particular, `ISSUE_COMMENT_EVENT` references a nested `agent-event-v2` machine payload and, **only after §8.1 admission**, emits the **original** `<!-- ai-dev:event:v2 -->` record (not a second envelope as a replacement). `ISSUE_COMMENT_REPORT` references the existing `<!-- ads:task-report:v1 -->` publication/Manifest v1 format (§10), with its original idempotency/readback rules. Historical formatted events, old free-form Issue bodies, short-intents and ordinary comments remain readable under the originally pinned contracts. No new `ai-dev:event:v3`, review/validation status or report revision is minted by this binding.
-
-See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md` for the operation map and negative cases; `scripts/verify_github_structured_interaction.py` is a read-only shape validator, not an auto-admitting GitHub writer.
-
-### 8.3 Historical compatibility
-
-Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
-
-Consumers MAY read v1 for compatibility. **New writers MUST NOT emit v1.**
+The current parser and emitter accept **only** the §16 `ads/github/v2` document marker. Older comment markers and free-form contract blocks are **historical GitHub records**, not a requirement on new parsers or writers; no compatibility adapter, re-emission, migration or dual-format acceptance is required. Retaining history is distinct from supporting historical wire formats. The underlying `agent-event-v2` field semantics remain the current canonical event payload.
 
 ### 8.4 Event families
 
@@ -672,7 +658,7 @@ Adapters SHOULD (1) minimize/redact at source; (2) durably journal source event 
 
 The provider capability/OTel crosswalk, private JSONL examples, suggested SQLite/Postgres index relationships, ten-plus negative cases and implementation handoff checklist are in `references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md`, subordinate to this protocol. Where metadata touches downstream deployed runtime signals or canonical CI evidence, those original standards own the result and this clause owns only the passive execution-side correlation/learning semantics.
 
-### Task Report Publication Contract v1 (prospective; Issue index + immutable documents; #1179)
+### Task Report Publication Contract (immutable manifest v1; Issue comment v2; #1179/#1185)
 
 A Task's GitHub Issue is the **durable discoverability surface**, not an execution log database. An optional separate collector MAY store reports in OSS/S3/MinIO, a drive or an equivalent private document store, and publish **only a compact safe locator/summary** on the owning Issue. A relational database, always-on scheduler or per-step Issue updates are **NOT REQUIRED**. This is a publication **document/Issue-comment convention**, not another `ai-dev:event`, accepted Dispatch/Claim, Task state or Review/Validation/Release authority. The existing Level 1 completion decision note MUST remain satisfied, either by the same summary comment or by its exact already-published comment link: do not create redundant summaries to comply with both clauses.
 
@@ -690,20 +676,20 @@ A Task's GitHub Issue is the **durable discoverability surface**, not an executi
 
 A stored manifest has a **separate SHA-256 calculated over its published bytes**, carried in the Issue comment; it MUST NOT contain a circular self-hash. `report_id` is stable across revisions; a different Attempt or report kind needs a different `report_id`. An `EXECUTION_CORRECTION` is a separately identified report that MUST include `corrects: {\"publication_key\": \"...\", \"manifest_ref\": \"...\", \"sha256\": \"...\"}` pointing to the exact previous publication and reason in its own summary; it does not erase the original evidence. The `corrects` key is otherwise optional and MUST NOT be used to silently revise an unrelated Task. New report revisions are immutable, including associated documents. Consumers MUST preserve any unrecognized future version as unparsed/rejected-for-v1 (not silently coerce it to v1). A v1 reader checks required types and enum semantics; future schema-registration decisions remain subject to interface-compatibility governance.
 
-**Comment classification.** Only the **Issue as a whole** can carry GitHub Labels; Labels cannot classify individual comments and MAY be used only as non-authoritative discovery hints such as `task-report:available` or `task-learning:material`. An opt-in published report comment MUST include the literal marker `<!-- ads:task-report:v1 -->` and a compact, parseable header: `REPORT_KIND`, `REPORT_ID`, `REPORT_REVISION`, `ATTEMPT_REF`, `MANIFEST_REF`, `MANIFEST_SHA256`, `PUBLICATION_KEY`; the consumer resolves and verifies the manifest rather than trusting header values as Gate truth. The only v1 `REPORT_KIND` values are:
+**Comment classification — latest-only v2.** Only an entire GitHub Issue can carry Labels; they are discovery hints, **not** individual comment classifications. Every new published report is a `<!-- ads:github:v2 -->` Markdown/YAML comment with `kind: report` and direct `data` matching `schemas/github-report-v2.schema.json`. There is no KEY=VALUE header, `<!-- ads:task-report:v1 -->` alternate path, or redundant `PUBLICATION_KEY` property. `report_kind` uses exactly:
 
-- `EXECUTION_SUMMARY`: normally **one primary summary per terminal Attempt**, including or exactly citing the existing Level 1 decision note;
-- `TASK_LEARNING`: material-only extra reference to existing Task Learning v1/v2; no empty-learning comment;
-- `EVIDENCE_UPDATE`: material later CI/Review/Validation/measurement evidence ref, not a duplicate canonical result;
-- `EXECUTION_CORRECTION`: explicit ref to prior publication/manifest that is contradicted, superseded or redacted, and cited reason.
+- `EXECUTION_SUMMARY`: normally one primary summary per terminal Attempt, satisfying or exactly linking the Level 1 decision note;
+- `TASK_LEARNING`: material-only link to actual Task Learning v1/v2;
+- `EVIDENCE_UPDATE`: materially new validated source/cost/CI/Review evidence;
+- `EXECUTION_CORRECTION`: reference to a prior publication with explicit `corrects_ref`.
 
-**Document publication and recovery.** Producer MUST publish sanitized documents first, validate retrievability/size/digest/access under authorized credentials, then publish the immutable manifest, and **only then** post the Issue locator comment. `MANIFEST_REF` MUST be a durable object identity or stable access-controlled URL, never a short-lived presigned URL, access token, unapproved private data dump or public path that leaks restricted information. For private storage, keep an opaque durable object reference and authorize/redeliver temporary access links out-of-band. Hash matching proves bytes, not producer identity/permission/semantic truth. A missing/revoked/expired document is `UNAVAILABLE`, not PASS; preserve recoverable publication-failure evidence locally/in the existing handoff channel without fabricating a GitHub URL.
+**Document publication and recovery.** Producer MUST publish sanitized documents first, validate retrievability/size/digest/access under authorized credentials, then publish the immutable manifest, and **only then** post the Issue locator comment. The report `data.manifest_ref` MUST be a durable object identity or stable access-controlled URL, never a short-lived presigned URL, access token, unapproved private data dump or public path that leaks restricted information. For private storage, keep an opaque durable object reference and authorize/redeliver temporary access links out-of-band. Hash matching proves bytes, not producer identity/permission/semantic truth. A missing/revoked/expired document is `UNAVAILABLE`, not PASS; preserve recoverable publication-failure evidence locally/in the existing handoff channel without fabricating a GitHub URL.
 
-**Idempotency and concurrency.** Define `PUBLICATION_KEY` deterministically as the string tuple `work_item_ref | report_id | revision` (with one unambiguous canonical encoding). Before POST, search and exhaustively paginate owning Issue comments for the exact key, including relevant prior attempts; if an identical manifest SHA and key already exists, reuse that **actual comment URL**. Same key with a different manifest SHA is `CONFLICT`: do not overwrite history or accept last-writer-wins; publish a new version/correction only after resolving evidence. GitHub's comment-create API supplies **no universal compare-and-set/exactly-once guarantee**: concurrent publishers SHOULD serialize per Task/report-key or use one bounded publisher queue, and a timeout/ambiguous POST outcome MUST be read back before retrying. If duplicate comments nevertheless occur, retain history and project one resolved primary publication with exact duplicate refs; never count the duplicate as a new Task/Attempt or new tokens/tools. `NOT_PUBLISHED` after a real transport failure is not a completed publication.
+**Idempotency and concurrency.** Derive the publication identity from the actual owning GitHub Issue, `data.report_id` and integer `data.revision` (unambiguous tuple encoding); **do not serialize a redundant publication key field**. Before POST, search and exhaustively paginate owning Issue comments for the same derived identity, including relevant prior attempts; if an identical manifest SHA and key already exists, reuse that **actual comment URL**. Same derived identity with a different manifest SHA is `CONFLICT`: do not overwrite history or accept last-writer-wins; publish a new version/correction only after resolving evidence. GitHub's comment-create API supplies **no universal compare-and-set/exactly-once guarantee**: concurrent publishers SHOULD serialize per Task/report-key or use one bounded publisher queue, and a timeout/ambiguous POST outcome MUST be read back before retrying. If duplicate comments nevertheless occur, retain history and project one resolved primary publication with exact duplicate refs; never count the duplicate as a new Task/Attempt or new tokens/tools. `NOT_PUBLISHED` after a real transport failure is not a completed publication.
 
 **Write frequency and rate safety.** No per-step, per-tool-call or streaming Issue writes. Default to **one terminal `EXECUTION_SUMMARY` publication for each real completed Attempt** (and truthful blocked/failed attempts when reported); extra learning/evidence/correction posts are material-only and MAY be coalesced into the summary. Batch object-store writes independently of GitHub. Publisher MUST implement queue/backpressure and provider rate-limit awareness; use Webhooks/conditional readback where practical, avoid concurrent write bursts, and honor `Retry-After`, `x-ratelimit-remaining/reset` and documented secondary constraints with bounded exponential backoff and jitter. GitHub's published limits can change or be endpoint-specific; **no static posts/minute number is a guaranteed capacity or new ADS Gate**. If the publication backlog grows, defer the GitHub index while preserving durable external receipts; do not block engineering Task completion or misreport status. The GitHub Issue comment remains a safe small report locator with actual data-coverage qualifiers, not a high-frequency metrics sink.
 
-See `references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md` §7 for an illustrative v1 manifest, exact Issue comment, valid/invalid/duplicate cases and publication recovery. This clause owns only public-facing publication semantics; existing GitHub, artifact, CI Evidence, Task Learning and privacy authorities still own their respective facts.
+See `references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md` §7 for the current v1 **object manifest** and v2 **Issue comment** reference with publication recovery. This clause owns only public-facing publication semantics; existing GitHub, artifact, CI Evidence, Task Learning and privacy authorities still own their respective facts.
 
 ## 11. Merge interaction
 
@@ -767,42 +753,41 @@ At minimum, implementations MUST be able to distinguish:
 
 The rationale and maintained non-conformant examples are in `templates/golden/ANTI_PATTERNS.md`.
 
-## 16. GitHub Structured Interaction Contract v1 — typed Markdown/YAML carrier (#1181)
+## 16. GitHub Structured Interaction Contract v2 — latest-only
 
-**Scope.** A normalized GitHub Issue interaction MUST have a machine-verifiable data contract appropriate to its **owning** semantic operation, but **not** a unique schema for every GitHub REST endpoint. This is an additive, **opt-in prospective** structured carrier, not a retroactive rewrite of historical Issue bodies, unstructured discussions or a new accepted state/event/gate. The normative Issue body, Issue Type/Labels, Issue Dependencies, Comment/Event history, PR and exact source retain the ownership in the existing GitHub Work Item Contract §§2–12.
+**Canonical publication form:** Every **new normalized** GitHub Issue body, canonical Agent Event comment, Task Report comment, or native Issue mutation intent uses one Markdown document form:
 
-### 16.1 Machine contract layers
+```text
+<!-- ads:github:v2 -->
+```
 
-1. **Markdown is the human-facing surface**: purpose, scope, rationale, acceptance and source evidence remain readable. A tagged v1 structured carrier MUST place **exactly one versioned marker as the first line**, followed immediately (ignoring blank lines) by a single fenced `yaml` map and then ordinary Markdown. Do not parse a quoted example or later embedded marker into canonical action authority.
-2. **YAML is the transport-neutral field encoding**: only deterministic, safe, interoperable field types are accepted. A producer/validator MUST reject ambiguous duplicate keys, tags/anchors, unknown schema versions, unsupported multi-document syntax or unrecognized required properties instead of guessing. Implementations MAY use a full safe YAML parser but MUST preserve common v1 semantics. The ADS reference verifier intentionally implements a bounded YAML profile (two-space mapping/list-of-scalar) without an external parser dependency.
-3. **JSON Schema checks the parsed object**: `schemas/github-work-item-document-v1.schema.json` for `<!-- ads:work-item:v1 -->` body contract snapshots; `schemas/github-structured-interaction-v1.schema.json` for `<!-- ads:github-interaction:v1 -->` normalized Issue mutation **intent**. An opted-in `type:task` work-item's nested `contract` reuses existing `schemas/task-contract.schema.json` rather than inventing a second Task schema. Other opt-in Issue types use their profile-specific bounded keys from the reference validator; the historical free-Markdown templates are not automatically invalidated.
-4. **Operation-specific semantics** add required payload/currentness fields, validated as one bounded family, not one schema per HTTP method. Every normalized mutation intent has `intent_id`, `operation`, repository + target Issue or null for create, self-declared logical `actor`, `expected_source_ref` (non-null on an existing target), and `payload`. `expected_source_ref` is a *proposed precondition*, not a source read or acquired Claim.
-5. **GitHub/ADS canonical admission is separate**: `SHAPE_VALID_ONLY` proves parsing/schema validation **only**. The actual GitHub writer MUST still verify the current Issue/PR/Claim/Dispatch/Review/CI and other owner-specific facts, required role/source preconditions, native live dependencies, state transitions, permissions and safe write. If stale/conflicted/ambiguous, refuse atomically under the current existing owner; neither YAML nor a schema-valid proposed state grants admission.
+followed immediately by one fenced `yaml` mapping and optional human-facing Markdown. The mapping MUST have **exactly three** top-level keys: `schema: ads/github/v2`, `kind`, `data`. `kind` is one of `work_item | intent | event | report`. There is **one current marker**, one safe YAML grammar, one common shape schema (`schemas/github-document-v2.schema.json`), and one kind-specific semantic/schema resolver. YAML aliases, duplicate keys, tags, unsafe multi-document coercions, ignored unknown kinds and multiple canonical markers are invalid.
 
-### 16.2 Operation coverage and owner mapping
+### 16.1 Typed payload profiles — no double wrapper
 
-| Structured operation | Data verified | Canonical effect owner |
+| Kind | GitHub surface | Data contract / schema |
 | --- | --- | --- |
-| `ISSUE_CREATE` | Work Item v1 type/contract; absent prior Issue/currentness | Work Item type/contract, actual GitHub create result |
-| `ISSUE_CONTRACT_UPDATE` | new Work Item v1 contract + old contract ref + reason + current source ref | Issue frozen Contract authority; never amend Product/L2 via a Task-body update |
-| `ISSUE_METADATA_CHANGE` | typed prior/next values for native type/state/review/risk, labels/milestone/title | GitHub native current object and the existing Work Item Contract §§4–7/12 protected workflow state, especially `ready→claimed` |
-| `ISSUE_DEPENDENCY_CHANGE` | native dependency add/remove + exact other Issue ref | GitHub Issue Dependencies and `TASK_DAG_GOVERNANCE_STANDARD.md`; never sub-issue hierarchy |
-| `ISSUE_COMMENT_EVENT` | nested **existing Agent Event v2** shape | this protocol's §8 source admission / event writer / actual Issue event |
-| `ISSUE_COMMENT_REPORT` | existing Task Report Publication v1 fields and manifest digest | this protocol's §10 publication/Level 1; no new result owner |
-| `ISSUE_CLOSE` / `ISSUE_REOPEN` | exact issue/currentness, reason and evidence refs | Current Work Item+Gate+merge result and native Issue state; no fabricated PASS |
-| Ordinary untagged Issue discussion | no normalized-operation declaration | Free Markdown; never a Task mutation/event. |
+| `work_item` | Canonical Issue body, stable task contract | `data.profile` selects the canonical Issue type; `data.contract` obeys its required profile. `type:task` validates the existing `schemas/task-contract.schema.json`; other Issue types have bounded profile-required fields, checked by the registered verifier. Human context/long acceptance stays Markdown. |
+| `intent` | Agent/tool **request** for a GitHub native Issue mutation | `schemas/github-intent-v2.schema.json` plus operation-specific checks and currentness. The only six actions are `ISSUE_CREATE`, `ISSUE_CONTRACT_UPDATE`, `ISSUE_METADATA_CHANGE`, `ISSUE_DEPENDENCY_CHANGE`, `ISSUE_CLOSE`, `ISSUE_REOPEN`. No separate event/report append operation is permitted. |
+| `event` | **One canonical Agent Event comment**, posted by admitted writer | `data` directly satisfies the existing `schemas/agent-event-v2.schema.json`, with the **same** self-declared actor identity and source refs as previously specified. No nested `event` or duplicate operator fields. |
+| `report` | **One Task Report comment** referencing immutable external documents | `data` validates `schemas/github-report-v2.schema.json` with report type/id/revision, attempt ref, durable manifest ref/digest and capture coverage; publication key is derived from owning Issue + report_id + revision, **not duplicated** in YAML. |
 
-All standardized **Issue mutation families** are covered by this operation registry. It does **not** cause every plain comment or HTTP request to become a normative ADS intent; existing operations outside Issue mutation keep their own source/schema owners. Labels still have no independent Gate/Agent-session truth. The transport GitHub account is **not** the self-declared logical `operator_id`.
+The latest parser/CLI `scripts/verify_github_structured_interaction.py` handles the four kinds, rejects older format markers and returns `SHAPE_VALID_ONLY` or `INVALID_SCHEMA` for declared normative records. Plain unmarked discussion is not an operation. It supports a bounded, deterministic safe YAML mapping and scalar-list profile; richer syntax is not implicitly accepted. `scripts/test_github_structured_interaction.py` covers all kinds and six mutation actions with negative cases. See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md`.
 
-### 16.3 Historic event and report compatibility
+### 16.2 GitHub facts and authority are never in a second writable YAML state
 
-Existing `<!-- ai-dev:event:v2 -->` + YAML and `schemas/agent-event-v2.schema.json` remain canonical for newly emitted accepted events. Existing `<!-- ads:task-report:v1 -->` with KEY=VALUE header and manifest reference remains the accepted report publication format. The v1 interaction envelope MAY wrap a *proposal* to issue one of those records but MUST NOT silently rewrite, duplicate or make their marker a new event family. History remains as originally written, including compatibility rules for previous ADS revisions.
+The Issue body's `data.profile` is a **schema selector**, not a second authoritative Issue Type. Live Issue Type/`type:*` label, `state:*` status, Review Policy, native Dependencies and milestone remain **canonical GitHub objects** under `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md`. A `work_item` document MUST agree with those objects to become runnable; YAML cannot mark an Issue READY merely by description. Issue IDs and parent/child DAG are **not** copied into a mutable YAML state log.
 
-An externally supplied YAML record, GitHub API ACK, human-looking status, ordinary comment, unbound evidence report or local client validation is **never** sufficient to authorize Claim, merge, Independent Review, Validation, Release or changes to frozen Product/L2/DAG. Source-verified GitHub and owner-specific transitions determine actual effects. The validator has no mutation capabilities.
+A normalized `intent` is **untrusted until admitted**. It carries target repo/Issue or null on create, self-declared logical Agent identity, asserted exact prior-currentness ref, intended change and evidence. A schema-valid intent is neither GitHub API permission nor accepted Claim/CAS. The writer MUST read current canonical GitHub facts and enforce the existing Work Item/Dispatch/Claim/review/CI transition and source-provenance rules before modifying the authoritative object. Stale/no-op/conflicting/native-invalid requests are refused with real evidence. No GitHub login-based logical Agent identity test or independent new Owner gate is introduced.
 
-### 16.4 Conformance, adoption and narrow anti-patterns
+### 16.3 Event/comment and report integrity
 
-- Machine reference: `scripts/verify_github_structured_interaction.py` and `scripts/test_github_structured_interaction.py`, with positive/adversarial cases; see `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md` for readable templates and the operation→schema/authority matrix.
-- Opt-in applies only to new documents from an explicitly compatible source pin; **do not retroactively reject** older free-Markdown Issue templates/events or force rewriting thousands of Issue bodies.
-- Reject ambiguous/fabricated state labels, self-dependent edges, truncated or unknown schema, duplicate fields, unbound role/currentness, unverified Task PASS, GitHub-login-as-Agent-ID, arbitrary hidden reasoning, and a non-atomic acceptance attempt.
-- No new Controller, database, trust/Owner identity gate, release check, automatic migration or mandatory Host validation is authorized by this document. Real end-to-end GitHub create/mutation and cross-provider adoption are future consuming-project responsibilities.
+An emitted `event` MUST go through §8.1 admission and use the single `kind: event` comment (not an intermediate event-append mutation). The existing Agent Event v2 payload machine semantics and Review/Validation/Release sources remain intact; `event` is not replaced by a generic pass/fail field. Comments containing quoted YAML or suspicious in-band records do not authorize admission.
+
+An emitted `report` MUST follow §10: immutable sanitized object uploads → readback/checksum → immutable manifest → **one YAML v2 Issue comment**; GitHub Labels apply to the Issue only, not to a comment. The idempotency key is the *derived* `(canonical Issue, report_id, revision)`. Same key and digest may reuse the real existing comment URL; different digest is a conflict, not last-writer-wins. No high-frequency per-step Issue writes. Correction uses `corrects_ref` pointing to the previous actual publication.
+
+### 16.4 Latest-only applicability and conformance
+
+**New consumers of this ADS main/source revision MUST emit and parse only v2.** Older v1/v2 **wrappers** are not supported in the current verifier; historical GitHub documents need not be modified or deleted but are not executable current-format input. This deliberately removes alternate parser paths, legacy write aliases and automatic migration obligations. Historic evidence correctness remains an independent GitHub fact, not an invitation to silently remap older wire formats into current actions.
+
+No new GitHub runtime, controller, standalone database, secret storage, review stage, Agent identity credential requirement, migration job or Release Gate is introduced. The bounded shape checker validates the portable document fields only. Real GitHub/OSS auth, state admission, atomic conditions, durable comment readback and object ACL enforcement belong to the authorized implementer and are **NOT validated by CI shape tests**.
