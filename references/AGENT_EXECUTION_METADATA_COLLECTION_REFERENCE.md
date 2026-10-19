@@ -1,6 +1,6 @@
 # Agent Execution Metadata — Collector Adapter & Storage Reference
 
-**Status:** non-normative implementation guidance for a **separate future project**, not a shipped ADS collector. The only owning standard for this concern is [Agent Task Execution Metadata Standard](../standards/AGENT_EXECUTION_METADATA_STANDARD.md). Earlier normative owners of GitHub/CI/Task Learning/Agent Capability remain authoritative. No project name, runtime or provider API availability is assumed.
+**Status:** non-normative implementation guidance for a **separate future project**, not a shipped ADS collector. The normative owner is [GitHub Agent Interaction Protocol](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md), section 10, **Passive Task execution metadata: collection, storage and use**. This reference provides adapter and storage examples under that existing owner, not a new normative/machine family. Earlier normative owners of GitHub/CI/Task Learning/Agent Capability remain authoritative. No project name, runtime or provider API availability is assumed.
 
 ## 1. Source-of-truth crosswalk: do not duplicate existing machines
 
