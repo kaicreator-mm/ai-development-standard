@@ -363,6 +363,93 @@ def test_all_normative_standards_have_golden_forbidden_rationale_coverage() -> N
     expect_reject(lambda: validate_ref(broken), "broken Golden/Forbidden/rationale anchor was not rejected")
 
 
+def test_github_structured_interaction_v1_source_and_schema_routing() -> None:
+    """Targeted source-only oracle; NOT a claim that a YAML/GitHub runtime exists."""
+    work = read("standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md")
+    protocol = read("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
+    ref = read("references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md")
+    schema = json.loads(read("schemas/task-contract.schema.json"))
+
+    require(work,
+        "Structured Issue contract projection",
+        "<!-- ads:work-item-structured:v1 -->",
+        "format: ads/work-item-markdown-yaml/v1",
+        "schema_ref: schemas/task-contract.schema.json",
+        "Issue body",
+        "schema_ref",
+        "CONTRACT_CONFLICT",
+    )
+    require(protocol,
+        "GitHub Structured Interaction Contract v1",
+        "ISSUE_CREATE", "CONTRACT_EDIT", "CANONICAL_EVENT_APPEND",
+        "REPORT_PUBLICATION", "DEPENDENCY_CHANGE", "ISSUE_CLOSE/REOPEN",
+        "<!-- ai-dev:event:v2 -->", "<!-- ads:task-report:v1 -->",
+        "schemas/agent-event-v2.schema.json",
+        "schemas/task-contract.schema.json",
+        "duplicate keys", "anchors/aliases", "UNAUTHORIZED",
+        "Two-stage validation", "plain", "Opt-in",
+    )
+    require(ref,
+        "## 2. Opt-in structured Task Issue",
+        "## 3. Conformant Agent event-v2 comment",
+        "## 5. Forbidden and adversarial cases",
+        "<!-- ads:work-item-structured:v1 -->",
+        "<!-- ai-dev:event:v2 -->",
+        "schema_ref: schemas/task-contract.schema.json",
+        "format: ads/work-item-markdown-yaml/v1",
+        "REPORT_KIND=EXECUTION_SUMMARY",
+        "N01", "N02", "N03", "N04", "N05", "N06", "N07", "N08",
+        "N09", "N10", "N11", "N12", "N13", "N14", "N15", "N16",
+    )
+
+    # The opt-in YAML wrapper selects the historical Task schema, not a new
+    # invented event/Task schema. The fixture below represents the parsed
+    # example once the two envelope selector fields are stripped.
+    from test_protocol_schemas import validate_subset
+
+    wrapper = {
+        "format": "ads/work-item-markdown-yaml/v1",
+        "schema_ref": "schemas/task-contract.schema.json",
+        "task_id": "T-02",
+        "goal": "Capture supported metadata for one real task execution",
+        "integration_target": "version/v0.1",
+        "baseline_sha": "0123456789abcdef0123456789abcdef01234567",
+        "review_policy": "required",
+        "validation_scope": "concern",
+        "required_gates": ["unit-contract"],
+        "acceptance": [
+            "One measured, source-identified model or tool event is recovered",
+            "Unsupported token counts remain UNKNOWN",
+        ],
+        "dependencies": [],
+        "agent_freedom": "F1_BOUNDED_IMPLEMENTATION",
+    }
+    assert wrapper["format"] == "ads/work-item-markdown-yaml/v1"
+    assert wrapper["schema_ref"] == "schemas/task-contract.schema.json"
+    task_payload = {k: v for k, v in wrapper.items() if k not in ("format", "schema_ref")}
+    assert validate_subset(task_payload, schema) == [], "opt-in Task schema fixture invalid"
+    for name, replacement in (
+        ("baseline_sha", "short-sha"),
+        ("review_policy", "undefined"),
+        ("required_gates", []),
+        ("acceptance", []),
+    ):
+        mutant = dict(task_payload)
+        mutant[name] = replacement
+        assert validate_subset(mutant, schema), f"must reject invalid task {name}"
+    for missing in ("task_id", "goal", "integration_target", "baseline_sha", "review_policy", "required_gates", "acceptance"):
+        mutant = dict(task_payload)
+        mutant.pop(missing)
+        assert validate_subset(mutant, schema), f"must reject omitted task {missing}"
+
+    # No actor identity or state authority arises from a quoted marker; the
+    # chosen schema, actual Issue Type/labels, and source/currentness are
+    # additional checks, and are explicitly NOT simulated here.
+    assert "quoted" in protocol.lower()
+    assert "Legacy" in protocol or "legacy" in protocol
+    assert "no YAML parser" in ref or "YAML parser is already shipped" in ref
+
+
 def test_review_policy_normative_alignment() -> None:
     work_item = read("standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md")
     interaction = read("standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md")
@@ -396,6 +483,7 @@ def main() -> None:
         test_live_markdown_dag_authority_oracle,
         test_negative_examples_cover_core_failures,
         test_all_normative_standards_have_golden_forbidden_rationale_coverage,
+        test_github_structured_interaction_v1_source_and_schema_routing,
         test_review_policy_normative_alignment,
         test_manifest_inventory,
     ]
