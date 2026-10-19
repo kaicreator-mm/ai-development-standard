@@ -1,3 +1,15 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:research-demo
+  contract:
+    hypothesis: "Falsifiable hypothesis with observable witness"
+    acceptance:
+      - "Real evidence for or against hypothesis"
+```
+
 # Research Demo Issue Template
 
 ## Purpose / Architecture UNKNOWN
