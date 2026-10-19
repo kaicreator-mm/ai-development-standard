@@ -1,3 +1,4 @@
 # Pinned only for the v4.14 GitHub-structured contract verifier; existing ADS stdlib-only tests unchanged.
 jsonschema==4.23.0
 PyYAML==6.0.2
+referencing==0.35.1
