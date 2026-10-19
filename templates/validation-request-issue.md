@@ -5,7 +5,7 @@ kind: work_item
 data:
   profile: type:validation
   contract:
-    target_sha: "<REPLACE_WITH_EXACT_COMMIT_SHA>"
+    target_sha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     validation_scope: concern
     expected_checks:
       - "Actual checks on exact target"
