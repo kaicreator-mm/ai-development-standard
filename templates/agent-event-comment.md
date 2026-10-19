@@ -10,6 +10,8 @@ All newly authored Agent Event comments on current ADS MUST use the **single lat
 <!-- ads:github:v2 -->
 ```
 
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
+
 These examples are event payloads wrapped in a current Markdown/YAML document. Historical markers are **not** current parser inputs; GitHub existing records remain historical facts without a parser compatibility obligation.
 
 ## Actor / operator attribution
