@@ -355,6 +355,14 @@ Add event-specific identity/status fields required by `schemas/agent-event-v2.sc
 
 The schema is the machine contract. Writers MUST NOT invent a parallel event version or silently redefine existing field semantics.
 
+### 8.2.1 Unified structured Issue mutation intents (opt-in; #1181)
+
+For new **explicitly normalized** GitHub Issue operations, the caller MAY supply `<!-- ads:github-interaction:v1 -->` Markdown/YAML under the **existing** `GITHUB_WORK_ITEM_CONTRACT_STANDARD.md` `15, using `schemas/github-structured-interaction-v1.schema.json`. This is a typed *untrusted proposal* and route to the **existing** `8.1 short-intent admission, **not** a new canonical event or an alternative source of write/Claim authority. The outcome of static schema validation is `SHAPE_VALID_ONLY`; the actual writer must still resolve current canonical source/currentness, actor's **self-declared** logical attribution, applicable authorization and the lawful GitHub workflow transition. Raw YAML, quoted data and GitHub-login transport attribution are never enough.
+
+In particular, `ISSUE_COMMENT_EVENT` references a nested `agent-event-v2` machine payload and, **only after `8.1 admission**, emits the **original** `<!-- ai-dev:event:v2 -->` record (not a second envelope as a replacement). `ISSUE_COMMENT_REPORT` references the existing `<!-- ads:task-report:v1 -->` publication/Manifest v1 format (`10), with its original idempotency/readback rules. Historical formatted events, old free-form Issue bodies, short-intents and ordinary comments remain readable under the originally pinned contracts. No new `ai-dev:event:v3`, review/validation status or report revision is minted by this binding.
+
+See `references/GITHUB_STRUCTURED_INTERACTION_REFERENCE.md` for the operation map and negative cases; `scripts/verify_github_structured_interaction.py` is a read-only shape validator, not an auto-admitting GitHub writer.
+
 ### 8.3 Historical compatibility
 
 Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
