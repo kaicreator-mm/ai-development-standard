@@ -4,7 +4,7 @@ Use this format for machine-readable Planner / Builder / Reviewer / Validator / 
 
 ## Event schema version
 
-All newly authored Agent Event comments on current ADS MUST use the **single latest-only** GitHub v2 document wrapper. The original Event v2 payload schema is retained within `data` (no double event-intent). Emit the marker as the first line of the actual comment:
+All newly authored Agent Event comments on current ADS MUST use the **single latest-only** GitHub v3 document wrapper. The original Event v2 payload schema is retained within `data` (no double event-intent). Emit the marker as the first line of the actual comment:
 
 ```html
 <!-- ads:github -->
