@@ -1,6 +1,9 @@
 # ADS v4.14 — Process Audit and Release Qualification Pending
 
-Status: **VERSION_CANDIDATE_SOURCE_ONLY / PRODUCT_FREEZE_PENDING / L2_FREEZE_PENDING / RELEASE_NOT_QUALIFIED / MAIN_NOT_MERGED**
+Status: **VERSION_CANDIDATE_SOURCE_ONLY / PRODUCT_FROZEN / L2_FROZEN / DAG_SOURCE_FROZEN / LIVE_DAG_NOT_MATERIALIZED / RELEASE_NOT_QUALIFIED / MAIN_NOT_MERGED**
+
+> **Currentness addendum after independent R1 and explicit freeze checkpoints (supersedes historical table entries for Product/L2/DAG only):** R0 full independent review and R1 focused delta review found no remaining P0/P1; documentation P2 corrected by [PR #1195](https://github.com/kaicreator-mm/ai-development-standard/pull/1195). [PR #1196](https://github.com/kaicreator-mm/ai-development-standard/pull/1196) added **separate exact-blob Product, L2 and planning DAG freeze records** at `docs/implementation/4.14.0/checkpoints/` (version branch `b3cf1a38c70aba1ada9b9f70e57dcd69e9ac26b4`, tree `3955da34f509c08d4d817107b507dac009f6b692`). Product PRD blob `49403efdeceb4f00c79c123bd03b414c68692d24`, L2 blob `7e1771754b06ba837b5c5cb558d937e92603eab4`, DAG source blob `5b42df3eae406597d58ae6fb64ddfb2a7da6fae1`. The **original unmodified** source-review/process rows below document the pre-freeze snapshot and discovered stage-order deviation; they are historical, not current unresolved freeze blockers. **Native live GitHub Issue Dependencies remain absent**, and final version Release Qualification remains `NOT_READY`. Private OSS ACL/atomic GitHub CAS still `NOT_RUN/NOT_PROVEN`. No `main` merge authorized.
+
 Parent: [#1187](https://github.com/kaicreator-mm/ai-development-standard/issues/1187).
 Version branch: `version/v4.14`, forked from `main@b1126df404b09b4d3ab9deedaaf26d9b9d5e1a5e`.
 
