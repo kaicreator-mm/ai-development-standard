@@ -141,7 +141,7 @@ class ContractTests(unittest.TestCase):
         mut = copy.deepcopy(BASE)
         mut["operation"] = "ISSUE_CLOSE"
         mut["payload"] = {"reason": "I say PASS", "evidence_refs": []}
-        fails(mk(mut), "evidence refs")
+        fails(mk(mut), "missing nested YAML value")
         mut = copy.deepcopy(BASE)
         mut["operation"] = "ISSUE_COMMENT_REPORT"
         mut["payload"] = {"report_kind": "EXECUTION_SUMMARY", "report_id": "id", "revision": 1,
