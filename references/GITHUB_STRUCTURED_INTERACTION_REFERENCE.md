@@ -17,7 +17,7 @@ Normative owners are [GitHub Work Item Contract](../standards/GITHUB_WORK_ITEM_C
 
 The following is a **fictional document-shape example**. All refs and hashes are placeholders rather than actual current evidence.
 
-```markdown
+~~~~markdown
 <!-- ads:work-item:v1 -->
 ```yaml
 schema_version: ads/work-item/v1
@@ -46,13 +46,13 @@ Collect metadata-only events and preserve provider-native request IDs.
 
 ## Limitations
 This Issue body is the *stable contract*; GitHub labels/dependencies remain live native objects.
-```
+~~~~
 
 The inner example is shown as a Markdown block for visibility. An actual Issue starts at the marker **without** an outer Markdown fence. Work Item YAML `work_item_type` MUST agree with canonical native Issue Type / `type:*` label when read; a snapshot mismatch requires reconciliation, not a new authoritative status. For type:task, `contract` MUST satisfy existing `task-contract.schema.json`. For other current Issue types the v1 profile enforces the bounded required keys in `scripts/verify_github_structured_interaction.py`, **only for opted-in new documents**, not frozen historical prose templates.
 
 ## 3. Normalized mutation intent — positive label/state metadata
 
-```markdown
+~~~~markdown
 <!-- ads:github-interaction:v1 -->
 ```yaml
 schema_version: ads/github-structured-interaction/v1
@@ -74,7 +74,7 @@ payload:
 
 Reason: propose admission for a ready Task. This document is **not** the accepted Claim.
 
-```
+~~~~
 
 Before a writer mutates native Issue state, it MUST read the real current Work Item, dependencies, admitted Claim/Dispatch and exact source, check expected revision/currentness, actor's **self-declared** role, the lawful state transition and original owner rules, and refuse on conflict. Valid YAML is **not** enough to enter `claimed`. No new credential/Owner check is inferred from the GitHub transport login. The existing v4.12 Claim protocol still supplies the atomic compare-and-set admission source.
 
