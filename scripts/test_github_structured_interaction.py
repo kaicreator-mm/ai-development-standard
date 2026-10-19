@@ -120,6 +120,60 @@ class V414(unittest.TestCase):
                 body=(ROOT/"templates"/name).read_text(encoding="utf-8")
                 self.assertEqual(verify_markdown(body,"work_item"),"SHAPE_VALID_ONLY")
 
+    def test_real_github_pilot_snapshots_and_executable_code(self):
+        """Snapshots were fetched from live ai-dev-pilot #20/#21. This CI rechecks exact bytes offline."""
+        import hashlib
+        import json
+        import subprocess
+        import sys
+        folder=ROOT/"docs/implementation/4.14.0/dogfood"
+        snap=json.loads((folder/"LIVE_READBACK_SNAPSHOT.json").read_text(encoding="utf-8"))
+        for kind,filename in (
+            ("work_item","REAL_GITHUB_WORK_ITEM.md"),
+            ("event","REAL_GITHUB_EVENT.md"),
+            ("report","REAL_GITHUB_REPORT.md"),
+        ):
+            with self.subTest(kind=kind):
+                self.assertEqual(verify_markdown((folder/filename).read_text(encoding="utf-8"),kind),
+                                 "SHAPE_VALID_ONLY")
+        self.assertEqual(snap["source_issue_number"],20)
+        self.assertEqual(snap["source_issue_state"],"closed")
+        self.assertEqual(snap["source_pr_base"],"smoke/v414-base")
+        self.assertTrue(snap["source_pr_merged"])
+        self.assertEqual(snap["source_pr_merge_sha"],snap["source_base_branch_head"])
+        self.assertEqual(snap["private_oss_acl"],"NOT_RUN")
+        self.assertEqual(snap["github_native_issue_dependency_write"],"NOT_AVAILABLE_IN_CONNECTED_API")
+        self.assertEqual(snap["atomic_github_issue_CAS"],"NOT_PROVEN")
+
+        # Git blob hashes prove these local fixtures equal their observed published GitHub blobs.
+        for name,expected in (
+            ("REAL_GITHUB_SOURCE.py",snap["smoke_code_blob"]),
+            ("REAL_GITHUB_SUMMARY.md",snap["report_summary_blob"]),
+            ("REAL_GITHUB_OBJECT_MANIFEST.json",snap["report_manifest_blob"]),
+        ):
+            data=(folder/name).read_bytes()
+            git_blob=hashlib.sha1(("blob "+str(len(data))+"\0").encode()+data).hexdigest()
+            self.assertEqual(git_blob,expected)
+        man_path=folder/"REAL_GITHUB_OBJECT_MANIFEST.json"
+        summary=folder/"REAL_GITHUB_SUMMARY.md"
+        self.assertEqual(hashlib.sha256(man_path.read_bytes()).hexdigest(),
+                         snap["report_manifest_sha256"])
+        self.assertEqual(hashlib.sha256(summary.read_bytes()).hexdigest(),
+                         snap["report_summary_sha256"])
+        man=json.loads(man_path.read_text(encoding="utf-8"))
+        self.assertEqual(man["schema_version"],"ads/task-report-manifest/v1")
+        self.assertEqual(man["documents"][0]["size_bytes"],summary.stat().st_size)
+        self.assertEqual(man["documents"][0]["sha256"],snap["report_summary_sha256"])
+        published=__import__("yaml").safe_load(
+            (folder/"REAL_GITHUB_REPORT.md").read_text(encoding="utf-8").split("```yaml\n",1)[1].split("\n```",1)[0]
+        )
+        self.assertEqual(published["data"]["manifest_sha256"],snap["report_manifest_sha256"])
+        self.assertIn("cfb345dbc8e7a020b56d79c2ac7572ecfe7eb22c",
+                      published["data"]["manifest_ref"])
+        result=subprocess.run([sys.executable,str(folder/"REAL_GITHUB_SOURCE.py")],
+                              capture_output=True,text=True,check=True)
+        self.assertIn("3 cases passed",result.stdout)
+
     def test_shape_is_never_admission(self):
         self.assertEqual(verify_markdown(markdown("intent",INTENT)),"SHAPE_VALID_ONLY")
         self.assertNotEqual(validate_record(envelope("intent",INTENT)),"ADMITTED")
