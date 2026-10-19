@@ -595,6 +595,27 @@ Canonical examples:
 
 A Reviewer acting independently MUST NOT modify product code in the same review role/session; findings route back through a Builder dispatch.
 
+### Agent completion decision note (prospective; source-only)
+
+After a Task reaches a genuine terminal `COMPLETED` outcome, its acting Agent **MUST append a concise, source-bound summary of the approach and its reason to the canonical GitHub Issue**, or refer to an already-published exact Issue comment. This is a **reporting convention** on the existing append-only Issue surface, not an `ai-dev:event` variant, fresh Task Pack, separate approval, or new Review/CI/merge/Release gate. Keep one compact report rather than duplicating source, logs or the existing accepted outcome event.
+
+```text
+TASK_DECISION_SUMMARY=REPORTED
+ACTOR=declared role + operator_id (+ session_ref when available)
+SUBJECT=Issue and exact PR/implementation SHA or immutable artifact ref
+DECISION=bounded approach selected, alternative/trade-off and factual rationale
+EXECUTION=unexpected constraint/repair, or NONE
+EVIDENCE=source, tests, CI, review refs; actual PASS/FAIL/BLOCKED/NOT_RUN scope
+LIMITS=unproven behavior, remaining risks and follow-up ref, or NONE_KNOWN
+TASK_LEARNING=NONE_MATERIAL | resolvable task-learning-v1/v2 ref(s)
+```
+
+Any factual rationale or claim MUST be recoverable from the cited external source/test/validation/Review; self-reported intent or explanation is not independent verification. Never request or record private chain-of-thought, secrets, unobserved timing/token/cost, fabricated CI results, or unexecuted Host/Hidden PASS. Declared logical Agent attribution remains distinct from GitHub account identity (§5). `BLOCKED`/`FAIL`/superseded attempts SHOULD also report concisely to avoid success-only hindsight; all old canonical events stay historical and append-only.
+
+**Existing Task Learning remains optional/materiality-driven:** a normal Task with no reusable learning writes `TASK_LEARNING=NONE_MATERIAL` inside its completion note, with no empty learning object. Material reusable experience follows the *existing* Task Learning v1/v2 source binding, compatible read rules and `EXECUTION_ARCHITECTURE_STANDARD.md` §30; mere comment frequency or word count never becomes evidence quality or mandatory schema fields.
+
+If GitHub write access is unavailable, report `TASK_DECISION_SUMMARY=NOT_PUBLISHED` with the actual transport blocker to the existing handoff/visible execution channel, then repair the comment when possible. Do not forge a comment URI, suppress genuine completion or manufacture a new Gate FAIL/PASS solely from comment delivery. **Only a downstream orchestration consumer** (e.g. Tally) MAY periodically summarize actual Issue+CI+Review+Task Learning evidence; compare Agent outcomes only within similarly risky/difficult roles/environments with counts and missing-data qualifiers, not by raw Issue closes or self-rated success. Such analysis does not grant new Agent authority or modify ADS standards automatically.
+
 ## 11. Merge interaction
 
 A Task/Fix PR becomes `merge-ready` only when the deterministic prerequisites from `EXECUTION_ARCHITECTURE_STANDARD.md` are satisfied, including:
