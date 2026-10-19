@@ -687,7 +687,8 @@
         "manifest_ref": {
           "type": "string",
           "minLength": 1,
-          "pattern": "(?i)^(?!.*(?:x-amz-signature|x-oss-signature|[?&]token=|[?&]sig=)).+$"
+          "pattern": "^[^\\s?#]+$",
+          "description": "Stable, whitespace-free locator with no URL query or fragment; signed URLs and query-borne credentials are not valid publication identities. Secret scanning, ACL and resolver checks are separate publication obligations."
         },
         "manifest_sha256": {
           "type": "string",
