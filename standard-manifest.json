@@ -126,9 +126,6 @@
       "schemas/agent-capability-evidence-v1.schema.json",
       "schemas/agent-capability-profile-v1.schema.json",
       "schemas/agent-event-v2.schema.json",
-      "schemas/github-document-v2.schema.json",
-      "schemas/github-intent-v2.schema.json",
-      "schemas/github-report-v2.schema.json",
       "schemas/artifact-promotion-v1.schema.json",
       "schemas/assurance-plan-v1.schema.json",
       "schemas/authority-applicability-entry-v1.schema.json",
@@ -163,7 +160,8 @@
       "schemas/validation-report.schema.json",
       "schemas/assurance-plan-v2.schema.json",
       "schemas/role-execution-profile-v1.schema.json",
-      "schemas/task-learning-v2.schema.json"
+      "schemas/task-learning-v2.schema.json",
+      "schemas/github/v4.14/structured-interaction.schema.json"
     ],
     "profiles": [
       "profiles/README.md",
@@ -339,7 +337,9 @@
       "scripts/v412_scaffold_dag_check.py",
       "scripts/test_v412_ads_compatible_select.py",
       "scripts/test_v412_scaffold_dag_check.py",
-      "scripts/verify_standard.py"
+      "scripts/verify_standard.py",
+      "scripts/requirements-github-v414.txt",
+      "scripts/test_v414_schema_portability.cjs"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"

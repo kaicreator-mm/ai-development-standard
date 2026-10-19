@@ -1,0 +1,34 @@
+{
+  "schema_version": "ads/task-report-manifest/v1",
+  "report_id": "ads:v414:ai-dev-pilot:20:attempt-1:summary",
+  "report_kind": "EXECUTION_SUMMARY",
+  "revision": 1,
+  "work_item_ref": "github:kaicreator-mm/ai-dev-pilot#20",
+  "attempt_ref": "ads:v414:smoke:attempt-1",
+  "attempt_binding": "COLLECTOR_ONLY",
+  "actor": {
+    "actor_role": "builder",
+    "operator_kind": "chatgpt-web",
+    "operator_id": "chatgpt-web:v414-smoke",
+    "session_ref": "v414-github-smoke"
+  },
+  "subject_ref": "git:kaicreator-mm/ai-dev-pilot@e3ec778a825569f56bdbbb39f6164b154035509d",
+  "generated_at": "2026-10-19T10:45:00Z",
+  "privacy_class": "PUBLISHABLE",
+  "coverage": "PARTIAL",
+  "source_refs": [
+    "https://github.com/kaicreator-mm/ai-dev-pilot/issues/20",
+    "https://github.com/kaicreator-mm/ai-dev-pilot/pull/21",
+    "git:kaicreator-mm/ai-dev-pilot@e3ec778a825569f56bdbbb39f6164b154035509d"
+  ],
+  "documents": [
+    {
+      "kind": "EXECUTION_SUMMARY",
+      "storage_ref": "https://github.com/kaicreator-mm/ai-dev-pilot/blob/d8ff8d3e2c651067672e43723b95ed79ffb9f89e/smoke/v414_summary.md",
+      "media_type": "text/markdown",
+      "size_bytes": 857,
+      "sha256": "2e7838c23112e2fac27b962f46b8a65accf05f764d50b26bf58f7be85eeaab8e"
+    }
+  ],
+  "supersedes": null
+}

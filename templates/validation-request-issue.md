@@ -1,11 +1,11 @@
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: work_item
 data:
   profile: type:validation
   contract:
-    target_sha: "<REPLACE_WITH_EXACT_COMMIT_SHA>"
+    target_sha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     validation_scope: concern
     expected_checks:
       - "Actual checks on exact target"

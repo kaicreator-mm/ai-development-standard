@@ -239,14 +239,14 @@ Notes: `COLLECTOR_ONLY` is not proof of a canonical accepted Dispatch; it means 
 
 A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2/` document and manifest path, and `supersedes: {"storage_ref": "object:.../r1/manifest.json", "sha256": "<actual r1 manifest SHA-256>", "revision": 1}`. The `<...>` span here is descriptive only, not valid JSON. Retain the immutable r1 bytes for provenance for as long as allowed by project retention rules.
 
-### 7.2 Latest-only v2 Issue comment example (object Manifest remains v1)
+### 7.2 Latest-only v3 Issue comment example (object Manifest remains v1)
 
-The GitHub **comment** now uses the common \`<!-- ads:github:v2 -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github-report-v2.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
+The GitHub **comment** now uses the common \`<!-- ads:github -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
 
 ~~~~markdown
-<!-- ads:github:v2 -->
+<!-- ads:github -->
 ```yaml
-schema: ads/github/v2
+schema: ads/github/v3
 kind: report
 data:
   report_id: task-report:example-repo:120:attempt-001:execution-summary
