@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/github-document-v2.schema.json",
+  "title": "ADS GitHub Document v2 — one canonical tagged Markdown/YAML envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "kind",
+    "data"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ads/github/v2"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "work_item",
+        "intent",
+        "event",
+        "report"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  }
+}
