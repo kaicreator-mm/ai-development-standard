@@ -1,6 +1,8 @@
 # AI Development Standard
 
-当前版本：`v4.13.1`（**源码身份不等于 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+当前版本：`v4.14.0`（源码候选；**VERSION/README 的版本身份不代表 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+
+> **v4.14.0 范围（版本候选）：** Latest-only GitHub Structured Interaction v3：一个 Markdown/YAML Envelope、一个 JSON Schema Draft 2020-12 完整判别式 Schema、十种 Work Item Profile、六种原生 Issue mutation intent、直接 Event/Report 评论。静态 Schema 校验与 GitHub 当前事实/Claim/Review/Release 严格分离；复用 Task Contract / Agent Event v2 数据语义。已经在 [ai-dev-pilot Issue #20](https://github.com/kaicreator-mm/ai-dev-pilot/issues/20) 和 [PR #21](https://github.com/kaicreator-mm/ai-dev-pilot/pull/21) 完成真实隔离 GitHub 生命周期和内容寻址报告验证。Product/L2/DAG 源冻结及原生 Issue Dependency 的证据在 `docs/implementation/4.14.0/`。本条记录**不声明**最终 Candidate Freeze、Release Qualification、主分支合并或 Tag。私有 OSS ACL 与跨并发 GitHub CAS 不属于本版静态标准的已验证运行时。
 
 > **v4.13.1 范围：v4.13.0 消费项目流程验收定向修复**。仅修复项目接入必需字段校验、原生 DAG 准入事实、CI Provider 预声明与模拟项目验收范围污染；不改变协议/schema，也不新增 Tally Runtime。\n\n> **v4.13.0 范围：ADS Foundation for Tally v2**。本版本仅提供 Organization Development Environment Profile、对外可消费的 GitHub Task/Claim/Agent Attempt 互操作参考、以及源证据约束下的 ADS 兼容升级预备提案 → 项目 opt-in PR → 合并前激活/回滚规范。ADS 保持独立标准仓库；实际 Toolkit、mise/Worktrunk、CLI/Skills/MCP、Agent/多项目调度与跨项目更新器均在 [Tally 项目](https://github.com/kaicreator-mm/tally/issues/55) 独立开发、验证和发布，不作为 ADS v4.13 的发布门槛。FR04 按交付能力验证的现行规范已满足要求，因此没有另增验证引擎。
 
