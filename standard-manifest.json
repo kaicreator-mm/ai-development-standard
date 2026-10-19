@@ -338,7 +338,8 @@
       "scripts/test_v412_ads_compatible_select.py",
       "scripts/test_v412_scaffold_dag_check.py",
       "scripts/verify_standard.py",
-      "scripts/requirements-github-v414.txt"
+      "scripts/requirements-github-v414.txt",
+      "scripts/test_v414_schema_portability.cjs"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
