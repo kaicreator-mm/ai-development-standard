@@ -227,6 +227,7 @@
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
+      ".github/workflows/verify-github-structured-interaction.yml",
       "scripts/resolve_standard_read_set.py",
       "scripts/test_execution_architecture.py",
       "scripts/test_pointer_only_trigger_contract.py",
