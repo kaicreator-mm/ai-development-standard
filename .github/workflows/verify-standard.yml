@@ -25,6 +25,7 @@ jobs:
       - run: python scripts/test_verify_project_standard.py
       - run: python scripts/test_project_execution_profile.py
       - run: python scripts/test_protocol_schemas.py
+      - run: python scripts/test_github_structured_interaction.py
       - run: python scripts/test_v33_lifecycle_contracts.py
       - run: python scripts/test_v33_semantic_regressions.py
       - run: python scripts/test_v34_lifecycle_contracts.py
