@@ -175,3 +175,146 @@ A future independent implementation project SHOULD produce, under its own Produc
 7. **No cross-system authorization**: report source truth/currentness; do not write canonical GitHub Task/Claim/Review/Validation/Release from telemetry observation.
 
 ADS can define/revise standards using normal versioning; **this reference does not create an implementation Task or launch an independent project**.
+
+
+## 7. Task Report Publication Contract v1 — document + Issue locator
+
+**Normative owner:** `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §10, `Task Report Publication Contract v1`. This section is an illustrative interoperability example for an implementation project. It is not an active collector, a new ADS machine schema family or a GitHub Event v3.
+
+### 7.1 Manifest example — one final Attempt revision
+
+This is a **fictional valid-shape example** with deliberately dummy 64-hex digests; do not present these bytes as verified evidence. All file locators represent immutable object IDs resolved with project authorization, **not publicly fetchable credentials**.
+
+```json
+{
+  "schema_version": "ads/task-report-manifest/v1",
+  "report_id": "task-report:example-repo:120:attempt-001:execution-summary",
+  "report_kind": "EXECUTION_SUMMARY",
+  "revision": 1,
+  "work_item_ref": "github:example-org/example-repo#120",
+  "attempt_ref": "collector:example-repo:attempt-001",
+  "attempt_binding": "COLLECTOR_ONLY",
+  "actor": {
+    "role": "builder",
+    "operator_kind": "codex",
+    "operator_id": "agent:builder-01",
+    "session_ref": "example-session-01"
+  },
+  "subject_ref": "git:example-org/example-repo@0123456789abcdef0123456789abcdef01234567",
+  "generated_at": "2026-10-19T06:10:00Z",
+  "privacy_class": "PROJECT_PRIVATE",
+  "coverage": "PARTIAL",
+  "source_refs": [
+    "github:example-org/example-repo#120",
+    "github:example-org/example-repo/pull/125"
+  ],
+  "documents": [
+    {
+      "kind": "EXECUTION_SUMMARY",
+      "storage_ref": "object:private-reports/example-repo/tasks/120/attempt-001/r1/summary.md",
+      "media_type": "text/markdown",
+      "size_bytes": 2048,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "kind": "METRICS",
+      "storage_ref": "object:private-reports/example-repo/tasks/120/attempt-001/r1/metrics.json",
+      "media_type": "application/json",
+      "size_bytes": 1024,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "kind": "TRACE",
+      "storage_ref": "object:private-reports/example-repo/tasks/120/attempt-001/r1/events.jsonl.gz",
+      "media_type": "application/gzip",
+      "size_bytes": 4096,
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "supersedes": null
+}
+```
+
+Notes: `COLLECTOR_ONLY` is not proof of a canonical accepted Dispatch; it means this example's Attempt was **not** bound to one. `coverage=PARTIAL` expressly avoids asserting all model, tool or billing events were captured. `subject_ref` is the exact subject claimed by the producer; a consumer re-resolves it against authoritative source. A real publisher computes the **manifest SHA-256 over its actual UTF-8 JSON bytes**, stores the manifest at an immutable revision identity such as `object:private-reports/example-repo/tasks/120/attempt-001/r1/manifest.json`, and publishes that digest with the link; a manifest cannot embed its own final digest without circularity.
+
+A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2/` document and manifest path, and `supersedes: {"storage_ref": "object:.../r1/manifest.json", "sha256": "<actual r1 manifest SHA-256>", "revision": 1}`. The `<...>` span here is descriptive only, not valid JSON. Retain the immutable r1 bytes for provenance for as long as allowed by project retention rules.
+
+### 7.2 Compact Issue comment example
+
+The real producer uses the **actual verified manifest checksum**, not the dummy digest shown here. Comment type is classified by the literal marker/header; GitHub Labels classify Issues, **not comments**.
+
+```text
+<!-- ads:task-report:v1 -->
+REPORT_KIND=EXECUTION_SUMMARY
+REPORT_ID=task-report:example-repo:120:attempt-001:execution-summary
+REPORT_REVISION=1
+ATTEMPT_REF=collector:example-repo:attempt-001
+PUBLICATION_KEY=github:example-org/example-repo#120 | task-report:example-repo:120:attempt-001:execution-summary | 1
+MANIFEST_REF=object:private-reports/example-repo/tasks/120/attempt-001/r1/manifest.json
+MANIFEST_SHA256=dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+
+TASK_DECISION_SUMMARY=REPORTED
+ACTOR=builder, agent:builder-01, session_ref=example-session-01
+SUBJECT=Issue #120, PR #125, git:example-org/example-repo@0123456789abcdef0123456789abcdef01234567
+DECISION=Reused existing receipt helper rather than duplicating a parser; actual source PR required.
+EXECUTION=No unexpected repair evidenced beyond cited PR; or NONE.
+REUSE=existing helper source ref in PR
+EVIDENCE=source PR ref; CI=NOT_RUN unless independently linked
+LIMITS=collector coverage PARTIAL; model billing UNKNOWN
+TASK_LEARNING=NONE_MATERIAL
+```
+
+This is **one Issue comment**, serving the existing Level 1 duty and the manifest publication locator together. A second standalone summary is unnecessary. No raw token log, tool argument, private prompt, secret or signed URL belongs in the comment.
+
+### 7.3 Suggested storage convention (not a forced vendor layout)
+
+```text
+<private-immutable-object-root>/
+  example-repo/
+    tasks/
+      120/
+        attempts/
+          attempt-001/
+            r1/
+              summary.md
+              metrics.json
+              events.jsonl.gz
+              manifest.json    <-- publish after confirming included files
+            r2/
+              summary.md
+              manifest.json    <-- new immutable correction/revision
+```
+
+Use OSS/S3/MinIO stable immutable object IDs, or a cloud drive's **stable file ID plus verified checksum** and source-specific access/retention controls; neither a mutable shared-name file nor a temporary signed download URL is a valid durable publication locator. For private storage, the GitHub comment can contain an **opaque resolver URI** and a source-bound digest; the private resolver returns an authorized temporary URL on demand. The comment itself must be safe at the Issue's actual public/private visibility level.
+
+Publication order: (1) reserve a source-stable `report_id`/Attempt key; (2) write scrubbed files under immutable object IDs and verify actual bytes/digests; (3) write immutable manifest and verify its own digest; (4) read all accessible existing Issue comments/pagination for `PUBLICATION_KEY`; (5) publish one concise comment and read back its real ID/URL; (6) if delivery outcome ambiguous, re-read/reconcile before retrying. Never treat a successful object upload as proof that a GitHub comment was written.
+
+### 7.4 Idempotency/correction cases
+
+| Case | Producer action | Consumer outcome |
+| --- | --- | --- |
+| Same report ID/revision/key and same manifest digest delivered twice | Re-read first actual comment, do not create second where controllable | One primary publication; repeated transport receipt not new usage |
+| Same key and different manifest SHA-256 | Raise `CONFLICT`, examine source and use new revision or correction | Both source facts preserved; no silent last-writer-wins |
+| First POST timed out after GitHub may have accepted it | Full Issue comments readback before retry | Actual URL if found; else queued bounded retry, no fabricated comment URI |
+| Two publishers race without a shared lease | One publisher queue is preferable; if duplicates arise mark duplicates in derived view with links | No claimed exactly-once guarantee from GitHub comment POST |
+| `EXECUTION_CORRECTION` after stale source or redaction | New report references superseded publication; retain permitted historical receipts | Subsequent readers follow authoritative corrections without deleting history |
+| Object exists but manifest unavailable/checksum wrong | Hold comment publication; retry source or record local publication failure | `NOT_PUBLISHED`/unavailable, never an Issue-linked PASS |
+| Manifest storage uses expiring presigned HTTPS link | Publish stable opaque resolver locator instead | Temporary signed URL never becomes durable Issue URL |
+| Issue Label `task-report:available` applied | Search hint only | Doesn't prove the individual report/manifest is valid |
+| Failed/blocked Attempt with material evidence | Emit terminal summary when applicable; truthfully name failure and incomplete coverage | Not a successful Task completion or automatic Review/Validation FAIL |
+| API limit 429/403 with `Retry-After` or other primary/secondary notice | Queue/coalesce; obey official headers and exponential backoff with jitter | Task work continues; report remains pending until real readback |
+
+### 7.5 GitHub write budget and data-free implementation
+
+**MVP recommendation:** one terminal summary comment per actual Attempt, then only *material* Learning/Evidence/Correction comments. Normal high-frequency tool/step telemetry stays in immutable objects. Project-selected queueing may coalesce pending updates. Use Webhooks and conditional GET where supported instead of aggressive polling. Serialized mutating requests (at least ~1 second spacing is GitHub's official best-practice advice as of writing) and server-provided backoff/rate-limit headers are preferable to fixed hourly budget claims. GitHub secondary limits are variable and not a guaranteed numeric service quota.
+
+With no DB, the independent collector can reconstruct an index from **Issue comment publication markers + stable object manifests**. It still needs a durable, idempotent **publisher queue/journal** (which can be files/object-based) for network partitions, retry safety and multi-writer conflict handling. GitHub does **not** provide an atomic transaction spanning OSS object writes and Issue comment POST; records must be recoverable at every intermediate stage.
+
+### 7.6 Producer and consumer acceptance matrix
+
+1. A single valid manifest and real source-bound checksum link on a completed Attempt can serve the existing Level 1 note and the document index.
+2. Wrong `schema_version`, `report_kind`, negative revision/size, missing sha256, mutable document ref or ambiguous Attempt link is rejected or held as UNKNOWN; do not silently accept.
+3. `supersedes` is null for r1 and points to exactly r(n-1) bytes for successor; a correction's declared target is explicit.
+4. A public Issue containing a restricted raw URL/secret is a publication failure even when document checksum matches.
+5. Duplicate/collision, missing paginated comments, ambiguous POST, provider rate limits, private drive permissions and disappearance of source objects all fail honestly, with Task authority unchanged.
+6. A Level 1 Issue note published independently before any collector exists remains valid; the collector may link it as an exact existing comment rather than duplicate it.
