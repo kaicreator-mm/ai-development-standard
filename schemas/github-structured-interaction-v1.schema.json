@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/github-structured-interaction-v1.schema.json",
+  "title": "ADS GitHub Structured Interaction v1 — non-authoritative Issue mutation intent envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "intent_id",
+    "operation",
+    "target",
+    "actor",
+    "expected_source_ref",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "ads/github-structured-interaction/v1"
+    },
+    "intent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "ISSUE_CREATE",
+        "ISSUE_CONTRACT_UPDATE",
+        "ISSUE_METADATA_CHANGE",
+        "ISSUE_DEPENDENCY_CHANGE",
+        "ISSUE_COMMENT_EVENT",
+        "ISSUE_COMMENT_REPORT",
+        "ISSUE_CLOSE",
+        "ISSUE_REOPEN"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "issue_ref"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "issue_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^#[1-9][0-9]*$"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_role",
+        "operator_kind",
+        "operator_id"
+      ],
+      "properties": {
+        "actor_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transport_actor": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "expected_source_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
