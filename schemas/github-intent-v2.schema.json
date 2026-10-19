@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/github-intent-v2.schema.json",
+  "title": "ADS GitHub typed mutation intent v2 (pre-admission only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "operation",
+    "target",
+    "actor",
+    "expected_ref",
+    "change"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "ISSUE_CREATE",
+        "ISSUE_CONTRACT_UPDATE",
+        "ISSUE_METADATA_CHANGE",
+        "ISSUE_DEPENDENCY_CHANGE",
+        "ISSUE_CLOSE",
+        "ISSUE_REOPEN"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "issue"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "issue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "operator_kind",
+        "operator_id"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "session_ref": {
+          "type": "string"
+        }
+      }
+    },
+    "expected_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "change": {
+      "type": "object"
+    }
+  }
+}
