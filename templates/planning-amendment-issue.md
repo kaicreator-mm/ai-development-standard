@@ -1,3 +1,16 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:planning
+  contract:
+    goal: "Bounded planning amendment"
+    frozen_inputs: "Exact Product/L2/DAG ref"
+    acceptance:
+      - "Source-bound planning change documented"
+```
+
 # Planning Amendment — <version> <change>
 
 ## Identity

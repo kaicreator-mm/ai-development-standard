@@ -239,32 +239,37 @@ Notes: `COLLECTOR_ONLY` is not proof of a canonical accepted Dispatch; it means 
 
 A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2/` document and manifest path, and `supersedes: {"storage_ref": "object:.../r1/manifest.json", "sha256": "<actual r1 manifest SHA-256>", "revision": 1}`. The `<...>` span here is descriptive only, not valid JSON. Retain the immutable r1 bytes for provenance for as long as allowed by project retention rules.
 
-### 7.2 Compact Issue comment example
+### 7.2 Latest-only v2 Issue comment example (object Manifest remains v1)
 
-The real producer uses the **actual verified manifest checksum**, not the dummy digest shown here. Comment type is classified by the literal marker/header; GitHub Labels classify Issues, **not comments**.
+The GitHub **comment** now uses the common \`<!-- ads:github:v2 -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github-report-v2.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
 
-```text
-<!-- ads:task-report:v1 -->
-REPORT_KIND=EXECUTION_SUMMARY
-REPORT_ID=task-report:example-repo:120:attempt-001:execution-summary
-REPORT_REVISION=1
-ATTEMPT_REF=collector:example-repo:attempt-001
-PUBLICATION_KEY=github:example-org/example-repo#120 | task-report:example-repo:120:attempt-001:execution-summary | 1
-MANIFEST_REF=object:private-reports/example-repo/tasks/120/attempt-001/r1/manifest.json
-MANIFEST_SHA256=dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+~~~~markdown
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: report
+data:
+  report_id: task-report:example-repo:120:attempt-001:execution-summary
+  report_kind: EXECUTION_SUMMARY
+  revision: 1
+  attempt_ref: collector:example-repo:attempt-001
+  manifest_ref: object:private-reports/example-repo/tasks/120/attempt-001/r1/manifest.json
+  manifest_sha256: dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+  coverage: PARTIAL
+```
+
+## Decision and evidence
 
 TASK_DECISION_SUMMARY=REPORTED
 ACTOR=builder, agent:builder-01, session_ref=example-session-01
 SUBJECT=Issue #120, PR #125, git:example-org/example-repo@0123456789abcdef0123456789abcdef01234567
-DECISION=Reused existing receipt helper rather than duplicating a parser; actual source PR required.
-EXECUTION=No unexpected repair evidenced beyond cited PR; or NONE.
-REUSE=existing helper source ref in PR
-EVIDENCE=source PR ref; CI=NOT_RUN unless independently linked
-LIMITS=collector coverage PARTIAL; model billing UNKNOWN
+DECISION=Reuse existing helper rather than duplicate parser; cite actual source PR.
+EVIDENCE=CI NOT_RUN unless independently linked
+LIMITS=PARTIAL collector coverage; billing UNKNOWN
 TASK_LEARNING=NONE_MATERIAL
-```
+~~~~
 
-This is **one Issue comment**, serving the existing Level 1 duty and the manifest publication locator together. A second standalone summary is unnecessary. No raw token log, tool argument, private prompt, secret or signed URL belongs in the comment.
+No explicit \`derived publication identity\` or second \`ISSUE_COMMENT_REPORT\` intent is emitted. The GitHub publisher derives dedupe identity from **actual owning Issue + report_id + revision**, reads back the real comment and reconciles provider retries. GitHub Labels may mark the whole Issue, never an individual comment.
 
 ### 7.3 Suggested storage convention (not a forced vendor layout)
 
@@ -287,7 +292,7 @@ This is **one Issue comment**, serving the existing Level 1 duty and the manifes
 
 Use OSS/S3/MinIO stable immutable object IDs, or a cloud drive's **stable file ID plus verified checksum** and source-specific access/retention controls; neither a mutable shared-name file nor a temporary signed download URL is a valid durable publication locator. For private storage, the GitHub comment can contain an **opaque resolver URI** and a source-bound digest; the private resolver returns an authorized temporary URL on demand. The comment itself must be safe at the Issue's actual public/private visibility level.
 
-Publication order: (1) reserve a source-stable `report_id`/Attempt key; (2) write scrubbed files under immutable object IDs and verify actual bytes/digests; (3) write immutable manifest and verify its own digest; (4) read all accessible existing Issue comments/pagination for `PUBLICATION_KEY`; (5) publish one concise comment and read back its real ID/URL; (6) if delivery outcome ambiguous, re-read/reconcile before retrying. Never treat a successful object upload as proof that a GitHub comment was written.
+Publication order: (1) reserve a source-stable `report_id`/Attempt key; (2) write scrubbed files under immutable object IDs and verify actual bytes/digests; (3) write immutable manifest and verify its own digest; (4) read all accessible existing Issue comments/pagination for `derived publication identity`; (5) publish one concise comment and read back its real ID/URL; (6) if delivery outcome ambiguous, re-read/reconcile before retrying. Never treat a successful object upload as proof that a GitHub comment was written.
 
 ### 7.4 Idempotency/correction cases
 

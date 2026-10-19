@@ -1,3 +1,16 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:bug
+  contract:
+    observed_behavior: "Source-backed unexpected behavior"
+    expected_behavior: "Declared contract expectation"
+    acceptance:
+      - "Regression witness and bounded fix validation"
+```
+
 # <Bug|Fix> — <title>
 
 ## Contract

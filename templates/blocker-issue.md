@@ -1,3 +1,14 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:blocker
+  contract:
+    blocking_fact: "Observed blocker and source"
+    unblock_condition: "Falsifiable recovery condition"
+```
+
 # Blocker — <title>
 
 ## Contract

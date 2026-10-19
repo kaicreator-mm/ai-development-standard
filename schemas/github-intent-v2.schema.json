@@ -1,23 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/github-structured-interaction-v1.schema.json",
-  "title": "ADS GitHub Structured Interaction v1 — non-authoritative Issue mutation intent envelope",
+  "$id": "https://kaicreator-mm.github.io/ai-development-standard/schemas/github-intent-v2.schema.json",
+  "title": "ADS GitHub typed mutation intent v2 (pre-admission only)",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema_version",
-    "intent_id",
+    "id",
     "operation",
     "target",
     "actor",
-    "expected_source_ref",
-    "payload"
+    "expected_ref",
+    "change"
   ],
   "properties": {
-    "schema_version": {
-      "const": "ads/github-structured-interaction/v1"
-    },
-    "intent_id": {
+    "id": {
       "type": "string",
       "minLength": 1
     },
@@ -28,8 +24,6 @@
         "ISSUE_CONTRACT_UPDATE",
         "ISSUE_METADATA_CHANGE",
         "ISSUE_DEPENDENCY_CHANGE",
-        "ISSUE_COMMENT_EVENT",
-        "ISSUE_COMMENT_REPORT",
         "ISSUE_CLOSE",
         "ISSUE_REOPEN"
       ]
@@ -39,19 +33,18 @@
       "additionalProperties": false,
       "required": [
         "repository",
-        "issue_ref"
+        "issue"
       ],
       "properties": {
         "repository": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
         },
-        "issue_ref": {
+        "issue": {
           "type": [
             "string",
             "null"
-          ],
-          "pattern": "^#[1-9][0-9]*$"
+          ]
         }
       }
     },
@@ -59,12 +52,12 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "actor_role",
+        "role",
         "operator_kind",
         "operator_id"
       ],
       "properties": {
-        "actor_role": {
+        "role": {
           "type": "string",
           "minLength": 1
         },
@@ -77,30 +70,18 @@
           "minLength": 1
         },
         "session_ref": {
-          "type": "string",
-          "minLength": 1
-        },
-        "transport_actor": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         }
       }
     },
-    "expected_source_ref": {
+    "expected_ref": {
       "type": [
         "string",
         "null"
       ]
     },
-    "payload": {
+    "change": {
       "type": "object"
-    },
-    "source_refs": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "minLength": 1
-      }
     }
   }
 }

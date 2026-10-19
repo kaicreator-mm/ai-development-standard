@@ -1,39 +1,40 @@
 #!/usr/bin/env python3
-"""Positive and adversarial tests for opt-in GitHub structured interaction v1."""
+"""Latest-only GitHub v2 document contract: functional and adversarial tests."""
 from __future__ import annotations
 
 import copy
 import json
 import unittest
-from verify_github_structured_interaction import (
-    ContractError, parse_yaml, verify_markdown, check_intent, check_work_item, REPORT_KINDS
-)
+from pathlib import Path
 from test_protocol_schemas import load_schema, validate_subset
+from verify_github_structured_interaction import ContractError, verify_markdown
 
-EXACT_SHA = "a" * 40
-BASE = {
-    "schema_version": "ads/github-structured-interaction/v1",
-    "intent_id": "request:1",
-    "operation": "ISSUE_METADATA_CHANGE",
-    "target": {"repository": "example-org/example-repo", "issue_ref": "#42"},
-    "actor": {"actor_role": "builder", "operator_kind": "codex", "operator_id": "codex:one"},
-    "expected_source_ref": "github:example-org/example-repo#42@revision-2",
-    "payload": {"field": "state", "before": "state:ready", "after": "state:claimed"},
-}
-WORK = {"schema_version": "ads/work-item/v1", "work_item_type": "type:task",
-        "contract": {"task_id": "T02", "goal": "Test", "integration_target": "version/v0.1",
-                     "baseline_sha": EXACT_SHA, "review_policy": "recommended",
-                     "required_gates": ["unit"], "acceptance": ["one real test"]}}
+SHA = "a" * 40
+WORK = {"profile": "type:task", "contract": {
+    "task_id": "T01", "goal": "Bounded task", "integration_target": "version/v0.1",
+    "baseline_sha": SHA, "review_policy": "recommended", "required_gates": ["unit"],
+    "acceptance": ["Observed evidence for the intended behavior"]
+}}
+INTENT = {"id": "operation:123", "operation": "ISSUE_METADATA_CHANGE",
+          "target": {"repository": "example-org/example-repo", "issue": "#42"},
+          "actor": {"role": "builder", "operator_kind": "codex", "operator_id": "codex:a"},
+          "expected_ref": "github:example-org/example-repo#42@revision-2",
+          "change": {"field": "state", "before": "state:ready", "after": "state:claimed"}}
+EVENT = {"schema": "ai-dev/event-v2", "event": "ROLE_CLAIMED", "actor_role": "builder",
+         "operator_kind": "codex", "operator_id": "codex:a", "task": "#42"}
+REPORT = {"report_id": "example:report:1", "report_kind": "EXECUTION_SUMMARY",
+          "revision": 1, "attempt_ref": "example:attempt:1",
+          "manifest_ref": "object:private/example/tasks/42/attempt-1/r1/manifest.json",
+          "manifest_sha256": "b" * 64, "coverage": "PARTIAL"}
 
 
-def emitter(obj, indent=0):
-    """Only the explicitly supported subset; fixtures are not a full YAML generator."""
+def yaml_lines(obj, depth=0):
     lines = []
     for key, value in obj.items():
-        pad = " " * indent
+        pad = " " * depth
         if isinstance(value, dict):
             lines.append(pad + key + ":")
-            lines.extend(emitter(value, indent + 2))
+            lines.extend(yaml_lines(value, depth + 2))
         elif isinstance(value, list):
             lines.append(pad + key + ":")
             for item in value:
@@ -43,143 +44,129 @@ def emitter(obj, indent=0):
     return lines
 
 
-def mk(obj, marker="<!-- ads:github-interaction:v1 -->"):
-    return marker + "\n```yaml\n" + "\n".join(emitter(obj)) + "\n```\n\n## Note\nSafe prose.\n"
+def render(kind, data):
+    env = {"schema": "ads/github/v2", "kind": kind, "data": data}
+    return ("<!-- ads:github:v2 -->\n```yaml\n" + "\n".join(yaml_lines(env))
+            + "\n```\n\n## Human notes\nSource-linked context only.\n")
 
 
-def fails(data, message=None):
+def fail(doc, text=None, **kwargs):
     try:
-        verify_markdown(data)
+        verify_markdown(doc, **kwargs)
     except ContractError as exc:
-        if message and message not in str(exc):
-            raise AssertionError(f"wanted {message!r}: got {exc}") from exc
+        if text and text not in str(exc):
+            raise AssertionError(f"expected {text!r}, got {exc!s}") from exc
         return
-    raise AssertionError("expected invalid structured interaction to fail")
+    raise AssertionError("invalid record incorrectly accepted")
 
 
-class ContractTests(unittest.TestCase):
-    def test_registered_envelopes_machine_schema(self):
-        for name, value in (("github-structured-interaction-v1.schema.json", BASE),
-                            ("github-work-item-document-v1.schema.json", WORK)):
-            self.assertEqual(validate_subset(value, load_schema(name)), [])
+class LatestOnlyContract(unittest.TestCase):
+    def test_all_four_kinds_have_one_format(self):
+        for kind, data in (("work_item", WORK), ("intent", INTENT), ("event", EVENT), ("report", REPORT)):
+            with self.subTest(kind=kind):
+                env = {"schema": "ads/github/v2", "kind": kind, "data": data}
+                self.assertEqual(validate_subset(env, load_schema("github-document-v2.schema.json")), [])
+                self.assertEqual(verify_markdown(render(kind, data), expected_kind=kind), "SHAPE_VALID_ONLY")
 
-    def test_markdown_yaml_work_item_and_intent(self):
-        self.assertEqual(verify_markdown(mk(BASE)), "SHAPE_VALID_ONLY")
-        self.assertEqual(verify_markdown(mk(WORK, "<!-- ads:work-item:v1 -->")),
-                         "SHAPE_VALID_ONLY")
-        self.assertEqual(verify_markdown("Just a discussion about a possible change."),
-                         "UNSTRUCTURED_DISCUSSION")
-        self.assertEqual(verify_markdown(mk(BASE), "intent"), "SHAPE_VALID_ONLY")
-
-    def test_all_normative_operations(self):
-        examples = {
+    def test_normative_mutations_six_not_eight(self):
+        table = {
             "ISSUE_CREATE": ({"work_item": WORK}, None, None),
-            "ISSUE_CONTRACT_UPDATE": ({"work_item": WORK, "previous_contract_ref": "blob:old", "change_reason": "Amend scope"}, "#42", "current:sha"),
-            "ISSUE_METADATA_CHANGE": (BASE["payload"], "#42", "current:sha"),
-            "ISSUE_DEPENDENCY_CHANGE": ({"dependency_issue_ref": "#43", "change": "ADD"}, "#42", "current:sha"),
-            "ISSUE_COMMENT_EVENT": ({"event": {"schema": "ai-dev/event-v2", "event": "ROLE_CLAIMED",
-                                             "actor_role": "builder", "operator_kind": "codex",
-                                             "operator_id": "codex:one", "task": "#42"}},
-                                    "#42", "current:sha"),
-            "ISSUE_COMMENT_REPORT": ({"report_kind": "EXECUTION_SUMMARY", "report_id": "task:r1",
-                                      "revision": 1, "attempt_ref": "attempt:r1",
-                                      "publication_key": "github:example-org/example-repo#42 | task:r1 | 1",
-                                      "manifest_ref": "object:private/r1/manifest.json",
-                                      "manifest_sha256": "b" * 64}, "#42", "current:sha"),
-            "ISSUE_CLOSE": ({"reason": "Result evidence", "evidence_refs": ["pr:#9@sha"]}, "#42", "current:sha"),
-            "ISSUE_REOPEN": ({"reason": "Post-close regression", "evidence_refs": ["bug:#19"]}, "#42", "current:sha"),
+            "ISSUE_CONTRACT_UPDATE": ({"work_item": WORK, "previous_ref": "blob:before", "reason": "Revision"}, "#42", "github:actual-before"),
+            "ISSUE_METADATA_CHANGE": (INTENT["change"], "#42", "github:actual-before"),
+            "ISSUE_DEPENDENCY_CHANGE": ({"dependency": "#43", "action": "ADD"}, "#42", "github:actual-before"),
+            "ISSUE_CLOSE": ({"reason": "Merged and checked", "evidence_refs": ["github:pr#8@sha"]}, "#42", "github:actual-before"),
+            "ISSUE_REOPEN": ({"reason": "Regression found", "evidence_refs": ["github:bug#11"]}, "#42", "github:actual-before"),
         }
-        for operation, (payload, issue, expected) in examples.items():
-            with self.subTest(operation=operation):
-                v = copy.deepcopy(BASE)
-                v["operation"] = operation
-                v["payload"] = payload
-                v["target"]["issue_ref"] = issue
-                v["expected_source_ref"] = expected
-                self.assertEqual(verify_markdown(mk(v)), "SHAPE_VALID_ONLY")
+        for op, (change, issue, expected_ref) in table.items():
+            with self.subTest(op=op):
+                v = copy.deepcopy(INTENT)
+                v.update(operation=op, change=change, expected_ref=expected_ref)
+                v["target"]["issue"] = issue
+                self.assertEqual(verify_markdown(render("intent", v)), "SHAPE_VALID_ONLY")
 
-    def test_legacy_event_and_report_read_compatibility(self):
-        event = {"schema": "ai-dev/event-v2", "event": "ROLE_CLAIMED",
-                 "actor_role": "builder", "operator_kind": "codex",
-                 "operator_id": "codex:one", "task": "#42"}
-        self.assertEqual(verify_markdown(mk(event, "<!-- ai-dev:event:v2 -->")),
-                         "SHAPE_VALID_ONLY")
-        text = ("<!-- ads:task-report:v1 -->\nREPORT_KIND=EXECUTION_SUMMARY\n"
-                "REPORT_ID=task:r1\nREPORT_REVISION=1\nATTEMPT_REF=attempt:1\n"
-                "PUBLICATION_KEY=github:example-org/example-repo#42 | task:r1 | 1\n"
-                "MANIFEST_REF=object:private/r1/manifest.json\n"
-                "MANIFEST_SHA256=" + "c" * 64 + "\n\nSummary of observed work.")
-        self.assertEqual(verify_markdown(text), "SHAPE_VALID_ONLY")
-        fails(text.replace("REPORT_KIND=EXECUTION_SUMMARY", "REPORT_KIND=UNKNOWN"))
+    def test_latest_only_rejects_old_formats(self):
+        for legacy in ("<!-- ai-dev:event:v2 -->", "<!-- ads:task-report:v1 -->",
+                       "<!-- ads:work-item:v1 -->", "<!-- ads:github-interaction:v1 -->"):
+            fail(legacy + "\n```yaml\nschema: old\n```", "latest-only")
+        fail("### Introduction\n" + render("event", EVENT), "latest-only")
+        fail(render("event", EVENT) + "\n<!-- ads:github:v2 -->", "exactly one")
+        fail(render("event", EVENT).replace("ads/github/v2", "ads/github/v1"))
+        fail(render("event", EVENT).replace("event", "unknown", 1))
 
-    def test_unsupported_and_tricky_yaml_fails_closed(self):
-        fails("## Explanation\n\n" + mk(BASE), "embedded/quoted")
-        fails(mk(BASE).replace("intent_id:", "intent_id: 1\nintent_id:"), "duplicate key")
-        fails(mk(BASE).replace("intent_id: ", "intent_id: &alias "), "unsupported")
-        fails(mk(BASE).replace("```yaml", "```json"), "fenced")
-        fails(mk(BASE) + "\n<!-- ads:github-interaction:v1 -->", "unique marker")
-        fails(mk(BASE).replace("operation: ", "operation: Z\noperation: "))
-        fails(mk(BASE).replace('"ISSUE_METADATA_CHANGE"', '"UNSUPPORTED"'))
-        fails(mk(BASE).replace('"codex:one"', 'null'))
-        fails(mk(BASE).replace('"#42"', 'null'), "exact Issue")
+    def test_safe_yaml_and_unknown_are_fail_closed(self):
+        doc = render("intent", INTENT)
+        fail(doc.replace("id: ", "id: 1\n    id: ", 1))
+        fail(doc.replace('operation: "ISSUE_METADATA_CHANGE"', 'operation: &a "ISSUE_METADATA_CHANGE"'))
+        fail(doc.replace("```yaml", "```json"), "fenced yaml")
+        fail(doc.replace('"codex:a"', "null"))
+        fail(doc.replace('"ISSUE_METADATA_CHANGE"', '"ISSUE_COMMENT_EVENT"'))
+        fail(doc.replace('"#42"', "null"), "exact issue")
 
-    def test_authoritative_fact_invariants_are_not_claimed_by_shape(self):
-        mut = copy.deepcopy(BASE)
-        mut["payload"]["after"] = "state:validated"
-        fails(mk(mut), "vocabulary")
-        mut = copy.deepcopy(BASE)
-        mut["expected_source_ref"] = None
-        fails(mk(mut), "precondition")
-        mut = copy.deepcopy(BASE)
-        mut["payload"]["field"] = "labels"
-        mut["payload"]["before"], mut["payload"]["after"] = "state:ready", "gate:pass"
-        fails(mk(mut), "labels must be lists")
-        mut = copy.deepcopy(BASE)
-        mut["operation"] = "ISSUE_DEPENDENCY_CHANGE"
-        mut["payload"] = {"dependency_issue_ref": "#42", "change": "ADD"}
-        fails(mk(mut), "dependency")
-        mut = copy.deepcopy(BASE)
-        mut["operation"] = "ISSUE_CLOSE"
-        mut["payload"] = {"reason": "I say PASS", "evidence_refs": []}
-        fails(mk(mut), "missing nested YAML value")
-        mut = copy.deepcopy(BASE)
-        mut["operation"] = "ISSUE_COMMENT_REPORT"
-        mut["payload"] = {"report_kind": "EXECUTION_SUMMARY", "report_id": "id", "revision": 1,
-                          "attempt_ref": "attempt", "publication_key": "bad",
-                          "manifest_ref": "private:key", "manifest_sha256": "f" * 64}
-        fails(mk(mut), "publication key mismatch")
-        mut["payload"]["publication_key"] = "github:example-org/example-repo#42 | id | 1"
-        mut["payload"]["manifest_sha256"] = "not-a-hash"
-        fails(mk(mut), "checksum")
+    def test_no_second_comment_operation_or_redundant_publication_key(self):
+        fail(render("intent", {**INTENT, "operation": "ISSUE_COMMENT_EVENT"}))
+        fail(render("report", {**REPORT, "publication_key": "caller-forged"}))
+        fail(render("report", {**REPORT, "manifest_sha256": "bad"}))
+        fail(render("report", {**REPORT, "revision": 0}))
+        fail(render("report", {**REPORT, "manifest_ref": "https://s3/x?X-Amz-Signature=secret"}), "signed URL")
+        fail(render("report", {**REPORT, "report_kind": "EXECUTION_CORRECTION"}), "correction")
+        self.assertEqual(verify_markdown(render("report", {
+            **REPORT, "report_kind": "EXECUTION_CORRECTION", "corrects_ref": "github:comment:123"
+        })), "SHAPE_VALID_ONLY")
 
-    def test_nested_event_actor_and_work_item_must_match_envelope(self):
-        mut = copy.deepcopy(BASE)
-        mut["operation"] = "ISSUE_COMMENT_EVENT"
-        mut["payload"] = {"event": {
-            "schema": "ai-dev/event-v2", "event": "ROLE_CLAIMED",
-            "actor_role": "reviewer", "operator_kind": "codex",
-            "operator_id": "codex:one", "task": "#42"
-        }}
-        fails(mk(mut), "attribution conflicts")
-        mut["payload"]["event"]["actor_role"] = "builder"
-        mut["payload"]["event"]["task"] = "#43"
-        fails(mk(mut), "target conflicts")
+    def test_work_item_shape_and_all_profiles(self):
+        fail(render("work_item", {"profile": "type:task", "contract": {}}), "missing nested YAML value")
+        fail(render("work_item", {"profile": "type:invented", "contract": WORK["contract"]}))
+        for profile, fields in {
+            "type:version": {"version": "v1", "goal": "Deliver v1", "closure_criteria": ["CI"]},
+            "type:planning": {"goal": "Freeze", "frozen_inputs": "ref", "acceptance": ["Review"]},
+            "type:research": {"question": "Why", "scope": "Narrow", "acceptance": ["Result"]},
+            "type:research-demo": {"hypothesis": "Falsifiable", "acceptance": ["Observation"]},
+            "type:bug": {"observed_behavior": "bad", "expected_behavior": "good", "acceptance": ["Fix"]},
+            "type:fix": {"observed_behavior": "bad", "expected_behavior": "good", "acceptance": ["Fix"]},
+            "type:validation": {"target_sha": SHA, "validation_scope": "concern", "expected_checks": ["test"]},
+            "type:blocker": {"blocking_fact": "Unavailable", "unblock_condition": "Recovered"},
+            "type:release": {"version": "v1", "release_qualification": "ref"},
+        }.items():
+            with self.subTest(profile=profile):
+                self.assertEqual(verify_markdown(render("work_item", {"profile": profile, "contract": fields})),
+                                 "SHAPE_VALID_ONLY")
 
-    def test_work_item_profiles_and_shape_failures(self):
-        wrong = copy.deepcopy(WORK)
-        del wrong["contract"]["baseline_sha"]
-        fails(mk(wrong, "<!-- ads:work-item:v1 -->"), "task-contract")
-        other = {"schema_version": "ads/work-item/v1", "work_item_type": "type:blocker",
-                 "contract": {"blocking_fact": "runner down", "unblock_condition": "host ready"}}
-        self.assertEqual(verify_markdown(mk(other, "<!-- ads:work-item:v1 -->")),
-                         "SHAPE_VALID_ONLY")
-        other["contract"]["unblock_condition"] = None
-        fails(mk(other, "<!-- ads:work-item:v1 -->"), "unblock_condition")
+    def test_native_authority_not_in_yaml_and_issue_match(self):
+        fail(render("intent", {**INTENT, "expected_ref": None}), "currentness")
+        v = copy.deepcopy(INTENT)
+        v["change"]["after"] = "state:passed"
+        fail(render("intent", v), "vocabulary")
+        v = copy.deepcopy(INTENT)
+        v["change"] = {"field": "labels", "before": ["state:ready"], "after": ["gate:pass"]}
+        fail(render("intent", v), "Gate truth")
+        v = copy.deepcopy(INTENT)
+        v["operation"] = "ISSUE_DEPENDENCY_CHANGE"
+        v["change"] = {"dependency": "#42", "action": "ADD"}
+        fail(render("intent", v), "self-loop")
+        fail(render("event", EVENT), "event target", expected_kind="event", issue="#999")
+        self.assertEqual(verify_markdown(render("event", EVENT), expected_kind="event", issue="#42"), "SHAPE_VALID_ONLY")
+        self.assertEqual(verify_markdown(render("intent", INTENT)), "SHAPE_VALID_ONLY")
 
-    def test_parser_returns_shape_only_not_success_or_admission(self):
-        result = verify_markdown(mk(BASE))
-        self.assertEqual(result, "SHAPE_VALID_ONLY")
-        self.assertNotIn(result, ("PASS", "ADMITTED", "MUTATED"))
+    def test_all_current_issue_templates_use_one_v2_contract(self):
+        root = Path(__file__).resolve().parents[1]
+        for template in (
+            "templates/task-issue.md",
+            "templates/version-issue.md",
+            "templates/planning-amendment-issue.md",
+            "templates/research-issue.md",
+            "templates/research-demo-issue.md",
+            "templates/bug-fix-issue.md",
+            "templates/validation-request-issue.md",
+            "templates/blocker-issue.md",
+        ):
+            with self.subTest(template=template):
+                content = (root / template).read_text(encoding="utf-8")
+                self.assertEqual(verify_markdown(content, expected_kind="work_item"), "SHAPE_VALID_ONLY")
+
+    def test_unstructured_discussion_is_not_mutation(self):
+        self.assertEqual(verify_markdown("Ordinary request, no machine contract."), "UNSTRUCTURED_DISCUSSION")
+        fail("Ordinary request, no machine contract.", expected_kind="intent", text="latest-only")
+        self.assertNotEqual(verify_markdown(render("intent", INTENT)), "ADMITTED")
 
 
 if __name__ == "__main__":

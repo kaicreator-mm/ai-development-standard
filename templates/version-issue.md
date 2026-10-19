@@ -1,3 +1,16 @@
+<!-- ads:github:v2 -->
+```yaml
+schema: ads/github/v2
+kind: work_item
+data:
+  profile: type:version
+  contract:
+    version: v1
+    goal: "Bounded release goal"
+    closure_criteria:
+      - "Required Task dependencies and evidence complete"
+```
+
 # Version <version> — <goal>
 
 ## Contract
