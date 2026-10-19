@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.14.0 — GitHub Structured Interaction, declarative schema and real GitHub dogfood (release candidate)
+
+- Replace active GitHub v2 comment/body envelopes with one latest-only Markdown/YAML `<!-- ads:github -->` marker, `schema: ads/github/v3`, and `kind: work_item | intent | event | report`; retain canonical Task Contract and Agent Event v2 **payload** definitions, not old wrapper aliases.
+- Publish a single full JSON Schema Draft 2020-12 root at `schemas/github/v4.14/structured-interaction.schema.json` with `$defs/oneOf`, ten Work Item profiles and six native Issue mutation operations. Preserve native GitHub issue/state/dependency/Claim/Review/Validation/Release ownership; `SHAPE_VALID_ONLY` never implies remote write authorization.
+- Replace hand-built YAML/type checking with pinned PyYAML + jsonschema, offline reference registry, strict duplicate-key and alias protections; add Node ECMAScript RegExp cross-language compatibility test, focused negative cases and existing full ADS CI.
+- Complete real isolated `kaicreator-mm/ai-dev-pilot` GitHub Issue #20/PR #21 lifecycle, Event/Report comments, immutable manifest and source-hash verification; obtain independent R0/R1 code review and source-bound Product, L2 and Task DAG freezes. GitHub native `blocked_by` DAG readback confirms four edges.
+- **Limits:** real private OSS ACL, multi-actor GitHub CAS and cross-provider execution are `NOT_RUN/NOT_PROVEN`; not evidence those deployed capabilities pass. Original direct-to-version stage-order deviation is explicitly disclosed in `docs/implementation/4.14.0/VERSION_PROCESS_AUDIT.md` and evaluated through full R0 + narrow R1 source review. Historic v4.9 pinned standard/workflow bytes are preserved.
+- **Release posture:** This is an exact-source release **candidate** change log entry. Candidate Freeze, Version Closeout, Release Qualification, single main integration, Tag and GitHub Release are distinct subsequent decisions; do not infer them from this text.
+
 ## v4.13.1 — Bounded consumer workflow acceptance hardening
 
 - Enforce the pre-existing `v4.adoption_level` A0–A4 MUST in the existing root-adopter verifier for pinned v4 projects, with five focused positive/negative regression cases; v1/v3 unchanged.
