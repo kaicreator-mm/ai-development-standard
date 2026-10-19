@@ -1,6 +1,6 @@
 # AI Development Standard
 
-当前版本源码候选：`v4.14.0`（**VERSION/README 的版本身份不代表 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
+当前版本：`v4.14.0`（源码候选；**VERSION/README 的版本身份不代表 Release Qualification 或公开发布**）。实际公开发布状态以 [GitHub Releases](https://github.com/kaicreator-mm/ai-development-standard/releases) 和相应不可变 Git SHA 为准。
 
 > **v4.14.0 范围（版本候选）：** Latest-only GitHub Structured Interaction v3：一个 Markdown/YAML Envelope、一个 JSON Schema Draft 2020-12 完整判别式 Schema、十种 Work Item Profile、六种原生 Issue mutation intent、直接 Event/Report 评论。静态 Schema 校验与 GitHub 当前事实/Claim/Review/Release 严格分离；复用 Task Contract / Agent Event v2 数据语义。已经在 [ai-dev-pilot Issue #20](https://github.com/kaicreator-mm/ai-dev-pilot/issues/20) 和 [PR #21](https://github.com/kaicreator-mm/ai-dev-pilot/pull/21) 完成真实隔离 GitHub 生命周期和内容寻址报告验证。Product/L2/DAG 源冻结及原生 Issue Dependency 的证据在 `docs/implementation/4.14.0/`。本条记录**不声明**最终 Candidate Freeze、Release Qualification、主分支合并或 Tag。私有 OSS ACL 与跨并发 GitHub CAS 不属于本版静态标准的已验证运行时。
 
