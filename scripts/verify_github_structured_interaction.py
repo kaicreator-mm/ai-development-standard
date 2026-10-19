@@ -171,7 +171,14 @@ def check_intent(obj):
             raise ContractError("illegal dependency mutation")
     elif op == "ISSUE_COMMENT_EVENT":
         require(payload, ("event",))
-        check_schema(payload["event"], "agent-event-v2.schema.json")
+        event = payload["event"]
+        check_schema(event, "agent-event-v2.schema.json")
+        for outer, inner in (("actor_role", "actor_role"), ("operator_kind", "operator_kind"), ("operator_id", "operator_id")):
+            if event.get(inner) != obj["actor"].get(outer):
+                raise ContractError("nested Event v2 actor attribution conflicts with outer intent")
+        for issue_field in ("task", "issue"):
+            if event.get(issue_field) is not None and event[issue_field] != target["issue_ref"]:
+                raise ContractError("nested Event v2 work-item target conflicts with outer Issue")
     elif op == "ISSUE_COMMENT_REPORT":
         require(payload, ("report_kind", "report_id", "revision", "attempt_ref", "publication_key",
                           "manifest_ref", "manifest_sha256"))
