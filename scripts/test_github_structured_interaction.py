@@ -152,6 +152,19 @@ class ContractTests(unittest.TestCase):
         mut["payload"]["manifest_sha256"] = "not-a-hash"
         fails(mk(mut), "checksum")
 
+    def test_nested_event_actor_and_work_item_must_match_envelope(self):
+        mut = copy.deepcopy(BASE)
+        mut["operation"] = "ISSUE_COMMENT_EVENT"
+        mut["payload"] = {"event": {
+            "schema": "ai-dev/event-v2", "event": "ROLE_CLAIMED",
+            "actor_role": "reviewer", "operator_kind": "codex",
+            "operator_id": "codex:one", "task": "#42"
+        }}
+        fails(mk(mut), "attribution conflicts")
+        mut["payload"]["event"]["actor_role"] = "builder"
+        mut["payload"]["event"]["task"] = "#43"
+        fails(mk(mut), "target conflicts")
+
     def test_work_item_profiles_and_shape_failures(self):
         wrong = copy.deepcopy(WORK)
         del wrong["contract"]["baseline_sha"]
