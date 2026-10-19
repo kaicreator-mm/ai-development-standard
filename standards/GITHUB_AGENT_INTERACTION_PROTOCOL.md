@@ -355,6 +355,10 @@ The payload is verified by `schemas/agent-event-v2.schema.json`; the common enve
 
 ### 8.3 Latest-only reader posture
 
+Historical `ai-dev:event:v1` comments remain valid history and are read-only compatibility evidence.
+
+This historical evidence statement does **not** require a v1 decoder in current writer/read tooling.
+
 The current parser and emitter accept **only** the §16 `ads/github/v2` document marker. Older comment markers and free-form contract blocks are **historical GitHub records**, not a requirement on new parsers or writers; no compatibility adapter, re-emission, migration or dual-format acceptance is required. Retaining history is distinct from supporting historical wire formats. The underlying `agent-event-v2` field semantics remain the current canonical event payload.
 
 ### 8.4 Event families
