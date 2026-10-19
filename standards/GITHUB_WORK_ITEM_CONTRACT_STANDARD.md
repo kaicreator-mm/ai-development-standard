@@ -219,29 +219,6 @@ Type-specific templates MAY add required sections but MUST NOT remove a common f
 
 The Issue body SHOULD remain stable. Claims, runtime state changes, validation/review results, and merge history belong in metadata plus append-oriented structured events/comments.
 
-### 9.1 Agent Task terminal decision summary (prospective, source-only)
-
-For an executable Task completed by an Agent, the acting Agent **MUST append one short, factual completion/decision summary to its canonical GitHub Issue** (or link an already-existing exact Issue comment). This summarizes **what was decided and why it was defensible**, not private model chain-of-thought. It complements the existing structured event/PR/Validation result, does **not** become that result and must not copy full logs. The normal target is a few sentences or compact fields, not a new Task Pack, separate artifact, Review round or CI gate.
-
-Use these minimum fields in an append-only Issue comment; they may be filled by references rather than duplicated prose:
-
-```text
-TASK_DECISION_SUMMARY=REPORTED
-ACTOR=declared role / logical operator_id / session_ref if available
-SUBJECT=Task Issue; PR and exact implementation SHA (or non-code artifact ref)
-DECISION=bounded problem, chosen approach and key trade-off/alternative
-EXECUTION=material surprise or blocker; actual fix/workaround, or NONE
-EVIDENCE=source/test/CI/review refs and actual PASS/FAIL/BLOCKED/NOT_RUN scope
-LIMITS=not proven, remaining risks, follow-up owner/ref, or NONE_KNOWN
-TASK_LEARNING=NONE_MATERIAL | existing task-learning-v1/v2 exact ref(s)
-```
-
-The report MUST distinguish directly observed facts from the Agent's explanation or hypothesis; never claim that unexecuted tests, CI labels, guessed elapsed times or synthetic Review/Release evidence passed. Attribution follows the **self-declared logical operator context**, not the GitHub login/transport identity; do not invent unavailable model, token, cost or session information. Material Task Learning continues to use the existing v1/v2 family and its exact-subject/currentness rules; **`NONE_MATERIAL` remains sufficient for learning** when the task has no transferable lesson.
-
-The same bounded report is SHOULD-level for `BLOCKED`, `FAIL` or abandoned/replaced attempts, since omitting failures biases retrospective learning. If GitHub comment publication itself is temporarily unavailable, record `REPORT_NOT_PUBLISHED` explicitly in the execution/handoff evidence and repair the missing Issue comment when writable; do not fabricate a comment URI or auto-declare a Gate PASS. A missing summary is traceability debt, **not a new independent merge/release Gate** and not license to rewrite historical terminal events.
-
-Periodic cross-Task synthesis and per-Agent effectiveness analysis MAY consume these comments plus **actual** GitHub/CI/Review/Task Learning refs as *read-only evidence*; such summaries are recommendations, not automatic grading authority or ADS standard mutations. Comparable-agent metrics MUST separate Task risk/difficulty, role, environment, evidence availability and source currentness; issue-close count, prose length, speed, model provider, or self-reported PASS alone MUST NOT be treated as a quality score. Executable scheduling, scorecards and reports belong to the consuming orchestration product (e.g. Tally), not this standards repository.
-
 ## 10. Issue Contract readiness
 
 No executable work item becomes `state:ready` until the durable contract is complete enough for the assigned role.
