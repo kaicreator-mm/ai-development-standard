@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import unittest
+from pathlib import Path
 from test_protocol_schemas import load_schema, validate_subset
 from verify_github_structured_interaction import ContractError, verify_markdown
 
@@ -145,6 +146,22 @@ class LatestOnlyContract(unittest.TestCase):
         fail(render("event", EVENT), "event target", expected_kind="event", issue="#999")
         self.assertEqual(verify_markdown(render("event", EVENT), expected_kind="event", issue="#42"), "SHAPE_VALID_ONLY")
         self.assertEqual(verify_markdown(render("intent", INTENT)), "SHAPE_VALID_ONLY")
+
+    def test_all_current_issue_templates_use_one_v2_contract(self):
+        root = Path(__file__).resolve().parents[1]
+        for template in (
+            "templates/task-issue.md",
+            "templates/version-issue.md",
+            "templates/planning-amendment-issue.md",
+            "templates/research-issue.md",
+            "templates/research-demo-issue.md",
+            "templates/bug-fix-issue.md",
+            "templates/validation-request-issue.md",
+            "templates/blocker-issue.md",
+        ):
+            with self.subTest(template=template):
+                content = (root / template).read_text(encoding="utf-8")
+                self.assertEqual(verify_markdown(content, expected_kind="work_item"), "SHAPE_VALID_ONLY")
 
     def test_unstructured_discussion_is_not_mutation(self):
         self.assertEqual(verify_markdown("Ordinary request, no machine contract."), "UNSTRUCTURED_DISCUSSION")
