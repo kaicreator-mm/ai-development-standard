@@ -2,7 +2,7 @@
 
 **Scope:** ADS opt-in machine-readable *intent* / *Work Item* carriers and read-only validators; this reference is not new GitHub authority, a mandatory migration, a modified Agent Event v2 schema, or a new Task status.
 
-Normative owners are [GitHub Work Item Contract](../standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md) `15 and [GitHub Agent Interaction Protocol](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) `8. Machine envelopes: [GitHub operation intent v1](../schemas/github-structured-interaction-v1.schema.json), [Work Item document v1](../schemas/github-work-item-document-v1.schema.json); existing [Agent Event v2](../schemas/agent-event-v2.schema.json), [Task Contract](../schemas/task-contract.schema.json) and [Task Report Publication v1](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) retain their schemas/meaning.
+Normative transport/schema owner is [GitHub Agent Interaction Protocol](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) §16, with existing event writer §8 and publication §10; [GitHub Work Item Contract](../standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md) retains native Issue contract/type/state/dependency authority. Machine envelopes: [GitHub operation intent v1](../schemas/github-structured-interaction-v1.schema.json), [Work Item document v1](../schemas/github-work-item-document-v1.schema.json); existing [Agent Event v2](../schemas/agent-event-v2.schema.json), [Task Contract](../schemas/task-contract.schema.json) and [Task Report Publication v1](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md) retain their schemas/meaning.
 
 ## 1. Parser profile, version binding and migration
 
