@@ -1,6 +1,6 @@
 # GitHub Structured Interaction — latest-only v3
 
-**Current source:** [GitHub Agent Interaction Protocol `16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). New ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. This source deliberately has **no legacy format read path** and no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
+**Current source:** [GitHub Agent Interaction Protocol §16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). New ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. This source deliberately has **no legacy format read path** and no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
 
 ## 1. One document wrapper for four kinds
 
@@ -32,7 +32,7 @@ The issue body explains the task in normal Markdown. Exact Title, native Issue T
 
 \`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. \`schema\` is fixed \`ads/github/v3\`. The minimal common envelope is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles use declared `oneOf` contract definitions in the canonical Draft 2020-12 Schema, not Python-only required-field maps. Historical Issue bodies need not be rewritten.
 
-The reference verifier uses **safe nested YAML mappings/lists** with duplicate-key, alias, anchor, unsafe-tag, timestamp and input-size checks, rather than a hand-built YAML dialect. It refuses duplicate keys, flow collections, tags, aliases, anchors, inferred timestamps and ambiguous syntax, rather than pretending to interpret a broad, unpinned YAML dialect. Long human explanations belong after the structured block as Markdown.
+The reference verifier uses **safe nested YAML mappings/lists** with duplicate-key, alias, anchor, unsafe-tag, timestamp and input-size checks, rather than a hand-built YAML dialect. It rejects duplicate keys, unsafe tags, aliases, anchors, implicit timestamps and malformed syntax; ordinary YAML flow mappings/sequences are accepted if they satisfy the same JSON Schema. Long human explanations belong after the structured block as Markdown.
 
 ## 2. Intent — native Issue changes only
 
@@ -120,27 +120,27 @@ LIMITS=PARTIAL collection; unreported billing UNKNOWN.
 TASK_LEARNING=NONE_MATERIAL.
 ~~~~
 
-The object Manifest retains the stable \`ads/task-report-manifest/v1\` JSON document format: **v1 is the object dialect, v2 is the single current GitHub comment wrapper**. The comment is not a second event stream. The GitHub Issue + \`report_id\` + \`revision\` determine the idempotency key; don't serialize it redundantly. The immutable manifest checksum validates bytes, not source authority. An \`EXECUTION_CORRECTION\` includes a \`corrects_ref\`. Private files need a stable authorized resolver, not a temporary signed URL. Do not post raw prompts, trace or per-step Issue comments.
+The object Manifest retains the stable \`ads/task-report-manifest/v1\` JSON document format: **v1 is the object dialect, v3 is the single current GitHub comment wrapper**. The comment is not a second event stream. The GitHub Issue + \`report_id\` + \`revision\` determine the idempotency key; don't serialize it redundantly. The immutable manifest checksum validates bytes, not source authority. An \`EXECUTION_CORRECTION\` includes a \`corrects_ref\`. Private files need a stable authorized resolver, not a temporary signed URL. Do not post raw prompts, trace or per-step Issue comments.
 
 ## 5. Machine-checkable operation and authority boundaries
 
 | \`kind\` | Current data contract | Last authority/source check |
 | --- | --- | --- |
 | \`work_item\` | Profile-required keys; Task Contract Schema for task | Owning Issue body plus GitHub native Type/Labels/Dependencies/Claim |
-| \`intent\` | \`github-intent-v2.schema.json\`, operation-specific payload, prior source ref | Existing GitHub Work Item transition/DAG/Claim rules; API write outcome |
-| \`event\` | Direct existing Agent Event v2 schema | Existing `8.1 admission and source-specific Review/Validation truth |
-| \`report\` | \`github-report-v2.schema.json\`, object manifest ref/hash | OSS/object readback/ACL, real GitHub comment readback, published revisions |
+| \`intent\` | \`schemas/github/v4.14/structured-interaction.schema.json\`, operation-specific payload, prior source ref | Existing GitHub Work Item transition/DAG/Claim rules; API write outcome |
+| \`event\` | Direct existing Agent Event v2 schema | Existing §8.1 admission and source-specific Review/Validation truth |
+| \`report\` | \`schemas/github/v4.14/structured-interaction.schema.json\`, object manifest ref/hash | OSS/object readback/ACL, real GitHub comment readback, published revisions |
 
 The parser never invokes a GitHub API mutation. Its CLI is:
 
 \`\`\`text
 python scripts/verify_github_structured_interaction.py file.md --kind work_item
-python scripts/verify_github_structured_interaction.py file.md --kind event --issue "#42"
+python scripts/verify_github_structured_interaction.py file.md --kind event
 \`\`\`
 
 ## 6. Failure and optimization oracles
 
-1. New work item/event/report/intent with v2 marker and correct kind → \`SHAPE_VALID_ONLY\`; never \`PASS\` or \`MUTATED\`.
+1. New work item/event/report/intent with v3 marker and correct kind → \`SHAPE_VALID_ONLY\`; never \`PASS\` or \`MUTATED\`.
 2. Wrong first-line marker, old wrapper, duplicate marker, unknown kind, arbitrary YAML aliases/tags/duplicate keys or invalid nested value → \`INVALID_SCHEMA\`.
 3. Old free-text Markdown discussion is still just \`UNSTRUCTURED_DISCUSSION\`, **not** an alternative normative operation.
 4. Task Contract missing baseline/goal/gates or other profile missing required keys → invalid, even if Markdown prose mentions those values.
