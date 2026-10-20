@@ -32,7 +32,7 @@
 
 ## C. Architecture drivers / material UNKNOWN and disposition
 
-| ID | Material question | Evidence / provisional answer | Disposition (Stage-2 R0) | Release effect |
+| ID | Material question | Evidence / provisional answer | Disposition (Stage-2 R1) | Release effect |
 | --- | --- | --- | --- | --- |
 | U1 | Can the manifest-free feedback remain one report family without v3 mutation? | A new **report-only** schema identity can discriminate summary/feedback/correction while original v3 stays current for all non-report kinds. | `STATIC_EVIDENCE_SUFFICIENT` for design; strict schema fixtures required later. | Positive and negative v4 report tests |
 | U2 | Can mixed v3/v4 pins coexist with open live v3 Task Issues? | Explicit per-kind × reader/writer version matrix; all v3 Work Item/Intent/Event records stay current; v4.14 reader cleanly ignores/rejects v4 report; v4.15 reads v3 report only historically. | `STATIC_EVIDENCE_SUFFICIENT` after P1-1 resolution. | Cross-pin schema/admission negative tests |
@@ -53,4 +53,4 @@
 - ADS #1210: actual task-meta / actual Tally source commit and controlled E2E evidence, one real Task + negative retry, stale, strict-verifier, privacy, access denial; qualified final version gates. External tasks stay owned by task-meta #5/#12 and Tally #62/#65.
 - No autonomous builder Task/PR/Claim authority until separate L2 Freeze and executable Task DAG/current native Issue dependencies.
 
-**R0 limits:** no runtime of task-meta/Tally inspected in this L2 evidence, no v4 Schema built, no v4 external GitHub comment published, no independent L2 review, no Product thaw or new Gate invented.
+**R1 limits:** no runtime of task-meta/Tally inspected in this L2 evidence, no v4 Schema built, no v4 external GitHub comment published, no independent L2 review, no Product thaw or new Gate invented.
