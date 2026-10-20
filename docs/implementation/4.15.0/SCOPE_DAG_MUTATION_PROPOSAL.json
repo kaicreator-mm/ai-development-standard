@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "mutation_id": "ads-v415-r3-supersede-s05-s06-PROPOSAL",
+  "mutation_class": "SUPERSEDE",
+  "requested_by": "human Product scope direction recorded at https://github.com/kaicreator-mm/ai-development-standard/issues/1207#issuecomment-6293679128",
+  "approved_by": "PENDING: no approving Product/L2/DAG decision exists for this proposal",
+  "reason": "Deliver ADS contract and mandatory ADS conformance before separately governed task-meta/Tally implementations; actual E2E remains NOT_RUN in #1210",
+  "affected_task_refs": [
+    "ADS#1219",
+    "ADS#1220",
+    "NEW_S05_PRIME_ID_PENDING",
+    "NEW_S06_PRIME_ID_PENDING",
+    "ADS#1217",
+    "ADS#1218"
+  ],
+  "old_topology_ref": "git:a1c2ddd8c7f48374a3425b2e98c5b9dee798534a:docs/implementation/4.15.0/TASK_DAG.md; live native readback must be refreshed before mutation",
+  "new_topology_ref": "docs/implementation/4.15.0/SCOPE_REVISION_R3.md#5-explicit-dag-mutation-proposal-not-in-place-task-edits-p1-2",
+  "old_edges": [
+    "#1215 -> #1216",
+    "#1216 -> #1217",
+    "#1217 -> #1219",
+    "#1218 -> #1219",
+    "#1219 -> #1220"
+  ],
+  "new_edges": [
+    "#1215 -> #1216",
+    "#1216 -> #1217",
+    "#1217 -> NEW_S05_PRIME_ID_PENDING",
+    "#1218 -> NEW_S05_PRIME_ID_PENDING",
+    "NEW_S05_PRIME_ID_PENDING -> NEW_S06_PRIME_ID_PENDING"
+  ],
+  "scope_impact": "New Task identities: S05 prime mandatory ADS conformance/handoff; S06 prime scoped ADS RQ. Do not repurpose #1219/#1220; preserve supersession lineage and #1210 actual oracle.",
+  "release_impact": "Deferred external runtime is NOT_RUN; ADS-owned checks mandatory PASS; limitation labels mandatory; #1225 remains open; main merge prohibited.",
+  "task_pack_impact_refs": [
+    "ADS#1219 historical unchanged",
+    "ADS#1220 historical unchanged",
+    "NEW_S05_PRIME_TASK_PACK_PENDING",
+    "NEW_S06_PRIME_TASK_PACK_PENDING"
+  ],
+  "review_impact": "R3 focused independent review NOT_RUN; exact Product/L2/DAG source decisions pending; new S05/S06 reviews required.",
+  "validation_impact_ref": "SCOPE_REVISION_R3.md §§3–6: no native mutation until actual IDs/Task Packs, approved current mapping and full old/new blocked_by readback; DF/MI rebind under TASK_DAG_GOVERNANCE §10A as applicable",
+  "created_at": "2026-10-20",
+  "notes_ref": "DRAFT ONLY: pending approval/IDs are blockers, not defaults. Schema validation is shape-only and supplies no authority."
+}

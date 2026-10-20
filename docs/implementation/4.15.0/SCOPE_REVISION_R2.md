@@ -1,5 +1,7 @@
 # v4.15 scope revision R2 — ADS contract delivery before consumer implementations
 
+**Historical unaccepted proposal.** R2 was reviewed with blocking findings. The current replacement proposal is [SCOPE_REVISION_R3.md](SCOPE_REVISION_R3.md); do not combine R2's proposed in-place Task edits with R3's explicit SUPERSEDE plan. Neither proposal is an activated Freeze.
+
 Status: **SOURCE_DRAFT / INDEPENDENT_DELTA_REVIEW_NOT_RUN / NOT_REFROZEN**.
 This proposal records the human Product direction received on 2026-10-20:
 
