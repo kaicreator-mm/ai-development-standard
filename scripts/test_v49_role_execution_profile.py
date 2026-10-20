@@ -123,6 +123,21 @@ V415_SOURCE_HEAD = "65f44b84db4f0293d1d453cea7b3c32fd7e42f5d"
 V415_SOURCE_PATH = "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
 V415_SOURCE_PREDECESSOR = "846158b95e4173182a258f49847e1fde6600baec"
 V415_SOURCE_BLOB = "51f3e58d906ea6d5c249167e941d34c5a066cb45"
+# Additional shared pin owners exposed by the full workflow, Task R2 before
+# writes (#1232@6301043679; refreshed CURRENT #1232@6301063329).
+# (immutable v4.15 base blob, exact source commit, exact successor blob)
+V415_SOURCE_SUCCESSORS = {
+    V415_SOURCE_PATH: (V415_SOURCE_PREDECESSOR, V415_SOURCE_HEAD, V415_SOURCE_BLOB),
+    "standards/RELEASE_STANDARD.md": (
+        "da82aa7d387d8f190c4ddff88b4c8782af804ac4", V415_SOURCE_HEAD,
+        "0e6b4f4d98ae2ef280dae7be70894e855ab8dc53",
+    ),
+    "scripts/test_v49_release_applicability.py": (
+        "7497f7b07f2086df48112783301cb43d4dbcc006",
+        "6a178b2678844d5ff3c3c020f16e4611f6e674d1",
+        "aff279a16a676b3a554b2a771d0ba90d0c9da298",
+    ),
+}
 
 PLANNING_PATHS = tuple(
     f".agent/execution/T-004/{name}"
@@ -218,6 +233,27 @@ def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
         return False
     try:
         return git_object_sha(VERSION_BASE_SHA, rel_path) == historical_blob
+    except subprocess.CalledProcessError:
+        return False
+
+
+def _v415_exact_successor_verified(rel_path: str) -> bool:
+    """Bounded test identity admission, not an authority/Gate verdict."""
+    binding = V415_SOURCE_SUCCESSORS.get(rel_path)
+    if binding is None:
+        return False
+    base_blob, source, successor = binding
+    try:
+        for older, newer in ((V415_SOURCE_BASE, source), (source, "HEAD")):
+            subprocess.run(
+                ["git", "merge-base", "--is-ancestor", older, newer],
+                cwd=ROOT, check=True, capture_output=True,
+            )
+        return (
+            git_object_sha(V415_SOURCE_BASE, rel_path) == base_blob
+            and git_object_sha(source, rel_path) == successor
+            and git_object_sha("HEAD", rel_path) == successor
+        )
     except subprocess.CalledProcessError:
         return False
 
@@ -751,6 +787,20 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
             self.assertNotIn(V415_SOURCE_BLOB, _admitted_rebound_blobs(V415_SOURCE_PATH, pinned))
         with mock.patch(__name__ + "._v411_context_verified", return_value=False):
             self.assertEqual(_admitted_rebound_blobs(V415_SOURCE_PATH, pinned), {pinned})
+
+    def test_v415_shared_successors_reject_third_blob_and_invalid_lineage(self) -> None:
+        self.assertFalse(_v415_exact_successor_verified("schemas/dispatch.schema.json"))
+        real_sha = git_object_sha
+        for path, (_, source, _) in V415_SOURCE_SUCCESSORS.items():
+            with self.subTest(path=path):
+                self.assertTrue(_v415_exact_successor_verified(path))
+                for tampered_rev in (V415_SOURCE_BASE, source, "HEAD"):
+                    def tampered(rev: str, rel: str) -> str:
+                        return "0" * 40 if rev == tampered_rev else real_sha(rev, rel)
+                    with mock.patch(__name__ + ".git_object_sha", side_effect=tampered):
+                        self.assertFalse(_v415_exact_successor_verified(path))
+                with mock.patch(__name__ + ".subprocess.run", side_effect=subprocess.CalledProcessError(1, "git")):
+                    self.assertFalse(_v415_exact_successor_verified(path))
 
     def test_immutable_planning_files_unmutated_since_pack_head(self) -> None:
         for rel_path in PLANNING_PATHS:
