@@ -37,17 +37,12 @@ The preceding **external** task-meta/Tally producers/readers are **actual upstre
 ```text
 S02 blocked_by S01
 S03 blocked_by S02
-S05 blocked_by S02
 S05 blocked_by S03
 S05 blocked_by S04
-S06 blocked_by S01
-S06 blocked_by S02
-S06 blocked_by S03
-S06 blocked_by S04
 S06 blocked_by S05
 ```
 
-No edges are implied merely by this Markdown. **GitHub native Issue Dependencies must actually exist**, with GitHub readback proving exact edges and no cycle; merely Issue body references or labels never qualify. S01 and S04 have no intra-ADS blockers and may proceed in parallel only **after proper Task Contract, metadata and accepted current Claim admission**. S02 after S01; S03 after S02. S05 after approved in-repo items and external real implementations; S06 after all.
+No edges are implied merely by this Markdown. **GitHub native Issue Dependencies must actually exist**, with GitHub readback proving exact edges and no cycle; merely Issue body references or labels never qualify. S01 and S04 have no intra-ADS blockers and may proceed in parallel only **after proper Task Contract, metadata and accepted current Claim admission**. S02 after S01; S03 after S02. S05 after the complete S01→S02→S03 chain **and** S04 and external implementations; S06 after S05. Native edges deliberately use **transitive reduction** (5 edges), not redundant direct blocked_by edges.
 
 ## Reuse/not-yet-executable distinction
 
