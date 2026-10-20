@@ -1,6 +1,7 @@
-# ADS v4.15 scope revision R3 — ADS contracts before external implementation
+# ADS v4.15 scope revision R4 — focused ownership and lifecycle repair
 
-**SOURCE_DRAFT / INDEPENDENT_DELTA_REVIEW_NOT_RUN / NOT_REFROZEN**.
+**SOURCE_DRAFT / R4_INDEPENDENT_DELTA_REVIEW_NOT_RUN / NOT_REFROZEN**.
+The filename remains SCOPE_REVISION_R3.md for link continuity; the current proposal is R4. R3 at `9eb9f269838a2df9320bc7eed0093e3b22c33811` received [REFREEZE_READY=NO, P0=0/P1=1/P2=3](https://github.com/kaicreator-mm/ai-development-standard/pull/1226#issuecomment-6294239641). This revision repairs that delta; prior review is not converted to PASS. References below to the R3 overlay/subject refer to this file at the **new exact reviewed blob**, not the earlier rejected blob.
 This supersedes the **unaccepted R2 proposal only**, not the historical accepted freezes. R2's [independent review](https://github.com/kaicreator-mm/ai-development-standard/pull/1226#issuecomment-6293787398) found P0=0/P1=4/P2=3. This text is an author repair, not Review PASS.
 
 Human direction [recorded at #1207@6293679128](https://github.com/kaicreator-mm/ai-development-standard/issues/1207#issuecomment-6293679128):
@@ -61,6 +62,10 @@ Filenames resolve solely to §1 blobs. Replacement **C**: this ADS release must 
 | F01 | PRODUCT_FREEZE frozen decision summary runtime-E2E sentence and “L2 mandatory carry-forward” RQ sentence | Historical freeze preserved; new exact Product decision must activate C and §6 disclosure. |
 | F02 | L2_FREEZE “Required later proofs” paragraph's runtime/RQ effect | Future oracle unchanged; new exact L2 decision activates C/P timing. |
 | F03 | TASK_DAG_FREEZE canonical S05/S06 nodes, mandatory S05 P2-2 bullet, branch-control “E2E/RQ remains BLOCKED/NOT_RUN” | §5 new DAG decision/native transition. P2-2 actual runtime oracle retained in #1210, NOT_RUN, no longer alone blocks scoped ADS RQ. Other branch/admission controls unchanged. |
+| O01 | PRD FR07 “ADS #1210 independent exact-source proof”; #1210 Deliverables “conformance matrix and minimal positive/negative fixtures” and Required tests item 6 valid/invalid fixture component | Explicitly transfer ADS-owned conformance matrix/fixtures and their exact-source proof to **new S05′**, §3. #1210 no longer owns those ADS release deliverables; it consumes their qualified immutable artifacts in later real integration. |
+| O02 | L2 §6 E6 owner column “ADS #1210”; §7 Architecture D “release candidate and independent closure”; L2 Evidence §D #1210 “qualified final version gates”; #1210 Deliverables “Independent review and actual version-level regression/Release Qualification before one final main merge” and title “version closure” | Explicitly transfer ADS candidate, version-level regression, independent closure and scoped RQ ownership to **new S06′**. #1210 owns only future runtime integration acceptance; it cannot decide ADS RQ or keep an ADS release dependency on external implementation. |
+| O03 | #1210 live title/body/status and provisional dependency paragraph | Apply the scope-narrowing amendment in §4 only after activation, with before/after readback and supersession lineage. Its runtime NOT_RUN/BLOCKED status describes future integration alone, not ADS release readiness. |
+| P11 | L1 L1-5 Q5 smallest real release slice; L2 §3 Publisher “actual build/ADS candidate source”; §2.3 feedback ads_subject_sha “tested frozen ADS candidate”; PRODUCT_FREEZE acceptance “test-only frozen candidate before RQ”; L2_FREEZE Scope “exact test-only candidate vs post-RQ project adoption” | **P**. For the post-qualification external integration path, “candidate” means the qualified exact ADS SHA under test, not an obligation to run external code before ADS RQ. Preserve source identity and effective-adoption isolation; unqualified SHA never becomes an effective production pin. |
 
 ## 3. Mandatory ADS executable acceptance (P1-4)
 
@@ -72,8 +77,11 @@ Every ADS-owned executable check from L2 §2–§3, E1, deterministic E4 and TAS
 - Late v3 EVIDENCE_UPDATE/TASK_LEARNING→new immutable v4 EXECUTION_SUMMARY revision; distinct EXECUTION_CORRECTION; unchanged §10 Level-1 learning note. No inferred private capture update or invented profile.
 - Recorded GitHub-shaped input decisions: Issue/publisher/report/revision/kind identity, same-digest dedupe, different-digest conflict, edit/revocation/unknown-integrity handling, cross-namespace/Issue/Task correction refusal, stale source, missing cost/verifier and strict-vs-partial semantics. Green partial checks/tool ACK never create Task PASS.
 - Complete ADS-owned handoff contracts and deterministic recorded-input oracles for pagination, 429, retry/lost ACK, privacy redaction/tombstone, same-build feedback/reader and no private resolver. Fixtures never prove real HTTP/credential/external behavior.
+- Explicit carrier invariants: exactly one first-line marker and one canonical typed YAML mapping with only schema/kind/data; Markdown and KEY=VALUE are never machine truth. Test Protocol §16.4 latest-only narrowing to per-kind/effective-pin semantics, writer refusal to emit v3 report kinds under a v4.15 pin, and refusal of prefilled own GitHub comment ID/URL in feedback data.
 
 Checks may be implemented in S02/S03/S05′ but must all be passing at S05′. Evidence names commands, true exits, source/tree and coverage. SHAPE_VALID_ONLY alone is not semantic conformance, Claim admission, Task PASS or RQ.
+
+S05′ source edits cannot silently change S02/S03-accepted wire or normative semantics. A discovered defect must route as a finding to the owning Task, with authorized correction/successor scope, focused re-review and renewed currentness; affected S05′ acceptance remains blocked until resolved. Tests/evidence additions do not grant S05′ a second contract writer role.
 
 ## 4. Named deferred real integration and retained oracle (P1-3)
 
@@ -84,6 +92,8 @@ External owners: [task-meta #3](https://github.com/kaicreator-mm/task-meta/issue
 [DEFERRED_E2E_ORACLE.md](DEFERRED_E2E_ORACLE.md) preserves original PRD J1–J6, L2 §5/E2–E6 and DAG P2-2 **verbatim** from the pinned blobs. Only old release timing is superseded by §2, never actual runtime behavior.
 
 Exactly these external execution classes may remain NOT_RUN for scoped ADS RQ: (1) actual Agent capture/private immutable source and sanitized task-meta publication/readback; (2) same-build real TS reader+feedback writer, effective grant witness and denied/absent private egress; (3) actual POST/lost-ACK/retry/pagination/429/permission-denial; (4) remote edit/correction/privacy removal/tombstone/readback; (5) actual CI/Host/Review verifier and observed-use/effect comparison; (6) cross-project exact-build integration and optional effective adoption. ADS deterministic checks in §3 cannot be transferred into these categories to skip them.
+
+**Post-activation #1210 scope narrowing:** preserve its original title/body as a durable pre-amendment snapshot with source hash and actual GitHub reference. Publish the new decision and old→new owner mapping O01/O02/O03 before editing. Set its title to `[Deferred integration] Real task-meta → GitHub → Tally → GitHub runtime interoperability`; set its body to §4's six runtime classes, external owners, verbatim oracle link and retained historical-source links. Remove ADS conformance/fixture ownership and ADS version closure/RQ ownership, linking instead to actual new S05′/S06′ Issue IDs. Retain actual runtime pin/readback requirements; item 6's ADS fixture-production component transfers to S05′ while #1210 consumes those artifacts under a qualified exact pin. Status is `DEFERRED_REAL_INTEGRATION / NOT_RUN`, never waived or PASS and never an ADS release blocker. Record a scope-narrowing lineage comment and read back exact title/body/status/links to prove the approved change. Until that amendment/readback, old live text remains unchanged and activation/materialization is incomplete; §4's description is proposed ownership, not a claim that the live Issue already changed.
 
 ## 5. Explicit DAG mutation proposal, not in-place Task edits (P1-2)
 
@@ -102,6 +112,10 @@ S06′: new ADS scoped closure/RQ Task, dependency accepted S05′ (transitively
 | #1219→#1220 | new S05′→new S06′ |
 
 After Product/L2/DAG activation, allocate new exact Task Packs/IDs and record explicit supersession lineage; rebind affected DF/MI mapping as applicable under TASK_DAG_GOVERNANCE §10A. Re-evaluate Task Pack/claim/finding currentness, preserve old claims/history, do not assume closure or reuse admission. Authorized native executor then performs the approved old→new edge transition, retaining old topology evidence; read all affected old/new blocked_by lists completely back, verify exact five-edge active graph and absence of cycles before dispatch. Missing approval/IDs/native capability/readback/mapping proof means HOLD/NATIVE_DAG_NOT_PROVEN. No native mutation has occurred in this proposal.
+
+**Old Task disposition and execution record:** before removing old release-path edges, put #1219/#1220 in explicit non-dispatchable `state:blocked` hold with a durable supersession comment and links to new IDs, preserving required-evidence/history. If an actual accepted Claim still exists, reconcile its terminal/publication/resource/generation state first; supersession cannot steal or terminate it by assumption. Once reconciliation and supersession are complete, close each old Issue with GitHub `state_reason=not_planned`, never completed/PASS, and verify readback. Do not leave an open orphan appearing READY. Then apply approved edge removals/additions under the same recorded transition and verify all old/new lists and terminal dispositions.
+
+The frozen mutation **proposal** stays byte-immutable with its PENDING authority/ID values. After actual IDs, authority and current facts exist, publish a **new** executed `dag-mutation-record-v1` with actual approving executor/decision refs, actual IDs/Task Packs, refreshed complete native old-topology evidence and exact resulting edges/readback. Bind it to the accepted DAG decision and record SUPERSEDE, DEFER and CHANGE_INTEGRATION_OWNER aspects. A timestamp or schema-valid draft is not execution evidence. If actual evidence disagrees with the approved proposal, re-evaluate the decision before mutation rather than editing the frozen draft or inventing approval.
 
 ## 6. Mandatory disclosure, pins and later compatibility defects (P2-1/P2-2)
 
