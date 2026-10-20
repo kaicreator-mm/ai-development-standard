@@ -40,7 +40,7 @@ Source baseline for this evidence branch is `a1c2ddd8c7f48374a3425b2e98c5b9dee79
 | [S01 observation](https://github.com/kaicreator-mm/ai-development-standard/issues/1215#issuecomment-6296970719) | New context inspected public history; original process/resource/terminal facts remain UNKNOWN | Firsthand original-builder attestation or legal release |
 | [S04 observation](https://github.com/kaicreator-mm/ai-development-standard/issues/1218#issuecomment-6297356012) | New context inspected public history; no required scarce resources declared in inspected contract | Proof of actual prior allocation/termination or legal release |
 
-The user reports both original sessions accessible. Accessibility is not evidence that either stopped or released its dispatch. Self-declared actor identity is accepted for attribution; no extra credential or second signature is requested. Attribution alone does not prove past process effects.
+Session accessibility is UNVERIFIED within this source pack; no durable provenance reference is supplied here. Accessibility would not prove that either original session stopped or released its dispatch. Self-declared actor identity is accepted for attribution; no extra credential or second signature is requested. Attribution alone does not prove past process effects.
 
 Historical source candidates are #1224 HEAD `fc8e29ce50e39b648c81fba2390b4e25aa246bd2` and #1223 HEAD `bb2fc4610911b8e10b4b6bc565337b4b2dcefc51`. Their recorded CI concerns synthetic merge commits, not literal HEAD validation or legal admission. Their prior findings are carried forward, including current implementation-plan, guarded-path and old-dispatch unknowns. This document performs no new candidate validation and transfers no PASS.
 
