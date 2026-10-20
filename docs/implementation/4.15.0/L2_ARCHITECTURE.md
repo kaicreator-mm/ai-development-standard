@@ -158,12 +158,12 @@ The arrows are **prospective architecture dependency candidates**, not native Gi
 
 ## 8. L2 independent review questions / selected risks
 
-1. Does the single v4 report kind-family provide **both** typed execution summary and manifest-free feedback while preserving v3 unchanged and existing Agent Event v2/Task authority? Are explicit report `report_kind` profiles and correction minimal rather than duplicating Task Learning, Event or stored Task State?
+1. Is the per-kind × reader-pin × writer-pin choice conclusive: v3 non-report Work Item/Intent/Event **current executable** across v4.14/v4.15 pins; v4 only `kind: report`, historical v3 report read-only under v4.15; no open Task rewrite or alternate Task/Event authority?
 2. Are `subject/actor/measurements/verifier/manifest/feedback` source-qualified enough for Tally to consume GitHub **without** access to private Manifest, and fail closed on missing quality/actual billing?
-3. Do v4 reader historical v3 semantics and candidate-as-test subject vs qualified effective main SHA avoid compatibility/regression and RQ acceptance loops? No tag ceremony or silent relaxation of old selector.
+3. Are former v3 `EVIDENCE_UPDATE` and `TASK_LEARNING` mapped to immutable summary revisions with distinct late CI/Host provenance and unchanged Level-1 learning notes? Does candidate-as-test subject vs effective RQ-qualified main SHA avoid release loops without tag ceremony?
 4. Does the credential-permission inventory require **actual grants**, plus denied private egress, satisfy R1 Product P2 without invented owner identity checks?
-5. Do edited/revoked comments, lost ACK, conflicts, missing verifier, late delivery, nested retry metrics and same GitHub login multiple sessions avoid false PASS or duplicate effects?
-6. Are U1–U8 evidence strengths, required demo ownership and genuine external implementation blockers honestly dispositioned? Does the architecture demand a new pre-L2 spike or can real E2E remain a later required Product acceptance? Missing source/schema/real credentials cannot be represented as PASS.
+5. Does RFC8785 canonical `data` digest plus GitHub-native edit metadata suffice **without private publisher receipts**, and does namespace-restricted correction avoid cross-publisher cancellation under a shared GitHub login? Exercise thought probes: edited/revoked comment, lost ACK, same-ID differing digest, failed verifier, late CI and nested retries.
+6. Are U1–U8 source-based architecture dispositions aligned with Stage 2.3: **U3 static-sufficient for witness design, no pre-L2 demo**, U6 BLOCKED **only for real E2/E3/E5/E6 and RQ, not L2 Freeze**, while runtime evidence stays NOT_RUN?
 7. Output a source-bound verdict `L2_FREEZE_READY=YES|NO`, P0/P1/P2 and exact changes, with reviewer self-declaration distinct from author; **L2 Review input is not L2 Freeze**.
 
-**Stage-2 R0 limitations:** no actual v4 protocol/schema implementation, no executed v4 fixture, no real external task-meta/Tally E2E, no native Task DAG and no new Product authority decision. L2 review must not make any of those claims.
+**Stage-2 R1 limitations:** no actual v4 protocol/schema implementation, no executed v4 fixture, no real external task-meta/Tally E2E, no native Task DAG and no new Product authority decision. Prior R0 independent `L2_FREEZE_READY=NO` remains historical pending independent R1 delta verdict. Source-author text changes do not prove runtime PASS.
