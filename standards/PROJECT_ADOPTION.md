@@ -144,6 +144,36 @@ A project without explicit opt-in remains `PINNED/MANUAL` by default. The update
 - **Merge/activation unknown:** Missing Task-isolation proof, native blocker/Claim source currentness or required Review/Validation ⇒ update PR remains unmerged; an unauthorized merge cannot be reported as legitimate activation.
 - **Rollback/historical:** A new source-bound rollback never rewrites the ADS SHA of previously accepted/validated Tasks or projects' historic Release/Review outcomes.
 
+### 2.1C v4.15 — independently qualified untagged main commit: manual adoption vs advisory discovery
+
+This prospective v4.15 clarification distinguishes an **explicit project-local `PINNED/MANUAL` upgrade checkpoint** (§6) from the conservative v4.12 read-only `TRACK_LATEST_COMPATIBLE_STABLE` *recommendation selector*. An optional Git Tag or GitHub Release is a discoverability/publication alias; it is **not** a new normative Release Qualification Gate for manual adoption. A semver string, an untagged reachable branch commit, passing CI, or a successfully merged unqualified PR are likewise **not** proof of a releasable standard.
+
+A project MAY manually choose an untagged ADS commit **only when every applicable predicate is independently verified and source-bound**:
+
+1. `revision` resolves to a **full immutable 40-hex SHA** that is **actually integrated into the ADS `main` history**; do not accept a mutable `main` ref, detached candidate, mere open PR or tag alias as the effective pin.
+2. A distinct ADS Release Qualification verdict `READY` is present for the **exact frozen version candidate SHA/tree**, and its actual repository-integration record binds that candidate to the chosen main integration SHA/tree; source differences and merge-base/currentness impact are explicitly reconciled under the existing Release/Repository Integration authority. `PR PASS` does not equal `Release PASS`, and `RQ READY` alone does not prove main integration.
+3. The selected commit's `VERSION`, `standard-manifest.json`, protocol/schema bytes and required historical/current compatibility expectations are inspected at that exact SHA. The project's existing effective revision, `PROJECT_OVERRIDES.md`, and applicable source/wire/behavior/actor/authority/Claim/Review/Validation/Release/external-effect compatibility are **affirmatively** checked; missing information is `UNKNOWN`, not an automatic compatible choice.
+4. The project's explicit authorized version-update PR/Task under §6 passes its own required checks and last-admission/currentness/permission criteria **before merging**; in-flight Tasks/Claims/frozen candidates remain pinned to their accepted former ADS revision unless an independently allowed checkpoint proves a safe transition. A manual choice does not activate merely because an Agent recommends it.
+5. The durable adoption evidence identifies `old_revision`, `proposed_revision`, `qualified_candidate_sha/tree`, `release_qualification_ref`, `repository_integration_ref`, exact new `VERSION` evidence, compatibility evidence, project update PR/checkpoint and the **effective pin after authorized merge**. Re-read facts at decision time; `BLOCKED` or `NOT_RUN` stays honest.
+
+**Observed predecessor example (not a waiver):** v4.14.0 was Release-Qualified and merged into `main@584512e8566408bed479192753c12a036309d277`; the user did not require a v4.14.0 Tag/Release alias. That exact commit may be **considered** for a project's manual adoption only if its real RQ/integration source links and *that project's* source/wire/authority compatibility and legal upgrade checkpoint are independently confirmed. This sentence is **not** a blanket approval of every adopter or proof of uninspected refs.
+
+**Legacy selector remains conservative:** `scripts/v412_ads_compatible_select.py` keeps its original published Tag+GitHub Release and active-work refusal behavior for an automated read-only recommendation. Its `NO_SAFE_RECOMMENDATION` for an untagged candidate is **not a manual-upgrade veto** and **not** a proof of compatibility. No automatic selector flag, hidden override, relaxed threshold, cross-repo PR writer or automatic activation is authorized here.
+
+**Pre-Release v4.15 interoperability tests use a different identity:** a *frozen, immutable v4.15 candidate SHA* MAY be selected as an **isolated validation subject** for the real task-meta → GitHub → Tally conformance journey. Record it as `test_subject_revision` with bounded smoke Issue/adapter config and exact source/currentness; **do not set it as the project's effective `.dev-standard/VERSION`**, do not mutate accepted live Claims/Task pins or infer qualified Release from test configuration. Material candidate drift invalidates affected tests. A production adoption becomes eligible only **after** actual E2E contributes to v4.15 Release Qualification and the resulting exact candidate is qualified and integrated into main.
+
+**Discriminating examples (expected resolution, not simulated test PASS):**
+
+| Scenario | Normative outcome |
+| --- | --- |
+| RQ-ready candidate/main integration observed and project-local compatible evidence confirmed, but no Tag or GitHub Release | `PINNED/MANUAL` **MAY proceed** through §6 authorized PR/Validation/checkpoint. Existing auto selector may still refuse. |
+| Tag/Release exists but actual RQ verdict, candidate/tree mapping or current project compatibility missing | `UNKNOWN/NO_SAFE_RECOMMENDATION`; **manual activation denied** pending evidence. |
+| `main` names latest changes but no exact qualified commit or source linkage | `BLOCKED`; **never** substitute floating main for a revision. |
+| Exact RQ-qualified main SHA exists, but project has an incompatible live Claim or unresolved schema/authority change | **Do not adopt** until an authorized non-weakening checkpoint proves safety; old Task remains on old pin. |
+| Frozen v4.15 candidate used by isolated smoke Agent before Release Qualification | `test_subject_revision` **only**; required E2E remains `NOT_RUN` until executed, and effective project pin is unchanged. |
+
+This section clarifies **only** the already-required selection/evidence authority. It changes neither the v4.12 selector's published-stable definition nor existing exact-RQ/Project-Upgrade truth, and it does not create a new Gate, Owner account requirement or compulsory GitHub Release.
+
 ### 2.2 v4 Progressive Adoption（A0–A4）
 
 v4 adoption level 只描述项目采用多少 Operation / Assurance / machine-contract / automation 能力，**不改变 mandatory truth floor**。低 adoption level 代表实现更轻，不代表 required gate 更少。
