@@ -82,7 +82,7 @@ ADS owns **standard and conformance**, task-meta and Tally own production code i
 
 `REQUIRED_NOW` version criteria once scoped & frozen (**evaluate candidate E2E before RQ; effective producer/consumer adoption only after qualified main integration**): canonical accepted PRD/L2/DAG authority, exact v4.15 wire/profile and adoption evidence, positive/negative schema/consumer conformance, **J1–J6 bounded actual producer/GitHub/consumer interoperability**, applicable visible CI, independent Review for normative/wire/authority changes, final candidate freeze, applicable hidden pack disposition, Release Qualification. Github and external consumer acceptance must show *actual* code and GitHub receipts on exact SHA. No PR/CI-only PASS as RQ.
 
-Declared status at draft: `Product Review=NOT_RUN; Product Freeze=NO; L2=NOT_STARTED; Task DAG=NOT_ADMITTED; task-meta/Tally E2E=NOT_RUN; v4.15 Release Qualification=NOT_READY`. Existing v4.14 independent validation is **reused only for unchanged foundation**, not as proof of new functionality.
+Declared status at R1 draft: `R0 Independent Product Review=BLOCKING_P1_3` ([actual source-bound verdict](https://github.com/kaicreator-mm/ai-development-standard/issues/1212#issuecomment-6283865287)); `R1 Focused Delta Review=NOT_RUN; Product Freeze=NO; L2=NOT_STARTED; Task DAG=NOT_ADMITTED; task-meta/Tally E2E=NOT_RUN; v4.15 Release Qualification=NOT_READY`. Existing v4.14 independent validation is **reused only for unchanged foundation**, not as proof of new functionality.
 
 ## 7. Stage 1 independent Product Review checklist / exit
 
