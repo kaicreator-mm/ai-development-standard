@@ -1,6 +1,6 @@
-# ADS v4.15.0 — L2 Architecture (R0 / Review Candidate)
+# ADS v4.15.0 — L2 Architecture (R1 / focused Review repair candidate)
 
-**Status:** `L2_CANDIDATE / INDEPENDENT_ARCHITECTURE_REVIEW_REQUIRED / NOT_FROZEN`. No Task DAG or implementation authorization.
+**Status:** `L2_R1_CANDIDATE / FOCUSED_INDEPENDENT_REVIEW_NOT_RUN / NOT_FROZEN`. Original [R0 independent L2 review](https://github.com/kaicreator-mm/ai-development-standard/issues/1213#issuecomment-6284889724): P0=0/P1=4/P2=5; source-author repairs are **not** a Review PASS. No Task DAG or implementation authorization.
 **Frozen Product:** [#1207@6284631551](https://github.com/kaicreator-mm/ai-development-standard/issues/1207#issuecomment-6284631551), `PRD.md@fbeacd479f5a9a0d3dc1a3f853abe623cc211031`, `L1_PRODUCT_EVIDENCE.md@34a8833056e8a3e31ba2238777fde21e816ce6ac`.
 **Architecture evidence / material UNKNOWNs:** [L2_ARCHITECTURE_EVIDENCE.md](L2_ARCHITECTURE_EVIDENCE.md).
 **Source baseline:** v4.14.0 `main@584512e8566408bed479192753c12a036309d277`; version branch `version/v4.15`.
@@ -30,22 +30,39 @@ DomainHarness's selected one K Primary governs **Domain App** state/admission/jo
 
 ## 2. Canonical v4 wire and compatibility split (FR02 / #1205)
 
-### 2.1 Root and schema identity
+### 2.1 Per-kind wire compatibility — P1-1 and P2-5 resolution
 
-One canonical **first line** `<!-- ads:github -->`, one fenced `yaml` block, a mapping with exactly `schema`, `kind`, `data`; human Markdown may follow but never supplies machine-required values. The prospective current root is `schema: ads/github/v4`, with `kind: work_item | intent | event | report`.
+**Chosen design: v4 is REPORT-ONLY.** The unchanged single first-line `<!-- ads:github -->`, single fenced YAML mapping with exactly `schema`, `kind`, `data` and human Markdown afterwards remain. A v4.15 writer **continues emitting `schema: ads/github/v3` for `work_item`, `intent` and `event`**; these are still **current executable** inputs for a v4.15 reader, subject to their original GitHub authority/Claim semantics. Only new `kind: report` uses `schema: ads/github/v4`. No previously live v3 Task Issue, Intent or Agent Event needs mutation or migration.
 
-**Design:** `schemas/github/v4.15/structured-interaction.schema.json` Draft 2020-12 contains strict conditional `oneOf` and discriminator profiles. `work_item`, `intent`, `event` preserve their effective v3 Task Contract, Agent Event v2, operation constraints and native currentness/authority; reuse pin-bound `$ref` owners via offline registry **or** mechanically verified identical shapes. No second Python field authority. Only `kind: report` gains the new typed consumer/feedback fields.
+New `schemas/github/v4.15/report.schema.json` Draft 2020-12 is a **report-only** strict discriminated schema accepting exactly `schema: ads/github/v4` and `kind: report`. The v4.15 verifier dispatches on **both** schema identity and kind. For all non-report kinds, it uses the **original unchanged v3 root and pinned offline `$ref` registry** (Task Contract / Agent Event v2). There is **no duplicate copy** of ten Work Item profile shapes. The v3 source Schema blob `a8c5d852c239f69850e7d856af75ca8179aff1dd` remains byte-identical.
 
-**Frozen predecessor:** v3 root `schemas/github/v4.14/structured-interaction.schema.json@a8c5d852c239f69850e7d856af75ca8179aff1dd` remains byte-for-byte unchanged. v3-only consumers: unsupported `ads/github/v4` is explicit `UNSUPPORTED_SCHEMA`/non-admission (or clean ignore), never stripping `schema` and partially parsing as v3. v4 current writer publishes v4 only. v4 reader can parse old v3 with the **original exact pinned v3 schema** as immutable *historical* evidence; v3 missing actor/verifier/cost/learning ⇒ typed `UNKNOWN/INSUFFICIENT_EVIDENCE`, no promotion into current v4 shape.
+| GitHub record | v4.14 reader/agent | v4.15 reader/agent | New v4.15 writer |
+| --- | --- | --- | --- |
+| v3 `work_item` | current executable with native authority checks | **current executable** with same checks | **v3** |
+| v3 `intent` | current admissible mutation request | **current admissible** request | **v3** |
+| v3 `event` | current Agent Event v2 | **current Agent Event v2** | **v3** |
+| v3 `report` | current per v4.14 pin | **historical read-only** via original v3 schema; absent new fields = `UNKNOWN/INSUFFICIENT_EVIDENCE` | no new v3 reports under v4.15 pin |
+| v4 `report` | `UNSUPPORTED_SCHEMA` or clean ignore, never partial parsing or PASS | current validated *observational evidence*, not Task PASS | **v4** |
+| v4 non-report or unknown pair | reject/ignore | reject `INVALID_SCHEMA/UNSUPPORTED_SCHEMA` | forbidden |
 
-### 2.2 One report kind-family, minimum discriminated profiles
+An active v4.14-pinned Agent may continue its own v3 reports without re-binding accepted Claims; mixed-pin readers must not treat unseen v4 reports as proof of success. The `latest-only` clause of Protocol §16.4 must be **prospectively narrowed in v4.15 to current accepted identity per kind and effective source pin**, while v4.14 remains exactly as qualified. This behavior/authority change requires focused compatibility tests. v4.15 historical v3 **report** reading does not enable v3 current report admission.
 
-The single `kind: report` has `data.report_kind` as discriminator. For v4 MVP, define exactly:
-- **`EXECUTION_SUMMARY`** — written by task-meta from actual observed Attempt; stable report id/revision, owning Task+Attempt, logical actor/session/role, exact source/code/ADS subject, manifest ref and SHA-256 **required**, observation provenance and coverage, bounded timing/token/tool/cost and verifier/source outcome summary. It **does not** assert Gate PASS.
-- **`EXPERIENCE_USE_FEEDBACK`** — written by Tally's GitHub publisher after advisory action/observation; stable id/revision, owning Task/Attempt, self-declared actor/session/role, experience/procedure identity/version, usage phase (`presented|accepted|applied|skipped|independently_checked|observed_effect`), actual source/CI/Host refs and explicit limits. **No `manifest_ref`/digest requirement and no fabricated task-meta Manifest.** This is a report **profile**, not a new event family.
-- **`EXECUTION_CORRECTION`** — bounded correction/revocation/tombstone reporting for an existing accepted actual GitHub comment; its stable new revision/source, previous `corrects_ref`, target profile, safe reason and invalidation semantics, with actual GitHub publication/readback. Manifest only if the underlying correction asserts a newly stored private task-meta object; **never** require private Manifest for a Tally feedback correction or safe revocation.
+### 2.2 New v4 reports and complete v3 report-kind migration — P1-2
 
-Older v3 `TASK_LEARNING/EVIDENCE_UPDATE` records remain historical readable **under their actual v3 schema**. New material reusable experience in v4 is a source-qualified bounded summary/link to existing Task Learning v2 evidence and actual GitHub refs, **not** a parallel Task Learning v3 machine family. Any later need for another v4 profile requires a separate compat-reviewed source amendment, not arbitrary unknown `report_kind`.
+Exactly three **new v4 `data.report_kind`** profiles under the *same* outer `kind: report`:
+- **`EXECUTION_SUMMARY`**: task-meta-owned Task/Attempt execution report with actor/source/coverage/verifier/cost and immutable private `manifest_ref` and SHA-256 digest, required; Tally consumes only GitHub-safe `data`.
+- **`EXPERIENCE_USE_FEEDBACK`**: Tally-owned, **manifest-free** report of presented/accepted/applied/skipped/independently_checked/observed_effect with actor/Task/Attempt/procedure/source and limits; never an Agent Event or Task PASS.
+- **`EXECUTION_CORRECTION`**: bounded correction/revocation **notice** targeting a prior accepted comment of the same owning Issue/report namespace and original profile/subject; cross-namespace attempted corrections are `DISPUTED/UNVERIFIED`, not automatic invalidation. A correction does **not** carry replacement execution facts; replacement requires a new revision of the source profile.
+
+| Old v3 `report_kind` | New v4 report publication disposition |
+| --- | --- |
+| `EXECUTION_SUMMARY` | v4 `EXECUTION_SUMMARY` initial immutable revision |
+| `EVIDENCE_UPDATE` | **new immutable revision of the same v4 `EXECUTION_SUMMARY` `report_id` and Attempt**, with updated task-meta-owned manifest/ref/digest and source-bound late CI/Host/Review verifier refs. Original revision persists. Tally may also read native late CI/Review directly; it cannot synthesize task-meta coverage. |
+| `TASK_LEARNING` | Material knowledge adds a **new immutable revision** of that v4 `EXECUTION_SUMMARY`, with new task-meta manifest/digest and Task Learning v2 source ref; if no accepted summary exists, report `INSUFFICIENT_EVIDENCE` rather than invent a new profile. The separate §10 Level-1 `TASK_LEARNING=NONE_MATERIAL | ref` note is **unchanged**. |
+| `EXECUTION_CORRECTION` | v4 `EXECUTION_CORRECTION` safe notice + new target-profile revision for any replacement |
+| (no v3 kind) | v4 `EXPERIENCE_USE_FEEDBACK` |
+
+The v4.15-pinned writer does **not** emit v3 report kinds; the v4.14-pinned writer/reader retains its qualified format until lawful version adoption. Ordinary late evidence is a source-bound **new revision**, not automatic `corrects_ref` invalidation; false former evidence uses correction notice and separately accepted replacement revision. Protocol §10 publication text will explicitly document the table during #1205 implementation. The same Issue/report_id/revision dedupe/readback rule applies, with no per-step GitHub spam.
 
 ### 2.3 Minimum data semantics and strictness
 
