@@ -137,6 +137,12 @@ V415_SOURCE_SUCCESSORS = {
         "6a178b2678844d5ff3c3c020f16e4611f6e674d1",
         "aff279a16a676b3a554b2a771d0ba90d0c9da298",
     ),
+    # R3 conformance composition repair: the immutable R2 kernel output.
+    "scripts/test_v49_gate_currentness.py": (
+        "a6ff6a212a574d8a09e17e7d4b98c30a05e81632",
+        "8566f1f98242714fbc6c471ad375bb0406625479",
+        "7b2330126ceb65effb80a8b8eced5ec0848c9696",
+    ),
 }
 
 PLANNING_PATHS = tuple(
