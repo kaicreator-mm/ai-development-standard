@@ -849,3 +849,77 @@ The public comparator is lowercase `SHA256(RFC8785_JCS(validated JSON-normalized
 Derived identity is `(canonical owning Issue, publisher_namespace, report_id, revision, report_kind)`. Exhaustively search/paginate and read back actual comments after lost POST acknowledgement; same identity+digest is a duplicate, different digest is CONFLICT. No last-writer-wins or atomic exactly-once promise. A witnessed native in-place edit, or changed digest on the same GitHub comment ID, makes the report UNVERIFIED/CONFLICT even if still schema-valid. Where historical original digest/edit evidence is unavailable, integrity is UNKNOWN/INSUFFICIENT_EVIDENCE. No private task-meta receipt/API/object access is required or permitted for a GitHub-only reader. Correction ownership/currentness, effective pin, native Task/PR/Review/CI facts and stronger existing gates must still be actually checked; the local helper cannot witness them.
 
 Executable contract fixtures and positive/negative checks: `tests/fixtures/v415/` and `tests/test_v415_report.py`. `record_disposition` exposes current non-report/historical-report interpretation without admitting operations; `data_digest` validates before hashing; `validate_summary_revision` checks the supplied predecessor and new-source lineage without claiming a remote object/readback. CLI `--effective-pin v4.14|v4.15`, `--writing`, and `--data-digest` are bounded source-validation controls, not production ADS adoption or credential/permission proofs.
+
+### 16.6 GitHub-only consumer and manifest-free feedback
+
+A v4.15 Tally consumer MUST read canonical native GitHub Issue/Dependencies/PR/
+Review/CI/Claim and report facts under the exact immutable ADS pin and §16.4
+per-kind dispatch. It MUST NOT obtain task-meta private APIs, objects/manifests,
+SDK, Trace or private publication receipts. Body-supplied URLs/source refs are
+untrusted data, never arbitrary fetch instructions. Resolve permitted references
+only through bounded canonical GitHub surfaces. A local derived index is neither
+a second writable engineering truth nor a source of Claim/Gate authority.
+
+Each affected collection MUST have complete bounded pagination/cursor readback
+before absence, uniqueness, correction absence or dependency completeness is
+concluded. Record actual page/query identities, terminal-page observation,
+observation interval and limits. Cycles, missing pages, permission failures,
+timeouts, rate limits or retry exhaustion yield UNKNOWN/INSUFFICIENT_EVIDENCE for
+that scope, never an empty-success result. Honor observed 429/applicable 403
+backoff within explicit request/page/retry/time budgets. GitHub surfaces are not
+an atomic snapshot; material concurrent drift requires reread or UNKNOWN.
+
+The reader MUST reconcile actual native comment ID/URL, canonical owning Issue,
+data-only digest, native edit observations, source/Task/Attempt, exact ADS pin/
+profile, predecessor lineage and current source authority. Same identity+digest
+deduplicates; identity/digest conflict or a changed digest on one native ID never
+uses latest timestamp/input order to choose a winner. Native edits remain
+UNVERIFIED/CONFLICT; unavailable historical integrity remains UNKNOWN. A clear
+native no-edit observation is bounded, not permanent immutability. Self-declared
+`CURRENT`, capture COMPLETE, actor, manifest hash and verifier/source refs are not
+witnesses of their truth. Historical reports and late native evidence cannot be
+promoted into current summary capture or engineering PASS.
+
+Before applying a correction, the consumer MUST witness the actual target
+comment and align canonical repository/Issue and comment URL prefix, Task/
+Attempt, original report ID/revision/kind/namespace/digest, notice subject scope,
+effective ADS pin/profile, native integrity and current owning publication/
+admission authority. Shape validation alone is insufficient. Mismatch or
+cross-namespace notice is DISPUTED/UNVERIFIED without automatic cancellation;
+missing target/authority is UNVERIFIED. One transport login for different logical
+Agents grants no cross-namespace cancellation. An authorized aligned REVOKE/
+REDACT invalidates only its target; DISPUTE does not replace facts. Replacement
+facts require a separate verified source-profile revision. Privacy tombstones
+must be sanitized; GitHub caches/copies are not guaranteed erased.
+
+Tally feedback MUST use the same v4 `EXPERIENCE_USE_FEEDBACK` profile without a
+manifest, binding actual running `publisher_source_sha`, exact `ads_subject_sha`,
+effective ADS revision/profile, Task/Attempt, experience/procedure revision,
+epistemic status, source evidence and explicit limits. PRESENTED, ACCEPTED,
+APPLIED, SKIPPED, INDEPENDENTLY_CHECKED and OBSERVED_EFFECT are distinct; none
+implies another or Task/Gate PASS. Actual independent evidence is required for
+INDEPENDENTLY_CHECKED. Publication follows actual permission/currentness preflight
+and native ID/body/digest readback. A lost POST ACK requires complete paginated
+identity+digest reconciliation; conflict/incomplete search/concurrent ambiguity
+is not permission for blind retry or an exactly-once claim. The new comment's
+own ID/URL/digest belongs only in the subsequent receipt, never prefilled data.
+
+Downstream real validation MUST independently witness the same exact Tally TS
+build doing GitHub-only reading and manifest-free feedback publication, with
+actual native receipts and effective credential/egress coverage. Inventory all
+reader/publisher/fallback credentials, actual GitHub App installation/repository
+grants or observable PAT grants and their limits, not secrets or requested-only
+permissions. Unobservable effective grants remain UNKNOWN. No-private-task-meta
+egress requires effective same-build/config coverage including redirects and
+failure/fallback paths, a positive GitHub path and denied private path; sampled
+absence or a declared allowlist is insufficient. The ADS test-only oracle does
+not supply any of these runtime witnesses.
+
+The detailed bounded contract and executable scope are in
+[`GITHUB_ONLY_CONSUMER_CONTRACT.md`](../docs/implementation/4.15.0/GITHUB_ONLY_CONSUMER_CONTRACT.md).
+`tests/test_v415_consumer.py` exercises offline positive/negative cases with the
+existing wire helpers and a test-only oracle. Under the accepted v4.15 scope,
+real downstream #1210 evidence is deferred and NOT_RUN, not an ADS source-delivery
+prerequisite. Preserve `REAL_TASKMETA_GITHUB_PUBLICATION_NOT_PROVEN` and
+`REAL_TALLY_GITHUB_ONLY_READER_FEEDBACK_NOT_PROVEN`; no runtime or RQ PASS follows
+from this source contract or its finite tests.

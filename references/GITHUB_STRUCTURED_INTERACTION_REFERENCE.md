@@ -148,3 +148,24 @@ python scripts/verify_github_structured_interaction.py report.md --kind report -
 ```
 
 The first command executes RFC8785 vectors, strict positive/negative profiles, original v3 blob identity/offline registry, compatibility, immutable revisions and edit/conflict behavior. The second retains the existing v4.14 conformance suite. Neither performs a real publication, reads private manifests, proves Tally/task-meta runtime, authenticates correction authority or passes a Task/Release gate. Native CI coverage is only the commands actually present in its workflow; a source-bound CI success does not imply the new standalone test command ran there.
+
+## 8. GitHub-only consumer and feedback conformance (S03)
+
+Normative owner: Protocol §16.6. Detailed source contract:
+[`GITHUB_ONLY_CONSUMER_CONTRACT.md`](../docs/implementation/4.15.0/GITHUB_ONLY_CONSUMER_CONTRACT.md).
+
+```text
+python tests/test_v415_consumer.py
+```
+
+This exercises existing wire/digest/disposition helpers and a tests-only finite
+oracle for complete pagination, bounded retries, native edit/conflict/currentness,
+source/namespace/Issue/Task-bound correction and manifest-free feedback. Its
+positive outputs are observations, never engineering PASS or real runtime proof.
+Negative cases include shape-valid wrong-target notices, shared-login different
+publishers, unavailable effective grants and missing egress/readback evidence.
+No verifier/schema change or private fetch is introduced. S02's correction shape
+finding remains OPEN; consumer application checks do not repair that helper.
+Downstream same-build TypeScript/grant/egress evidence remains deferred NOT_RUN.
+These standalone cases require actual explicit execution; generic native CI
+success does not imply this command ran.
