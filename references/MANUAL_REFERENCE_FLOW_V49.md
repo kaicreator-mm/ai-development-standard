@@ -332,3 +332,19 @@ Product A01-A17 in an isolated stateful source-contract model. It cannot establi
 actual S01/S04 applicability, native consumer fences, deployment, cleanup or RQ.
 Those facts must be inspected for the actual later operation; model fixtures
 are not their proof and the original chat is not a required evidence store.
+
+### Genuine new defect: separate bounded source authoring
+
+The preceding immutable operation stays read-only. If its exact artifact fails
+source acceptance, a distinct defect Task is possible only under adopted
+EXE_ARCH23.6 / RELEASE11.7A: prior exact owner defect authorization, actual proven
+disjoint source refs/effects and every acceptance consumer, no unresolved old
+integration/resource/external obligation, full phase-appropriate CURRENT and
+ordinary fresh known-key Claim before writing. Do not rename a blocked old Task
+or treat the artifact/model as authority. Inspect/validate all inherited source
+and the minimal new delta; qualify the actual new candidate. Keep the old key
+UNKNOWN/HOLD. Ratified new integration and repair delivery still need a separate
+prior owner amendment/current final acceptance to satisfy the original Task.
+The fixed finite matrix BOUNDED_SOURCE_REPAIR_CASES.json and
+scripts/test_v415_bounded_source_repair.py are source conformance only; actual
+S04 applicability is NOT_PROVEN until those real operation facts are published.
