@@ -130,6 +130,17 @@ V415_SOURCE_BLOB = "51f3e58d906ea6d5c249167e941d34c5a066cb45"
 V415_RECOVERY_BASE = "9d253c8efd1035b8861122e4cb7e1c062674b0f4"
 V415_RECOVERY_SOURCE = "2681b350fecff3846db88b023a62fe6db26c7707"
 V415_RECOVERY_BLOB = "65b9b32181eeb3611d024e09417c412f6e81e533"
+# #1246 owns this exact two-path successor and its shared-test seam together.
+# Immutable normative commit precedes this fixture commit; never self-pin HEAD.
+V415_ARTIFACT_BASE = "68541d901bf2afb83040dd87593c281bb06e969a"
+V415_ARTIFACT_SOURCE = "b28f34421822ed8b0c09e799c0252eda3d1326d1"
+V415_ARTIFACT_BLOBS = {
+    V415_SOURCE_PATH: (V415_RECOVERY_BLOB, "6ff29f728ccb0a4b7d908f73370ceba223fff7aa"),
+    "standards/RELEASE_STANDARD.md": (
+        "0e6b4f4d98ae2ef280dae7be70894e855ab8dc53",
+        "a9af09c523688695d7601c5b93ac5e058a78acec",
+    ),
+}
 # Additional shared pin owners exposed by the full workflow, Task R2 before
 # writes (#1232@6301043679; refreshed CURRENT #1232@6301063329).
 # (immutable v4.15 base blob, exact source commit, exact successor blob)
@@ -269,12 +280,33 @@ def _v415_recovery_successor_verified(rel_path: str) -> bool:
         return False
 
 
+def _v415_artifact_successor_verified(rel_path: str) -> bool:
+    binding = V415_ARTIFACT_BLOBS.get(rel_path)
+    if binding is None:
+        return False
+    before, after = binding
+    try:
+        for older, newer in ((V415_ARTIFACT_BASE, V415_ARTIFACT_SOURCE),
+                             (V415_ARTIFACT_SOURCE, "HEAD")):
+            subprocess.run(
+                ["git", "merge-base", "--is-ancestor", older, newer],
+                cwd=ROOT, check=True, capture_output=True,
+            )
+        return (git_object_sha(V415_ARTIFACT_BASE, rel_path) == before
+                and git_object_sha(V415_ARTIFACT_SOURCE, rel_path) == after
+                and git_object_sha("HEAD", rel_path) == after)
+    except subprocess.CalledProcessError:
+        return False
+
+
 def _v415_exact_successor_verified(rel_path: str) -> bool:
     """Bounded test identity admission, not an authority/Gate verdict."""
     binding = V415_SOURCE_SUCCESSORS.get(rel_path)
     if binding is None:
         return False
     base_blob, source, successor = binding
+    if source == V415_ARTIFACT_SOURCE and not _v415_artifact_successor_verified(rel_path):
+        return False
     if source == V415_RECOVERY_SOURCE and not _v415_recovery_successor_verified(rel_path):
         return False
     try:
@@ -314,6 +346,8 @@ def _admitted_rebound_blobs(rel_path: str, pinned_blob: str) -> set[str]:
     admitted = {pinned_blob}
     if _v411_context_verified(rel_path, pinned_blob):
         admitted.update(V411_REBOUND_OWNER_BLOBS.get(rel_path, ()))
+        if _v415_artifact_successor_verified(rel_path):
+            admitted.add(V415_ARTIFACT_BLOBS[rel_path][1])
         if _v415_source_context_verified(rel_path, pinned_blob):
             admitted.add(V415_SOURCE_BLOB)
             if _v415_recovery_successor_verified(rel_path):
@@ -329,6 +363,13 @@ if _v415_recovery_successor_verified(V415_SOURCE_PATH):
     V415_SOURCE_SUCCESSORS[V415_SOURCE_PATH] = (
         V415_SOURCE_PREDECESSOR, V415_RECOVERY_SOURCE, V415_RECOVERY_BLOB,
     )
+
+for _artifact_path, (_, _artifact_blob) in V415_ARTIFACT_BLOBS.items():
+    if _v415_artifact_successor_verified(_artifact_path):
+        _historical_blob = V415_SOURCE_SUCCESSORS[_artifact_path][0]
+        V415_SOURCE_SUCCESSORS[_artifact_path] = (
+            _historical_blob, V415_ARTIFACT_SOURCE, _artifact_blob,
+        )
 
 
 def heading_exists(text: str, anchor: str) -> bool:
@@ -855,7 +896,9 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
         is_recovery = git_object_sha("HEAD", V415_SOURCE_PATH) == V415_RECOVERY_BLOB
         self.assertEqual(is_recovery, _v415_recovery_successor_verified(V415_SOURCE_PATH))
         self.assertEqual(
-            V415_RECOVERY_BLOB if is_recovery else V415_SOURCE_BLOB,
+            V415_ARTIFACT_BLOBS[V415_SOURCE_PATH][1]
+            if _v415_artifact_successor_verified(V415_SOURCE_PATH)
+            else V415_RECOVERY_BLOB if is_recovery else V415_SOURCE_BLOB,
             V415_SOURCE_SUCCESSORS[V415_SOURCE_PATH][2],
         )
         self.assertFalse(_v415_recovery_successor_verified("schemas/dispatch.schema.json"))
@@ -885,6 +928,33 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
                     self.assertFalse(_v415_recovery_successor_verified(V415_SOURCE_PATH))
         with mock.patch(__name__ + ".subprocess.run", side_effect=subprocess.CalledProcessError(1, "git")):
             self.assertFalse(_v415_recovery_successor_verified(V415_SOURCE_PATH))
+
+    def test_artifact_bridge_exact_base_source_head_and_negative_guards(self) -> None:
+        for path, (_, after) in V415_ARTIFACT_BLOBS.items():
+            self.assertEqual(git_object_sha("HEAD", path) == after,
+                             _v415_artifact_successor_verified(path))
+            self.assertTrue(_v415_exact_successor_verified(path))
+            anchors = {rev: git_object_sha(rev, path)
+                       for rev in (V415_ARTIFACT_BASE, V415_ARTIFACT_SOURCE, "HEAD")}
+            for bad_rev in anchors:
+                def bad_sha(rev, rel_path):
+                    self.assertEqual(rel_path, path)
+                    return "0" * 40 if rev == bad_rev else anchors[rev]
+                with self.subTest(path=path, corrupt=bad_rev), \
+                        mock.patch(__name__ + ".git_object_sha", side_effect=bad_sha):
+                    self.assertFalse(_v415_artifact_successor_verified(path))
+                    self.assertFalse(_v415_exact_successor_verified(path))
+            with mock.patch(__name__ + ".subprocess.run", side_effect=subprocess.CalledProcessError(1, "git")):
+                self.assertFalse(_v415_artifact_successor_verified(path))
+                self.assertFalse(_v415_exact_successor_verified(path))
+            with mock.patch(__name__ + ".git_object_sha", side_effect=subprocess.CalledProcessError(128, "git")):
+                self.assertFalse(_v415_artifact_successor_verified(path))
+            with mock.patch(__name__ + "._v415_artifact_successor_verified", return_value=False):
+                self.assertFalse(_v415_exact_successor_verified(path))
+                if path in READ_ONLY_OWNER_PATHS_REBOUND_BLOBS:
+                    self.assertNotIn(after, _admitted_rebound_blobs(
+                        path, READ_ONLY_OWNER_PATHS_REBOUND_BLOBS[path]))
+        self.assertFalse(_v415_artifact_successor_verified("schemas/dispatch.schema.json"))
 
     def test_immutable_planning_files_unmutated_since_pack_head(self) -> None:
         for rel_path in PLANNING_PATHS:

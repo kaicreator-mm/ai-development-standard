@@ -769,6 +769,40 @@ runtime demo to deliver source. Preserve all applicable stronger gates and keep
 independent work moving. Native/runtime capabilities remain unproven until their
 separately scoped real execution; a local source-decision model is not that proof.
 
+### 23.5 Distinct immutable-artifact source acceptance
+
+An unavailable historical ledger does not authorize same-key replacement. The
+old key and UNKNOWN generation remain held under sections 23.3/27.4. For ADS
+standards-source delivery only, RELEASE_STANDARD11.7A's distinct immutable-artifact
+route MAY satisfy an existing Task's delivery obligation through a fresh current
+acceptance operation. It grants no Builder write, reservation, Claim, generation
+advance, epoch/key rename, resource reassignment/release or old-role terminal.
+
+Before selection, the Product/Task owners MUST publish/read back the explicit
+Task-specific acceptance amendment under an adopted standard. The integration
+executor MUST establish exact pre-existing artifact identity, actual disjoint
+protected effects, actual current consumer boundary, resource/effect applicability,
+fresh full assurance and governing section 29.1 CURRENT. UNKNOWN historical
+generation is preserved; UNKNOWN material overlap blocks. A comment, closed PR,
+same bytes or the human's ledger availability report proves none of these facts.
+An unresolved authorized old integration consumer/request or material external
+obligation retains its stronger reconciliation/fence requirement.
+
+The three ordered decisions are selection/authorization, actual integration
+ratification after post-effect verification, and separate final Task-delivery
+acceptance. Only the last, published/read back under all current applicable gates,
+can satisfy delivery and permit true dependency readiness. Their exact inputs,
+idempotency and UNRATIFIED behavior are owned by RELEASE_STANDARD11.7A. Future
+integration/final receipts are not prerequisites for pre-effect selection.
+
+Late old results, including same-byte results, cannot substitute current operation
+authority. A genuine newly exposed material overlapping accepted binding MUST
+hold the affected acceptance/downstream scope and preserve both histories and
+actual effects. This route does not qualify native controller races, runtime
+cleanup or Version RQ. If a real acceptance boundary cannot be established, name
+the precise missing capability/owner; do not repeat unavailable-ledger requests
+or unchanged Product Review.
+
 ## 24. Version-scoped Validation Handoff Queue
 
 Projects MAY expose a stable version-level validation queue, for example:
