@@ -70,12 +70,13 @@ def observe(items, *, complete, issue, source_sha, ads_sha):
                 item['url'] != issue + '#issuecomment-' + str(item['id'])):
             results.append('UNVERIFIED')
             continue
-        if (sub['source_sha'] != source_sha or sub['ads_revision'] != ads_sha or
-                sub['currentness']['state'] != 'CURRENT' or not item.get('source_witness')):
-            results.append('UNKNOWN')
-            continue
         digest = wire.data_digest(r)
         state = 'OBSERVED'
+        # Valid owning-native identity/digest collisions remain conflicts even
+        # when one observation cannot be promoted by its source witness.
+        if (sub['source_sha'] != source_sha or sub['ads_revision'] != ads_sha or
+                sub['currentness']['state'] != 'CURRENT' or not item.get('source_witness')):
+            state = 'UNKNOWN'
         edit = item.get('edit_evidence', 'UNKNOWN')
         if edit == 'EDITED':
             state = 'UNVERIFIED'

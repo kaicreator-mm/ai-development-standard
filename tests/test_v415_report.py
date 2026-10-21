@@ -120,20 +120,14 @@ class ReportShape(unittest.TestCase):
 
     def test_cli_public_digest_and_old_pin_rejection(self):
         import tempfile
-        # Use the repository fixture as JSON inside a valid normalized document.
-        # Temporary command input stays in the authorized workspace temp root.
-        out=ROOT.parent.parent/'_tmp/ai-development-standard-i1225-audit'
-        if not out.is_dir():
-            # CI/clean checkout owns a disposable process temp directory instead.
-            out=Path(tempfile.gettempdir())
-        path=out/'ads-s02-cli-report.md';path.write_text(markdown(fixture()),encoding='utf8')
-        try:
+        # Per-run isolation; callers may set TMP/TEMP to their authorized root.
+        with tempfile.TemporaryDirectory(prefix='ads-v415-cli-') as temporary:
+            path=Path(temporary)/'report.md';path.write_text(markdown(fixture()),encoding='utf8')
             cmd=[sys.executable,str(ROOT/'scripts/verify_github_structured_interaction.py'),str(path),'--kind','report']
             p=subprocess.run(cmd+['--data-digest'],capture_output=True,text=True)
             self.assertEqual(p.returncode,0,p.stdout+p.stderr);self.assertEqual(p.stdout.strip(),v.data_digest(fixture()))
             p=subprocess.run(cmd+['--effective-pin','v4.14'],capture_output=True,text=True)
             self.assertEqual(p.returncode,1);self.assertIn('UNSUPPORTED_SCHEMA',p.stdout)
-        finally:path.unlink(missing_ok=True)
 
     def test_v3_schema_bytes_and_offline_registry(self):
         raw=v.SCHEMA_FILE.read_bytes()
