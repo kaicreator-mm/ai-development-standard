@@ -8,10 +8,15 @@ No new protocol/schema/event family or runtime dependency is introduced.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, replace
+import hashlib
+import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
+import jsonschema
 import yaml
 
 from verify_github_structured_interaction import ContractError, verify_markdown
@@ -20,6 +25,7 @@ from test_v411_t06_claim_admission import ClaimAdmissionAdapter, proposal as adj
 ROOT = Path(__file__).resolve().parents[1]
 KEY = "kaicreator-mm/ai-development-standard#1237:builder:__default__"
 BASE = "9d253c8efd1035b8861122e4cb7e1c062674b0f4"
+PRODUCT_BLOB = "b2fdb026952b94b855f54320588261eaa2e57108"
 
 
 @dataclass(frozen=True)
@@ -108,16 +114,122 @@ class ExistingPreflightTests(unittest.TestCase):
         return "<!-- ads:github -->\n```yaml\n" + yaml.safe_dump(
             {"schema": "ads/github/v3", "kind": "event", "data": event}, sort_keys=False) + "```\n"
 
-    def test_real_shape_validator_rejects_original_running_claim_before_effect(self):
-        effects = []
+    def test_real_shape_validator_rejects_original_running_claim(self):
         with self.assertRaises(ContractError):
-            verdict = verify_markdown(self.record("RUNNING"), "event")
-            effects.append(verdict)  # unreachable on schema failure
-        self.assertEqual([], effects)
+            verify_markdown(self.record("RUNNING"), "event")
 
     def test_shape_success_does_not_authorize_unknown_frontier(self):
         self.assertEqual("SHAPE_VALID_ONLY", verify_markdown(self.record(), "event"))
         self.assertEqual("HOLD", recovery_decision(Facts(generation=None)))
+
+    def dispatch(self):
+        return {"dispatch_id": "dispatch:local-test", "repository": "kaicreator-mm/ai-development-standard",
+                "version": "v4.15", "task": "#1237", "issue": "#1237", "role": "builder",
+                "execution_profile": "LOCAL_BUILDER", "branch": "codex/local-test",
+                "expected_base_sha": BASE, "requested_head_sha": BASE, "pinned_standard_revision": BASE,
+                "agent_freedom": "F1_BOUNDED_IMPLEMENTATION", "dispatch_state": "READY",
+                "task_pack_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/1237"}
+
+    def validator(self):
+        return jsonschema.Draft202012Validator(json.loads(
+            (ROOT / "schemas/dispatch.schema.json").read_text(encoding="utf-8")))
+
+    def test_real_dispatch_schema_valid_ready_and_malformed_counterexamples(self):
+        self.validator().validate(self.dispatch())
+        for field, value in (("role", "scheduler"), ("execution_profile", "LOCAL_VALIDATOR"),
+                             ("dispatch_state", "DONE"), ("expected_base_sha", "short-sha")):
+            with self.subTest(field=field):
+                invalid = {**self.dispatch(), field: value}
+                with self.assertRaises(jsonschema.ValidationError):
+                    self.validator().validate(invalid)
+        missing = self.dispatch()
+        del missing["task_pack_ref"]
+        with self.assertRaises(jsonschema.ValidationError):
+            self.validator().validate(missing)
+
+    def test_shape_pair_unknown_semantics_and_stale_exact_subject_never_admit(self):
+        self.assertEqual("SHAPE_VALID_ONLY", verify_markdown(self.record(), "event"))
+        self.validator().validate(self.dispatch())
+        # Schema accepts any syntactically valid SHA: exact identity is a
+        # separate engineering predicate, checked by the existing adapter.
+        stale = {**self.dispatch(), "requested_head_sha": "a" * 40}
+        self.validator().validate(stale)
+        harness = RecoveryApplicationHarness()
+        proposal = replace(harness.proposal, head_sha=stale["requested_head_sha"])
+        before = harness.snapshot()
+        self.assertEqual("INELIGIBLE", harness.apply(Facts(), proposal=proposal))
+        self.assertEqual(before, harness.snapshot())
+        for facts in (Facts(current=None), Facts(generation=None),
+                      Facts(external_effects_resolved=None)):
+            with self.subTest(facts=facts):
+                before = harness.snapshot()
+                self.assertEqual("HOLD", harness.apply(facts, event=self.record(), dispatch=self.dispatch()))
+                self.assertEqual(before, harness.snapshot())
+        # An actual required binding whose capacity is unknown is another
+        # engineering failure, even when both source shapes are valid.
+        harness.adapter.resources.capacity.clear()
+        before = harness.snapshot()
+        self.assertEqual("INELIGIBLE", harness.apply(Facts(), event=self.record(), dispatch=self.dispatch()))
+        self.assertEqual(before, harness.snapshot())
+
+
+class RecoveryApplicationHarness:
+    """Isolated same-key fence + existing stateful admission adapter, NOT runtime.
+
+    Every recovery attempt (including a shape failure or old revoked request)
+    goes through apply. Only a permitted decision can call the actual adjacent
+    adapter. Source effects additionally require its accepted binding. This is a
+    bounded executable application model of R4; fixture facts are not observations.
+    """
+
+    def __init__(self, active="none"):
+        self.adapter = ClaimAdmissionAdapter(capacity={"host": 2})
+        self.adapter.generations[KEY] = 7  # exact known fixture frontier
+        self.proposal = adjacent_proposal(self.adapter, key=KEY, operator="successor",
+                                          resources=(("host", 1),))
+        self.source_effects = []
+        self.existing = None
+        if active != "none":
+            old = replace(self.proposal, operator="old" if active == "old" else "successor")
+            accepted = self.adapter.admit(old)
+            assert accepted.status == "ACCEPTED"
+            self.existing = accepted.detail
+            self.proposal = adjacent_proposal(self.adapter, key=KEY, operator="successor",
+                                              resources=(("host", 1),))
+
+    def snapshot(self):
+        # Include full durable contents, not only event counts: claim/dispatch,
+        # exact generation, bound capacity, publication history and source effects.
+        state = {**vars(self.adapter), "resources": vars(self.adapter.resources)}
+        return deepcopy({"adapter": state, "effects": self.source_effects})
+
+    def permits(self, decision):
+        return decision == "CONTINUE_TO_ADMISSION"
+
+    def apply(self, facts, *, event=None, dispatch=None, proposal=None, source=False):
+        if event is not None:
+            try:
+                verify_markdown(event, "event")
+            except ContractError:
+                return "REJECT"
+        if dispatch is not None:
+            validator = ExistingPreflightTests().validator()
+            if not validator.is_valid(dispatch):
+                return "REJECT"
+        decision = recovery_decision(facts)
+        if not self.permits(decision):
+            return decision
+        if source:
+            # This branch models an already-started successor when G23 exposes
+            # a false fence. It must recheck the fence before another effect.
+            if self.existing is None:
+                return "HOLD"
+            self.source_effects.append({"binding": self.existing, "effect": "source-write"})
+            return "ACCEPTED"
+        accepted = self.adapter.admit(proposal or self.proposal)
+        if accepted.status == "ACCEPTED":
+            self.source_effects.append({"binding": accepted.detail, "effect": "source-write"})
+        return accepted.status
 
 
 # Explicit expected results derive from the immutable frozen Product cases, not
@@ -151,6 +263,16 @@ CASES = [
 
 
 class RecoveryDecisionTests(unittest.TestCase):
+    def test_expected_oracle_is_pinned_to_independently_frozen_product(self):
+        # Hard-coded expected dispositions above are the selected admission
+        # limbs of this independently reviewed immutable Product, not generated
+        # from recovery_decision() or the mutable implementation owner prose.
+        content = (ROOT / "docs/intake/i1235-github-recovery/PROPOSAL.md").read_text(encoding="utf-8").encode()
+        blob = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+        self.assertEqual(PRODUCT_BLOB, blob)
+        for case, _, _ in CASES:
+            self.assertIn(("| " + case + " | ").encode(), content)
+
     def test_all_frozen_scenario_admission_limbs_have_explicit_oracles(self):
         self.assertEqual([f"G{i:02}" for i in range(1, 25)], [x[0] for x in CASES])
         for case, facts, expected in CASES:
@@ -176,6 +298,66 @@ class RecoveryDecisionTests(unittest.TestCase):
         for number in (0, 1, 7, 10**12):
             self.assertEqual("HOLD", recovery_decision(Facts(generation=number, common_writer=False)))
             self.assertEqual("HOLD", recovery_decision(Facts(generation=number, old_outcome="UNCERTAIN")))
+
+
+class RecoveryApplicationTests(unittest.TestCase):
+    def test_all_noncontinuing_scenario_actions_preserve_full_accepted_state(self):
+        for case, facts, expected in CASES:
+            if expected == "CONTINUE_TO_ADMISSION":
+                continue
+            with self.subTest(case=case):
+                # G22 retains a genuinely accepted active old binding; G23
+                # retains the already-started successor and stops further work.
+                active = "old" if case in {"G04", "G22"} else "successor" if case == "G23" else "none"
+                harness = RecoveryApplicationHarness(active=active)
+                before = harness.snapshot()
+                proposal = replace(harness.proposal, operator="old") if case == "G20" else harness.proposal
+                self.assertEqual(expected, harness.apply(facts, proposal=proposal, source=(case == "G23")))
+                self.assertEqual(before, harness.snapshot())
+
+    def test_g19_positive_reaches_real_composite_admission_and_bound_effect_once(self):
+        harness = RecoveryApplicationHarness()
+        before = harness.snapshot()
+        self.assertEqual("ACCEPTED", harness.apply(dict((c, f) for c, f, _ in CASES)["G19"]))
+        after = harness.snapshot()
+        self.assertNotEqual(before, after)
+        self.assertEqual(8, harness.adapter.current_generation(KEY))
+        self.assertEqual(1, harness.adapter.resources.active["host"])
+        dispatch = harness.adapter.active_claim_on(KEY)
+        self.assertEqual("successor", dispatch.claim.operator)
+        self.assertEqual((("host", 1),), harness.adapter.bound_resources[dispatch.dispatch_id])
+        self.assertEqual(1, len(harness.source_effects))
+        self.assertEqual("DISPATCH_CLAIMED", harness.adapter.events[-1]["type"])
+        before_retry = harness.snapshot()
+        self.assertEqual("STALE", harness.apply(Facts()))
+        self.assertEqual(before_retry, harness.snapshot())
+
+    def test_shape_failure_blocks_actual_application_not_a_local_append(self):
+        for kwargs in ({"event": ExistingPreflightTests().record("RUNNING")},
+                       {"dispatch": {**ExistingPreflightTests().dispatch(), "role": "scheduler"}}):
+            with self.subTest(kwargs=kwargs):
+                harness = RecoveryApplicationHarness()
+                before = harness.snapshot()
+                self.assertEqual("REJECT", harness.apply(Facts(), **kwargs))
+                self.assertEqual(before, harness.snapshot())
+        harness = RecoveryApplicationHarness()
+        self.assertEqual("ACCEPTED", harness.apply(Facts(), event=ExistingPreflightTests().record(),
+                                                   dispatch=ExistingPreflightTests().dispatch()))
+
+    def test_guard_bypass_mutants_are_detected_by_the_same_state_invariant(self):
+        # Demonstrate the exact review counterexample: leave disposition strings
+        # correct but bypass their application guard. The invariant MUST detect
+        # real accepted state/effect changes, not simply reassert a return string.
+        cases = {c: f for c, f, _ in CASES}
+        for case in ("G08", "G10", "G20", "G23"):
+            with self.subTest(case=case):
+                harness = RecoveryApplicationHarness(active="successor" if case == "G23" else "none")
+                before = harness.snapshot()
+                with patch.object(harness, "permits", return_value=True):
+                    proposal = replace(harness.proposal, operator="old") if case == "G20" else harness.proposal
+                    harness.apply(cases[case], proposal=proposal, source=(case == "G23"))
+                with self.assertRaises(AssertionError):
+                    self.assertEqual(before, harness.snapshot())
 
 class ExistingSerializedAdapterTests(unittest.TestCase):
     def test_genuine_adjacent_adapter_rejects_stale_claim_with_zero_mutation(self):
