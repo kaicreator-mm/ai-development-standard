@@ -168,36 +168,84 @@ The current recovery controller must establish all of the following:
    A logically fenced old source branch is not a physical runtime fence and must
    never be reported as one.
 
-### R4. Genuine prospective generation decision; never guess history
+### R4. Reconcile the same serialized authority before any generation advance
 
-Normal recovery uses the reconstructed accepted durable generation/revision and
-advances it through the existing serialization contract. A counter, timestamp,
-comment count or event shape is not an admission decision.
+**The exceptional `new generation > max(published bounds)` rule is withdrawn.**
+Independent Product Review [P1-01](https://github.com/kaicreator-mm/ai-development-standard/pull/1236#issuecomment-6309593617)
+demonstrated that a complete comment snapshot cannot exclude an in-flight old
+acceptance. A larger number, a branch quarantine or an owner's declaration alone
+does not fence it. Unknown historical numerical state is not proof of no Claim.
 
-For an incomplete historical source-only publication, the proposed exceptional
-rule is a **prospective owner-issued recovery barrier on the same protected key**,
-using the existing accepted event/admission references. All authoritative refs
-must resolve, all published generation bounds must be inventoried and actual
-single-writer authority/effect fencing must be established first. The real writer
-then issues and publishes a new generation strictly above every published bound,
-with the complete predecessor/ref inventory, the authority to reject every old
-proposal, and durable publication readback. This is an actual new decision; the
-old accepted counter may remain UNKNOWN. It is not evidence that an old reported
-generation was accepted, not a counter reset and not a timestamp-derived counter.
+The proposed procedure uses only the existing §11/§27 serialized admission
+authority on the **same protected key**. It adds a durable recovery checklist,
+not a new acceptance store, epoch, lifecycle or generation-jump power. The current
+controller publishes its recovery authority, inspected predecessor refs and the
+following independently checkable fence-completion evidence on the owning Issue:
 
-This is a **material proposed owner rule**, not a capability silently inferred
-from current §27.5. Its safety depends on the closed durable-authority boundary:
-an unresolved reference that could contain a newer accepted generation blocks
-the barrier. A known accepted active Claim is resolved by its cancellation owner
-first. A private unreported number cannot become canonical authority; an actual
-runtime store claiming independent authority violates the reconstructibility
-contract and needs its own repair/fence. If published bounds or the relevant
-effect boundary cannot be determined, the barrier is forbidden and the affected
-scope stays held. Do not initialize an old unknown counter to zero.
+1. **Common decision order.** Identify the single actual writer and all current
+   grants that can accept a Claim for this key, plus the actual source-integration
+   consumers. The existing serialized authority must order all old acceptance
+   attempts, cancellation/revocation and successor admission. GitHub comment
+   creation time/ID is not that order. A second writer or an acceptance-capable
+   pending request outside this order means HOLD; do not call an inventory a CAS.
+2. **Close pending admission outcomes.** Reconcile every referenced or observed
+   pending/uncertain admission and its composite work/resource result at that
+   authority: accepted (with actual generation and binding), rejected (with no
+   accepted binding), or still uncertain. Preserve the actual result. For an
+   accepted active binding, its owning cancellation authority must resolve it
+   and its resource/effect obligations before replacement. A fence cannot turn
+   an already accepted binding into an unclaimed proposal. Still uncertain means
+   HOLD under §27.4, even if no Claim comment is currently visible.
+3. **Revoke future old acceptance.** At the same serialized authority, withdraw
+   outstanding old writer grants and old dispatch eligibility prospectively,
+   publish/read back the decision and its exact predecessor/decision refs. Show
+   how every admission/integration consumer rejects that revoked authority.
+   For the manual source route, the designated sole writer must actually cease
+   old acceptance duties before successor admission; the current integrating
+   controller consumes the revoked-dispatch and exact-source exclusion records.
+   If an old autonomous writer can still commit accepted decisions, a grant
+   revocation comment does not complete the fence: reconcile/drain that writer
+   or verify its actual common acceptance fence. No original-chat reply or
+   stopped-process assertion is required when the shared authority/effect fence
+   is independently proven. If neither route is provable, HOLD with that writer
+   or consumer surface and its existing owner explicitly named.
+4. **Reconstruct the exact frontier.** Derive the actual current generation and
+   accepted binding set from the reconciled serialized decisions, including any
+   lawful cancellation/reroute advancement. Record the predecessor lineage and
+   real before/after values. Merely knowing all published lower bounds does not
+   satisfy this step. If the exact current counter remains UNKNOWN, no barrier,
+   reservation, successor Claim or source write is permitted. Do not reset to
+   zero, invent a larger value or change the protected key to escape the hold.
+5. **Consume the fence at fresh admission.** Re-read fence completion, current
+   authority, exact generation, resources, findings and §29.1 CURRENT immediately
+   before the ordinary all-or-none reservation/Claim operation. Use the existing
+   once-only generation transitions, not a recovery-specific increment. Publish
+   and read back its actual decision before source work. Conflicting/late facts
+   that defeat any predicate trigger HOLD/reconciliation, never dual acceptance.
 
-Independent Review must specifically decide whether this bounded rule preserves
-§11/§27 safety. If it does not, route to a different explicit owning-source design;
-do not adopt the proposal merely because it restores progress.
+Canonical precedence follows the **accepted serialized decisions**, not arrival
+order or a numeric maximum. An old Claim accepted *before* effective revocation
+must be reconciled as accepted history; if still active it prevents replacement.
+An old proposal presented *after* effective revocation is rejected STALE with
+zero canonical mutation, even if it quotes a large/equal generation or arrives
+as a well-formed GitHub comment. Its publication is retained as an attempted
+proposal, never silently promoted to acceptance. A delayed receipt of a genuine
+pre-revocation accepted decision is historical only **after** its binding and
+terminal were included in reconciliation. If it exposes a previously unresolved
+accepted binding, fence completion was not established: HOLD the successor and
+reconcile the incident; do not retroactively erase either observation or infer
+zero source/resource effects. Late source results similarly cannot become current
+Validation, Review or integration eligibility for the freshly bound candidate.
+
+Fence completion therefore requires **all five** evidenced predicates; closing
+an old PR proves only source exclusion. This is source/manual authority fencing,
+not physical process isolation or proof of native atomic CAS. If the existing
+authority cannot establish the exact frontier and exclusion of pending accepted
+operations, the current proposal deliberately supplies no escape hatch. Publish
+the precise remaining surface and route any materially different prospective
+authority design through its owning Product/L2/Task process before use. Do not
+repeatedly request private chat evidence or claim this proposal already unlocks
+S01/S04; their actual recovery predicates remain to be established after adoption.
 
 ### R5. Fresh admission, re-execution and current validation
 
@@ -229,15 +277,15 @@ conformance. It does not close #1232 P2-01/#1227's existing implementation work.
 | ID | Scenario | Expected decision and reason |
 | --- | --- | --- |
 | G01 | Original chat lost; complete accepted result, exact source and resources all durably resolved | Continue from GitHub; never ask for original chat |
-| G02 | Producer omitted exit; original chat unavailable; source-only effects and complete published bounds can be safely fenced | Current owner may prepare prospective recovery under R1–R4; no new Claim yet |
+| G02 | Producer omitted exit; original chat unavailable; source-only effects known, complete published bounds inventoried but exact current counter not yet reconciled | HOLD successor admission; owner may collect R1–R4 evidence, bounds alone never authorize a generation |
 | G03 | Same as G02, but only “no heartbeat” supports termination | Reject that termination claim; require actual source/effect fence, not elapsed time |
 | G04 | A known accepted active Claim remains and no owning cancellation exists | Hold; no unclaimed reroute or stolen Claim |
 | G05 | A referenced admission record is inaccessible, despite the Issue comments being complete | Hold; incomplete authoritative closure cannot issue a barrier |
 | G06 | Source proposal used invalid RUNNING; actual cloud allocation is observed | Preserve invalid Claim; hold cloud/resource recovery; never infer zero allocation |
 | G07 | A0/docs-labelled task actually deploys a service | Runtime obligations apply; source-only recovery is inapplicable |
-| G08 | Old branch/PR excluded and new branch admitted, but old outcome/cleanup remains unobserved | Do not assert stopped process or cleanup; source progression requires R3 fences and all actual resource predicates, not a fabricated historical receipt |
+| G08 | Old PR excluded; an old acceptance request is known pending with unknown outcome; no common fence/drain evidence; no observed external resource | HOLD; source exclusion and apparently empty resources do not resolve admission uncertainty; no new branch admission |
 | G09 | Proposed generation comes from comment count, timestamp or resetting UNKNOWN to zero | Reject; no genuine generation decision |
-| G10 | Every published bound is known, but one unresolved authoritative ref might name a higher generation | Hold; no finite bound established |
+| G10 | Every published bound is known, but one unresolved authoritative ref might name a higher accepted generation | HOLD; exact current generation and binding set not reconstructed |
 | G11 | Only private undocumented speculative process is cited as an accepted owner | Do not create owner authority; inspect actual declared effect surfaces and record evidence defect |
 | G12 | Fenced recovery completed; new CURRENT absent or stale | Hold successor Claim/source writes |
 | G13 | Fresh Claim accepted; new source not tested; old synthetic CI is green | Validation NOT_RUN; no merge eligibility |
@@ -246,6 +294,12 @@ conformance. It does not close #1232 P2-01/#1227's existing implementation work.
 | G16 | Merge acknowledgement unknown or compensating read failed | UNRATIFIED/downstream hold; do not retry as presumed failure/success |
 | G17 | Fresh source concern validated and merged under its actual required gates | Concern result only; no full-version RQ, runtime PASS or main merge |
 | G18 | Current receiver changes operator label to impersonate old producer or Reviewer | Reject; preserve producer/reconstructor provenance and actual independence |
+| G19 | All R4 predicates evidenced: same serialized writer resolves old rejected request, revokes old grant, proves exact frontier; source consumers exclude old PR; required/observed external effects and resources empty; old process unobserved | CONTINUE to fresh CURRENT and ordinary admission on the same key; do not assert process termination or completed validation |
+| G20 | After the completed G19 fence, old writer publishes an old g1 or equal-number Claim proposal; no accepted predecessor decision exists | STALE, zero accepted Claim/resource/generation mutation; preserve attempted publication; a number does not restore revoked authority |
+| G21 | Same source fence as G19, but an actually observed deployment/request has unknown outcome and no physical fence | HOLD affected successor; source-only recovery cannot erase external effects; name existing effect/resource owner and reconciliation action |
+| G22 | Old Claim accepted before revocation; its delayed receipt arrives before fence completion, binding still active | HOLD; reconcile real accepted binding and owning cancellation, no unclaimed-reroute shortcut |
+| G23 | Late receipt proves an accepted old binding omitted from a claimed completed fence, after successor Start | HOLD successor/downstream; fence completion was false; preserve incident and actual effects, reconcile at common authority, no retroactive ratification |
+| G24 | Late old source result refers to an accepted pre-revocation binding already fully reconciled/terminated in completed fence; new source differs | Historical only; no transfer of old PASS or new terminal; continue only under current successor's own gates |
 
 ## 6. Implementation plan after Product Review and Freeze
 
@@ -259,7 +313,7 @@ One bounded normative implementation concern should:
   the existing authority rather than create a parallel recovery lifecycle.
 - Synchronize existing handoff/terminal templates and source-specific manual
   reference with the adopted semantic obligations; no new event/schema family.
-- Implement small deterministic source-decision tests from G01–G18 with
+- Implement small deterministic source-decision tests from G01–G24 with
   independently anchored expected outcomes. Keep actual resource/native/runtime
   verification separate and disclose every unproved capability.
 - After validation and required implementation Review, explicitly adopt the
@@ -276,7 +330,10 @@ do not replay old Product/source reviews without a material change.
 Proven by cited sources: GitHub-only recovery was already required; the old-chat
 prerequisite was an execution error; the selected incident has missing durable
 recovery evidence; existing rules lack the precise proposed abandoned-publication
-barrier procedure. The decision table is an inspectable safety specification.
+reconciliation procedure. Independent Review P1-01 rejected the numerical-jump
+design; this successor withdraws it and specifies same-authority fence and
+reconciliation obligations instead. The decision table is an inspectable safety
+specification.
 
 NOT proven: a historical Claim was valid; an old counter/process/resource is
 known/released; a real controller/native runtime implements R1–R6; a source fence
@@ -287,7 +344,7 @@ The current proposal is not effective authority and unlocks no legacy key.
 ## 8. Exact-source Review and handoff contract
 
 Required independent Product Review assesses P1–P6, the historical diagnosis,
-R1–R6 (especially R4's material new decision), G01–G18 and cross-owner integration.
+R1–R6 (especially R4's repaired authority/fence boundary), G01–G24 and cross-owner integration.
 It must distinguish acceptance of the existing GitHub-only invariant from
 acceptance of the proposed recovery rule. Findings refer to the immutable PR
 HEAD/source, preserve actual reviewer operator/session independence and remain
@@ -299,3 +356,11 @@ contract and real source implementation admission. On changes requested, revise
 this same proposal concern; do not ask the human to locate private old chats.
 Every receiver reads this work item, current PR, exact evidence and current
 next-action record from GitHub; chat carries only a pointer.
+
+Focused successor Review must explicitly dispose of carried P1-01/P2-01 against
+this exact source. The Builder's proposed repair is not a verified resolution.
+The prior CHANGES_REQUESTED verdict remains immutable for its original SHA;
+do not replay unrelated accepted Product directions or relabel the refused
+native GitHub Review submission as successful. This Task requires independent
+logical Review evidence, not a native approval object; any separately selected
+native requirement would still need its actual distinct transport reviewer.
