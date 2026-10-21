@@ -181,6 +181,16 @@ next route: review|merge|release|human-decision
 
 This result summary is not a new task trigger or task authority. Do not require a human to relay full logs between Web sessions when GitHub already contains them.
 
+For EXE_ARCH23.5 / RELEASE11.7A immutable-artifact acceptance, the receiving
+contract MUST distinguish the prior Task acceptance amendment, selection-operation
+receipt, actual ratified integration identity/lineage and final Task-delivery
+receipt from the unresolved old-key HOLD/incident. Publish/read back every actual
+decision and pending request. Selection, CI, a native merge or integration-only
+result never means Task delivery. Only current final accepted delivery may drive
+native Task completion/dependencies once; duplicates return its canonical receipt.
+Same-byte old results cannot supply current operation authority. UNKNOWN outcomes
+stay UNRATIFIED/HOLD with actual effects preserved, not presumed zero effects.
+
 ## 9. Completion
 
 A handoff completes only when:

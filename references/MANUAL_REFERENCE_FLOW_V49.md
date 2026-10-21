@@ -306,3 +306,29 @@ scripts/test_v415_github_recovery.py model those obligations; they do not qualif
 a native GitHub race, controller deployment or physical resource cleanup. Reuse
 unchanged current evidence and review only material successor effects under the
 selected policy; no required gate or adverse finding is removed to save time.
+
+## 13. Distinct immutable-artifact delivery (v4.15 owner reference)
+
+EXE_ARCH23.5 and RELEASE11.7A own this optional source route. First adopt the rule
+and publish/read back the Task-specific owner amendment. Establish all current
+preselection predicates, including actual disjoint effects and actual authorized
+consumer boundary; an unavailable ledger or asserted fence is insufficient.
+Select exact pre-existing bytes, read back the selection and every affected
+consumer, then attempt guarded native integration. Reconstruct the actual outcome
+and verify actual checkout SHA/parents/tree plus fresh applicable postconditions.
+Only afterward may the Task/process executor decide/publish/read back final
+delivery under its newly CURRENT full gates. Consume that canonical operation
+and integration identity once for native Task completion/dependency readiness.
+
+Selection and ratified integration remain distinct from final delivery. Unknown
+ACK, partial verification or changed inputs retain UNRATIFIED/HOLD. Duplicate
+current requests return the existing receipt; same-byte old results cannot
+replace its authority. Late genuine material overlap holds the affected scope
+and preserves histories. The old Builder key stays held/UNKNOWN throughout;
+no repair source write or generation/resource/terminal action is authorized.
+
+scripts/test_v415_artifact_acceptance.py exercises the independently frozen
+Product A01-A17 in an isolated stateful source-contract model. It cannot establish
+actual S01/S04 applicability, native consumer fences, deployment, cleanup or RQ.
+Those facts must be inspected for the actual later operation; model fixtures
+are not their proof and the original chat is not a required evidence store.
