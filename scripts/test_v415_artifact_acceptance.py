@@ -6,7 +6,7 @@ are isolated fixtures, never evidence that S01/S04 actually meet those facts.
 No network, native Task mutation, old-key admission or source repair occurs.
 """
 from copy import deepcopy
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 import hashlib
 from pathlib import Path
 import unittest
@@ -61,9 +61,72 @@ class Facts:
             self.repair_write, self.replacement))
 
 
+@dataclass(frozen=True)
+class NativeObservation:
+    """Independent fixture read from native state, not the request's outcome.
+
+    Expected integration tree is separately predicted from the permitted diff;
+    source tree and integration tree need not be equal on a merge target.
+    These literals are model premises, not real GitHub proof.
+    """
+    ref: str = "native-read/1"
+    source: str = "immutable-source"
+    source_tree: str = "source-tree"
+    target_before: str = "target-before"
+    integration: str = "actual-merge"
+    expected_tree: str = "actual-tree"
+    tree: str = "actual-tree"
+    method: str = "merge"
+    parents: tuple = ("target-before", "immutable-source")
+    checkout: str = "actual-merge"
+    checkout_tree: str = "actual-tree"
+
+
+@dataclass(frozen=True)
+class CurrentRead:
+    ref: str
+    sequence: int
+    revision: int
+    phase: str
+    facts: Facts
+    ratification: str | None
+
+
+@dataclass
+class EvidenceAuthority:
+    """Separate model authority: caller self-reports cannot mint issued reads."""
+    facts: Facts = Facts()
+    native: NativeObservation | None = NativeObservation()
+    revision: int = 0
+    sequence: int = 0
+    issued: dict = field(default_factory=dict)
+
+    def tick(self):
+        self.sequence += 1
+        return self.sequence
+
+    def read(self, phase, ratification=None):
+        sequence = self.tick()
+        token = CurrentRead(f"current-read/{sequence}", sequence, self.revision,
+                            phase, self.facts, ratification)
+        self.issued[token.ref] = token
+        return token
+
+    def change(self, **changes):
+        self.facts = replace(self.facts, **changes)
+        self.revision += 1
+
+    def current(self, token):
+        return (isinstance(token, CurrentRead)
+                and self.issued.get(token.ref) == token
+                and token.revision == self.revision and token.facts == self.facts
+                and self.facts.eligible())
+
+
 class Acceptance:
     """Model the current disjoint operation; never writes the held old store."""
-    def __init__(self):
+    def __init__(self, authority=None):
+        self.authority = authority if authority is not None else EvidenceAuthority()
         self.old = {"key": "original-builder-key", "generation": None,
                     "status": "UNKNOWN/HOLD", "accepted_bindings": "UNKNOWN",
                     "resources": "UNKNOWN", "terminal": None}
@@ -71,6 +134,8 @@ class Acceptance:
         self.selection = None
         self.request = None
         self.actual = None
+        self.verified = None
+        self.ratification_attempt = None
         self.ratified = None
         self.delivery = None
         self.done = 0
@@ -113,30 +178,76 @@ class Acceptance:
         # Actual request/outcome evidence is preserved even when qualification fails.
         self.actual = deepcopy(actual)
         expected = self.selection["facts"]
+        native = self.authority.native
         valid = (not self.hold and facts == expected and facts.eligible()
+                 and facts == self.authority.facts and native is not None
                  and actual.get("ack") == "known"
                  and actual.get("operation") == self.selection["operation"]
                  and actual.get("source") == expected.source
                  and actual.get("target_before") == expected.target
-                 and bool(actual.get("integration")) and bool(actual.get("tree"))
-                 and actual.get("method") == "merge"
-                 and actual.get("parents") == (expected.target, expected.source)
-                 and actual.get("checkout") == actual.get("integration")
-                 and actual.get("checkout_tree") == actual.get("tree")
-                 and actual.get("tree") == actual.get("expected_tree")
+                 and native.source == expected.source and native.source_tree == expected.tree
+                 and native.target_before == expected.target
+                 and native.parents == (expected.target, expected.source)
+                 and native.tree == native.expected_tree
+                 and native.checkout == native.integration and native.checkout_tree == native.tree
+                 and native.method == "merge"
+                 and all(actual.get(name) == getattr(native, name) for name in
+                         ("source", "target_before", "integration", "method", "parents",
+                          "checkout", "checkout_tree", "tree", "expected_tree"))
                  and actual.get("compensation") is True
                  and actual.get("post_checks") is True)
         if not valid:
             self.hold = True
             self.incidents.append("UNRATIFIED actual integration outcome")
             return "UNRATIFIED"
-        self.ratified = deepcopy(actual)
-        return "RATIFIED_INTEGRATION"
+        self.verified = {"actual": deepcopy(actual), "native": native}
+        return "VERIFIED_OUTCOME"
 
-    def final(self, operation, integration, tree, facts, receipt):
+    def publish_ratification(self, operation, receipt, acknowledged=True):
+        if (self.hold or not self.verified or self.ratification_attempt
+                or operation != self.selection["operation"] or not receipt
+                or self.authority.facts != self.selection["facts"]
+                or not self.authority.facts.eligible()
+                or self.authority.native != self.verified["native"]):
+            return "BLOCKED"
+        self.ratification_attempt = {"receipt": receipt, "acknowledged": acknowledged}
+        if acknowledged is not True:
+            self.hold = True
+            self.incidents.append("UNRATIFIED ratification publication acknowledgement")
+            return "UNRATIFIED"
+        actual = self.verified["actual"]
+        self.ratified = {name: actual[name] for name in
+                        ("source", "target_before", "integration", "tree", "operation")}
+        self.ratified.update(receipt=receipt, native_ref=self.verified["native"].ref,
+                             readback=False, read_sequence=None)
+        return "RATIFICATION_PUBLISHED"
+
+    def readback_ratification(self, receipt, binding):
+        if (self.hold or not self.ratified or self.ratified["readback"]
+                or self.authority.facts != self.selection["facts"]
+                or not self.authority.facts.eligible()
+                or self.authority.native != self.verified["native"]):
+            return "BLOCKED"
+        expected = {k: v for k, v in self.ratified.items()
+                    if k not in {"readback", "read_sequence"}}
+        if receipt != self.ratified["receipt"] or binding != expected:
+            self.hold = True
+            self.incidents.append("UNRATIFIED ratification readback missing/mismatched")
+            return "UNRATIFIED"
+        self.ratified["readback"] = True
+        self.ratified["read_sequence"] = self.authority.tick()
+        return "RATIFICATION_READ_BACK"
+
+    def final(self, operation, integration, tree, facts, receipt, current=None):
         if (self.hold or not self.ratified or not self.selection
                 or operation != self.selection["operation"]
                 or facts != self.selection["facts"] or not facts.eligible()
+                or not self.ratified["readback"]
+                or not self.authority.current(current) or current.phase != "final"
+                or current.facts != facts
+                or current.ratification != self.ratified["receipt"]
+                or current.sequence <= self.ratified["read_sequence"]
+                or self.authority.native != self.verified["native"]
                 or integration != self.ratified["integration"]
                 or tree != self.ratified["tree"] or not receipt):
             return "BLOCKED"
@@ -144,11 +255,14 @@ class Acceptance:
             return self.delivery["receipt"]
         self.delivery = {"task": self.task, "operation": operation,
                          "integration": integration, "tree": tree,
-                         "receipt": receipt, "readback": False}
+                         "receipt": receipt, "readback": False,
+                         "ratification": self.ratified["receipt"], "current": current}
         return receipt
 
     def consume_delivery(self, receipt):
         if self.hold or not self.delivery or receipt != self.delivery["receipt"]:
+            return "BLOCKED"
+        if not self.authority.current(self.delivery["current"]):
             return "BLOCKED"
         if self.delivery["readback"]:
             return "EXISTING_DELIVERY"
@@ -191,6 +305,11 @@ def invariant(model, old):
         assert model.delivery and model.delivery["readback"] and model.ratified
     if model.delivery:
         assert model.selection and model.ratified
+        assert model.ratified.get("readback"), "ratification not read back"
+        assert model.delivery["ratification"] == model.ratified["receipt"]
+        current = model.delivery["current"]
+        assert model.authority.issued.get(current.ref) == current
+        assert current.phase == "final" and current.sequence > model.ratified["read_sequence"]
         assert model.delivery["operation"] == model.selection["operation"]
         assert model.delivery["integration"] == model.ratified["integration"]
         assert model.delivery["tree"] == model.ratified["tree"]
@@ -217,13 +336,27 @@ class ArtifactAcceptanceTests(unittest.TestCase):
     def integrated(self):
         self.selected()
         self.assertEqual(self.m.request_integration("selection/1", self.f), "REQUESTED")
-        self.assertEqual(self.m.observe(outcome(), self.f), "RATIFIED_INTEGRATION")
+        self.assertEqual(self.m.observe(outcome(), self.f), "VERIFIED_OUTCOME")
+        self.ratify(self.m)
         self.assertEqual((self.m.done, self.m.wakes), (0, 0))
+
+    def ratify(self, model):
+        self.assertEqual(model.publish_ratification("selection/1", "ratification/1"),
+                         "RATIFICATION_PUBLISHED")
+        binding = {k: v for k, v in model.ratified.items()
+                   if k not in {"readback", "read_sequence"}}
+        self.assertEqual(model.readback_ratification("ratification/1", binding),
+                         "RATIFICATION_READ_BACK")
+
+    def fresh(self, model=None):
+        model = model if model is not None else self.m
+        return model.authority.read("final", "ratification/1")
 
     def delivered(self):
         self.integrated()
+        current = self.fresh()
         self.assertEqual(self.m.final("selection/1", "actual-merge", "actual-tree",
-                                     self.f, "delivery/1"), "delivery/1")
+                                     self.f, "delivery/1", current), "delivery/1")
         self.assertEqual(self.m.done, 0)  # publication must be read back first
         self.assertEqual(self.m.consume_delivery("delivery/1"), "DELIVERED")
 
@@ -372,11 +505,13 @@ class ArtifactAcceptanceTests(unittest.TestCase):
         self.m.request_integration("selection/1", self.f)
         self.rejected(lambda: self.m.request_integration("selection/1", self.f), "EXISTING_REQUEST")
         self.m.observe(outcome(), self.f)
+        self.ratify(self.m)
+        current = self.fresh()
         self.rejected(lambda: self.m.old_result(self.f.source, "old-validation"), "STALE_AUTHORITY")
-        self.rejected(lambda: self.m.final("old-grant", "actual-merge", "actual-tree", self.f, "old-receipt"))
-        self.m.final("selection/1", "actual-merge", "actual-tree", self.f, "delivery/1")
+        self.rejected(lambda: self.m.final("old-grant", "actual-merge", "actual-tree", self.f, "old-receipt", current))
+        self.m.final("selection/1", "actual-merge", "actual-tree", self.f, "delivery/1", current)
         self.m.consume_delivery("delivery/1")
-        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree", self.f, "duplicate"), "delivery/1")
+        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree", self.f, "duplicate", current), "delivery/1")
         self.rejected(lambda: self.m.consume_delivery("delivery/1"), "EXISTING_DELIVERY")
         self.assertEqual(self.m.delivery["receipt"], "delivery/1")
 
@@ -393,6 +528,136 @@ class ArtifactAcceptanceTests(unittest.TestCase):
         self.assertEqual(self.m.conflicting_operation("selection/2"), "HOLD")
         self.rejected(lambda: self.m.request_integration("selection/1", self.f))
 
+    def test_P1_01_observation_and_publication_do_not_replace_ratification_readback(self):
+        self.selected()
+        self.m.request_integration("selection/1", self.f)
+        self.assertEqual(self.m.observe(outcome(), self.f), "VERIFIED_OUTCOME")
+        self.assertIsNone(self.m.ratified)
+        current = self.fresh()
+        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree",
+                                           self.f, "d", current))
+        self.m.publish_ratification("selection/1", "ratification/1")
+        current = self.fresh()
+        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree",
+                                           self.f, "d", current))
+        binding = {k: v for k, v in self.m.ratified.items()
+                   if k not in {"readback", "read_sequence"}}
+        self.m.readback_ratification("ratification/1", binding)
+        # Even a FINAL-labelled read made before ratification readback is stale.
+        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree",
+                                           self.f, "d", current))
+        fresh = self.fresh()
+        self.assertEqual(self.m.final("selection/1", "actual-merge", "actual-tree",
+                                     self.f, "d", fresh), "d")
+        self.assertEqual((self.m.done, self.m.wakes), (0, 0))
+
+    def test_P1_01_failed_unknown_publication_and_mismatched_missing_readback(self):
+        for failure in ("failed-publication", "unknown-publication", "missing-readback",
+                        "wrong-ref", "operation", "source", "target_before", "integration", "tree"):
+            with self.subTest(failure=failure):
+                m = Acceptance()
+                m.select(self.f, "selection/1"); m.readback("selection/1", self.f)
+                m.request_integration("selection/1", self.f)
+                m.observe(outcome(), self.f)
+                actual = deepcopy(m.actual)
+                if failure.endswith("publication"):
+                    ack = False if failure == "failed-publication" else None
+                    self.assertEqual(m.publish_ratification("selection/1", "ratification/1", ack), "UNRATIFIED")
+                else:
+                    m.publish_ratification("selection/1", "ratification/1")
+                    binding = {k: v for k, v in m.ratified.items()
+                               if k not in {"readback", "read_sequence"}}
+                    if failure == "missing-readback":
+                        binding = None
+                    elif failure != "wrong-ref":
+                        binding[failure] = "incorrect"
+                    ref = "wrong" if failure == "wrong-ref" else "ratification/1"
+                    self.assertEqual(m.readback_ratification(ref, binding), "UNRATIFIED")
+                self.assertEqual(m.actual, actual)
+                self.assertTrue(m.hold and m.incidents)
+                current = self.fresh(m)
+                before = m.snapshot()
+                self.assertEqual(m.final("selection/1", "actual-merge", "actual-tree",
+                                         self.f, "d", current), "BLOCKED")
+                self.assertEqual(m.snapshot(), before)
+                self.assertEqual((m.done, m.wakes), (0, 0))
+                invariant(m, self.old)
+
+    def test_P1_02_coordinated_self_report_corruption_cannot_change_native_oracle(self):
+        for corruption in (
+                {"tree": "wrong", "expected_tree": "wrong", "checkout_tree": "wrong"},
+                {"integration": "wrong", "checkout": "wrong"},
+                {"source": "other", "parents": ("target-before", "other")},
+                {"target_before": "other", "parents": ("other", "immutable-source")}):
+            with self.subTest(corruption=corruption):
+                m = Acceptance()
+                native = m.authority.native
+                m.select(self.f, "selection/1"); m.readback("selection/1", self.f)
+                m.request_integration("selection/1", self.f)
+                actual = outcome(**corruption)
+                self.assertEqual(m.observe(actual, self.f), "UNRATIFIED")
+                self.assertEqual(m.actual, actual)
+                self.assertEqual(m.authority.native, native)
+                self.assertIsNone(m.verified)
+                self.assertIsNone(m.ratified)
+                self.assertEqual((m.done, m.wakes), (0, 0))
+                invariant(m, self.old)
+
+    def test_P1_02_wrong_native_tree_or_missing_native_read_still_unratified(self):
+        for native in (None, replace(NativeObservation(), tree="wrong", checkout_tree="wrong"),
+                       replace(NativeObservation(), source_tree="wrong")):
+            m = Acceptance(EvidenceAuthority(native=native))
+            m.select(self.f, "selection/1"); m.readback("selection/1", self.f)
+            m.request_integration("selection/1", self.f)
+            self.assertEqual(m.observe(outcome(), self.f), "UNRATIFIED")
+            self.assertIsNone(m.ratified)
+            invariant(m, self.old)
+
+    def test_P2_01_preselection_same_snapshot_cannot_prove_fresh_final_current(self):
+        preselection = self.m.authority.read("selection")
+        early_final = self.fresh()
+        self.integrated()
+        for old in (None, preselection, early_final):
+            self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree",
+                                               self.f, "d", old))
+        fresh = self.fresh()
+        fake = replace(fresh, ref="unissued-current")
+        self.rejected(lambda: self.m.final("selection/1", "actual-merge", "actual-tree",
+                                           self.f, "d", fake))
+        self.assertEqual(self.m.final("selection/1", "actual-merge", "actual-tree",
+                                     self.f, "d", fresh), "d")
+
+    def test_P2_01_late_finding_permission_target_and_revision_reject_old_true_replay(self):
+        for changes in ({"findings_clear": False}, {"permission": False},
+                        {"target": "late-target"}, {"dependencies": False}):
+            with self.subTest(changes=changes):
+                m = Acceptance()
+                m.select(self.f, "selection/1"); m.readback("selection/1", self.f)
+                m.request_integration("selection/1", self.f); m.observe(outcome(), self.f)
+                self.ratify(m)
+                old = self.fresh(m)
+                m.authority.change(**changes)
+                for token in (old, self.fresh(m)):
+                    before = m.snapshot()
+                    self.assertEqual(m.final("selection/1", "actual-merge", "actual-tree",
+                                             self.f, "d", token), "BLOCKED")
+                    self.assertEqual(m.snapshot(), before)
+                # Restoring equal bytes/booleans does not make an old issued read fresh.
+                m.authority.change(**{k: getattr(self.f, k) for k in changes})
+                before = m.snapshot()
+                self.assertEqual(m.final("selection/1", "actual-merge", "actual-tree",
+                                         self.f, "d", old), "BLOCKED")
+                self.assertEqual(m.snapshot(), before)
+                new = self.fresh(m)
+                self.assertEqual(m.final("selection/1", "actual-merge", "actual-tree",
+                                         self.f, "d", new), "d")
+                m.authority.change(permission=False)
+                before = m.snapshot()
+                self.assertEqual(m.consume_delivery("d"), "BLOCKED")
+                self.assertEqual(m.snapshot(), before)
+                self.assertEqual((m.done, m.wakes), (0, 0))
+                invariant(m, self.old)
+
     def test_mutants_premature_delivery_old_store_and_attribution_detected(self):
         for mutation in ("premature", "old-generation", "duplicate", "old-grant"):
             mutant = Acceptance()
@@ -408,6 +673,16 @@ class ArtifactAcceptanceTests(unittest.TestCase):
                 mutant.delivery = {"operation": "old-grant", "integration": "actual-merge", "tree": "actual-tree"}
             with self.subTest(mutation=mutation), self.assertRaises(AssertionError):
                 invariant(mutant, self.old)
+
+    def test_P2_01_bypassed_current_guard_is_detected_by_rejected_state_oracle(self):
+        self.integrated()
+        old = self.fresh()
+        self.m.authority.change(permission=False)
+        before = self.m.snapshot()
+        with patch.object(self.m.authority, "current", return_value=True):
+            self.m.final("selection/1", "actual-merge", "actual-tree", self.f, "d", old)
+        with self.assertRaises(AssertionError):
+            self.assertEqual(self.m.snapshot(), before)
 
 
 if __name__ == "__main__":
