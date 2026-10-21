@@ -22,6 +22,8 @@ import subprocess
 import unittest
 from pathlib import Path
 
+from test_v49_role_execution_profile import V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified
+
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_DIR = ROOT / "fixtures" / "gate-currentness"
 MAP_DOC = ROOT / "references" / "GATE_EVIDENCE_CURRENTNESS_MATRIX.md"
@@ -1074,7 +1076,15 @@ class GateCurrentnessKernel(unittest.TestCase):
             if rel_path in READ_ONLY_DEPS_REBOUND_BLOBS:
                 continue
             with self.subTest(read_only=rel_path):
-                if _v412_s01_exact_successor_verified(rel_path):
+                if _v415_exact_successor_verified(rel_path):
+                    # Task #1232 R2: exact source-owned Release oracle extension;
+                    # the old base pin is retained by the fallback, not replaced.
+                    self.assertEqual(
+                        git_blob_sha(BASE_SHA, rel_path),
+                        git_blob_sha(VERSION_BASE_SHA, rel_path),
+                    )
+                    self.assertEqual(V415_SOURCE_SUCCESSORS[rel_path][2], git_blob_sha("HEAD", rel_path))
+                elif _v412_s01_exact_successor_verified(rel_path):
                     # Only the pinned v4.12 Task S01 successor passes;
                     # all historical/non-S01 objects use original proof.
                     self.assertEqual(
@@ -1105,6 +1115,8 @@ class GateCurrentnessKernel(unittest.TestCase):
                         admitted.add(v411_blob)
                 if _v412_s01_exact_successor_verified(rel_path):
                     admitted.add(V412_S01_SOURCE_BLOBS[rel_path][1])
+                if _v411_context_verified(rel_path, pinned_blob) and _v415_exact_successor_verified(rel_path):
+                    admitted.add(V415_SOURCE_SUCCESSORS[rel_path][2])
                 self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST

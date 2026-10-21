@@ -6,6 +6,7 @@ import subprocess
 import unittest
 
 from test_protocol_schemas import assert_supported_schema, load_schema, validate_subset
+from test_v49_role_execution_profile import V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -694,6 +695,8 @@ class ExecutionContractRefsV49LifecycleBoundaryTests(unittest.TestCase):
                 for v411_blob in V411_OWNER_BLOBS.get(rel, ()):
                     if _v411_context_verified(rel, blob):
                         admitted.add(v411_blob)
+                if _v411_context_verified(rel, blob) and _v415_exact_successor_verified(rel):
+                    admitted.add(V415_SOURCE_SUCCESSORS[rel][2])
                 self.assertIn(git_blob_sha(ROOT / rel), admitted)
 
     def test_frozen_planning_blobs_resolve_unchanged(self) -> None:

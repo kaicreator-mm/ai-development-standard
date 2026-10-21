@@ -8,6 +8,14 @@ only tooling. It is a descriptive walkthrough for operators and controllers; it 
 no normative semantics. Every normative rule below is owned by the exact reference cited
 next to it, and the owner text always controls over this summary.
 
+For ADS's own standards-source delivery, consume the explicit subject/mode boundary in
+`standards/RELEASE_STANDARD.md` §11.7A and `standards/EXECUTION_ARCHITECTURE_STANDARD.md`
+§1/§14. The standard's source/contract delivery precedes separately scoped runtime
+qualification; this reference does not turn its manual walkthrough into proof of
+controller generations or atomic source/target protection. Manual Claim/currentness,
+native gates and uncertainty/downstream-hold duties remain owned by those standards.
+The historical v4.9 examples below retain their original identities and evidence scope.
+
 ## 1. Consumed authorities (exact refs, cited not copied)
 
 ```text

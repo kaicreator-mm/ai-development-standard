@@ -19,6 +19,8 @@ Chat is a workspace and transport. It is not project state.
 
 This standard is normative for the semantics below, but an automation runtime is optional. A project MAY execute the same state transitions manually. Trunk/Fast Path remains valid for small, low-risk work.
 
+Standards-source delivery and runtime qualification are separate subjects. ADS's own source-only development uses the explicit standards-delivery contract in `RELEASE_STANDARD.md` §11.7A. Writing, reviewing, validating or integrating normative text, schemas, examples and contract-conformance tooling MUST NOT require prior deployment or qualification of the orchestration runtime being specified. Actual project/runtime protected effects retain all applicable requirements of this standard. A source-delivery result never proves those runtime capabilities.
+
 ## 2. Authority boundaries
 
 This document owns orchestration semantics only. It does not redefine domain authorities:
@@ -470,6 +472,8 @@ An infrastructure exception records at least candidate SHA, provider/channel, pr
 Do not repeatedly restart a known-broken provider without new evidence that infrastructure conditions changed.
 
 ## 14. Merge Controller
+
+Sections 14.1–14.4 define the protected-effect contract of a selected Merge Controller implementation and any implementation claiming equivalent controller guarantees. They are not prerequisite runtime-qualification gates for ADS's own manual standards-source integration route explicitly defined in `RELEASE_STANDARD.md` §11.7A. That route does not claim atomic multi-surface observation, source-issued platform generations, or atomic source-and-target mutation when its native mechanism does not supply them. This is an explicit subject/mode boundary, not an inference from absent evidence, adoption level or tool choice. Manual source integration retains its own mandatory pre/post-read, native guard, uncertainty and downstream-hold rules. A project or runtime implementing protected effects cannot borrow the standards-source route merely because its repository also contains documents.
 
 The Merge Controller performs only deterministic merge operations whose prerequisites are satisfied.
 

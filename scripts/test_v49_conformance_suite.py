@@ -39,6 +39,9 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+from test_v49_role_execution_profile import (
+    V415_SOURCE_BASE, V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified,
+)
 import sys
 import unittest
 from pathlib import Path
@@ -1325,7 +1328,16 @@ class C12CoverageManifest(ConformanceSuiteBase):
         for rel_path, merged_blob in T012_MERGED_BLOBS.items():
             with self.subTest(t012_merged_output=rel_path):
                 current_blob = git_blob_sha("HEAD", rel_path)
-                if (
+                if rel_path == V412_S01_GATE_TEST_PATH and _v415_exact_successor_verified(rel_path):
+                    # #1232 R3: preserve both the T012 historical pin and
+                    # qualified v4.12 predecessor; only the exact R2 output
+                    # is admitted on its immutable source/base/HEAD lineage.
+                    git("merge-base", "--is-ancestor", V412_S01_QUALIFIED_BASE_SHA, "HEAD")
+                    self.assertEqual(merged_blob, V412_S01_GATE_TEST_HISTORICAL)
+                    self.assertEqual(merged_blob, git_blob_sha(V412_S01_QUALIFIED_BASE_SHA, rel_path))
+                    self.assertEqual(V412_S01_GATE_TEST_SUCCESSOR, git_blob_sha(V415_SOURCE_BASE, rel_path))
+                    self.assertEqual(V415_SOURCE_SUCCESSORS[rel_path][2], current_blob)
+                elif (
                     rel_path == V412_S01_GATE_TEST_PATH
                     and v412_s01_exact_test_successor_current()
                 ):
