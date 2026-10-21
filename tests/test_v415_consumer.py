@@ -1,6 +1,7 @@
 """Finite ADS-owned S03 conformance, never real Tally/GitHub/runtime qualification."""
 import copy
 import json
+from itertools import permutations
 from pathlib import Path
 import sys
 import unittest
@@ -108,6 +109,48 @@ class ReconciliationBoundary(unittest.TestCase):
     def test_same_native_comment_changed_identity_still_conflicts(self):
         a,b=item(),item();b['record']['data']['report_id']='different-id'
         self.assertEqual(read([a,b]),['CONFLICT','CONFLICT'])
+
+    def test_collision_precedes_unavailable_source_promotion_in_every_order(self):
+        for field in ('source_witness', 'source_sha', 'ads_revision', 'currentness'):
+            a,b=item(),item(number=124)
+            b['record']['data']['limits'].append('Different bounded observation')
+            if field == 'source_witness':
+                b[field]=False
+            elif field == 'currentness':
+                b['record']['data']['subject'][field]['state']='UNKNOWN'
+            else:
+                b['record']['data']['subject'][field]='c'*40
+                if field == 'source_sha':
+                    b['record']['data']['verifier']['subject_sha']='c'*40
+            self.assertEqual(read([b]),['UNKNOWN'])
+            for pair in permutations([a,b]):
+                with self.subTest(field=field,ids=[x['id'] for x in pair]):
+                    self.assertEqual(read(pair),['CONFLICT','CONFLICT'])
+
+    def test_native_comment_collision_with_unknown_and_edited_observations(self):
+        a,b=item(),item()
+        b['record']['data']['report_id']='changed-id'
+        b['source_witness']=False
+        for pair in permutations([a,b]):self.assertEqual(read(pair),['CONFLICT','CONFLICT'])
+        b['edit_evidence']='EDITED'
+        for pair in permutations([a,b]):self.assertEqual(read(pair),['CONFLICT','CONFLICT'])
+
+    def test_all_unknown_collision_is_not_hidden_or_promoted(self):
+        a,b=item(),item(number=124)
+        a['source_witness']=b['source_witness']=False
+        self.assertEqual(read([a,b]),['UNKNOWN','UNKNOWN'])
+        b['record']['data']['limits'].append('different')
+        for pair in permutations([a,b]):self.assertEqual(read(pair),['CONFLICT','CONFLICT'])
+
+    def test_invalid_or_foreign_native_input_cannot_poison_owning_identity(self):
+        for field in ('schema','issue','url'):
+            a,b=item(),item(number=124)
+            b['record']['data']['limits'].append('different')
+            if field=='schema':b['record']['schema']='ads/github/v99'
+            else:b[field]='https://github.com/other/repo/issues/42'
+            expected='INVALID_SCHEMA' if field=='schema' else 'UNVERIFIED'
+            self.assertEqual(read([a,b]),['OBSERVED',expected])
+            self.assertEqual(read([b,a]),[expected,'OBSERVED'])
 
     def test_body_current_assertion_cannot_prove_source(self):
         x=item();x['source_witness']=False
