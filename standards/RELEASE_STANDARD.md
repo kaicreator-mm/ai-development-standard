@@ -296,6 +296,46 @@ After any attempt, reconstruct the result from durable native state. Bind actual
 
 Any subsequent ratification is a **fresh subject-bound decision by the existing declared integration/Release authority**, consuming exact actual integration SHA/tree, expected versus observed source/target, newly impacted dependencies/checks/Review/Validation, permissions, unresolved findings and Plan `CURRENT`. Carry adverse facts forward. A compensating read alone cannot establish an absent atomic guard, and no decision backdates a rejected/unknown admission. If the actual tree cannot be qualified, retain quarantine/UNRATIFIED and downstream hold, and route any repair through the existing authority/Task process. No new ratification authority, state dimension or event family is created here.
 
+#### Bounded new source-defect authoring with a held historical key
+
+EXE_ARCH23.6 is a separate prospective **authoring** procedure; the immutable
+acceptance procedure below stays read-only. Its owner is the existing current
+Product/Task/source process authority, not a Reviewer or a self-authorizing model.
+Before repair admission, publish/read back an explicit defect authorization with
+the original Task/held-key/finding refs, exact existing artifact/tree/blobs, its
+historical defects, minimum allowed semantic delta/files and new repair Task/ref.
+Record actual old/current source grants, ref/worktree write effects, all affected
+authorized integration consumers and pending requests, resource/effect applicability
+and full current Task/dependency/permission/finding/Assurance inputs. Missing or
+ambiguous **material** overlap facts block. Different Task/ref names, a closed PR,
+human ledger availability report or source-model PASS are not disjointness proof.
+
+After adoption and that actual boundary, the normal sole admission writer may
+accept only the new repair Task's own known-generation all-or-none Claim/resources.
+No old-key reset, terminal, Claim replacement, epoch or resource release occurs.
+Only that fresh admitted authoring Task can materialize permitted old source
+input on its new ref and apply the named defect delta. It cannot modify an old
+ref or acquire its grant. A broader replacement/rebuild or unresolved authorized
+old integration/external obligation remains held under the ordinary recovery
+rules. Do not relabel incompatible old work as a new concern to bypass them.
+
+Inspect and actually validate the entire candidate diff/current target, including
+inherited source and the changed delta; retain original source/negative tests,
+Review policy and all adverse findings. Scope/base/authority drift invalidates
+affected currentness. Before integration every actual affected consumer must
+bind only the new exact qualified source operation and reject delayed old
+authority. Use native expected-head guard, immediate target reread, actual outcome
+reconstruction and compensating checks; unknown effects remain UNRATIFIED/HOLD.
+
+After ratified current integration, publish/read back separate repair delivery.
+An original Task may consume that corrected artifact only under a prior explicit
+owner delivery amendment and its own fresh final delivery acceptance, consuming
+the actual ratified integration, full current gates and unresolved old incident.
+Preserve both histories, unique completion/dependency consumption and mandatory
+runtime limitations. Repair completion is not original-Task completion, adoption,
+runtime qualification or version RQ. The actual S04 operation requires its own
+evidence after this standard is adopted; this text grants no historical permission.
+
 #### Distinct immutable-artifact acceptance with an unavailable ledger
 
 This prospective route implements EXE_ARCH23.5. It is a distinct current source

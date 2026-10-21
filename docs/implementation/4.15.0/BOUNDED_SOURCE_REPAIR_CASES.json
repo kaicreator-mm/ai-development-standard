@@ -1,0 +1,18 @@
+{
+  "scope": "Independent finite source-contract premises only; no actual grant, GitHub effect, fence or runtime witness",
+  "positive": "fresh known-key defect Task, prior adopted owner amendment, exact inherited artifact, proven disjoint refs/effects and consumers, complete CURRENT, minimal delta and all actual source gates",
+  "reject_false_or_unknown": [
+    "adopted", "prior_owner_amendment", "exact_artifact", "actual_disjoint_effects",
+    "all_consumers_verified", "material_obligations_resolved", "complete_reads",
+    "plan_current", "permission", "dependencies", "minimal_defect_delta",
+    "input_inspected", "review_policy_bound", "fresh_task_distinct_obligation"
+  ],
+  "reject_true_or_unknown": [
+    "old_ref_write", "old_grant_reassigned", "old_generation_changed", "old_resource_release",
+    "old_integration_consumer", "old_pending_request", "material_overlap",
+    "external_effect_unknown", "renamed_replacement", "general_rebuild"
+  ],
+  "reject_other": ["new key generation unknown", "new key already occupied", "missing exact artifact/finding/owner refs", "missing required resource binding", "unauthorized file delta", "stale source/base after Claim", "late old result used as authority", "unratified integration used as original delivery"],
+  "preserve": "Entire original held key, generation=None, accepted binding UNKNOWN, resources UNKNOWN and terminal=None remain byte-for-byte unchanged; original Task not completed by repair Claim/write/CI/merge alone",
+  "ordered_positive": ["ordinary fresh key Claim0-to1 plus all required bindings", "minimal authoring", "current full source qualification", "guarded actual integration ratification", "repair final delivery", "separately authorized original Task final delivery", "duplicate consumption returns same receipt"]
+}

@@ -803,6 +803,65 @@ cleanup or Version RQ. If a real acceptance boundary cannot be established, name
 the precise missing capability/owner; do not repeat unavailable-ledger requests
 or unchanged Product Review.
 
+### 23.6 Bounded new source-defect repair while a historical key stays held
+
+Section 23.5 remains read-only. A genuine defect discovered in its existing
+artifact can require **new authoring**, which that acceptance operation cannot
+authorize. For ADS standards-source only, the current Product/Task and source
+process owners MAY explicitly authorize a separate, minimal defect-repair Task
+under RELEASE_STANDARD11.7A's bounded source-defect procedure. This is not recovery,
+replacement or a renamed continuation of the held Builder key. The original key,
+unknown generation, accepted-binding uncertainty, resources and terminal history
+remain unchanged. A new Task ID, branch name or proposed rule alone grants nothing.
+
+Before any repair admission, its adopted authority and prior owner amendment MUST
+identify the actual defect/finding, exact existing artifact/source/tree/blobs,
+original Task and held-key incident, narrowly permitted semantic delta and files,
+fresh Task/branch/executor and actual current acceptance consumers. The owner
+must distinguish the new defect obligation from resuming the original Builder.
+The original Task must not be silently repurposed or declared complete.
+
+Actual disjointness MUST be established, not assumed from different identifiers:
+inspect old source grants/native requests, precise writable Git refs, worktree
+effects, current consumer permissions and pending requests, and every applicable
+resource/external obligation. The repair may write only its new authorized source
+ref/worktree. It cannot write the old ref, exercise/reassign an old grant, release
+old resources, alter an old frontier or directly integrate into a protected target.
+Every affected authorized integration consumer must reject late old authority
+and consume only the new exact independently qualified operation. An unresolved
+authorized old integration consumer/request, unknown material effect overlap,
+scarce binding or inaccessible material effect pointer retains HOLD and its
+stronger reconciliation/fence obligation. Unknown historical generation alone
+does not prove material overlap, nor does it prove that none exists. A declaration
+or unavailable ledger cannot establish this boundary.
+
+Only after that actual boundary and full governing §29.1 CURRENT are published
+and read back may the ordinary designated single writer admit the **fresh repair
+Task's own known key**, including all required resource bindings and generation
+transition under §§11/27. No generation/epoch compatibility exception is added.
+The old key is not admitted, terminated, renumbered or released. If the operation
+is actually a replacement for ambiguous ownership, ordinary §23.3/27.4 applies
+and this procedure is unavailable.
+
+The exact old artifact is untrusted source input/provenance, never execution
+permission or historical PASS. Materializing its permitted content on the new
+Task branch and applying the authorized minimal defect delta is attributable
+only to that fresh admitted Task; it is not permission for a general rebuild,
+feature change, arbitrary rebase or conflict repair. The complete resulting diff
+against current target, inherited material and changed delta all require actual
+current source/negative/compatibility checks and the owning Review policy. Scope
+or base drift requires fresh owner/currentness treatment; an earlier PASS cannot
+qualify changed source by implication.
+
+Fresh guarded integration, compensating readback/ratification and separate final
+delivery follow RELEASE11.7A. The repaired artifact may satisfy the original
+Task's delivery only after its owners explicitly bind the exact new integrated
+artifact and current gates in a prior delivery amendment, followed by actual
+separate final acceptance. Neither new Claim, source copy, CI, native merge nor
+repair-Task completion alone closes/wakes the original Task. Duplicate or late
+old results cannot supply that authority or produce a second completion. This
+source-only procedure proves no runtime/native fence or Version Qualification.
+
 ## 24. Version-scoped Validation Handoff Queue
 
 Projects MAY expose a stable version-level validation queue, for example:

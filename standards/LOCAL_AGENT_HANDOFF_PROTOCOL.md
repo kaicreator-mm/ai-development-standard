@@ -226,6 +226,22 @@ actual admission and the new exact candidate's required validation/review; an ol
 diff/CI result is input, not transferable successor PASS. Publish the result and
 next route here before returning, even if only partial recovery was possible.
 
+### 12.1 Actual defect after immutable-artifact inspection
+
+If current source inspection finds a genuine defect, EXE_ARCH23.5 acceptance
+cannot authorize its repair. Route the exact finding/input to EXE_ARCH23.6 and
+RELEASE11.7A's separately adopted bounded source-defect authoring procedure.
+Before authoring, the current owners must bind its minimal scope and prove the
+actual disjoint ref/worktree/consumer/resource-effect boundary, then obtain the
+fresh repair Task's own ordinary admission/CURRENT. A new Task ID alone, old CI,
+model PASS or a human ledger report does not satisfy that proof. Unknown material
+overlap, unresolved old integration authority or external obligation stays held.
+Keep the original key/unknown frontier/resources/terminal untouched. No request
+to return to the original chat is required. Preserve inherited source provenance,
+actual new-source checks/Review, ratified integration and separate repair/original
+Task deliveries; neither repair authoring nor repair completion closes the old
+Task. This subsection grants no exception to the read-only artifact operation.
+
 ## 13. Template and bootstrap
 
 Use:
