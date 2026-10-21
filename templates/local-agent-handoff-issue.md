@@ -73,6 +73,14 @@ If no prior evidence exists, record `NOT_APPLICABLE` explicitly rather than omit
 
 ## Completion Rule
 
+Before final chat return, publish/read back the actual execution exit, including
+partial/failure/BLOCKED/stop/cancelled outcomes. Include producer/receiver and exact
+work/source/admission/generation refs, required/observed resources, pending effect
+and publication acknowledgements, actual checks/findings and next owner/action
+under LOCAL_AGENT_HANDOFF_PROTOCOL section 8. Checkpoint before protected effects;
+do not assume a crash finalizer. Recover from GitHub under EXE_ARCH23.2-23.3,
+never an original conversation, guessed counter or source fence as physical cleanup.
+
 `<all required gates PASS + evidence linked, or explicit FAIL/BLOCKED with reproduction/impact>`
 
 ## Blocker Rule
