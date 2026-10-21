@@ -283,3 +283,26 @@ exposed a semantic gap, the route is the owning Task/DAG amendment, not an edit 
 Executable checks for the properties claimed above live in
 scripts/test_v49_manual_reference_flow.py with the fixtures under
 fixtures/manual-reference-flow/; they are Builder evidence, not independent Validation.
+
+## 12. Source-only missing-receipt recovery (v4.15 owner reference)
+
+This descriptive route consumes EXECUTION_ARCHITECTURE_STANDARD sections
+23.1-23.4 and RELEASE_STANDARD11.7A; it does not redefine them. Before source
+work, run applicable shape preflight and independently check actual admission,
+generation/resources and governing CURRENT. Publish/read back the decision.
+Exit/checkpoint contents follow LOCAL_AGENT_HANDOFF_PROTOCOL8/12.
+
+A fresh worker inventories GitHub authority and effect pointers, preserves
+accepted/rejected/uncertain outcomes and uses the same existing serialized
+authority for reconciliation, real old-grant/consumer fencing and exact frontier
+reconstruction. Complete comment pages or closing an old PR alone are not a fence.
+UNKNOWN exact generation or pending acceptance means scoped HOLD, not a reset or
+numerical jump. Late accepted old receipts versus stale revoked proposals are
+decided by the owner clauses, not arrival time. Real external effects retain
+their actual recovery obligations. No old conversation or provider is required.
+
+The positive/negative local source-decision checks in
+scripts/test_v415_github_recovery.py model those obligations; they do not qualify
+a native GitHub race, controller deployment or physical resource cleanup. Reuse
+unchanged current evidence and review only material successor effects under the
+selected policy; no required gate or adverse finding is removed to save time.
