@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADS v4.14 latest-only structured Markdown+YAML checker.
+"""ADS pinned per-kind structured Markdown+YAML checker (v4 report-only).
 
 This is STRICTLY a source-independent data validator: never dispatch/claim or write GitHub.
 Validation is performed by genuine Draft 2020-12 JSON Schema, not a Python op/profile switch.
@@ -7,8 +7,11 @@ Validation is performed by genuine Draft 2020-12 JSON Schema, not a Python op/pr
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import re
+from datetime import datetime
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -20,6 +23,7 @@ from yaml.events import AliasEvent
 ROOT = Path(__file__).resolve().parents[1]
 MARKER = "<!-- ads:github -->"
 SCHEMA_FILE = ROOT / "schemas/github/v4.14/structured-interaction.schema.json"
+REPORT_SCHEMA_FILE = ROOT / "schemas/github/v4.15/report.schema.json"
 REFERENCED = (
     ROOT / "schemas/task-contract.schema.json",
     ROOT / "schemas/agent-event-v2.schema.json",
@@ -49,6 +53,8 @@ class StrictLoader(yaml.SafeLoader):
             event = self.peek_event()
             if getattr(event, "anchor", None):
                 raise ContractError("YAML anchors are forbidden")
+            if getattr(event, "tag", None):
+                raise ContractError("explicit YAML tags are forbidden")
             return super().compose_node(parent, index)
         finally:
             self._node_depth -= 1
@@ -70,11 +76,20 @@ class StrictLoader(yaml.SafeLoader):
 # Local resolver mutation only; keep yaml.SafeLoader unchanged for other tooling.
 StrictLoader.yaml_implicit_resolvers = {
     key: [(tag, pattern) for tag, pattern in vals
-          if tag not in ("tag:yaml.org,2002:timestamp", "tag:yaml.org,2002:bool")]
+          if tag not in ("tag:yaml.org,2002:timestamp", "tag:yaml.org,2002:bool",
+                         "tag:yaml.org,2002:int", "tag:yaml.org,2002:float")]
     for key, vals in yaml.SafeLoader.yaml_implicit_resolvers.items()
 }
 StrictLoader.add_implicit_resolver(
     "tag:yaml.org,2002:bool", re.compile(r"^(?:true|false)$"), list("tf")
+)
+StrictLoader.add_implicit_resolver(
+    "tag:yaml.org,2002:int", re.compile(r"^-?(?:0|[1-9][0-9]*)$"), list("-0123456789")
+)
+StrictLoader.add_implicit_resolver(
+    "tag:yaml.org,2002:float",
+    re.compile(r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+(?:[eE][+-]?[0-9]+)?|[eE][+-]?[0-9]+)$"),
+    list("-0123456789")
 )
 
 
@@ -92,8 +107,97 @@ def _registry():
     return Registry(retrieve=_deny_remote).with_resources(refs)
 
 
+def _json_domain(value, depth=0):
+    """Reject coercions before Schema/JCS; integers must survive JS readers exactly."""
+    if depth > MAX_DEPTH:
+        raise ContractError("JSON nesting too deep")
+    if value is None or type(value) is bool:
+        return
+    if type(value) is str:
+        if any(0xD800 <= ord(c) <= 0xDFFF for c in value):
+            raise ContractError("lone Unicode surrogate")
+    elif type(value) is int:
+        if abs(value) > 9007199254740991:
+            raise ContractError("integer outside interoperable exact range; encode as string")
+    elif type(value) is float:
+        if not math.isfinite(value):
+            raise ContractError("nonfinite JSON number")
+    elif type(value) is list:
+        for item in value:
+            _json_domain(item, depth + 1)
+    elif type(value) is dict:
+        for key, item in value.items():
+            if type(key) is not str:
+                raise ContractError("JSON object key must be string")
+            _json_domain(key, depth + 1)
+            _json_domain(item, depth + 1)
+    else:
+        raise ContractError("non-JSON YAML/programmatic value")
+
+
+def _jcs_number(value):
+    """Shortest binary64 round-trip digits, with ECMAScript decimal placement.
+
+    CPython repr supplies shortest round-trip digits (ties to even). JCS differs
+    from Python in negative zero, decimal/exponent thresholds and exponent zeros.
+    RFC8785 Appendix B boundary/tie vectors are exercised by the v4.15 tests.
+    """
+    if value == 0:
+        return "0"
+    if type(value) is int:
+        return str(value)
+    sign = "-" if value < 0 else ""
+    raw = repr(abs(value)).lower()
+    mantissa, _, exp = raw.partition("e")
+    exponent = int(exp or "0")
+    whole, _, fraction = mantissa.partition(".")
+    digits = (whole + fraction).lstrip("0")
+    point = len(whole) + exponent
+    if whole == "0":
+        zeros = len(fraction) - len(fraction.lstrip("0"))
+        point = -zeros + exponent
+    digits = digits.rstrip("0") or "0"
+    if 0 < point <= 21:
+        if len(digits) <= point:
+            return sign + digits + "0" * (point - len(digits))
+        return sign + digits[:point] + "." + digits[point:]
+    if -6 < point <= 0:
+        return sign + "0." + "0" * (-point) + digits
+    exponent = point - 1
+    return sign + digits[0] + ("." + digits[1:] if len(digits) > 1 else "") + "e" + ("+" if exponent >= 0 else "-") + str(abs(exponent))
+
+
+def canonical_json(value) -> bytes:
+    """RFC8785 UTF-8 bytes; no Unicode normalization, UTF-16 property ordering."""
+    _json_domain(value)
+    def encode(item):
+        if item is None:
+            return "null"
+        if type(item) is bool:
+            return "true" if item else "false"
+        if type(item) in (int, float):
+            return _jcs_number(item)
+        if type(item) is str:
+            return json.dumps(item, ensure_ascii=False)
+        if type(item) is list:
+            return "[" + ",".join(encode(x) for x in item) + "]"
+        keys = sorted(item, key=lambda x: x.encode("utf-16-be"))
+        return "{" + ",".join(encode(k) + ":" + encode(item[k]) for k in keys) + "}"
+    return encode(value).encode("utf-8")
+
+
 def validate_record(data: dict) -> str:
-    schema = json.loads(SCHEMA_FILE.read_text(encoding="utf-8"))
+    _json_domain(data)
+    if not isinstance(data, dict):
+        raise ContractError("canonical record must be an object")
+    pair = (data.get("schema"), data.get("kind"))
+    if pair == ("ads/github/v4", "report"):
+        path = REPORT_SCHEMA_FILE
+    elif pair[0] == "ads/github/v3" and pair[1] in ("work_item", "intent", "event", "report"):
+        path = SCHEMA_FILE
+    else:
+        raise ContractError("UNSUPPORTED_SCHEMA: unrecognized schema/kind pair")
+    schema = json.loads(path.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema, registry=_registry())
     errors = sorted(validator.iter_errors(data), key=lambda e: (list(map(str, e.absolute_path)), e.message))
@@ -103,6 +207,114 @@ def validate_record(data: dict) -> str:
         causes = "; ".join(c.message for c in first.context[:4])
         raise ContractError(f"JSON_SCHEMA {pointer}: {first.message}" +
                             (f" (alternatives: {causes})" if causes else ""))
+    if path == REPORT_SCHEMA_FILE:
+        _report_semantics(data["data"])
+    return "SHAPE_VALID_ONLY"
+
+
+def record_disposition(record, effective_pin="v4.15", writing=False):
+    """Interpret wire compatibility only; CURRENT never means Claim admission."""
+    if effective_pin not in ("v4.14", "v4.15"):
+        raise ContractError("UNSUPPORTED_SCHEMA: unresolved effective pin")
+    if effective_pin == "v4.14" and record.get("schema") != "ads/github/v3":
+        raise ContractError("UNSUPPORTED_SCHEMA: v4.14 reader")
+    validate_record(record)
+    if effective_pin == "v4.15" and record["schema"] == "ads/github/v3" and record["kind"] == "report":
+        if writing:
+            raise ContractError("v4.15 writer cannot emit historical v3 report")
+        return "HISTORICAL_READ_ONLY"
+    return "CURRENT_OBSERVATION" if record["kind"] == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
+
+
+def _report_semantics(data):
+    subject = data["subject"]
+    if not subject["issue_ref"].startswith("https://github.com/" + subject["repository"] + "/issues/"):
+        raise ContractError("owning repository/Issue mismatch")
+    try:
+        datetime.fromisoformat(data["observed_at"].replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError("invalid observed_at calendar time") from exc
+    prev = data["supersedes"]
+    if prev is not None and (prev["revision"] != data["revision"] - 1 or not prev["comment_ref"].startswith(subject["issue_ref"] + "#issuecomment-")):
+        raise ContractError("revision must name its exact preceding owning-Issue publication")
+    if data["report_kind"] == "EXECUTION_SUMMARY":
+        if subject["attempt_ref"] not in data["aggregation"]["attempt_refs"]:
+            raise ContractError("summary Attempt missing from leaf aggregation")
+        if set(data["aggregation"]["attempt_refs"]) & set(data["aggregation"]["excluded_attempt_refs"]):
+            raise ContractError("included and excluded Attempt overlap")
+        if data["verifier"]["subject_sha"] != subject["source_sha"]:
+            raise ContractError("verifier/source mismatch")
+        groups = [set(data["verifier"][k]) for k in ("checked", "failed", "skipped", "unchecked")]
+        if any(a & b for i, a in enumerate(groups) for b in groups[i + 1:]):
+            raise ContractError("verifier scopes must be disjoint")
+        for metric in data["metrics"]:
+            if metric["value"] is None and metric["epistemic"] != "UNKNOWN":
+                raise ContractError("missing metric requires UNKNOWN")
+        manifest = data["manifest_ref"].lower()
+        if any(token in manifest for token in ("?", "#", "token=", "signature=", "credential=")):
+            raise ContractError("manifest must be stable opaque/private locator, never signed URL")
+    elif data["report_kind"] == "EXPERIENCE_USE_FEEDBACK":
+        if data["ads_subject_sha"] != subject["ads_revision"]:
+            raise ContractError("feedback ADS subject/effective test profile mismatch")
+
+
+def data_digest(record) -> str:
+    """Public validated data comparator, not private-manifest integrity or authority."""
+    validate_record(record)
+    if record["schema"] != "ads/github/v4" or record["kind"] != "report":
+        raise ContractError("v4 report required for public data digest")
+    return hashlib.sha256(canonical_json(record["data"])).hexdigest()
+
+
+def report_identity(record):
+    validate_record(record)
+    if record.get("schema") != "ads/github/v4" or record.get("kind") != "report":
+        raise ContractError("v4 report identity required")
+    d = record["data"]
+    return (d["subject"]["issue_ref"], d["publisher_namespace"], d["report_id"], d["revision"], d["report_kind"])
+
+
+def observation_status(record, *, edited=None, previous_record=None, same_comment=False):
+    """Bounded comparator of supplied observations; obtains no GitHub facts itself.
+
+    `edited=False` must be witnessed by a native consumer; absence is UNKNOWN.
+    This helper never authenticates publisher/correction authority or grants PASS.
+    """
+    digest = data_digest(record)
+    if edited is True:
+        return "UNVERIFIED_EDIT"
+    if previous_record is not None:
+        previous_digest = data_digest(previous_record)
+        if (same_comment or report_identity(record) == report_identity(previous_record)) and digest != previous_digest:
+            return "CONFLICT"
+        if report_identity(record) == report_identity(previous_record) and digest == previous_digest:
+            return "DUPLICATE" if edited is False else "UNKNOWN_INTEGRITY"
+    return "OBSERVED_SHAPE_ONLY" if edited is False else "UNKNOWN_INTEGRITY"
+
+
+def validate_summary_revision(previous, successor, legacy_kind):
+    """EVIDENCE_UPDATE/TASK_LEARNING mapping, with actual prior data supplied.
+
+    Checks immutable data lineage, never remote manifest bytes or publication.
+    """
+    if legacy_kind not in ("EVIDENCE_UPDATE", "TASK_LEARNING"):
+        raise ContractError("unsupported legacy revision reason")
+    for record in (previous, successor):
+        validate_record(record)
+        if record.get("schema") != "ads/github/v4" or record["data"]["report_kind"] != "EXECUTION_SUMMARY":
+            raise ContractError("late evidence/learning requires an existing v4 summary")
+    a, b = previous["data"], successor["data"]
+    subject_identity = ("repository", "issue_ref", "task_ref", "attempt_ref", "attempt_binding", "source_sha", "ads_revision", "ads_profile")
+    if any(a[k] != b[k] for k in ("report_id", "publisher_namespace")) or any(a["subject"][k] != b["subject"][k] for k in subject_identity) or b["revision"] != a["revision"] + 1:
+        raise ContractError("not the same summary/Attempt subject's next revision")
+    if b["supersedes"]["data_digest"] != data_digest(previous):
+        raise ContractError("predecessor digest mismatch")
+    if a["manifest_ref"] == b["manifest_ref"] or a["manifest_sha256"] == b["manifest_sha256"]:
+        raise ContractError("new summary revision requires new immutable private manifest")
+    if legacy_kind == "TASK_LEARNING" and (b["learning"]["state"] != "REFERENCED" or not (set(b["learning"]["source_refs"]) - set(a["learning"]["source_refs"]))):
+        raise ContractError("material learning requires a new actual Task Learning source ref")
+    if legacy_kind == "EVIDENCE_UPDATE" and not (set(b["source_refs"] + b["verifier"]["source_refs"]) - set(a["source_refs"] + a["verifier"]["source_refs"])):
+        raise ContractError("late evidence requires a new source-bound evidence ref")
     return "SHAPE_VALID_ONLY"
 
 
@@ -135,28 +347,34 @@ def parse_markdown(source: str) -> dict | None:
         raise ContractError(f"unsafe or malformed YAML: {exc}") from exc
     if not isinstance(obj, dict):
         raise ContractError("canonical YAML must contain a single root object")
+    _json_domain(obj)
     return obj
 
 
-def verify_markdown(source: str, expected_kind: str | None = None, **_ignored):
+def verify_markdown(source: str, expected_kind: str | None = None, *, effective_pin="v4.15", writing=False, **_ignored):
     data = parse_markdown(source)
     if data is None:
         if expected_kind:
             raise ContractError("normalized document required")
         return "UNSTRUCTURED_DISCUSSION"
-    verdict = validate_record(data)
+    record_disposition(data, effective_pin, writing)
     if expected_kind is not None and data["kind"] != expected_kind:
         raise ContractError(f"expected kind={expected_kind}, got kind={data['kind']}")
-    return verdict
+    return "SHAPE_VALID_ONLY"
 
 
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("file", type=Path)
     cli.add_argument("--kind", choices=["work_item", "intent", "event", "report"])
+    cli.add_argument("--effective-pin", choices=["v4.14", "v4.15"], default="v4.15")
+    cli.add_argument("--writing", action="store_true")
+    cli.add_argument("--data-digest", action="store_true")
     args = cli.parse_args()
     try:
-        print(verify_markdown(args.file.read_text(encoding="utf-8"), args.kind))
+        source = args.file.read_text(encoding="utf-8")
+        verdict = verify_markdown(source, args.kind, effective_pin=args.effective_pin, writing=args.writing)
+        print(data_digest(parse_markdown(source)) if args.data_digest else verdict)
     except (ContractError, OSError) as exc:
         print("INVALID_SCHEMA: " + str(exc))
         raise SystemExit(1) from exc
