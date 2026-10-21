@@ -8,6 +8,7 @@
     "python tests/test_v415_report.py",
     "python tests/test_v415_consumer.py",
     "python tests/test_v415_contract_integration.py",
+    "python tests/test_v415_source_boundary.py",
     "python scripts/test_github_structured_interaction.py",
     "python scripts/test_protocol_schemas.py",
     "python scripts/test_work_item_contract_and_golden_templates.py",
@@ -16,6 +17,7 @@
     "node scripts/test_v414_schema_portability.cjs"
   ],
   "coverage": [
+    {"requirement": "Existing #1232 P2-01 / #1227@6307345351 source-boundary counterexamples", "tests": ["test_v415_source_boundary.AdoptedSourceBoundary"], "boundary": "Exact adopted owner blobs and discriminating fixtures/stateful source models; no real runtime, native CAS, credential, race, fencing or historical Claim recovery proof"},
     {"requirement": "R4-3 strict profiles/carrier/JSON-safe parsing/JCS", "tests": ["test_v415_report.ReportShape", "test_v415_report.ParsingAndJCS", "test_v415_contract_integration.IntegratedWire.test_carrier_human_truth_and_no_prefilled_feedback_receipt"], "boundary": "Schema-valid shape or finite JCS vectors are not source authority or universal numeric proof"},
     {"requirement": "R4-3 original v3/current nonreport/historical reports/unsupported pairs/effective pins", "tests": ["test_v415_contract_integration.PinnedCompatibility", "scripts/test_github_structured_interaction.py", "scripts/test_v414_schema_portability.cjs"], "boundary": "Pinned original parser actually runs; newer --effective-pin does not emulate old lexical parsing"},
     {"requirement": "R4-3 EVIDENCE_UPDATE/TASK_LEARNING immutable revisions and Level-1 note", "tests": ["test_v415_report.ImmutableRevisions", "test_v415_contract_integration.IntegratedWire.test_publish_read_digest_and_immutable_late_evidence_chain", "test_v415_contract_integration.PinnedCompatibility.test_frozen_predecessors_schema_and_level1_learning_are_unchanged"], "boundary": "Manifest/source refs are supplied fixture claims, not actual private publication"},
