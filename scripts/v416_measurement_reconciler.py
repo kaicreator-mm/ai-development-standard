@@ -53,13 +53,18 @@ def metric_total(observations: list[dict]) -> dict:
             continue
         seen[key] = row
     revisions: dict[tuple, dict] = {}
+    histories: dict[tuple, list[dict]] = defaultdict(list)
     for row in seen.values():
         k = tuple(row[f] for f in PHYSICAL + METRIC_SCOPE) + (row["observation_id"],)
-        old = revisions.get(k)
-        if old is None or row["source_revision"] > old["source_revision"]:
-            if old is not None and row.get("supersedes_revision") != old["source_revision"]:
+        histories[k].append(row)
+    for key, history in histories.items():
+        history.sort(key=lambda x: x["source_revision"])
+        for prior, later in zip(history, history[1:]):
+            if later.get("supersedes_revision") != prior["source_revision"]:
                 return result("UNKNOWN", reason="revision_lineage_not_proven")
-            revisions[k] = row
+        revisions[key] = history[-1]
+    if len({row["publisher_namespace"] for row in revisions.values()}) != 1:
+        return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for row in revisions.values():
         groups[tuple(row[f] for f in PHYSICAL + METRIC_SCOPE)].append(row)
@@ -90,7 +95,7 @@ def metric_total(observations: list[dict]) -> dict:
 def cost_total(observations: list[dict]) -> dict:
     if not observations:
         return result("UNKNOWN", reason="no_actual_ledger")
-    revisioned: dict[tuple, dict] = {}
+    histories: dict[tuple, dict[int, dict]] = defaultdict(dict)
     for row in observations:
         if not verified(row, ACCOUNT + ("basis", "source_revision", "source_digest")) or \
            row.get("population_complete") is not True or amount(row.get("value")) is None:
@@ -98,19 +103,19 @@ def cost_total(observations: list[dict]) -> dict:
         if type(row["source_revision"]) is not int or row["source_revision"] < 1:
             return result("UNKNOWN", reason="bad_invoice_revision")
         key = tuple(row[k] for k in ACCOUNT)
-        prev = revisioned.get(key)
-        if prev is not None:
-            if prev["source_revision"] == row["source_revision"]:
-                if prev["source_digest"] != row["source_digest"] or prev["value"] != row["value"]:
-                    return result("CONFLICT", reason="same_invoice_revision_conflicts")
-                continue
-            if row["source_revision"] > prev["source_revision"]:
-                if row.get("supersedes_revision") != prev["source_revision"]:
-                    return result("UNKNOWN", reason="invoice_supersession_unknown")
-                revisioned[key] = row
-        else:
-            revisioned[key] = row
-    rows = list(revisioned.values())
+        old = histories[key].get(row["source_revision"])
+        if old is not None and (old["source_digest"] != row["source_digest"] or old["value"] != row["value"]):
+            return result("CONFLICT", reason="same_invoice_revision_conflicts")
+        histories[key][row["source_revision"]] = row
+    rows = []
+    for history in histories.values():
+        revisions = sorted(history)
+        for older, newer in zip(revisions, revisions[1:]):
+            if history[newer].get("supersedes_revision") != older:
+                return result("UNKNOWN", reason="invoice_supersession_unknown")
+        rows.append(history[revisions[-1]])
+    if len({x["publisher_namespace"] for x in rows}) != 1:
+        return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
     if len({x["currency"] for x in rows}) != 1:
         return result("NOT_COMPARABLE", reason="currency_without_qualified_fx")
     scopes: dict[tuple, list[dict]] = defaultdict(list)
