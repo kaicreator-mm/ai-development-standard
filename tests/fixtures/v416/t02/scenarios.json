@@ -1996,9 +1996,9 @@
         }
       ],
       "expected": {
-        "status": "UNKNOWN",
+        "status": "CONFLICT",
         "total": null,
-        "reason": "parent_and_leaf_population_ambiguous"
+        "reason": "one_observation_revision_conflicting_digest"
       }
     },
     {
