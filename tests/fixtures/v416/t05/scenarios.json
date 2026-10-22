@@ -1,0 +1,262 @@
+{
+  "schema": "ads/v416-t05-source-oracle/v1",
+  "scope": "source-only-not-real-Host-Gate-or-GitHub-effect",
+  "routes": [
+    {
+      "id": "C15_web_only",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "WEB_EXECUTABLE"
+    },
+    {
+      "id": "C15_web_ci",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": false,
+        "ci_capable": true,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "CI_EXECUTABLE"
+    },
+    {
+      "id": "C15_web_local_physical_remaining",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": true,
+        "physical_witnessed": false
+      },
+      "expected": "LOCAL_PHYSICAL_REMAINDER"
+    },
+    {
+      "id": "C15_physical_completed",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": true,
+        "physical_witnessed": true
+      },
+      "expected": "PHYSICAL_WITNESSED"
+    },
+    {
+      "id": "C15_stale_source",
+      "input": {
+        "task_current": false,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "HOLD_NO_SOURCE_AUTHORITY"
+    },
+    {
+      "id": "C15_no_accepted_claim",
+      "input": {
+        "task_current": true,
+        "claim_accepted": false,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "HOLD_NO_SOURCE_AUTHORITY"
+    },
+    {
+      "id": "C15_ambiguous_old_writer",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": true,
+        "competing_active_writer": false,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "HOLD_COMPETING_WRITER"
+    },
+    {
+      "id": "C15_second_active_writer",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": true,
+        "web_capable": true,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "HOLD_COMPETING_WRITER"
+    },
+    {
+      "id": "C15_unavailable_web_ci",
+      "input": {
+        "task_current": true,
+        "claim_accepted": true,
+        "prior_claim_ambiguous": false,
+        "competing_active_writer": false,
+        "web_capable": false,
+        "ci_capable": false,
+        "needs_physical": false,
+        "physical_witnessed": false
+      },
+      "expected": "CAPABILITY_UNAVAILABLE"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "C16_native_valid_evidence",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "native",
+        "schema_shape_valid": false,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "NATIVE_EVIDENCE_RECONSTRUCTIBLE"
+    },
+    {
+      "id": "C16_chat_only",
+      "input": {
+        "native_comment_id": null,
+        "native_readback": false,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "native",
+        "schema_shape_valid": false,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "NOT_PUBLISHED"
+    },
+    {
+      "id": "C16_shape_only",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "REVIEW_RESULT",
+        "schema_shape_valid": true,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "UNADMITTED_MACHINE_EVENT"
+    },
+    {
+      "id": "C16_machine_admitted",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "REVIEW_RESULT",
+        "schema_shape_valid": true,
+        "canonical_admitted": true,
+        "independent_context": true
+      },
+      "expected": "NATIVE_EVIDENCE_RECONSTRUCTIBLE"
+    },
+    {
+      "id": "C16_missing_readback",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": false,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "native",
+        "schema_shape_valid": false,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "NOT_PUBLISHED"
+    },
+    {
+      "id": "C16_missing_exit",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": null,
+        "event_kind": "native",
+        "schema_shape_valid": false,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "UNQUALIFIED_TEST_TUPLE"
+    },
+    {
+      "id": "C16_missing_sha",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": null,
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "native",
+        "schema_shape_valid": false,
+        "canonical_admitted": false,
+        "independent_context": true
+      },
+      "expected": "UNQUALIFIED_TEST_TUPLE"
+    },
+    {
+      "id": "C16_same_context_review",
+      "input": {
+        "native_comment_id": "123456",
+        "native_readback": true,
+        "exact_subject_sha": "0123456789abcdef0123456789abcdef01234567",
+        "environment": "linux-python",
+        "command": "python test.py",
+        "exit_code": 0,
+        "event_kind": "REVIEW_RESULT",
+        "schema_shape_valid": false,
+        "canonical_admitted": true,
+        "independent_context": false
+      },
+      "expected": "UNADMITTED_MACHINE_EVENT"
+    }
+  ]
+}
