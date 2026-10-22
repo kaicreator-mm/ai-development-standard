@@ -32,3 +32,5 @@ core_artifacts:
   - REVIEW_CHECKLIST.md
 retention: durable
 pack_state_at_generation: PACK_CURRENT
+optional_artifacts:
+  - ASSURANCE_PLAN.json
