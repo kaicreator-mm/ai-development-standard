@@ -1,0 +1,1241 @@
+{
+  "schema": "ads/v416-t02-source-accounting/v1",
+  "scope": "deterministic-contract-only-not-real-provider-evidence",
+  "cases": [
+    {
+      "id": "C02_one_delta",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "10",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C02_replay_same_digest",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "10",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C02_digest_conflict",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "dX",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "CONFLICT",
+        "total": null,
+        "reason": "one_observation_revision_conflicting_digest"
+      }
+    },
+    {
+      "id": "C02_update_lineage",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 2,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "15",
+          "supersedes_revision": 1
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "15",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C02_revision_no_predecessor",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 2,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "15"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "revision_lineage_not_proven"
+      }
+    },
+    {
+      "id": "C03_physical_retry_separate",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:2",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "7"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "17",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C03_identical_local_id_other_task",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1267",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "3"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "13",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C03_null_provider_ref",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": null,
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "source_or_window_unproved"
+      }
+    },
+    {
+      "id": "C03_parent_leaf_overlap",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "PARENT",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "parent_and_leaf_population_ambiguous"
+      }
+    },
+    {
+      "id": "C04_two_deltas",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "5"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "15",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C04_cumulative_latest",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "10",
+          "watermark": 1,
+          "watermark_current": true
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "16",
+          "watermark": 2,
+          "watermark_current": true
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "16",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C04_cumulative_no_watermark",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "10",
+          "watermark": null
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "watermark_unproved"
+      }
+    },
+    {
+      "id": "C04_cumulative_nonmonotone",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "10",
+          "watermark": 1,
+          "watermark_current": true
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "8",
+          "watermark": 2,
+          "watermark_current": true
+        }
+      ],
+      "expected": {
+        "status": "CONFLICT",
+        "total": null,
+        "reason": "nonmonotone_cumulative_source"
+      }
+    },
+    {
+      "id": "C04_mixed_delta_cumulative",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "CUMULATIVE_SNAPSHOT",
+          "value": "16",
+          "watermark": 2,
+          "watermark_current": true
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "mixed_delta_cumulative_or_bad_kind"
+      }
+    },
+    {
+      "id": "C04_mismatched_metric_unit",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o2",
+          "source_revision": 1,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "USD",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "1"
+        }
+      ],
+      "expected": {
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "metric_registry_or_unit_mismatch"
+      }
+    },
+    {
+      "id": "C05_one_billed",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "12.5",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_exact_bill_duplicate",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "12.5",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_quote_overlaps_bill",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "quote:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "ESTIMATED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "8"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "12.5",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_unsettled_billing",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "invoice_without_settlement"
+      }
+    },
+    {
+      "id": "C05_cost_missing_denominator",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": false,
+          "settlement_verified": true,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "cost_source_or_denominator_unknown"
+      }
+    },
+    {
+      "id": "C05_conflicting_invoice",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c2",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "15"
+        }
+      ],
+      "expected": {
+        "status": "CONFLICT",
+        "total": null,
+        "reason": "same_invoice_revision_conflicts"
+      }
+    },
+    {
+      "id": "C05_invoice_revision",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 2,
+          "source_digest": "c2",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "13",
+          "supersedes_revision": 1
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "13",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_cross_currency",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:2",
+          "receipt_ref": "invoice:2",
+          "currency": "MMK",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "8000"
+        }
+      ],
+      "expected": {
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "currency_without_qualified_fx"
+      }
+    },
+    {
+      "id": "C05_multiple_bills_same_scope",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:2",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "13"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "overlapping_bills_unknown"
+      }
+    },
+    {
+      "id": "C05_only_estimate",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "ESTIMATED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "only_estimate_or_provider_quote"
+      }
+    },
+    {
+      "id": "C12_overlap_intervals",
+      "kind": "intervals",
+      "rows": [
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 0,
+          "end_ms": 100
+        },
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 50,
+          "end_ms": 150
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_INTERVAL_UNION_MS",
+        "total": "150",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C12_disjoint_intervals",
+      "kind": "intervals",
+      "rows": [
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 0,
+          "end_ms": 100
+        },
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 150,
+          "end_ms": 200
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_INTERVAL_UNION_MS",
+        "total": "150",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C12_incompatible_clock",
+      "kind": "intervals",
+      "rows": [
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 0,
+          "end_ms": 100
+        },
+        {
+          "source_current": true,
+          "clock_witness": "clock:B",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:B",
+          "start_ms": 0,
+          "end_ms": 100
+        }
+      ],
+      "expected": {
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "incompatible_clock"
+      }
+    },
+    {
+      "id": "C12_unproved_clock",
+      "kind": "intervals",
+      "rows": [
+        {
+          "source_current": true,
+          "clock_witness": null,
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 0,
+          "end_ms": 100
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "clock_source_missing"
+      }
+    },
+    {
+      "id": "C12_bad_interval",
+      "kind": "intervals",
+      "rows": [
+        {
+          "source_current": true,
+          "clock_witness": "clock:monotonic-A",
+          "source_receipt_ref": "qualified:interval-A",
+          "clock_domain": "host:A",
+          "start_ms": 200,
+          "end_ms": 100
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "invalid_grounded_interval"
+      }
+    }
+  ]
+}
