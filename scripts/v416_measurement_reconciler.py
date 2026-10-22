@@ -40,6 +40,23 @@ def verified(row: dict, fields: tuple[str, ...]) -> bool:
         for k in fields
     )
 
+def same_typed_source_row(left: Any, right: Any, depth: int = 0) -> bool:
+    """Type-strict full JSON payload equality for replay; bool != int even in nested fields."""
+    if type(left) is not type(right) or depth > 64:
+        return False
+    if type(left) is dict:
+        return left.keys() == right.keys() and all(
+            same_typed_source_row(left[key], right[key], depth + 1) for key in left
+        )
+    if type(left) is list:
+        return len(left) == len(right) and all(
+            same_typed_source_row(a, b, depth + 1) for a, b in zip(left, right)
+        )
+    if type(left) in (str, int, float, bool, type(None)):
+        return left == right
+    return False
+
+
 def exact_total(values: list[Decimal]) -> Decimal | None:
     # Decimal's default 28-digit context MUST NOT silently round provider totals.
     if not values:
@@ -87,7 +104,7 @@ def metric_total(observations: list[dict]) -> dict:
         key = physical + scope + (row["observation_id"], row["source_revision"])
         original = seen.get(key)
         if original is not None:
-            if original != row:
+            if not same_typed_source_row(original, row):
                 return result("CONFLICT", reason="one_observation_revision_conflicting_digest")
             continue
         seen[key] = row
@@ -157,7 +174,7 @@ def cost_total(observations: list[dict]) -> dict:
             return result("UNKNOWN", reason="bad_invoice_revision")
         key = tuple(row[k] for k in ACCOUNT)
         old = histories[key].get(row["source_revision"])
-        if old is not None and old != row:
+        if old is not None and not same_typed_source_row(old, row):
             return result("CONFLICT", reason="same_invoice_revision_conflicts")
         histories[key][row["source_revision"]] = row
     rows = []
