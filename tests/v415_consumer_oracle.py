@@ -92,9 +92,11 @@ def observe(items, *, complete, issue, source_sha, ads_sha):
             for pos, _ in entries:
                 results[pos] = 'CONFLICT'
         elif len(entries) > 1:
-            for pos, _ in entries[1:]:
-                if results[pos] == 'OBSERVED':
-                    results[pos] = 'DUPLICATE'
+            # An UNKNOWN/UNVERIFIED entry cannot occupy the primary slot.
+            # Preserve one actually qualified witness, regardless of page order.
+            observed = [pos for pos, _ in entries if results[pos] == 'OBSERVED']
+            for pos in observed[1:]:
+                results[pos] = 'DUPLICATE'
     # Resolve actual supplied native predecessors, independent of input ordering.
     candidates = [(pos, item) for pos, item in enumerate(items)
                   if results[pos] in ('OBSERVED', 'DUPLICATE')]

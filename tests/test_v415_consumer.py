@@ -94,6 +94,26 @@ class ReconciliationBoundary(unittest.TestCase):
     def test_duplicate_is_not_another_attempt(self):
         self.assertEqual(read([item(),item(number=124)]),['OBSERVED','DUPLICATE'])
 
+    def test_same_digest_primary_requires_observed_witness_in_both_orders(self):
+        for changes,state in [({'source_witness':False},'UNKNOWN'),
+                              ({'edit_evidence':'UNKNOWN'},'UNKNOWN'),
+                              ({'edit_evidence':'EDITED'},'UNVERIFIED')]:
+            uncertain,valid=item(),item(number=124)
+            uncertain.update(changes)
+            self.assertEqual(read([uncertain,valid]),[state,'OBSERVED'])
+            self.assertEqual(read([valid,uncertain]),['OBSERVED',state])
+
+    def test_same_digest_multiple_qualified_witnesses_keep_one_actual_primary(self):
+        uncertain,one,two=item(),item(number=124),item(number=125)
+        uncertain['source_witness']=False
+        for ordering in permutations([uncertain,one,two]):
+            statuses=read(ordering)
+            qualified=[status for x,status in zip(ordering,statuses) if x['source_witness']]
+            self.assertEqual(qualified,['OBSERVED','DUPLICATE'])
+            self.assertEqual(statuses[list(ordering).index(uncertain)],'UNKNOWN')
+        one['source_witness']=two['source_witness']=False
+        self.assertEqual(read([uncertain,one,two]),['UNKNOWN']*3)
+
     def test_conflict_never_uses_input_order_or_newest(self):
         a,b=item(),item(number=124)
         b['record']['data']['limits'].append('Conflicting additional observation')

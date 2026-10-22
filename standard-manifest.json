@@ -161,7 +161,8 @@
       "schemas/assurance-plan-v2.schema.json",
       "schemas/role-execution-profile-v1.schema.json",
       "schemas/task-learning-v2.schema.json",
-      "schemas/github/v4.14/structured-interaction.schema.json"
+      "schemas/github/v4.14/structured-interaction.schema.json",
+      "schemas/github/v4.15/report.schema.json"
     ],
     "profiles": [
       "profiles/README.md",
@@ -222,7 +223,33 @@
       "references/V48_REGISTRY_ADOPTION_REFERENCE.md",
       "references/WOODPECKER_LOCAL_BACKEND_REFERENCE.md",
       "references/WOODPECKER_UBUNTU_BUILD_01_CAPABILITY_2026-09-18.yaml",
-      "references/WORKSPACE_ARTIFACT_REFERENCE.md"
+      "references/WORKSPACE_ARTIFACT_REFERENCE.md",
+      "tests/fixtures/v415/correction.json",
+      "tests/fixtures/v415/feedback.json",
+      "tests/fixtures/v415/historical_v414_reader.py",
+      "tests/fixtures/v415/summary.json",
+      "tests/v415_consumer_oracle.py",
+      "docs/implementation/4.15.0/BOUNDED_SOURCE_REPAIR_CASES.json",
+      "docs/implementation/4.15.0/DEFERRED_E2E_ORACLE.md",
+      "docs/implementation/4.15.0/GITHUB_ONLY_CONSUMER_CONTRACT.md",
+      "docs/implementation/4.15.0/L1_PRODUCT_EVIDENCE.md",
+      "docs/implementation/4.15.0/L2_ARCHITECTURE.md",
+      "docs/implementation/4.15.0/L2_ARCHITECTURE_EVIDENCE.md",
+      "docs/implementation/4.15.0/L2_FREEZE.md",
+      "docs/implementation/4.15.0/PRD.md",
+      "docs/implementation/4.15.0/PRODUCT_FREEZE.md",
+      "docs/implementation/4.15.0/S05_CONFORMANCE_MATRIX.json",
+      "docs/implementation/4.15.0/S05_DOWNSTREAM_HANDOFF.md",
+      "docs/implementation/4.15.0/SCOPE_DAG_MUTATION_PROPOSAL.json",
+      "docs/implementation/4.15.0/SCOPE_REVISION_R2.md",
+      "docs/implementation/4.15.0/SCOPE_REVISION_R3.md",
+      "docs/implementation/4.15.0/SOURCE_DELIVERY_BOUNDARY.md",
+      "docs/implementation/4.15.0/TASK_DAG.md",
+      "docs/implementation/4.15.0/TASK_DAG_FREEZE.md",
+      "docs/intake/i1225-unavailable-ledger/PROPOSAL.md",
+      "docs/intake/i1235-github-recovery/PROPOSAL.md",
+      "docs/implementation/4.15.0/S06_CLOSURE_MATRIX.json",
+      "docs/implementation/4.15.0/S06_RELEASE_NOTES.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -339,7 +366,14 @@
       "scripts/test_v412_scaffold_dag_check.py",
       "scripts/verify_standard.py",
       "scripts/requirements-github-v414.txt",
-      "scripts/test_v414_schema_portability.cjs"
+      "scripts/test_v414_schema_portability.cjs",
+      "scripts/test_v415_artifact_acceptance.py",
+      "scripts/test_v415_bounded_source_repair.py",
+      "scripts/test_v415_github_recovery.py",
+      "tests/test_v415_consumer.py",
+      "tests/test_v415_contract_integration.py",
+      "tests/test_v415_report.py",
+      "tests/test_v415_source_boundary.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
