@@ -2863,6 +2863,135 @@
         "total": null,
         "reason": "one_observation_revision_conflicting_digest"
       }
+    },
+    {
+      "id": "C05_unsupported_basis_cannot_be_silently_dropped",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "alternative:unrecognized",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "UNSUPPORTED_BASIS",
+          "source_revision": 1,
+          "source_digest": "alternate:unrecognized",
+          "source_current": true,
+          "source_receipt_ref": "qualified:alternative:unrecognized",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "900"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "unqualified_cost_basis"
+      }
+    },
+    {
+      "id": "C05_unknown_basis_cannot_be_silently_dropped",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "alternative:unknown",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "UNKNOWN",
+          "source_revision": 1,
+          "source_digest": "alternate:unknown",
+          "source_current": true,
+          "source_receipt_ref": "qualified:alternative:unknown",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "900"
+        }
+      ],
+      "expected": {
+        "status": "UNKNOWN",
+        "total": null,
+        "reason": "unqualified_cost_basis"
+      }
+    },
+    {
+      "id": "C05_provider_reported_quote_can_be_superseded_by_bill",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "alternative:provider",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "PROVIDER_REPORTED",
+          "source_revision": 1,
+          "source_digest": "alternate:provider",
+          "source_current": true,
+          "source_receipt_ref": "qualified:alternative:provider",
+          "population_complete": true,
+          "settlement_verified": false,
+          "value": "900"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "12.5",
+        "reason": ""
+      }
     }
   ]
 }
