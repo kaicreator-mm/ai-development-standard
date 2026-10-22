@@ -68,3 +68,15 @@ Pre-freeze output here is read-only inspection + documentation artifact only. No
 - **Support only:** #1204 Markdown/currentness P2 can be separate docs PR after confirming affected bytes; #1205/#1208/#1209 exact-source historical closeout after facts-based reconciliation, no duplicate implementation; #1210/#1231 runtime follow-up untouched; #1229/#1230 release-source amendment reconciliation separate from v4.15.1 Product.
 
 Required prospective independent decision: review this exact R3 crosswalk plus R2 plan, return `PRODUCT_SCOPE_READY=YES|NO`, `COMPAT_DECISION=ACCEPT_OPT_IN_PATCH|SPLIT_MINOR|NEEDS_REVISION`, and per-owner `COVERED|PARTIAL|MISSING` with P0/P1/P2. Not the same as Freeze. If selected Product Review owner accepts, **then** explicit Freeze and authorized L2/Task admission; no threshold-based automatic advancement.
+
+
+## 5. R3 safety conditions tightened before independent review
+
+**Unpinned observation must be profile-discriminated, not a global nullable source.** New-profile `source_sha=null` is allowable **only** inside a source-unknown `EXECUTION_SUMMARY` with the explicitly observational `attempt_binding=COLLECTOR_ONLY`, typed source status/reason, and no accepted source/Task/Gate authority. It MUST NOT make a `CORRECTION` or `EXPERIENCE_USE_FEEDBACK` source nullable, allow a canonical admitted Dispatch to lose its exact source, or create an authoritative verifier result without an exact tested subject. An attempted `verifier=PASS` or source `currentness=CURRENT` on such a summary is invalid. If an unpinned tool execution reports a failure, record it only as bounded observation with source/limits; never treat it as exact-subject strict validation. Same wire must require real immutable source bindings for authority-bearing evidence as dictated by owning gate.
+
+**Native comment vs §8 terminal event:** `LOCAL_AGENT_HANDOFF_PROTOCOL.md` §8 L146–168 already requires a structured phase-exit event/readback. Merely posting a native Markdown validation comment is **not** an exemption from that pre-existing terminal handoff when applicable. A native comment may hold rich commands/toolchain/exits and be accepted as Validation/Review evidence *if* the actual owning policy permits; the phase terminal canonical Event/handoff still must refer to this evidence and be published where §8 requires it. If `REVIEW_RESULT` is emitted, §9.2 requires machine findings records; no opaque Markdown-to-event upcast. The owner may explicitly decide a different allowed evidence form under existing authority, not by an assistant's inference.
+
+**Cross-profile negative checks to add after Product decision:**
+- F19: `source_sha=null` with `attempt_binding=CANONICAL_DISPATCH`, or `currentness=CURRENT`, or a verifier PASS — reject.
+- F20: `source_sha=null` on feedback or correction, or wrong source/currentness of actual publication actor — reject or UNKNOWN, never transfer collector-only exception.
+- F21: native evidence comment exists but an applicable structured exit/handoff or required admitted machine REVIEW_RESULT is missing — terminal/gate unsatisfied.
