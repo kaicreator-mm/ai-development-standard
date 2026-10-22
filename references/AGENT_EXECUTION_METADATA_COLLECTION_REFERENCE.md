@@ -241,7 +241,7 @@ A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2
 
 ### 7.2 Latest-only v3 Issue comment example (object Manifest remains v1)
 
-The GitHub **comment** now uses the common \`<!-- ads:github -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
+The GitHub **comment** now uses the common `<!-- ads:github -->` marker and `kind: report`; its `data` is validated by `schemas/github/v4.14/structured-interaction.schema.json`. The durable OSS/S3 object **Manifest** in §7.1 still uses the established `ads/task-report-manifest/v1` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
 
 ~~~~markdown
 <!-- ads:github -->
@@ -269,7 +269,7 @@ LIMITS=PARTIAL collector coverage; billing UNKNOWN
 TASK_LEARNING=NONE_MATERIAL
 ~~~~
 
-No explicit \`derived publication identity\` or second \`ISSUE_COMMENT_REPORT\` intent is emitted. The GitHub publisher derives dedupe identity from **actual owning Issue + report_id + revision**, reads back the real comment and reconciles provider retries. GitHub Labels may mark the whole Issue, never an individual comment.
+No explicit `derived publication identity` or second `ISSUE_COMMENT_REPORT` intent is emitted. The GitHub publisher derives dedupe identity from **actual owning Issue + report_id + revision**, reads back the real comment and reconciles provider retries. GitHub Labels may mark the whole Issue, never an individual comment.
 
 ### 7.3 Suggested storage convention (not a forced vendor layout)
 
