@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, Inexact, Overflow, localcontext
 from typing import Any
 
 PHYSICAL = ("publisher_namespace", "task_ref", "attempt_ref", "adapter_id",
@@ -18,18 +18,59 @@ def result(status: str, total: Decimal | int | None = None, reason: str = "") ->
 def amount(v: Any) -> Decimal | None:
     if type(v) not in (int, str):
         return None  # no implicit binary64, boolean or guessed precision
+    if len(str(v)) > 256:
+        return None  # bounded untrusted source input
     try:
         n = Decimal(str(v))
     except InvalidOperation:
         return None
-    return n if n.is_finite() else None
+    if not n.is_finite() or n < 0 or abs(n.as_tuple().exponent) > 1024:
+        return None  # no implicit credits, negative token counts, or unbounded exponent
+    return n
 
 def verified(row: dict, fields: tuple[str, ...]) -> bool:
-    return bool(row.get("source_current") is True and row.get("source_receipt_ref")
-                and all(row.get(k) is not None and row.get(k) != "" for k in fields))
+    if type(row) is not dict or row.get("source_current") is not True:
+        return False
+    if type(row.get("source_receipt_ref")) is not str or not row["source_receipt_ref"].strip():
+        return False
+    return all(
+        (type(row.get(k)) is int and row[k] >= 1)
+        if k == "source_revision"
+        else (type(row.get(k)) is str and bool(row[k].strip()))
+        for k in fields
+    )
+
+def exact_total(values: list[Decimal]) -> Decimal | None:
+    # Decimal's default 28-digit context MUST NOT silently round provider totals.
+    if not values:
+        return Decimal(0)
+    precision = sum(len(x.as_tuple().digits) + max(0, -x.as_tuple().exponent)
+                    for x in values) + len(values) + 4
+    if precision > 8192:
+        return None
+    try:
+        with localcontext() as ctx:
+            ctx.prec = precision
+            ctx.traps[Inexact] = True
+            return sum(values, Decimal(0))
+    except (InvalidOperation, Inexact, Overflow):
+        return None
+
+def complete_revision_chain(history: list[dict]) -> bool:
+    history.sort(key=lambda x: x["source_revision"])
+    if not history or history[0]["source_revision"] != 1:
+        return False  # no orphan revisions; a root witness needs explicit future contract
+    if history[0].get("supersedes_revision") is not None:
+        return False
+    return all(
+        later["source_revision"] == prior["source_revision"] + 1
+        and type(later.get("supersedes_revision")) is int
+        and later["supersedes_revision"] == prior["source_revision"]
+        for prior, later in zip(history, history[1:])
+    )
 
 def metric_total(observations: list[dict]) -> dict:
-    if not observations:
+    if type(observations) is not list or not observations or len(observations) > 4096:
         return result("UNKNOWN", reason="population_absent")
     seen: dict[tuple, dict] = {}
     for row in observations:
@@ -37,7 +78,7 @@ def metric_total(observations: list[dict]) -> dict:
                      "source_revision", "source_digest", "measurement_kind")
         if not verified(row, required) or row.get("window_current") is not True:
             return result("UNKNOWN", reason="source_or_window_unproved")
-        if row.get("aggregation_role", "LEAF") != "LEAF":
+        if row.get("aggregation_role") != "LEAF":
             return result("UNKNOWN", reason="parent_and_leaf_population_ambiguous")
         if type(row["source_revision"]) is not int or row["source_revision"] < 1:
             return result("UNKNOWN", reason="bad_source_revision")
@@ -47,8 +88,8 @@ def metric_total(observations: list[dict]) -> dict:
         scope = tuple(row[k] for k in METRIC_SCOPE)
         key = physical + scope + (row["observation_id"], row["source_revision"])
         original = seen.get(key)
-        if original:
-            if original["source_digest"] != row["source_digest"] or original["value"] != row["value"]:
+        if original is not None:
+            if original != row:
                 return result("CONFLICT", reason="one_observation_revision_conflicting_digest")
             continue
         seen[key] = row
@@ -58,10 +99,8 @@ def metric_total(observations: list[dict]) -> dict:
         k = tuple(row[f] for f in PHYSICAL + METRIC_SCOPE) + (row["observation_id"],)
         histories[k].append(row)
     for key, history in histories.items():
-        history.sort(key=lambda x: x["source_revision"])
-        for prior, later in zip(history, history[1:]):
-            if later.get("supersedes_revision") != prior["source_revision"]:
-                return result("UNKNOWN", reason="revision_lineage_not_proven")
+        if not complete_revision_chain(history):
+            return result("UNKNOWN", reason="revision_lineage_not_proven")
         revisions[key] = history[-1]
     if len({row["publisher_namespace"] for row in revisions.values()}) != 1:
         return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
@@ -72,13 +111,21 @@ def metric_total(observations: list[dict]) -> dict:
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for row in revisions.values():
         groups[tuple(row[f] for f in PHYSICAL + METRIC_SCOPE)].append(row)
-    total = Decimal(0)
+    subtotals: list[Decimal] = []
     metric_context = set()
     for key, rows in groups.items():
         metric_context.add(key[len(PHYSICAL):len(PHYSICAL) + 3])
         kinds = {x["measurement_kind"] for x in rows}
         if kinds == {"COUNTER_DELTA"}:
-            total += sum((amount(x["value"]) for x in rows), Decimal(0))
+            if len(rows) > 1 and (any(x.get("delta_nonoverlap_verified") is not True
+                                      or not isinstance(x.get("delta_nonoverlap_witness"), str)
+                                      or not x["delta_nonoverlap_witness"].strip() for x in rows)
+                                  or len({x["delta_nonoverlap_witness"] for x in rows}) != 1):
+                return result("UNKNOWN", reason="delta_nonoverlap_unproved")
+            subtotal = exact_total([amount(x["value"]) for x in rows])
+            if subtotal is None:
+                return result("UNKNOWN", reason="inexact_metric_total")
+            subtotals.append(subtotal)
         elif kinds == {"CUMULATIVE_SNAPSHOT"}:
             if any(type(x.get("watermark")) is not int or x["watermark"] < 0 or
                    x.get("watermark_current") is not True for x in rows):
@@ -89,15 +136,17 @@ def metric_total(observations: list[dict]) -> dict:
             vals = [amount(x["value"]) for x in rows]
             if any(v2 < v1 for v1, v2 in zip(vals, vals[1:])):
                 return result("CONFLICT", reason="nonmonotone_cumulative_source")
-            total += vals[-1]  # the latest witnessed watermark, never add all snapshots
+            subtotals.append(vals[-1])  # latest witnessed watermark only
         else:
             return result("UNKNOWN", reason="mixed_delta_cumulative_or_bad_kind")
     if len(metric_context) != 1:
         return result("NOT_COMPARABLE", reason="metric_registry_or_unit_mismatch")
-    return result("COMPARABLE_OBSERVATION", total)
+    total = exact_total(subtotals)
+    return (result("COMPARABLE_OBSERVATION", total) if total is not None
+            else result("UNKNOWN", reason="inexact_metric_total"))
 
 def cost_total(observations: list[dict]) -> dict:
-    if not observations:
+    if type(observations) is not list or not observations or len(observations) > 4096:
         return result("UNKNOWN", reason="no_actual_ledger")
     histories: dict[tuple, dict[int, dict]] = defaultdict(dict)
     for row in observations:
@@ -108,16 +157,15 @@ def cost_total(observations: list[dict]) -> dict:
             return result("UNKNOWN", reason="bad_invoice_revision")
         key = tuple(row[k] for k in ACCOUNT)
         old = histories[key].get(row["source_revision"])
-        if old is not None and (old["source_digest"] != row["source_digest"] or old["value"] != row["value"]):
+        if old is not None and old != row:
             return result("CONFLICT", reason="same_invoice_revision_conflicts")
         histories[key][row["source_revision"]] = row
     rows = []
     for history in histories.values():
-        revisions = sorted(history)
-        for older, newer in zip(revisions, revisions[1:]):
-            if history[newer].get("supersedes_revision") != older:
-                return result("UNKNOWN", reason="invoice_supersession_unknown")
-        rows.append(history[revisions[-1]])
+        revisions = [history[n] for n in sorted(history)]
+        if not complete_revision_chain(revisions):
+            return result("UNKNOWN", reason="invoice_supersession_unknown")
+        rows.append(revisions[-1])
     if len({x["publisher_namespace"] for x in rows}) != 1:
         return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
     if len({x["currency"] for x in rows}) != 1:
@@ -126,10 +174,14 @@ def cost_total(observations: list[dict]) -> dict:
     for row in rows:
         scopes[(row["publisher_namespace"], row["economic_scope_ref"],
                 row["cost_category"], row["billing_window_ref"])].append(row)
-    if len(scopes) > 1 and any(x.get("disjoint_coverage_verified") is not True or
-                               not x.get("disjoint_coverage_witness") for x in rows):
+    if len(scopes) > 1 and (
+        any(x.get("disjoint_coverage_verified") is not True or
+            type(x.get("disjoint_coverage_witness")) is not str or
+            not x["disjoint_coverage_witness"].strip() for x in rows)
+        or len({x["disjoint_coverage_witness"] for x in rows}) != 1
+    ):
         return result("UNKNOWN", reason="billing_coverage_overlap_unproved")
-    total = Decimal(0)
+    subtotals: list[Decimal] = []
     for scoped in scopes.values():
         if any(x["basis"] == "BILLED" and x.get("settlement_verified") is not True for x in scoped):
             return result("UNKNOWN", reason="invoice_without_settlement")
@@ -137,22 +189,27 @@ def cost_total(observations: list[dict]) -> dict:
         if len(billed) > 1:
             return result("UNKNOWN", reason="overlapping_bills_unknown")
         if billed:
-            total += amount(billed[0]["value"])
+            subtotals.append(amount(billed[0]["value"]))
         elif any(x["basis"] == "BILLED" for x in scoped):
             return result("UNKNOWN", reason="invoice_without_settlement")
         else:
             return result("UNKNOWN", reason="only_estimate_or_provider_quote")
-    return result("COMPARABLE_BILLED", total)
+    total = exact_total(subtotals)
+    return (result("COMPARABLE_BILLED", total) if total is not None
+            else result("UNKNOWN", reason="inexact_cost_total"))
 
 def interval_union(intervals: list[dict]) -> dict:
-    if not intervals:
+    if type(intervals) is not list or not intervals or len(intervals) > 4096:
         return result("UNKNOWN", reason="no_intervals")
     domain = set()
+    populations = set()
     spans = []
     for row in intervals:
-        if row.get("source_current") is not True or not row.get("clock_witness") or \
-           not row.get("source_receipt_ref") or row.get("clock_domain") is None:
+        if type(row) is not dict or any(type(row.get(k)) is not str or
+            not row[k].strip() for k in ("clock_witness", "source_receipt_ref",
+            "clock_domain", "publisher_namespace", "task_ref", "attempt_ref")) or row.get("source_current") is not True:
             return result("UNKNOWN", reason="clock_source_missing")
+        populations.add((row["publisher_namespace"], row["task_ref"], row["attempt_ref"]))
         start, end = row.get("start_ms"), row.get("end_ms")
         if type(start) is not int or type(end) is not int or end < start:
             return result("UNKNOWN", reason="invalid_grounded_interval")
@@ -160,6 +217,8 @@ def interval_union(intervals: list[dict]) -> dict:
         spans.append((start, end))
     if len(domain) != 1:
         return result("NOT_COMPARABLE", reason="incompatible_clock")
+    if len(populations) != 1:
+        return result("NOT_COMPARABLE", reason="interval_population_mismatch")
     spans.sort()
     left, right = spans[0]
     total = 0
