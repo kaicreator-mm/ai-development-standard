@@ -1,0 +1,148 @@
+{
+  "protocol_version": "ai-dev-assurance/v2",
+  "owner_family": "assurance-plan",
+  "predecessor_protocol_version": "ai-dev-assurance/v1",
+  "assurance_plan_id": "ads-v416-t02-3041a1be3f13",
+  "operation_id": "t02-physical-accounting",
+  "subject_ref": "#1266",
+  "subject_identity_ref": "sha:3041a1be3f130e5cc5e676c2e56a99882adfd97c",
+  "identity_binding": "exact-sha",
+  "finding_disposition_policy": "p2-explicit-p3-optional",
+  "finding_carry_forward_policy": "unresolved-valid-findings-carry-forward",
+  "activities": [
+    {
+      "assurance_id": "T02-REVIEW",
+      "kind": "review",
+      "policy": "required",
+      "mode": "single-independent",
+      "coverage": [
+        "Physical Attempt/metric/cost exact-source normative consistency"
+      ],
+      "independence": {
+        "context": "required",
+        "model": "none",
+        "executor": "none",
+        "evidence": "required"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    },
+    {
+      "assurance_id": "T02-VALIDATION",
+      "kind": "validation",
+      "policy": "required",
+      "mode": "executable-validation",
+      "coverage": [
+        "C02,C03,C04,C05,C12 actual negative/positive cases"
+      ],
+      "independence": {
+        "context": "none",
+        "model": "none",
+        "executor": "none",
+        "evidence": "none"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    }
+  ],
+  "assurance_floor": {
+    "composition": "owner-scoped-conjunctive-floor",
+    "requirements": [
+      {
+        "requirement_id": "T02-REVIEW",
+        "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md",
+        "gate_ref": "source-bound-independent-review",
+        "policy": "required",
+        "strength_ref": "#1266:review:required"
+      },
+      {
+        "requirement_id": "T02-VALIDATION",
+        "owner_ref": "standards/VALIDATION_STANDARD.md",
+        "gate_ref": "targeted-conformance",
+        "policy": "required",
+        "strength_ref": "#1266:targeted-conformance"
+      }
+    ]
+  },
+  "concern_resolutions": [
+    {
+      "concern_id": "T02-REVIEW",
+      "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md",
+      "gate_ref": "source-bound-independent-review",
+      "baseline_requirement_ref": "T02-REVIEW",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1266",
+        "currentness_ref": "version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T02-REVIEW",
+      "currentness_ref": "version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c"
+    },
+    {
+      "concern_id": "T02-VALIDATION",
+      "owner_ref": "standards/VALIDATION_STANDARD.md",
+      "gate_ref": "targeted-conformance",
+      "baseline_requirement_ref": "T02-VALIDATION",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1266",
+        "currentness_ref": "version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T02-VALIDATION",
+      "currentness_ref": "version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c"
+    }
+  ],
+  "cross_owner_composition": {
+    "policy": "conjunctive-no-cancellation",
+    "concern_resolution_refs": [
+      "T02-REVIEW",
+      "T02-VALIDATION"
+    ],
+    "cancellation_allowed": false
+  },
+  "selected_path": {
+    "rule": "floor-or-stronger-after-valid-owner-reductions",
+    "selected_requirement_refs": [
+      "T02-REVIEW",
+      "T02-VALIDATION"
+    ],
+    "relation_to_floor": "SATISFIES_FLOOR"
+  },
+  "currentness_binding": {
+    "rule": "all-components-exact-current",
+    "subject_identity_ref": "sha:3041a1be3f130e5cc5e676c2e56a99882adfd97c",
+    "owner_authority_refs": [
+      "#1261@6338348925",
+      "#1261@6338359775",
+      "#1261@6338768231",
+      "version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c"
+    ],
+    "owner_authority_digest": "gitblob:659fcce6cc617ac8560ceb4c3e1b6004cd170ff8",
+    "proof_input_refs": [
+      "#1265@6340675602",
+      "#1265:state:done",
+      "#1275:merged",
+      "#1266:blocked_by:#1265:closed"
+    ],
+    "proof_input_digest": "gitblob:f3b2ed1b013cbffd4e886fb54eefc42a95580c88",
+    "task_pack_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/1266",
+    "task_pack_digest": "gitblob:40807b6f04b5c90c02f3f65d50f8629b11e15fff",
+    "release_decision_refs": [],
+    "release_decision_digest": "gitblob:0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc",
+    "unresolved_finding_refs": [],
+    "unresolved_finding_digest": "gitblob:0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc",
+    "binding_digest": "gitblob:64a36ef3ea3291882fe1bb46fe12eeefd5c2db4c",
+    "state": "CURRENT"
+  },
+  "aggregation": {
+    "policy": "finding-union-blocker-dominance",
+    "blocker_resolution": "unresolved-valid-blocker-dominates",
+    "majority_vote_for_correctness": false,
+    "conflict_route": "BLOCKED if source/identity unknown"
+  },
+  "completion_predicate": "Source-only focused tests and distinct independent exact HEAD Review before version-only merge."
+}
