@@ -31,7 +31,7 @@ The existing Task Issue or Task/Execution Pack MAY display a short *read-only* p
 Before **any** effect/commit: re-read exact Task Issue/native `type:task` and `state:*`, real blocked_by dependencies, source/current Task/Pack, expected integration SHA, allowed files and Review Policy; check one accepted serialized `DISPATCH_CLAIMED` for the protected key and no incompatible active/uncertain old Claim. Verify actual resource/environment and source owner permission at the effect boundary.
 
 - `state:planned`, stale source, an unconfirmed/disputed Claim, missing Pack currentness or unknown permission ⇒ STOP/HOLD before source write.
-- A Web preference or an agent saying `ROLE_CLAIMED` cannot replace Claim admission, source verification or independent Review.
+- A Web preference or an agent saying `ROLE_CLAIMED` cannot replace the existing `SINGLE_WRITER_ADMISSION`/Claim admission, source verification or independent Review.
 - If a Local physical proof is genuinely required after Web implementation, first durably record completed source, exact PR HEAD/test tuple, remaining physical evidence and valid terminal/handoff state. A different Local Agent cannot steal the same unresolved Builder Claim.
 - If the Task consists solely of GitHub docs/Schema/tests + CI, Local is **not** a new prerequisite; an independent Reviewer remains a **role separation**, not by itself a physical Build Host requirement.
 
