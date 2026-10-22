@@ -1,0 +1,12 @@
+task_id: T06
+cases:
+  - when: native dependency/readback absent or Task Claim unknown
+    outcome: BLOCKED
+  - when: role/authority missing or stale at effect boundary
+    outcome: BLOCKED
+  - when: child response ACK but actual provider receipt absent
+    outcome: UNKNOWN
+  - when: effect receipt arrives late after cancellation
+    outcome: UNKNOWN_UNTIL_RECONCILED
+  - when: required independent source review absent
+    outcome: NOT_RUN
