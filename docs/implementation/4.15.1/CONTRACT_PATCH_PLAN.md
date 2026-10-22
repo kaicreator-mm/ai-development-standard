@@ -106,3 +106,33 @@ Use synthetic task-meta measurements (two models and retries, one dirty failed A
 Retain the proposed *separate opt-in successor report wire* from R0 for schema additions, but explicitly seek Product/compatibility review before committing its name or choosing a standards PATCH with a new wire. No same-wire incompatible mutation. Keep one parent version #1261; issue-specific source owners #1258/#1259/#1198/#1206/#1260 stay linked, not cloned into duplicate Issue DAG. Source execution after lawful Review/Freeze may be split by concerns: (A) typed wire+unknown-source+correction, (B) applicability+experiment evidence, (C) timing/evolution handoff+conformance. Review current contract first; if it already covers any subitem, mark ALREADY_COVERED and do not reimplement.
 
 **No Freeze and no v4.15.1 source work authorized by this R1 draft.**
+
+
+## R2 — #1241 Plan-first / Web-first / Remaining-only Handoff scope (2026-10-22)
+
+**Status: SEVENTH PRODUCT CANDIDATE / NOT_FROZEN / NO NEW GATE / SOURCE NOT_AUTHORIZED.** #1241 was absent from the R1 six-item summary. User explicitly called this out; treat it as a separate **workflow/practice standards** concern for v4.15.1, not part of the v5 Report wire and not contingent on the new task-meta metrics.
+
+**Existing issue/owner:** [#1241](https://github.com/kaicreator-mm/ai-development-standard/issues/1241), which already has project dogfood on Shun Assistant and v4.15 S04/S05/S06. Reuse TASK_DECOMPOSITION, EXECUTION_PACK, EXECUTION_ARCHITECTURE, LOCAL_AGENT_HANDOFF, Issue/Task Pack, existing Claim/Dispatch and Review/Validation owners; [#1173](https://github.com/kaicreator-mm/ai-development-standard/issues/1173) already covers parent-child Task/evidence×environment, and #1235/#1237 source-bound recovery.
+
+### Product behavior to consider for v4.15.1
+
+1. **Plan-first (pre-source, read-only):** a simple 1–N-step table inside the existing Task Pack/Issue, with deliverable, evidence class, currently available WEB / CI / LOCAL capability, exact allowed write set and dependencies, actual currentness/Claim preflight, and disposition for each remainder. A simple Task can be 3 lines; no new file, child Issue, Review, Freeze or formal planning Gate is compulsory.
+2. **Web-first (preference, not a permission):** Web handles all *actually supported* read, contract, source, fixture, PR and CI orchestration after applicable legal Builder Claim is accepted. Lack of physical Host/real token/independent reviewer ability is evidence UNKNOWN/NOT_RUN; cannot be recast as Web PASS. When a designated independent reviewer is required, the source Builder cannot impersonate one.
+3. **Handoff only the real residual:** materialized GitHub checkpoint includes immutable source/ref, completed bounded validation tuple, scope/write-set forbidden paths, actual Claim terminal/resource/generation disposition and next eligible role, plus only missing steps. A pointer-only Local Agent trigger is generated only for unavoidable environment/credential/physical evidence; CI can be chosen when it truly covers the profile.
+4. **No concurrent protected writer:** uncertain old Claim/lease/generation or missing current authority => HOLD, not second Builder in Local or a new unproven generation. Same-key resume/handoff must follow current admission and historical recovery rules.
+5. **Quality unchanged:** existing optional/required independent Review and real Host gates remain owned by original authority. Do not infer task success from source compilation, synthetic demo, partial Handoff or step checkbox; one concern one PR still applies.
+
+### Focused norm/dogfood matrix N26–N31
+
+- N26 **WEB_ONLY**: bounded docs/schema case where Web has legal Claim and source/CI tools; no Local dispatch should be emitted.
+- N27 **WEB + CI**: Web authors source and CI covers actual targeted check with recorded SHA/job/profile; no second physical Host attempt without applicable gate.
+- N28 **WEB + LOCAL physical**: a real Host/credential/OS capability is required after Web finishes safe part; GitHub checkpoint contains completed refs and restricted remaining Local scope; Host evidence NOT_RUN before it actually executes.
+- N29 **UNKNOWN Claim**: dispatch message is schema-valid but composite admission/currentness or old key is unproven; first protected source write refused and Local handoff cannot create concurrent Claim.
+- N30 **Required independent Review**: Builder supplies exact source/diff/probes but cannot self-PASS; Reviewer receives GitHub pointer and current check evidence, not private original chat.
+- N31 **Plan simplicity**: tiny one-step change with no Local requirements does not acquire a new Task DAG, child Issue, formal Plan Freeze, independent review beyond existing Policy or unnecessary CI rerun.
+
+### Ownership, disposition and small-version boundary
+
+- Implement as one **separate bounded documentation / lightweight Task Pack or Execution Pack guidance concern** only if detailed crosswalk of §6/§11/§23/§27/§29 and LOCAL_AGENT_HANDOFF finds a real uncovered executable behavior. If current clauses suffice, prefer one example + three negative probes and record ALREADY_COVERED/EXECUTION_GAP instead of duplicated normative text.
+- This work can be planned/reviewed independently of report v5 design and does **not** cause the Report schema to incorporate execution planning or a second event/claim state machine.
+- R2 acceptance is a *prospective product scope decision*, not implementation authority or a new v4.15.1 Release Gate. Cross-project time/cost savings remain UNKNOWN until measured by actual task-meta evidence; no invented claimed percentage.
