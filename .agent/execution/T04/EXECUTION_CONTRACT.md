@@ -1,0 +1,2 @@
+# T04 JIT Execution Contract
+Owner Issue #1268 under Product/L2/DAG Freeze #1261. Exact target `version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb`. Zero upstream native blocked_by. Allowed *source implementation* only: `references/ADS_V416_APPLICABILITY_EVOLUTION.md`, `scripts/test_v416_t04_evolution.py`, `tests/fixtures/v416/t04/*`. No common standard/schema/Task Learning wire changes; no trial engine. Required independent exact-HEAD review and source execution tests before version merge. Six core JIT artifacts at this path are scheduler pack preparation.
