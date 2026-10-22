@@ -66,3 +66,43 @@ For each finite bounded public metric:
 - **Closure**: true tests on exact candidate SHA, required independent source Review, compatibility matrix, no regression in v4/v3, qualified Release and future repository integration decision. A documentation-only assertion and a simulated POST alone are insufficient.
 
 **Unresolved until independent Product/L2 review:** Is new v5 wire under standards patch 4.15.1 acceptable as *additive* with explicit negotiation, or should compatibility-owner require a different release/version identity? Is the minimal typed vocabulary sufficient for the original #1258 report comparison goal? Does v5 correction need any permitted cross-namespace delegation path? Findings route to revision of this proposal; never assume source author also supplied independent review.
+
+
+## R1 — six-issue pre-freeze contract expansion (2026-10-22)
+
+**Status: PRODUCT_SCOPE_CANDIDATE / NOT_FROZEN / NO IMPLEMENTATION CLAIM.** This section extends the R0 narrow report proposal at user direction; no v4.15.0 frozen bytes/main/Task/Gate change is authorized. All changes are prospective, source-bounded standards semantics. Existing Task Learning, GitHub report and ADS Evolution governance must be reused before adding fields.
+
+| Priority | Issue / owner | Minimal v4.15.1 standards acceptance | Out of scope |
+| --- | --- | --- | --- |
+| P1 | #1258 metrics/route/cost | Typed metric ID and comparable unit/scope/window/provider/requested-selected-resolved model source, logical/physical identity, inclusive cache rules, BILLED-vs-ESTIMATED separate costs; missing basis UNKNOWN | Collector, model router, hidden Trace in GitHub, same-wire v4 mutation |
+| P1 | #1259 failed/dirty/precommit Attempt | Truthful source-unpinned public disposition or explicit nonpublication with insufficient evidence; no fabricated HEAD SHA. Known exact subject/no verifier stays NOT_RUN/UNKNOWN | Automatic Task/Gate PASS, new canonical Attempt admission |
+| P1 | #1198 experience applicability | Evidence-bound task class/risk/env/profile/prerequisites/exclusions/counterexamples/currentness and feedback distinction PRESENTED/ACCEPTED/APPLIED/INDEPENDENTLY_CHECKED/OBSERVED_EFFECT using existing v4 feedback wherever sufficient | Task Learning v3, forced reuse of irrelevant lessons, automatic policy selection |
+| P1 | #1206 optional improvement experiment | Source-bound baseline/variant IDs, comparable cohort, independent semantic verifier, actual total cost including failed probes/rework and unknown observations, trial isolation/authority boundary; no uplift without valid comparator | Harness/optimizer implementation, mandatory A/B trials, numeric score as Release truth |
+| P2 | #1260 bounded execution phases | Observed physical operation versus declared Step/Phase, clock-source/interval union/wall and wait scope, retries vs duplicated deliveries, partial/unknown coverage; only bounded public aggregates | Universal Phase Engine, mandatory OTel/Agent SDK, private full Step/Span timeline |
+| P2, high product importance | Existing DEVELOPMENT_WORKFLOW section 8 + Task Learning v2: evolution evidence handoff | Traceable Evidence/Task Learning -> Applicability -> optional Experiment/Use Feedback -> ADS Evolution Intake -> Candidate decision with immutable source/version, owner, exclusions/contradictions, publication class, decision and next lawful Task/BUILD ref. Preserve NO_CHANGE/MORE_EVIDENCE/OPEN_ADS_INTAKE and normal Product/L2/Task/Review/Release authority | New Evolution state machine, automatic standard edits, numeric auto-promotion, hidden validation/CI waive, automatic Domain Package activation |
+
+**Specific sixth-item rule:** existing v4.8-era normative DEVELOPMENT_WORKFLOW section 8 already owns classification and promotion. The only potential new contract is a minimal machine-reconstructible source-qualified evidence handoff, NOT a new evolution governance engine. Where current Task Learning v2 and section 8 refs already suffice, a short reference/example and negative fixture are preferred over a new schema.
+
+### Additional falsification oracles N15–N25 (language-independent)
+
+- N15 dirty or precommit Attempt with no immutable source: last HEAD is not its tested source; no fabricated 40-hex SHA or Gate PASS.
+- N16 true exact source with zero actual verifier invocation: verifier truth NOT_RUN/UNKNOWN, never a fake checker.
+- N17 external verifier accepted ACK but lost terminal response: evidence UNKNOWN, not PASS.
+- N18 parent/child model/tool spans overlap or clock basis incompatible: union of well-grounded intervals only, otherwise UNKNOWN.
+- N19 old v4 reader sees future report profile: refuse unsupported schema; historical v3 Work Item/Event and v4 report bytes unchanged.
+- N20 experience applies by keyword but fails tech/risk/host exclusion: NOT_APPLICABLE/INSUFFICIENT_EVIDENCE, not an auto recommendation.
+- N21 procedure merely presented, never applied: no successful reuse or effect claim.
+- N22 procedure applied with verifier absent or negative: NOT_PROVEN or negative result, not effective.
+- N23 baseline 1 sample vs candidate 1 cheap success plus failed expensive probes: total cost/denominators prevent unjustified ROI.
+- N24 phase labeled TEST in Agent prose without actual native tool/Host observation: self-reported, not observed 120s testing.
+- N25 numeric score or one successful probe attempts evolution promotion/Package activation: existing Evolution classifier yields NO_CHANGE/MORE_EVIDENCE or explicit OPEN_ADS_INTAKE via normal owner, never self-authorized mutation.
+
+### One executable standards-only vertical slice
+
+Use synthetic task-meta measurements (two models and retries, one dirty failed Attempt), GitHub-style source records, a **GitHub-only** synthetic Tally reducer for experience applicability, feedback, controlled baseline/probe comparisons and evolution-source handoff. Any language suffices. Test public formats and normative reduction; never call toy simulation native task-meta/Tally/runtime PASS. Include realistic misbindings, negative traces, corrections, version/source drift and missing evidence. Real #1210/#1231 remain separate NOT_RUN.
+
+### Compatibility and staged work
+
+Retain the proposed *separate opt-in successor report wire* from R0 for schema additions, but explicitly seek Product/compatibility review before committing its name or choosing a standards PATCH with a new wire. No same-wire incompatible mutation. Keep one parent version #1261; issue-specific source owners #1258/#1259/#1198/#1206/#1260 stay linked, not cloned into duplicate Issue DAG. Source execution after lawful Review/Freeze may be split by concerns: (A) typed wire+unknown-source+correction, (B) applicability+experiment evidence, (C) timing/evolution handoff+conformance. Review current contract first; if it already covers any subitem, mark ALREADY_COVERED and do not reimplement.
+
+**No Freeze and no v4.15.1 source work authorized by this R1 draft.**
