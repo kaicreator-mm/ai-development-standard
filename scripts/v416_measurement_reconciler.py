@@ -67,6 +67,8 @@ def metric_total(observations: list[dict]) -> dict:
         return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
     if len({row["task_ref"] for row in revisions.values()}) != 1:
         return result("NOT_COMPARABLE", reason="cross_task_population_unproved")
+    if len({row["window_id"] for row in revisions.values()}) != 1:
+        return result("UNKNOWN", reason="window_nonoverlap_unproved")
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for row in revisions.values():
         groups[tuple(row[f] for f in PHYSICAL + METRIC_SCOPE)].append(row)
@@ -124,8 +126,13 @@ def cost_total(observations: list[dict]) -> dict:
     for row in rows:
         scopes[(row["publisher_namespace"], row["economic_scope_ref"],
                 row["cost_category"], row["billing_window_ref"])].append(row)
+    if len(scopes) > 1 and any(x.get("disjoint_coverage_verified") is not True or
+                               not x.get("disjoint_coverage_witness") for x in rows):
+        return result("UNKNOWN", reason="billing_coverage_overlap_unproved")
     total = Decimal(0)
     for scoped in scopes.values():
+        if any(x["basis"] == "BILLED" and x.get("settlement_verified") is not True for x in scoped):
+            return result("UNKNOWN", reason="invoice_without_settlement")
         billed = [x for x in scoped if x["basis"] == "BILLED" and x.get("settlement_verified") is True]
         if len(billed) > 1:
             return result("UNKNOWN", reason="overlapping_bills_unknown")
