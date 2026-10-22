@@ -1236,6 +1236,204 @@
         "total": null,
         "reason": "invalid_grounded_interval"
       }
+    },
+    {
+      "id": "C03_cross_publisher_alias_unknown",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        },
+        {
+          "publisher_namespace": "collector:B",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "other",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "cross_publisher_alias_unproved"
+      }
+    },
+    {
+      "id": "C02_reverse_revision_lineage",
+      "kind": "metrics",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 2,
+          "source_digest": "d2",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "15",
+          "supersedes_revision": 1
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "task_ref": "#1266",
+          "attempt_ref": "attempt:A",
+          "adapter_id": "adapter:1",
+          "provider_run_ref": "provider:sessionA",
+          "physical_attempt_ref": "physical:1",
+          "logical_call_ref": "logical:1",
+          "observation_id": "o1",
+          "source_revision": 1,
+          "source_digest": "d1",
+          "metric_id": "token:input",
+          "registry_revision": "registry:v1",
+          "unit": "token",
+          "window_id": "interval:A",
+          "source_current": true,
+          "source_receipt_ref": "qualified:w1",
+          "window_current": true,
+          "aggregation_role": "LEAF",
+          "measurement_kind": "COUNTER_DELTA",
+          "value": "10"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_OBSERVATION",
+        "total": "15",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_reverse_invoice_revision",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 2,
+          "source_digest": "c2",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "13",
+          "supersedes_revision": 1
+        },
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "COMPARABLE_BILLED",
+        "total": "13",
+        "reason": ""
+      }
+    },
+    {
+      "id": "C05_cross_publisher_bills_unknown",
+      "kind": "costs",
+      "rows": [
+        {
+          "publisher_namespace": "collector:A",
+          "economic_scope_ref": "scope:1",
+          "receipt_ref": "invoice:1",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "c1",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        },
+        {
+          "publisher_namespace": "collector:B",
+          "economic_scope_ref": "scope:B",
+          "receipt_ref": "invoice:B",
+          "currency": "USD",
+          "cost_category": "inference",
+          "billing_window_ref": "billing:1",
+          "basis": "BILLED",
+          "source_revision": 1,
+          "source_digest": "cB",
+          "source_current": true,
+          "source_receipt_ref": "qualified:invoice",
+          "population_complete": true,
+          "settlement_verified": true,
+          "value": "12.5"
+        }
+      ],
+      "expected": {
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "cross_publisher_alias_unproved"
+      }
     }
   ]
 }

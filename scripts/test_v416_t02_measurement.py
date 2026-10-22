@@ -16,7 +16,7 @@ class T02SourceAccountingTests(unittest.TestCase):
         cls.cases = json.loads(FX.read_text(encoding="utf-8"))["cases"]
 
     def test_unique_source_contract_coverage(self):
-        self.assertEqual(len(self.cases), 30)
+        self.assertEqual(len(self.cases), 34)
         ids = [x["id"] for x in self.cases]
         self.assertEqual(len(ids), len(set(ids)))
         for prefix in ("C02_", "C03_", "C04_", "C05_", "C12_"):
