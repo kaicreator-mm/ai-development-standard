@@ -78,8 +78,6 @@ def metric_total(observations: list[dict]) -> dict:
                      "source_revision", "source_digest", "measurement_kind")
         if not verified(row, required) or row.get("window_current") is not True:
             return result("UNKNOWN", reason="source_or_window_unproved")
-        if row.get("aggregation_role") != "LEAF":
-            return result("UNKNOWN", reason="parent_and_leaf_population_ambiguous")
         if type(row["source_revision"]) is not int or row["source_revision"] < 1:
             return result("UNKNOWN", reason="bad_source_revision")
         if amount(row.get("value")) is None:
@@ -93,6 +91,8 @@ def metric_total(observations: list[dict]) -> dict:
                 return result("CONFLICT", reason="one_observation_revision_conflicting_digest")
             continue
         seen[key] = row
+    if any(row.get("aggregation_role") != "LEAF" for row in seen.values()):
+        return result("UNKNOWN", reason="parent_and_leaf_population_ambiguous")
     revisions: dict[tuple, dict] = {}
     histories: dict[tuple, list[dict]] = defaultdict(list)
     for row in seen.values():
