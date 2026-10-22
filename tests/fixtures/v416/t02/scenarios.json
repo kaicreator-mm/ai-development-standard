@@ -361,9 +361,9 @@
         }
       ],
       "expected": {
-        "status": "COMPARABLE_OBSERVATION",
-        "total": "13",
-        "reason": ""
+        "status": "NOT_COMPARABLE",
+        "total": null,
+        "reason": "cross_task_population_unproved"
       }
     },
     {
