@@ -1,0 +1,12 @@
+task_id: T01
+failures:
+  - when: native dependent Task pin, source or Claim unclear
+    outcome: BLOCKED
+  - when: source-null canonical dispatch, verified PASS, feedback or notice
+    outcome: SCHEMA_REJECT
+  - when: wrong native correction target or owner source
+    outcome: UNVERIFIED_OR_DISPUTED
+  - when: public projection not source-authorized
+    outcome: WITHHOLD
+  - when: legacy v4-only reader sees v5
+    outcome: UNSUPPORTED_AND_UNKNOWN_DENOMINATOR
