@@ -65,6 +65,8 @@ def metric_total(observations: list[dict]) -> dict:
         revisions[key] = history[-1]
     if len({row["publisher_namespace"] for row in revisions.values()}) != 1:
         return result("NOT_COMPARABLE", reason="cross_publisher_alias_unproved")
+    if len({row["task_ref"] for row in revisions.values()}) != 1:
+        return result("NOT_COMPARABLE", reason="cross_task_population_unproved")
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for row in revisions.values():
         groups[tuple(row[f] for f in PHYSICAL + METRIC_SCOPE)].append(row)
