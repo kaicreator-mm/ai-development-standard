@@ -1,0 +1,106 @@
+# ADS v4.16.0 — R7 L2 Architecture Delta: Qualified Behavior Transitions and v5 Projection
+
+**State:** \`L2_DELTA_CANDIDATE / INDEPENDENT_REVIEW_NOT_RUN / L2_FREEZE_NOT_RUN\`. Parent: R7 Product delta + [#1277](https://github.com/kaicreator-mm/ai-development-standard/issues/1277), owner [#1261](https://github.com/kaicreator-mm/ai-development-standard/issues/1261). **Base:** \`version/v4.16@3041a1be3f130e5cc5e676c2e56a99882adfd97c\` (no edits to frozen R4/R5/R6, old schema, completed Task source).
+
+## 1. Source-owner inventory and conflict guards
+
+| Semantic owner | Actual immutable inspected source | Decision |
+| --- | --- | --- |
+| Observed Tool/Step/Span/Attempt/clock/epistemic provenance | \`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md\` §10, blob \`dac829232919d495faf8af2d416f4eaaf48f66bf\`; \`standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md\` blob \`3dddb3b5b81f44491b198a5496ba70f64942a561\` | REUSE, not another collector family |
+| Private capture/adapter/OTel | \`references/AGENT_EXECUTION_METADATA_COLLECTION_REFERENCE.md\` blob \`c3cdc8bd26912f6cd12f2b379fad147a93762af2\` | Reuse as nonnormative guidance; task-meta owns implementation |
+| Task Learning / recurrence / Evolution | \`schemas/task-learning-v2.schema.json\` blob \`a7547c2e29bc7551cc066f776d48e3926456022c\`, \`standards/DEVELOPMENT_WORKFLOW.md\` §8; T04 \`references/ADS_V416_APPLICABILITY_EVOLUTION.md\` blob \`d7c0a0c816f2074e4450e2c062b1474d11d3b230\` | REUSE; no new Task Learning fields/lifecycle |
+| Strict public v5 Report | \`schemas/github/v4.16/report.schema.json\` blob \`7478313cc006162432649d734e59c5cd77db5106\`, \`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md\` §16.7 | **Gap:** strict \`additionalProperties=false\` at \`$defs.summary\`; typed behavioral projection not expressible without explicit additive schema member |
+| v3/v4 historical schemas | v4 blob \`88c96dda7f8bcaabe1766a807599ed15bbeae2de\`; frozen version source and original v3 | IMMUTABLE, original reader semantics retained |
+| T02 metric/clock/cost source reducer | Issue #1266 and PR #1276 *candidate*, not yet integrated | INPUT ONLY after source qualification; no shared concurrent write |
+| T03 native GitHub structured validator/reader | Issue #1267 existing, blocked by T02 | Owns parser, history and consumer-level source currentness, including added v5 field only after T09 accepted |
+
+## 2. Logical data contract — strict conceptual identity and evidence
+
+Normative semantics belong in the existing §10 owner, with a focused reusable behavior reference; **the following logical records do not automatically become separate ADS JSON Schemas or new \`ai-dev:event\` types.** Projects implement private records as needed and preserve source identities; any public projection is governed by §4.
+
+| Type | Mandatory semantic fields before a **comparable** conclusion | Not allowed |
+| --- | --- | --- |
+| \`ObservedOperation\` | source namespace/event ID and revision, physical/logical Attempt/ref, adapter+mapping revision, \`observed_at\` clock domain, evidence class and coverage; declared Task/Dispatch correlation if actually accepted | no source-less observed facts; a tool call or planned step is not a selected Version |
+| \`StrategyCandidateRef\` | owner scope, source-qualified stable candidate/version fingerprint, candidate-lineage or equivalence evidence, applicable constraint/technique/verifier objective revision; unknown alias remains distinct | Agent narrative/branch label/model guess alone is not equivalence |
+| \`VersionState\` | \`state_id\` scoped by owner+Task/Attempt and a source-qualified immutable **selected** source/tree/ChangeSet fingerprint; \`candidate_ref\` plus selection event/ref, applicable baseline, observed/unknown eligibility and currentness | not 1 git commit = 1 version; unselected working tree/declared plan cannot become selected state |
+| \`Transition\` | \`transition_id\`, \`before_state_ref\`, \`after_state_ref\`, source-qualified selection/ordering edge with witness, same comparable Task/subject scope, annotator/classification version, causal/source constraints | GitHub commit timestamp or ingestion order alone is not causality; parallel branches need partial order |
+| \`VerifierOutcome\` | independent actual verifier ref, evaluated exact source/currentness and acceptance scope, pass/fail/skipped/unknown, observed toolchain+window/coverage, benchmark/cohort identity; do not substitute self-report | successful tool result, LLM score or unrelated Task Gate is not acceptance proof |
+
+**Identification:** stable object IDs may use a project-defined qualified opaque string but MUST bind original source namespace and immutable source revision/digest; content hash equality without candidate selection is insufficient. When a chosen VersionState cannot be reconstructed from original material, outcome is \`UNRESOLVED\`; do not back-assign future commit SHA to previous dirty execution. Changed source revisions generate new source-bound facts, not silent rewrite. Native GitHub ref values and SHA aliases must be resolved to full immutable values before acting as evidence. Exact hash/tree equivalence is not *strategic* equivalence by itself.
+
+### 2.1 Annotation and disagreement
+
+- Per **claim** \`evidence_class\` is \`OBSERVED|SELF_REPORTED|INFERRED|UNKNOWN\` (existing §10 vocabulary). Behavioral intent is at best source-bound self-report or inference unless an independent external artifact/decision concretely establishes the **external** selection fact; no instrumented read of private thought is required or permissible.
+- Optional labels \`action_category\`, \`intent_label\`, \`pivot_flag\`, \`revisit_flag\` are **annotations**, not authoritative workflow state or Gate. Retain classifier/annotation schema revision, emitter (human/model/rule), method version, raw evidence refs, contradictory classifications and review/adjudication state. A decimal confidence is **not** an objective probability unless an actual calibration source/cohort is qualified; absence ⇒ \`UNKNOWN\`.
+- Two annotators can disagree about a transition with identical raw source; preserve both signed/source refs and \`DISPUTED/UNKNOWN\` resolution (do not majority-vote into accepted Pivot). Source-owner override must cite the actual authority/independent evidence and immutable new revision; old labels remain as historical evidence.
+- Partial capture, hidden candidates or unknown intermediate versions cannot create a confident \`NO_PIVOT\` or \`NO_REVISIT\`; absence of evidence is not zero.
+
+## 3. Pivot, Revisit and explicit counterexamples
+
+**Pivot (supported):** a source-witnessed transition between distinct qualified \`VersionState\` selections which changes a **material strategy dimension** (technical approach, verification method or actual governing constraint) and has (a) real before/after candidate identities, (b) observable selection/commit/decision evidence, (c) non-inferred method/label version and (d) no counter-evidence classifying it as mere retry, rollback, failure recovery or local parameter/code polish. A Pivot label based solely on Agent self-report is \`SELF_REPORTED/UNKNOWN\`, not established as \`OBSERVED\`.
+
+**Revisit (supported):** for states A→B→A′, (1) A/B/A′ selected and causally ordered within the qualified scope, (2) A and A′ have a **source-qualified original candidate/strategic equivalence relation** (exact snapshot equivalence alone is insufficient), (3) B shows real nontrivial departure from candidate A, (4) A′ is **new re-selection** of historically visited candidate after B (not replay/rollback/recovery mechanism), and (5) the relevant intermediate records are complete enough to rule out spurious neighboring/parallel order. Revisit can be labelled UNKNOWN even when all three source snapshots are readable but the selection/intent lineage is missing.
+
+**Counterexamples MUST not be counted:** identical tool command delivered twice; two physical retries under one strategy; restoring failed machine state or recovering lost ACK; automatic git rollback of a bad edit; a commit with same diff but no explicit candidate selection; branch merge where parents are concurrent without verified order; source timestamp order without common clock; annotator disagreement without adjudication; incomplete trace with missing state B. \`ROLLBACK/RECOVERY/LOCAL_REVISION/UNRESOLVED\` are **interpretation classes**, not new \`state:*\` or GitHub Gate status.
+
+## 4. v5 GitHub-only public projection — selected dialect and security
+
+### 4.1 Precise proposed delta, not yet authorized source
+
+Public owner remains **existing** \`ads/github/v5\` \`kind: report\`, \`report_kind=EXECUTION_SUMMARY\`. T09 proposes **one optional** \`data.behavior_evidence\` member of \`$defs.summary.properties\`, \`additionalProperties=false\` retained, with a strict local \`$defs.behavior_evidence\` shape and nested strict objects. Historical v5 summary payloads lacking the optional member MUST stay shape valid. \`EXPERIENCE_USE_FEEDBACK\` and \`EXECUTION_CORRECTION\` retain exact current field/meaning; v3 Work Item/Intent/Event and v4.15 strict Report are unchanged.
+
+**Minimum bounded field design** (T09 converts to Draft2020-12 with explicit max counts/lengths and negative tests, not arbitrary invented keys):
+- \`definition_revision\`, \`annotation_revision\` (qualified immutable semantic dialect/ontology fingerprint), \`method_source_refs[]\` / \`classifier_source_refs[]\` where source-safe; \`evidence_class\` from existing four values; \`coverage\` with \`COMPLETE|PARTIAL|UNKNOWN\`, missingness/sampling/refusal reason.
+- Explicit \`task_class_ref\`, \`cohort_revision_ref\`, \`baseline_ref\`, \`verifier_scope_ref\`, \`observation_window_ref\`, currency/clock/method comparable flags as warranted. \`eligible_denominator\` nonnegative integer or \`null\` UNKNOWN; \`observed_denominator\` nonnegative integer or \`null\`; \`pivot_count\` and \`revisit_count\` each nonnegative integer or \`null\`. Non-null counts are permitted only with actual qualified, complete population and successful comparability preflight **outside Schema**; \`0\` means witnessed eligible zero, not missing publisher. Source-only Schema may enforce cross-field denominator bounds but cannot prove GitHub owner/coverage/permission or source receipt truth.
+- Optional **bounded public** \`transition_evidence_refs[]\` and \`candidate_lineage_refs[]\` only when individually \`PUBLISHABLE\` by source owner and nonsensitive; do not publish raw strategy content, private Prompt, rejected Tool arg, human private trace, hidden grading or unredacted document/URL. \`unknown_reason\` and \`disagreement_status\` preserve \`UNKNOWN/DISPUTED\`. An absent \`behavior_evidence\` does **not** prove zero behavioral transitions.
+- A public digest/watermark/coverage receipt and actual native GitHub owner/Issue/Task/Attempt identity must be independently resolved with §16.7 before any numeric/quality conclusion. A Source-only fixture that says \`PUBLISHABLE\` does not make it authorized.
+
+**Compatibility authority check (critical):** currently v5 only exists in \`version/v4.16\` source and is not yet adopted as immutable main v4.16. Adding an **optional** typed member to the same future Report-v5 Schema MAY qualify as a pre-adoption minor source addition, but cannot silently change validity of existing positive v5 instances, or cause a v5-old pinned reader to accept unrecognized keys. A v5-old reader seeing a post-R7 v5-new report must reject it as \`UNSUPPORTED\` under its effective source/schema pin and leave population coverage \`UNKNOWN\`; a new reader may parse both old-v5 and new-v5 using the actual immutable producer pin/protocol, rather than treating missing new field as observed zero. If actual adopted v5 instance/source exists outside qualified pre-adoption tests, **STOP and escalate** for an explicitly versioned successor: no in-place contract change after qualified adoption. This requires independent L2 approval even though the member is optional.
+
+### 4.2 Consumer currentness / eligibility, no new authority
+
+ADS T03 extended source reader must: (1) read native owning Issue/PR comment identity and full page coverage, (2) select actual \`ads/github/v5\` and immutable source-dialect profile per original publication, (3) validate shape and its known/unknown behavioral extension, (4) resolve owner permission, publication clearance and source IDs, (5) only emit \`COMPARABLE\` when candidate/transition + verifier/denominator/provenance are qualified and current; otherwise \`UNKNOWN/INSUFFICIENT_EVIDENCE/UNSUPPORTED\`. Shape validity **never** establishes actual Pivot, accepted GitHub Claim, independent grader verdict, runtime Experiment adoption or release authority.
+
+When GitHub comments for old v4/v5 coexist, never parse v5 into v4; never derive cross-profile denominator from only supported subset. Existing v5 correction publisher-vs-target rules preserved. Task Learning v2 may carry safe qualified **reference** to public behavior report using existing \`source_test_validation_review_refs\` and \`known_limitation_refs\`; **do not** add fields or rewrite frozen v2 schema.
+
+## 5. Exact successor Task DAG + writeset and gate plan
+
+| Task | Dependency | Allowed source-only write-set | Required conformance | Review |
+| --- | --- | --- | --- | --- |
+| **T08** (NEW) | Frozen R7 successor & Task DAG admission only | \`references/ADS_V416_BEHAVIOR_TRANSITIONS.md\`, narrow \`standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md\` **§10-only** if normative text required, \`scripts/test_v416_t08_behavior.py\`, \`tests/fixtures/v416/t08/*\` | B01–B08 semantics, counterexamples, classifier disagreement and observed vs self-report | **required** independent exact-head source Review |
+| **T09** (NEW) | T08 accepted/merged | \`schemas/github/v4.16/report.schema.json\` **bounded additive member only**, Protocol §16.7 scoped behavior projection, \`scripts/test_v416_t09_behavior_report.py\`, \`tests/fixtures/v416/t09/*\` | B09–B12 v5 optional+privacy+denominator+old-v5/old-v4 parser compatibility, strict official Schema | **required** independent exact-head source Review |
+| **T03** (existing, amend task source only) | T02 **and** T09 | Existing T03 parser/tests/readback-only files; no v5 Schema edits; fresh v3/v4/v5-old/v5-new mixed reader compatibility and native permission negatives | Preserve prior C01,C07–C09 plus B08–B12 end-to-end source readback, no shape⇒authorization | **required** independent exact-head source Review |
+| **T07** (existing, amend task scope only) | T03,T04,T05,T06, with T08/T09 transitive | Existing version closure write set; integrated C01–C16 plus B01–B12 / Agent G tests, RQ including unchanged v4.15 predecessor | Independent composed version Review, RQ, qualified real external \`NOT_RUN\` | **required** independent integrated Review + release owner decision |
+
+**Edges:** original six native edges remain: T01→T02, T02→T03, T03→T07, T04→T07, T05→T07, T06→T07. Add exactly **two**: T08→T09, T09→T03. 9 nodes, 8 edges, acyclic and transitively reduced given direct edges. **Order:** R7 Product/L2 independent source Review → explicit Product + L2 delta Freeze → successor 9-Task DAG candidate, independent DAG Review and explicit Freeze → real two GitHub Task Issues and native edges POST/GET both directions → Builder Claims/source PRs/Review → T07 fresh integrated RQ. Existing T02 source Builder already terminal/current Validator reservation; do not repin or edit its Task/PR under R7 without evidence.
+
+**Write isolation:** T08 writes only focused behavior source; T09 writes v5 schema & §16.7; T03 writes parser after both T02 and T09 source Task terminal; only a single source writer may own the common \`GITHUB_AGENT_INTERACTION_PROTOCOL.md\` at a time. T08→T09 serializes common protocol updates. Public v5-old/new mutation requires official Schema test and fresh exact-source Review. Existing accepted T01/T04/T05/T06 source Review remains historical for its original SHA; full integration testing occurs at T07 (not all prior PRs reopened by fiat). Frozen R4/R5/R6 remain unmodified.
+
+## 6. Falsifiable acceptance matrix B01–B12 (planned, NOT_RUN)
+
+| Case | Source input | Qualified expected | Forbidden inference |
+| --- | --- | --- | --- |
+| B01 | instrumented Tool operation / git commit but no selected strategy VersionState | \`NO_SELECTED_VERSION/UNKNOWN\` | one command or commit ⇒ new version |
+| B02 | immutable chosen source/tree and witnessed selection/candidate | one VersionState | mutable branch-as-current proof |
+| B03 | A→B with documented changed actual technical strategy & verifier scope | Pivot supported at observed/evidence level | rename/log narrative proves intent |
+| B04 | A→B→A′ with witnessed historical-equivalent candidate, material intervening B and re-selection | Revisit supported | same code SHA/automatic rollback ⇒ Revisit |
+| B05 | duplicate delivery/retry, rollback, crash recovery, same diff/no reselect | no *supported* Pivot/Revisit | false positives via raw commits |
+| B06 | two concurrent branches with uncertain causal ordering or missing intermediate B | \`UNKNOWN/NOT_COMPARABLE\` | sort by ingested_at |
+| B07 | two annotators disagree, one self-reported private intent | retain both disputed/unknown provenance | majority-vote or fake observed intent |
+| B08 | different verifier, task/risk/cohort, source coverage and censored trials | \`NOT_COMPARABLE\`, missing denominator UNKNOWN | cross-Task Gate PASS = comparable score |
+| B09 | unchanged old v5 EXECUTION_SUMMARY + feedback/correction schemas | still accepted under qualified exact source | accidental new required public field |
+| B10 | new v5 optional behavior_evidence with complete public source refs, qualified cohort & nonnegative counts | structurally accepted, **not** source-authorized by shape | declared PUBLISHABLE means permission |
+| B11 | negative extra keys/raw private trace/unbound transition refs, counts>denominator/missing population | schema rejection or consumer UNKNOWN as applicable | private credential/prompt leak or fabricated zero |
+| B12 | v5-old reader sees v5-new, v4 reader sees v5, mixed v4/v5 Issue, correction across incompatible profiles | UNSUPPORTED/UNKNOWN source-scoped | reinterpret new wire/claim full denominator |
+
+Each planned case must later specify exact input source/blob, source namespace, bounded read set, expected behavior, missingness/coverage, publisher visibility, effect limitations and real executable official tests. No selected python version is a semantic requirement; CPython 3.14 is an acceptable test runner.
+
+## 7. R7 independent L2 reviewer checklist / decision
+
+- Check Product P-R7-01..10 ↔ L2 §2–§6 coverage, immutable source identity vs classification/intent evidence, source-data and public projection privacy, nonce/duplicate/branch ordering, gap/refusal semantics.
+- Challenge self-reported strategy equivalence, percent improvement, missing denominator, unqualified cross-agent benchmark and conflict; try B01–B12 counterexamples with actual source owners.
+- Verify v5 strict \`additionalProperties=false\` owner, optional member and old-v5/new-v5 exact pin compatibility; separate Schema shape from native permission/Verifier authority. Confirm v4/v3 and Task Learning v1/v2 bytes unaffected and 3 existing report kinds unchanged.
+- Check successor DAG 9 nodes/8 edges, correct existing T02/T03/T07 Task owner amendments, disjoint write sets and no early claims; never treat this R7 planning PR as authorization to implement a public schema or create native edges.
+- Explicitly return \`P0/P1/P2\`, \`PRODUCT_SCOPE_READY\`, \`L2_DESIGN_READY\`, \`COMPAT_DECISION\`, \`R7_DELTA_FREEZE_ELIGIBLE=YES|NO\`; report unknown source adoption if unverified.
+
+**Product/L2 freeze remains NOT_RUN** until a distinct independent Reviewer exact-HEAD PASS and two explicit owner decisions, then the approved R7 successor scope (not the old frozen bytes) becomes operative for a separate reviewed DAG amendment.
