@@ -1,0 +1,310 @@
+{
+  "schema": "ads/v416-t04-source-oracle/v1",
+  "scope": "source-only-no-causal-ROI-or-automatic-promotion",
+  "C11": [
+    {
+      "id": "C11_complete_scoped_comparison",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "COMPARABLE_OBSERVATION"
+    },
+    {
+      "id": "C11_missing_failed_trials",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": false,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_missing_host_cost",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": false,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_duplicate_invoice_estimate",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": false,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_mismatched_verifier",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": false,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_censored_denominator",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": false,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_selection_bias",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": false,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_cross_currency",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": true,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": false,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    },
+    {
+      "id": "C11_bad_window",
+      "input": {
+        "cohort_matched": true,
+        "verifier_matched": true,
+        "window_matched": false,
+        "denominator_complete": true,
+        "all_outcomes_included": true,
+        "source_costs_complete": true,
+        "disjoint_accounting": true,
+        "comparable_currency": true,
+        "selection_bias_controlled": true,
+        "baseline_total": 125,
+        "variant_total": 105
+      },
+      "expected": "UNKNOWN"
+    }
+  ],
+  "C13": [
+    {
+      "id": "C13_verified_applicable",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": true,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": true,
+        "exclusion_present": false
+      },
+      "expected": "APPLICABLE_EVIDENCE"
+    },
+    {
+      "id": "C13_stale_profile",
+      "input": {
+        "task_profile_current": false,
+        "matched_domain": true,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": true,
+        "exclusion_present": false
+      },
+      "expected": "MORE_EVIDENCE"
+    },
+    {
+      "id": "C13_domain_mismatch",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": false,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": true,
+        "exclusion_present": false
+      },
+      "expected": "MORE_EVIDENCE"
+    },
+    {
+      "id": "C13_toolchain_mismatch",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": true,
+        "matched_toolchain": false,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": true,
+        "exclusion_present": false
+      },
+      "expected": "MORE_EVIDENCE"
+    },
+    {
+      "id": "C13_unwitnessed_counterexample",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": true,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": false,
+        "exclusion_present": false
+      },
+      "expected": "MORE_EVIDENCE"
+    },
+    {
+      "id": "C13_exclusion_veto",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": true,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": true,
+        "counterexample_checked": true,
+        "exclusion_present": true
+      },
+      "expected": "NOT_APPLICABLE"
+    },
+    {
+      "id": "C13_no_independent_verifier",
+      "input": {
+        "task_profile_current": true,
+        "matched_domain": true,
+        "matched_toolchain": true,
+        "source_qualified": true,
+        "independent_verifier": false,
+        "counterexample_checked": true,
+        "exclusion_present": false
+      },
+      "expected": "MORE_EVIDENCE"
+    }
+  ],
+  "C14": [
+    {
+      "id": "C14_project_defect",
+      "classification": "PROJECT_DEFECT",
+      "expected": "ROUTE_PROJECT"
+    },
+    {
+      "id": "C14_agent_defect",
+      "classification": "AGENT_EXECUTION_DEFECT",
+      "expected": "ROUTE_EXECUTION"
+    },
+    {
+      "id": "C14_env_defect",
+      "classification": "ENVIRONMENT_OR_TOOL_DEFECT",
+      "expected": "ROUTE_ENVIRONMENT"
+    },
+    {
+      "id": "C14_project_specific",
+      "classification": "PROJECT_SPECIFIC_REQUIREMENT",
+      "expected": "ROUTE_PROJECT_SPECIFIC"
+    },
+    {
+      "id": "C14_friction_unknown",
+      "classification": "STANDARD_FRICTION_CANDIDATE",
+      "expected": "MORE_EVIDENCE"
+    },
+    {
+      "id": "C14_ads_candidate_source_only",
+      "classification": "ADS_EVOLUTION_CANDIDATE",
+      "expected": "OPEN_ADS_INTAKE"
+    }
+  ],
+  "publication": [
+    {
+      "id": "C14_publishable",
+      "publication_class": "PUBLISHABLE",
+      "owner_cleared": true,
+      "expected": "PUBLISH_MINIMAL"
+    },
+    {
+      "id": "C14_restricted",
+      "publication_class": "RESTRICTED",
+      "owner_cleared": true,
+      "expected": "WITHHOLD"
+    },
+    {
+      "id": "C14_no_owner_clearance",
+      "publication_class": "PUBLISHABLE",
+      "owner_cleared": false,
+      "expected": "WITHHOLD"
+    },
+    {
+      "id": "C14_missing_class",
+      "publication_class": null,
+      "owner_cleared": false,
+      "expected": "WITHHOLD"
+    }
+  ]
+}
