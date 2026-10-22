@@ -25,8 +25,10 @@ The existing structured-interaction workflow now directly invokes all seven
 accepted standalone v4.15 suites. Full-history checkout is necessary for their
 source-owned immutable ancestry checks. The workflow keeps contents:read and
 the existing Python dependency/toolchain setup; the existing verify-standard
-workflow remains unchanged. The manifest registers source schemas, executable
-checks, fixture/helper assets and implementation evidence separately. Inventory
+workflow remains unchanged. The manifest registers source schemas and executable
+checks in their existing sections; fixture/helper assets and implementation
+evidence are supplemental references. The twelve existing inventory section
+names remain unchanged, with no new discovery table. Inventory
 presence is not an assertion that every historical proposal is adopted.
 
 ## Finding dispositions retained for exact-source independent Review

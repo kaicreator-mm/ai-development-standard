@@ -16,6 +16,7 @@
       "python scripts/test_v415_artifact_acceptance.py",
       "python scripts/test_v415_bounded_source_repair.py",
       "python scripts/test_v49_role_execution_profile.py",
+      "python scripts/test_v49_authority_state_registry.py",
       "python scripts/test_v49_gate_currentness.py",
       "python scripts/test_v49_release_applicability.py",
       "python scripts/test_protocol_schemas.py",
