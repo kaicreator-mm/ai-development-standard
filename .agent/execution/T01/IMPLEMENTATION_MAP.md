@@ -1,0 +1,2 @@
+# T01 v5 source implementation
+Start from exact frozen v4 schema blob 88c96dda7f8bcaabe1766a807599ed15bbeae2de at schemas/github/v4.15/report.schema.json. Preserve it byte-identical. Create new v5 report Schema, add isolated v5 normative subsection to protocol only, deterministic JSON Schema Draft 2020-12 test+fixture. Do not change v3 Work Item/Event wire; do not emulate a real source authorization by shape-valid token. Later T02 owns physical/cost reconciliation, T03 owns mixed-reader implementation and actual full window handling.

@@ -1,0 +1,21 @@
+task_id: T01
+scope: source-only
+tests:
+  - id: C01
+    state: NOT_RUN
+    test: v4 and v3 byte compatibility plus explicit v5 opt-in and unknown denominator
+  - id: C06
+    state: NOT_RUN
+    test: collector-only unpinned summary and forbidden canonical source-null
+  - id: C07
+    state: NOT_RUN
+    test: correction own SHA vs native target original SHA null
+  - id: C08
+    state: NOT_RUN
+    test: unrelated later SHA fails; matched source-association revision
+  - id: C09
+    state: NOT_RUN
+    test: wrong issue namespace profile or digest correction
+  - id: C10
+    state: NOT_RUN
+    test: authorization/privacy class, fail closed

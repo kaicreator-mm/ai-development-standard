@@ -1,0 +1,30 @@
+pack_id: ads-v416-t01-jit-6d147eac6c86
+task_id: T01
+repository: kaicreator-mm/ai-development-standard
+version: v4.16.0
+base_sha: 6d147eac6c86eff620d3695a46ccbb3be452debb
+task_pack_ref: https://github.com/kaicreator-mm/ai-development-standard/issues/1265
+branch: task/v416-t01-v5-public-wire
+parent_issue: "#1261"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 6d147eac6c86eff620d3695a46ccbb3be452debb
+generated_by: chatgpt-web:ads-v416-t01-controller
+generated_at: "2026-10-22"
+dependency_completion: []
+material_paths:
+  - schemas/github/v4.15/report.schema.json
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - docs/implementation/4.16.0/R4_PRODUCT_L2_REPAIR.md
+  - docs/implementation/4.16.0/R6_AGENT_AUTHORITY_OUTCOME_REPAIR.md
+  - schemas/github/v4.16/report.schema.json
+  - scripts/test_v416_t01_report_schema.py
+  - tests/fixtures/v416/t01/
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+pack_state_at_generation: PACK_CURRENT
