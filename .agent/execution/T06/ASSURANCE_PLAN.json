@@ -1,0 +1,149 @@
+{
+  "protocol_version": "ai-dev-assurance/v2",
+  "owner_family": "assurance-plan",
+  "predecessor_protocol_version": "ai-dev-assurance/v1",
+  "assurance_plan_id": "ads-v416-T06-assurance-b6d147eac",
+  "operation_id": "t06-initial-source-concern",
+  "subject_ref": "#1270",
+  "subject_identity_ref": "sha:6d147eac6c86eff620d3695a46ccbb3be452debb",
+  "identity_binding": "exact-sha",
+  "finding_disposition_policy": "p2-explicit-p3-optional",
+  "finding_carry_forward_policy": "unresolved-valid-findings-carry-forward",
+  "activities": [
+    {
+      "assurance_id": "T06-SOURCE-REVIEW",
+      "kind": "review",
+      "policy": "required",
+      "mode": "single-independent",
+      "coverage": [
+        "Exact-source public contract and P2-G03 authority"
+      ],
+      "independence": {
+        "context": "required",
+        "model": "none",
+        "executor": "none",
+        "evidence": "required"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    },
+    {
+      "assurance_id": "T06-TARGETED-TEST",
+      "kind": "validation",
+      "policy": "required",
+      "mode": "executable-validation",
+      "coverage": [
+        "Source-only executable A03/G09-G12 negative and positive cases"
+      ],
+      "independence": {
+        "context": "none",
+        "model": "none",
+        "executor": "none",
+        "evidence": "none"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    }
+  ],
+  "assurance_floor": {
+    "composition": "owner-scoped-conjunctive-floor",
+    "requirements": [
+      {
+        "requirement_id": "T06-SOURCE-REVIEW",
+        "owner_ref": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md#7",
+        "gate_ref": "source-bound-independent-review",
+        "policy": "required",
+        "strength_ref": "#1270:review:required"
+      },
+      {
+        "requirement_id": "T06-TARGETED-TEST",
+        "owner_ref": "standards/VALIDATION_STANDARD.md",
+        "gate_ref": "targeted-conformance",
+        "policy": "required",
+        "strength_ref": "#1270:targeted-conformance"
+      }
+    ]
+  },
+  "concern_resolutions": [
+    {
+      "concern_id": "T06-SOURCE-REVIEW",
+      "owner_ref": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md#7",
+      "gate_ref": "source-bound-independent-review",
+      "baseline_requirement_ref": "T06-SOURCE-REVIEW",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1270:review:required",
+        "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T06-SOURCE-REVIEW",
+      "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    },
+    {
+      "concern_id": "T06-TARGETED-TEST",
+      "owner_ref": "standards/VALIDATION_STANDARD.md",
+      "gate_ref": "targeted-conformance",
+      "baseline_requirement_ref": "T06-TARGETED-TEST",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1270:review:required",
+        "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T06-TARGETED-TEST",
+      "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    }
+  ],
+  "cross_owner_composition": {
+    "policy": "conjunctive-no-cancellation",
+    "concern_resolution_refs": [
+      "T06-SOURCE-REVIEW",
+      "T06-TARGETED-TEST"
+    ],
+    "cancellation_allowed": false
+  },
+  "selected_path": {
+    "rule": "floor-or-stronger-after-valid-owner-reductions",
+    "selected_requirement_refs": [
+      "T06-SOURCE-REVIEW",
+      "T06-TARGETED-TEST"
+    ],
+    "relation_to_floor": "SATISFIES_FLOOR"
+  },
+  "currentness_binding": {
+    "rule": "all-components-exact-current",
+    "subject_identity_ref": "sha:6d147eac6c86eff620d3695a46ccbb3be452debb",
+    "owner_authority_refs": [
+      "#1261@6338348925",
+      "#1261@6338359775",
+      "#1261@6338768231",
+      "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    ],
+    "owner_authority_digest": "gitblob:6c886f13b710152b50e89fc4882a4af29256d61e",
+    "proof_input_refs": [
+      "#1261@6339159582",
+      "https://api.github.com/repos/kaicreator-mm/ai-development-standard/issues/1270/dependencies/blocked_by",
+      "https://github.com/kaicreator-mm/ai-development-standard/issues/1270#issuecomment-6338834609"
+    ],
+    "proof_input_digest": "gitblob:8351cfd44b94b33247033fffaa4ad962045435aa",
+    "task_pack_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/1270",
+    "task_pack_digest": "gitblob:62f13d270b79f5580e692c85129606a2623e8489",
+    "release_decision_refs": [],
+    "release_decision_digest": "gitblob:0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc",
+    "unresolved_finding_refs": [
+      "#1261@6338270205:P2-G03"
+    ],
+    "unresolved_finding_digest": "gitblob:6d7bc653e19f6fb993f1fba6799f77a47cfd9592",
+    "binding_digest": "gitblob:891719cccffd3f430d199e401a6c4151382477a0",
+    "state": "CURRENT"
+  },
+  "aggregation": {
+    "policy": "finding-union-blocker-dominance",
+    "blocker_resolution": "unresolved-valid-blocker-dominates",
+    "majority_vote_for_correctness": false,
+    "conflict_route": "BLOCKED until current owner finding disposition"
+  },
+  "completion_predicate": "Both independent source Review and actual focused source Validation are required; no Task Done before both and merged source."
+}

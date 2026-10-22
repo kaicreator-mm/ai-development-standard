@@ -1,0 +1,18 @@
+task_id: T06
+scope: source-contract
+tests:
+  - id: A03
+    behavior: stale profile/evidence cannot authorize current selection
+    status: NOT_RUN
+  - id: G09
+    behavior: positive task-selection-child-provider-receipt-independent-verifier native reference trace
+    status: NOT_RUN
+  - id: G10
+    behavior: stale capability/Task/Claim negative
+    status: NOT_RUN
+  - id: G11
+    behavior: late ACK after cancellation and unknown provider effect
+    status: NOT_RUN
+  - id: G12
+    behavior: old v1 Profile/Event no forced migration
+    status: NOT_RUN
