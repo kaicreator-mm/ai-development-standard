@@ -172,6 +172,11 @@ def cost_total(observations: list[dict]) -> dict:
             return result("UNKNOWN", reason="cost_source_or_denominator_unknown")
         if type(row["source_revision"]) is not int or row["source_revision"] < 1:
             return result("UNKNOWN", reason="bad_invoice_revision")
+        # A settled bill may replace only a *known* quote/estimate basis.
+        # UNKNOWN and unrecognized receipt bases invalidate the whole ledger
+        # population; never silently drop them while returning a billed total.
+        if row["basis"] not in ("BILLED", "PROVIDER_REPORTED", "ESTIMATED"):
+            return result("UNKNOWN", reason="unqualified_cost_basis")
         key = tuple(row[k] for k in ACCOUNT)
         old = histories[key].get(row["source_revision"])
         if old is not None and not same_typed_source_row(old, row):
