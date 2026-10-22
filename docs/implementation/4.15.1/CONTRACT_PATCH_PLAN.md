@@ -136,3 +136,17 @@ Retain the proposed *separate opt-in successor report wire* from R0 for schema a
 - Implement as one **separate bounded documentation / lightweight Task Pack or Execution Pack guidance concern** only if detailed crosswalk of §6/§11/§23/§27/§29 and LOCAL_AGENT_HANDOFF finds a real uncovered executable behavior. If current clauses suffice, prefer one example + three negative probes and record ALREADY_COVERED/EXECUTION_GAP instead of duplicated normative text.
 - This work can be planned/reviewed independently of report v5 design and does **not** cause the Report schema to incorporate execution planning or a second event/claim state machine.
 - R2 acceptance is a *prospective product scope decision*, not implementation authority or a new v4.15.1 Release Gate. Cross-project time/cost savings remain UNKNOWN until measured by actual task-meta evidence; no invented claimed percentage.
+
+
+## R3 — inspected source crosswalk and definitive review questions
+
+**READ FIRST:** [R3_SOURCE_COVERAGE_AND_PRODUCT_DECISIONS.md](R3_SOURCE_COVERAGE_AND_PRODUCT_DECISIONS.md) records exact v4.15 normative file/blob/line owners, the 24-Issue triage, and **18 additional normative falsification cases F01–F18**. R0→R2 remain history/proposals; **this R3 crosswalk is the current review subject** for source-coverage disposition, including the two new focused owners #1234 (Validator writeback) and #1202 (strict verifier→candidate promotion). These cases are *planned*, not asserted as executed conformance.
+
+Review questions needing independently accepted Product/compatibility judgement **before Freeze**:
+1. **Option B source-unpinned Attempt** (proposed): source_sha=null only in the **new opt-in** wire, source_status UNPINNED/UNKNOWN, COLLECTOR_ONLY, no exact-source/Gate/Task currentness; old v4 consumer sees none and must not substitute HEAD. Alternative A publication hold remains supported fallback.
+2. **Native GitHub Validator writeback** (#1234): exact subject/env/command-exit/findings/native readback may be accepted by the applicable owner as native evidence, but not as an admitted machine REVIEW_RESULT. A newly emitted canonical REVIEW_RESULT with material findings must still satisfy existing §9.2 findings.records. Add explicit pre-dispatch writeback destination/format.
+3. **Strict verifier/Evolution** (#1202 and §8): current Validation, Task Learning v2 and Evolution already forbid partial→PASS and automatic Package/standards promotion. Add missing GitHub-only counterexample linkage and 3 negative cases only; no new state/gate.
+4. **Compatibility:** distinguish standards patch 4.15.1 from proposed report wire major v5; independent decision `ACCEPT_OPT_IN_PATCH | SPLIT_MINOR | NEEDS_REVISION`. Old v4 stays byte-identical and supported old readers reject v5; no new reader acceptance is implied, and no project adoption until immutable RQ-qualified pin.
+5. **Small concern decomposition:** A public wire (#1258/#1259/correction), B evidence use (#1198/#1206/#1202/Evolution), C #1241/#1234 workflow, D narrow #1260 timing. All remain planning until explicit source authority.
+
+**Status on this R3:** Product/L2 Freeze=NOT_RUN; implementation source Claim=NOT_RUN; schema/CI conformance for a new profile=NOT_RUN; RQ=NOT_RUN; no change to original v4.15.0 qualified candidate or main.
