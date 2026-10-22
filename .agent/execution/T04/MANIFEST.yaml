@@ -1,0 +1,32 @@
+pack_id: ads-v416-t04-b6d147eac
+task_id: T04
+repository: kaicreator-mm/ai-development-standard
+version: v4.16.0
+base_sha: 6d147eac6c86eff620d3695a46ccbb3be452debb
+task_pack_ref: https://github.com/kaicreator-mm/ai-development-standard/issues/1268
+branch: task/v416-t04-applicability-evolution
+parent_issue: "#1261"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 6d147eac6c86eff620d3695a46ccbb3be452debb
+generated_by: chatgpt-web:ads-v416-t04-sole-controller
+generated_at: "2026-10-22"
+dependency_completion: []
+material_paths:
+  - standards/DEVELOPMENT_WORKFLOW.md
+  - schemas/task-learning-v2.schema.json
+  - references/TASK_LEARNING_EVIDENCE_REFERENCE.md
+  - docs/implementation/4.16.0/R4_PRODUCT_L2_REPAIR.md
+  - references/ADS_V416_APPLICABILITY_EVOLUTION.md
+  - scripts/test_v416_t04_evolution.py
+  - tests/fixtures/v416/t04/
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+optional_artifacts:
+  - ASSURANCE_PLAN.json
+retention: durable
+pack_state_at_generation: PACK_CURRENT

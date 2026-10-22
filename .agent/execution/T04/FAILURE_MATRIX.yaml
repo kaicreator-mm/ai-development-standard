@@ -1,0 +1,10 @@
+task_id: T04
+cases:
+  - when: accepted Task Claim missing or old protected key active
+    outcome: BLOCKED
+  - when: trials incomplete or cost scope mixed
+    outcome: UNKNOWN
+  - when: privacy clearance missing
+    outcome: WITHHOLD
+  - when: promotion requested from telemetry only
+    outcome: NO_CHANGE_OR_MORE_EVIDENCE
