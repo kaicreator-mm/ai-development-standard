@@ -2,6 +2,7 @@
 """T02 actual source-only reducer tests. Not an external billing or Tool runtime qualification."""
 from __future__ import annotations
 import json
+import itertools
 import unittest
 from pathlib import Path
 from v416_measurement_reconciler import metric_total, cost_total, interval_union
@@ -16,7 +17,7 @@ class T02SourceAccountingTests(unittest.TestCase):
         cls.cases = json.loads(FX.read_text(encoding="utf-8"))["cases"]
 
     def test_unique_source_contract_coverage(self):
-        self.assertEqual(len(self.cases), 38)
+        self.assertEqual(len(self.cases), 65)
         ids = [x["id"] for x in self.cases]
         self.assertEqual(len(ids), len(set(ids)))
         for prefix in ("C02_", "C03_", "C04_", "C05_", "C12_"):
@@ -26,6 +27,15 @@ class T02SourceAccountingTests(unittest.TestCase):
         for example in self.cases:
             with self.subTest(case=example["id"]):
                 self.assertEqual(METHODS[example["kind"]](example["rows"]), example["expected"])
+
+    def test_row_order_determinism_for_each_fixture(self):
+        # Order must never change source-disposition, even with conflicting replay.
+        for example in self.cases:
+            if len(example["rows"]) > 4:
+                continue
+            for perm in itertools.permutations(example["rows"]):
+                with self.subTest(case=example["id"]):
+                    self.assertEqual(METHODS[example["kind"]](list(perm)), example["expected"])
 
     def test_fail_closed_empty_populations(self):
         for name, method in METHODS.items():
