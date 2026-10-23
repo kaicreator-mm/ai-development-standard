@@ -1,0 +1,12 @@
+task_id: T04
+scope: source-only
+tests:
+  - id: C11
+    status: NOT_RUN
+    case: full-trial experiment economics and unknown/selection bias
+  - id: C13
+    status: NOT_RUN
+    case: applicability evidence, counterexample and conflicting proof
+  - id: C14
+    status: NOT_RUN
+    case: observed practice route to existing Evolution, no self promotion

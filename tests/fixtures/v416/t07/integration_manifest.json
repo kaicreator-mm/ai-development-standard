@@ -1,0 +1,165 @@
+{
+  "schema": "ads/v416-t07-integrated-source-closure/v1",
+  "target": "ADS v4.16.0",
+  "scope": "standards-source-only",
+  "owned_task": "#1271",
+  "integration_branch": "version/v4.16",
+  "source_base": "595598a2da31178fa4c0db39981796f58cf273c5",
+  "groups": {
+    "C01": [
+      "T01",
+      "T03"
+    ],
+    "C02": [
+      "T02"
+    ],
+    "C03": [
+      "T02"
+    ],
+    "C04": [
+      "T02"
+    ],
+    "C05": [
+      "T02"
+    ],
+    "C06": [
+      "T01",
+      "T03"
+    ],
+    "C07": [
+      "T01",
+      "T03"
+    ],
+    "C08": [
+      "T01",
+      "T03"
+    ],
+    "C09": [
+      "T01",
+      "T03"
+    ],
+    "C10": [
+      "T01"
+    ],
+    "C11": [
+      "T04"
+    ],
+    "C12": [
+      "T02"
+    ],
+    "C13": [
+      "T04"
+    ],
+    "C14": [
+      "T04"
+    ],
+    "C15": [
+      "T05"
+    ],
+    "C16": [
+      "T05"
+    ],
+    "A03": [
+      "T06"
+    ],
+    "G09": [
+      "T06"
+    ],
+    "G10": [
+      "T06"
+    ],
+    "G11": [
+      "T06"
+    ],
+    "G12": [
+      "T06"
+    ]
+  },
+  "suites": [
+    {
+      "id": "T01",
+      "command": "scripts/test_v416_t01_report_schema.py",
+      "artifact": "tests/fixtures/v416/t01/scenarios.json",
+      "boundary": "strict separate v5 report wire, no publisher ACL"
+    },
+    {
+      "id": "T02",
+      "command": "scripts/test_v416_t02_measurement.py",
+      "artifact": "tests/fixtures/v416/t02/scenarios.json",
+      "boundary": "source-qualified metric/cost/clock, no provider invoice proof"
+    },
+    {
+      "id": "T03",
+      "command": "scripts/test_v416_t03_reader.py",
+      "artifact": "tests/fixtures/v416/t03/compatibility_matrix.json",
+      "boundary": "mixed v3/v4/v5 offline supplied-page observations"
+    },
+    {
+      "id": "T04",
+      "command": "scripts/test_v416_t04_evolution.py",
+      "artifact": "tests/fixtures/v416/t04/scenarios.json",
+      "boundary": "noncausal source-linked applicability and evolution"
+    },
+    {
+      "id": "T05",
+      "command": "scripts/test_v416_t05_writeback.py",
+      "artifact": "tests/fixtures/v416/t05/scenarios.json",
+      "boundary": "source-only writeback, not authorized native GitHub receipt"
+    },
+    {
+      "id": "T06",
+      "command": "scripts/test_v416_t06_agent_governance.py",
+      "artifact": "tests/fixtures/v416/t06/scenarios.json",
+      "boundary": "source-only effect governance, not actual delegated provider effect"
+    },
+    {
+      "id": "LEGACY_INTERACTION",
+      "command": "scripts/test_github_structured_interaction.py",
+      "boundary": "v3/v4 interaction and T03 source bridge"
+    },
+    {
+      "id": "LEGACY_REPORT",
+      "command": "tests/test_v415_report.py",
+      "boundary": "strict v4 original reader and report"
+    },
+    {
+      "id": "LEGACY_CONSUMER",
+      "command": "tests/test_v415_consumer.py",
+      "boundary": "historical v4 consumer selection and dedup"
+    },
+    {
+      "id": "LEGACY_INTEGRATION",
+      "command": "tests/test_v415_contract_integration.py",
+      "boundary": "historical mixed reader regression"
+    },
+    {
+      "id": "PROTO_SCHEMAS",
+      "command": "scripts/test_protocol_schemas.py",
+      "boundary": "unmodified general schema owners"
+    }
+  ],
+  "schema_pins": {
+    "schemas/github/v4.14/structured-interaction.schema.json": "a8c5d852c239f69850e7d856af75ca8179aff1dd",
+    "schemas/github/v4.15/report.schema.json": "88c96dda7f8bcaabe1766a807599ed15bbeae2de",
+    "schemas/github/v4.16/report.schema.json": "7478313cc006162432649d734e59c5cd77db5106"
+  },
+  "release_gates": [
+    "FULL_REGRESSION",
+    "HIDDEN_VALIDATION",
+    "CRITICAL_JOURNEYS",
+    "PACKAGING",
+    "INDEPENDENT_REVIEW",
+    "RELEASE_QUALIFICATION",
+    "MAIN_MERGE",
+    "TAG"
+  ],
+  "external_not_run": [
+    "REAL_TASKMETA_GITHUB_TALLY_E2E",
+    "#1210",
+    "REAL_CONTROLLER_HOST_DEMO",
+    "#1231",
+    "AUTHENTICATED_PROVIDER_CLOCK_AND_BILLING",
+    "GITHUB_NATIVE_PUBLISHER_ACL"
+  ],
+  "policy": "A successful source test runner may issue SOURCE_CONFORMANCE_PASS only. No auto RQ, main merge, native provider/publisher authorization or version bump."
+}

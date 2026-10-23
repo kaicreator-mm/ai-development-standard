@@ -1,0 +1,32 @@
+pack_id: ads-v416-t02-3041a1be3f13
+task_id: T02
+repository: kaicreator-mm/ai-development-standard
+version: v4.16.0
+base_sha: 3041a1be3f130e5cc5e676c2e56a99882adfd97c
+branch: task/v416-t02-physical-accounting
+parent_issue: "#1261"
+task_pack_ref: https://github.com/kaicreator-mm/ai-development-standard/issues/1266
+pinned_standard_revision: 3041a1be3f130e5cc5e676c2e56a99882adfd97c
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+generated_by: chatgpt-web:ads-v416-t02-controller
+generated_at: "2026-10-22"
+dependency_completion:
+  - "T01 #1265:closed; PR #1275:merged"
+material_paths:
+  - schemas/github/v4.16/report.schema.json
+  - docs/implementation/4.16.0/R4_PRODUCT_L2_REPAIR.md
+  - scripts/v416_measurement_reconciler.py
+  - scripts/test_v416_t02_measurement.py
+  - tests/fixtures/v416/t02/
+  - docs/implementation/4.16.0/T02_MEASUREMENT_EVIDENCE.md
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+optional_artifacts:
+  - ASSURANCE_PLAN.json
+retention: durable
+pack_state_at_generation: PACK_CURRENT

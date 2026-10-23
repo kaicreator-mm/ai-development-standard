@@ -8,6 +8,14 @@ only tooling. It is a descriptive walkthrough for operators and controllers; it 
 no normative semantics. Every normative rule below is owned by the exact reference cited
 next to it, and the owner text always controls over this summary.
 
+For ADS's own standards-source delivery, consume the explicit subject/mode boundary in
+`standards/RELEASE_STANDARD.md` §11.7A and `standards/EXECUTION_ARCHITECTURE_STANDARD.md`
+§1/§14. The standard's source/contract delivery precedes separately scoped runtime
+qualification; this reference does not turn its manual walkthrough into proof of
+controller generations or atomic source/target protection. Manual Claim/currentness,
+native gates and uncertainty/downstream-hold duties remain owned by those standards.
+The historical v4.9 examples below retain their original identities and evidence scope.
+
 ## 1. Consumed authorities (exact refs, cited not copied)
 
 ```text
@@ -275,3 +283,68 @@ exposed a semantic gap, the route is the owning Task/DAG amendment, not an edit 
 Executable checks for the properties claimed above live in
 scripts/test_v49_manual_reference_flow.py with the fixtures under
 fixtures/manual-reference-flow/; they are Builder evidence, not independent Validation.
+
+## 12. Source-only missing-receipt recovery (v4.15 owner reference)
+
+This descriptive route consumes EXECUTION_ARCHITECTURE_STANDARD sections
+23.1-23.4 and RELEASE_STANDARD11.7A; it does not redefine them. Before source
+work, run applicable shape preflight and independently check actual admission,
+generation/resources and governing CURRENT. Publish/read back the decision.
+Exit/checkpoint contents follow LOCAL_AGENT_HANDOFF_PROTOCOL8/12.
+
+A fresh worker inventories GitHub authority and effect pointers, preserves
+accepted/rejected/uncertain outcomes and uses the same existing serialized
+authority for reconciliation, real old-grant/consumer fencing and exact frontier
+reconstruction. Complete comment pages or closing an old PR alone are not a fence.
+UNKNOWN exact generation or pending acceptance means scoped HOLD, not a reset or
+numerical jump. Late accepted old receipts versus stale revoked proposals are
+decided by the owner clauses, not arrival time. Real external effects retain
+their actual recovery obligations. No old conversation or provider is required.
+
+The positive/negative local source-decision checks in
+scripts/test_v415_github_recovery.py model those obligations; they do not qualify
+a native GitHub race, controller deployment or physical resource cleanup. Reuse
+unchanged current evidence and review only material successor effects under the
+selected policy; no required gate or adverse finding is removed to save time.
+
+## 13. Distinct immutable-artifact delivery (v4.15 owner reference)
+
+EXE_ARCH23.5 and RELEASE11.7A own this optional source route. First adopt the rule
+and publish/read back the Task-specific owner amendment. Establish all current
+preselection predicates, including actual disjoint effects and actual authorized
+consumer boundary; an unavailable ledger or asserted fence is insufficient.
+Select exact pre-existing bytes, read back the selection and every affected
+consumer, then attempt guarded native integration. Reconstruct the actual outcome
+and verify actual checkout SHA/parents/tree plus fresh applicable postconditions.
+Only afterward may the Task/process executor decide/publish/read back final
+delivery under its newly CURRENT full gates. Consume that canonical operation
+and integration identity once for native Task completion/dependency readiness.
+
+Selection and ratified integration remain distinct from final delivery. Unknown
+ACK, partial verification or changed inputs retain UNRATIFIED/HOLD. Duplicate
+current requests return the existing receipt; same-byte old results cannot
+replace its authority. Late genuine material overlap holds the affected scope
+and preserves histories. The old Builder key stays held/UNKNOWN throughout;
+no repair source write or generation/resource/terminal action is authorized.
+
+scripts/test_v415_artifact_acceptance.py exercises the independently frozen
+Product A01-A17 in an isolated stateful source-contract model. It cannot establish
+actual S01/S04 applicability, native consumer fences, deployment, cleanup or RQ.
+Those facts must be inspected for the actual later operation; model fixtures
+are not their proof and the original chat is not a required evidence store.
+
+### Genuine new defect: separate bounded source authoring
+
+The preceding immutable operation stays read-only. If its exact artifact fails
+source acceptance, a distinct defect Task is possible only under adopted
+EXE_ARCH23.6 / RELEASE11.7A: prior exact owner defect authorization, actual proven
+disjoint source refs/effects and every acceptance consumer, no unresolved old
+integration/resource/external obligation, full phase-appropriate CURRENT and
+ordinary fresh known-key Claim before writing. Do not rename a blocked old Task
+or treat the artifact/model as authority. Inspect/validate all inherited source
+and the minimal new delta; qualify the actual new candidate. Keep the old key
+UNKNOWN/HOLD. Ratified new integration and repair delivery still need a separate
+prior owner amendment/current final acceptance to satisfy the original Task.
+The fixed finite matrix BOUNDED_SOURCE_REPAIR_CASES.json and
+scripts/test_v415_bounded_source_repair.py are source conformance only; actual
+S04 applicability is NOT_PROVEN until those real operation facts are published.

@@ -1,0 +1,12 @@
+task_id: T05
+scope: source-only
+tests:
+  - id: C15
+    case: WEB-only native source/Claim current positive and stale/duplicate/UNKNOWN Claim refusal
+    status: NOT_RUN
+  - id: C16
+    case: Validator exact test tuple native writeback and GitHub readback; local-only physical remainder
+    status: NOT_RUN
+  - id: N_LOCAL
+    case: No forced 1-to-1 task-to-Local delegation and no duplicate local takeover
+    status: NOT_RUN

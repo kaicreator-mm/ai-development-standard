@@ -1,0 +1,49 @@
+{
+  "scope": "ADS-owned deterministic source conformance only; no runtime or release verdict",
+  "task": "https://github.com/kaicreator-mm/ai-development-standard/issues/1227",
+  "execution_pack": "https://github.com/kaicreator-mm/ai-development-standard/issues/1227#issuecomment-6326052042",
+  "base_sha": "2c1e0a8f98c628e0257ac52e0f27fd8ebbfdf6dc",
+  "exact_tested_sha_authority": "Actual post-commit GitHub Validation Tuple, not this source file",
+  "commands": [
+    "python tests/test_v415_report.py",
+    "python tests/test_v415_consumer.py",
+    "python tests/test_v415_contract_integration.py",
+    "python tests/test_v415_source_boundary.py",
+    "python scripts/test_github_structured_interaction.py",
+    "python scripts/test_protocol_schemas.py",
+    "python scripts/test_work_item_contract_and_golden_templates.py",
+    "python scripts/test_v412_ads_compatible_select.py",
+    "python scripts/verify_standard.py",
+    "node scripts/test_v414_schema_portability.cjs"
+  ],
+  "coverage": [
+    {"requirement": "Existing #1232 P2-01 / #1227@6307345351 source-boundary counterexamples", "tests": ["test_v415_source_boundary.AdoptedSourceBoundary"], "boundary": "Exact adopted owner blobs and discriminating fixtures/stateful source models; no real runtime, native CAS, credential, race, fencing or historical Claim recovery proof"},
+    {"requirement": "R4-3 strict profiles/carrier/JSON-safe parsing/JCS", "tests": ["test_v415_report.ReportShape", "test_v415_report.ParsingAndJCS", "test_v415_contract_integration.IntegratedWire.test_carrier_human_truth_and_no_prefilled_feedback_receipt"], "boundary": "Schema-valid shape or finite JCS vectors are not source authority or universal numeric proof"},
+    {"requirement": "R4-3 original v3/current nonreport/historical reports/unsupported pairs/effective pins", "tests": ["test_v415_contract_integration.PinnedCompatibility", "scripts/test_github_structured_interaction.py", "scripts/test_v414_schema_portability.cjs"], "boundary": "Pinned original parser actually runs; newer --effective-pin does not emulate old lexical parsing"},
+    {"requirement": "R4-3 EVIDENCE_UPDATE/TASK_LEARNING immutable revisions and Level-1 note", "tests": ["test_v415_report.ImmutableRevisions", "test_v415_contract_integration.IntegratedWire.test_publish_read_digest_and_immutable_late_evidence_chain", "test_v415_contract_integration.PinnedCompatibility.test_frozen_predecessors_schema_and_level1_learning_are_unchanged"], "boundary": "Manifest/source refs are supplied fixture claims, not actual private publication"},
+    {"requirement": "R4-3 deterministic E4 identity/digest/dedupe/edit/UNKNOWN/stale/correction", "tests": ["test_v415_consumer.ReconciliationBoundary", "test_v415_consumer.CorrectionBoundary", "test_v415_contract_integration.IntegratedWire"], "boundary": "Known actual target and owning scope checked; no timestamp or shared transport grants cancellation"},
+    {"requirement": "R4-3 bounded pagination/429/retry/lost ACK", "tests": ["test_v415_consumer.CollectionBoundary", "test_v415_contract_integration.IntegratedWire.test_retry_lost_ack_reconciles_actual_identity_not_attempt_count"], "boundary": "Recorded response inputs only, no real HTTP/POST/exactly-once guarantee"},
+    {"requirement": "R4-3 privacy redaction/tombstone/no private resolver", "tests": ["test_v415_contract_integration.IntegratedWire.test_sanitized_redaction_tombstone_never_carries_replacement", "test_v415_contract_integration.IntegratedWire.test_private_references_do_not_trigger_resolver_or_socket"], "boundary": "Finite sanitized projection and source no-fetch path, no actual removal/cache erasure/egress isolation proof"},
+    {"requirement": "R4-3 verifier/cost/strict-vs-partial/no ACK-to-PASS", "tests": ["test_v415_report.ReportShape", "test_v415_contract_integration.IntegratedWire.test_partial_green_checks_and_ack_remain_observations"], "boundary": "COMPLETE and supplied verifier/source refs remain publisher claims, not independently verified completeness"},
+    {"requirement": "R4-3 same-build feedback/reader/grants/private egress", "tests": ["test_v415_consumer.FeedbackBoundary", "test_v415_contract_integration.IntegratedWire.test_same_build_and_permission_evidence_are_not_schema_fields"], "boundary": "BOUNDED_WITNESS fixture flags; actual Tally TS build/grants/egress remain NOT_RUN #1210"},
+    {"requirement": "S04 manual qualification/adoption distinction and unchanged selector", "tests": ["scripts/test_v412_ads_compatible_select.py", "S04 exact-source receipt #1252@6325704453"], "boundary": "Exact main/RQ correspondence observed in S04; no current v4.15 production adoption or main merge"}
+  ],
+  "immutable_blobs": {
+    "docs/implementation/4.15.0/PRD.md": "fbeacd479f5a9a0d3dc1a3f853abe623cc211031",
+    "docs/implementation/4.15.0/L1_PRODUCT_EVIDENCE.md": "34a8833056e8a3e31ba2238777fde21e816ce6ac",
+    "docs/implementation/4.15.0/L2_ARCHITECTURE.md": "cf4721a90122a9c9bad486209d478f2adf81e0dc",
+    "docs/implementation/4.15.0/L2_ARCHITECTURE_EVIDENCE.md": "4c280d690f087efe39a0d3d6b07860d4806b18b4",
+    "docs/implementation/4.15.0/TASK_DAG.md": "2de26c1f82d29ad0317b219058fe6b3a34147398",
+    "docs/implementation/4.15.0/PRODUCT_FREEZE.md": "82a060ce8bbe74fbf1dbb4901b8dc0cf8f56dc92",
+    "docs/implementation/4.15.0/L2_FREEZE.md": "928428d7fc074f17f33bb557b7a3fbaa285cfa4a",
+    "docs/implementation/4.15.0/TASK_DAG_FREEZE.md": "90e4bbe7154bc4228cc0d81954aba658309cfcd6",
+    "schemas/github/v4.14/structured-interaction.schema.json": "a8c5d852c239f69850e7d856af75ca8179aff1dd",
+    "schemas/task-contract.schema.json": "070d583c24adad28fdf30173ca4502a5659709cb",
+    "schemas/agent-event-v2.schema.json": "cad9434e11febfd29657b564dbe710700c674888",
+    "tests/fixtures/v415/historical_v414_reader.py": "c92cec520c315565d9d05ffbc5254ac803e346a3"
+  },
+  "mandatory_limitations": [
+    "REAL_TASKMETA_GITHUB_PUBLICATION_NOT_PROVEN",
+    "REAL_TALLY_GITHUB_ONLY_READER_FEEDBACK_NOT_PROVEN"
+  ]
+}

@@ -1,6 +1,6 @@
-# GitHub Structured Interaction — latest-only v3
+# GitHub Structured Interaction — v3 operations and v4 reports
 
-**Current source:** [GitHub Agent Interaction Protocol §16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). New ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. This source deliberately has **no legacy format read path** and no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
+**Current source:** [GitHub Agent Interaction Protocol §16](../standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md). Under a v4.15 effective pin, new ADS consumers emit **one** canonical Markdown+YAML form for a Work Item body, an Issue mutation intent, a canonical Agent Event comment, or a Task Report comment. V3 Work Item/Intent/Event stay current; v3 reports are historical read-only and new reports use v4. Older v1/v2 wrappers remain unsupported, with no automatic migration requirement. Existing GitHub native data, Review/Validation/Release evidence and Task/Dispatch/Claim rules remain authoritative.
 
 ## 1. One document wrapper for four kinds
 
@@ -30,7 +30,7 @@ data:
 The issue body explains the task in normal Markdown. Exact Title, native Issue Type, State, Risk, Review Policy, Milestone and GitHub Dependencies must still be checked against current native GitHub facts.
 ~~~~
 
-\`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. \`schema\` is fixed \`ads/github/v3\`. The minimal common envelope is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles use declared `oneOf` contract definitions in the canonical Draft 2020-12 Schema, not Python-only required-field maps. Historical Issue bodies need not be rewritten.
+\`kind\` selects the machine contract; \`data\` contains **only the kind's fields**. For these non-report operations, \`schema\` remains \`ads/github/v3\`; v4.15 reports alone use \`ads/github/v4\`. The minimal common envelope is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`, not a separate schema per REST verb. The direct Task payload is validated by the existing \`schemas/task-contract.schema.json\`. Nine other Issue profiles use declared `oneOf` contract definitions in the canonical Draft 2020-12 Schema, not Python-only required-field maps. Historical Issue bodies need not be rewritten.
 
 The reference verifier uses **safe nested YAML mappings/lists** with duplicate-key, alias, anchor, unsafe-tag, timestamp and input-size checks, rather than a hand-built YAML dialect. It rejects duplicate keys, unsafe tags, aliases, anchors, implicit timestamps and malformed syntax; ordinary YAML flow mappings/sequences are accepted if they satisfy the same JSON Schema. Long human explanations belong after the structured block as Markdown.
 
@@ -93,34 +93,17 @@ PR #N and real targeted tests/CI refs (not an independent PASS by virtue of this
 
 Event v2 is the reused **payload schema**, not the obsolete document marker. When a canonical event is admitted by the `8.1 writer it emits exactly one \`kind: event\` comment, not \`kind: intent\` → another legacy comment. Do not duplicate Agent identity in an outer event record.
 
-## 4. Report — single typed YAML comment and derived dedupe key
+## 4. Report — v4.15 strict observational profiles
 
-~~~~markdown
-<!-- ads:github -->
-```yaml
-schema: ads/github/v3
-kind: report
-data:
-  report_id: task-meta:example:42:attempt-1:summary
-  report_kind: EXECUTION_SUMMARY
-  revision: 1
-  attempt_ref: collector:example:attempt-1
-  manifest_ref: object:private-reports/example/tasks/42/attempt-1/r1/manifest.json
-  manifest_sha256: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-  coverage: PARTIAL
-  source_refs:
-    - github:example-org/example-repo#42
-```
+The exact executable examples are [summary](../tests/fixtures/v415/summary.json), [manifest-free feedback](../tests/fixtures/v415/feedback.json), and [correction notice](../tests/fixtures/v415/correction.json). They are **offline illustrative fixtures**, not observed GitHub publications or runtime PASS. Serialize each as one leading `<!-- ads:github -->` and one YAML fence with exactly schema/kind/data. Human Markdown follows the fence and is never machine authority. Exact required keys/typing are owned by [the v4 report-only schema](../schemas/github/v4.15/report.schema.json) and Protocol §16.5.
 
-## Execution summary
+The summary has explicit UNKNOWN/null cost and per-metric epistemic/currentness, leaf aggregation, actual-subject verifier references and private immutable manifest ref/digest. Feedback carries actual publisher/ADS SHAs and distinct use phase, with no manifest. A correction carries only target+reason+notice; it does not authenticate cancellation ownership or replace facts. Same GitHub transport login is not logical publisher ownership.
 
-DECISION=Reused existing parsing helper (source/ref required).
-EVIDENCE=Exact PR/CI source refs or NOT_RUN.
-LIMITS=PARTIAL collection; unreported billing UNKNOWN.
-TASK_LEARNING=NONE_MATERIAL.
-~~~~
+V3 `EVIDENCE_UPDATE` and `TASK_LEARNING` map to a new immutable revision of an existing v4 summary with the same report_id/Attempt, a new manifest ref/hash and late source / Task Learning v2 refs. Missing predecessor is INSUFFICIENT_EVIDENCE. Correction is a separate notice and replacement is a source-profile revision. Level-1 `TASK_LEARNING=NONE_MATERIAL | ref` remains unchanged.
 
-The object Manifest retains the stable \`ads/task-report-manifest/v1\` JSON document format: **v1 is the object dialect, v3 is the single current GitHub comment wrapper**. The comment is not a second event stream. The GitHub Issue + \`report_id\` + \`revision\` determine the idempotency key; don't serialize it redundantly. The immutable manifest checksum validates bytes, not source authority. An \`EXECUTION_CORRECTION\` includes a \`corrects_ref\`. Private files need a stable authorized resolver, not a temporary signed URL. Do not post raw prompts, trace or per-step Issue comments.
+Compute public `SHA256(RFC8785_JCS(validated data))` into the external readback receipt/index; never place a self digest or own future comment URL/ID in data. Dedupe identity includes owning Issue, namespace, report_id, revision and kind. Edited/conflicting same-comment/key evidence fails closed; unknown edit/original evidence remains UNKNOWN. The private manifest hash is separate and is not validated by this public digest. Tally's GitHub-only reader neither needs nor may fetch private task-meta contents.
+
+The unchanged v3 report schema/examples at the v4.14 immutable pin remain historical read-only for v4.15. Do not emit new v3 reports under v4.15; do not migrate live v3 Task/Intent/Event or mutate their offline registry.
 
 ## 5. Machine-checkable operation and authority boundaries
 
@@ -129,7 +112,7 @@ The object Manifest retains the stable \`ads/task-report-manifest/v1\` JSON docu
 | \`work_item\` | Profile-required keys; Task Contract Schema for task | Owning Issue body plus GitHub native Type/Labels/Dependencies/Claim |
 | \`intent\` | \`schemas/github/v4.14/structured-interaction.schema.json\`, operation-specific payload, prior source ref | Existing GitHub Work Item transition/DAG/Claim rules; API write outcome |
 | \`event\` | Direct existing Agent Event v2 schema | Existing §8.1 admission and source-specific Review/Validation truth |
-| \`report\` | \`schemas/github/v4.14/structured-interaction.schema.json\`, object manifest ref/hash | OSS/object readback/ACL, real GitHub comment readback, published revisions |
+| \`report\` | \`schemas/github/v4.15/report.schema.json\`, strict summary/feedback/correction profiles (v3 reports historical-only) | OSS/object readback/ACL, real GitHub comment readback, published revisions |
 
 The parser never invokes a GitHub API mutation. Its CLI is:
 
@@ -140,17 +123,107 @@ python scripts/verify_github_structured_interaction.py file.md --kind event
 
 ## 6. Failure and optimization oracles
 
-1. New work item/event/report/intent with v3 marker and correct kind → \`SHAPE_VALID_ONLY\`; never \`PASS\` or \`MUTATED\`.
+1. Current v3 work item/event/intent, or v4 report with the common marker and correct pair → \`SHAPE_VALID_ONLY\`; never \`PASS\` or \`MUTATED\`.
 2. Wrong first-line marker, old wrapper, duplicate marker, unknown kind, arbitrary YAML aliases/tags/duplicate keys or invalid nested value → \`INVALID_SCHEMA\`.
 3. Old free-text Markdown discussion is still just \`UNSTRUCTURED_DISCUSSION\`, **not** an alternative normative operation.
 4. Task Contract missing baseline/goal/gates or other profile missing required keys → invalid, even if Markdown prose mentions those values.
 5. Existing Issue mutation without source-currentness/ref, malformed canonical native state, forbidden \`gate:pass\` label, no-op status, self-dependency → invalid.
 6. \`kind: intent\` with \`ISSUE_COMMENT_EVENT\` or \`ISSUE_COMMENT_REPORT\` → invalid. Canonical comments are direct kinds, not separate operation proposals.
 7. Event \`data\` lacks required original Event v2 fields or mismatches the actual Issue target → invalid.
-8. Report contains duplicate arbitrary publication key field, invalid digest, unsupported report kind, correction without \`corrects_ref\` or short-lived signing secret in locator → invalid.
+8. Report contains duplicate arbitrary publication key field, invalid digest, unsupported report kind, v4 correction without its typed target/notice or short-lived signing secret in locator → invalid.
 9. Two apparently valid simultaneous source-change intents → static shape can pass **both**; only the existing authorized GitHub writer may commit one from the current state; other must be rejected or retried after re-read.
 10. Report comment POST timeout/duplicate after actual GitHub acceptance → derive key from source Issue/id/revision, read back real comments, reuse identical manifest digest or detect conflict. No false exactly-once guarantee.
 11. A malicious quoted YAML block in human prose is merely untrusted content, not a canonical admitted event.
 12. No old adapter/readback implementation, bulk migration, per-tool Issue spam or duplicate Task status storage is required.
 
-**Intentional limit:** real GitHub source admission and OSS write/retry are implementation responsibilities (e.g. future task-meta), not proven by schema shape/CI. A consumer choosing this source revision adopts v2 directly, not v1 compatibility behavior.
+**Intentional limit:** real GitHub source admission and OSS write/retry are implementation responsibilities (e.g. future task-meta), not proven by schema shape/CI. A consumer must resolve its exact effective immutable pin and per-kind wire disposition; Schema never activates an adoption.
+
+
+## 7. Reproducible v4.15 source checks
+
+```text
+python tests/test_v415_report.py
+python scripts/test_github_structured_interaction.py
+python scripts/verify_github_structured_interaction.py report.md --kind report --effective-pin v4.15 --writing --data-digest
+```
+
+The first command executes RFC8785 vectors, strict positive/negative profiles, original v3 blob identity/offline registry, compatibility, immutable revisions and edit/conflict behavior. The second retains the existing v4.14 conformance suite. Neither performs a real publication, reads private manifests, proves Tally/task-meta runtime, authenticates correction authority or passes a Task/Release gate. Native CI coverage is only the commands actually present in its workflow; a source-bound CI success does not imply the new standalone test command ran there.
+
+## 8. GitHub-only consumer and feedback conformance (S03)
+
+Normative owner: Protocol §16.6. Detailed source contract:
+[`GITHUB_ONLY_CONSUMER_CONTRACT.md`](../docs/implementation/4.15.0/GITHUB_ONLY_CONSUMER_CONTRACT.md).
+
+```text
+python tests/test_v415_consumer.py
+```
+
+This exercises existing wire/digest/disposition helpers and a tests-only finite
+oracle for complete pagination, bounded retries, native edit/conflict/currentness,
+source/namespace/Issue/Task-bound correction and manifest-free feedback. Its
+positive outputs are observations, never engineering PASS or real runtime proof.
+Negative cases include shape-valid wrong-target notices, shared-login different
+publishers, unavailable effective grants and missing egress/readback evidence.
+No verifier/schema change or private fetch is introduced. S02's correction shape
+finding remains OPEN; consumer application checks do not repair that helper.
+Downstream same-build TypeScript/grant/egress evidence remains deferred NOT_RUN.
+These standalone cases require actual explicit execution; generic native CI
+success does not imply this command ran.
+
+## 9. ADS v4.16 candidate — v5 Report reader (T03)
+
+**Opt-in, source-only compatibility:** The v3 Work Item/Intent/Event and historical
+v3 Report still use the *unchanged* v4.14 schema; v4 Report still uses the
+*unchanged* v4.15 strict schema. New `ads/github/v5`, `kind: report` exclusively
+uses [the distinct v4.16 strict schema](../schemas/github/v4.16/report.schema.json).
+A v5 Work Item, Event, Intent or unrecognized report kind is rejected. An older
+`--effective-pin v4.14|v4.15` reader must return typed `UNSUPPORTED_SCHEMA`
+for v5 instead of coercing it to v4 or counting missing source as zero.
+`--effective-pin v4.16` permits **shape inspection** only, not a writer grant
+or proof that the GitHub project has adopted v4.16 in `main`. A source-only
+v5 `record_disposition` result is `V5_SHAPE_ONLY`.
+
+The original material's `subject.source_sha` may be null for an observational
+collector-only **summary** with `UNPINNED/UNKNOWN` source status, but the
+publisher's own `publisher_source_sha` and `ads_revision` stay separately
+non-null. Such a report has UNKNOWN source currentness, nonempty collector
+observation refs, and cannot claim authenticated verifier PASS, canonical
+Dispatch/Claim/Attempt, settled billed cost or a real result denominator.
+A source-association successor must preserve the publisher/Task/Attempt identity,
+cite an actual immutable predecessor and new manifest, and must not fabricate
+a CANONICAL_DISPATCH identity from an observational Attempt.
+
+A v5 correction is a **notice**, not a native GitHub update. Its target must
+name the original publication's owning repository, Issue, comment ID/URL,
+publisher namespace, report identity, source state and original **RFC8785
+data-only** SHA-256 digest. `compare_v5_correction_source()` checks only a
+caller-supplied original: `UNVERIFIED` without a complete/unmodified native
+source, `DISPUTED` for mismatches, or `SOURCE_MATCH_ONLY` on matching
+source bytes. None is authority to revoke/redact/apply the notice. The
+authoritative native reader must independently witness complete comment
+pagination, native post/readback, comment edit history, publisher/grant identity
+and currentness. `inspect_supplied_issue_pages()` is a **bounded offline
+oracle** over supplied page data; `OBSERVED_SHAPE_ONLY` remains untrusted
+until those native facts are actually verified. A missing terminal page,
+unexpected cursor, edited comment or conflicting same-identity digest fails
+closed. No private task-meta API or OSS manifest content is fetched.
+
+Reproduce the declared source-only contract with:
+
+```text
+python scripts/test_v416_t03_reader.py
+python scripts/test_github_structured_interaction.py
+python tests/test_v415_report.py
+python tests/test_v415_consumer.py
+python scripts/verify_github_structured_interaction.py v5-report.md --kind report --effective-pin v4.16 --data-digest
+```
+
+The v4.16 standalone tests exercise v5 summary/feedback/correction shapes,
+collector-null refusal, revision and correction identity, mixed Issue
+v3/v4/v5 routing, digest conflict, pagination gaps, and unsupported older
+readers. These examples are test inputs, not publication. Actual native
+GitHub readback with authenticated ownership, real producer publication,
+task-meta→GitHub→Tally E2E, physical/provider clock and invoice qualification,
+Host integration and Release Qualification remain separate NOT_RUN gates.
+The Python interpreter used for test execution is not normative to ADS data
+contracts, and generic CI success never implies this standalone test ran.

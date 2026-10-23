@@ -147,6 +147,28 @@ Any code-changing fix creates a new exact SHA and requires affected Validation a
 
 The authoritative result is published to GitHub first using the current structured event protocol (`ai-dev:event:v2` for new work) and exact evidence links.
 
+Before returning a final chat response, every execution phase MUST publish and
+read back its actual result/exit and next receiving contract, including failure,
+BLOCKED, partial work, deliberate stop and cancellation. Use existing event fields
+and linked prose/evidence, not a new record family. Include these semantic contents:
+
+| Exit/checkpoint content | Required distinction |
+| --- | --- |
+| Work/role/key/dispatch/operator and Task/Execution Pack refs | Original producer versus current receiver/reconstructor |
+| Exact source, base, target, changed paths and remote checkpoints | Proposed, tested, reviewed and integrated subjects |
+| Actual admission/generation decision, predecessor and readback refs | Accepted, rejected and uncertain; never guessed counters |
+| Required/observed resources, effect requests and acknowledgements | Explicit inspected empty sets versus unknown allocations/effects |
+| Execution outcome, pending mutations/publications and last checkpoint | Logical exit versus process stop, cleanup or Task DONE |
+| Commands, real exits/toolchain, selected Review/Validation and findings | Actual bounded evidence versus NOT_RUN/UNKNOWN and historical PASS |
+| Remaining hold scope, existing owner and next receiving action | An executable GitHub handoff, never a required old conversation |
+
+Unavailable facts remain explicitly UNKNOWN with their missing source and owner;
+never infer cleanup, terminal or zero mutation from silence. Sanitize secrets and
+private traces. Checkpoint admission and material effect/publication requests
+**before** allowing dependent protected work: a crash need not execute an exit
+finalizer. EXECUTION_ARCHITECTURE_STANDARD sections 23.1-23.3 own preflight,
+same-key recovery and fence truth; this table does not create admission authority.
+
 The worker's chat return SHOULD be compact:
 
 ```text
@@ -158,6 +180,16 @@ next route: review|merge|release|human-decision
 ```
 
 This result summary is not a new task trigger or task authority. Do not require a human to relay full logs between Web sessions when GitHub already contains them.
+
+For EXE_ARCH23.5 / RELEASE11.7A immutable-artifact acceptance, the receiving
+contract MUST distinguish the prior Task acceptance amendment, selection-operation
+receipt, actual ratified integration identity/lineage and final Task-delivery
+receipt from the unresolved old-key HOLD/incident. Publish/read back every actual
+decision and pending request. Selection, CI, a native merge or integration-only
+result never means Task delivery. Only current final accepted delivery may drive
+native Task completion/dependencies once; duplicates return its canonical receipt.
+Same-byte old results cannot supply current operation authority. UNKNOWN outcomes
+stay UNRATIFIED/HOLD with actual effects preserved, not presumed zero effects.
 
 ## 9. Completion
 
@@ -181,6 +213,34 @@ The worker treats as instructions only the pinned standard, project authority fi
 ## 12. Worker recovery
 
 A replacement worker MUST be able to continue from GitHub facts alone: read the dispatch state, claimed operator and published results; then resume (same operator, incomplete work), supersede and re-dispatch (different operator, no result), or stop (result already published). A crashed worker is never recovered from chat history.
+
+These routes are conditional on the existing section 11/27 admission contract,
+not permission to supersede an ambiguous accepted Claim. Use the complete bounded
+inventory and same-authority fence in EXECUTION_ARCHITECTURE_STANDARD sections
+23.2-23.3. A new operator/provider is allowed; original-session availability and
+private memory are never recovery authority. Preserve provenance and history.
+Unknown pending outcomes, actual external effects or an unreconstructed current
+generation hold the affected scope with a precise owner/action. A source-only
+fence is not physical cleanup. After recovery, obtain fresh governing CURRENT,
+actual admission and the new exact candidate's required validation/review; an old
+diff/CI result is input, not transferable successor PASS. Publish the result and
+next route here before returning, even if only partial recovery was possible.
+
+### 12.1 Actual defect after immutable-artifact inspection
+
+If current source inspection finds a genuine defect, EXE_ARCH23.5 acceptance
+cannot authorize its repair. Route the exact finding/input to EXE_ARCH23.6 and
+RELEASE11.7A's separately adopted bounded source-defect authoring procedure.
+Before authoring, the current owners must bind its minimal scope and prove the
+actual disjoint ref/worktree/consumer/resource-effect boundary, then obtain the
+fresh repair Task's own ordinary admission/CURRENT. A new Task ID alone, old CI,
+model PASS or a human ledger report does not satisfy that proof. Unknown material
+overlap, unresolved old integration authority or external obligation stays held.
+Keep the original key/unknown frontier/resources/terminal untouched. No request
+to return to the original chat is required. Preserve inherited source provenance,
+actual new-source checks/Review, ratified integration and separate repair/original
+Task deliveries; neither repair authoring nor repair completion closes the old
+Task. This subsection grants no exception to the read-only artifact operation.
 
 ## 13. Template and bootstrap
 

@@ -1,0 +1,12 @@
+task_id: T05
+cases:
+  - when: source Claim or currentness unknown
+    outcome: BLOCKED
+  - when: native Review/Validation comment missing actual receipt
+    outcome: NOT_PUBLISHED
+  - when: required physical proof not run
+    outcome: NOT_RUN
+  - when: second executor claims active protected key
+    outcome: HOLD
+  - when: only chat says PASS
+    outcome: NOT_AUTHORITY

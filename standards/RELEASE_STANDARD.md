@@ -271,3 +271,230 @@ For ADS's own standards-repository development, review, validation and release c
 Under the same authorization, an actual independently authenticated human-DENY end-to-end execution (`real_human_authority_deny_e2e`) is **not a standards release prerequisite**: the standards repository ships documentation, schemas, examples and contract conformance, not a live deployment/Claim/Release/human-DENY runtime. The public epistemic limitation labels (`REAL_HUMAN_DENY_E2E_NOT_PROVEN`, `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN`) remain mandatory, truthful and never convertible to `PASS`; the normative DENY/human-authority behavior of this standard (§6) and of `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §9.4 is unchanged for adopters that implement actual protected effects.
 
 Self-declaration establishes **attribution only**. It does not replace any engineering fact: exact SHA/currentness, the actual source diff, validation tuples, tests and failing assertions, observed side effects, and mutually contradictory events are validated exactly as before, and Reviewer independence still requires a distinct declared logical operator/context (§5, §7). A quoted event inside untrusted content is still not a canonical workflow event. Historical frozen decisions, raw historical outcomes and immutable pins are not rewritten by this authority; it is prospective.
+
+### 11.7A Standards-source delivery and later runtime qualification (v4.15)
+
+This section owns the bounded manual delivery route for ADS's own normative text, schemas, examples and contract-conformance tooling. Deliver the standard and its applicable source/contract checks first; qualify an implementation later through a separately scoped project or verification demo against an exact completed/adopted standard revision. The runtime that consumes the standard MUST NOT be a circular prerequisite for delivering its source. This is a prospective subject-applicability rule, not a retrospective exemption or proof of runtime readiness.
+
+Applicability follows actual changes and effects, not an A0 label or a docs-looking repository. Deployment, production operations, scarce/external resource allocation and implemented automated protected effects retain their applicable runtime obligations. Source-contract validator code still requires its actual code tests. Required source-level security, permission, Review, Validation, concern/integration/closure and Release gates are not removed by this separation; a concern PASS is not Version Qualification.
+
+#### Manual source-work admission
+
+The declared process executor MUST bind the exact operation, current Task/scope authority, base/source identity, applicable dependencies/role/resource predicates, permissions and unresolved findings. Assurance Plan currentness under `EXECUTION_ARCHITECTURE_STANDARD.md` §29.1 remains mandatory and may be established from durable manually collected facts. It neither requires a deployed runtime nor confers Gate PASS; absent, stale or ambiguous inputs fail closed. Required Release/finding sets, including explicit empty sets, remain bound under `ASSURANCE_PLAN_STANDARD.md` §12.
+
+Manual admission consumes the existing `SINGLE_WRITER_ADMISSION` contract and EXE_ARCH §§11.1.1/27.3–27.5: one designated logical writer serializes the protected work/role key, actual reservation/generation advancement and Claim, with every actually required resource binding **all-or-none** at the admission point. Accepted reservation/Claim and resource facts MUST be durably published and read back before implementation source writes. Uncertain publication or incompatible ownership blocks; it cannot be bypassed by renaming a Task concern, role, compatibility group or session. Optional machine/audit field recording is not permission to omit substantive generation/ownership truth, and is not a requirement for a new deployed CAS service.
+
+Recovery MUST either reconcile an actually accepted prior binding and its terminal/publication/resource/generation effects, or establish that no binding was accepted under EXE_ARCH §27.4. Missing optional historical fields alone do not establish invalidity or acceptance. New source delivery cannot retrospectively ratify an invalid/unproven Claim, erase actual prior side effects or release ambiguous ownership. Independent new concerns do not authorize work on an old protected key.
+
+#### Manual standards concern integration
+
+Before integration, the executor MUST fully read and record the applicable native surfaces: exact current PR HEAD and target, current Task/scope and dependencies, policy-selected Review, actual required Validation/checks, permissions, unresolved findings and governing Plan `CURRENT`. Pagination, failed/partial reads, unresolved conflicts, missing required checks, stale evidence or UNKNOWN currentness block. A policy that requires a native approval is not satisfied by relabelling a conversation comment as that approval.
+
+Use the actual native expected-head guard. Recheck the target immediately before requesting integration; stop/recompute if observed drift invalidates the evidence. Record the actual request's source identity and observed target. This manual procedure is a bounded read sequence, **not atomic source/target CAS**, and does not claim a source-side change counter for native surfaces. A race not prevented by the native mechanism remains an explicit residual limitation. Source delivery under this route MUST NOT be reported as qualification of EXE_ARCH §14.1–14.4; those guarantees remain required for implementations claiming that controller contract.
+
+After any attempt, reconstruct the result from durable native state. Bind actual source, target-before, integration SHA/tree and method as applicable, then perform the applicable compensating read over current admission surfaces. Unknown acknowledgement, unexpected source/target, invalidating target drift, a new blocker/conflict, incomplete read or failed compensation leaves the integration **UNRATIFIED**. No downstream READY/DONE/RQ is unlocked from it. An actual unexpected mutation is preserved as an incident; it is not rewritten as zero mutation or a successful Gate.
+
+Any subsequent ratification is a **fresh subject-bound decision by the existing declared integration/Release authority**, consuming exact actual integration SHA/tree, expected versus observed source/target, newly impacted dependencies/checks/Review/Validation, permissions, unresolved findings and Plan `CURRENT`. Carry adverse facts forward. A compensating read alone cannot establish an absent atomic guard, and no decision backdates a rejected/unknown admission. If the actual tree cannot be qualified, retain quarantine/UNRATIFIED and downstream hold, and route any repair through the existing authority/Task process. No new ratification authority, state dimension or event family is created here.
+
+#### Bounded new source-defect authoring with a held historical key
+
+EXE_ARCH23.6 is a separate prospective **authoring** procedure; the immutable
+acceptance procedure below stays read-only. Its owner is the existing current
+Product/Task/source process authority, not a Reviewer or a self-authorizing model.
+Before repair admission, publish/read back an explicit defect authorization with
+the original Task/held-key/finding refs, exact existing artifact/tree/blobs, its
+historical defects, minimum allowed semantic delta/files and new repair Task/ref.
+Record actual old/current source grants, ref/worktree write effects, all affected
+authorized integration consumers and pending requests, resource/effect applicability
+and full current Task/dependency/permission/finding/Assurance inputs. Missing or
+ambiguous **material** overlap facts block. Different Task/ref names, a closed PR,
+human ledger availability report or source-model PASS are not disjointness proof.
+
+After adoption and that actual boundary, the normal sole admission writer may
+accept only the new repair Task's own known-generation all-or-none Claim/resources.
+No old-key reset, terminal, Claim replacement, epoch or resource release occurs.
+Only that fresh admitted authoring Task can materialize permitted old source
+input on its new ref and apply the named defect delta. It cannot modify an old
+ref or acquire its grant. A broader replacement/rebuild or unresolved authorized
+old integration/external obligation remains held under the ordinary recovery
+rules. Do not relabel incompatible old work as a new concern to bypass them.
+
+Inspect and actually validate the entire candidate diff/current target, including
+inherited source and the changed delta; retain original source/negative tests,
+Review policy and all adverse findings. Scope/base/authority drift invalidates
+affected currentness. Before integration every actual affected consumer must
+bind only the new exact qualified source operation and reject delayed old
+authority. Use native expected-head guard, immediate target reread, actual outcome
+reconstruction and compensating checks; unknown effects remain UNRATIFIED/HOLD.
+
+After ratified current integration, publish/read back separate repair delivery.
+An original Task may consume that corrected artifact only under a prior explicit
+owner delivery amendment and its own fresh final delivery acceptance, consuming
+the actual ratified integration, full current gates and unresolved old incident.
+Preserve both histories, unique completion/dependency consumption and mandatory
+runtime limitations. Repair completion is not original-Task completion, adoption,
+runtime qualification or version RQ. The actual S04 operation requires its own
+evidence after this standard is adopted; this text grants no historical permission.
+
+#### Distinct immutable-artifact acceptance with an unavailable ledger
+
+This prospective route implements EXE_ARCH23.5. It is a distinct current source
+acceptance operation, not old Builder recovery or permission to modify/reapply
+source. The old protected key stays held/UNKNOWN without Claim, generation,
+resource or terminal mutation. It is limited to ADS standards-source delivery;
+actual runtime, deployment, scarce/external effects retain their obligations.
+Executors MUST satisfy the following ordered requirements. These uses of existing
+manual owner records introduce no new
+workflow state, event family, role, admission store or generation epoch.
+
+##### Preconditions for pre-effect selection
+
+The current Product/Task owners must first record the explicit Task-specific
+acceptance amendment, binding this adopted route, exact permitted artifact and
+the integration/process executor authorized to select it. This amendment grants
+no old Builder authority and is not itself an artifact-selection or delivery
+result. Its publication/readback must precede selection. Required Product Freeze
+and normative adoption must already exist; a Product proposal alone grants nothing.
+
+All six following facts, plus complete current Task/dependency/PR/check/Review/
+permission/finding inputs and governing CURRENT, must be established **before**
+the integration executor publishes its pre-effect selection. No integration
+outcome or final delivery receipt is required to exist at this point.
+
+1. **Exact existing artifact.** Identify its commit, tree and allowed file blobs,
+   original PR/producer provenance and historical defects. The artifact was
+   published before this decision. No new Builder edit, copy/reapply commit,
+   rebase, conflict repair or branch update is authorized by this route.
+2. **Explicit authority.** The current Product/Task contract permits delivery
+   by fresh artifact acceptance. The existing integration/process authority
+   is authorized to select the operation under the governing adopted standard.
+   A Reviewer cannot create this permission; a proposed document cannot supply it.
+3. **Actually disjoint protected effects.** Inspect the original grants,
+   Task/PR contracts, native facts and referenced authoritative stores. Show
+   that current source acceptance neither consumes/reassigns an old exclusive
+   binding nor exercises an old Builder grant. An UNKNOWN historical generation
+   is retained; an UNKNOWN *material overlap* fails closed. The human's ledger
+   availability statement alone proves none of these conditions.
+4. **Real source-acceptance boundary.** Identify the actual current authorized
+   integration consumer(s). They must durably exclude old Dispatch/Claim,
+   delayed old results and historical CI from qualifying current acceptance.
+   Establish the boundary before selection; after publishing selection, read it
+   back and verify that every affected authorized consumer binds only that
+   selected operation/artifact and current assurance before requesting integration.
+   A declaration, branch closure or list of known PRs alone is not that proof.
+   A still-authorized independent old integration consumer or unresolved old
+   protected integration request blocks this route.
+5. **Resource/effect applicability.** Inspect the actual required effects and
+   resources of this acceptance operation, and old effects that can affect its
+   safety. No absence is inferred from an unavailable ledger. An observed or
+   required uncertain external effect, exclusive resource overlap or authoritative
+   effect pointer retains its own stronger reconciliation/fence obligation.
+   Inaccessible evidence on a material acceptance boundary blocks. Unrelated
+   hypothetical private memory does not acquire canonical authority.
+6. **Fresh full assurance.** Inspect the entire actual artifact diff against
+   current target and permitted scope. Re-execute every applicable source/code,
+   schema/compatibility and negative-case check for the current candidate.
+   Re-evaluate selected Review and all carried findings. Historical CI or a
+   prior recommended Review skip is not current PASS. Any current required
+   independent Review must be genuinely independent and exact-subject bound.
+
+##### Selection, integration and post-effect verification
+
+The existing integration executor publishes and reads back a scope-bound
+**selection/authorization receipt**, identifying the existing Task, prior
+acceptance-amendment ref, exact artifact/source/tree, expected target, adopted
+owner refs, CURRENT, current assurance/finding refs, old-key HOLD/incident refs
+and the authorized integration operation. Its durable canonical receipt ref
+identifies this operation; equal SHA/tree values do not identify its authority.
+This is a manual authority record using existing GitHub evidence conventions,
+not a new workflow state/event enum, Claim or final Task-delivery result.
+
+After verifying the selected consumer boundary and rereading exact currentness,
+the executor may request integration. Apply this section's native expected-head
+guard and immediate target reread. Preserve request identity and acknowledgement;
+reconstruct the actual source, target-before, integration SHA/tree, method and
+native outcome, then perform its applicable compensating/post-effect reads.
+Record actual tested checkout SHA/parents/tree, not just run head/API base.
+
+Unknown acknowledgement, conflicting/late facts, failed/partial verification,
+unexpected integration or other invalidating drift means UNRATIFIED/HOLD under
+the existing manual route. Preserve actual effects and incident; never retry
+as presumed failure or infer Task completion. Only when actual integration and
+post-effect/current assurance checks satisfy the owning rule may that executor
+publish/read back the exact ratified integration result. An actual native merge
+or that integration result alone is still not the Task-delivery decision.
+
+##### Final Task-delivery decision and dependency consumption
+
+The existing Task/process executor makes a separate, fresh post-integration
+decision. It must consume the Task's prior acceptance amendment, selection
+operation/receipt, **actual ratified integration SHA/tree and source/target
+lineage**, complete post-effect verification, all applicable current required
+gates/dependencies/Review/Validation, permissions, carried findings, old-key
+HOLD/effect-owner refs and newly recomputed governing CURRENT. It cannot be
+published as successful delivery until all these inputs exist and are current.
+
+Publish and read back its explicit **final Task-delivery acceptance** and exact
+evidence refs through the existing Task result/completion record, then perform
+the existing native Task completion/routing updates with readback. This final
+accepted delivery record is the **only** decision in this route that can satisfy
+the Task delivery obligation and permit dependency satisfaction/derived READY.
+Selection, a merge request/ACK, CI alone, a bare native merge, an UNRATIFIED
+outcome or an integration-only result must never trigger those effects. Required
+gates remain required even if a native Task label was changed prematurely.
+
+Consumers bind the current Task, selection-operation ref and final exact
+integration identity to its canonical accepted delivery receipt. A duplicate
+request returns that existing receipt without another delivery acceptance,
+Task-DONE transition or dependency wake; any conflicting attempted operation
+requires explicit owner resolution, not last-writer-wins. Same-byte old Claim/
+result/validation has no current operation authority and cannot substitute for
+or overwrite selection, ratified integration or final delivery attribution.
+It causes no old-key generation/resource/terminal mutation. A newly exposed
+genuine material overlapping accepted binding follows the conflicts subsection's incident HOLD.
+
+| Ordered owner action | Evidence available at that point | Allowed consequence |
+| --- | --- | --- |
+| Product/Task owner authorizes acceptance amendment | Adopted route, current Task and exact allowed source scope | Permission to assess/select only; not Task DONE |
+| Integration executor selects artifact | All pre-effect selection preconditions; no future integration receipt assumed | Publish/read back selection; verify consumers; attempt guarded integration only |
+| Integration executor requests/reconstructs/verifies integration | Actual request/outcome and source/target/integration SHA/tree; post-effect/current gates | Ratified integration result or UNRATIFIED/HOLD; no delivery/dependency unlock |
+| Task/process executor decides and publishes final delivery | All final Task-delivery inputs: actual ratified integration, current gates and old-HOLD refs | Accepted delivery/readback may satisfy Task and wake true dependents once; otherwise HOLD |
+
+These are ordered uses of existing owner records and workflow semantics, not
+new lifecycle states. There is no requirement for final delivery evidence to
+exist before selection or for successful delivery before its integration.
+
+These conditions do not assert that the source boundary already exists for
+S01/S04. Actual applicability must be inspected after adoption. In particular,
+manual source integration's bounded race limitation remains explicit; it is
+not transformed into atomic CAS or a physical fence by this amendment.
+
+##### Conflicts, late facts and stop conditions
+
+A current source HEAD/target change invalidates affected evidence. A conflict or
+needed repair ends this route without source modification; ordinary Builder
+admission is still blocked until its real prerequisites are satisfied. A new
+Task/role/group/epoch cannot be used to perform those otherwise blocked edits.
+
+A late old proposal/result cannot acquire current acceptance merely by quoting
+an equal/larger generation or the same source bytes. Its actual history remains
+preserved. A genuine delayed accepted-binding receipt is recorded as history;
+if it reveals material overlap, an old authorized integration consumer/request,
+or a fence premise that was false, hold the current/downstream scope and
+reconcile the incident. Do not silently erase the old acceptance or current
+mutation, fabricate zero effects, or retroactively bless the earlier decision.
+
+An unexpected native merge/target mutation is not successful delivery. Preserve
+the incident and apply this section's UNRATIFIED/compensation and any fresh
+ratification requirements. No downstream readiness or RQ is inferred.
+
+If the actual source-acceptance boundary cannot be established, name that exact
+current capability/owner once. Do not rerun the unavailable-ledger request or
+an unchanged Product Review. This route does not promise unconditional
+liveness when a real safety predicate cannot be established.
+
+#### Source closure and deferred verification lineage
+
+Source-delivery conformance and runtime qualification MUST be reported separately. While unqualified, retain `REAL_NATIVE_CLAIM_AND_RELEASE_RUNTIME_NOT_PROVEN`, `REAL_HUMAN_DENY_E2E_NOT_PROVEN` and the version-required task-meta/Tally not-proven limitations; none becomes PASS from a source release. Required source closure/hidden-validation applicability and RQ still consume the exact integrated candidate and their actual owner rules.
+
+Where a project/demo verification obligation has been selected, the source delivery's durable handoff/closure MUST name its follow-up owner and Issue or equivalent ref, the tested standard's immutable adopted SHA and exact source/schema scope (or explicitly mark that future pin unselected until adoption), negative oracles, and outstanding limitations. Before the later demo is dispatched its exact standard pin and own admission/resource/cleanup contract MUST be resolved. For v4.15, controller verification planning is tracked by [#1231](https://github.com/kaicreator-mm/ai-development-standard/issues/1231), with ADS runtime-verification planner as routing owner until a mechanism owner is selected; external task-meta/Tally interoperability remains [#1210](https://github.com/kaicreator-mm/ai-development-standard/issues/1210). These follow-ups do not become bootstrap blockers of standards-source delivery. No universal demo prerequisite for every standards change is introduced.

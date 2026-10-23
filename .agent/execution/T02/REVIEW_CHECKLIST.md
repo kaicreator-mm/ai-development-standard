@@ -1,0 +1,2 @@
+# T02 independent code review
+Exact Version base/head, accepted T01 native source. Check namespace/Task/Attempt/adapter/provider physical key and duplicate identity digest, metric registry canonical unit/subsets, cumulative/delta, monotone watermark, retries, source-comparable clock, invoice revisions and settlement exclusivity, multiple currencies/coverages, privacy and completeness. Verify no invented physical proof, no common protocol/schema edits. Distinct required reviewer P0/P1/P2 PASS/BLOCK; no main merge.

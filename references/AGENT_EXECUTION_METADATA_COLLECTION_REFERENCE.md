@@ -241,7 +241,7 @@ A second revision uses the *same* `report_id`, `revision: 2`, a new distinct `r2
 
 ### 7.2 Latest-only v3 Issue comment example (object Manifest remains v1)
 
-The GitHub **comment** now uses the common \`<!-- ads:github -->\` marker and \`kind: report\`; its \`data\` is validated by \`schemas/github/v4.14/structured-interaction.schema.json\`. The durable OSS/S3 object **Manifest** in `7.1 still uses the established \`ads/task-report-manifest/v1\` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
+The GitHub **comment** now uses the common `<!-- ads:github -->` marker and `kind: report`; its `data` is validated by `schemas/github/v4.14/structured-interaction.schema.json`. The durable OSS/S3 object **Manifest** in §7.1 still uses the established `ads/task-report-manifest/v1` JSON dialect. The fictional digest below is illustrative; a real publisher computes/checks actual stored bytes.
 
 ~~~~markdown
 <!-- ads:github -->
@@ -269,7 +269,7 @@ LIMITS=PARTIAL collector coverage; billing UNKNOWN
 TASK_LEARNING=NONE_MATERIAL
 ~~~~
 
-No explicit \`derived publication identity\` or second \`ISSUE_COMMENT_REPORT\` intent is emitted. The GitHub publisher derives dedupe identity from **actual owning Issue + report_id + revision**, reads back the real comment and reconciles provider retries. GitHub Labels may mark the whole Issue, never an individual comment.
+No explicit `derived publication identity` or second `ISSUE_COMMENT_REPORT` intent is emitted. The GitHub publisher derives dedupe identity from **actual owning Issue + report_id + revision**, reads back the real comment and reconciles provider retries. GitHub Labels may mark the whole Issue, never an individual comment.
 
 ### 7.3 Suggested storage convention (not a forced vendor layout)
 
@@ -323,3 +323,31 @@ With no DB, the independent collector can reconstruct an index from **Issue comm
 4. A public Issue containing a restricted raw URL/secret is a publication failure even when document checksum matches.
 5. Duplicate/collision, missing paginated comments, ambiguous POST, provider rate limits, private drive permissions and disappearance of source objects all fail honestly, with Task authority unchanged.
 6. A Level 1 Issue note published independently before any collector exists remains valid; the collector may link it as an exact existing comment rather than duplicate it.
+
+## 8. v4.15 projection-only source/coverage crosswalk (illustrative, not a publishable v4 Schema)
+
+This section illustrates the **existing §10 observation semantics** as GitHub-safe projection choices; S02/#1205 will define/validate the exact current `ads/github/v4` YAML fields. Do **not** post the examples below as a GitHub machine record, and do **not** treat this reference as an adapter, second Task Contract or provider-independent billing API. The actual Tally consumer reads only source-qualified GitHub comments/native PR/CI/Review facts and has no access to the private manifest.
+
+| Observed source fact | Bounded GitHub-safe public meaning | Intentionally not inferred |
+| --- | --- | --- |
+| Native Host records a completed child tool invocation with provider call ID `call-7`, parent root `span-1`, and a second delivery of the **same** event | One counted physical tool call when the event ID, Attempt and binding are verified; `source=HOST`, coverage `PARTIAL` if sibling tools are not instrumented | Root `span-1` + child + duplicate are **not** three calls, and an unobserved tool is not `0` |
+| Provider usage receipt for `call-7`: 120 input and 20 output tokens, pricing table revision known, invoice absent | `OBSERVED/provider-reported` tokens in the call window; spend may be `INFERRED/pricing-revision` only if computed with source-bound rates; **billed** cost `UNKNOWN` | Provider usage != total Task tokens; estimated price != settled invoice or verified charge |
+| A CLI process exits 0 while the required Host semantic regression is missing | `SELF_REPORTED` Attempt result/exit and `UNKNOWN` independent semantic completion, linked to exact CI/Host facts that are actually available | Exit 0, valid YAML and a green optional check do not establish strict Task/Gate PASS |
+| Initial summary exists; an independent required CI verdict arrives only later | task-meta may create a **new immutable** EXECUTION_SUMMARY revision with updated own private manifest/digest and public verifier source; Tally separately reads actual native CI | Old GitHub body isn't edited; late CI source without new task-meta publication does not prove the collector captured it |
+| Two logical Agents share one GitHub transport login | Distinct declared operator IDs/sessions and source-bound Task/Attempt links, with actual adapter coverage | Transport login cannot merge the Agents into one role/session or authorize cross-namespace correction |
+| Private manifest is unavailable to a Tally GitHub-only reader | `manifest_ref/digest` is a source locator/integrity claim only; public fields remain readable if independently supported | Private URI inaccessible is **not** permission to query task-meta, infer missing measurement, or declare corrupt source bytes |
+| Collector misses the sole token hook but observes a Host wall timer | Host duration may be `OBSERVED` if scope/unit/clock basis are known; tokens, cache and billed cost remain `UNKNOWN` | Missing token/bill fields are not zero, and `capture_coverage=COMPLETE` is unsupported |
+
+### 8.1 Bounded publishable summary decision example
+
+Suppose the owning GitHub Issue is `#42`, one Agent Attempt `attempt-2`, and task-meta observes just one instrumented provider request and an exact Host check. A safe GitHub-visible **projection decision** (not syntax for any ADS Schema) is:
+
+- **IDENTITY:** exact owning Issue `#42`; accepted Attempt `attempt-2`; fully resolved source SHA; self-declared logical operator+session; source adapter revision.
+- **OBSERVED:** one distinct physical request, 120 input/20 output tokens in a *single covered request*; cite adapter receipt identity or safe digest (never the private receipt contents).
+- **PARTIAL:** only instrumented request(s) represented, with coverage limits explicitly stated; do not report entire Task total unless observed call set is complete.
+- **UNKNOWN:** actual billed cost, uninstrumented tool calls, cache tokens and remote output outside the observed scope.
+- **VERIFIER:** independently read Host check on exact tested SHA if available; unrelated CI, a partial green result, or the self-reported Attempt is not an accepted Task PASS.
+- **PRIVACY:** omit prompts/args/private Trace/credentials and any private URI whose contents are not authorized for the GitHub Issue audience.
+- **LEARNING:** `NONE_MATERIAL` absent source-backed applicable improvements; do not manufacture Task Learning evidence.
+
+S02 converts this semantic projection into a strict **single** `ads/github/v4` `kind: report` YAML `data` schema with valid/invalid machine fixtures, immutability and digest checks; S03 defines the GitHub-only reader/feedback; S05 performs the **actual** producer→GitHub→reader/feedback E2E. The existence of this reference does not satisfy those executable acceptances.

@@ -1,0 +1,2 @@
+# T02 implementation map
+Frozen R4 P1-03 §2 source owner. Reuse T01 v5 Schema as read-only strict source; T03 owns validator/compatibility. Implement bounded deterministic Python **source-only** reducer, no private collector or provider billing runtime, no normative new Registry. Required actual C02–C05/C12 fixtures and Python 3.14-compatible focused test. Real source receipt/clock/currentness fact absent ⇒ UNKNOWN.

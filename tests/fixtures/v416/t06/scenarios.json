@@ -1,0 +1,500 @@
+{
+  "schema": "ads/v416-t06-source-oracle/v1",
+  "scope": "bounded-source-only-not-provider-or-claim-pass",
+  "cases": [
+    {
+      "id": "G09_accepted_connected_positive",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "RECONSTRUCTIBLE"
+    },
+    {
+      "id": "A03_stale_profile",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": false,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_STALE_SELECTION"
+    },
+    {
+      "id": "G10_stale_task_pin",
+      "input": {
+        "historical_v1": false,
+        "current_task": false,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_STALE_SELECTION"
+    },
+    {
+      "id": "G10_history_is_not_live_permission",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": false,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_STALE_SELECTION"
+    },
+    {
+      "id": "G10_child_privilege_escalation",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read",
+          "write"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_AUTHORITY_ESCALATION"
+    },
+    {
+      "id": "G10_conflicting_claim",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": true,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_CONFLICTING_CLAIM"
+    },
+    {
+      "id": "G11_lost_provider_ack",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": false,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "HOLD_EFFECT_UNKNOWN"
+    },
+    {
+      "id": "G11_cancel_late_callback",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": true,
+        "late_callback": true,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "HOLD_LATE_CALLBACK"
+    },
+    {
+      "id": "G11_no_independent_verifier",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": false,
+        "github_readback": true
+      },
+      "expected": "STRICT_GATE_UNPROVEN"
+    },
+    {
+      "id": "G11_no_native_readback",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": false
+      },
+      "expected": "STRICT_GATE_UNPROVEN"
+    },
+    {
+      "id": "G12_historical_v1_no_new_required_ref",
+      "input": {
+        "historical_v1": true,
+        "current_task": true,
+        "profile_current": false,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": false,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": false,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "HISTORICAL_ONLY"
+    },
+    {
+      "id": "G10_claim_absent",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": false,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": true,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "REFUSE_NO_CLAIM"
+    },
+    {
+      "id": "G11_dispatch_done_not_provider_receipt",
+      "input": {
+        "historical_v1": false,
+        "current_task": true,
+        "profile_current": true,
+        "capability_evidence_current": true,
+        "role_eligible": true,
+        "claim_accepted": true,
+        "conflicting_claim": false,
+        "parent_authority": [
+          "read",
+          "write"
+        ],
+        "task_authority": [
+          "read",
+          "write"
+        ],
+        "role_authority": [
+          "read",
+          "write"
+        ],
+        "external_authority": [
+          "read",
+          "write"
+        ],
+        "child_requests": [
+          "read"
+        ],
+        "cancel_requested": false,
+        "late_callback": false,
+        "effect_possible": true,
+        "provider_commit_witness": false,
+        "independent_verifier_pass": true,
+        "github_readback": true
+      },
+      "expected": "HOLD_EFFECT_UNKNOWN"
+    }
+  ]
+}

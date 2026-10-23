@@ -178,5 +178,16 @@ class V414(unittest.TestCase):
         self.assertEqual(verify_markdown(markdown("intent",INTENT)),"SHAPE_VALID_ONLY")
         self.assertNotEqual(validate_record(envelope("intent",INTENT)),"ADMITTED")
 
+class V416NewReaderBridge(unittest.TestCase):
+    def test_v416_reader_regression_in_existing_ci(self):
+        """Keep historical v3/v4 suite and also execute new strict v5 reader tests."""
+        import test_v416_t03_reader
+        suite = unittest.defaultTestLoader.loadTestsFromModule(test_v416_t03_reader)
+        result = unittest.TestResult()
+        suite.run(result)
+        self.assertTrue(result.wasSuccessful(),
+            "v4.16 T03 source tests: " + repr(result.errors + result.failures))
+
+
 if __name__=="__main__":
     unittest.main(verbosity=2)

@@ -94,6 +94,23 @@ When intentionally handing off or abandoning the role before a normal result eve
 
 `ROLE_CLAIMED` is attribution/routing evidence, not a distributed lock. Project policy must explicitly define exclusivity if multiple operators are not allowed to work the same role concurrently.
 
+## Preflight and durable execution exit
+
+Before publishing an acceptance/start, validate the actual current wrapper/event
+and any Dispatch shape, then independently check EXE_ARCH sections 11/23.1/27/29.1
+engineering predicates. `SHAPE_VALID_ONLY` is not accepted admission or CURRENT.
+Publish/read back the real serialized decision before source/effects.
+
+Before final chat return, append the actual phase exit or partial/BLOCKED result
+using the existing applicable event plus linked evidence/prose. Surface the
+LOCAL_AGENT_HANDOFF_PROTOCOL section 8 contents: exact work/key/dispatch/source,
+producer versus receiver, actual admission/generation refs, required/observed
+resources, effect/publication requests and pending acknowledgements, command exits,
+findings, existing next owner/action and publication readback. Unknown stays
+UNKNOWN; do not manufacture a process stop, release, PASS or Task DONE. A crash
+requires checkpoints before effects, not an assumed finalizer. These are semantic
+contents, not new schema keys or a second terminal/event family.
+
 `TASK_CLAIMED` remains a valid Builder-specific compatibility event; new cross-role flows SHOULD prefer `ROLE_CLAIMED`.
 
 ## IMPLEMENTATION_READY example

@@ -19,6 +19,8 @@ Chat is a workspace and transport. It is not project state.
 
 This standard is normative for the semantics below, but an automation runtime is optional. A project MAY execute the same state transitions manually. Trunk/Fast Path remains valid for small, low-risk work.
 
+Standards-source delivery and runtime qualification are separate subjects. ADS's own source-only development uses the explicit standards-delivery contract in `RELEASE_STANDARD.md` §11.7A. Writing, reviewing, validating or integrating normative text, schemas, examples and contract-conformance tooling MUST NOT require prior deployment or qualification of the orchestration runtime being specified. Actual project/runtime protected effects retain all applicable requirements of this standard. A source-delivery result never proves those runtime capabilities.
+
 ## 2. Authority boundaries
 
 This document owns orchestration semantics only. It does not redefine domain authorities:
@@ -471,6 +473,8 @@ Do not repeatedly restart a known-broken provider without new evidence that infr
 
 ## 14. Merge Controller
 
+Sections 14.1–14.4 define the protected-effect contract of a selected Merge Controller implementation and any implementation claiming equivalent controller guarantees. They are not prerequisite runtime-qualification gates for ADS's own manual standards-source integration route explicitly defined in `RELEASE_STANDARD.md` §11.7A. That route does not claim atomic multi-surface observation, source-issued platform generations, or atomic source-and-target mutation when its native mechanism does not supply them. This is an explicit subject/mode boundary, not an inference from absent evidence, adoption level or tool choice. Manual source integration retains its own mandatory pre/post-read, native guard, uncertainty and downstream-hold rules. A project or runtime implementing protected effects cannot borrow the standards-source route merely because its repository also contains documents.
+
 The Merge Controller performs only deterministic merge operations whose prerequisites are satisfied.
 
 Before merge it re-reads current head/target and evaluates stale evidence/base drift.
@@ -654,6 +658,210 @@ Builder, Validator and Reviewer work MAY be executed by disposable timer/webhook
 
 A worker crash must be recoverable from GitHub facts alone: the replacement worker reads the dispatch state, claimed operator and published results, then resumes (same operator, incomplete work), supersedes and re-dispatches (different operator, no result), or does nothing (result already published). Timer workers are not required when webhook/event-driven execution is available.
 
+### 23.1 Pre-effect admission and durable checkpoints
+
+Before the first protected source write or other authorized effect, the designated
+admission writer MUST validate the proposed Dispatch/Claim against the applicable
+existing schemas and independently verify section 11/27 predicates: exact work,
+role, Task/Execution Pack, base/requested subject, native dependencies, authority,
+incompatible claims, actual generation, every required resource binding and the
+governing section 29.1 Assurance Plan CURRENT. Where executable shape validation
+is available, run it before publication; for the current GitHub wrapper use
+`scripts/verify_github_structured_interaction.py <record> --kind event` and the
+existing dispatch schema. Its `SHAPE_VALID_ONLY` result proves syntax only.
+Schema failure, stale/unknown currentness, unknown required resources or an
+ambiguous admission outcome MUST prevent acceptance and protected execution;
+rejected proposals create no canonical Claim, partial binding or generation advance.
+
+The actual serialized all-or-none admission and its readback MUST precede work.
+Checkpoint material source/effect requests, their acknowledgement/readback and any
+pending publication before a replacement could depend on them. A crashed worker
+cannot be assumed to run a finalizer. Optional audit fields do not become new
+mandatory schema fields; the substantive decisions still require durable evidence.
+
+### 23.2 Recovery inventory and authority
+
+The existing current recovery/process controller MUST publish a bounded inventory
+on the owning work item: repository/work/role/protected key; exact authority and
+Task/Execution Pack refs; source/base/target; all dispatch, admission, generation,
+terminal and publication refs; native dependencies, permissions, Review/Validation
+and unresolved findings; actually required and observed resource/effect sets;
+and next receiving owner/action. Read all pages and follow authoritative pointers
+to closure. Explicit empty sets need inspected scope; no declaration is not proof
+of nonallocation. Record original producer versus recovery-observer provenance.
+
+Classify the old outcome as proven accepted, proven rejected/unadmitted, or
+uncertain. Preserve accepted bindings and their owning cancellation authority;
+never call an accepted active Claim unclaimed. Preserve rejected source artifacts
+and actual effects without ratifying the old Claim. Unresolved referenced stores,
+pending protected requests or partial reads hold the affected scope. Hypothetical
+private memory is not an extra authority store: original conversation/model/provider
+availability MUST NOT be a recovery prerequisite. A fresh receiver uses GitHub and
+its resolvable evidence pointers; it never impersonates the absent producer.
+
+### 23.3 Same-key reconciliation and source-effect fencing
+
+Sections 11.1/11.2 and 27.3-27.5 remain the only admission/terminal authority.
+For the bounded standards-source route under RELEASE_STANDARD section 11.7A,
+the current controller MUST establish and publish the following before replacement:
+
+1. Identify the actual common serialized admission writer, all outstanding old
+   grants and acceptance-capable consumers, including source integration. Order
+   old decisions, prospective revocation and replacement through that authority.
+   Comment IDs, timestamps, a complete snapshot or a maximum published number
+   are not that serialization order. An independent writer outside it means HOLD.
+2. Reconcile every referenced/observed pending acceptance as accepted (actual
+   composite binding/generation), rejected (no accepted binding), or uncertain.
+   Resolve accepted active bindings through their owning cancellation and actual
+   resource/effect obligations. Still uncertain means HOLD under section 27.4.
+3. Prospectively revoke old grants/dispatch eligibility at the same authority;
+   read back the decision and verify every affected admission/integration consumer
+   rejects the revoked authority. An old autonomous writer able to accept work
+   needs actual drain/reconciliation or a proven common acceptance fence; a
+   revocation comment alone is insufficient. Quarantine old source branches/PRs
+   from acceptance with immutable provenance. Branch exclusion is not a process
+   stop, physical fence, released capacity or evidence of zero external effects.
+4. Reconstruct the exact current generation and accepted binding frontier from
+   those reconciled decisions, with predecessor refs and actual before/after
+   transitions. UNKNOWN forbids a recovery barrier, reservation, successor Claim
+   or source write. Never reset an unknown counter to zero, jump above published
+   lower bounds, or rename a work/role/group key to evade it.
+
+Fence completion requires all four evidenced predicates and the actual resource/
+effect obligations. Re-read that fence, exact source/base/Task, current findings,
+permissions and governing CURRENT immediately before the ordinary same-key
+all-or-none reservation/Claim. Publish/read back its real once-only generation
+decision before successor work. Recovery itself grants no Validation/Review PASS,
+Task DONE, dependent READY, integration acceptance or Release Qualification.
+
+Late-publication precedence follows accepted serialized decisions. A genuinely
+accepted pre-revocation Claim remains accepted history and blocks replacement
+while active. A post-revocation old proposal is STALE with zero canonical mutation,
+even if it quotes an equal/larger generation or is a shape-valid GitHub comment.
+A delayed genuine acceptance receipt is historical-only after its binding and
+terminal were reconciled. If it exposes an omitted accepted binding, the claimed
+fence was false: HOLD successor/downstream, preserve the incident and actual
+effects, and reconcile at the common authority. Never retroactively erase it.
+Late old source results cannot qualify the new exact candidate or revive terminals.
+
+An observed external effect, unknown protected-effect request or required resource
+outside that source fence retains its own stronger reconciliation/physical-fence
+obligation. If any authority, pending outcome, exact frontier or affected consumer
+cannot be established, name that precise surface, existing owner and next safe
+action and retain its scoped HOLD. Any materially different recovery authority
+design requires its owning Product/L2/Task amendment before use, not a fabricated
+counter or repeated request for private chat history.
+
+### 23.4 Exit, receiving contract and proportional continuation
+
+Publish semantic exit/checkpoint contents through existing events/evidence under
+LOCAL_AGENT_HANDOFF_PROTOCOL sections 8/12: actual outcome (including partial,
+blocked, cancellation or stop), exact identities, pending effects/publications,
+resource disposition, findings and next receiver/action with readback. Logical
+execution terminal is distinct from source acceptance, physical cleanup and
+Task completion. A replacement may be a fresh context of any capable provider.
+
+Reuse exact current accepted evidence; section 29.5 still carries adverse findings
+and rejects review shopping. An authorized changed successor needs only the
+actually affected required Review/Validation, with explicit impact and per-finding
+disposition; do not mechanically reopen unchanged Product/L2/DAG or create a
+runtime demo to deliver source. Preserve all applicable stronger gates and keep
+independent work moving. Native/runtime capabilities remain unproven until their
+separately scoped real execution; a local source-decision model is not that proof.
+
+### 23.5 Distinct immutable-artifact source acceptance
+
+An unavailable historical ledger does not authorize same-key replacement. The
+old key and UNKNOWN generation remain held under sections 23.3/27.4. For ADS
+standards-source delivery only, RELEASE_STANDARD11.7A's distinct immutable-artifact
+route MAY satisfy an existing Task's delivery obligation through a fresh current
+acceptance operation. It grants no Builder write, reservation, Claim, generation
+advance, epoch/key rename, resource reassignment/release or old-role terminal.
+
+Before selection, the Product/Task owners MUST publish/read back the explicit
+Task-specific acceptance amendment under an adopted standard. The integration
+executor MUST establish exact pre-existing artifact identity, actual disjoint
+protected effects, actual current consumer boundary, resource/effect applicability,
+fresh full assurance and governing section 29.1 CURRENT. UNKNOWN historical
+generation is preserved; UNKNOWN material overlap blocks. A comment, closed PR,
+same bytes or the human's ledger availability report proves none of these facts.
+An unresolved authorized old integration consumer/request or material external
+obligation retains its stronger reconciliation/fence requirement.
+
+The three ordered decisions are selection/authorization, actual integration
+ratification after post-effect verification, and separate final Task-delivery
+acceptance. Only the last, published/read back under all current applicable gates,
+can satisfy delivery and permit true dependency readiness. Their exact inputs,
+idempotency and UNRATIFIED behavior are owned by RELEASE_STANDARD11.7A. Future
+integration/final receipts are not prerequisites for pre-effect selection.
+
+Late old results, including same-byte results, cannot substitute current operation
+authority. A genuine newly exposed material overlapping accepted binding MUST
+hold the affected acceptance/downstream scope and preserve both histories and
+actual effects. This route does not qualify native controller races, runtime
+cleanup or Version RQ. If a real acceptance boundary cannot be established, name
+the precise missing capability/owner; do not repeat unavailable-ledger requests
+or unchanged Product Review.
+
+### 23.6 Bounded new source-defect repair while a historical key stays held
+
+Section 23.5 remains read-only. A genuine defect discovered in its existing
+artifact can require **new authoring**, which that acceptance operation cannot
+authorize. For ADS standards-source only, the current Product/Task and source
+process owners MAY explicitly authorize a separate, minimal defect-repair Task
+under RELEASE_STANDARD11.7A's bounded source-defect procedure. This is not recovery,
+replacement or a renamed continuation of the held Builder key. The original key,
+unknown generation, accepted-binding uncertainty, resources and terminal history
+remain unchanged. A new Task ID, branch name or proposed rule alone grants nothing.
+
+Before any repair admission, its adopted authority and prior owner amendment MUST
+identify the actual defect/finding, exact existing artifact/source/tree/blobs,
+original Task and held-key incident, narrowly permitted semantic delta and files,
+fresh Task/branch/executor and actual current acceptance consumers. The owner
+must distinguish the new defect obligation from resuming the original Builder.
+The original Task must not be silently repurposed or declared complete.
+
+Actual disjointness MUST be established, not assumed from different identifiers:
+inspect old source grants/native requests, precise writable Git refs, worktree
+effects, current consumer permissions and pending requests, and every applicable
+resource/external obligation. The repair may write only its new authorized source
+ref/worktree. It cannot write the old ref, exercise/reassign an old grant, release
+old resources, alter an old frontier or directly integrate into a protected target.
+Every affected authorized integration consumer must reject late old authority
+and consume only the new exact independently qualified operation. An unresolved
+authorized old integration consumer/request, unknown material effect overlap,
+scarce binding or inaccessible material effect pointer retains HOLD and its
+stronger reconciliation/fence obligation. Unknown historical generation alone
+does not prove material overlap, nor does it prove that none exists. A declaration
+or unavailable ledger cannot establish this boundary.
+
+Only after that actual boundary and full governing §29.1 CURRENT are published
+and read back may the ordinary designated single writer admit the **fresh repair
+Task's own known key**, including all required resource bindings and generation
+transition under §§11/27. No generation/epoch compatibility exception is added.
+The old key is not admitted, terminated, renumbered or released. If the operation
+is actually a replacement for ambiguous ownership, ordinary §23.3/27.4 applies
+and this procedure is unavailable.
+
+The exact old artifact is untrusted source input/provenance, never execution
+permission or historical PASS. Materializing its permitted content on the new
+Task branch and applying the authorized minimal defect delta is attributable
+only to that fresh admitted Task; it is not permission for a general rebuild,
+feature change, arbitrary rebase or conflict repair. The complete resulting diff
+against current target, inherited material and changed delta all require actual
+current source/negative/compatibility checks and the owning Review policy. Scope
+or base drift requires fresh owner/currentness treatment; an earlier PASS cannot
+qualify changed source by implication.
+
+Fresh guarded integration, compensating readback/ratification and separate final
+delivery follow RELEASE11.7A. The repaired artifact may satisfy the original
+Task's delivery only after its owners explicitly bind the exact new integrated
+artifact and current gates in a prior delivery amendment, followed by actual
+separate final acceptance. Neither new Claim, source copy, CI, native merge nor
+repair-Task completion alone closes/wakes the original Task. Duplicate or late
+old results cannot supply that authority or produce a second completion. This
+source-only procedure proves no runtime/native fence or Version Qualification.
+
 ## 24. Version-scoped Validation Handoff Queue
 
 Projects MAY expose a stable version-level validation queue, for example:
@@ -819,6 +1027,10 @@ If a crash, timeout, transport loss, or publication failure makes the outcome of
 Until reconciliation determines the durable outcome, replacement admission for the affected claim/resource set is blocked. Recovery MUST either reconstruct the already-accepted all-or-none binding, prove that no accepted binding exists, or surface `BLOCKED/UNAVAILABLE`; it MUST NOT guess from transient locks, process memory, queue state, ACK/progress, or individually observed per-key writes.
 
 These rules reuse the existing GitHub/repository fact plane, section 11 Claim lifecycle, existing runner/resource owners, and existing Interchange family. They create no second scheduler/state database, durable Availability owner, or new Exchange family.
+
+For bounded missing-receipt recovery, apply the inventory and common-authority
+fence procedure in section 23.2-23.3. It does not weaken this ambiguous-outcome
+hold or authorize a numerical generation jump.
 
 ### 27.5 Atomic protected claim generations and lawful unclaimed dispatch reroute (v4.11, additive)
 

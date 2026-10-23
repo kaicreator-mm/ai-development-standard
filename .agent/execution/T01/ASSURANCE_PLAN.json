@@ -1,0 +1,147 @@
+{
+  "protocol_version": "ai-dev-assurance/v2",
+  "owner_family": "assurance-plan",
+  "predecessor_protocol_version": "ai-dev-assurance/v1",
+  "assurance_plan_id": "ads-v416-t01-assurance-b6d147eac",
+  "operation_id": "t01-optin-v5-source-contract",
+  "subject_ref": "#1265",
+  "subject_identity_ref": "sha:6d147eac6c86eff620d3695a46ccbb3be452debb",
+  "identity_binding": "exact-sha",
+  "finding_disposition_policy": "p2-explicit-p3-optional",
+  "finding_carry_forward_policy": "unresolved-valid-findings-carry-forward",
+  "activities": [
+    {
+      "assurance_id": "T01-REVIEW",
+      "kind": "review",
+      "policy": "required",
+      "mode": "single-independent",
+      "coverage": [
+        "Exact public v5 source compatibility"
+      ],
+      "independence": {
+        "context": "required",
+        "model": "none",
+        "executor": "none",
+        "evidence": "required"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    },
+    {
+      "assurance_id": "T01-TEST",
+      "kind": "validation",
+      "policy": "required",
+      "mode": "executable-validation",
+      "coverage": [
+        "Actual JSON Schema Draft 2020-12 C01,C06-C10"
+      ],
+      "independence": {
+        "context": "none",
+        "model": "none",
+        "executor": "none",
+        "evidence": "none"
+      },
+      "depends_on": [],
+      "collaboration_selected": false
+    }
+  ],
+  "assurance_floor": {
+    "composition": "owner-scoped-conjunctive-floor",
+    "requirements": [
+      {
+        "requirement_id": "T01-REVIEW",
+        "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md#Stage-2.6",
+        "gate_ref": "source-bound-independent-review",
+        "policy": "required",
+        "strength_ref": "#1265:review:required"
+      },
+      {
+        "requirement_id": "T01-TEST",
+        "owner_ref": "standards/VALIDATION_STANDARD.md",
+        "gate_ref": "targeted-conformance",
+        "policy": "required",
+        "strength_ref": "#1265:targeted-conformance"
+      }
+    ]
+  },
+  "concern_resolutions": [
+    {
+      "concern_id": "T01-REVIEW",
+      "owner_ref": "standards/DEVELOPMENT_WORKFLOW.md#Stage-2.6",
+      "gate_ref": "source-bound-independent-review",
+      "baseline_requirement_ref": "T01-REVIEW",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1265",
+        "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T01-REVIEW",
+      "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    },
+    {
+      "concern_id": "T01-TEST",
+      "owner_ref": "standards/VALIDATION_STANDARD.md",
+      "gate_ref": "targeted-conformance",
+      "baseline_requirement_ref": "T01-TEST",
+      "owner_permission": {
+        "decision": "DENY_REDUCTION",
+        "authority_ref": "#1265",
+        "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+      },
+      "predicate_proofs": [],
+      "resolution": "BASELINE",
+      "selected_requirement_ref": "T01-TEST",
+      "currentness_ref": "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    }
+  ],
+  "cross_owner_composition": {
+    "policy": "conjunctive-no-cancellation",
+    "concern_resolution_refs": [
+      "T01-REVIEW",
+      "T01-TEST"
+    ],
+    "cancellation_allowed": false
+  },
+  "selected_path": {
+    "rule": "floor-or-stronger-after-valid-owner-reductions",
+    "selected_requirement_refs": [
+      "T01-REVIEW",
+      "T01-TEST"
+    ],
+    "relation_to_floor": "SATISFIES_FLOOR"
+  },
+  "currentness_binding": {
+    "rule": "all-components-exact-current",
+    "subject_identity_ref": "sha:6d147eac6c86eff620d3695a46ccbb3be452debb",
+    "owner_authority_refs": [
+      "#1261@6338348925",
+      "#1261@6338359775",
+      "#1261@6338768231",
+      "version/v4.16@6d147eac6c86eff620d3695a46ccbb3be452debb"
+    ],
+    "owner_authority_digest": "gitblob:6c886f13b710152b50e89fc4882a4af29256d61e",
+    "proof_input_refs": [
+      "#1261@6339159582",
+      "#1265@6338860801",
+      "https://api.github.com/repos/kaicreator-mm/ai-development-standard/issues/1265/dependencies/blocked_by"
+    ],
+    "proof_input_digest": "gitblob:e0407eefead1131602cdde301a2ef0e7dc6c68d2",
+    "task_pack_ref": "https://github.com/kaicreator-mm/ai-development-standard/issues/1265",
+    "task_pack_digest": "gitblob:507039278369a1532421bef7367e2b065379337d",
+    "release_decision_refs": [],
+    "release_decision_digest": "gitblob:0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc",
+    "unresolved_finding_refs": [],
+    "unresolved_finding_digest": "gitblob:0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc",
+    "binding_digest": "gitblob:1f46ba8852add1f09f06002b79a5c66261ca4480",
+    "state": "CURRENT"
+  },
+  "aggregation": {
+    "policy": "finding-union-blocker-dominance",
+    "blocker_resolution": "unresolved-valid-blocker-dominates",
+    "majority_vote_for_correctness": false,
+    "conflict_route": "BLOCKED pending owner disposition"
+  },
+  "completion_predicate": "Executed v5 official Schema tests and exact independent Review before merge; no external adoption until immutable main pin."
+}

@@ -1,0 +1,36 @@
+pack_id: ads-v416-t06-jit-b6d147eac
+task_id: T06
+repository: kaicreator-mm/ai-development-standard
+version: v4.16.0
+base_sha: 6d147eac6c86eff620d3695a46ccbb3be452debb
+task_pack_ref: https://github.com/kaicreator-mm/ai-development-standard/issues/1270
+branch: task/v416-t06-agent-governance
+parent_issue: "#1261"
+agent_freedom: F1_BOUNDED_IMPLEMENTATION
+pinned_standard_revision: 6d147eac6c86eff620d3695a46ccbb3be452debb
+generated_by: chatgpt-web:ads-v416-t06-jit-controller
+generated_at: "2026-10-22T11:03:00Z"
+dependency_completion: []
+material_paths:
+  - standards/EXECUTION_ARCHITECTURE_STANDARD.md
+  - standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md
+  - standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md
+  - schemas/dispatch.schema.json
+  - schemas/agent-capability-profile-v1.schema.json
+  - schemas/agent-capability-evidence-v1.schema.json
+  - schemas/role-execution-profile-v1.schema.json
+  - docs/implementation/4.16.0/R6_AGENT_AUTHORITY_OUTCOME_REPAIR.md
+  - docs/implementation/4.16.0/G_AGENT_OWNER_CROSSWALK.md
+  - scripts/test_v416_t06_agent_governance.py
+  - tests/fixtures/v416/t06/
+core_artifacts:
+  - MANIFEST.yaml
+  - EXECUTION_CONTRACT.md
+  - TEST_MATRIX.yaml
+  - FAILURE_MATRIX.yaml
+  - IMPLEMENTATION_MAP.md
+  - REVIEW_CHECKLIST.md
+retention: durable
+pack_state_at_generation: PACK_CURRENT
+optional_artifacts:
+  - ASSURANCE_PLAN.json
