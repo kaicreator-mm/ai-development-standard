@@ -452,7 +452,7 @@ def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
         return {"complete": False, "statuses": []}
     rows, cursor, seen = [], None, set()
     complete = False
-    for page in pages:
+    for index, page in enumerate(pages):
         if (type(page) is not dict or page.get("cursor") != cursor or
             type(page.get("comments")) is not list or
             page.get("status") != 200 or len(rows) + len(page["comments"]) > 4096):
@@ -460,7 +460,7 @@ def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
         rows.extend(page["comments"])
         next_cursor = page.get("next")
         if next_cursor is None:
-            complete = True
+            complete = index == len(pages) - 1
             break
         if type(next_cursor) is not str or not next_cursor or next_cursor in seen:
             break
@@ -481,7 +481,7 @@ def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
             if type(item.get("id")) is not int or item["id"] < 1:
                 statuses.append("UNVERIFIED")
                 continue
-            if parsed["kind"] != "report":
+            if parsed["kind"] != "report" or parsed.get("schema") == "ads/github/v3":
                 statuses.append(disposition)
                 continue
             subject = parsed["data"].get("subject")
