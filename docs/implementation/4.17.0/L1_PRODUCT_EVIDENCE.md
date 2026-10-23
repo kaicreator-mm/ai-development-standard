@@ -72,4 +72,73 @@ These are Git **blob** identities from the provisional version/v4.16 candidate, 
 3. Re-read Final Validator/Release Qualification and actual immutable v4.16 qualified predecessor **before** approving Product Freeze and effective v4.17 source compatibility. Pending v4.16 must not be silently treated as released.
 4. Product R0 → independent acceptance → Product Freeze → L2 Freeze → Task DAG Freeze → version branch implementation. Source-only PRD is not a Task/Claim/Runner; no main merge.
 
-**Status at authoring:** SOURCE_READ, PRD_R0_CANDIDATE, VALIDATION_NOT_RUN, REVIEW_NOT_RUN, PRODUCT_FREEZE_NO, V417_IMPLEMENTATION_NOT_RUN.
+**Historical R0 status:** SOURCE_READ, PRD_R0_CANDIDATE, VALIDATION_NOT_RUN, REVIEW_NOT_RUN, PRODUCT_FREEZE_NO, V417_IMPLEMENTATION_NOT_RUN. Later independent R0 Review and author R1 repair are in §6.
+
+## 6. Product R1 — independent R0 Review disposition and exact-source gap adjudication (prospective)
+
+**R0 independent Review:** [#1300 comment #6365054251](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365054251), inspected H `1056c36be31e6aae83ff3ca5e012fbed67b71681`, L1 blob `7e4a686f33e46599b20b9cb01ac9eb3ff49e8be0` and PRD blob `8505e5fd2c67ace9c14fe15c8abe9835c085f76b`. Verdict `NEEDS_REVISION / P0=0 P1=2 P2=2 / PRODUCT_FREEZE_READY=NO`. This is **author-owned R1 repair**, not independent reviewer approval; final exact R1 SHA/blobs will be recorded after writes.
+
+### Finalized R1 Product classification by current provisional owner
+| Source classification | Concerns | Normative v4.17 authoring disposition |
+| --- | --- | --- |
+| `ALREADY_NORMATIVE` | C01 #1280, C02 #1281, C05 #1284 | **No normative rewrite.** Retain source-qualified tests/examples and product rationale, route execution failures to original owner. Do not require implementation Tasks for these Concern labels. |
+| `DOGFOOD_GAP` | C03 #1282, C04 #1283, C06 #1285, C07 #1286, C09 #1295, C11 #1297, C12 #1298 | Keep bounded existing-owner positive+negative Golden, capability matrix or reference-only public join; do not create new gate, decision protocol, provider metrics or schema by implication. |
+| `TRUE_BOUNDED_SPEC_GAP` | C08 #1287 and C10 #1296 | Candidate narrow ADS semantic clarification only: source-qualified trajectory/denominators, and consumer-facing dependency evidence/currentness. Tally owns derived candidate state/actions, not ADS. Future Task admission still needs Product+L2+DAG Freeze. |
+
+**Authoritative source-owner pins unchanged from §2.** C08 is scoped to GitHub Agent Interaction §10 and v5 source interpretation, **not** modifying `schemas/github/v4.16/report.schema.json` bytes. C10 is scoped to GitHub Agent Interaction §16.6–16.7, Context Engineering §2–3 and Skill Procedure §6–8; `EXECUTION_ARCHITECTURE` §29.6 already handles native Dispatch but not Tally business-derived Candidate eligibility. Derived assessment is never a new ADS event/Claim/Gate lifecycle.
+
+### C08 R1 semantic definitions — count only source-qualified observation
+
+All labels below are **optional bounded analysis concepts, not public v5 enums, fields or mandatory tracing**:
+
+| Concept | Qualification / stable identity | Not sufficient |
+| --- | --- | --- |
+| `VersionState` | Exact repository/source version or artifact SHA/blob+governed strategy/goal reference+scope+independently resolvable evidence owner, with one unique analysis key | Timestamp, Git diff, source branch label alone or untrusted model explanation |
+| `Transition` | One distinct source-qualified causal predecessor→successor operation between VersionStates with observed ordering/native lineage and a stable operation/ref key; dedupe same source occurrence | Repeated event delivery, parallel incomparable branches, approximate wall clock or manufactured sequential sort |
+| `Pivot` | Qualified Transition plus actual authoritative strategy/goal **change** under same comparison scope; governing owner and before/after strategy intent must be evidenced | Source code change without goal/strategy owner decision; inferred intention from failed tests |
+| `Revisit` | Qualified Transition from a departed strategy lineage, with an earlier witnessed A→B departure and new A′ *owner-verified strategy equivalence* (same governed strategy/goal reference or supported compatibility/equivalence evidence, including scope/currentness); exact file SHA need not equal A | Same command twice, failed rollback, merely reverted code text, A and A′ inferred similar from descriptions |
+
+**Denominator and missingness truth:** `D_pivot` = unique independently witnessed comparable **Transition opportunities** with qualified before/after owner-backed strategy identity and in-scope change eligibility; `N_pivot` = those D_pivot with a witnessed strategy/goal change. `D_revisit` = unique witnessed comparable transition opportunities with an **observed** prior departure, adequate known lineage/history and authoritative strategy equivalence predicate resolvable on that opportunity; `N_revisit` = those D_revisit with actual qualified return to an earlier departed strategy. One transition can be eligible for both metrics but each is counted at most once **within each** metric; no source-independent `N/D` generalization. Opportunities whose intermediate version/branch ordering, owner-goal identity, capture coverage or correction are UNKNOWN are **explicit UNKNOWN/excluded from numerator *and* denominator**, with `unknown_opportunities` and observation coverage disclosed separately; no missing-as-no-Pivot. If all eligible opportunities absent then denominator 0 ⇒ `NOT_COMPARABLE/INSUFFICIENT_EVIDENCE`, **not 0%**. A partial trace subset rate cannot be sold as global Agent success, improvement or behavior frequency. Multiple parallel causal paths can be counted independently only if their stable qualified transition identities and eligible opportunity basis are distinct; no artificial global serial order.
+
+**Counterexample pairs:**
+- ACT: A(source-strategy=goal-X, exact sha A) → B(goal-Y, sha B) → A′(goal-X, SHA C, owner-qualified equivalence) has 2 distinct observed strategy change Transitions. `D_pivot=2,N_pivot=2`. Only second Transition has witnessed earlier departure and qualifying return: `D_revisit=1,N_revisit=1` under the scoped opportunity rule.
+- ABSTAIN: A→B followed by a failed filesystem reset or same command replay without new governed strategy/equivalence evidence => `Revisit` NOT proven; disputed missing B→A′ evidence is UNKNOWN and contributes to neither N nor D. Incomparably parallel A/B histories cannot be temporally sorted into a Pivot.
+- TRUE NEGATIVE: fully witnessed change to new code while strategy owner remains goal-X, and all required before/after strategy identities are resolved: `D_pivot=1,N_pivot=0` (do not force ABSTAIN for lawful unchanged strategy).
+
+### C10 R1 source-derived validity and requalification truth table
+
+**Dependency identity:** derived user-visible recommendation/context/eligibility must retain the bounded set of **material public report/native source claims it actually consumed**: canonical GitHub repository/Issue/native comment ID+digest, originating report namespace/id/revision, Task/Attempt/ADS pin/profile, actual source and owner/readback. Do not make every historical report globally mandatory; only inputs that actually support a material decision are relevant. Native GitHub correction owner/currentness resolution in GitHub Interaction §16.6 controls **input facts**, not any new Tally Candidate lifecycle.
+
+| Source evidence read on future material consumption/promotion | ADS consumer qualification of dependent premise | Tally/Host/DomainHarness boundary |
+| --- | --- | --- |
+| `VERIFIED_CURRENT` with complete bounded pagination, correct owner/target digest, applicable source and surviving source evidence | Eligible for **further owning qualification**, not auto-PASS or automatic application. A correction to unrelated nonmaterial evidence does not invalidate an independent premise. | Tally may assess Candidate via existing business rules; actual Task/Build/effect requires native authority and K admission. |
+| `VERIFIED_REVOKED_OR_STALE` by aligned authorized REVOKE/REDACT or material source correction that negates a consumed premise | Dependent conclusion is **no longer qualified for a NEW material selection, promotion, or admission** until independently requalified. Preserve original bytes/lineage and prior observed decisions. A replacement report is a separately verified new source proof. | Tally recalculates only affected Context/Candidate; already-running occurrence remains exact BUILD-pinned, old Host/Task receipts unchanged. New rollback needs existing authorized owner path. |
+| `UNVERIFIABLE_OR_PARTIAL` (missing page, 403/429 exhaustion, wrong source SHA, absent owner witness, checksum conflict, mixed-profile incompatibility) | For a *materially dependent* NEW use, `UNKNOWN/INSUFFICIENT_EVIDENCE`: **no positive qualification by absence**; bound retries and refer to owner. | Do not auto-revoke historical Build; Tally must fail closed on new candidate relying on unknown evidence. |
+| `FOREIGN_DISPUTED` or malformed/other-namespace correction (no target-owner match) | Does **not** revoke verified source by itself. Preserve DISPUTED/UNVERIFIED notice and independently check whether a new currentness/authority conflict exists. | No speculative cascade invalidation or secret tombstone. If a material currentness conflict remains unresolved, fresh selection must remain UNKNOWN. |
+
+**Boundary timing:** reevaluate at each material **new** context assembly, candidate ranking or adoption decision, before *new* execution/BUILD authorization, and when stale correction is newly observed at the next lawful consumption checkpoint. No synchronous polling requirement, no retroactive false Task FAIL, no automatic running Package mutation/rollback, no new ADS Gate. Nonmaterial corrected metrics cannot invalidate unrelated verified procedure claims; where support is mixed, retained independent premises may still qualify without relying on the revoked input.
+
+**Pairs:** (a) owner-aligned correction revokes sole R1 support for P ⇒ P not eligible for a new Task until separately requalified, old P-running BUILD unchanged; (b) unrelated correction to Q ⇒ P retains valid independent sources; (c) cross-namespace DISPUTE about R1 with verified original intact ⇒ no automatic revocation; (d) partially paginated GitHub history ⇒ UNKNOWN for new relying decision, not clean absence or 0; (e) later owner-verified replacement source can restore future eligibility through ordinary Tally/owner decision, not an ADS automatic approval.
+
+### C09 / C07 / C11 / C12 bounded public-reference and compatibility evidence (R1 P2 closure input)
+
+**Illustrative reference-only joined journey, NOT a wire payload:** `canonical GitHub Task Issue/Attempt/actual accepted Claim` + `ADS pinned public EXECUTION_SUMMARY (report_id/revision/publisher_namespace/native comment URL+ID/digest/source_refs)` → Tally C GitHub completes bounded readback and forms *local/advisory decision* with `experience_ref/procedure_revision` → accepted native Task/Dispatch/BUILD and independently witnessed Host/K Effect where actually authorized → Tally publishes **existing** `EXPERIENCE_USE_FEEDBACK` referencing source-qualified current Task/Attempt, experience/procedure revision, epistemic phase and source refs, with publisher+ADS subject pin, then native GitHub identity/digest readback. Do not publish Tally's local decision schema as a new ADS record, put raw manifest in feedback, or treat source refs as authenticated without resolving their native authority. If K/Host receipt is private/unobservable, the public “effectiveness” join stays `UNKNOWN`, even if feedback phase is self-reported APPLIED. `§28.2` reconstructible delegation is authority-bearing causation; this Tally advice chain is **not** Claim permission.
+
+| Public consumer / metric capability case | Required disposition, and negative proof |
+| --- | --- |
+| v3 native Issue/Event with compatible pin; v4 report-only supported reader | Admit by effective per-kind pin; v3 is not inferred to contain report fields, v4 profile validates only its own governed kind. |
+| v5 report on v5-capable, explicitly adopted producer/consumer | Safe public projection, dedupe by verified namespace/report id/revision+native ID/digest, not timestamps; source ref still requires witness. |
+| v4-only reader sees v5 or mixed unadopted stream | `UNSUPPORTED` for comment and `UNKNOWN` for cross-profile absence/denominator; **not zero Attempts**, no silent downgrade or default v5 publication. |
+| Native GitHub pagination incomplete, edit/digest mismatch, 429/403, foreign correction | `UNKNOWN/INSUFFICIENT_EVIDENCE` or `DISPUTED/UNVERIFIED` for affected premise, not fabricated no-report evidence or automatic REVOKE. |
+| Public metric same unit/window/physical attempt/coverage, witnessed actual observed/billed basis | Source-qualified aggregation and comparison on the compatible cohort; each logical/physical observation counted once under current v5 ledger/correction. |
+| Logical retry vs physical attempts, multiple overlapping call windows, estimate later billed | Separate identity, overlap and pricing revisions; no retry or estimate+bill double-count. `ESTIMATED` and `BILLED` remain distinct bases. |
+| Provider/model route classified private/unwitnessed, only aggregate public | Publish only clearance-allowed aggregate; route-level comparison `UNKNOWN/NOT_COMPARABLE`, never infer model name from prose, hidden manifest or opaque cost. |
+| Matched optional Skill experiment baseline/holdout/cohort with legal measurement | Qualification still requires independent holdout/no leakage, observed full cost/coverage and ordinary Skill/project authority; in-sample apparent uplift alone never qualifies a Build. |
+
+These are bounded source-only **conformance candidates**, not synthetic runtime successes or a mandatory global evaluator. Real downstream task-meta/Tally #1210/#1231 remains `NOT_RUN` until actually witnessed; tests may be Python3.14 but semantics remain language-neutral.
+
+### Product R1 further exit
+- Independent fresh **focused R0→R1 blob delta review** of ONLY these two planning files must verify P1-01, P1-02, P2-01, P2-02 and new regressions; no self-PASS.
+- v4.16 frozen Release Qualification has a conditional source-only finding; real main merge/tag/adoption and any current predecessor pointer must be re-read before Product Freeze. This planning source cannot be automatically published or merged as v4.16.
+- `PRODUCT_FREEZE=NO / L2_FREEZE=NO / TASK_DAG=NOT_ADMITTED / V417_IMPLEMENTATION=NOT_RUN` until owner authority explicitly accepts reviewed Product.
+
