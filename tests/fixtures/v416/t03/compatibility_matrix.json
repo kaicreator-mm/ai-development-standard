@@ -1,0 +1,72 @@
+{
+  "schema": "ads/v416-t03-reader-compat/v1",
+  "scope": "offline-shape-and-compatibility-only-not-native-github-authority",
+  "cases": [
+    {
+      "id": "V3_WORK_ITEM_V414",
+      "record": "v3_work_item",
+      "reader": "v4.14",
+      "expected": "CURRENT_EXECUTABLE_SHAPE_ONLY"
+    },
+    {
+      "id": "V3_WORK_ITEM_V416",
+      "record": "v3_work_item",
+      "reader": "v4.16",
+      "expected": "CURRENT_EXECUTABLE_SHAPE_ONLY"
+    },
+    {
+      "id": "V3_REPORT_V415",
+      "record": "v3_report",
+      "reader": "v4.15",
+      "expected": "HISTORICAL_READ_ONLY"
+    },
+    {
+      "id": "V3_REPORT_V416",
+      "record": "v3_report",
+      "reader": "v4.16",
+      "expected": "HISTORICAL_READ_ONLY"
+    },
+    {
+      "id": "V4_REPORT_V415",
+      "record": "v4_summary",
+      "reader": "v4.15",
+      "expected": "CURRENT_OBSERVATION"
+    },
+    {
+      "id": "V4_REPORT_V416",
+      "record": "v4_summary",
+      "reader": "v4.16",
+      "expected": "CURRENT_OBSERVATION"
+    },
+    {
+      "id": "V5_SUMMARY_V416",
+      "record": "v5_summary",
+      "reader": "v4.16",
+      "expected": "V5_SHAPE_ONLY"
+    },
+    {
+      "id": "V5_FEEDBACK_V416",
+      "record": "v5_feedback",
+      "reader": "v4.16",
+      "expected": "V5_SHAPE_ONLY"
+    },
+    {
+      "id": "V5_CORRECTION_V416",
+      "record": "v5_correction",
+      "reader": "v4.16",
+      "expected": "V5_SHAPE_ONLY"
+    },
+    {
+      "id": "V5_SUMMARY_V415_UNSUPPORTED",
+      "record": "v5_summary",
+      "reader": "v4.15",
+      "error": "UNSUPPORTED_SCHEMA"
+    },
+    {
+      "id": "V5_SUMMARY_V414_UNSUPPORTED",
+      "record": "v5_summary",
+      "reader": "v4.14",
+      "error": "UNSUPPORTED_SCHEMA"
+    }
+  ]
+}
