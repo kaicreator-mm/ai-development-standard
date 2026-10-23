@@ -55,6 +55,32 @@ def source_comment(record, number=123, edited=False):
 
 
 class T03MixedReader(unittest.TestCase):
+    def test_explicit_compatibility_matrix(self):
+        matrix = json.loads((ROOT / "tests/fixtures/v416/t03/compatibility_matrix.json")
+                            .read_text(encoding="utf8"))
+        self.assertEqual(len(matrix["cases"]), 11)
+        variants = {
+            "v3_work_item": envelope("work_item", WORK),
+            "v3_report": envelope("report", {
+                "report_id": "legacy:42", "report_kind": "EXECUTION_SUMMARY",
+                "revision": 1, "attempt_ref": "attempt:42:1",
+                "manifest_ref": "object:private/42/r1/manifest.json",
+                "manifest_sha256": "b" * 64, "coverage": "PARTIAL"}),
+            "v4_summary": json.loads((FIX / "summary.json").read_text(encoding="utf8")),
+            "v5_summary": v5(),
+            "v5_feedback": v5("feedback"),
+            "v5_correction": v5("correction"),
+        }
+        for case in matrix["cases"]:
+            with self.subTest(case=case["id"]):
+                record = variants[case["record"]]
+                if "error" in case:
+                    with self.assertRaisesRegex(ContractError, case["error"]):
+                        record_disposition(record, case["reader"])
+                else:
+                    self.assertEqual(record_disposition(record, case["reader"]),
+                                     case["expected"])
+
     def test_three_v5_shapes_and_old_windows(self):
         for name in ("summary", "feedback", "correction"):
             record = v5(name)
