@@ -150,8 +150,7 @@ class T03MixedReader(unittest.TestCase):
             "original_material_sha256": "e" * 64,
             "source_sha": "a" * 40,
             "artifact_witness_refs": ["github:original-material-ref"],
-            "association_currentness": {"state": "CURRENT",
-                "source_refs": ["github:source-link-proposal"], "limits": ["Not authenticated"]}}
+            "association_currentness": "CURRENT"}
         self.assertEqual(validate_record(successor), "SHAPE_VALID_ONLY")
         self.assertEqual(compare_v5_summary_revision(previous, successor,
             predecessor_comment_ref=ref, previous_unedited=True), "SOURCE_CHAIN_SHAPE_ONLY")
