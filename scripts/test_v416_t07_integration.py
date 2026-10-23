@@ -7,6 +7,7 @@ No provider invoice, native GitHub ACL, full Host E2E or Release Gate is inferre
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -14,6 +15,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +27,12 @@ LEGACY_SUITES = {"LEGACY_INTERACTION", "LEGACY_REPORT",
                  "LEGACY_CONSUMER", "LEGACY_INTEGRATION", "PROTO_SCHEMAS"}
 SOURCE_ONLY_RESULT = "SOURCE_CONFORMANCE_PASS_ONLY"
 
+
+
+# Frozen owner identities independently checked, never adopted from editable manifest.
+EXPECTED_SUITES = {"T01":["scripts/test_v416_t01_report_schema.py","tests/fixtures/v416/t01/scenarios.json"],"T02":["scripts/test_v416_t02_measurement.py","tests/fixtures/v416/t02/scenarios.json"],"T03":["scripts/test_v416_t03_reader.py","tests/fixtures/v416/t03/compatibility_matrix.json"],"T04":["scripts/test_v416_t04_evolution.py","tests/fixtures/v416/t04/scenarios.json"],"T05":["scripts/test_v416_t05_writeback.py","tests/fixtures/v416/t05/scenarios.json"],"T06":["scripts/test_v416_t06_agent_governance.py","tests/fixtures/v416/t06/scenarios.json"],"LEGACY_INTERACTION":["scripts/test_github_structured_interaction.py",None],"LEGACY_REPORT":["tests/test_v415_report.py",None],"LEGACY_CONSUMER":["tests/test_v415_consumer.py",None],"LEGACY_INTEGRATION":["tests/test_v415_contract_integration.py",None],"PROTO_SCHEMAS":["scripts/test_protocol_schemas.py",None]}
+EXPECTED_GROUPS = {"C01":["T01","T03"],"C02":["T02"],"C03":["T02"],"C04":["T02"],"C05":["T02"],"C06":["T01","T03"],"C07":["T01","T03"],"C08":["T01","T03"],"C09":["T01","T03"],"C10":["T01"],"C11":["T04"],"C12":["T02"],"C13":["T04"],"C14":["T04"],"C15":["T05"],"C16":["T05"],"A03":["T06"],"G09":["T06"],"G10":["T06"],"G11":["T06"],"G12":["T06"]}
+EXPECTED_SCHEMA_PINS = {"schemas/github/v4.14/structured-interaction.schema.json":"a8c5d852c239f69850e7d856af75ca8179aff1dd","schemas/github/v4.15/report.schema.json":"88c96dda7f8bcaabe1766a807599ed15bbeae2de","schemas/github/v4.16/report.schema.json":"7478313cc006162432649d734e59c5cd77db5106"}
 
 class QualificationError(Exception):
     pass
@@ -39,8 +47,8 @@ def git(*args: str) -> str:
     return proc.stdout.strip()
 
 
-def load_and_check_manifest() -> dict:
-    m = json.loads(MANIFEST.read_text(encoding="utf-8"))
+def load_and_check_manifest(candidate: dict | None = None) -> dict:
+    m = candidate if candidate is not None else json.loads(MANIFEST.read_text(encoding="utf-8"))
     if m.get("schema") != "ads/v416-t07-integrated-source-closure/v1":
         raise QualificationError("Unknown closure manifest format")
     if m.get("scope") != "standards-source-only" or m.get("owned_task") != "#1271":
@@ -55,6 +63,8 @@ def load_and_check_manifest() -> dict:
     if len(ids) != len(set(ids)) or set(ids) != REQUIRED_TASK_SUITES | LEGACY_SUITES:
         raise QualificationError("All six sources and five historical suites required")
     for suite in suites:
+        if [suite.get("command"), suite.get("artifact")] != EXPECTED_SUITES[suite["id"]]:
+            raise QualificationError(f"Suite ID/command/fixture mismatch: {suite['id']}")
         command = suite.get("command")
         if not isinstance(command, str) or not command.endswith(".py") or command.startswith("/"):
             raise QualificationError("Unsafe suite path")
@@ -64,25 +74,10 @@ def load_and_check_manifest() -> dict:
             raise QualificationError(f"Missing executable {command}")
         if "artifact" in suite and not (ROOT / suite["artifact"]).is_file():
             raise QualificationError(f"Missing fixture {suite['artifact']}")
-    for group, owners in groups.items():
-        if not isinstance(owners, list) or not owners:
-            raise QualificationError(f"Missing group owner {group}")
-        if len(owners) != len(set(owners)) or not set(owners) <= REQUIRED_TASK_SUITES:
-            raise QualificationError(f"Unqualified group owner {group}")
-    for group in ("C02", "C03", "C04", "C05", "C12"):
-        if "T02" not in groups[group]:
-            raise QualificationError(f"Accounting case missing T02 {group}")
-    for group in ("C11", "C13", "C14"):
-        if "T04" not in groups[group]:
-            raise QualificationError(f"Evolution case missing T04 {group}")
-    for group in ("C15", "C16"):
-        if "T05" not in groups[group]:
-            raise QualificationError(f"Writeback case missing T05 {group}")
-    for group in ("A03", "G09", "G10", "G11", "G12"):
-        if "T06" not in groups[group]:
-            raise QualificationError(f"Agent case missing T06 {group}")
+    if groups != EXPECTED_GROUPS:
+        raise QualificationError("Canonical 21 group ownership map mismatch")
     pinned = m.get("schema_pins")
-    if not isinstance(pinned, dict) or len(pinned) != 3:
+    if not isinstance(pinned, dict) or pinned != EXPECTED_SCHEMA_PINS:
         raise QualificationError("Frozen v3/v4/v5 schema pins missing")
     for file, want in pinned.items():
         path = ROOT / file
