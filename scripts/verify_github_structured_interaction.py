@@ -267,6 +267,55 @@ def _report_semantics(data):
             raise ContractError("feedback ADS subject/effective test profile mismatch")
 
 
+def _v5_report_semantics(data):
+    """Structural consistency only: never native GitHub/producer authority."""
+    subject = data["subject"]
+    issue = subject["issue_ref"]
+    if not issue.startswith("https://github.com/" + subject["repository"] + "/issues/"):
+        raise ContractError("v5 owning repository/Issue mismatch")
+    try:
+        datetime.fromisoformat(data["observed_at"].replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError("invalid v5 observed_at calendar time") from exc
+    prev = data["supersedes"]
+    if prev is not None and (prev["revision"] != data["revision"] - 1
+                             or not prev["comment_ref"].startswith(issue + "#issuecomment-")):
+        raise ContractError("v5 predecessor must be the immediate owning-Issue revision")
+    if data["report_kind"] == "EXECUTION_SUMMARY":
+        if subject["attempt_ref"] not in data["aggregation"]["attempt_refs"]:
+            raise ContractError("v5 summary Attempt absent from leaf aggregation")
+        if set(data["aggregation"]["attempt_refs"]) & set(data["aggregation"]["excluded_attempt_refs"]):
+            raise ContractError("v5 included/excluded Attempt overlap")
+        if data["verifier"]["subject_sha"] is not None and data["verifier"]["subject_sha"] != subject["source_sha"]:
+            raise ContractError("v5 verifier original source mismatch")
+        sets = [set(data["verifier"][key]) for key in ("checked", "failed", "skipped", "unchecked")]
+        if any(a & b for i, a in enumerate(sets) for b in sets[i + 1:]):
+            raise ContractError("v5 verifier scopes overlap")
+        if any(metric["value"] is None and metric["epistemic"] != "UNKNOWN" for metric in data["metrics"]):
+            raise ContractError("v5 missing metric requires UNKNOWN")
+        if any(token in data["manifest_ref"].lower() for token in ("?", "#", "token=", "signature=", "credential=")):
+            raise ContractError("v5 manifest must be stable opaque locator")
+        if "source_association" in data and data["source_association"]["source_sha"] != subject["source_sha"]:
+            raise ContractError("v5 associated original source mismatch")
+    elif data["report_kind"] == "EXPERIENCE_USE_FEEDBACK":
+        if data["ads_subject_sha"] != subject["ads_revision"]:
+            raise ContractError("v5 feedback ADS subject mismatch")
+        if data["publisher_source_sha"] != subject["publisher_source_sha"]:
+            raise ContractError("v5 feedback publisher source mismatch")
+    elif data["report_kind"] == "EXECUTION_CORRECTION":
+        target = data["target"]
+        if target["repository"] != subject["repository"] or target["issue_ref"] != issue:
+            raise ContractError("v5 correction foreign Issue target")
+        if target["task_ref"] != subject["task_ref"] or target["attempt_ref"] != subject["attempt_ref"]:
+            raise ContractError("v5 correction cross-Task/Attempt")
+        if target["publisher_namespace"] != data["publisher_namespace"]:
+            raise ContractError("v5 correction cross-publisher assertion")
+        if target["comment_ref"] != issue + "#issuecomment-" + str(target["comment_id"]):
+            raise ContractError("v5 correction native comment identity mismatch")
+        if data["notice_publisher_source_sha"] != subject["publisher_source_sha"]:
+            raise ContractError("v5 correction publisher source mismatch")
+
+
 def data_digest(record) -> str:
     """Public validated data comparator, not private-manifest integrity or authority."""
     validate_record(record)
