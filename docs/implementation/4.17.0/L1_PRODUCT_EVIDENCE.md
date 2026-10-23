@@ -1,6 +1,6 @@
-# ADS v4.17.0 — L1 Product Evidence R0
+# ADS v4.17.0 — L1 Product Evidence R2 (unfrozen)
 
-**Candidate:** PLANNING_ONLY / L1_R0_SOURCE_READ / NOT_INDEPENDENTLY_REVIEWED / NOT_FROZEN.
+**Current candidate:** PLANNING_ONLY / L1_R2_AUTHOR_REPAIR / R1_FOCUSED_REVIEW_PASS / R1_HOLISTIC_REVIEW_NEEDS_REVISION / R2_NOT_REVIEWED / PRODUCT_FREEZE=NO. Sections 1–5 preserve historical R0; §6 preserves R1; **§7 is current prospective R2 Product disposition**. Reviewer results: [R1 focused PASS](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365436658), [holistic P1-A review](https://github.com/kaicreator-mm/ai-development-standard/issues/1279#issuecomment-6365541383).
 **Product umbrella:** [#1279](https://github.com/kaicreator-mm/ai-development-standard/issues/1279) · [Product R0 intake #1299](https://github.com/kaicreator-mm/ai-development-standard/issues/1299) · [Independent Review #1300](https://github.com/kaicreator-mm/ai-development-standard/issues/1300).
 **Source baseline, NOT a released predecessor:** `version/v4.16@2df2825e47a81ca1b1306e8899d55c49a7a8c776`, Git tree `bb5e7bbfb24c363aed4103b1872aca43b590c0a0`. [v4.16 T07 exact preflight](https://github.com/kaicreator-mm/ai-development-standard/issues/1271#issuecomment-6363964565) and [Python3.14 local source-only result](https://github.com/kaicreator-mm/ai-development-standard/issues/1271#issuecomment-6364342194). v4.16 Release Qualification/main/tag not witnessed. This L1 branch **must never be merged into or used to alter the pending v4.16 source release candidate**.
 
@@ -42,7 +42,7 @@ These are Git **blob** identities from the provisional version/v4.16 candidate, 
 
 ## 3. Concern-to-owner gap intake crosswalk
 
-| C | Priority | Candidate disposition at R0 | Proposed smallest output |
+| C | Priority | **Historical R0 hypothesis (superseded by §§6–7)** | Proposed smallest output |
 |---|---|---|---|
 | C01 #1280 | P0 | likely ALREADY_NORMATIVE | Source-based root-class vs Builder false blame + legal repair fixture |
 | C02 #1281 | P0 | likely ALREADY_NORMATIVE | Process diagnostic vs valid/invalid strict Gate fixture |
@@ -57,7 +57,7 @@ These are Git **blob** identities from the provisional version/v4.16 candidate, 
 | C11 #1297 | P0 | DOGFOOD_GAP candidate | Shared GitHub-only v3/v4/v5 positive+negative Golden |
 | C12 #1298 | P1 | ALREADY_NORMATIVE vs PRIVACY/TRUE_BOUNDED_SPEC_GAP undecided | Versioned public metric comparability/capability matrix |
 
-**R0 classifications are hypotheses**, not final admissions, blockers or approvals. A later review must give exact text and one conformance positive/negative per Concern; only confirmed `TRUE_BOUNDED_SPEC_GAP` becomes a normative Task candidate.
+**Historical R0 classifications are hypotheses**, not final admissions, blockers or approvals. §6 and then current §7 supersede these statuses. A later review must give exact text and one conformance positive/negative per Concern; only confirmed `TRUE_BOUNDED_SPEC_GAP` becomes a normative Task candidate.
 
 ## 4. Cross-project boundaries and acceptance evidence
 - ADS defines only source-authoritative semantics, public contract/version, Golden and qualification.
@@ -76,7 +76,7 @@ These are Git **blob** identities from the provisional version/v4.16 candidate, 
 
 ## 6. Product R1 — independent R0 Review disposition and exact-source gap adjudication (prospective)
 
-**R0 independent Review:** [#1300 comment #6365054251](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365054251), inspected H `1056c36be31e6aae83ff3ca5e012fbed67b71681`, L1 blob `7e4a686f33e46599b20b9cb01ac9eb3ff49e8be0` and PRD blob `8505e5fd2c67ace9c14fe15c8abe9835c085f76b`. Verdict `NEEDS_REVISION / P0=0 P1=2 P2=2 / PRODUCT_FREEZE_READY=NO`. This is **author-owned R1 repair**, not independent reviewer approval; final exact R1 SHA/blobs will be recorded after writes.
+**Historical R0 independent Review:** [#1300 comment #6365054251](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365054251), inspected H `1056c36be31e6aae83ff3ca5e012fbed67b71681`, L1 blob `7e4a686f33e46599b20b9cb01ac9eb3ff49e8be0` and PRD blob `8505e5fd2c67ace9c14fe15c8abe9835c085f76b`. Verdict `NEEDS_REVISION / P0=0 P1=2 P2=2 / PRODUCT_FREEZE_READY=NO`. This was **author-owned R1 repair**, subsequently independently focused-delta reviewed at exact H `17560a6a9778a78575b230bee0e5242e02762f9c`, L1 blob `6e78ecdc6bb7034b3fea7b5afa33235b84fd4f40`, PRD blob `368361de8d4267f3805ab31f4b012ccad5e28bfc`; [R1 focused PASS](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365436658), P0=0/P1=0/P2=2. A separate [holistic review](https://github.com/kaicreator-mm/ai-development-standard/issues/1279#issuecomment-6365541383) found new P1-A: C08 lacked observable strategy identity, so Product still NOT freeze-ready.
 
 ### Finalized R1 Product classification by current provisional owner
 | Source classification | Concerns | Normative v4.17 authoring disposition |
@@ -142,3 +142,65 @@ These are bounded source-only **conformance candidates**, not synthetic runtime 
 - v4.16 frozen Release Qualification has a conditional source-only finding; real main merge/tag/adoption and any current predecessor pointer must be re-read before Product Freeze. This planning source cannot be automatically published or merged as v4.16.
 - `PRODUCT_FREEZE=NO / L2_FREEZE=NO / TASK_DAG=NOT_ADMITTED / V417_IMPLEMENTATION=NOT_RUN` until owner authority explicitly accepts reviewed Product.
 
+
+## 7. Product R2 — holistic Claude Review repair: observable C08 + bounded version delivery
+
+**Input:** independent [holistic Product source review, #1279@6365541383](https://github.com/kaicreator-mm/ai-development-standard/issues/1279#issuecomment-6365541383), P0=0/P1=1/P2=4 plus 2 carried. This §7 prospectively supersedes R1 §6 where evidence-class observability or output disposition differs. It does NOT invalidate the narrow original R1 focused PASS. Current Product R2 is **unreviewed author input**; no Freeze, implementation Task or v4.16 baseline promotion.
+
+### 7.1 C08 P1-A resolution — real observed carrier OR explicitly inferred diagnostic, always separated
+
+**Decision:** choose the existing-owner evidence-class approach, **without a new report wire**. Existing `GITHUB_AGENT_INTERACTION_PROTOCOL.md` §10 Level 3 explicitly allows `OBSERVED | SELF_REPORTED | INFERRED | UNKNOWN` per claim and privacy/source-qualified contextual use; it does not require a new raw Trace or public `strategy_id` field. C08 previously proposed `StrategyCandidateRef`: this is a **read-only logical reference** to an actual lawful versioned Product/Task/PRD/approved strategy/procedure/Skill decision when one exists, *not a new ADS field or permission*. It can be absent.
+
+- **Carrier A (OBSERVED source-qualified)**: a bounded *existing* GitHub native Task/Issue + frozen Product/PRD/Task amendment or authorized strategy/procedure/decision reference whose owning authority actually identifies **goal/strategy before and after** with exact subject pin, lawful acceptance/currentness and causally ordered version operation. The observed fact is the native **accepted strategy decision**, not the mere existence of a comment. `A′` equivalence requires owner-accepted strategy reference/lineage or independently source-qualified compatibility/equivalence for the compared goal/scope. If the subject has no such carrier, **OBSERVED eligibility is UNKNOWN**, never filled by classification.
+- **Carrier B (INFERRED bounded diagnostic)**: an analysis of actually available GitHub PR source diffs/issue context/Task Learning/step summaries/version lineage with a **declared** classification hypothesis, source evidence refs, `classifier_or_labeler_revision`, rule/version provenance, capture-window/cohort, ordering/evidence class, contradictory counterevidence and uncertainty. Observing a Git commit or report is OBSERVED *as a fact*; interpreting it as a Pivot/Revisit is **INFERRED**, not an authoritative goal decision. A source-owning self-report is `SELF_REPORTED`, also **not** OBSERVED until separately corroborated. Do not invent a strategy identity solely from a code diff or LLM output, do not silently raise INFERRED to OBSERVED, and do not infer Task/Gate PASS, intentional improvement or effect.
+- **Carrier C (UNKNOWN/UNQUALIFIED)**: no stable source+classifier/capture opportunity, missing causal lineage, contradictory/missing owner, insufficient permissions/privacy, or incompatible version/profile. Emit `UNKNOWN/NOT_COMPARABLE`; never numeric 0 for unavailable opportunities. Projects without sufficient signals may legitimately have **no C08 quantitative result**, rather than a compulsory capture instrument.
+
+**Denominators must remain distinct from R1 §6 strict calculations:**
+- `N_obs_pivot/D_obs_pivot`, `N_obs_revisit/D_obs_revisit`: only independently source-qualified owner-accepted strategy/goal transitions (R1 §6). `D_obs=0` => OBSERVED NOT_COMPARABLE, not 0%.
+- `N_inf_pivot/D_inf_pivot`, `N_inf_revisit/D_inf_revisit`: **only classifier-eligible, trace-covered unique transitions in a specified source cohort**, with stable version/operation identity, observable causal ordering and fixed labeler revision. Labeler evidence can classify `PIVOT_CANDIDATE` or `REVISIT_CANDIDATE` with explicitly inferred equivalence; rejected candidate with sufficient measured input stays a measured inferred negative. Unlabelable/missing history/ordering/coverage stays UNKNOWN and is excluded from *both* N_inf and D_inf, with `excluded_unknown_count` and coverage. These metrics describe **frequency of the stated model's labels on eligible evidence**, not actual Pivot/Revisit behavior prevalence or independent verification.
+- Never combine OBSERVED and INFERRED numerators/denominators, promote private classifier labels to v5 public report facts, or use any Pivot/revisit rate as a Task/Release/Agent effectiveness Gate. Distinct labeler revisions/cohorts/windows cannot be compared as one rate without separately qualified mapping; no cross-branch artificial ordering.
+
+**Positive and forbidden pairs on real available surfaces:**
+1. Public owner-approved Task vA strategy X → authorized changed Task vB strategy Y → later owner-approved equivalent X′ with causal native refs ⇒ **OBSERVED** two qualified Pivots and one eligible Revisit (where R1 opportunity qualification satisfied); exact code SHAs may differ.
+2. PR diff + Issue note + witnessed commit ancestry without an approved strategy decision ⇒ optional **INFERRED** label from an identified labeler revision and source cohort only, separately reported; forbidden to call this OBSERVED or assert true causal benefit.
+3. Self-declared Agent intent conflicting with Task-approved goal ⇒ preserve `SELF_REPORTED` vs OBSERVED contradiction; never silently select self-report as owner truth.
+4. Unrated version/verifier outcome, denied/private publication or not-yet-adopted v5 reader ⇒ legal source-only local classification may remain private; public projected metric withheld or UNSUPPORTED/UNKNOWN. A failed rollback, duplicate command, incomparable parallel paths or missing intermediate leaves actual Revisit unqualified.
+5. Current owner intent unchanged across a valid witnessed code edit ⇒ OBSERVED Pivot true negative (0/1 on its own eligible comparison basis). Inferred variant can also emit negative label when full classifier features are present; no obligation to agree with OBSERVED.
+
+**No inference from current carrier availability alone:** This Product decision makes C08 **potentially useful on real GitHub-native material**, not a claim that any active task-meta/Tally build already captures enough transitions to measure it, nor a claim of any witnessed real Pivot sample. Without actual source coverage it remains UNKNOWN. In L2, independently check that the optional read-only Level 3 path is demonstrable using a real GitHub-supported input shape **without inventing new v5 public fields**; Golden positive/negative fixture proves semantic feasibility only.
+
+### 7.2 Output type / closure matrix (supersedes R0 §3 priorities as implementation count)
+
+Risk priority remains original for affected behavior but **does not authorize work that is already normative**:
+
+| FR / concern | Actual ADS v4.17 deliverable type | Existing owner / gate and closure route |
+| --- | --- | --- |
+| FR01 C01 #1280, FR02 C02 #1281, FR05 C05 #1284 | `CLOSE_WITH_REFERENCE` | Reference current DEVELOPMENT_WORKFLOW, VALIDATION/ASSURANCE, CONTEXT; no new source/Task; preserve useful positive/forbidden cases as linked existing coverage (not 3 new suites) |
+| FR03 C03, FR04 C04, FR06 C06, FR07 C07, FR09 C09, FR11 C11, FR12 C12 | `GOLDEN_FIXTURE` | Extend a **bounded shared existing-owner** positive/negative Golden/reference corpus as needed, reuse current tests and schema; no new normative policy, runtime Agent judge or E2E Gate |
+| FR08 C08 #1287 | `NORMATIVE_CLARIFICATION` | Prospective GitHub Interaction §10 Level 3 behavior semantics + optionally referenced interpretive positive/forbidden corpus; no original strict v5 Schema mutation |
+| FR10 C10 #1296 | `NORMATIVE_CLARIFICATION` | Prospective GitHub Interaction §16.6 / §16.7 cross-source derived *input* applicability only, not Tally Candidate state, no new Claim/Gate/REST bus |
+
+**CLOSE_WITH_REFERENCE handling:** On Product freeze, mark C01/C02/C05 normative rewrite candidate **already covered**, referencing exact owner and Golden; the original intake Issues remain historical and may be closed as `not_planned / superseded by already-owned norm` only after reviewer/owner reconciliation, not silently converted into executable implementation Tasks. DOGFOOD issues may be grouped into one small source-only Golden concern **if write sets and owner test purposes allow**, not seven duplicate PRs.
+
+### 7.3 Release content, bounded Golden plan and measurable Definition of Done
+
+**Prospective source owners** only (final allowed Task write sets and owner approval belong to frozen L2/DAG):
+- Normative delta at existing `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` §10 for C08 and §16.6–16.7 for C10 **only if** final independent source-gap review confirms distinct semantics not already owned. Preserve old v3/v4/v5 strict schemas untouched; if needed, a *future* wire version requires a separate full Product+compatibility review, not a hidden v4.17 add-on.
+- Reuse `templates/golden/STANDARD_COVERAGE.json`, existing `templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md`, `tests/test_v415_consumer.py` and source-only coverage where suitable, plus a scoped new v4.17 conformance test/reference file only if useful. Add/adjust `standard-manifest.json` **only for genuinely created canonical assets**, and only after Task scope authorization; do not duplicate a standard coverage registry entry.
+- Existing `DEVELOPMENT_WORKFLOW`, `VALIDATION_STANDARD`, `CONTEXT_ENGINEERING_STANDARD`, `EXECUTION_ARCHITECTURE_STANDARD`, `RELEASE_STANDARD`, `SKILL_PROCEDURE_GOVERNANCE_STANDARD` retained unchanged unless independently proven actual gap; no default gate.
+
+**Initial Golden **budget**: a bounded *planning target*, not a new universal test quota/Gate:** maximum **14 paired scenarios** across one shared reference corpus: **4 C08** (OBSERVED, INFERRED/self-report conflict, duplicates/parallel/missing, private/ungraded/not-adopted), **4 C10** (verified revoke, partial/unverified, foreign dispute, independent premise/BUILD-pinned continuity) and **6 shared** (C03 ACT/ABSTAIN+ACK, C04 evolving scope, C06 shared ABI, C07 holdout contamination, C09 public join, C11/C12 mixed version/metrics/privacy). Reuse preexisting fixtures when they satisfy a pair. Any gap needing more than 14 pairs requires an explicitly reviewed L2/Task scope amendment; do not inflate into 12 independent mini test frameworks.
+
+**v4.17 source Release DoD:**
+1. Product R2 L1/PRD independently reviewed and explicitly Frozen **after** source-owner/candidate release predecessor confirmed; exact SHA/Blob and R1/holistic adverse findings resolved/prospectively carried.
+2. L2 design independently reviewed/Frozen, legal DAG from only **confirmed** normative and evidence concerns with disjoint write sets and true native dependencies, and each Task has actual tests/review.
+3. Same final v4.17 source SHA/Tree: language-neutral semantics in owner paragraphs, actual executable positive/forbidden conformance, unchanged legacy v3/v4/v5 schema bytes, old-reader UNSUPPORTED and privacy/invalid-source refusal, manifest/coverage consistent.
+4. Applicable actual Full Regression, source Critical Journeys, source Packaging/manifest, applicable Hidden determination, independent composed-version Review and **separate Release Qualification** on exact frozen candidate; PASS may not be claimed from a draft, source fixture alone or another SHA.
+5. Publish only through existing Version/Release/Main integration authority and immutable ADS revision adoption; no Task/Review/Validation/Release extra Gate, no Tally or task-meta code changes, no real downstream E2E claim (#1210/#1231 remain separate and NOT_RUN unless independently executed).
+
+**Version value decision:** v4.17 as a minor standards version is justified only by accepted C08 and/or C10 **actual normative semantic clarification** and associated source-only coverage; if Product ultimately confirms **only Golden/dogfood without any normative delta**, record a version-scope decision instead of shipping a duplicate feature-version just because twelve Issues exist.
+
+### 7.4 Pre-Freeze currentness and outstanding gates
+- Source-only R1 focused Review [#1300@6365436658](https://github.com/kaicreator-mm/ai-development-standard/issues/1300#issuecomment-6365436658) PASS at `17560a6...` remains scoped to its original four findings. Holistic #1279 P1-A and P2 are addressed *as proposed* in this R2; independent R2 reviewer must recheck **all**.
+- Current provisional v4.16 `2df2825...` RQ was **CONDITIONAL**; [#1271](https://github.com/kaicreator-mm/ai-development-standard/issues/1271) A03 repair PR #1301 is a separately owned version-only concern and may change qualified predecessor SHA/tree. No implied main merge, release/tag or v4.17 effective adoption from current planning branch.
+- `PRODUCT_R2_REVIEW=NOT_RUN; PRODUCT_FREEZE_READY=NO; PRODUCT_FREEZE=NO; L2_FREEZE=NO; TASK_DAG=NOT_ADMITTED`. Future exact R2 commit+blob identifiers are provided by GitHub diff/Review handoff, **not** guessed here.
