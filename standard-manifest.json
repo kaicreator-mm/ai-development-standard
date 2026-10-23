@@ -162,7 +162,8 @@
       "schemas/role-execution-profile-v1.schema.json",
       "schemas/task-learning-v2.schema.json",
       "schemas/github/v4.14/structured-interaction.schema.json",
-      "schemas/github/v4.15/report.schema.json"
+      "schemas/github/v4.15/report.schema.json",
+      "schemas/github/v4.16/report.schema.json"
     ],
     "profiles": [
       "profiles/README.md",
@@ -249,7 +250,8 @@
       "docs/intake/i1225-unavailable-ledger/PROPOSAL.md",
       "docs/intake/i1235-github-recovery/PROPOSAL.md",
       "docs/implementation/4.15.0/S06_CLOSURE_MATRIX.json",
-      "docs/implementation/4.15.0/S06_RELEASE_NOTES.md"
+      "docs/implementation/4.15.0/S06_RELEASE_NOTES.md",
+      "docs/implementation/4.16.0/T07_INTEGRATED_RELEASE_QUALIFICATION.md"
     ],
     "verification": [
       ".github/workflows/verify-standard.yml",
@@ -373,7 +375,14 @@
       "tests/test_v415_consumer.py",
       "tests/test_v415_contract_integration.py",
       "tests/test_v415_report.py",
-      "tests/test_v415_source_boundary.py"
+      "tests/test_v415_source_boundary.py",
+      "scripts/test_v416_t01_report_schema.py",
+      "scripts/test_v416_t02_measurement.py",
+      "scripts/test_v416_t03_reader.py",
+      "scripts/test_v416_t04_evolution.py",
+      "scripts/test_v416_t05_writeback.py",
+      "scripts/test_v416_t06_agent_governance.py",
+      "scripts/test_v416_t07_integration.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
