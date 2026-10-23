@@ -167,6 +167,11 @@ class T03MixedReader(unittest.TestCase):
         self.assertEqual(validate_record(correction), "SHAPE_VALID_ONLY")
         self.assertEqual(compare_v5_correction_source(correction), "UNVERIFIED")
         self.assertEqual(compare_v5_correction_source(correction, original), "UNVERIFIED")
+        # A v5 notice cannot revoke the previous protocol's report.
+        old_v4 = json.loads((FIX / "summary.json").read_text(encoding="utf8"))
+        self.assertEqual(compare_v5_correction_source(correction, old_v4,
+            target_comment_ref=target["comment_ref"], original_unedited=True,
+            complete_collection=True), "DISPUTED")
         url = target["comment_ref"]
         self.assertEqual(compare_v5_correction_source(correction, original,
             target_comment_ref=url, original_unedited=True,
