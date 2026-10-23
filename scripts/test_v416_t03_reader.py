@@ -89,6 +89,41 @@ class T03MixedReader(unittest.TestCase):
         with self.assertRaises(ContractError):
             validate_record(r)
 
+    def test_collector_source_association_is_revision_not_canonical_attempt(self):
+        previous = v5()
+        ps = previous["data"]["subject"]
+        ps.update(source_status="UNPINNED", source_sha=None,
+                  source_reason="original material not available", source_currentness="UNKNOWN",
+                  collector_observation_refs=["collector:trace:source"])
+        ps["currentness"]["state"] = "UNKNOWN"
+        pver = previous["data"]["verifier"]
+        pver.update(subject_sha=None, status="UNKNOWN", epistemic="UNKNOWN",
+                    checked=[], failed=[])
+        pver["currentness"]["state"] = "UNKNOWN"
+        validate_record(previous)
+        successor = copy.deepcopy(previous)
+        d = successor["data"]
+        d["revision"] = 2
+        ref = ps["issue_ref"] + "#issuecomment-123"
+        d["supersedes"] = {"revision": 1, "comment_ref": ref,
+                           "data_digest": data_digest(previous)}
+        d["manifest_ref"] = "object:private/task42/attempt1/r2/manifest.json"
+        d["manifest_sha256"] = "f" * 64
+        d["subject"].update(source_status="PINNED", source_sha="a" * 40,
+                             source_reason=None, source_currentness="UNKNOWN")
+        d["source_association"] = {
+            "original_material_sha256": "e" * 64,
+            "source_sha": "a" * 40,
+            "artifact_witness_refs": ["github:original-material-ref"],
+            "association_currentness": {"state": "UNKNOWN",
+                "source_refs": ["github:source-link-proposal"], "limits": ["Not authenticated"]}}
+        self.assertEqual(validate_record(successor), "SHAPE_VALID_ONLY")
+        self.assertEqual(compare_v5_summary_revision(previous, successor,
+            predecessor_comment_ref=ref, previous_unedited=True), "SOURCE_CHAIN_SHAPE_ONLY")
+        successor["data"]["subject"]["attempt_binding"] = "CANONICAL_DISPATCH"
+        with self.assertRaises(ContractError):
+            validate_record(successor)
+
     def test_summary_source_and_feedback_publisher_identity_rejected(self):
         r = v5()
         r["data"]["verifier"]["subject_sha"] = "f" * 40
