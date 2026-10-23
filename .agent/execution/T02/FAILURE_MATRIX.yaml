@@ -1,0 +1,8 @@
+task_id: T02
+cases:
+  - {when: missing source or native event, result: UNKNOWN}
+  - {when: same identity different digest, result: CONFLICT}
+  - {when: cumulative watermark not source-grounded, result: UNKNOWN}
+  - {when: billed and estimate overlap, result: UNKNOWN_OR_SOURCE_QUALIFIED_ALTERNATIVE}
+  - {when: incompatible clock or currency, result: NOT_COMPARABLE}
+  - {when: external provider receipt not available, result: NOT_PROVEN}

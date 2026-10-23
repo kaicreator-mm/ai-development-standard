@@ -1,0 +1,7 @@
+task_id: T02
+cases:
+  - {id: C02, status: NOT_RUN, purpose: report revision/observation digest conflict}
+  - {id: C03, status: NOT_RUN, purpose: distinct physical attempt and alias}
+  - {id: C04, status: NOT_RUN, purpose: cumulative watermark and delta overlap}
+  - {id: C05, status: NOT_RUN, purpose: receipt and billed/estimate accounting}
+  - {id: C12, status: NOT_RUN, purpose: clock-compatible interval union}
