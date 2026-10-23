@@ -32,6 +32,8 @@ def v5(name="summary"):
              source_status="PINNED", source_currentness="CURRENT",
              source_reason=None, collector_observation_refs=[])
     if name == "summary":
+        d["cost"].update(accounting_ref=None, economic_scope_ref=None,
+                         billing_window_ref=None, cost_category=None)
         d["verifier"]["status"] = "PASS"
         d["metrics"][0].update(metric_id="token:input",
             observation_id="obs:1", logical_call_ref="logical:1",
