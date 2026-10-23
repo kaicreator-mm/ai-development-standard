@@ -376,6 +376,140 @@ def validate_summary_revision(previous, successor, legacy_kind):
     return "SHAPE_VALID_ONLY"
 
 
+def compare_v5_correction_source(correction, original=None, *,
+                                 target_comment_ref=None, original_unedited=False,
+                                 complete_collection=False):
+    """Bounded caller-supplied source comparison; never applies a GitHub notice.
+
+    Even matched and purportedly native flags do not authenticate a publisher
+    namespace grant or authorize REVOKE, REDACT, DISPUTE, or replacement.
+    """
+    validate_record(correction)
+    if correction.get("schema") != "ads/github/v5" or correction["data"]["report_kind"] != "EXECUTION_CORRECTION":
+        raise ContractError("v5 correction required")
+    if original is None or not complete_collection or not original_unedited:
+        return "UNVERIFIED"
+    validate_record(original)
+    if original.get("schema") != "ads/github/v5" or original["data"]["report_kind"] not in ("EXECUTION_SUMMARY", "EXPERIENCE_USE_FEEDBACK"):
+        return "DISPUTED"
+    target = correction["data"]["target"]
+    old = original["data"]
+    subject = old["subject"]
+    keys = ("repository", "issue_ref", "task_ref", "attempt_ref")
+    if any(target[key] != subject[key] for key in keys):
+        return "DISPUTED"
+    if (target["comment_ref"] != target_comment_ref
+        or target["publisher_namespace"] != old["publisher_namespace"]
+        or target["report_id"] != old["report_id"]
+        or target["revision"] != old["revision"]
+        or target["report_kind"] != old["report_kind"]
+        or target["target_source_status"] != subject["source_status"]
+        or target["target_source_sha"] != subject["source_sha"]
+        or target["data_digest"] != data_digest(original)):
+        return "DISPUTED"
+    return "SOURCE_MATCH_ONLY"
+
+
+def compare_v5_summary_revision(previous, successor, *, predecessor_comment_ref=None,
+                                previous_unedited=False):
+    """A source-only chain: no promotion of collector Attempt to canonical Claim."""
+    for record in (previous, successor):
+        validate_record(record)
+        if record.get("schema") != "ads/github/v5" or record["data"]["report_kind"] != "EXECUTION_SUMMARY":
+            raise ContractError("two v5 summaries required")
+    a, b = previous["data"], successor["data"]
+    stable = ("repository", "issue_ref", "task_ref", "attempt_ref",
+              "attempt_binding", "ads_revision", "ads_profile", "publisher_source_sha")
+    if (a["report_id"] != b["report_id"] or
+        a["publisher_namespace"] != b["publisher_namespace"] or
+        any(a["subject"][key] != b["subject"][key] for key in stable) or
+        b["revision"] != a["revision"] + 1):
+        raise ContractError("v5 next revision changes identity or skips predecessor")
+    predecessor = b["supersedes"]
+    if predecessor["revision"] != a["revision"] or predecessor["data_digest"] != data_digest(previous):
+        raise ContractError("v5 prior data digest/revision mismatch")
+    if not previous_unedited or predecessor_comment_ref != predecessor["comment_ref"]:
+        return "UNVERIFIED"
+    if a["manifest_ref"] == b["manifest_ref"] or a["manifest_sha256"] == b["manifest_sha256"]:
+        raise ContractError("v5 revision reuses previous immutable manifest")
+    if "source_association" in b:
+        if "source_association" in a or a["subject"]["source_status"] not in ("UNKNOWN", "UNPINNED"):
+            raise ContractError("v5 source association requires unpinned prior observation")
+        if b["subject"]["attempt_binding"] != "COLLECTOR_ONLY":
+            raise ContractError("v5 source association cannot mint canonical Attempt")
+    elif any(a["subject"][key] != b["subject"][key] for key in ("source_status", "source_sha")):
+        raise ContractError("v5 source changed without association")
+    return "SOURCE_CHAIN_SHAPE_ONLY"
+
+
+def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
+    """Inspect finite supplied GitHub page data; NEVER fetch/authenticate remotely.
+
+    The caller's edited=False and complete page values are not themselves proof
+    of native readback, ACL or publisher grant. Every output remains observational.
+    """
+    if type(pages) is not list or not pages or len(pages) > 128:
+        return {"complete": False, "statuses": []}
+    rows, cursor, seen = [], None, set()
+    complete = False
+    for page in pages:
+        if (type(page) is not dict or page.get("cursor") != cursor or
+            type(page.get("comments")) is not list or
+            page.get("status") != 200 or len(rows) + len(page["comments"]) > 4096):
+            break
+        rows.extend(page["comments"])
+        next_cursor = page.get("next")
+        if next_cursor is None:
+            complete = True
+            break
+        if type(next_cursor) is not str or not next_cursor or next_cursor in seen:
+            break
+        seen.add(next_cursor)
+        cursor = next_cursor
+    if not complete:
+        return {"complete": False, "statuses": ["UNKNOWN_INTEGRITY"] * len(rows)}
+    statuses, identities, comment_ids = [], {}, {}
+    for item in rows:
+        try:
+            if type(item) is not dict or type(item.get("body")) is not str:
+                raise ContractError("native bytes missing")
+            parsed = parse_markdown(item["body"])
+            if parsed is None:
+                statuses.append("UNSTRUCTURED_DISCUSSION")
+                continue
+            disposition = record_disposition(parsed, effective_pin)
+            if type(item.get("id")) is not int or item["id"] < 1:
+                statuses.append("UNVERIFIED")
+                continue
+            if parsed["kind"] != "report":
+                statuses.append(disposition)
+                continue
+            subject = parsed["data"].get("subject")
+            if not subject or item.get("url") != subject["issue_ref"] + "#issuecomment-" + str(item["id"]):
+                statuses.append("UNVERIFIED")
+                continue
+            if item.get("edited") is not False:
+                statuses.append("UNVERIFIED_EDIT" if item.get("edited") is True else "UNKNOWN_INTEGRITY")
+                continue
+            identity = report_identity(parsed)
+            digest = data_digest(parsed)
+            statuses.append("OBSERVED_SHAPE_ONLY")
+            identities.setdefault(identity, []).append((len(statuses) - 1, digest))
+            comment_ids.setdefault(item["id"], []).append((len(statuses) - 1, digest))
+        except (ContractError, KeyError, TypeError, ValueError):
+            statuses.append("INVALID_SCHEMA")
+    for groups in (identities, comment_ids):
+        for members in groups.values():
+            if len({digest for _, digest in members}) > 1:
+                for idx, _ in members:
+                    statuses[idx] = "CONFLICT"
+            elif len(members) > 1:
+                for idx, _ in members[1:]:
+                    if statuses[idx] == "OBSERVED_SHAPE_ONLY":
+                        statuses[idx] = "DUPLICATE"
+    return {"complete": True, "statuses": statuses}
+
+
 def parse_markdown(source: str) -> dict | None:
     if len(source.encode("utf-8")) > MAX_BYTES:
         raise ContractError("source document exceeds MAX_BYTES")
