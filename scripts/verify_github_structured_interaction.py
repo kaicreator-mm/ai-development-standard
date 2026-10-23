@@ -496,7 +496,9 @@ def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
             statuses.append("OBSERVED_SHAPE_ONLY")
             identities.setdefault(identity, []).append((len(statuses) - 1, digest))
             comment_ids.setdefault(item["id"], []).append((len(statuses) - 1, digest))
-        except (ContractError, KeyError, TypeError, ValueError):
+        except ContractError as exc:
+            statuses.append("UNSUPPORTED" if str(exc).startswith("UNSUPPORTED_SCHEMA") else "INVALID_SCHEMA")
+        except (KeyError, TypeError, ValueError):
             statuses.append("INVALID_SCHEMA")
     for groups in (identities, comment_ids):
         for members in groups.values():
