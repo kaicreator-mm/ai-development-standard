@@ -209,8 +209,44 @@ def run_all(m: dict, *, expected_sha: str, timeout: int) -> dict:
             "native_end_to_end": "NOT_RUN", "release_qualification": "NOT_RUN"}
 
 
+
+def integrity_self_test(manifest: dict) -> bool:
+    """Adversarial real-path checks; a green source test is not RQ."""
+    outcomes = []
+    def should_reject(name, mutation):
+        modified = copy.deepcopy(manifest)
+        mutation(modified)
+        try:
+            load_and_check_manifest(modified)
+        except QualificationError:
+            outcomes.append((name, True))
+        else:
+            outcomes.append((name, False))
+    should_reject("suite-command-swap", lambda x: x["suites"][0].update(command=EXPECTED_SUITES["T02"][0]))
+    should_reject("suite-fixture-swap", lambda x: x["suites"][0].update(artifact=EXPECTED_SUITES["T02"][1]))
+    should_reject("schema-blob-swap", lambda x: x["schema_pins"].update({"schemas/github/v4.16/report.schema.json": "a" * 40}))
+    should_reject("schema-path-swap", lambda x: x["schema_pins"].update({"README.md": "a" * 40}))
+    should_reject("group-owner-swap", lambda x: x["groups"].update(C01=["T06"]))
+    with tempfile.TemporaryDirectory(prefix="ads-t07-integrity-") as tmp:
+        examples = (
+            ("stdout-fake", 'print("Ran 99 tests in 0.01s")\n', False),
+            ("all-skipped", 'import unittest\nclass T(unittest.TestCase):\n @unittest.skip("none")\n def test_ignored(self): pass\nunittest.main()\n', False),
+            ("real-test-control", 'import unittest\nclass T(unittest.TestCase):\n def test_real(self): self.assertEqual(1, 1)\nunittest.main()\n', True),
+        )
+        for name, script, expected in examples:
+            file = Path(tmp) / (name + ".py")
+            file.write_text(script, encoding="utf-8")
+            result, count, audited = audited_suite(str(file), 30)
+            outcomes.append((name, (audited and count == 1 and result.returncode == 0) == expected))
+    for name, qualified in outcomes:
+        print(f"NEGATIVE_{name}: {'PASS' if qualified else 'FAIL'}")
+    return len(outcomes) == 8 and all(ok for _, ok in outcomes)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--self-test", action="store_true",
+                    help="Execute actual integrity negative probes (not Release PASS)")
     ap.add_argument("--run", action="store_true",
                     help="Execute all source test suites (not only their file existence)")
     ap.add_argument("--expected-sha", help="Exact commit hash (mandatory with --run)")
@@ -220,6 +256,10 @@ def main() -> int:
     opts = ap.parse_args()
     try:
         m = load_and_check_manifest()
+        if opts.self_test:
+            if opts.run:
+                raise QualificationError("Cannot combine --self-test with --run")
+            return 0 if integrity_self_test(m) else 1
         if not opts.run:
             print(json.dumps({"manifest": "SOURCE_MAPPING_VALID_ONLY",
                               "groups": len(m["groups"]), "suites": len(m["suites"]),
