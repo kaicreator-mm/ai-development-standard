@@ -955,6 +955,87 @@ prerequisite. Preserve `REAL_TASKMETA_GITHUB_PUBLICATION_NOT_PROVEN` and
 `REAL_TALLY_GITHUB_ONLY_READER_FEEDBACK_NOT_PROVEN`; no runtime or RQ PASS follows
 from this source contract or its finite tests.
 
+**Prospective material-input requalification (v4.17 C10).** An
+evidence-informed consumer may form a new derived selection, promotion,
+recommendation or native action admission only from actually consumed
+material public-input premises. The mere existence of a native GitHub
+comment, Issue, PR, Review, CI outcome, event marker, citation or
+timestamp is not evidence that a specific consumer materially used that
+premise; source presence, a cross-reference or a textual citation is not
+a consumption witness. A consumer asserting that one new dependent
+conclusion materially relies on a particular premise MUST hold a
+reconstructible consumer-local witnessed material-use reference tying
+that exact decision scope to the exact input object and its source
+observation. This edge is application-local and decision-specific: it is
+not a new public ADS Report field, Task/Claim admission fact, Tally
+Candidate state or universal Task Gate, and it never restricts ordinary
+lawful native processing that makes no such dependent inference. A
+missing or ambiguous material-use edge yields
+`UNKNOWN/INSUFFICIENT_EVIDENCE` for that asserted new dependent
+conclusion only — never a global cancellation, historical rollback or a
+blocked unrelated Task.
+
+**Source-kind-aware reconciliation (v4.17 C10).** The preceding
+reader-reconciliation MUST applies on Report-comment paths wherever each
+listed element is actually applicable to the source kind, and it retains
+full binding force there. A native GitHub
+Task/Issue/amendment/dependency/PR/Review/CI/Claim/Dispatch object that
+is not an `ads/github/v4` or `ads/github/v5` Report reconciles through
+its own native identity contract: canonical repository, native object
+kind and immutable native ID/URL, witnessed exact subject/ref or body
+snapshot/revision, actual owning authority, source lineage,
+readback/currentness and complete scoped pagination. Report-only
+elements — data-only digest, `report_id`, `publisher_namespace`, Report
+Task/Attempt binding — apply only where the actual report profile
+requires them; no native-only source MUST manufacture a Report ID,
+publisher namespace, Report-data digest or a missing Attempt, and a
+field inapplicable to the actual source kind is not a defect. A missing
+applicable identity, authority, integrity or bounded-readback element
+remains `UNKNOWN/INSUFFICIENT_EVIDENCE` for a new materially reliant
+conclusion. An observed mutable native body is never presumed immutably
+unchanged without a source-witnessed snapshot.
+
+**Profile-exact notice targets (v4.17 C10).** Schema-exact notice
+targets are profile-exact: a v4 `EXECUTION_CORRECTION.target` carrying
+exactly its required eight keys (`comment_ref`, `report_id`,
+`revision`, `report_kind`, `publisher_namespace`, `issue_ref`,
+`task_ref`, `data_digest`) is profile-correct, not malformed, for
+lacking v5-only keys; a v5 target additionally requires `repository`,
+`comment_id`, `ads_profile`, `attempt_ref`, `target_source_status` and
+`target_source_sha`; strict `additionalProperties:false` leaves v5-only
+keys neither required nor accepted in a v4 target. These names describe
+the already-frozen schemas; this subsection adds no wire or Schema
+field.
+
+**Dependency-bounded prospective reevaluation (v4.17 C10).** At a later
+context assembly, selection/promotion or new native action admission the
+consumer re-checks only the sources its new conclusion materially
+depends on, using at most the following analysis labels, which are not
+wire enums, notice values, Candidate states or Gate outputs. A premise
+verified CURRENT under its source-kind contract (`VERIFIED_CURRENT`) is
+eligible for the ordinary owning decision, never automatically a Review
+PASS, Task outcome or Tool authority. An owner-verified,
+source/profile-aligned `REVOKE`/`REDACT`/correction/supersession or
+verified material staleness of an actually consumed premise
+(`VERIFIED_REVOKED_OR_STALE`) requires withholding only new decisions
+actually reliant on that premise until a separately qualified
+replacement or owning disposition exists; a mismatched or malformed
+notice target remains DISPUTED/UNVERIFIED under the existing correction
+rules. A bounded read ending in 403/429 after honored backoff, a missing
+terminal page, an invalid/changed digest, incomplete correction lineage
+or an unknown owner (`UNVERIFIABLE_OR_PARTIAL`) is fail-closed
+`UNKNOWN/INSUFFICIENT_EVIDENCE` for new material use, never an
+empty-success. A foreign `DISPUTE` without independently witnessed
+native contradiction (`FOREIGN_DISPUTED`) never revokes a verified
+publisher's original source; an independently witnessed material
+conflict follows the existing UNKNOWN/source-owner escalation. Old
+Report facts, already accepted Builder/BUILD pins, effective immutable
+ADS pins, historical reports and real K/Host effect receipts are
+historical and MUST NOT be retroactively rewritten or rolled back.
+Unrelated fully qualified lawful new activity remains eligible under its
+original owning authorization; any compensation is a separate
+authorized action.
+
 ### 16.7 ADS v4.16 opt-in Report v5 (separate minor-version wire)
 
 A qualified, immutable **main** ADS v4.16 adoption SHA and source-qualified explicit v5 publication capability are required before a normal writer emits `schema: ads/github/v5`, `kind: report`. `version/v4.16`, this source candidate or a successful shape test is **CANDIDATE_ONLY**, never automatic producer/consumer migration or a second concurrent default. Existing v3 Work Item/Intent/Event and v4.15 report identity/schema bytes/current readers are unchanged. Historical v3/v4 records are governed by their actual pinned profile. v4 writers continue emitting **only** `ads/github/v4`; a v4-only reader must classify v5 as **UNSUPPORTED** and any cross-profile count/absence/completeness as `UNKNOWN/INSUFFICIENT_EVIDENCE`, never treat it as v4 or no Attempt. A v5-aware reader must dispatch each native comment using its effective immutable ADS pin, marker, report_kind, pagination/currentness and original/schema profile; it may not backfill old v4 values or silently correct a v4 report through a v5 notice. T03 owns the actual source verifier/reader code and full mixed-window tests.
@@ -968,3 +1049,7 @@ For a truly witnessed immutable artifact of the **original executed material**, 
 A v5 `EXECUTION_CORRECTION` always has its own pinned publisher/notice source (non-null `notice_publisher_source_sha` must equal current `subject.publisher_source_sha` under the native owner's observed source; a JSON Schema cannot prove cross-field equality). Its `target` binds **the original** canonical repository/Issue + comment URL/ID, `ads_profile=ads/github/v5:report`, original Task/**Attempt**/publisher namespace, report ID/revision/kind, exact public data digest and typed target source status/SHA (nullable only when target is UNPINNED/UNKNOWN). A source-null target is valid as historical description, never as the notice publisher's own source. `REVOKE|REDACT|DISPUTE` never modify the original GitHub comment in place. Before applying a notice, consumer must independently read back exact target and notice IDs/bodies/data-only digests, align native Issue/comment ID, Task/Attempt, report lineage, publisher namespace/authority, original source pin and full pagination/currentness. A wrong Issue, Task, Attempt, namespace, digest, profile, owner or unreachable/edited target ⇒ `UNVERIFIED/DISPUTED`; the v5 Schema is not authority to revoke another logical producer sharing a GitHub transport account. Privacy removal/tombstone is separately owner authorized and cannot guarantee historical caches are erased. Corrections and late source-associated revisions are distinct facts; no correction may be erased by arrival order.
 
 The v5 numeric projection is bounded to public typed `metric_id`, physical/logical attempt and adapter source references, observation ID/revision, window, measurement-kind/unit and cost accounting refs. Actual source receipt identity, qualified alias equality, retry/delta/cumulative deduplication, clock comparability, billed-versus-estimated identity and completeness semantics belong to T02, not to a v5 `value` alone; **no inferred total** from schema-valid numbers. Privacy/source classification applies to every metric/model/provider/cost ref, not just the envelope. T01 source tests cover C01/C06–C10 *Schema shapes* and explicit non-schema authority refusals. Real task-meta publisher, Tally consumer, provider source/Host and GitHub native correction effects remain `NOT_RUN` until separately admitted/witnessed; no v4.16 release is qualified by this subsection alone.
+
+**v5 dependent-input readback (v4.17 C10).** Before treating a v5 `EXECUTION_CORRECTION` as changing the qualification of a subsequently consumed material v5 premise, the consumer MUST apply the already-required exact target tuple to the original native GitHub comment and report — owning repository/Issue, `comment_ref`/`comment_id`, target `report_id`/`revision`/`report_kind`/`publisher_namespace`, `issue_ref`/`task_ref`/`attempt_ref`/`ads_profile`, `data_digest`, and typed `target_source_status`/`target_source_sha` — and independently qualify the notice's owning authority, immutable notice publisher source and `PUBLISHABLE` clearance, native comment integrity, privacy classification and completed scoped pagination under the existing rules of this subsection. A wrong namespace, digest, Task, Attempt, profile, owner or an unreachable/edited target stays `UNVERIFIED/DISPUTED`; a foreign `DISPUTE` never revokes the actual target; a historical source-null target never authorizes a source-null notice publisher. A schema-valid v5 target establishes eligibility for notice semantics only, never automatically a valid Task outcome, authorization or Gate PASS.
+
+**v5 requalification boundary (v4.17 C10).** Requalification under this subsection is prospective and dependency-bounded: only new conclusions actually reliant on the noticed premise are withheld until a separately qualified replacement or owning disposition exists, while already accepted Builder/BUILD pins, historical reports and real K/Host effects remain immutable. A v4-only reader encountering v5 material still classifies it `UNSUPPORTED` with `UNKNOWN/INSUFFICIENT_EVIDENCE` for any cross-profile reliance, never a false zero or clean absence. This addition creates no v5 Schema field, public consumer Candidate ID, new notice enum, retroactive effect invalidation, hidden task-meta access or v4↔v5 migration.
