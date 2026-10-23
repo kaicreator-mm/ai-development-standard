@@ -192,7 +192,17 @@ def run_all(m: dict, *, expected_sha: str, timeout: int) -> dict:
         print(f"{suite['id']}: {row['result']} exit={row['exit']} tests={row['unittest_count']}", flush=True)
     after = git("rev-parse", "HEAD")
     clean_after = git_clean()
+    by_id = {row["id"]: row for row in details}
+    groups = {
+        group: {
+            "required_source_owners": owners,
+            "source_suites_executed_and_passed": all(
+                by_id.get(owner, {}).get("result") == "PASS" for owner in owners),
+        }
+        for group, owners in m["groups"].items()
+    }
     all_ok = (all(x["result"] == "PASS" for x in details)
+              and all(x["source_suites_executed_and_passed"] for x in groups.values())
               and after == expected_sha and clean_after)
     return {"schema": "ads/v416-t07-local-run-result/v1",
             "task": "#1271", "source_sha": expected_sha,
@@ -200,6 +210,7 @@ def run_all(m: dict, *, expected_sha: str, timeout: int) -> dict:
             "python": sys.version.split()[0],
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "source_suites": details,
+            "acceptance_group_source_evidence": groups,
             "total_unittest_methods": sum(x["unittest_count"] or 0 for x in details),
             "all_sources_executed": len(details) == len(m["suites"]),
             "source_checkout_clean_after": clean_after,
