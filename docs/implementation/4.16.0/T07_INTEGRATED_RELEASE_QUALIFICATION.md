@@ -74,7 +74,7 @@ The independent exact-H R1 [BLOCK #1271@6360941918](https://github.com/kaicreato
 
 ## 4. Predecessor, branch and migration
 
-- At the time this source-preparation ledger was authored, main was the former v4.14 pin. The v4.15 source integration PR [#1211](https://github.com/kaicreator-mm/ai-development-standard/pull/1211) remains **DRAFT**; it may not be treated as Release-qualified or merged implicitly.
+- At the time this source-preparation ledger was authored, main was the former v4.14 pin. At that snapshot, the v4.15 source integration PR [#1211](https://github.com/kaicreator-mm/ai-development-standard/pull/1211) was **DRAFT and unmerged**; that historical state never implies an independently qualified v4.15 Release. Determine its subsequent status from the live GitHub PR and current #1271 reconciliation, not this archived ledger.
 - The v4.16 version branch includes the qualified v4.15 source candidates in ancestry. Its own source closure must explicitly distinguish **cumulative version source payload**, historical predecessor delivery, compatibility and Release scope, and not pretend that main is already on v4.15.
 - The opt-in v5 reader is **not** the effective writer default or a native GitHub authority grant before an authorized adopted ADS pin; legacy v3/v4 paths remain as historically frozen.
 - v4.17 research C08 and R7 proposals are **out of v4.16 scope** and not closure blockers.
