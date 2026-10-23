@@ -218,22 +218,32 @@ def validate_record(data: dict) -> str:
 
 
 def record_disposition(record, effective_pin="v4.15", writing=False):
-    """Interpret wire compatibility only; CURRENT never means Claim admission."""
-    if effective_pin not in ("v4.14", "v4.15", "v4.16"):
-        raise ContractError("UNSUPPORTED_SCHEMA: unresolved effective pin")
+    """Frozen v4.14/v4.15 reader API: v4.16 remains unsupported here."""
+    if effective_pin not in ("v4.14", "v4.15"):
+        raise ContractError("UNSUPPORTED_SCHEMA: unresolved historical effective pin")
     if effective_pin == "v4.14" and record.get("schema") != "ads/github/v3":
         raise ContractError("UNSUPPORTED_SCHEMA: v4.14 reader")
-    if record.get("schema") == "ads/github/v5" and effective_pin != "v4.16":
-        raise ContractError("UNSUPPORTED_SCHEMA: v5 report requires v4.16 reader")
+    if record.get("schema") == "ads/github/v5":
+        raise ContractError("UNSUPPORTED_SCHEMA: v4.15 reader cannot consume v5")
     validate_record(record)
-    if effective_pin in ("v4.15", "v4.16") and record["schema"] == "ads/github/v3" and record["kind"] == "report":
+    if effective_pin == "v4.15" and record["schema"] == "ads/github/v3" and record["kind"] == "report":
         if writing:
             raise ContractError("v4.15 writer cannot emit historical v3 report")
         return "HISTORICAL_READ_ONLY"
-    if record.get("schema") == "ads/github/v5":
-        return "V5_SHAPE_ONLY"  # never an adopted writer or native authority grant
     return "CURRENT_OBSERVATION" if record["kind"] == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
 
+
+def v416_record_disposition(record, *, writing=False):
+    """New, explicit v4.16 opt-in reader; no modification to frozen v4.15 API."""
+    validate_record(record)
+    family, kind = record["schema"], record["kind"]
+    if family == "ads/github/v3" and kind == "report":
+        if writing:
+            raise ContractError("v4.16 writer cannot emit historical v3 report")
+        return "HISTORICAL_READ_ONLY"
+    if family == "ads/github/v5":
+        return "V5_SHAPE_ONLY"  # no project adoption/native publisher grant proven
+    return "CURRENT_OBSERVATION" if kind == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
 
 def _report_semantics(data):
     subject = data["subject"]
@@ -477,7 +487,8 @@ def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
             if parsed is None:
                 statuses.append("UNSTRUCTURED_DISCUSSION")
                 continue
-            disposition = record_disposition(parsed, effective_pin)
+            disposition = (v416_record_disposition(parsed) if effective_pin == "v4.16"
+                           else record_disposition(parsed, effective_pin))
             if type(item.get("id")) is not int or item["id"] < 1:
                 statuses.append("UNVERIFIED")
                 continue
@@ -551,7 +562,10 @@ def verify_markdown(source: str, expected_kind: str | None = None, *, effective_
         if expected_kind:
             raise ContractError("normalized document required")
         return "UNSTRUCTURED_DISCUSSION"
-    record_disposition(data, effective_pin, writing)
+    if effective_pin == "v4.16":
+        v416_record_disposition(data, writing=writing)
+    else:
+        record_disposition(data, effective_pin, writing)
     if expected_kind is not None and data["kind"] != expected_kind:
         raise ContractError(f"expected kind={expected_kind}, got kind={data['kind']}")
     return "SHAPE_VALID_ONLY"
