@@ -99,6 +99,63 @@ def load_and_check_manifest(candidate: dict | None = None) -> dict:
     return m
 
 
+
+# A unittest result is counted only when TextTestRunner.run actually ran.
+# Printed "Ran N tests in" lines cannot produce this side-channel witness.
+_UNITTEST_BOOT = r'''
+import json, os, runpy, sys, unittest
+results = []
+original = unittest.TextTestRunner.run
+def capture(self, suite):
+    result = original(self, suite)
+    results.append(dict(run=result.testsRun, skipped=len(result.skipped),
+        failures=len(result.failures), errors=len(result.errors),
+        unexpected_successes=len(result.unexpectedSuccesses),
+        successful=result.wasSuccessful()))
+    return result
+unittest.TextTestRunner.run = capture
+script = os.path.abspath(sys.argv[1])
+sys.argv = [script]
+sys.path.insert(0, os.path.dirname(script))
+try:
+    runpy.run_path(script, run_name="__main__")
+except SystemExit as exc:
+    if exc.code not in (None, 0, False):
+        raise
+finally:
+    with open(os.environ["ADS_T07_UNITTEST_AUDIT"], "x", encoding="utf-8") as stream:
+        json.dump({"origin": "TextTestRunner.run", "results": results}, stream)
+'''
+
+
+def audited_suite(script: str, timeout: int):
+    """Return real unittest outcomes, never parse a suite's self-reported text."""
+    with tempfile.TemporaryDirectory(prefix="ads-t07-audit-") as directory:
+        audit = Path(directory) / "audit.json"
+        env = os.environ.copy()
+        env["ADS_T07_UNITTEST_AUDIT"] = str(audit)
+        result = subprocess.run(
+            [sys.executable, "-c", _UNITTEST_BOOT, script],
+            cwd=ROOT, capture_output=True, encoding="utf-8",
+            errors="replace", timeout=timeout, check=False, env=env)
+        try:
+            witness = json.loads(audit.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return result, None, False
+        runs = witness.get("results")
+        if witness.get("origin") != "TextTestRunner.run" or not isinstance(runs, list) or not runs:
+            return result, None, False
+        if any(type(row.get("run")) is not int or row["run"] < 1
+               or row.get("skipped") or row.get("failures") or row.get("errors")
+               or row.get("unexpected_successes")
+               or row.get("successful") is not True for row in runs if isinstance(row, dict)):
+            return result, None, False
+        if any(not isinstance(row, dict) for row in runs):
+            return result, None, False
+        count = sum(row["run"] for row in runs)
+        return result, count, result.returncode == 0 and count > 0
+
+
 def git_clean() -> bool:
     return not git("status", "--porcelain")
 
@@ -115,15 +172,12 @@ def run_all(m: dict, *, expected_sha: str, timeout: int) -> dict:
     for suite in m["suites"]:
         cmd = [sys.executable, suite["command"]]
         try:
-            proc = subprocess.run(cmd, cwd=ROOT, capture_output=True,
-                                  encoding="utf-8", errors="replace",
-                                  check=False, timeout=timeout)
+            proc, count, audited = audited_suite(suite["command"], timeout)
             combined = proc.stdout + "\n" + proc.stderr
-            counts = re.findall(r"Ran\s+(\d+)\s+tests?\s+in", combined)
-            count = int(counts[-1]) if counts else None
-            passed = proc.returncode == 0 and count is not None and count > 0
+            passed = proc.returncode == 0 and audited and count is not None and count > 0
             row = {"id": suite["id"], "command": cmd[1],
                    "exit": proc.returncode, "unittest_count": count,
+                   "real_unittest_audit": audited,
                    "result": "PASS" if passed else "FAIL",
                    "log_sha256": hashlib.sha256(combined.encode("utf-8")).hexdigest(),
                    "timeout": False}
