@@ -39,6 +39,20 @@ Coverage facts are reproducible but narrower than implementation integration:
 - C15/C16: bounded Web/Local handoff and source evidence shape; no GitHub native authenticated permission acceptance merely from fixtures
 - A03/G09–G12: delegated Tool/Effect authority intersection and stale/late callback fail-closed examples, **not** an actual Host/Provider invocation
 
+
+### R2 validation-runner integrity repair (after R1 BLOCK)
+
+The independent exact-H R1 [BLOCK #1271@6360941918](https://github.com/kaicreator-mm/ai-development-standard/issues/1271#issuecomment-6360941918) identified three P1 and one P2 omissions in the first T07 runner. R2 implements, without changing any historical normative Schema:
+
+- A built-in fixed `EXPECTED_SUITES` table binds all 11 canonical **suite IDs to their exact Python entrypoint and owning fixture**, disallowing a test/fixture swap while preserving IDs
+- An immutable `EXPECTED_SCHEMA_PINS` three-path map fixes both actual required Schema paths and independently recorded original Git blob hashes, rejecting editable alternative self-selected pins
+- `EXPECTED_GROUPS` binds the exact full 21-group C01–C16/A03/G09–G12 ownership relationship, not just a partial subset
+- Each subprocess is wrapped with actual `unittest.TextTestRunner.run` observation, providing real `TestResult.testsRun`, skip/error/failure and unexpected-success evidence through an off-repository temporary audit. Text such as `Ran 99 tests in …` is **never** used to count tests. Zero executed methods or **any skipped tests** fail closed
+- `--self-test` executes **8 integrity controls**: suite command substitution, fixture substitution, Schema SHA substitution, Schema path substitution, C01 owner substitution, stdout-only fake, 100%-skipped unittest, and a real positive control. This is an actual runtime probe, not a mock of `audited_suite`
+
+**R2 physical source qualification remains NOT_RUN until independently executed** at a fresh exact R2 SHA with `py -3.14 scripts/test_v416_t07_integration.py --self-test` and the full `--run --expected-sha` commands. The old exact-H Python 149/149 real suite result remains truthful historical evidence but **does not transfer** across this repair. Generic CI cannot replace either new R2 test run. A separate exact-H independent Reviewer must verify and dispose P1×3/P2×1 before version merge. No premature VERSION/CHANGELOG, main, tag or Release PASS.
+
+
 ## 3. Release Gate ledger (immutable facts only)
 
 | Gate | Current status | Required actual next evidence |
