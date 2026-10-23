@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from verify_github_structured_interaction import (
-    ROOT, ContractError, MARKER, validate_record, record_disposition,
+    ROOT, ContractError, MARKER, validate_record, record_disposition, v416_record_disposition,
     data_digest, report_identity, compare_v5_correction_source,
     compare_v5_summary_revision, inspect_supplied_issue_pages, verify_markdown,
 )
@@ -54,6 +54,13 @@ def source_comment(record, number=123, edited=False):
             "body": MARKER + "\n\x60\x60\x60yaml\n" + json.dumps(record, ensure_ascii=False) + "\n\x60\x60\x60\n"}
 
 
+def reader_disposition(record, pin="v4.15", writing=False):
+    """Explicit opt-in adapter; the historical record_disposition API stays frozen."""
+    if pin == "v4.16":
+        return v416_record_disposition(record, writing=writing)
+    return record_disposition(record, pin, writing)
+
+
 class T03MixedReader(unittest.TestCase):
     def test_explicit_compatibility_matrix(self):
         matrix = json.loads((ROOT / "tests/fixtures/v416/t03/compatibility_matrix.json")
@@ -76,9 +83,9 @@ class T03MixedReader(unittest.TestCase):
                 record = variants[case["record"]]
                 if "error" in case:
                     with self.assertRaisesRegex(ContractError, case["error"]):
-                        record_disposition(record, case["reader"])
+                        reader_disposition(record, case["reader"])
                 else:
-                    self.assertEqual(record_disposition(record, case["reader"]),
+                    self.assertEqual(reader_disposition(record, case["reader"]),
                                      case["expected"])
 
     def test_three_v5_shapes_and_old_windows(self):
@@ -86,16 +93,16 @@ class T03MixedReader(unittest.TestCase):
             record = v5(name)
             with self.subTest(kind=name):
                 self.assertEqual(validate_record(record), "SHAPE_VALID_ONLY")
-                self.assertEqual(record_disposition(record, "v4.16"), "V5_SHAPE_ONLY")
-                self.assertEqual(record_disposition(record, "v4.16", writing=True), "V5_SHAPE_ONLY")
+                self.assertEqual(reader_disposition(record, "v4.16"), "V5_SHAPE_ONLY")
+                self.assertEqual(reader_disposition(record, "v4.16", writing=True), "V5_SHAPE_ONLY")
                 with self.assertRaisesRegex(ContractError, "UNSUPPORTED_SCHEMA"):
-                    record_disposition(record, "v4.15")
+                    reader_disposition(record, "v4.15")
                 with self.assertRaisesRegex(ContractError, "UNSUPPORTED_SCHEMA"):
-                    record_disposition(record, "v4.14")
+                    reader_disposition(record, "v4.14")
         historical = json.loads((FIX / "summary.json").read_text(encoding="utf8"))
-        self.assertEqual(record_disposition(historical, "v4.15"), "CURRENT_OBSERVATION")
-        self.assertEqual(record_disposition(historical, "v4.16"), "CURRENT_OBSERVATION")
-        self.assertEqual(record_disposition(envelope("work_item", WORK), "v4.16"),
+        self.assertEqual(reader_disposition(historical, "v4.15"), "CURRENT_OBSERVATION")
+        self.assertEqual(reader_disposition(historical, "v4.16"), "CURRENT_OBSERVATION")
+        self.assertEqual(reader_disposition(envelope("work_item", WORK), "v4.16"),
                          "CURRENT_EXECUTABLE_SHAPE_ONLY")
 
     def test_older_mixed_reader_returns_typed_unsupported_not_invalid_record(self):
@@ -119,7 +126,7 @@ class T03MixedReader(unittest.TestCase):
                         epistemic="UNKNOWN")
         verifier["currentness"]["state"] = "UNKNOWN"
         self.assertEqual(validate_record(r), "SHAPE_VALID_ONLY")
-        self.assertEqual(record_disposition(r, "v4.16"), "V5_SHAPE_ONLY")
+        self.assertEqual(reader_disposition(r, "v4.16"), "V5_SHAPE_ONLY")
         r["data"]["cost"].update(basis="BILLED", value=3.0)
         with self.assertRaises(ContractError):
             validate_record(r)
