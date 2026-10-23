@@ -169,3 +169,61 @@ finding remains OPEN; consumer application checks do not repair that helper.
 Downstream same-build TypeScript/grant/egress evidence remains deferred NOT_RUN.
 These standalone cases require actual explicit execution; generic native CI
 success does not imply this command ran.
+
+## 9. ADS v4.16 candidate — v5 Report reader (T03)
+
+**Opt-in, source-only compatibility:** The v3 Work Item/Intent/Event and historical
+v3 Report still use the *unchanged* v4.14 schema; v4 Report still uses the
+*unchanged* v4.15 strict schema. New `ads/github/v5`, `kind: report` exclusively
+uses [the distinct v4.16 strict schema](../schemas/github/v4.16/report.schema.json).
+A v5 Work Item, Event, Intent or unrecognized report kind is rejected. An older
+`--effective-pin v4.14|v4.15` reader must return typed `UNSUPPORTED_SCHEMA`
+for v5 instead of coercing it to v4 or counting missing source as zero.
+`--effective-pin v4.16` permits **shape inspection** only, not a writer grant
+or proof that the GitHub project has adopted v4.16 in `main`. A source-only
+v5 `record_disposition` result is `V5_SHAPE_ONLY`.
+
+The original material's `subject.source_sha` may be null for an observational
+collector-only **summary** with `UNPINNED/UNKNOWN` source status, but the
+publisher's own `publisher_source_sha` and `ads_revision` stay separately
+non-null. Such a report has UNKNOWN source currentness, nonempty collector
+observation refs, and cannot claim authenticated verifier PASS, canonical
+Dispatch/Claim/Attempt, settled billed cost or a real result denominator.
+A source-association successor must preserve the publisher/Task/Attempt identity,
+cite an actual immutable predecessor and new manifest, and must not fabricate
+a CANONICAL_DISPATCH identity from an observational Attempt.
+
+A v5 correction is a **notice**, not a native GitHub update. Its target must
+name the original publication's owning repository, Issue, comment ID/URL,
+publisher namespace, report identity, source state and original **RFC8785
+data-only** SHA-256 digest. `compare_v5_correction_source()` checks only a
+caller-supplied original: `UNVERIFIED` without a complete/unmodified native
+source, `DISPUTED` for mismatches, or `SOURCE_MATCH_ONLY` on matching
+source bytes. None is authority to revoke/redact/apply the notice. The
+authoritative native reader must independently witness complete comment
+pagination, native post/readback, comment edit history, publisher/grant identity
+and currentness. `inspect_supplied_issue_pages()` is a **bounded offline
+oracle** over supplied page data; `OBSERVED_SHAPE_ONLY` remains untrusted
+until those native facts are actually verified. A missing terminal page,
+unexpected cursor, edited comment or conflicting same-identity digest fails
+closed. No private task-meta API or OSS manifest content is fetched.
+
+Reproduce the declared source-only contract with:
+
+```text
+python scripts/test_v416_t03_reader.py
+python scripts/test_github_structured_interaction.py
+python tests/test_v415_report.py
+python tests/test_v415_consumer.py
+python scripts/verify_github_structured_interaction.py v5-report.md --kind report --effective-pin v4.16 --data-digest
+```
+
+The v4.16 standalone tests exercise v5 summary/feedback/correction shapes,
+collector-null refusal, revision and correction identity, mixed Issue
+v3/v4/v5 routing, digest conflict, pagination gaps, and unsupported older
+readers. These examples are test inputs, not publication. Actual native
+GitHub readback with authenticated ownership, real producer publication,
+task-meta→GitHub→Tally E2E, physical/provider clock and invoice qualification,
+Host integration and Release Qualification remain separate NOT_RUN gates.
+The Python interpreter used for test execution is not normative to ADS data
+contracts, and generic CI success never implies this standalone test ran.

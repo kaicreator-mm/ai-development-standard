@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADS pinned per-kind structured Markdown+YAML checker (v4 report-only).
+"""ADS pinned per-kind structured Markdown+YAML checker (v3/v4/v5 report).
 
 This is STRICTLY a source-independent data validator: never dispatch/claim or write GitHub.
 Validation is performed by genuine Draft 2020-12 JSON Schema, not a Python op/profile switch.
@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MARKER = "<!-- ads:github -->"
 SCHEMA_FILE = ROOT / "schemas/github/v4.14/structured-interaction.schema.json"
 REPORT_SCHEMA_FILE = ROOT / "schemas/github/v4.15/report.schema.json"
+V5_REPORT_SCHEMA_FILE = ROOT / "schemas/github/v4.16/report.schema.json"
 REFERENCED = (
     ROOT / "schemas/task-contract.schema.json",
     ROOT / "schemas/agent-event-v2.schema.json",
@@ -193,6 +194,8 @@ def validate_record(data: dict) -> str:
     pair = (data.get("schema"), data.get("kind"))
     if pair == ("ads/github/v4", "report"):
         path = REPORT_SCHEMA_FILE
+    elif pair == ("ads/github/v5", "report"):
+        path = V5_REPORT_SCHEMA_FILE
     elif pair[0] == "ads/github/v3" and pair[1] in ("work_item", "intent", "event", "report"):
         path = SCHEMA_FILE
     else:
@@ -209,15 +212,19 @@ def validate_record(data: dict) -> str:
                             (f" (alternatives: {causes})" if causes else ""))
     if path == REPORT_SCHEMA_FILE:
         _report_semantics(data["data"])
+    elif path == V5_REPORT_SCHEMA_FILE:
+        _v5_report_semantics(data["data"])
     return "SHAPE_VALID_ONLY"
 
 
 def record_disposition(record, effective_pin="v4.15", writing=False):
-    """Interpret wire compatibility only; CURRENT never means Claim admission."""
+    """Frozen v4.14/v4.15 reader API: v4.16 remains unsupported here."""
     if effective_pin not in ("v4.14", "v4.15"):
-        raise ContractError("UNSUPPORTED_SCHEMA: unresolved effective pin")
+        raise ContractError("UNSUPPORTED_SCHEMA: unresolved historical effective pin")
     if effective_pin == "v4.14" and record.get("schema") != "ads/github/v3":
         raise ContractError("UNSUPPORTED_SCHEMA: v4.14 reader")
+    if record.get("schema") == "ads/github/v5":
+        raise ContractError("UNSUPPORTED_SCHEMA: v4.15 reader cannot consume v5")
     validate_record(record)
     if effective_pin == "v4.15" and record["schema"] == "ads/github/v3" and record["kind"] == "report":
         if writing:
@@ -225,6 +232,18 @@ def record_disposition(record, effective_pin="v4.15", writing=False):
         return "HISTORICAL_READ_ONLY"
     return "CURRENT_OBSERVATION" if record["kind"] == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
 
+
+def v416_record_disposition(record, *, writing=False):
+    """New, explicit v4.16 opt-in reader; no modification to frozen v4.15 API."""
+    validate_record(record)
+    family, kind = record["schema"], record["kind"]
+    if family == "ads/github/v3" and kind == "report":
+        if writing:
+            raise ContractError("v4.16 writer cannot emit historical v3 report")
+        return "HISTORICAL_READ_ONLY"
+    if family == "ads/github/v5":
+        return "V5_SHAPE_ONLY"  # no project adoption/native publisher grant proven
+    return "CURRENT_OBSERVATION" if kind == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
 
 def _report_semantics(data):
     subject = data["subject"]
@@ -258,18 +277,67 @@ def _report_semantics(data):
             raise ContractError("feedback ADS subject/effective test profile mismatch")
 
 
+def _v5_report_semantics(data):
+    """Structural consistency only: never native GitHub/producer authority."""
+    subject = data["subject"]
+    issue = subject["issue_ref"]
+    if not issue.startswith("https://github.com/" + subject["repository"] + "/issues/"):
+        raise ContractError("v5 owning repository/Issue mismatch")
+    try:
+        datetime.fromisoformat(data["observed_at"].replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError("invalid v5 observed_at calendar time") from exc
+    prev = data["supersedes"]
+    if prev is not None and (prev["revision"] != data["revision"] - 1
+                             or not prev["comment_ref"].startswith(issue + "#issuecomment-")):
+        raise ContractError("v5 predecessor must be the immediate owning-Issue revision")
+    if data["report_kind"] == "EXECUTION_SUMMARY":
+        if subject["attempt_ref"] not in data["aggregation"]["attempt_refs"]:
+            raise ContractError("v5 summary Attempt absent from leaf aggregation")
+        if set(data["aggregation"]["attempt_refs"]) & set(data["aggregation"]["excluded_attempt_refs"]):
+            raise ContractError("v5 included/excluded Attempt overlap")
+        if data["verifier"]["subject_sha"] is not None and data["verifier"]["subject_sha"] != subject["source_sha"]:
+            raise ContractError("v5 verifier original source mismatch")
+        sets = [set(data["verifier"][key]) for key in ("checked", "failed", "skipped", "unchecked")]
+        if any(a & b for i, a in enumerate(sets) for b in sets[i + 1:]):
+            raise ContractError("v5 verifier scopes overlap")
+        if any(metric["value"] is None and metric["epistemic"] != "UNKNOWN" for metric in data["metrics"]):
+            raise ContractError("v5 missing metric requires UNKNOWN")
+        if any(token in data["manifest_ref"].lower() for token in ("?", "#", "token=", "signature=", "credential=")):
+            raise ContractError("v5 manifest must be stable opaque locator")
+        if "source_association" in data and data["source_association"]["source_sha"] != subject["source_sha"]:
+            raise ContractError("v5 associated original source mismatch")
+    elif data["report_kind"] == "EXPERIENCE_USE_FEEDBACK":
+        if data["ads_subject_sha"] != subject["ads_revision"]:
+            raise ContractError("v5 feedback ADS subject mismatch")
+        if data["publisher_source_sha"] != subject["publisher_source_sha"]:
+            raise ContractError("v5 feedback publisher source mismatch")
+    elif data["report_kind"] == "EXECUTION_CORRECTION":
+        target = data["target"]
+        if target["repository"] != subject["repository"] or target["issue_ref"] != issue:
+            raise ContractError("v5 correction foreign Issue target")
+        if target["task_ref"] != subject["task_ref"] or target["attempt_ref"] != subject["attempt_ref"]:
+            raise ContractError("v5 correction cross-Task/Attempt")
+        if target["publisher_namespace"] != data["publisher_namespace"]:
+            raise ContractError("v5 correction cross-publisher assertion")
+        if target["comment_ref"] != issue + "#issuecomment-" + str(target["comment_id"]):
+            raise ContractError("v5 correction native comment identity mismatch")
+        if data["notice_publisher_source_sha"] != subject["publisher_source_sha"]:
+            raise ContractError("v5 correction publisher source mismatch")
+
+
 def data_digest(record) -> str:
     """Public validated data comparator, not private-manifest integrity or authority."""
     validate_record(record)
-    if record["schema"] != "ads/github/v4" or record["kind"] != "report":
-        raise ContractError("v4 report required for public data digest")
+    if record["schema"] not in ("ads/github/v4", "ads/github/v5") or record["kind"] != "report":
+        raise ContractError("v4/v5 report required for public data digest")
     return hashlib.sha256(canonical_json(record["data"])).hexdigest()
 
 
 def report_identity(record):
     validate_record(record)
-    if record.get("schema") != "ads/github/v4" or record.get("kind") != "report":
-        raise ContractError("v4 report identity required")
+    if record.get("schema") not in ("ads/github/v4", "ads/github/v5") or record.get("kind") != "report":
+        raise ContractError("v4/v5 report identity required")
     d = record["data"]
     return (d["subject"]["issue_ref"], d["publisher_namespace"], d["report_id"], d["revision"], d["report_kind"])
 
@@ -318,6 +386,143 @@ def validate_summary_revision(previous, successor, legacy_kind):
     return "SHAPE_VALID_ONLY"
 
 
+def compare_v5_correction_source(correction, original=None, *,
+                                 target_comment_ref=None, original_unedited=False,
+                                 complete_collection=False):
+    """Bounded caller-supplied source comparison; never applies a GitHub notice.
+
+    Even matched and purportedly native flags do not authenticate a publisher
+    namespace grant or authorize REVOKE, REDACT, DISPUTE, or replacement.
+    """
+    validate_record(correction)
+    if correction.get("schema") != "ads/github/v5" or correction["data"]["report_kind"] != "EXECUTION_CORRECTION":
+        raise ContractError("v5 correction required")
+    if original is None or not complete_collection or not original_unedited:
+        return "UNVERIFIED"
+    validate_record(original)
+    if original.get("schema") != "ads/github/v5" or original["data"]["report_kind"] not in ("EXECUTION_SUMMARY", "EXPERIENCE_USE_FEEDBACK"):
+        return "DISPUTED"
+    target = correction["data"]["target"]
+    old = original["data"]
+    subject = old["subject"]
+    keys = ("repository", "issue_ref", "task_ref", "attempt_ref")
+    if any(target[key] != subject[key] for key in keys):
+        return "DISPUTED"
+    if (target["comment_ref"] != target_comment_ref
+        or target["publisher_namespace"] != old["publisher_namespace"]
+        or target["report_id"] != old["report_id"]
+        or target["revision"] != old["revision"]
+        or target["report_kind"] != old["report_kind"]
+        or target["target_source_status"] != subject["source_status"]
+        or target["target_source_sha"] != subject["source_sha"]
+        or target["data_digest"] != data_digest(original)):
+        return "DISPUTED"
+    return "SOURCE_MATCH_ONLY"
+
+
+def compare_v5_summary_revision(previous, successor, *, predecessor_comment_ref=None,
+                                previous_unedited=False):
+    """A source-only chain: no promotion of collector Attempt to canonical Claim."""
+    for record in (previous, successor):
+        validate_record(record)
+        if record.get("schema") != "ads/github/v5" or record["data"]["report_kind"] != "EXECUTION_SUMMARY":
+            raise ContractError("two v5 summaries required")
+    a, b = previous["data"], successor["data"]
+    stable = ("repository", "issue_ref", "task_ref", "attempt_ref",
+              "attempt_binding", "ads_revision", "ads_profile", "publisher_source_sha")
+    if (a["report_id"] != b["report_id"] or
+        a["publisher_namespace"] != b["publisher_namespace"] or
+        any(a["subject"][key] != b["subject"][key] for key in stable) or
+        b["revision"] != a["revision"] + 1):
+        raise ContractError("v5 next revision changes identity or skips predecessor")
+    predecessor = b["supersedes"]
+    if predecessor["revision"] != a["revision"] or predecessor["data_digest"] != data_digest(previous):
+        raise ContractError("v5 prior data digest/revision mismatch")
+    if not previous_unedited or predecessor_comment_ref != predecessor["comment_ref"]:
+        return "UNVERIFIED"
+    if a["manifest_ref"] == b["manifest_ref"] or a["manifest_sha256"] == b["manifest_sha256"]:
+        raise ContractError("v5 revision reuses previous immutable manifest")
+    if "source_association" in b:
+        if "source_association" in a or a["subject"]["source_status"] not in ("UNKNOWN", "UNPINNED"):
+            raise ContractError("v5 source association requires unpinned prior observation")
+        if b["subject"]["attempt_binding"] != "COLLECTOR_ONLY":
+            raise ContractError("v5 source association cannot mint canonical Attempt")
+    elif any(a["subject"][key] != b["subject"][key] for key in ("source_status", "source_sha")):
+        raise ContractError("v5 source changed without association")
+    return "SOURCE_CHAIN_SHAPE_ONLY"
+
+
+def inspect_supplied_issue_pages(pages, *, effective_pin="v4.16"):
+    """Inspect finite supplied GitHub page data; NEVER fetch/authenticate remotely.
+
+    The caller's edited=False and complete page values are not themselves proof
+    of native readback, ACL or publisher grant. Every output remains observational.
+    """
+    if type(pages) is not list or not pages or len(pages) > 128:
+        return {"complete": False, "statuses": []}
+    rows, cursor, seen = [], None, set()
+    complete = False
+    for index, page in enumerate(pages):
+        if (type(page) is not dict or page.get("cursor") != cursor or
+            type(page.get("comments")) is not list or
+            page.get("status") != 200 or len(rows) + len(page["comments"]) > 4096):
+            break
+        rows.extend(page["comments"])
+        next_cursor = page.get("next")
+        if next_cursor is None:
+            complete = index == len(pages) - 1
+            break
+        if type(next_cursor) is not str or not next_cursor or next_cursor in seen:
+            break
+        seen.add(next_cursor)
+        cursor = next_cursor
+    if not complete:
+        return {"complete": False, "statuses": ["UNKNOWN_INTEGRITY"] * len(rows)}
+    statuses, identities, comment_ids = [], {}, {}
+    for item in rows:
+        try:
+            if type(item) is not dict or type(item.get("body")) is not str:
+                raise ContractError("native bytes missing")
+            parsed = parse_markdown(item["body"])
+            if parsed is None:
+                statuses.append("UNSTRUCTURED_DISCUSSION")
+                continue
+            disposition = (v416_record_disposition(parsed) if effective_pin == "v4.16"
+                           else record_disposition(parsed, effective_pin))
+            if type(item.get("id")) is not int or item["id"] < 1:
+                statuses.append("UNVERIFIED")
+                continue
+            if parsed["kind"] != "report" or parsed.get("schema") == "ads/github/v3":
+                statuses.append(disposition)
+                continue
+            subject = parsed["data"].get("subject")
+            if not subject or item.get("url") != subject["issue_ref"] + "#issuecomment-" + str(item["id"]):
+                statuses.append("UNVERIFIED")
+                continue
+            if item.get("edited") is not False:
+                statuses.append("UNVERIFIED_EDIT" if item.get("edited") is True else "UNKNOWN_INTEGRITY")
+                continue
+            identity = report_identity(parsed)
+            digest = data_digest(parsed)
+            statuses.append("OBSERVED_SHAPE_ONLY")
+            identities.setdefault(identity, []).append((len(statuses) - 1, digest))
+            comment_ids.setdefault(item["id"], []).append((len(statuses) - 1, digest))
+        except ContractError as exc:
+            statuses.append("UNSUPPORTED" if str(exc).startswith("UNSUPPORTED_SCHEMA") else "INVALID_SCHEMA")
+        except (KeyError, TypeError, ValueError):
+            statuses.append("INVALID_SCHEMA")
+    for groups in (identities, comment_ids):
+        for members in groups.values():
+            if len({digest for _, digest in members}) > 1:
+                for idx, _ in members:
+                    statuses[idx] = "CONFLICT"
+            elif len(members) > 1:
+                for idx, _ in members[1:]:
+                    if statuses[idx] == "OBSERVED_SHAPE_ONLY":
+                        statuses[idx] = "DUPLICATE"
+    return {"complete": True, "statuses": statuses}
+
+
 def parse_markdown(source: str) -> dict | None:
     if len(source.encode("utf-8")) > MAX_BYTES:
         raise ContractError("source document exceeds MAX_BYTES")
@@ -357,7 +562,10 @@ def verify_markdown(source: str, expected_kind: str | None = None, *, effective_
         if expected_kind:
             raise ContractError("normalized document required")
         return "UNSTRUCTURED_DISCUSSION"
-    record_disposition(data, effective_pin, writing)
+    if effective_pin == "v4.16":
+        v416_record_disposition(data, writing=writing)
+    else:
+        record_disposition(data, effective_pin, writing)
     if expected_kind is not None and data["kind"] != expected_kind:
         raise ContractError(f"expected kind={expected_kind}, got kind={data['kind']}")
     return "SHAPE_VALID_ONLY"
@@ -367,7 +575,7 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("file", type=Path)
     cli.add_argument("--kind", choices=["work_item", "intent", "event", "report"])
-    cli.add_argument("--effective-pin", choices=["v4.14", "v4.15"], default="v4.15")
+    cli.add_argument("--effective-pin", choices=["v4.14", "v4.15", "v4.16"], default="v4.15")
     cli.add_argument("--writing", action="store_true")
     cli.add_argument("--data-digest", action="store_true")
     args = cli.parse_args()
