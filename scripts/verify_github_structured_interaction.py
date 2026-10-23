@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADS pinned per-kind structured Markdown+YAML checker (v4 report-only).
+"""ADS pinned per-kind structured Markdown+YAML checker (v3/v4/v5 report).
 
 This is STRICTLY a source-independent data validator: never dispatch/claim or write GitHub.
 Validation is performed by genuine Draft 2020-12 JSON Schema, not a Python op/profile switch.
@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MARKER = "<!-- ads:github -->"
 SCHEMA_FILE = ROOT / "schemas/github/v4.14/structured-interaction.schema.json"
 REPORT_SCHEMA_FILE = ROOT / "schemas/github/v4.15/report.schema.json"
+V5_REPORT_SCHEMA_FILE = ROOT / "schemas/github/v4.16/report.schema.json"
 REFERENCED = (
     ROOT / "schemas/task-contract.schema.json",
     ROOT / "schemas/agent-event-v2.schema.json",
@@ -193,6 +194,8 @@ def validate_record(data: dict) -> str:
     pair = (data.get("schema"), data.get("kind"))
     if pair == ("ads/github/v4", "report"):
         path = REPORT_SCHEMA_FILE
+    elif pair == ("ads/github/v5", "report"):
+        path = V5_REPORT_SCHEMA_FILE
     elif pair[0] == "ads/github/v3" and pair[1] in ("work_item", "intent", "event", "report"):
         path = SCHEMA_FILE
     else:
@@ -209,20 +212,26 @@ def validate_record(data: dict) -> str:
                             (f" (alternatives: {causes})" if causes else ""))
     if path == REPORT_SCHEMA_FILE:
         _report_semantics(data["data"])
+    elif path == V5_REPORT_SCHEMA_FILE:
+        _v5_report_semantics(data["data"])
     return "SHAPE_VALID_ONLY"
 
 
 def record_disposition(record, effective_pin="v4.15", writing=False):
     """Interpret wire compatibility only; CURRENT never means Claim admission."""
-    if effective_pin not in ("v4.14", "v4.15"):
+    if effective_pin not in ("v4.14", "v4.15", "v4.16"):
         raise ContractError("UNSUPPORTED_SCHEMA: unresolved effective pin")
     if effective_pin == "v4.14" and record.get("schema") != "ads/github/v3":
         raise ContractError("UNSUPPORTED_SCHEMA: v4.14 reader")
+    if record.get("schema") == "ads/github/v5" and effective_pin != "v4.16":
+        raise ContractError("UNSUPPORTED_SCHEMA: v5 report requires v4.16 reader")
     validate_record(record)
-    if effective_pin == "v4.15" and record["schema"] == "ads/github/v3" and record["kind"] == "report":
+    if effective_pin in ("v4.15", "v4.16") and record["schema"] == "ads/github/v3" and record["kind"] == "report":
         if writing:
             raise ContractError("v4.15 writer cannot emit historical v3 report")
         return "HISTORICAL_READ_ONLY"
+    if record.get("schema") == "ads/github/v5":
+        return "V5_SHAPE_ONLY"  # never an adopted writer or native authority grant
     return "CURRENT_OBSERVATION" if record["kind"] == "report" else "CURRENT_EXECUTABLE_SHAPE_ONLY"
 
 
@@ -261,15 +270,15 @@ def _report_semantics(data):
 def data_digest(record) -> str:
     """Public validated data comparator, not private-manifest integrity or authority."""
     validate_record(record)
-    if record["schema"] != "ads/github/v4" or record["kind"] != "report":
-        raise ContractError("v4 report required for public data digest")
+    if record["schema"] not in ("ads/github/v4", "ads/github/v5") or record["kind"] != "report":
+        raise ContractError("v4/v5 report required for public data digest")
     return hashlib.sha256(canonical_json(record["data"])).hexdigest()
 
 
 def report_identity(record):
     validate_record(record)
-    if record.get("schema") != "ads/github/v4" or record.get("kind") != "report":
-        raise ContractError("v4 report identity required")
+    if record.get("schema") not in ("ads/github/v4", "ads/github/v5") or record.get("kind") != "report":
+        raise ContractError("v4/v5 report identity required")
     d = record["data"]
     return (d["subject"]["issue_ref"], d["publisher_namespace"], d["report_id"], d["revision"], d["report_kind"])
 
@@ -367,7 +376,7 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("file", type=Path)
     cli.add_argument("--kind", choices=["work_item", "intent", "event", "report"])
-    cli.add_argument("--effective-pin", choices=["v4.14", "v4.15"], default="v4.15")
+    cli.add_argument("--effective-pin", choices=["v4.14", "v4.15", "v4.16"], default="v4.15")
     cli.add_argument("--writing", action="store_true")
     cli.add_argument("--data-digest", action="store_true")
     args = cli.parse_args()
