@@ -141,7 +141,7 @@ class T03MixedReader(unittest.TestCase):
             "original_material_sha256": "e" * 64,
             "source_sha": "a" * 40,
             "artifact_witness_refs": ["github:original-material-ref"],
-            "association_currentness": {"state": "UNKNOWN",
+            "association_currentness": {"state": "CURRENT",
                 "source_refs": ["github:source-link-proposal"], "limits": ["Not authenticated"]}}
         self.assertEqual(validate_record(successor), "SHAPE_VALID_ONLY")
         self.assertEqual(compare_v5_summary_revision(previous, successor,
@@ -204,6 +204,7 @@ class T03MixedReader(unittest.TestCase):
 
     def test_mixed_issue_and_complete_page_requirement(self):
         a, b = v5(), json.loads((FIX / "summary.json").read_text(encoding="utf8"))
+        a["data"]["report_id"] = "report:42:v5-observation"
         c = envelope("work_item", WORK)
         items = [source_comment(a, 123), source_comment(b, 124),
                  {"id": 125, "body": MARKER + "\n\x60\x60\x60yaml\n" + json.dumps(c) + "\n\x60\x60\x60\n",
