@@ -14,6 +14,7 @@ reader bridge and T02 measurement reducer.
 import copy
 import json
 from pathlib import Path
+import re
 import sys
 import unittest
 
@@ -46,12 +47,18 @@ def _collapse_deliveries(selections):
 def c08_edge_verdict(prev, sel):
     """One OBSERVED-lane decision for the causal edge prev->sel: eligible only
     with a witnessed causal selection edge and an accepted owner decision that
-    covers both governed strategy identities."""
+    covers both governed strategy identities AND a decidable material
+    comparison - an absent or non-boolean `changed` stays UNKNOWN (GAIP §10),
+    excluded from numerator and denominator alike."""
     d = sel.get('decision') or {}
     if not (sel.get('causal') and d.get('accepted') is True
             and d.get('covers') == (prev['strategy'], sel['strategy'])):
         return 'UNKNOWN'
-    return 'STRATEGY_CHANGED' if d.get('changed') is True else 'STRATEGY_KEPT'
+    if d.get('changed') is True:
+        return 'STRATEGY_CHANGED'
+    if d.get('changed') is False:
+        return 'STRATEGY_KEPT'
+    return 'UNKNOWN'
 
 
 def c08_pivot_metrics(selections):
@@ -151,18 +158,22 @@ def c10_dependent_requalification(premise_status, *, relies):
 
 
 NATIVE_KINDS = ('pull_request', 'issue', 'review', 'ci_run')
+_SHA256_SNAPSHOT = re.compile(r'sha256:[0-9a-f]{64}')
 
 
 def c10_native_dependent_inference(native, *, owner_witness, material_use,
                                    readback_complete):
     """A native GitHub object qualifies a NEW dependent inference by its own
-    identity contract (no Report ID needed) only with owner, witnessed
-    snapshot/currentness, complete scoped readback AND a consumer-local
-    material-use edge; existence/citation alone is not consumption."""
-    if (native['kind'] not in NATIVE_KINDS or 'report_id' in native
-            or not owner_witness or not native.get('snapshot') or not readback_complete):
-        return 'UNKNOWN'
-    if not material_use:
+    identity contract (no Report ID needed) only with its canonical repo, an
+    immutable native object id + url, a witnessed sha-256 content snapshot
+    (currentness), complete scoped readback AND a consumer-local material-use
+    edge; existence/citation alone is not consumption, and a missing identity
+    or currentness is never patched by an invented Report ID."""
+    if (native.get('kind') not in NATIVE_KINDS or 'report_id' in native
+            or not owner_witness or not material_use or not readback_complete
+            or not native.get('repo') or not native.get('native_id')
+            or not native.get('url')
+            or not _SHA256_SNAPSHOT.fullmatch(str(native.get('snapshot') or ''))):
         return 'UNKNOWN'
     return 'QUALIFIED_WITHOUT_REPORT_ID'
 
@@ -179,10 +190,9 @@ def c10_prospective_boundary(history, premise_status, *, reliant, unrelated):
     withheld, unrelated qualified work proceeds, and a retroactive undo
     request cannot rewrite history."""
     receipts = copy.deepcopy(history)
-    if premise_status == 'VERIFIED_REVOKED_OR_STALE' and reliant:
-        reliant_outcome = 'WITHHOLD_PENDING_REQUALIFICATION'
-    elif premise_status == 'VERIFIED_REVOKED_OR_STALE':
-        reliant_outcome = 'WITHHOLD_PENDING_REQUALIFICATION'
+    if premise_status == 'VERIFIED_REVOKED_OR_STALE':
+        reliant_outcome = ('WITHHOLD_PENDING_REQUALIFICATION' if reliant
+                           else 'PROCEED_UNAFFECTED')
     else:
         reliant_outcome = 'PROCEED_OWNER_DECISION'
     return {'receipts': receipts, 'history_unchanged': receipts == history,
@@ -222,29 +232,81 @@ def c03_act_admission(claim, capability, credential, effect, ledger):
     return 'ACT'
 
 
+class _ProvenanceView:
+    """Read-tracking view over supplied hidden-oracle input: every access is
+    recorded, so a verdict that actually sourced hidden bytes is observable
+    and fails closed. Possession without access is not a leak."""
+
+    def __init__(self, payload):
+        self._payload = payload
+        self.touched = False
+
+    def _touch(self):
+        self.touched = True
+
+    def __getitem__(self, key):
+        self._touch()
+        return self._payload[key]
+
+    def get(self, key, default=None):
+        self._touch()
+        return self._payload.get(key, default)
+
+    def __contains__(self, key):
+        self._touch()
+        return key in self._payload
+
+    def keys(self):
+        self._touch()
+        return self._payload.keys()
+
+    def values(self):
+        self._touch()
+        return self._payload.values()
+
+    def items(self):
+        self._touch()
+        return self._payload.items()
+
+    def __iter__(self):
+        self._touch()
+        return iter(self._payload)
+
+    def __len__(self):
+        self._touch()
+        return len(self._payload)
+
+    def __eq__(self, other):
+        self._touch()
+        return self._payload == other
+
+    __hash__ = None
+
+
 def c04_integration_verdict(tasks, obligations, *, final_sha, validated_shas,
                             hidden_pack=None):
     """Cumulative multi-target verification: both source targets pass locally
     AND previously-active obligations hold at the final current SHA. A stale
-    PASS (SHA drift after validation), a failing cross-target obligation, or
-    any result that depends on hidden-oracle contents is never a PASS; the
-    verdict function takes no hidden-oracle input and exposes none."""
+    PASS (SHA drift after validation) or a failing cross-target obligation is
+    never a PASS. The verdict never SOURCES hidden-oracle contents: a supplied
+    pack is reachable only behind a read-tracking provenance view, one
+    observed read fails the whole run closed (FAIL_ORACLE_LEAK), and hidden
+    bytes never appear in any returned verdict."""
+    hidden = _ProvenanceView(hidden_pack) if hidden_pack is not None else None
     verdict = _c04_public_verdict(tasks, obligations, final_sha=final_sha,
-                                  validated_shas=validated_shas)
-    if hidden_pack is not None:
-        without = _c04_public_verdict(tasks, obligations, final_sha=final_sha,
-                                      validated_shas=validated_shas)
-        if verdict != without:
-            return {'verdict': 'FAIL_ORACLE_LEAK'}
+                                  validated_shas=validated_shas, hidden=hidden)
+    if hidden is not None and hidden.touched:
+        return {'verdict': 'FAIL_ORACLE_LEAK'}
     return verdict
 
 
-def _c04_public_verdict(tasks, obligations, *, final_sha, validated_shas):
+def _c04_public_verdict(tasks, obligations, *, final_sha, validated_shas,
+                        hidden=None):
     if any(final_sha != sha for sha in validated_shas):
         return {'verdict': 'FAIL_STALE_PASS'}
     if not all(t['local_pass'] for t in tasks):
         return {'verdict': 'FAIL_LOCAL'}
-    failed = [o['id'] for o in obligations if not o['holds'](final_sha)]
+    failed = [o['id'] for o in obligations if not o['holds'](final_sha, hidden)]
     if failed:
         return {'verdict': 'FAIL_INTEGRATION', 'failed_obligations': failed}
     return {'verdict': 'PASS_CUMULATIVE', 'failed_obligations': []}
@@ -277,8 +339,9 @@ def c06_parallel_admission(claims, *, current_generation):
 def c07_trial_qualification(trial):
     """A harness/Skill trial is comparable only with matched baseline/policy/
     model/environment/verifier pins and an independently witnessed clean
-    holdout; training-only gains, hidden-oracle access, contamination or
-    unmeasured regressions never promote."""
+    holdout; training-only gains, hidden-oracle access, contamination, an
+    explicitly witnessed holdout/hidden-oracle leak (even with disjoint item
+    IDs) or unmeasured regressions never promote."""
     pins = ('baseline_ref', 'policy_ref', 'model_ref', 'environment_ref', 'verifier_ref')
     if any(not trial.get(p) for p in pins):
         return 'NOT_COMPARABLE'
@@ -286,6 +349,8 @@ def c07_trial_qualification(trial):
         return 'ORACLE_NOT_INDEPENDENT'
     if set(trial['holdout_items']) & set(trial['training_items']):
         return 'CONTAMINATED_HOLDOUT'
+    if trial.get('holdout_leak_witnessed'):
+        return 'LEAKED_HOLDOUT'
     if not trial.get('holdout_independent_witness'):
         return 'HOLDOUT_NOT_INDEPENDENT'
     if not trial.get('regression_suite_executed'):
@@ -295,8 +360,9 @@ def c07_trial_qualification(trial):
 
 def c09_feedback_chain(steps):
     """PRESENTED -> APPLIED -> INDEPENDENTLY_CHECKED each need their own
-    source-qualified receipt; a phase never proves the next, and a transport
-    login is neither an Agent identity nor an effect authority."""
+    source-qualified, owner-witnessed receipt; a phase never proves the next,
+    independence needs a nonempty verifier operator AND a known applier, and
+    a transport login is neither an Agent identity nor an effect authority."""
     phase = None
     for step in steps:
         kind = step['receipt']['kind']
@@ -305,12 +371,19 @@ def c09_feedback_chain(steps):
                 phase = 'PRESENTED'
             continue
         if phase == 'PRESENTED' and kind == 'APPLIED':
-            if step['receipt'].get('operator_id') and step['operator_id'] == step['receipt']['operator_id'] \
-                    and step['receipt'].get('transport_actor') != step['receipt']['operator_id']:
+            if (step['receipt'].get('owner_witness')
+                    and step['receipt'].get('operator_id')
+                    and step['operator_id'] == step['receipt']['operator_id']
+                    and step['receipt'].get('transport_actor')
+                    != step['receipt']['operator_id']):
                 phase = 'APPLIED'
         elif phase == 'APPLIED' and kind == 'INDEPENDENTLY_CHECKED':
-            if step['receipt'].get('verifier_ref') and step['receipt'].get('owner_witness') \
-                    and step['receipt'].get('verifier_operator') != step['receipt'].get('applier_operator'):
+            if (step['receipt'].get('owner_witness')
+                    and step['receipt'].get('verifier_ref')
+                    and step['receipt'].get('verifier_operator')
+                    and step['receipt'].get('applier_operator')
+                    and step['receipt']['verifier_operator']
+                    != step['receipt']['applier_operator']):
                 phase = 'INDEPENDENTLY_CHECKED'
     return phase or 'UNQUALIFIED'
 
@@ -403,6 +476,27 @@ class G01_C08_ObservedTrajectory(unittest.TestCase):
                        decision=owner_decision('strategy:A', 'strategy:A',
                                                changed=False))
         self.assertEqual(c08_pivot_metrics([a, a3]), (0, 1, 0))
+
+    def test_forbidden_undecidable_changed_is_unknown_not_observed_negative(self):
+        # GAIP §10: an accepted, causally covered edge whose material
+        # comparison is undecidable (absent or non-boolean `changed`) is
+        # UNKNOWN - excluded from both numerator and denominator, never an
+        # observed 0/1 KEEP.
+        a = selection('A', 'strategy:A', 'occ:A')
+        absent = selection('B', 'strategy:B', 'occ:B',
+                           decision={'accepted': True,
+                                     'covers': ('strategy:A', 'strategy:B')})
+        self.assertEqual(c08_pivot_metrics([a, absent]), (0, 0, 1))
+        nonbool = selection('B', 'strategy:B', 'occ:B',
+                            decision=owner_decision('strategy:A', 'strategy:B',
+                                                    changed=None))
+        a2 = selection("A'", 'strategy:A', "occ:A'",
+                       decision=owner_decision('strategy:B', 'strategy:A',
+                                               return_of='strategy:A'))
+        self.assertEqual(c08_pivot_metrics([a, nonbool, a2]), (1, 1, 1))
+        # The undecidable edge is not a witnessed departure either, so A'
+        # has no eligible revisit opportunity against it.
+        self.assertEqual(c08_revisit_metrics([a, nonbool, a2]), (0, 0, 2))
 
     def test_forbidden_mere_rollback_string_match_or_missing_middle_is_unknown(self):
         a = selection('A', 'strategy:A', 'occ:A')
@@ -548,12 +642,31 @@ class G05_C10_RevokeVsDispute(unittest.TestCase):
 class G06_C10_NativeVsReport(unittest.TestCase):
     def native(self):
         return {'kind': 'pull_request', 'repo': 'kaicreator-mm/ai-development-standard',
-                'native_id': 1309, 'snapshot': 'sha256:' + 'a' * 64}
+                'native_id': 1309,
+                'url': 'https://github.com/kaicreator-mm/ai-development-standard/pull/1309',
+                'snapshot': 'sha256:' + 'a' * 64}
 
     def test_native_with_witnessed_material_use_qualifies_without_report_id(self):
         self.assertEqual(c10_native_dependent_inference(
             self.native(), owner_witness=True, material_use=True,
             readback_complete=True), 'QUALIFIED_WITHOUT_REPORT_ID')
+
+    def test_forbidden_missing_native_identity_or_currentness(self):
+        # GAIP §16.6: the native identity contract requires the canonical
+        # repo, an immutable native object id + url and a witnessed sha-256
+        # content snapshot; a bare kind/snapshot sketch, a missing identity
+        # field or a non-digest snapshot never qualifies - and no Report ID
+        # is invented to patch the gap.
+        for broken in ({'kind': 'issue', 'snapshot': 'x'},
+                       dict(self.native(), repo=None),
+                       dict(self.native(), native_id=None),
+                       dict(self.native(), url=None),
+                       dict(self.native(), snapshot='x'),
+                       dict(self.native(), snapshot='sha256:' + 'g' * 64)):
+            with self.subTest(native=broken):
+                self.assertEqual(c10_native_dependent_inference(
+                    broken, owner_witness=True, material_use=True,
+                    readback_complete=True), 'UNKNOWN')
 
     def test_forbidden_no_consumption_edge_or_fabricated_report_fields(self):
         self.assertEqual(c10_native_dependent_inference(
@@ -634,7 +747,10 @@ class G08_C10_HistoricalImmutable(unittest.TestCase):
     def test_forbidden_retroactive_undo_and_global_block(self):
         out = c10_prospective_boundary(self.history(), 'VERIFIED_REVOKED_OR_STALE',
                                        reliant=False, unrelated={'qualified': True})
-        self.assertEqual(out['reliant'], 'WITHHOLD_PENDING_REQUALIFICATION')
+        # Dependency-bounded: a NEW decision not reliant on the revoked
+        # premise is never withheld - a global block would exceed the
+        # notice's authority (GAIP §16.6).
+        self.assertEqual(out['reliant'], 'PROCEED_UNAFFECTED')
         self.assertEqual(out['unrelated'], 'PROCEED_UNAFFECTED')
         current = c10_prospective_boundary(self.history(), 'VERIFIED_CURRENT',
                                            reliant=True, unrelated={'qualified': True})
@@ -705,14 +821,38 @@ class G10_C04_CumulativeAndHiddenOracle(unittest.TestCase):
     def tasks(self):
         return [{'id': 't1', 'local_pass': True}, {'id': 't2', 'local_pass': True}]
 
-    def obligations(self, cross_target_holds=True):
-        return [{'id': 'shared-contract', 'holds': lambda sha: cross_target_holds}]
+    def obligations(self, cross_target_holds=True, holds=None):
+        # Honest obligations never consult the hidden view; `holds` receives
+        # it only so a sourced dependency is expressible and observable.
+        return [{'id': 'shared-contract',
+                 'holds': holds if holds is not None
+                 else (lambda sha, hidden: cross_target_holds)}]
 
     def test_two_local_passes_plus_integration_obligations_pass(self):
         out = c04_integration_verdict(self.tasks(), self.obligations(),
                                       final_sha='f' * 40,
                                       validated_shas=['f' * 40])
         self.assertEqual(out['verdict'], 'PASS_CUMULATIVE')
+
+    def test_forbidden_sourced_hidden_oracle_dependency_fails_closed(self):
+        # Red-first provenance probe: an obligation that actually READS the
+        # supplied hidden pack is a sourced hidden-oracle dependency - the
+        # whole verdict fails closed, and no hidden payload is exposed.
+        leaky = [{'id': 'leaky',
+                  'holds': lambda sha, hidden: hidden['secret_expected'] == 'x'}]
+        out = c04_integration_verdict(self.tasks(), leaky,
+                                      final_sha='f' * 40,
+                                      validated_shas=['f' * 40],
+                                      hidden_pack={'secret_expected': 'x'})
+        self.assertEqual(out['verdict'], 'FAIL_ORACLE_LEAK')
+        self.assertNotIn('secret_expected', json.dumps(out))
+        # Possession without access is not a leak: an honest verdict with a
+        # supplied pack stays a normal PASS.
+        honest = c04_integration_verdict(self.tasks(), self.obligations(),
+                                         final_sha='f' * 40,
+                                         validated_shas=['f' * 40],
+                                         hidden_pack={'secret_expected': 'x'})
+        self.assertEqual(honest['verdict'], 'PASS_CUMULATIVE')
 
     def test_forbidden_integration_gap_drift_and_oracle_leak(self):
         out = c04_integration_verdict(self.tasks(), self.obligations(False),
@@ -789,6 +929,12 @@ class G12_C07_HoldoutQualification(unittest.TestCase):
     def test_forbidden_contamination_oracle_leak_and_unpinned(self):
         self.assertEqual(c07_trial_qualification(
             self.trial(holdout_items=['h1', 'q1'])), 'CONTAMINATED_HOLDOUT')
+        # An explicitly witnessed holdout/hidden-oracle leak forbids
+        # promotion even when training and holdout item IDs happen to be
+        # disjoint; the probe reads only the witness flag and discloses no
+        # hidden pack item.
+        self.assertEqual(c07_trial_qualification(
+            self.trial(holdout_leak_witnessed=True)), 'LEAKED_HOLDOUT')
         self.assertEqual(c07_trial_qualification(
             self.trial(verifier_ref='verifier:training')), 'ORACLE_NOT_INDEPENDENT')
         self.assertEqual(c07_trial_qualification(
@@ -849,6 +995,22 @@ class G13_C09_FeedbackChain(unittest.TestCase):
             'kind': 'INDEPENDENTLY_CHECKED', 'owner_witness': True,
             'verifier_ref': 'github:self-check', 'verifier_operator': 'agent:1',
             'applier_operator': 'agent:1'}}]), 'APPLIED')
+        # APPLIED needs its own owner-witnessed receipt, not just a matching
+        # operator claim.
+        unwitnessed = presented + [{'operator_id': 'agent:1', 'receipt': {
+            'kind': 'APPLIED', 'operator_id': 'agent:1',
+            'transport_actor': 'github:shared'}}]
+        self.assertEqual(c09_feedback_chain(unwitnessed), 'PRESENTED')
+        # Independence needs a genuinely present, nonempty verifier operator
+        # AND a known applier: a missing one must not satisfy `None != applier`.
+        for receipt in ({'kind': 'INDEPENDENTLY_CHECKED', 'owner_witness': True,
+                         'verifier_ref': 'github:independent-observation',
+                         'verifier_operator': None, 'applier_operator': 'agent:1'},
+                        {'kind': 'INDEPENDENTLY_CHECKED', 'owner_witness': True,
+                         'verifier_ref': 'github:independent-observation',
+                         'verifier_operator': 'agent:2'}):
+            self.assertEqual(c09_feedback_chain(applied + [
+                {'operator_id': 'agent:1', 'receipt': receipt}]), 'APPLIED')
         self.assertEqual(c09_feedback_chain([]), 'UNQUALIFIED')
 
 
