@@ -1014,21 +1014,28 @@ depends on, using at most the following analysis labels, which are not
 wire enums, notice values, Candidate states or Gate outputs. A premise
 verified CURRENT under its source-kind contract (`VERIFIED_CURRENT`) is
 eligible for the ordinary owning decision, never automatically a Review
-PASS, Task outcome or Tool authority. An owner-verified,
-source/profile-aligned `REVOKE`/`REDACT`/correction/supersession or
-verified material staleness of an actually consumed premise
-(`VERIFIED_REVOKED_OR_STALE`) requires withholding only new decisions
-actually reliant on that premise until a separately qualified
-replacement or owning disposition exists; a mismatched or malformed
-notice target remains DISPUTED/UNVERIFIED under the existing correction
-rules. A bounded read ending in 403/429 after honored backoff, a missing
+PASS, Task outcome or Tool authority. An actually effective authorized
+`notice=REVOKE|REDACT` (per the notice enum and the existing
+invalidates-only-its-target rule), or an independently qualified
+material-invalidating supersession or verified material staleness, of an
+actually consumed premise (`VERIFIED_REVOKED_OR_STALE`) requires
+withholding only new decisions actually reliant on that premise until a
+separately qualified replacement or owning disposition exists; a
+mismatched or malformed notice target remains DISPUTED/UNVERIFIED under
+the existing correction rules, and a same-owner correctly shaped
+`notice=DISPUTE` is a non-revoking notice by default: it never moves the
+premise to `VERIFIED_REVOKED_OR_STALE` and withholds nothing by itself.
+A bounded read ending in 403/429 after honored backoff, a missing
 terminal page, an invalid/changed digest, incomplete correction lineage
 or an unknown owner (`UNVERIFIABLE_OR_PARTIAL`) is fail-closed
 `UNKNOWN/INSUFFICIENT_EVIDENCE` for new material use, never an
-empty-success. A foreign `DISPUTE` without independently witnessed
-native contradiction (`FOREIGN_DISPUTED`) never revokes a verified
-publisher's original source; an independently witnessed material
-conflict follows the existing UNKNOWN/source-owner escalation. Old
+empty-success. A `notice=DISPUTE`, same-owner or foreign
+(`FOREIGN_DISPUTED` marks the foreign case), never revokes a verified
+publisher's original source and never by itself withholds anything; a
+separately witnessed material contradiction makes only the particular
+new dependent conclusion `UNKNOWN/INSUFFICIENT_EVIDENCE` pending the
+existing UNKNOWN/source-owner escalation, never
+`VERIFIED_REVOKED_OR_STALE`. Old
 Report facts, already accepted Builder/BUILD pins, effective immutable
 ADS pins, historical reports and real K/Host effect receipts are
 historical and MUST NOT be retroactively rewritten or rolled back.
@@ -1050,6 +1057,6 @@ A v5 `EXECUTION_CORRECTION` always has its own pinned publisher/notice source (n
 
 The v5 numeric projection is bounded to public typed `metric_id`, physical/logical attempt and adapter source references, observation ID/revision, window, measurement-kind/unit and cost accounting refs. Actual source receipt identity, qualified alias equality, retry/delta/cumulative deduplication, clock comparability, billed-versus-estimated identity and completeness semantics belong to T02, not to a v5 `value` alone; **no inferred total** from schema-valid numbers. Privacy/source classification applies to every metric/model/provider/cost ref, not just the envelope. T01 source tests cover C01/C06–C10 *Schema shapes* and explicit non-schema authority refusals. Real task-meta publisher, Tally consumer, provider source/Host and GitHub native correction effects remain `NOT_RUN` until separately admitted/witnessed; no v4.16 release is qualified by this subsection alone.
 
-**v5 dependent-input readback (v4.17 C10).** Before treating a v5 `EXECUTION_CORRECTION` as changing the qualification of a subsequently consumed material v5 premise, the consumer MUST apply the already-required exact target tuple to the original native GitHub comment and report — owning repository/Issue, `comment_ref`/`comment_id`, target `report_id`/`revision`/`report_kind`/`publisher_namespace`, `issue_ref`/`task_ref`/`attempt_ref`/`ads_profile`, `data_digest`, and typed `target_source_status`/`target_source_sha` — and independently qualify the notice's owning authority, immutable notice publisher source and `PUBLISHABLE` clearance, native comment integrity, privacy classification and completed scoped pagination under the existing rules of this subsection. A wrong namespace, digest, Task, Attempt, profile, owner or an unreachable/edited target stays `UNVERIFIED/DISPUTED`; a foreign `DISPUTE` never revokes the actual target; a historical source-null target never authorizes a source-null notice publisher. A schema-valid v5 target establishes eligibility for notice semantics only, never automatically a valid Task outcome, authorization or Gate PASS.
+**v5 dependent-input readback (v4.17 C10).** Before treating a v5 `EXECUTION_CORRECTION` as changing the qualification of a subsequently consumed material v5 premise, the consumer MUST apply the already-required exact target tuple to the original native GitHub comment and report — owning repository/Issue, `comment_ref`/`comment_id`, target `report_id`/`revision`/`report_kind`/`publisher_namespace`, `issue_ref`/`task_ref`/`attempt_ref`/`ads_profile`, `data_digest`, and typed `target_source_status`/`target_source_sha` — and independently qualify the notice's owning authority, immutable notice publisher source and `PUBLISHABLE` clearance, native comment integrity, privacy classification and completed scoped pagination under the existing rules of this subsection. The exact tuple, owner and readback qualify the *interpretation* of a notice but never convert a non-revoking `notice=DISPUTE` into a revocation; only a verified revoking or redacting notice (`notice=REVOKE|REDACT`) or an independently qualified material-invalidating supersession or verified material staleness gates future dependent choices. A wrong namespace, digest, Task, Attempt, profile, owner or an unreachable/edited target stays `UNVERIFIED/DISPUTED`; a `DISPUTE`, same-owner or foreign, never revokes the actual target and alone never withholds anything; a historical source-null target never authorizes a source-null notice publisher. A schema-valid v5 target establishes eligibility for notice semantics only, never automatically a valid Task outcome, authorization or Gate PASS.
 
-**v5 requalification boundary (v4.17 C10).** Requalification under this subsection is prospective and dependency-bounded: only new conclusions actually reliant on the noticed premise are withheld until a separately qualified replacement or owning disposition exists, while already accepted Builder/BUILD pins, historical reports and real K/Host effects remain immutable. A v4-only reader encountering v5 material still classifies it `UNSUPPORTED` with `UNKNOWN/INSUFFICIENT_EVIDENCE` for any cross-profile reliance, never a false zero or clean absence. This addition creates no v5 Schema field, public consumer Candidate ID, new notice enum, retroactive effect invalidation, hidden task-meta access or v4↔v5 migration.
+**v5 requalification boundary (v4.17 C10).** Requalification under this subsection is prospective and dependency-bounded: only new conclusions reliant on a premise affected by a verified invalidating notice (`notice=REVOKE|REDACT`) or by independently qualified material staleness/conflict are withheld until a separately qualified replacement or owning disposition exists, while already accepted Builder/BUILD pins, historical reports and real K/Host effects remain immutable. A v4-only reader encountering v5 material still classifies it `UNSUPPORTED` with `UNKNOWN/INSUFFICIENT_EVIDENCE` for any cross-profile reliance, never a false zero or clean absence. This addition creates no v5 Schema field, public consumer Candidate ID, new notice enum, retroactive effect invalidation, hidden task-meta access or v4↔v5 migration.
