@@ -202,6 +202,17 @@ class T03MixedReader(unittest.TestCase):
             compare_v5_summary_revision(original, newer,
                 predecessor_comment_ref=ref, previous_unedited=True)
 
+    def test_cross_dialect_same_identity_is_conflict_not_two_reports(self):
+        # A v4/v5 pair with an identical publisher/report_id/revision is
+        # not automatically two economic Attempts or a safe migration.
+        v5_record = v5()
+        historical_v4 = json.loads((FIX / "summary.json").read_text(encoding="utf8"))
+        for items in ([source_comment(v5_record, 123), source_comment(historical_v4, 124)],
+                      [source_comment(historical_v4, 124), source_comment(v5_record, 123)]):
+            result = inspect_supplied_issue_pages([{"cursor": None, "status": 200,
+                "comments": items, "next": None}])
+            self.assertEqual(result["statuses"], ["CONFLICT", "CONFLICT"])
+
     def test_mixed_issue_and_complete_page_requirement(self):
         a, b = v5(), json.loads((FIX / "summary.json").read_text(encoding="utf8"))
         a["data"]["report_id"] = "report:42:v5-observation"
