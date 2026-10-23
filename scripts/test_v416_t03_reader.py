@@ -98,6 +98,15 @@ class T03MixedReader(unittest.TestCase):
         self.assertEqual(record_disposition(envelope("work_item", WORK), "v4.16"),
                          "CURRENT_EXECUTABLE_SHAPE_ONLY")
 
+    def test_older_mixed_reader_returns_typed_unsupported_not_invalid_record(self):
+        item = source_comment(v5(), 123)
+        page = [{"cursor": None, "status": 200, "comments": [item], "next": None}]
+        for pin in ("v4.14", "v4.15"):
+            self.assertEqual(inspect_supplied_issue_pages(
+                page, effective_pin=pin)["statuses"], ["UNSUPPORTED"])
+        self.assertEqual(inspect_supplied_issue_pages(
+            page, effective_pin="v4.16")["statuses"], ["OBSERVED_SHAPE_ONLY"])
+
     def test_collector_only_original_source_null_is_observational(self):
         r = v5()
         s = r["data"]["subject"]
