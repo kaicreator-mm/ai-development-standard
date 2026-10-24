@@ -1,11 +1,12 @@
-# ADS v4.18.0 — Product Requirements Document R0
+# ADS v4.18.0 — Product Requirements Document R1
 
-> **STATUS:** PRODUCT_DRAFT_R0 / REVIEW_NOT_RUN / NOT_FROZEN / NOT_NORMATIVE / NO_IMPLEMENTATION_AUTHORITY  
+> **STATUS:** PRODUCT_DRAFT_R1 / AUTHOR_P1_P2_REPAIR / INDEPENDENT_R2_PENDING / NOT_FROZEN / NOT_NORMATIVE / NO_IMPLEMENTATION_AUTHORITY  
 > **VERSION:** v4.18.0 (prospective)  
 > **SOURCE BRANCH:** version/v4.18  
-> **BASELINE:** ADS v4.17.0 main，最终审核时必须重新读取 exact SHA / Git blob  
+> **BASELINE:** ADS v4.17.0 `main@a45644d734fdf94da3e6f9c3f90ffe4ce3c25fda`（v4.17 标准源码经 #1315 合并，**CONDITIONAL source qualification**；RA02 为 NOT_APPLICABLE 而非 PASS；非整套运行时验证完成声明）。审核/冻结时必须重读 exact HEAD、Git blob 与后续漂移  
 > **SOURCE:** [ADS #1320](https://github.com/kaicreator-mm/ai-development-standard/issues/1320) 与 2026-10-25 需求讨论  
-> **NEXT:** Claude 独立 Product R1 审核；审核 PASS 不自动产生 Product Freeze、L2 Freeze、Task/Claim、Main Merge 或 Release 授权。
+> **R1 REVIEW:** [#1320 R1 findings](https://github.com/kaicreator-mm/ai-development-standard/issues/1320#issuecomment-6388457224)：P0=0/P1=2/P2=6/P3=3；`CHANGES_REQUESTED`，`PRD_FREEZE_READY=NO`。  
+> **NEXT:** 新 exact HEAD/PRD blob 的独立 Product R2 **focused difference review**；即使审核 PASS，也不自动产生 Product Freeze、L2 Freeze、Task/Claim、Main Merge 或 Release 授权。
 
 ## 0. 产品定位与核心决策
 
@@ -42,7 +43,7 @@ ADS v4.18 的重点，是在现有开发治理规范上，补足**大型需求�
 
 ### 1.2 真实案例
 
-[DomainHarness v0.10.2 #1300](https://github.com/kaicreator-mm/domain-harness/issues/1300) 的既有 18 节点计划在 #1320 Intake 时仍以长串行链为主；Host SQLite、订阅投影、文档、外部 Producer Fixture 和只读预检包含可以提前准备的独立工作面。[A6 #1356](https://github.com/kaicreator-mm/domain-harness/issues/1356) 与 [PR #1357](https://github.com/kaicreator-mm/domain-harness/pull/1357) 可作为设计案例，**但不能把提案或差异审核 PASS 视作已获源码写入授权，也不能声称已经测量到效率收益**。
+[DomainHarness v0.10.2 #1300](https://github.com/kaicreator-mm/domain-harness/issues/1300) 的既有 18 节点计划在 #1320 Intake 时仍以长串行链为主；Host SQLite、订阅投影、文档、外部 Producer Fixture 和只读预检包含可以提前准备的独立工作面。[A6 #1356](https://github.com/kaicreator-mm/domain-harness/issues/1356) 已关闭；[PR #1357](https://github.com/kaicreator-mm/domain-harness/pull/1357) 于 2026-10-24 合并到 DomainHarness `v0.10.2`，属于**该项目按自身 pinned ADS 权威采纳的本地并行草稿修订**。这只能作为回顾性实践证据，不能自动改变 ADS v4.18 规范、别的项目 JIT/Claim 准入或验证要求；尚无可信的实测加速/节约结论。
 
 ### 1.3 已有规范：应优先复用
 
@@ -52,8 +53,12 @@ ADS v4.18 的重点，是在现有开发治理规范上，补足**大型需求�
 - TASK_DAG_GOVERNANCE_STANDARD §10A：已接受的 Source Scaffold (SF) ↔ Task-side DAG Binding (DF)、真实 Anchor、单一有效写入 Task、MI 完整性、双向校验、合法 Mutation。
 - EXECUTION_ARCHITECTURE / EXECUTION_PACK：原生 GitHub DAG、JIT 分支、序列化 Claim、Role Ready Sets、F0–F3、精确身份与恢复。
 - GITHUB_AGENT_INTERACTION_PROTOCOL / LOCAL_AGENT_HANDOFF_PROTOCOL：逻辑执行体、独立 Reviewer、委托与职责移交、GitHub-only 持久事实与最小 Local Handoff。
-- MODEL_USAGE_POLICY：风险与自由度决定模型强度，不用任务标题或品牌决定。
-- Human Decision Queue、DEVELOPMENT_WORKFLOW §9：真正的人类/合法委托授权、DENY/WITHHOLD、有效决策回执。
+- MODEL_USAGE_POLICY §1–4：风险与自由度决定模型强度及非收敛升级；不按模型品牌赋权。
+- PROJECT_STRUCTURE §1/§4：多子模块项目优先考虑 Monorepo，但按领域边界决定实际布局，不新增仓库结构权威。
+- EXECUTION_ARCHITECTURE §23.4 / LOCAL_AGENT_HANDOFF_PROTOCOL §3、§8–9：已涵盖 proportional continuation、真实剩余工作、受限交接和 GitHub 持久回执。
+- EXECUTION_ARCHITECTURE §11.1.1 / §27.3、TASK_DAG_GOVERNANCE §10A：分别涵盖单 Task 受保护 Claim、跨 Task 共享资源准入与单有效 Scaffold Anchor Writer。
+- EXECUTION_ARCHITECTURE §19、DEVELOPMENT_WORKFLOW §4（non-converging repair）及 §9：人工决定、异常升级、DENY/WITHHOLD 和真实授权的权威边界。
+- ARCHITECTURE_DESIGN_STANDARD 与 RELEASE_STANDARD §11.7A：已存在的架构决策质量和 ADS standards-source qualification 边界。
 - 相关实践：[ADS #1173](https://github.com/kaicreator-mm/ai-development-standard/issues/1173)、[#1241](https://github.com/kaicreator-mm/ai-development-standard/issues/1241)、[#1199](https://github.com/kaicreator-mm/ai-development-standard/issues/1199)、[#1200](https://github.com/kaicreator-mm/ai-development-standard/issues/1200)、[#1201](https://github.com/kaicreator-mm/ai-development-standard/issues/1201)。
 
 每项新增功能在 L2 前须判定：ALREADY_COVERED / TRUE_GAP / IMPLEMENTATION_ONLY，并明确既有规范 owner/source/blob；不得仅因换一种说法便复制规则。
@@ -72,7 +77,28 @@ ADS v4.18 的重点，是在现有开发治理规范上，补足**大型需求�
 **P1（轻量方法完善）：** FR-13～FR-15。  
 **P2（可后置持续演化）：** FR-16。
 
-优先级不是 12 个独立强制 PR 或冻结前的实施准入。
+**产品优先级 ≠ 必须新增规范文本。** P0 表示应满足的 Product outcome，不代表每项 FR 都需要新的文件、字段、PR、Gate 或规范条款。一个 `ALREADY_COVERED` FR 由**原 owner + 其当前 Git blob + 既有/至多一个共享 Golden 正反例**证明满足；不得另写等效条款。`IMPLEMENTATION_ONLY`/纯示例/模式索引不得扩大规范权威。`TRUE_GAP` 才可进入最小规范差异设计，并在 L2 复核。
+
+**R1 评审后的优先增量边界（待 L2 确认）：** FR-04 依赖理由与拓扑替代方案输出；FR-05 在 Freeze 前基于 SF↔DF 的双向边界反馈；FR-08 在现有 Lane Summary 补充 WEB/CI/LOCAL/独立角色与能力要求；FR-07 采用现有 JIT 规则的解释/负例；FR-10 的最小剩余工作 handoff tuple 仅在现有 LAH §3 / EXEC_ARCH §23.4 尚未充分覆盖时才补充。FR-03 的模式索引及 FR-15 的非门禁评价可独立采用轻量示例。优先级不是 12 个独立强制 PR 或冻结前的实施准入。
+
+| FR | R1 新增性初判 | 现有规范/处理建议（L2 须复核当前 Blob） |
+| --- | --- | --- |
+| FR-01 | ALREADY_COVERED mostly | Task Decomposition §3/§9/§13、task-dag Lane；仅补 Capability-first 提示 |
+| FR-02 | ALREADY_COVERED | Task Decomposition §4–6/§10/§13；不重写 |
+| FR-03 | PARTIAL / TRUE_GAP_SMALL | 中央接线与原子性已有；提供轻量 Pattern 索引/反例 |
+| FR-04 | TRUE_GAP | 可选依赖理由注解、替代拓扑/串行说明；不改 native blocked_by |
+| FR-05 | PARTIAL / TRUE_GAP_SMALL | SF↔DF/MI 已有；补冻结前双向规划反馈 |
+| FR-06 | ALREADY_COVERED | Task Decomposition、SF↔DF、Project Structure，引用即可 |
+| FR-07 | ALREADY_COVERED / CLARIFICATION | 决定采用 JIT/ready_builder 不变的 Option A；禁止 merge-only native 第二语义 |
+| FR-08 | PARTIAL / TRUE_GAP_SMALL | Workflow/Model Policy 既有；增加紧凑 Lane capabilities/roles 规划 |
+| FR-09 | ALREADY_COVERED | Model Policy、Execution/GAIP/LAH；可选协作示例 |
+| FR-10 | PARTIAL / VERIFY_OWNER | LAH §3/§8、Execution §23.4 已有；先核对后必要时最小 tuple |
+| FR-11 | ALREADY_COVERED mostly | Execution §19、Workflow §4/§9，设备协助仅示例 |
+| FR-12 | ALREADY_COVERED | Workflow §9、人类授权，仅引用/示例 |
+| FR-13–14 | IMPLEMENTATION_ONLY | 现有 Golden/Reference 中一处可选索引 |
+| FR-15 | PARTIAL | 优化分析是非 Gate 检查表；正确性由已有标准负责 |
+| FR-16 | ALREADY_COVERED / DEFER | Workflow §8，跨产品实现不纳入 v4.18 交付前置 |
+
 
 ## 3. 需求与 Task DAG 分解
 
@@ -113,7 +139,7 @@ Planner 对主要 Concern 评价：价值/结果独立、Contract 稳定、实�
 
 在 DAG Freeze 前，Planner 对大型/明显串行计划 SHOULD：
 1. 检查覆盖、正确依赖、原子性和安全可执行性。
-2. 将依赖理由分类：集成代码/契约、共享写集、Review/Validation 证据、Merge/Release 汇合、资源/执行体（这些理由不是替代原生 DAG）。
+2. 以**非权威规划注解**解释依赖理由：集成代码/契约、共享写集、Review/Validation 证据、Merge/Release 汇合、资源/执行体。**选择 Option A：GitHub 原生 blocked_by 仍是唯一真实依赖；理由标签不能重分类 native edge、不能更改 ready_builder/ready_merge、不能授予源码提前开发或绕过 JIT。** 如注解与 native 当前关系冲突，native 关系胜出，受影响源码准入 HOLD；需要拓扑变化时使用已有法定 Task Split/Add/Mutation 与 native readback。
 3. 比较候选拓扑的可用并行 Workfront、最长拓扑链、Owner 冲突、Agent/环境匹配、Rebase/CI/Review/交接/集成成本。
 4. 提供一项安全替代方案，或给出不可优化的具体证明。
 5. 无实测耗时与成本时只能做定性或结构分析，不能声明数值加速。
@@ -134,7 +160,7 @@ Planner 对主要 Concern 评价：价值/结果独立、Contract 稳定、实�
 
 ### FR-06 — 源码所有权及集成边界（P0）
 
-多模块项目优先评估 Git Monorepo，公共 Contracts、Core、Adapter、SDK、apps 与 Tests 按真实业务边界拆分；共享 manifest、workspace/lockfile、Catalog、入口、CI 等安排唯一有效写入者或明确中央集成任务。
+多模块项目的 Monorepo 倾向由现有 `standards/PROJECT_STRUCTURE.md` §1/§4 决定（本 FR 不重新定义布局策略）；在该权威下评估公共 Contracts、Core、Adapter、SDK、apps 与 Tests 的真正业务边界；共享 manifest、workspace/lockfile、Catalog、入口、CI 等按现有单有效写入/资源准入原则确定中央 Owner。
 
 一目录一 Task 不构成合格拆分。现有 Anchor ID/kind/location/contract_ref、Git Object identity、文件 mode/symlink/gitlink、MI 双向可重算性和受控排除机制不变。并行草稿分支不能扩大写集或绕过绑定约束。
 
@@ -149,7 +175,7 @@ Planner 对主要 Concern 评价：价值/结果独立、Contract 稳定、实�
 - MERGE ELIGIBLE：满足 Task 的依赖、真实 CI/Validation、适用独立 Review、target/currentness 以及集成前提。
 - RELEASE ELIGIBLE：整版 exact candidate 的 Full/Hidden/Critical Journeys/Packaging/RQ 由现有标准判定。
 
-不得因独立文件存在便提前允许被阻塞 Task 的 Builder 写入；若有合法独立前置 Concern，须经现有 Task Split/新增/Scaffold source admission 与 Claim 权威。不能把未合并 Scaffold、draft PR 或 read-only PREP 提升为源码许可。
+**Product 决定采用 Option A（v4.18 不改变 §6 JIT / ready_builder）：** 受 native `blocked_by` 的 Task 仍不得仅凭“Merge-only”注解、独立路径或草稿分支获得提前源码实施准入。可独立实施的前置 Concern 只能经现有合法 Task Split/ADD/独立 source-scaffold planning Task（如适用）、真实 native dependency mutation/readback、明确不重叠的 Source Writer、当前合法 Claim 后开始自己的工作；原下游 Task 的真实集成/合并依赖保持。PREP 是只读分析而非写源码。DomainHarness A6 的本地双门禁为回顾性项目特例，**不被 v4.18 普遍采纳**。将“原 Task 原生依赖不变却标记 merge-only 并提前 Builder READY”的机制作为将来独立 Product/L2 研究，不在 v4.18 改变原生边语义、JIT 或 Claim。
 
 ## 6. Agent 适配与跨 Agent 协作
 
@@ -173,11 +199,11 @@ Strong Agent 面向 Product/Architecture、复杂不变量、风险决策与高�
 - Builder → Independent Reviewer / Validator。
 - Agents → Genuine Human/Delegate Decision → Agents resume。
 
-一个 Task 可涉及不同角色，但同一 Protected Claim Key 不得出现不兼容的并发 Builder。现有责任委托/交接、operator_id/session_ref、event-v2、Review 独立性和 GitHub durable handoff 均保持为唯一权威。
+一个 Task 可涉及不同角色，但并行 Writer 必须同时满足**三个既有约束**：① `EXECUTION_ARCHITECTURE §11.1.1` 每 Task/Role/compatibility_group 的序列化受保护 Claim；② `TASK_DECOMPOSITION §4` 与 `TASK_DAG_GOVERNANCE §10A` 的跨 Task 写集/Scaffold Anchor 单有效 Writer；③ `EXECUTION_ARCHITECTURE §27.3` 对实际共享资源的准入。两 Task 的 Claim Key 不同**不代表**可并发写同一 Catalog/lockfile/Anchor。现有委托/交接、operator_id/session_ref、event-v2、Review 独立性与 GitHub 持久事实仍是唯一权威。
 
 ### FR-10 — Minimal Remaining-work Handoff（P0）
 
-完成可合法完成的工作后，移交**最小剩余单元**，而非重做整个 Task。GitHub 记录：current exact subject、accepted Claim/Task Pack、已验证输出、未完成的必要证据/资源、真实环境能力、接收角色、停止/升级条件、UNKNOWN 或失效证据。
+复用 `LOCAL_AGENT_HANDOFF_PROTOCOL §3/§8` 与 `EXECUTION_ARCHITECTURE §23.4` 的原有持久交接与 proportional continuation：完成可合法完成的工作后，只移交**最小剩余单元**，而非重做 Task。既有 GitHub 事实应足以解析 current exact subject、accepted Claim/Task Pack、已验证输出、未完成证据/资源、环境能力、接收角色、停止/升级条件、UNKNOWN 或失效证据。只有经 L2 证实这些现有字段无法表达时，才提出最小 tuple/prose 改动，不另建 schema 或事件族。
 
 - WEB 可完成的 GitHub/源码/文档工作优先完成，但不强制每项必须 WEB 先行。
 - CI 满足真实 profile 时优先复用，不机械要求 Local 重跑。
@@ -192,7 +218,7 @@ Strong Agent 面向 Product/Architecture、复杂不变量、风险决策与高�
 仅在以下真实条件需要人工/合法委托权威：
 - **Protected Decision：** Product/架构/权限重大取舍、受保护风险接受、例外、破坏性操作、需人决定的 Release 限制等。
 - **Environment Assistance：** 连接物理设备、合法完成访问/同意手续、Agent 无法执行的现场动作。
-- **Escalation：** 相同根因反复失败但没有新证据、Frozen 事实矛盾、必要权限/效果 UNKNOWN 且无法现有规则消解。
+- **Escalation：** 复用 `DEVELOPMENT_WORKFLOW §4` Non-converging Repair 与 `MODEL_USAGE_POLICY §4`：相同根因反复失败且无新证据、Frozen 事实矛盾、必要权限/效果 UNKNOWN 且无法按已有 owner 规则消解时升级；升级未必自动等于人类审批，先路由正确所属权威。
 
 不让人工抄日志、转发 GitHub 已存指针、轮询 CI、重复低风险代码审核。人工并不是固定阶段门禁。
 
@@ -226,7 +252,7 @@ Problem & Goal → Constraints & Invariants → Candidate Patterns → Evaluatio
 - Release：Critical Journeys、Exact Integrated Closure。
 - Evolution：Root Cause、Pattern Applicability、Measured Improvement。
 
-模式库只是索引、建议与 Golden Cases，不成为新的规范权威或要求每个阶段新建文件。
+模式建议默认只在现有 `templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md`（以及已存在的 Golden Index）中维护**一处可选索引/对照**；相关原标准可以链接，不要求为十个 Stage 分别改写规范或创建新文件。索引提供适用前提/反例，不是新的规范权威，也不要求每个阶段新建文件。
 
 ### FR-15 — Planning Quality Evaluation（P1）
 
@@ -238,16 +264,18 @@ Problem & Goal → Constraints & Invariants → Candidate Patterns → Evaluatio
 
 ### FR-16 — Evidence-driven Pattern Evolution（P2）
 
-ADS 定义规范/Pattern 和合法演化流程；task-meta 采集 Agent/Tool/Run/Cost/结果；Tally 可利用有效数据选择执行体及提出演化候选；DomainHarness 保持自己的 Kernel/Package/Effect 权威。只有具有对照与适用范围的实测数据可用于效率判断；任何遥测、推荐评分或 Agent 自报告不得自动改变规范、发布 Gate 或旧项目 pinned 版本。
+ADS 仅定义自己拥有的规范/Pattern 与合法演化流程；task-meta、Tally、DomainHarness 是否实现采集、选择、候选推荐及运行时效果，分别属于各项目自身 Product/L2 和验收权限，**ADS v4.18 不承诺、不强制这些外部产品的实现行为**。只有来源合格、具有对照与适用范围的实测数据可用于效率判断；任何遥测、推荐评分或 Agent 自报告不得自动改变规范、发布 Gate 或旧项目 pinned 版本。
 
 本项可以晚于 P0/P1 完成，不成为 v4.18 核心路径不必要阻断。
 
 ## 9. Product Acceptance Scenarios
 
+**验收证据级别：** v4.18 此处新增/澄清规范的 Product acceptance 以现有 conformance owner 的**E1 SOURCE-ONLY Golden 正反用例**和精确 Git blob/commit 校验为主；可复用 `templates/golden/STANDARD_CONFORMANCE_EXAMPLES.md` 的源级示例及其既有测试 owner。以下含“真实 Node24/SQLite、多人 Agent、Human Approval”的案例在规范测试中应使用**明确标注的虚构场景/Fixture**，验证是否正确拒绝伪资格，不得自称已经进行了真实物理/外部效果/授权验证。DomainHarness #1300/#1356/#1357 仅为回顾性案例。真实多 Agent/Tally/task-meta 集成、外部效果、运行收益测量分别保持 `NOT_RUN` 或项目独立已证事实，不是此次 source-only ADS 标准交付的新增发布前置条件；Release 适用性由原 `RELEASE_STANDARD §11.7A` 和 Gate Owner 判断。
+
 ### 正例
 
 - **P01 多维拆分：** 一项多渠道通知大需求拆成 Email、SMS、UI、订阅能力，先冻结公共 Contract，形成具有局部实施流程的并行 Lane，最后完整集成。
-- **P02 长链对比：** 输入含可独立 Adapter/Docs/Fixture 的 18-node 过度串行 DAG，给出替代拓扑，并明确真实依赖、中央 Writer、复验与 Release 汇合。
+- **P02 长链对比：** 输入**虚构**含可独立 Adapter/Docs/Fixture 的 18-node 过度串行 DAG，给出合法替代拓扑，并明确真实依赖、中央 Writer、复验与 Release 汇合；不修改 DomainHarness 的现行 native DAG，也不宣称实测节省。
 - **P03 SF 驱动并行：** 已接受 Monorepo SF 中 Contracts/Core/Adapter/SDK Anchor 与实际 Issue/Task 绑定，独立作者没有共享写集竞争；MI 独立验证。
 - **P04 DAG 反向评估 SF：** 共享源码导致虚假串行时，在冻结前提出中央接线或源码边界改善方案；冻结后必须合法 Amend。
 - **P05 Agent 协作：** Strong 产生 Contract/Oracle，若干合法 Builder 编码，CI 提供真正可用证据，Local 只补充不足的物理验证，Reviewer 独立审核，Merge Owner 集成。
@@ -271,6 +299,7 @@ ADS 定义规范/Pattern 和合法演化流程；task-meta 采集 Agent/Tool/Run
 - **N12** 无实测数据而声称 2× 加速、节约具体成本 → 不接受效果结论。
 - **N13** Agent 仅凭模型名称或自述能力提升权限/F3 → 拒绝。
 - **N14** 需要一次人工设备操作却把全部 Task 强迫交给人工 → 不符合最小介入。
+- **N15** 用 Capability Tree/Lane 表/依赖原因的 `MERGE_ONLY` 注解宣称 Builder READY，实际 native `blocked_by` 尚未满足 → GitHub native 事实胜出，source HOLD；任何实质变更必须先完成已有 DAG Mutation 和 native 双向 readback。
 
 ## 10. 规范变更归属与初步 Task 分流
 
@@ -282,9 +311,10 @@ ADS 定义规范/Pattern 和合法演化流程；task-meta 采集 Agent/Tool/Run
 | templates/task-dag.md | 现有 Lane Summary 增加紧凑 Parallelism + Scaffold + Agent 评估 | 不创建第二 DAG |
 | TASK_DAG_GOVERNANCE §10A | 在 Planner 示例中复用已有 SF↔DF/MI | 不重写完整性或 Anchor 权威 |
 | DEVELOPMENT_WORKFLOW §2.4/2.4A | 必要时轻量引用跨维度规划 | 不新增默认 Scaffold 阶段 |
-| EXECUTION_ARCHITECTURE / EXECUTION_PACK | 精确澄清 PREP 与 JIT/source Claim 的界线 | 不新增源码提前权限 |
-| MODEL_USAGE / Agent Interaction / Local Handoff | 复用能力、角色、职责交接约束 | 不建 Agent 注册或新 Event |
-| Human Decision §19 / Workflow §9 | 复用人工与授权示例 | 不做新的审批体系 |
+| EXECUTION_ARCHITECTURE §6/§11.1.1/§23.4/§27.3 与 EXECUTION_PACK | Option A：JIT / ready_builder 不变；仅提供 PREP 与合法 Writer 的负例和引用 | 不新增 merge-only native 依赖或提前源码权限 |
+| PROJECT_STRUCTURE §1/§4 | 沿用多模块 Monorepo 的已有政策 | 不新增项目架构默认约束 |
+| MODEL_USAGE §1–4 / GAIP / LOCAL_AGENT_HANDOFF §3/§8–9 | 复用能力、独立角色、最小剩余工作和恢复约束 | 不建 Agent 注册或新 Event |
+| EXECUTION_ARCHITECTURE §19 / DEVELOPMENT_WORKFLOW §4/§9 | 复用非收敛升级、受保护人类授权和人工协助示例 | 不做新的审批体系 |
 | Existing conformance owner | 复合正例 + 小型负例 | 不将静态测试视作真实 Host/Release PASS |
 
 候选工作面：A 需求/Concern/Topology，B Scaffold 联合规划，C Agent/协作，D 人工/升级，E 阶段 Pattern，F 组合 Conformance，R 版本集成。A–E 可以在**真正独立的标准文件写集**上并行，但若竞争相同规范 Owner，必须统一编辑或合法拆分；F/R 保留真实汇合条件。P2 可延后。
@@ -295,9 +325,11 @@ ADS 定义规范/Pattern 和合法演化流程；task-meta 采集 Agent/Tool/Run
 
 ADS 规范源码的交付与真实跨系统运行时能力验证是不同 subject；不能以本 R0 声称 Tally/task-meta/DomainHarness 功能已实现。
 
-## 12. Claude 独立 Product R1 审核契约
+## 12. Claude 独立 Product R2 差异审核契约
 
-请以当前 exact branch HEAD 与本 PRD 的实际 Git blob 为 subject，独立读取 ADS 当前 main 所属规范、#1320、#1173、#1241、#1199–#1201，按 ALREADY_COVERED / TRUE_GAP / IMPLEMENTATION_ONLY 给出源所有权交叉表。
+R1 独立审核记录：[#1320@6388457224](https://github.com/kaicreator-mm/ai-development-standard/issues/1320#issuecomment-6388457224)；R0 exact HEAD `37a257d3be60e99e38c494f274a3e1c35860dcdd`，PRD blob `e8d3822bfe0bb5b31b2c991a10a8cbdbdd73b8a6`。R1 结果 P0=0/P1=2/P2=6/P3=3、`CHANGES_REQUESTED`、`PRD_FREEZE_READY=NO`。本文 R1 已修订 P1-1/P1-2 和 P2-1..P2-6，并纳入 P3 的负例、统一索引与外部产品边界。
+
+请独立读取**当前新的 exact branch HEAD 和 PRD Git blob**，只审 R0→R1 实质差异及可能新增的 P0/P1；必要时对照有效 main owner/blob 与 #1320、#1173、#1241、#1199–#1201。重点验证：Option A 是否完全禁止 `MERGE_ONLY` 标签成为 source authority、Product outcome 的 ALREADY_COVERED 如何关闭、Scaffold/Claim/Shared resource 三层权限、A6 历史事实和 source-only Golden 证据级别。
 
 重点反证：
 1. Requirement/Capability/Concern/Step/Lane/Task 的层次及多对多映射是否正确，是否在无意中创建第二 DAG。
@@ -308,6 +340,6 @@ ADS 规范源码的交付与真实跨系统运行时能力验证是不同 subjec
 6. P0/P1/P2 范围是否需要收缩，是否存在能阻塞 v4.18 的不合理依赖。
 7. 正负用例是否足以证伪伪并行、伪验证、伪权限与过度拆分。
 
-要求报告：SUBJECT_HEAD、PRD_BLOB、SOURCE_CURRENTNESS、INDEPENDENCE、P0/P1/P2/P3 各项发现与真实反例/源引文/修正建议、PRODUCT_R1=PASS|CHANGES_REQUESTED|BLOCKED、PRD_FREEZE_READY=YES|NO、NEXT。
+要求报告：SUBJECT_HEAD、PRD_BLOB、SOURCE_CURRENTNESS、INDEPENDENCE、R1_P1_CLOSURE、R1_P2_CLOSURE、P0/P1/P2/P3 与真实反例/源引文/修正建议、PRODUCT_R2=PASS|CHANGES_REQUESTED|BLOCKED、PRD_FREEZE_READY=YES|NO、NEXT。
 
 **只读审核；不修改源码、不合并、不进行 Product Freeze。**
