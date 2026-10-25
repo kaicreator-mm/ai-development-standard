@@ -72,3 +72,33 @@ This is legitimate because concerns are distinct and conflict is explicitly cont
 Before freezing a Task, resolve every dispatch fact from the §1 worksheet into durable authority: identity/concern, frozen authority refs, expected output, allowed write-set, forbidden scope, acceptance, gates, validation owner, review policy, integration target, dependencies, failure/escalation.
 
 If a required fact lives only in a conversation, thread or someone's memory, either freeze it into durable authority or keep the work unplanned. The v4.10 JIT Execution Pack (TASK/PLAN/CONTEXT/DOD/COMMANDS/HANDOFF per Task, bound to an exact integration baseline and owner blob) is the current dogfood of this pattern.
+
+
+## 10. Optional v4.18 Safe Task DAG Planning Patterns — E1 source-only
+
+This is a **non-normative companion to the existing Task Decomposition owner**, not a second execution graph, new permission, issue-label state, Agent registry or Review/Release gate. Examples below are **fictitious E1 planning oracles** derived from frozen v4.18 Product/L2. They do not demonstrate multi-Agent runtime execution, accepted real SF/MI, physical Host tests, genuine protected human approval or measured time savings.
+
+### Pattern selection (non-authoritative)
+
+- **Fan-out / Fan-in:** freeze common contracts first; parallel concerns only when their native blockers and effective writer scopes actually allow; central integration consumes accepted results.
+- **Vertical Slice:** a capability's whole acceptance may be independently useful; do not turn each step or source directory into an Issue.
+- **Parallel Pipelines:** different capability Lanes may carry their own ordered Contract/Implementation/Test steps while unrelated Lanes run concurrently.
+- **Contract-first / Platform + Plugins:** stable shared ABI enables independent adapters; unresolved shared semantic ownership stays prerequisite or atomic.
+- **Evidence Parallel:** independent read-only research/preflight is not authority for a blocked source-writing Builder.
+- **Migration / Strangler:** prepare compatible streams independently but keep the cutover and data invariant under one accepted integration owner.
+- **Atomic Invariant:** concurrency is inappropriate where it splits transaction, security or state-machine consistency.
+- **Optional Source Scaffold feedback:** reason about actual accepted module/anchor boundaries before Freeze; SF/DF/MI §10A remains the sole mapping authority when adopted. Without accepted SF, mark NOT_APPLICABLE.
+
+### Paired source-only Golden and forbidden examples
+
+| ID | Planning pattern | Positive E1 oracle | Forbidden E1 oracle |
+| --- | --- | --- | --- |
+| G418-01 | Capability-first vertical slices | Email and SMS outcomes become coherent concerns in separate Lanes, with local steps and one shared Contract owner | Treat global Contract → Core → UI phase order as compulsory native serialization for unrelated capability Issues |
+| G418-02 | Fan-out / Fan-in topology comparison | Compare A ∥ B ∥ C → I → R with a longer serial candidate; preserve all real native blocked_by edges and report speedup UNKNOWN | Delete a real native blocked_by edge or claim unmeasured 2× speedup to maximize apparent concurrency |
+| G418-03 | Qualified Source Scaffold feedback | Accepted SF modules and anchors suggest disjoint writers before Freeze, then validate actual SF↔DF mapping and MI under §10A | Unaccepted SF Anchor grants Builder permission, or two concurrent Tasks write the same effective Anchor without lawful mutation |
+| G418-04 | Agent and evidence fit | Choose risk-qualified WEB/CI/LOCAL role capability, distinct independent Reviewer, and hand off only unproved real physical evidence | Builder self-approves a required independent Review, or Web reading masquerades as verified real Host PASS |
+| G418-05 | Native dependency / JIT boundary | Task blocked_by a predecessor may perform lawful read-only PREP; Builder source remains HOLD until native dependency and accepted Claim permit | Annotate a blocked Task as merge-only and declare ready_builder or source-writing permission while real blocked_by remains |
+| G418-06 | Atomic invariant rationale | Keep one serial transaction/security concern atomic with a specific invariant; no artificial parallelism quota | Split an indivisible consistency rule into partial-invalid sibling source writers for better concurrency statistics |
+| G418-07 | Genuine human decision / assistance | Request only a protected exact-scope decision or real device action when needed, then resume accepted remaining work | Accept a text-only HUMAN_APPROVED token as protected consent or require a person for routine CI polling |
+
+**Planning evidence rule:** Candidate edge reasons (contract/code, writer, evidence, integration, scarce resource) are *annotations* only. They never reclassify live GitHub Issue Dependencies, grant `ready_builder`, bypass JIT/Claim, authorize overlapping writes, waive independent Review or decide Release applicability. A mostly-serial plan may be correct with an explicit atomicity rationale. No positive example is a claim that actual task execution or cost improvement occurred.
