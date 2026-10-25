@@ -27,3 +27,15 @@ jobs:
       # visible; a green integrated guard only proves NO NEW failing subtests.
       # Release owner alone decides three historical owner-pin applicability.
       - run: python tests/test_v418_integrated_planning_conformance.py -v
+
+  windows-encoding-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Focused portability lane for T13/T05A subprocess output on Windows.
+      - run: python tests/test_v418_integrated_planning_conformance.py -v
