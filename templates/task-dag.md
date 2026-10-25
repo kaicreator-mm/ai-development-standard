@@ -59,6 +59,34 @@ Before freeze, summarize the intended concurrency plan:
 
 If the DAG is mostly serial, record why the dependencies are real rather than leaving parallelism unexplored.
 
+## Optional v4.18 Capability-first / Safe Topology Assessment (planning only)
+
+For a substantial multi-concern version, start from independently acceptable **Product capabilities**, then map each capability to coherent **Concerns**, local Lane steps and actual Task Issues; do not turn every workflow phase, file or checklist step into a separate Issue. Small atomic/Fast Path work (for example, one isolated typo with no shared writer) may record one sentence explaining why no alternative topology is material.
+
+| Product capability / acceptance | Coherent concern / Task | Lane-local steps (not auto-Issues) | Contract / atomic boundary | Unique effective writer / shared integration |
+|---|---|---|---|---|
+| `<accepted-outcome>` | `T-001` | `<local-workflow>` | `<frozen-ref / invariant>` | `<owned-write-set / central-wiring-task>` |
+
+For a mostly serial candidate, compare one legal alternative or explain concretely why the original chain is necessary. Structural path/independent workfronts are qualitative; record wall-clock, token-cost or speedup as `UNKNOWN` unless measured from admissible evidence.
+
+| Candidate topology | Real prerequisite / advisory dependency reason | Safe parallel workfronts | Shared writer / integration join | Validation / Review / handoff trade-off | Decision |
+|---|---|---|---|---|---|
+| `<existing-or-alternative>` | `<contract / writer / review-evidence / convergence / resource>` | `<issues or none>` | `<central owner>` | `<scope / UNKNOWN metrics>` | `SELECT / REJECT + reason` |
+
+**These are non-authoritative planning explanations.** Dependency-reason tags do not reclassify GitHub's native `blocked_by`, determine `ready_builder` or `ready_merge`, authorize a source write before a JIT admitted Claim, or bypass required Review/Validation/Release conditions. A real topology change uses the existing formal DAG mutation and native readback, not editing this comparison table.
+
+### Optional pre-Freeze Scaffold feedback
+
+If an actual, accepted source-first SF checkpoint exists, compare its real modules/packages, immutable anchors, contracts and writer paths with proposed concerns **before** binding/freeze. Identify shared manifest/catalog/entrypoint hotspots and consider a qualified contract seam or one central integration owner *within the existing L2 amendment authority*; never infer source-writing permission from SF structure alone. After Freeze, any material SF/DF change follows existing `TASK_DAG_GOVERNANCE_STANDARD.md` §10A and its independent MI/currentness rules. Without an accepted source-first SF, record `SF_PLANNING_FEEDBACK=NOT_APPLICABLE`; the next optional v4.12 SF↔DF binding section remains conditional.
+
+### Candidate Agent, proof and human-assistance fit
+
+| Lane / concern | Candidate skill and risk/freedom | Builder / independent Reviewer | WEB / CI / LOCAL capability actually needed | Remaining-work handoff / true human trigger |
+|---|---|---|---|---|
+| `<lane>` | `<ability, risk, F0-F3>` | `<role and review policy>` | `<real tools / physical evidence gap>` | `<exact outstanding proof or NOT_APPLICABLE>` |
+
+Choose **capability classes** at planning time, not fixed model branding or an Agent registry. Real operator, current source SHA, legal Claim and environment validation are selected under the existing Dispatch/Execution Pack authority. CI may satisfy actual qualified tests; a Local action is requested only for evidence a supported executor cannot obtain. Human involvement stays bounded to existing protected decisions, actual physical/operator assistance or exceptional authority escalation; routine CI polling and forwarding logs are not new human gates.
+
 ## Optional v4.12 Source Scaffold ↔ Task Binding (only when applicable)
 
 Use this section **only** for a project that actually adopts a qualified v4.12+ standard, has an accepted source-first SF checkpoint and needs an explicit DF mapping. It is a *planning snapshot*, not another writable authority or a new required metadata schema. The Task-side anchor binding is the single canonical mapping owner; reference the source facts, do not replicate an editable SF anchor ownership table.

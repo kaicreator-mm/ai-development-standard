@@ -345,6 +345,6 @@ or treat the artifact/model as authority. Inspect/validate all inherited source
 and the minimal new delta; qualify the actual new candidate. Keep the old key
 UNKNOWN/HOLD. Ratified new integration and repair delivery still need a separate
 prior owner amendment/current final acceptance to satisfy the original Task.
-The fixed finite matrix BOUNDED_SOURCE_REPAIR_CASES.json and
+The fixed finite matrix docs/implementation/4.15.0/BOUNDED_SOURCE_REPAIR_CASES.json and
 scripts/test_v415_bounded_source_repair.py are source conformance only; actual
 S04 applicability is NOT_PROVEN until those real operation facts are published.

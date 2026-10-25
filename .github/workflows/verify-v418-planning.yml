@@ -1,0 +1,41 @@
+name: verify-v418-planning
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Historical exact-source test subcases inspect immutable commit ancestry.
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r scripts/requirements-github-v414.txt
+      - run: python scripts/test_v43_task_decomposition.py
+      - run: python scripts/test_v42_adoption_wiring.py
+      - run: python tests/test_v417_golden_consistency.py
+      - run: python tests/test_v418_planning_conformance.py -v
+      # Full old T13/T05A suites run inside this test. Their raw EXIT=1 remains
+      # visible; a green integrated guard only proves NO NEW failing subtests.
+      # Release owner alone decides three historical owner-pin applicability.
+      - run: python tests/test_v418_integrated_planning_conformance.py -v
+
+  windows-encoding-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Focused portability lane for T13/T05A subprocess output on Windows.
+      - run: python tests/test_v418_integrated_planning_conformance.py -v

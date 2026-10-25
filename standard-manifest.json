@@ -382,7 +382,9 @@
       "scripts/test_v416_t04_evolution.py",
       "scripts/test_v416_t05_writeback.py",
       "scripts/test_v416_t06_agent_governance.py",
-      "scripts/test_v416_t07_integration.py"
+      "scripts/test_v416_t07_integration.py",
+      "tests/test_v418_planning_conformance.py",
+      "tests/test_v418_integrated_planning_conformance.py"
     ],
     "discovery_standards": [
       "standards/REFERENCE_CONVENTION_STANDARD.md"
