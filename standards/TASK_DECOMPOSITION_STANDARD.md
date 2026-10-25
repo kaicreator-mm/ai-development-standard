@@ -174,6 +174,10 @@ Before freezing a Task, ask:
 8. Is a stacked PR really required by code-baseline dependency?
 9. Could a qualified Agent dispatch, execute and validate this Task from the durable facts alone?
 
+For a substantial or mostly serial candidate, the Planner SHOULD compare at least one **safe alternative Task DAG topology**, or record a concrete reason why serial execution is necessary; compare frozen contracts, atomic invariants, disjoint writers, true integration dependencies, Agent/environment suitability and Review/Validation cost without inventing measured speedups.
+
+Dependency-reason categories (contract or code baseline, exclusive writer, Review/Validation evidence, integration or Release convergence, and resources) are **non-authoritative planning annotations**; they do not alter GitHub native Issue Dependencies, `ready_builder`, JIT, accepted Claim, write-set/Scaffold Anchor ownership or merge/Release admission.
+
 ## 14. Failure handling
 
 ### 14.1 JIT oversized Task discovered after ACTIVE Claim (#1072)
