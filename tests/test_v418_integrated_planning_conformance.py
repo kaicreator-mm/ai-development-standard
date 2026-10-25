@@ -103,11 +103,15 @@ class IntegratedPlanning(unittest.TestCase):
             with self.subTest(path=path):
                 env = os.environ.copy()
                 env["PYTHONDONTWRITEBYTECODE"] = "1"
+                # Child unittest emits stable UTF-8 even on Windows code-page hosts.
+                env["PYTHONUTF8"] = "1"
+                env["PYTHONIOENCODING"] = "utf-8"
                 proc = subprocess.run(
                     [sys.executable, path], cwd=ROOT, capture_output=True,
-                    text=True, encoding="utf-8", timeout=180, env=env
+                    text=True, encoding="utf-8", errors="replace",
+                    timeout=180, env=env
                 )
-                log = proc.stdout + "\n" + proc.stderr
+                log = (proc.stdout or "") + "\n" + (proc.stderr or "")
                 headers = re.findall(r"^(?:FAIL|ERROR): [^\n]+", log, re.MULTILINE)
                 observed = []
                 for header in headers:
