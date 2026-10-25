@@ -9,7 +9,7 @@
 ## Task identity, result and boundaries
 
 - **Task ID:** ADS-V418-I
-- **Goal:** Once A/B/C merge, create I-owned cross-source test, register/wire new E1 tests in existing manifest and CI, run exact combined regression.
+- **Goal:** Once A/B/C merge, create I-owned cross-source test, register both E1 tests in existing manifest and execute them through a new v4.18-specific CI workflow, preserving exact historic verify-standard workflow blob.
 - **Integration target:** `version/v4.18`, never `main` before Release Qualification.
 - **Risk:** high
 - **Review policy:** required; a required independent Review must come from a genuinely distinct operator/context.
@@ -23,12 +23,13 @@ native blocked_by A #1323, B #1324, C #1325; no source writing before all comple
 ## Allowed write-set
 
 - standard-manifest.json
-- .github/workflows/verify-standard.yml
+- .github/workflows/verify-v418-planning.yml NEW (A01-authorized I-owned dedicated E1 workflow; preserve historical verify-standard.yml byte-for-byte)
 - tests/test_v418_integrated_planning_conformance.py NEW
 - coverage/index ONLY if prior verification requires
 
 ## Forbidden scope
 
+- .github/workflows/verify-standard.yml (pinned v4.9 owner must stay untouched)
 - A/B/C-owned source except independently approved repair
 - old T13/T05A tests, v4.17 Golden, release metadata
 
@@ -36,14 +37,20 @@ native blocked_by A #1323, B #1324, C #1325; no source writing before all comple
 
 - [ ] All dependencies accepted and source integrated/current
 - [ ] No shared wiring written in A/B/C workfronts
-- [ ] Real CI run executes both new tests and mandatory existing tests
+- [ ] Real dedicated v4.18 CI run executes both new tests and mandatory inherited source tests; existing pinned verify-standard job remains green
 - [ ] Independent source Review; no fake historic all-PASS
+
+## Explicit Task Pack Revision R2 — A01 frozen-architecture CI route
+
+**Authority:** [#1321 A01 Architecture Amendment](https://github.com/kaicreator-mm/ai-development-standard/issues/1321#issuecomment-6397761622). The initial source-only PR #1331 CI proved that modifying historically pinned `.github/workflows/verify-standard.yml` caused v4.9 `test_v49_conformance_suite.py::C12CoverageManifest.test_c12_test_oracle_lane_discipline` failure (Git blob 9fa6099… expected). I Builder restored original pinned blob at its HEAD 5703bef… before changing this Task Pack. This controlled planning **revision** changes *only the CI file routing* from modifying existing workflow to creating `.github/workflows/verify-v418-planning.yml`; identity, outcomes, dependency graph, role/review policy, E1-only requirements, full historical T13/T05A subtest obligations and Release authority are unchanged.
+
+This revision must be re-bound at source review: current version branch Task Pack blob must equal the revision recorded on Issue #1326; I's existing same-operator `SINGLE_WRITER_ADMISSION` Claim remains singular, not an opportunity for another incompatible claim. Integration base drift is planning-only with no change to A/B/C material writes; any other conflict requires source currentness reconciling. The qualified distinct I reviewer shall independently verify this amendment and actual GitHub CI before I merger.
 
 ## Tests → Contract → Implementation → Failure Handling → Reference
 
 ### Tests and exact evidence
 
-- verify-standard.yml actual run
+- Original verify-standard.yml actual run unchanged **and** new verify-v418-planning.yml actual independent GitHub CI run; no owner blob divergence
 - G418 unit + integrated suite
 - Lane and Golden/wiring suites
 - T13/T05A full per-subtest difference check
