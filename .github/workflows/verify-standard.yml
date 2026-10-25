@@ -57,3 +57,11 @@ jobs:
       - run: python scripts/test_v49_assurance_owner.py
       - run: python scripts/test_v49_release_applicability.py
       - run: python scripts/test_v49_conformance_suite.py
+      # v4.18 source-only E1: scoped inherited owner + frozen Golden regression
+      - run: python scripts/test_v43_task_decomposition.py
+      - run: python scripts/test_v42_adoption_wiring.py
+      - run: python tests/test_v417_golden_consistency.py
+      - run: python tests/test_v418_planning_conformance.py -v
+      # This integrated oracle retains and identifies raw old T13/T05A EXIT=1;
+      # its own PASS only means no NEW subtest failures, not old-suite PASS or RQ.
+      - run: python tests/test_v418_integrated_planning_conformance.py -v
