@@ -198,7 +198,7 @@ This companion registry gives every active normative standard a concise positive
 
 ## testing-standard
 
-**Golden:** Tests are selected by contract/risk, include negative cases where material, and report only what actually executed.
+**Golden:** Tests are selected by contract/risk, include negative cases where material, and report only what actually executed. For a material claimed suite, check real discovered/executed test inventory; for material public features, exercise the selected runtime/consumer call path rather than merely loading its package.
 
 **Forbidden:** Claiming coverage from tests that were skipped/unavailable or using only happy-path tests for failure-sensitive behavior.
 
