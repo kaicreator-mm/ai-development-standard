@@ -54,3 +54,12 @@ A "yes" is a reviewable implementation-quality defect only when it is material t
 ## Failure posture
 
 When ecosystem-specific behavior is unclear, use the applicable profile/project authority. When a check/result question belongs to Testing, CI, Validation or Release, route there rather than extending this standard's authority.
+
+## v4.19 candidate: implementation evidence has levels
+
+[DomainHarness public package root #139](https://github.com/kaicreator-mm/domain-harness/issues/139) and [never-invoked K hook #1264](https://github.com/kaicreator-mm/domain-harness/issues/1264) demonstrate two independent implementation risks:
+
+- The **advertised public package root** can import platform-specific dependencies even when an internal subpath is portable. Where material, use a clean installed consumer and the real published entrypoint; workspace-only import success does not establish this.
+- A selected Hook or Feature can be imported, registered and initialized while never being **called** by the owning runtime. Use one actual invocation/effect/receipt or legitimate `NOT_RUN`, plus negative cases where that path controls authority.
+
+These checks stay under the project Testing/Integration/CI owner and do not create an Implementation Quality Gate or require an expensive physical matrix for an unrelated mechanical edit.
