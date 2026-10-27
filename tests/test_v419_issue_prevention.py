@@ -3,7 +3,7 @@
 This checks only committed source/fixture integrity and miniature negative
 illustrations, NOT real DomainHarness tests, exact-SHA CI, Agent execution,
 physical Host evidence, Product Freeze, or release qualification.
-Run from repo root: python -m unittest tests.test_v419_issue_prevention -v
+Run from repo root: python -m unittest discover -s tests -p test_v419_issue_prevention.py -v
 """
 from __future__ import annotations
 
