@@ -70,7 +70,7 @@ This companion registry gives every active normative standard a concise positive
 
 ## development-workflow
 
-**Golden:** Frozen PRD → L2 evidence/freeze → Task DAG → materialized Task Issues/dependencies → implementation/validation/review → version closure.
+**Golden:** Frozen PRD → L2 evidence/freeze → Task DAG → materialized Task Issues/dependencies → implementation/validation/review → version closure. On a material recurring or cross-component finding, route to the root-class owner, compare a bounded local fix against the right contract/adapter/architecture repair level, and retain Review rounds under the same concern when lawful.
 
 **Forbidden:** Skipping upstream authority by letting implementation tasks redefine product/architecture semantics or treating PR PASS as Release PASS.
 
