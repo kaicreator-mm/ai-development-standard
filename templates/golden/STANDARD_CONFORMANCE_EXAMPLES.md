@@ -200,7 +200,7 @@ This companion registry gives every active normative standard a concise positive
 
 **Golden:** Tests are selected by contract/risk, include negative cases where material, and report only what actually executed. For a material claimed suite, check real discovered/executed test inventory; for material public features, exercise the selected runtime/consumer call path rather than merely loading its package.
 
-**Forbidden:** Claiming coverage from tests that were skipped/unavailable or using only happy-path tests for failure-sensitive behavior.
+**Forbidden:** Claiming coverage from tests that were skipped/unavailable or using only happy-path tests for failure-sensitive behavior. A green `npm test` excluding nested critical suites (DomainHarness #162), or declaring a selected extension functional because it was imported but never invoked (#1264).
 
 **Why:** Test evidence must be bounded and truthful.
 
