@@ -50,3 +50,9 @@ Never leave a high-impact UNKNOWN as an implicit choice for the implementation A
 ## Format independence
 
 This reference can be used inside an ADR, design document, Frozen L2 artifact or equivalent. The repository may adopt a stronger project-specific template via PROJECT_OVERRIDES; it need not rename existing design history solely to match this reference.
+
+## v4.19 candidate: selected path evidence during structural refactor
+
+**Source:** [DomainHarness #1013](https://github.com/kaicreator-mm/domain-harness/issues/1013), [#1100](https://github.com/kaicreator-mm/domain-harness/issues/1100), [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264). A new BUILD-selected Kernel Hook exported from a package is not evidence that the selected Primary calls it. A real public entrypoint may also fail to wire trusted Host ports even if isolated K/S/Host PRs all build.
+
+**Golden, when material:** record one traceable public consumer entry → installed/selected contract → Host/Kernel/adapter composition → invoked operation → result/negative; assign a later integration owner when the dependent code is not yet executable. State retained durability/replay/CAS invariants and which real tests will prove them. If the source-only L2 decision cannot prove a physical seam, record `UNKNOWN` rather than fabricated PASS. **Forbidden:** treat imported/initialized code or a checked retained-feature row as execution proof; expand L2 into a compulsory full-platform demo for every leaf.
