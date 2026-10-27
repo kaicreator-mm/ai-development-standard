@@ -48,6 +48,12 @@ Architecture evidence may come from source inspection, existing contracts, proto
 
 Evidence strength must match the claim. A mock or toy benchmark does not automatically prove production behavior.
 
+For a material public API, package-selected behavior, plug-in system or architecture replacement, the design SHOULD identify the **selected executable composition path** (public consumer entry → BUILD/installer or equivalent → Host/adapter → selected implementation → observable result) and its owning integration/Validation concern. A module being defined, imported, initialized or exported is not evidence that the promised hook, authorization, routing or public operation is invoked. Where full physical execution is not yet feasible, use source/contract inspection, record the material unproven seam as `UNKNOWN`, and allocate one bounded representative integration check at the first legal dependency-complete point; do not demand a full release demo before L2 Freeze.
+
+For retained critical behavior after architecture replacement, carry only the **material** invariant set into explicit current-version selected-path acceptance (e.g. replay/dedup, stale-CAS exclusion, effect authorization, multi-package routing). Merely copying a retained-feature checklist or green component tests into the new version does not prove those behaviors. The owning Product/L2 and Testing/Validation paths still decide applicability; this paragraph grants no new automatic Gate.
+
+Sources: [DomainHarness v0.8 integration #1013](https://github.com/kaicreator-mm/domain-harness/issues/1013), [post-release stale CAS #1100](https://github.com/kaicreator-mm/domain-harness/issues/1100), [multi-B #1102](https://github.com/kaicreator-mm/domain-harness/issues/1102), [K hook #1264](https://github.com/kaicreator-mm/domain-harness/issues/1264).
+
 A high-impact `UNKNOWN` MUST NOT silently become implementation freedom. It must be dispositioned by one of:
 
 ```text
