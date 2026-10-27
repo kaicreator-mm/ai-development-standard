@@ -72,7 +72,7 @@ This companion registry gives every active normative standard a concise positive
 
 **Golden:** Frozen PRD → L2 evidence/freeze → Task DAG → materialized Task Issues/dependencies → implementation/validation/review → version closure. On a material recurring or cross-component finding, route to the root-class owner, compare a bounded local fix against the right contract/adapter/architecture repair level, and retain Review rounds under the same concern when lawful.
 
-**Forbidden:** Skipping upstream authority by letting implementation tasks redefine product/architecture semantics or treating PR PASS as Release PASS.
+**Forbidden:** Skipping upstream authority by letting implementation tasks redefine product/architecture semantics or treating PR PASS as Release PASS. Choosing another tiny patch solely to preserve a stale DAG while the same cross-component root class keeps failing, or creating a new Task for every review checkpoint.
 
 **Why:** Stage ownership and checkpoints prevent semantic drift.
 
