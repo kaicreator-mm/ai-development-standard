@@ -145,7 +145,7 @@ A Dispatch is the executable handoff from the canonical dispatch architecture (`
 
 Machine contract: `schemas/dispatch.schema.json`.
 
-Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`) configure execution authority. They do not introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol.
+Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`, `WEB_BUILDER`, `LOCAL_VALIDATION`) select bounded execution context within the authority of the Dispatch role. `WEB_BUILDER` is builder-only and maps to WEB; `LOCAL_VALIDATION` is validator-only and maps to LOCAL. For new v4.19 work, ordinary implementation defaults to `WEB_BUILDER`; `LOCAL_BUILDER` remains readable for v4.18-pinned history and explicitly grandfathered workflows only. `LOCAL_VALIDATION` is exact-SHA, validation-only and used only for genuine local capability gaps after Web/CI evidence is considered. Profiles do not widen role authority or introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol.
 
 ## 5. Authority hierarchy and contradiction routing
 

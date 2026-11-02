@@ -14,7 +14,7 @@ coverage is pinned by the pack TEST_MATRIX (``covers`` + ``dispositions``).
 
 R4 (bounded repair after Validation R3 #861@6025948290): the reducer emits
 only the contracted row with profile-aware environment projection
-(LOCAL_BUILDER/LOCAL_VALIDATOR/WEB_REVIEWER via ``project_dispatch_environment``)
+(legacy and v4.19 profiles via ``project_dispatch_environment``)
 and B5/B6 persisted-key mismatch fail-closed; the integration regression embeds
 ``project_active_dispatches`` output into a complete execution-state instance
 and validates it through the real ``schemas/execution-state.schema.json``
@@ -403,6 +403,26 @@ class EnvironmentProfileProjectionTests(unittest.TestCase):
             ),
             "WEB",
         )
+
+    def test_v419_profiles_project_to_their_declared_environments(self) -> None:
+        self.assertEqual(
+            project_dispatch_environment({"execution_profile": "WEB_BUILDER", "execution_environment": "WEB"}),
+            "WEB",
+        )
+        self.assertEqual(
+            project_dispatch_environment({"execution_profile": "LOCAL_VALIDATION", "execution_environment": "LOCAL"}),
+            "LOCAL",
+        )
+
+    def test_v419_profiles_reject_contradictory_environments(self) -> None:
+        for dispatch in (
+            {"execution_profile": "WEB_BUILDER", "execution_environment": "LOCAL"},
+            {"execution_profile": "LOCAL_VALIDATION", "execution_environment": "WEB"},
+        ):
+            with self.subTest(dispatch=dispatch):
+                with self.assertRaises(ValueError) as caught:
+                    project_dispatch_environment(dispatch)
+                self.assertIn(ENVIRONMENT_PROFILE_CONTRADICTION, str(caught.exception))
 
 
 class MultiActiveProjectionTests(unittest.TestCase):

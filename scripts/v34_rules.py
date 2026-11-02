@@ -511,13 +511,15 @@ DEFAULT_COMPATIBILITY_GROUP = "__default__"
 
 ENVIRONMENT_PROFILE_CONTRADICTION = "ENVIRONMENT_PROFILE_CONTRADICTION"
 
-# A7: the historical profiles whose unambiguous legacy mapping projects the
-# coarse execution environment. PLATFORM_VALIDATOR/CLOSURE_VALIDATOR are
-# environment-orthogonal (A9/A10) and map through the explicit field only.
+# A7: legacy and v4.19 profiles with unambiguous environment projection.
+# PLATFORM_VALIDATOR/CLOSURE_VALIDATOR remain environment-orthogonal (A9/A10)
+# and map through the explicit field only.
 EXECUTION_PROFILE_ENVIRONMENTS = {
     "LOCAL_BUILDER": "LOCAL",
     "LOCAL_VALIDATOR": "LOCAL",
     "WEB_REVIEWER": "WEB",
+    "WEB_BUILDER": "WEB",
+    "LOCAL_VALIDATION": "LOCAL",
 }
 
 ENVIRONMENT_ORTHOGONAL_PROFILES = ("PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR")
