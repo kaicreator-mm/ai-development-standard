@@ -533,6 +533,8 @@ class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
             _dispatch_fixture(execution_profile="BUILDER"),
             _dispatch_fixture(execution_profile="LOCAL_REVIEWER"),
             _dispatch_fixture(role="builder", execution_profile="WEB_REVIEWER"),
+            _dispatch_fixture(role="validator", execution_profile="WEB_BUILDER", requested_head_sha="e4dee733068e91e4a3e07f0b0e7a56129c2779bf", validation_profile="concern"),
+            _dispatch_fixture(role="builder", execution_profile="LOCAL_VALIDATION"),
         ):
             with self.subTest(value=value):
                 self.assertTrue(validate_subset(value, schema))
@@ -550,13 +552,17 @@ class T06BSerializedAdmissionSchemaTests(unittest.TestCase):
         # Never normalize or rewrite the already-emitted invalid record in place.
         self.assertEqual(invalid_historical["execution_profile"], "BUILDER")
         self.assertNotEqual(corrected["dispatch_id"], invalid_historical["dispatch_id"])
+        web_builder = _dispatch_fixture(execution_profile="WEB_BUILDER", execution_environment="WEB")
+        self.assertEqual(validate_subset(web_builder, schema), [])
+        local_validation = _dispatch_fixture(role="validator", execution_profile="LOCAL_VALIDATION", requested_head_sha="e4dee733068e91e4a3e07f0b0e7a56129c2779bf", validation_profile="concern", execution_environment="LOCAL")
+        self.assertEqual(validate_subset(local_validation, schema), [])
 
     def test_a11_profile_enum_and_role_couplings_are_byte_stable(self) -> None:
         schema = load_schema("dispatch.schema.json")
         assert_supported_schema(schema)
         self.assertEqual(
             schema["properties"]["execution_profile"]["enum"],
-            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"],
+            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR", "WEB_BUILDER", "LOCAL_VALIDATION"],
         )
         couplings = sorted(
             json.dumps(c, sort_keys=True)
@@ -702,6 +708,24 @@ class T06BEnvironmentProfileConformanceTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             project_dispatch_environment(contradicted)
         self.assertIn("ENVIRONMENT_PROFILE_CONTRADICTION", str(caught.exception))
+
+    def test_v419_profiles_project_to_their_canonical_environments(self) -> None:
+        web_builder = _dispatch_fixture(execution_profile="WEB_BUILDER", execution_environment="WEB")
+        self.assertEqual(self._verdict(web_builder), [])
+        self.assertEqual(project_dispatch_environment(web_builder), "WEB")
+        local_validation = self._validator_dispatch(execution_profile="LOCAL_VALIDATION", execution_environment="LOCAL")
+        self.assertEqual(self._verdict(local_validation), [])
+        self.assertEqual(project_dispatch_environment(local_validation), "LOCAL")
+
+    def test_v419_profiles_reject_contradictory_explicit_environments(self) -> None:
+        web_builder = _dispatch_fixture(execution_profile="WEB_BUILDER", execution_environment="LOCAL")
+        local_validation = self._validator_dispatch(execution_profile="LOCAL_VALIDATION", execution_environment="WEB")
+        for value in (web_builder, local_validation):
+            self.assertEqual(self._verdict(value), [])
+            with self.subTest(profile=value["execution_profile"]):
+                with self.assertRaises(ValueError) as caught:
+                    project_dispatch_environment(value)
+                self.assertIn("ENVIRONMENT_PROFILE_CONTRADICTION", str(caught.exception))
 
     def _validator_dispatch(self, **overrides) -> dict:
         value = _dispatch_fixture(
