@@ -71,6 +71,8 @@ docs/product-exploration/<exploration-id>/
 5. **结论与限制**：`PASS | FAIL | PARTIAL | BLOCKED | NOT_RUN` 是**该实验的描述性结果**（不创造 ADS 新 Gate），附 What was proven / What was NOT proven、剩余 P0/P1、外部审核/许可证状态和下一项**最小**证据。
 6. **历史与处理**：Base/Final commit/blob、研究 rX、修复理由、失效旧证据、新结果，必要的 Owner/Reviewer 独立判断记录。无 source/环境真实性时，不得把自审核或 PR 合并升级成验证 PASS。
 
+**执行环境选择应由实验内容决定，不以工具的大版本制造无关门禁（DKE 实践增量）**：纯 Product 探索的领域文本、Element/CQ/SAP、数据一致性与证据检查，关注真实输入/实际执行/反例/Exact SHA，而不要求 Node 24、固定 Node 版本或特定 Host。可选择当前可用的任一**兼容**执行方式，并记录真实执行器、转换/适配器、已执行的内容以及未覆盖的 Node loader/原生差异；`script exists`、脚本死代码、未经执行的检查不能算 PASS。仅在验证目标自身包含 Node API/Runtime/CI 兼容性，或其他现行 Stage 2/发布门禁明确要求时，才把特定运行时及版本作为**该项技术验证**的变量；这不废止 ADS #1359 对实际工程/CI 的既有要求。变更脚本逻辑需针对变化部分重验，但**不得只因执行者使用另一 Node 版本而自动派发验证**。这一经验来自 [DKE #209](https://github.com/kaicreator-mm/domain-forge/issues/209) 的源码级别审计（曾发现 `expandImpact` 死代码）及后续 V8 有界回归，详见反馈 #1361；不将其升级为新机器 Gate。
+
 **反例是必需的真实性控制**：假设若被推翻，应如实保留失败输入和反证，不允许通过删除失败样本、修改 preregistered 问题、反复调 prompt 到 PASS 而隐瞒试次；重大真实性/隐私/外部副作用风险按现有 ADS 门禁处理。
 
 ## 4. 主 Issue 的最小索引信息与停止决策
