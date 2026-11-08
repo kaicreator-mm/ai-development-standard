@@ -969,7 +969,7 @@ class FrozenGuardTests(unittest.TestCase):
         assert_supported_schema(schema)
         self.assertEqual(
             schema["properties"]["execution_profile"]["enum"],
-            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR"],
+            ["LOCAL_BUILDER", "LOCAL_VALIDATOR", "WEB_REVIEWER", "PLATFORM_VALIDATOR", "CLOSURE_VALIDATOR", "WEB_BUILDER", "LOCAL_VALIDATION"],
         )
         couplings = [
             c for c in schema["allOf"] if "execution_profile" in c.get("if", {}).get("properties", {})
