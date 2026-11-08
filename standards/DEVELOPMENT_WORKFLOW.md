@@ -741,6 +741,7 @@ gate applicability 或 authority ambiguity（→ 上一节）
 
 - 对跨组件/公共契约、持续复现或明显影响关键用户路径的 root class，owning repair decision SHOULD 在现有 Issue/PR 中简短比较 **局部实现修复、共享适配/成熟依赖、合法契约/架构修订或明确允许的延期**，根据可证伪的第一处因果偏差和对下游消费者、验证/复审、集成、维护总成本的影响选择 **minimum sufficient correction**；不能以 diff 最小、DAG 不变或已有分支写集小作为先验的修复正确性证明。普通单点可复现 Bug 可直接 Fast Path，**不新增 Architecture Review Gate**。参考 [DomainHarness A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) 与 [Host CAS adapter #1394](https://github.com/kaicreator-mm/domain-harness/issues/1394)。
 - 同一 root class 的反复 Review/repair SHOULD 复用同一 concern 的现有 Issue/PR 和 exact-SHA finding/attempt lineage；只有出现实际独立 source owner/Task/环境 obligation 时才另建 Issue。减少跟踪对象不允许合并角色、伪造独立 Review、遗漏 required CI/Validation、转移旧 SHA PASS 或掩盖安全关键问题。参考 [DomainHarness #363](https://github.com/kaicreator-mm/domain-harness/issues/363)、[#378](https://github.com/kaicreator-mm/domain-harness/issues/378) 与 [#586](https://github.com/kaicreator-mm/domain-harness/issues/586)。
+
 ### Non-converging repair：escalation，而非 universal retry cap
 
 - 当同一 root class 反复复现，或新的 repair attempt 未带来新的 root-class 归因、新的可证伪证据或新的 disposition 时，即构成 non-converging；MUST escalation/adjudication，MUST NOT 无界循环。
