@@ -90,7 +90,36 @@ Related Product/Architecture/Task Issue refs
 
 进度不得简单按实验/PR 数相加。建议同时记录 `hypotheses_resolved / hypotheses_in_scope`、关键 UNKNOWN 是否减少、失败假设数量、实际成本与迭代次数（**仅在真实测量时报告数值**），避免通过增加活动数量制造假进展。
 
-## 5. 实践反馈与渐进修订（不追溯改写原证据）
+## 5. 跨场景复用证据组织方法的边界（实践建议，不新增 Stage 2 权威）
+
+“现有主 Issue + Git exact version evidence + 按需具体 Issue”是一种可在不同阶段**借鉴的证据组织方式**，但本标准提案的正式适用范围仍是 Stage 1 Product Exploration。另一个规范版本的 Conformance Demo 可以借鉴索引、Git 修订和证据依赖关系，**不能**因此规避其既有 Requirements/MUST、Stage 2 Architecture Research Demo 独立 Issue/分支/E1–E3、独立 Review、L2 Freeze、CI 或 Release Gate。研究结果、原生符合性与发布资格由各自 owner 决定。只因新的 Demo 修订、失败测试或改了文件，不自动创建 Issue、产品 SemVer 或 Frozen Task DAG；适用规范要求的具体 Issue 仍必须创建。
+
+### 5.1 证据维度应区分，而非压成单一 PASS
+
+按研究的重要性与实际适用范围，报告可分别注明下列**描述性维度**，并明确“已证明 / 未证明”；这不是新增强制填写的 ADS Schema、状态或额外审批门禁。
+
+| 维度 | 所能证明 | 不得自动推导 |
+| --- | --- | --- |
+| 原始来源 / provenance | pinned source 与输入范围真实、可回读 | 原始来源足以赋予业务或语义判断的权威 |
+| 语义 / 关系 / 反证 | 约束、关系、推导和 UNKNOWN 在特定样本内被检验 | 来源端点可信就代表派生关系被接受或能泛化 |
+| 执行 / Consumer / native proof | 真实程序和所记录环境、正反例在确切版本运行 | Mock/结构 PASS 等于真实消费资格，或旧 SHA PASS 继承到新 HEAD |
+| 独立判断 / authority | 相应 Reviewer/Owner 真实确认的确切范围与决定 | Source SHA、LLM 自评或 CI SUCCESS 自动变成 Claim、Effect、Freeze、Release |
+
+- 同一 exact HEAD/TREE 的多个 CI context 要保留**逐项状态与 URL**。集成 FAIL、Node24 PASS、通用 verify PASS 只证明后两项通过，不能给整轮 PASS；无步骤日志只能标明失败原因 UNKNOWN，不能凭猜测将其归因为基础设施或代码。
+- 不同版本引用历史 PASS 时只复用其原始 source/环境/范围事实；新合约、新原生入口、新 Evidence 义务或新版本要进行实际差异复核。失败、UNKNOWN、早期反例和失效回执不得被新报告覆盖。
+- 负面测试必须断言预期的拒绝语义。Runner 自身崩溃、断言未运行或超时不算负例通过。修复最早的真实阻塞后，在同一 Writer/写集内重跑受影响范围；遵循 ADS #1359，不派发 validation-only 往返。
+
+### 5.2 用反事实检查拆分颗粒度，避免证据形式主义
+
+当 Element、知识关系或实验主题被分出单独范围，只承载一条边、一组 UNKNOWN 或单一薄包装时，可以在**同一 pinned 真实输入**上比较保留 Parent 与独立 Split。必须保持原有知识、关系、约束、来源、负例与未知覆盖；“owner map 完整”不是拆分合理性的充分条件。更少的 Element 数不是普遍 KPI，仍须证明独立语义责任。多个证据问题之间可画 Evidence-Question Dependency Map，用于确定最小下一项试验、可并行研究和前置证据；它**不是** Frozen Implementation Task DAG。
+
+### 5.3 DIS v0.2.0 实际实践（限定的反例，不是通用效益证明）
+
+[DomainHarness #1499](https://github.com/kaicreator-mm/domain-harness/issues/1499)复用现有版本主验证 Issue，Product/L1 由 [#1496](https://github.com/kaicreator-mm/domain-harness/issues/1496) 持有、Demo/Matrix/CI 在 [Draft PR #1497](https://github.com/kaicreator-mm/domain-harness/pull/1497) 的 Git 中追踪，未创建新的 Demo 主 Issue。R11 Exact HEAD 4632d5e0b331f0119da0c8d78249b7c1437856a1 / TREE 8f347807680db455cc8627590bc3c60778b9e953 的三个观测分别是 [DIS integration FAILURE](https://ci.kaicreator.com/repos/18/pipeline/2232/1)、[Node24 SUCCESS](https://ci.kaicreator.com/repos/18/pipeline/2232/2)、[generic verify SUCCESS](https://ci.kaicreator.com/repos/18/pipeline/2232/3)。当时 CORE-003 仍为 PARTIAL，R11 无新的成功收据；status-only 不能说明集成失败根因。该案例提示 Source Pin、typed outcome、尚未经独立校验的 Evidence 与真正的 KDP Effect 权威不可互相替代。
+
+案例只证明**组织方式可用于第二种验证场景，尚不证明效率优势**。若节省的时间、审查负担、工具成本没有实测，标记 NOT_MEASURED。未来如需把跨阶段模式变为强制规范，须经独立 scope/owner 审核，不可依靠此候选参考静默改变 Stage 2 门禁。
+
+## 6. 实践反馈与渐进修订（不追溯改写原证据）
 
 **主入口**：[ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361)。后续 DKE/Tally/DomainHarness/Runx 等项目可在自身原始 Issue/PR 下保留完整资料，仅在 ADS issue 内记录 `project; exact source; hypothesis; outcome; limitation; process-cost(if measured); what can generalize; counterexample; proposed standard clause`。
 
@@ -99,7 +128,7 @@ Related Product/Architecture/Task Issue refs
 - **经验入 ADS 有边界**：实践反馈可以更新参考案例；新增强制规则/机器契约/权威变化需经原有 ADS Product/L2/Review/Release 流程正式处理。不能仅凭单例把样板升级为普遍必须。
 - **Delivery-First**：进入实际 Builder/Reviewer/Repairer/Local/CI 执行时遵循 [ADS #1359](https://github.com/kaicreator-mm/ai-development-standard/issues/1359) 的单一 Writer、合并修复/验证和 PASS-to-Next；探索本身无权改写现有合法 Task DAG 或 Release 权威。
 
-## 6. 实例：DKE R2 × Tally v2.1.1 的实际证据
+## 7. 实例：DKE R2 × Tally v2.1.1 的实际证据
 
 - DKE R2 Draft [DomainForge PR #208](https://github.com/kaicreator-mm/domain-forge/pull/208)，DomainForge 问题 #207；Tally 原始实验 [#299](https://github.com/kaicreator-mm/tally/issues/299) 的知识图谱是唯一输入权威。
 - [真实 Tally 图谱纵切 Demo 报告](https://github.com/kaicreator-mm/domain-forge/blob/product/dke-0.0.1-candidate-r1/docs/standards/dke/DKE-0.0.1/demos/tally-v2.1.1/REPORT.md) 提供可追溯数据：Tally exact commit `3e94685ca57a4b7258988826697af1c1c3a6b3c8`、806 非图根记录、6 条 Claim 的候选 Element 范围、S2/S3/S4 的人工引导回退记录、源验证和故障注入。

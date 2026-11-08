@@ -23,6 +23,9 @@
 - Unresolved UNKNOWN / limitations:
 - Next smallest evidence that could change the Product decision:
 - Reuse existing exact evidence instead of rerunning unchanged checks:
+- Evidence dimensions when relevant: source/provenance, derived semantic claims, actual consumer execution, independent Owner judgment (do not collapse to one PASS):
+- If CI ran, exact HEAD/TREE and each required context status; missing logs and unrun cases marked UNKNOWN/NOT_RUN, no old PASS inheritance:
+- Optional anti-split counterfactual when Element granularity is disputed (parent vs independent scope on same pinned input):
 
 ## Owner disposition（仅记录现有 Product authority 的真实决定）
 - Recommendation only: ADOPT / REVISE / CONTINUE / REJECT
