@@ -132,6 +132,16 @@ Idea/Intent
 - **Product Freeze** 是 Product authority 的显式冻结行为，把一个确切 Product subject 绑定为冻结记录；与本文 “PRD / Scope Freeze” 是同一事件，不是新增 gate。Reviewer 可以推荐 Freeze，但 Product Review PASS、研究结论或 Execution Agent 的意见都只是 evidence/judgment，本身不产生冻结效力，不能替代或自动产生 Product Freeze；只有 Product authority（或其授权的 routing rule）授权该 transition 时，Controller 才能确定性地记录 Freeze。
 - **Architecture Research / Research Demo 属于 Stage 2**，不得前移到 Product Freeze 之前充当产品发现（product discovery）的替代品。Product Freeze 后若 Architecture Research 发现产品范围不可行/矛盾，走既有 Product thaw/contradiction 路径。
 
+#### Stage 1 — Product Exploration 的轻量证据组织（按需，ADS #1361 候选）
+
+当多个 Product Research 问题无法依靠已有证据解决、需要重复 Demo/真实实验来判断是否值得构建产品时，SHOULD **优先复用一个现有 Product Issue 作为探索索引**；没有合适索引时 MAY 建一个主 Issue，记录问题/可证伪假设、下一个最小证据、真实进展、阻塞和 Owner 决策。**实验本身的输入、协议、Demo 代码、正反例、真实运行收据、失败记录、报告和修订历史存放 Git 版本化内容；Issue 只索引这些 exact refs**。参见 [Product Exploration Evidence Reference](../references/PRODUCT_EXPLORATION_EVIDENCE_REFERENCE.md) 和 [可选索引模板](../templates/product-exploration-index.md)。
+
+- **具体执行 Issue 按需创建**：跨项目/责任方、独立写集或外部副作用、高风险/阻塞/并行工作需要明确独立任务或适用规范本身要求时才创建；不能为了每次实验 r0/r1 创建 Issue，也不能因为试验 r1 创建新的产品 `vX.Y.Z`。研究分支只作隔离，**实际结论须绑定 Git commit/tree/blob、输入/执行回执**，不能只留会移动的 branch head。
+- **不强制**：单问题、低风险、已有等价证据或 `NO_RESEARCH_REQUIRED` 时保持 inline；不得机械要求每个产品都建立探索索引、Demo、PR、LLM Critic 或新的阶段。既有必需 Product Evidence/Review/Freeze 仍按原 owner 和风险适用性执行。
+- **真实证明边界**：每个实质性实验声明 Product question、预期与反证、数据/实际环境版本、positive/negative/UNKNOWN、观察结果和 `What was proven / What was NOT proven`；未运行须 `NOT_RUN`，模拟/结构 PASS 不能被称为真实业务资格或 Product Freeze。建议 `ADOPT | REVISE | CONTINUE | REJECT` 仅作为自然语言研究结论，**不是 ADS 新 machine Gate/Task status**，也不自行发起 Freeze。
+- **Stage 1/2 不越界**：此模式是 Stage 1 Product Research 的组织方法，**不把 Stage 2 Architecture Demo 提前**。若 Frozen Product 后的 Architecture UNKNOWN 需要研究，必须按 `ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` 已有 Research Demo Issue/isolated branch、E1/E2/E3 和 L2 Review 规则执行。其研究发现否定 Frozen Scope 时复用既有 Thaw/Contradiction owner。
+- **持续演化**：通过 [ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361) 归集来自项目的实际精确证据、失败反例、Issue/branch 额外成本及最小修订建议；具体 Demo 仍由产生实验的项目/版本记录持有。若产物进入 Task 实施则遵循 [ADS #1359](https://github.com/kaicreator-mm/ai-development-standard/issues/1359) 的 Delivery-First；不替代 Frozen Task DAG、Claim、CI、独立 Review 或 Release 权威。
+
 PRD / Scope Freeze 应明确：
 
 - 本版本解决的问题；
@@ -729,6 +739,8 @@ gate applicability 或 authority ambiguity（→ 上一节）
 - 若 root class 属于当前 Task write set 之外的所有者（产品语义、架构、公共 contract、其它组件、环境/工具链），MUST 把 repair 路由到该 owner 的既有路径（Product thaw/contradiction、Architecture Amendment、Interface Compatibility、环境 owner 等）；MUST NOT 在同一 PR 内静默扩大 scope，MUST NOT 就地重定义更高 authority。
 - repair 沿用既有 routing 与状态（Stage 4 的 Reviewer route 与 validation repair 路径）；本节不新增 route、workflow state 或 gate state。
 
+- 对跨组件/公共契约、持续复现或明显影响关键用户路径的 root class，owning repair decision SHOULD 在现有 Issue/PR 中简短比较 **局部实现修复、共享适配/成熟依赖、合法契约/架构修订或明确允许的延期**，根据可证伪的第一处因果偏差和对下游消费者、验证/复审、集成、维护总成本的影响选择 **minimum sufficient correction**；不能以 diff 最小、DAG 不变或已有分支写集小作为先验的修复正确性证明。普通单点可复现 Bug 可直接 Fast Path，**不新增 Architecture Review Gate**。参考 [DomainHarness A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) 与 [Host CAS adapter #1394](https://github.com/kaicreator-mm/domain-harness/issues/1394)。
+- 同一 root class 的反复 Review/repair SHOULD 复用同一 concern 的现有 Issue/PR 和 exact-SHA finding/attempt lineage；只有出现实际独立 source owner/Task/环境 obligation 时才另建 Issue。减少跟踪对象不允许合并角色、伪造独立 Review、遗漏 required CI/Validation、转移旧 SHA PASS 或掩盖安全关键问题。参考 [DomainHarness #363](https://github.com/kaicreator-mm/domain-harness/issues/363)、[#378](https://github.com/kaicreator-mm/domain-harness/issues/378) 与 [#586](https://github.com/kaicreator-mm/domain-harness/issues/586)。
 ### Non-converging repair：escalation，而非 universal retry cap
 
 - 当同一 root class 反复复现，或新的 repair attempt 未带来新的 root-class 归因、新的可证伪证据或新的 disposition 时，即构成 non-converging；MUST escalation/adjudication，MUST NOT 无界循环。
