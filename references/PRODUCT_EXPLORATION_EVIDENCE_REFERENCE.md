@@ -121,6 +121,18 @@ Related Product/Architecture/Task Issue refs
 
 案例只证明**组织方式可用于第二种验证场景，尚不证明效率优势**。若节省的时间、审查负担、工具成本没有实测，标记 NOT_MEASURED。未来如需把跨阶段模式变为强制规范，须经独立 scope/owner 审核，不可依靠此候选参考静默改变 Stage 2 门禁。
 
+### 5.4 DKE R30 实际独立来源审查的三类非结构性反例（2026-11-09）
+
+实践来源：[DomainForge #209 R30 独立 Review 回执](https://github.com/kaicreator-mm/domain-forge/issues/209#issuecomment-6727748859)、实验精确 HEAD `e81bac13894ec5a38ade66e0598fc13ddcef3d04`、[原始来源优先冻结分析](https://github.com/kaicreator-mm/domain-forge/issues/209#issuecomment-6727585553) 和独立 V8 执行收据。原始 Tally 807 节点图谱 Blob `b6dc804d3ccc3aac7ce818533c2948f54b34644a` 不变，旧 R30 的 27 项负例已通过且**未重新运行**；独立审核在受限语义层新执行 32/32 断言和 21/21 反例拒绝。这不是人类领域 Oracle，也没有使 SAP Qualified。
+
+- **同一官方来源内部互相矛盾**：Cloudflare 2025-06-12 事故报道的摘要为 2h28m（148 分钟），而同篇 UTC 时间线 17:52–20:28 相差 156 分钟，差异 8 分钟。源资料可访问、来源组织可信、链路完整，也不能自动选择其中一个作为合格的唯一事实；应保留两段准确来源定位与 `SOURCE_INTERNAL_CONFLICT/UNKNOWN`，必要时交来源所有者裁决。
+- **同发布方错误 Locator**：原 R30 只验证 Evidence→Locator→Source 可达且属于 CF 或 GH，错误地把 Cloudflare 事故 Overview 当作后续 Remediation/Redesign 的证据片段可能仍然结构绿。一个高价值负例应**交换同来源但不同章节/时期的有效 Locator**，逐个检查被引用 Evidence 的语义与适用期。此处的结构/有界语义修复不等于无限自然语言蕴涵或专业资格。
+- **“数据未丢失”与“每次写入成功”不是同一命题**：Cloudflare 的事故范围内无数据丢失陈述，与 SSH 命令日志未保存、SCIM 身份更新失败并存；同理，GitHub 2018 16:24 MySQL 回切、16:45 过期 webhook payload 丢弃、23:03 绿灯是不同恢复阶段。不能跨产品、跨时间将来源结论推导为所有写入/事件送达成功。
+
+**复用纪律**：做独立来源优先审查时，先独立写出 Claim/CQ/Element/反例并记录 GitHub 源码引用，**再**查看作者的候选判断；用户简报已透露的事实应如实标注部分非盲。R30 的 `SOURCE_REVIEW=PASS_WITH_LIMITATIONS`、`SAP_QUALIFICATION=BLOCK` 与并行 R31 的只读原生 Function 执行成功相互独立；R31 DIS HEAD `fde77c6cca9c60985eeb86f8ebc88a00c9cb40fd` 的 Woodpecker 集成/Min-Node 两项成功而通用 Verify 取消，**不是 3/3 全绿**。没有实际独立 Oracle/来源 Owner 资格，就不能把 V8 通过、原生消费或报告声称升级为正式知识资格。
+
+这只是对 §5.1 来源/语义/独立资格分维度方法的**有来源实践补充**，不新增强制安全门、每 Demo Issue、外部 Reviewer 配额或 Node 大版本要求。更一般的过程改善反馈留在 [ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361#issuecomment-6727766559)，未来是否形成规范条款仍需既有 Product/L2/Review 权威。
+
 ## 6. 实践反馈与渐进修订（不追溯改写原证据）
 
 **主入口**：[ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361)。后续 DKE/Tally/DomainHarness/Runx 等项目可在自身原始 Issue/PR 下保留完整资料，仅在 ADS issue 内记录 `project; exact source; hypothesis; outcome; limitation; process-cost(if measured); what can generalize; counterexample; proposed standard clause`。
