@@ -64,6 +64,28 @@ Selection minimizes *observed or estimated total* `web + local + CI + handoff + 
 
 Existing frozen Web Builder/Local Validation Product/L2/DAG in #1353 are preserved as historical exact subjects. This R0 proposes an **explicit prospective compatibility disposition**, because their text describes ordinary new Web Builder as a global default whereas #1359 and current Owner intent require selection by total cost and capability. The profile bindings and validator-only semantics are still valid; changing a frozen Product rule requires the normal Product Review + revised exact Freeze/derived L2/DAG process. A new Product R0 does not silently thaw or authorize PR #1358 source changes.
 
+### 3.1 Prospective amendment to frozen #1353 mode policy (requires new authority)
+
+Do **not** change the historical #1353 Freeze subject in-place. After independent Product Review, a source-bound prospective amendment should replace only the **global executor-default restriction**, not the new Dispatch profile identities or their role bounds:
+
+| Existing scoped rule in #1353/T01 | Proposed revised general v4.19 rule |
+| --- | --- |
+| Ordinary *new* implementation defaults to `WEB_BUILDER`; `LOCAL_BUILDER` only for old pins or grandfathered work | Ordinary work selects `WEB_BUILDER`, `LOCAL_BUILDER` or another currently lawful capable Builder based on total cost, actual environment, evidence needs, continuity and risk; for clearly cheap Web-eligible Tasks the **Web-primary + Local Validation** mode is preferred |
+| `LOCAL_VALIDATION` may validate exact SHA and may not edit source | **Unchanged.** It cannot repair/commit, including when an environment test finds a defect |
+| Historical Dispatch role/profile coupling and protected Claim key | **Unchanged.** Profile/environment are never Claim-key or role authority |
+| CI-first and required exact-source gates | **Unchanged.** Avoid redundant Local only if the necessary Web/CI evidence genuinely satisfies the obligation |
+
+**Acceptance examples for Product/L2 revision:**
+
+- Web can finish a bounded source-only Task; actual Local environment unnecessary → select Web-primary, no Local dispatch; positive.
+- Local OS/device is required for both implementation and immediate repair → an authorized `LOCAL_BUILDER` with valid accepted Claim/Task Pack may be selected from the start; positive, not a historical-only exception.
+- A Web-authored source candidate only needs Windows/physical validation → `LOCAL_VALIDATION` on exact HEAD may run read-only; positive.
+- Validation finds a defect but `LOCAL_VALIDATION` directly edits a file → reject. Reassign via legal Builder authority and CAS, or have the current authorized Builder repair; do not silently change Validator's role.
+- A workflow assumes Web cheaper without observed cost evidence and blocks a qualified Local Builder despite repeated expensive handoff → classify as strategy-selection defect; costs or comparative evidence remain UNKNOWN if not measured.
+- Profile changes collide on the same protected Claim key/write set, or an old v4.18 Task is retroactively rewritten → reject under inherited guards.
+
+**Source impact after revised Freeze:** the two texts in `standards/EXECUTION_PACK_STANDARD.md` and `standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md` within T01's seven-path candidate require review and scoped repair; `WEB_BUILDER` / `LOCAL_VALIDATION` schema enum, semantic projection, legacy mappings and protected-key tests should remain additive unless actual conformance reveals a separate defect. PR #1358's old exact-SHA validation does not transfer if changed. Any new task/writer authorization must follow the original Task/DAG amendment owner. No schema or lifecycle expansion is proposed.
+
 ## 4. Version acceptance and boundaries
 
 A qualified v4.19 delivery should demonstrate all of the following, with explicit current exact refs:
