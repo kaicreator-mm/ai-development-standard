@@ -19,6 +19,8 @@ Ask:
 4. Where should multiple lanes converge into an explicit central wiring/integration Task rather than editing the same files concurrently?
 5. Are any apparent lanes actually false parallelism because they share unresolved architecture, overlapping write sets, mutable shared contract ownership, an unmerged code baseline, or the same integration authority?
 6. Can unrelated work be moved out of a serial chain without weakening dependency, Review, Validation, or Release truth?
+7. For a material packaging/runtime refactor, have we checked available cheap installed-entrypoint/import graph, manifest/generated-file owners, selected CI toolchain and earliest executable public consumer seam? If not feasible yet, which legitimate integration owner carries the material UNKNOWN?
+8. Is an apparent predecessor really necessary before writing independent source, or only before final compatibility, physical validation or Release convergence? Preserve native blocked_by and accepted Claim until formally changed.
 
 Use lane names that describe the real concern boundary. Examples such as `contract`, `core`, `integration`, `ui`, `validation`, `platform-*`, or domain/component names are guidance, not a mandatory taxonomy.
 
