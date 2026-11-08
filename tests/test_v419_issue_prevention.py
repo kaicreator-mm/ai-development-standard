@@ -109,9 +109,9 @@ class IssuePreventionSourceOnly(unittest.TestCase):
             (root / "tests" / "root.test.ts").write_text("", encoding="utf-8")
             nested = root / "tests" / "execution" / "recovery.test.ts"
             nested.write_text("", encoding="utf-8")
-            expected = {str(p.relative_to(root)) for p
+            expected = {p.relative_to(root).as_posix() for p
                         in root.rglob("*.test.ts")}
-            discovered = {str(p.relative_to(root)) for p
+            discovered = {p.relative_to(root).as_posix() for p
                           in (root / "tests").glob("*.test.ts")}
             self.assertIn("tests/execution/recovery.test.ts", expected)
             self.assertNotIn("tests/execution/recovery.test.ts", discovered)
