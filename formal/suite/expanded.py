@@ -86,7 +86,7 @@ def run_case(case, root, options):
         answers = ANSWERS.findall(result["text"])
         if not isinstance(case["expect"], list) or not case["expect"] or any(x not in ("sat", "unsat") for x in case["expect"]):
             raise ValueError("invalid SMT expected outcome")
-        ok = result["code"] == 0 and answers == case["expect"]
+        ok = result["code"] == 0 and answers == case["expect"] and "(error" not in result["text"].lower()
         actual = {"answers": answers}
     status = ("COUNTEREXAMPLE" if case["purpose"] == "mutation" else "PASS_MODEL") if ok else (
         "NOT_RUN" if result["kind"] == "UNAVAILABLE" else "INCONCLUSIVE" if result["kind"] == "TIMEOUT" else "FAIL")
@@ -134,7 +134,7 @@ def main_v1(options, suite_path, spec):
         alignment = {"status": "STALE", "reason": "Changed-source selection invalidates old source-bound results until new exact source pinned", "baseline_alignment": alignment}
     statuses = {r["status"] for r in results}
     good = bool(results) and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"}) and all(d["status"] == "PASS" for d in differential)
-    verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] == "BLOCKED" else
+    verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
                "INCONCLUSIVE" if not good else "MODEL_AND_SOURCE_PASS" if alignment["status"] == "PASS" else "MODEL_ONLY_PASS")
     if options.strict_source and alignment["status"] != "PASS":
         verdict = "BLOCKED"
