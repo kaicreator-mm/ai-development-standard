@@ -129,6 +129,7 @@ def audit_traceability(spec, index, trace, source_map):
     by_prop = {p["id"]: p for p in index["properties"]}
     by_trace = {p["property_id"]: p for p in trace["properties"]}
     by_source = {s["path"]: s for s in trace["sources"]}
+    source_definitions = {s["path"]: s for s in source_map["sources"]}
     by_case = {c["id"]: c for c in spec["cases"]}
     for p in index["properties"]:
         pid = p["id"]
@@ -149,6 +150,11 @@ def audit_traceability(spec, index, trace, source_map):
         actual = {p["id"] for p in index["properties"] if src in p["sources"]}
         if set(by_source[src]["property_ids"]) != actual:
             raise ValueError("reverse source-property mismatch: " + src)
+        if by_source[src].get("blob") != source_definitions[src].get("blob"):
+            raise ValueError("source provenance blob mismatch: " + src)
+        anchors = by_source[src].get("anchors")
+        if not isinstance(anchors, list) or not anchors or any(not isinstance(a, str) or not a for a in anchors):
+            raise ValueError("missing/invalid trace source anchors: " + src)
     for c in spec["cases"]:
         if c["property_id"] not in by_prop:
             raise ValueError("unmapped case: " + c["id"])
@@ -169,15 +175,28 @@ def audit_traceability(spec, index, trace, source_map):
             "case_count": len(cases), "source_count": len(sources)}
 
 
+def combine_source_anchors(source_map, trace):
+    """Require both source-map anchors and supplementary trace-rule anchors."""
+    trace_by_path = {s["path"]: s for s in trace["sources"]}
+    merged = dict(source_map)
+    merged["sources"] = [
+        dict(s, anchors=list(dict.fromkeys(s["anchors"] + trace_by_path[s["path"]]["anchors"])))
+        for s in source_map["sources"]
+    ]
+    return merged
+
+
 def main_v1(options, suite_path, spec):
     root = suite_path.resolve().parents[2]  # formal/v4.19/r1/suite.json -> formal/
     index_path = safe_path(root, spec["source_index"], ".json")
     index = json.loads(index_path.read_text("utf8"))
     source_map = json.loads(safe_path(root, spec["source_map"], ".json").read_text("utf8"))
     traceability = {"status": "NOT_RUN"}
+    effective_source_map = source_map
     if spec.get("traceability"):
         trace = json.loads(safe_path(root, spec["traceability"], ".json").read_text("utf8"))
         traceability = audit_traceability(spec, index, trace, source_map)
+        effective_source_map = combine_source_anchors(source_map, trace)
     if spec["candidate_head"] != source_map["candidate_head"] or spec["candidate_head"] != index["candidate_head"]:
         raise ValueError("Exact SHA discrepancy among suite, index, source-map")
     props = {p["id"]: p for p in index["properties"]}
@@ -216,7 +235,7 @@ def main_v1(options, suite_path, spec):
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
     differential = solver_differential(selected, results)
-    alignment = source_alignment(options.source_checkout, source_map)
+    alignment = source_alignment(options.source_checkout, effective_source_map)
     if options.changed_source:
         alignment = {"status": "STALE", "reason": "Changed-source selection invalidates old source-bound results until new exact source pinned", "baseline_alignment": alignment}
     statuses = {r["status"] for r in results}
@@ -242,6 +261,8 @@ def main_v1(options, suite_path, spec):
         "candidate_head": spec["candidate_head"], "candidate_status": "PROSPECTIVE_UNFROZEN",
         "suite_sha256": sha256(suite_path), "source_index_sha256": sha256(index_path),
         "source_map_sha256": sha256(safe_path(root, spec["source_map"], ".json")),
+        "traceability_sha256": (sha256(safe_path(root, spec["traceability"], ".json"))
+                                 if spec.get("traceability") else None),
         "source_alignment": alignment, "tool_versions": tools, "model_verdict": verdict,
         "traceability_audit": traceability,
         "model_input_alignment_before": model_before,

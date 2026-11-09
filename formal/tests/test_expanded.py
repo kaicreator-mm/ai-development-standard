@@ -76,10 +76,10 @@ class ExpandedTests(unittest.TestCase):
     def test_traceability_bidirectional_and_dependency_cycle(self):
         spec={"candidate_head":"c", "cases":[{"id":"case", "model_id":"M", "property_id":"P"}]}
         index={"candidate_head":"c","properties":[{"id":"P","model_id":"M","sources":["a"]}]}
-        source={"candidate_head":"c","sources":[{"path":"a"}]}
+        source={"candidate_head":"c","sources":[{"path":"a","blob":"a"*40,"anchors":["rule"]}]}
         trace={"subject_head":"c",
                "properties":[{"property_id":"P","case_ids":["case"],"source_paths":["a"]}],
-               "sources":[{"path":"a","property_ids":["P"]}]}
+               "sources":[{"path":"a","property_ids":["P"],"blob":"a"*40,"anchors":["rule","extra"]}]}
         self.assertEqual(runner.audit_traceability(spec,index,trace,source)["status"],"PASS")
         broken=json.loads(json.dumps(trace))
         broken["sources"][0]["property_ids"]=[]
@@ -89,6 +89,16 @@ class ExpandedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"invalid dependency"):
             runner.audit_traceability(spec,index,trace,source)
         index["properties"][0]["depends_on"]=[]
+        merged=runner.combine_source_anchors(source,trace)
+        self.assertEqual(merged["sources"][0]["anchors"],["rule","extra"])
+        corrupted=json.loads(json.dumps(trace))
+        corrupted["sources"][0]["blob"]="0"*40
+        with self.assertRaisesRegex(ValueError,"provenance blob mismatch"):
+            runner.audit_traceability(spec,index,corrupted,source)
+        corrupted=json.loads(json.dumps(trace))
+        corrupted["sources"][0]["anchors"]=[]
+        with self.assertRaisesRegex(ValueError,"trace source anchors"):
+            runner.audit_traceability(spec,index,corrupted,source)
         trace["subject_head"]="old"
         with self.assertRaisesRegex(ValueError,"candidate SHA"):
             runner.audit_traceability(spec,index,trace,source)
