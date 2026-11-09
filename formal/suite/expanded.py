@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 from provenance import model_alignment
 from differential import solver_differential
+from toolchain import toolchain_alignment
 
 ANSWERS = re.compile(r"^(sat|unsat|unknown)$", re.MULTILINE)
 STATES = re.compile(r"(\d+) states generated, (\d+) distinct states found")
@@ -220,14 +221,17 @@ def main_v1(options, suite_path, spec):
     model_inputs = {str(suite_path.resolve().relative_to(root)),
                     spec["source_index"], spec["source_map"],
                     "suite/run.py", "suite/expanded.py",
-                    "suite/provenance.py", "suite/differential.py"}
+                    "suite/provenance.py", "suite/differential.py",
+                    "suite/toolchain.py", "tools/inventory.json"}
     if spec.get("traceability"):
         model_inputs.add(spec["traceability"])
     for case in selected:
         model_inputs.add(case["model"])
         if case.get("config"):
             model_inputs.add(case["config"])
+    inventory = json.loads(safe_path(root, "tools/inventory.json", ".json").read_text("utf8"))
     model_before = model_alignment(root, model_inputs, getattr(options, "model_head", None))
+    toolchain_before = toolchain_alignment(options, selected, inventory)
     # A caller-provided but invalid model pin must not execute or be treated as PASS.
     # A merely missing pin still executes: a definite solver failure must surface as
     # FAIL and must not be masked into BLOCKED by --strict-source (which is enforced
@@ -236,6 +240,7 @@ def main_v1(options, suite_path, spec):
     results = [] if blocked_model else [run_case(c, root, options) for c in selected]
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
+    toolchain_after = toolchain_alignment(options, selected, inventory)
     differential = solver_differential(selected, results)
     alignment = source_alignment(options.source_checkout, effective_source_map)
     if options.changed_source:
@@ -244,10 +249,15 @@ def main_v1(options, suite_path, spec):
     good = bool(results) and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"}) and all(d["status"] == "PASS" for d in differential)
     verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
                "INCONCLUSIVE" if not good else "MODEL_AND_SOURCE_PASS" if alignment["status"] == "PASS" else "MODEL_ONLY_PASS")
-    if verdict == "MODEL_AND_SOURCE_PASS" and model_after["status"] != "PASS":
+    if verdict == "MODEL_AND_SOURCE_PASS" and (model_after["status"] != "PASS"
+                                              or toolchain_before["status"] != "PASS"
+                                              or toolchain_after["status"] != "PASS"):
         verdict = "MODEL_ONLY_PASS"
     if (model_before["status"] in ("FAIL", "BLOCKED") or model_after["status"] in ("FAIL", "BLOCKED")) and verdict != "FAIL":
         verdict = "BLOCKED"
+    if toolchain_before["status"] != "PASS" or toolchain_after["status"] != "PASS":
+        if verdict != "FAIL":
+            verdict = "BLOCKED" if options.strict_source else "INCONCLUSIVE"
     if options.strict_source and (alignment["status"] != "PASS" or model_after["status"] != "PASS") and verdict != "FAIL":
         verdict = "BLOCKED"
     tools = {}
@@ -269,6 +279,9 @@ def main_v1(options, suite_path, spec):
         "traceability_audit": traceability,
         "model_input_alignment_before": model_before,
         "model_input_alignment_after": model_after,
+        "toolchain_alignment_before": toolchain_before,
+        "toolchain_alignment_after": toolchain_after,
+        "tool_inventory_sha256": sha256(safe_path(root, "tools/inventory.json", ".json")),
         "checks": results, "solver_differential": differential,
         "selection": {
             "all_declared_cases_selected": (len(selected) == len(spec["cases"])
@@ -285,7 +298,7 @@ def main_v1(options, suite_path, spec):
         "affected_property_ids": invalidated if options.changed_source else None,
         "coverage": {"modeled_obligations_denominator": len(props),
                      "modeled_obligations_with_selected_cases": len({x["property_id"] for x in results}),
-                     "source_bound_verified_obligations": len({x["property_id"] for x in results}) if alignment["status"] == "PASS" and good else 0,
+                     "source_bound_verified_obligations": len({x["property_id"] for x in results}) if verdict == "MODEL_AND_SOURCE_PASS" else 0,
                      "all_ADS_normative_obligations_denominator": None,
                      "note": "Pilot denominator is declared properties; entire ADS rule inventory not enumerated"},
         "semantic_evaluation": "SELF_CHALLENGED_INDEPENDENT_REVIEW_NOT_RUN",
