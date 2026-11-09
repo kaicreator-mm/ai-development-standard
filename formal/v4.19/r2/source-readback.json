@@ -1,0 +1,56 @@
+{
+  "schema": "ads/formal-source-readback/v1",
+  "target": "PR #1365 prospective candidate",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "observed_pr_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "observed_pr_base": "fbf1a7d49596c549e955ef36949f4110a0da2d33",
+  "pr_state": "open",
+  "verification_method": "GitHub fetch_file at pinned candidate SHA, compare Git blob identity and anchor strings; NOT an independent local checkout",
+  "checks": [
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "expected_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "actual_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "missing_anchors": [],
+      "status": "PASS"
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "expected_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "actual_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "missing_anchors": [],
+      "status": "PASS"
+    },
+    {
+      "path": "schemas/dispatch.schema.json",
+      "expected_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "actual_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "missing_anchors": [],
+      "status": "PASS"
+    },
+    {
+      "path": "scripts/v34_rules.py",
+      "expected_blob": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+      "actual_blob": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+      "missing_anchors": [],
+      "status": "PASS"
+    },
+    {
+      "path": "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+      "expected_blob": "787a412c7eb4bdc09ae4bf9e35e77d266b693825",
+      "actual_blob": "787a412c7eb4bdc09ae4bf9e35e77d266b693825",
+      "missing_anchors": [],
+      "status": "PASS"
+    },
+    {
+      "path": "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+      "expected_blob": "dd72a092ae6226ba2715aaaf37d29b3766a940b1",
+      "actual_blob": "dd72a092ae6226ba2715aaaf37d29b3766a940b1",
+      "missing_anchors": [],
+      "status": "PASS"
+    }
+  ],
+  "verdict": "GITHUB_BLOB_ALIGNMENT_PASS",
+  "independent_git_checkout": "NOT_RUN",
+  "normative_scope": "UNFROZEN_CANDIDATE"
+}
