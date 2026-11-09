@@ -35,7 +35,8 @@
       "id": "ADS-P-DEP",
       "model_id": "ADS-M-DEPENDENCY",
       "sources": [
-        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
       ],
       "hypothesis": "cycle and shared write-set collision prohibited in finite graph",
       "limitations": [
@@ -93,7 +94,8 @@
       "id": "ADS-P-DEP-4",
       "model_id": "ADS-M-DEPENDENCY",
       "sources": [
-        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
       ],
       "hypothesis": "every edge of a four-node DAG has a strictly increasing topological rank",
       "limitations": [

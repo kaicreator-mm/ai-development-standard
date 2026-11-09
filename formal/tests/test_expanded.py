@@ -71,6 +71,26 @@ class ExpandedTests(unittest.TestCase):
             self.assertEqual(report['model_verdict'], 'FAIL')
             self.assertEqual(report['source_alignment']['status'], 'NOT_RUN')
 
+    def test_traceability_bidirectional_and_dependency_cycle(self):
+        spec={"candidate_head":"c", "cases":[{"id":"case", "model_id":"M", "property_id":"P"}]}
+        index={"candidate_head":"c","properties":[{"id":"P","model_id":"M","sources":["a"]}]}
+        source={"candidate_head":"c","sources":[{"path":"a"}]}
+        trace={"subject_head":"c",
+               "properties":[{"property_id":"P","case_ids":["case"],"source_paths":["a"]}],
+               "sources":[{"path":"a","property_ids":["P"]}]}
+        self.assertEqual(runner.audit_traceability(spec,index,trace,source)["status"],"PASS")
+        broken=json.loads(json.dumps(trace))
+        broken["sources"][0]["property_ids"]=[]
+        with self.assertRaisesRegex(ValueError,"reverse source-property"):
+            runner.audit_traceability(spec,index,broken,source)
+        index["properties"][0]["depends_on"]=["P"]
+        with self.assertRaisesRegex(ValueError,"invalid dependency"):
+            runner.audit_traceability(spec,index,trace,source)
+        index["properties"][0]["depends_on"]=[]
+        trace["subject_head"]="old"
+        with self.assertRaisesRegex(ValueError,"candidate SHA"):
+            runner.audit_traceability(spec,index,trace,source)
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'

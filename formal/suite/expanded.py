@@ -108,11 +108,74 @@ def affected_properties(properties, changed_sources):
         invalid = next_invalid
 
 
+def audit_traceability(spec, index, trace, source_map):
+    """Fail closed on missing/broken bidirectional source-property-case links."""
+    sha = spec["candidate_head"]
+    if sha != index.get("candidate_head") or sha != source_map.get("candidate_head") or sha != trace.get("subject_head"):
+        raise ValueError("traceability candidate SHA mismatch")
+    sources = [s["path"] for s in source_map["sources"]]
+    props = [p["id"] for p in index["properties"]]
+    cases = [c["id"] for c in spec["cases"]]
+    tp = [p["property_id"] for p in trace["properties"]]
+    ts = [s["path"] for s in trace["sources"]]
+    for label, values in (("sources", sources), ("properties", props),
+                          ("cases", cases), ("trace properties", tp), ("trace sources", ts)):
+        if len(values) != len(set(values)):
+            raise ValueError("duplicate " + label)
+    if set(props) != set(tp) or set(sources) != set(ts):
+        raise ValueError("traceability missing or orphan source/property")
+    by_prop = {p["id"]: p for p in index["properties"]}
+    by_trace = {p["property_id"]: p for p in trace["properties"]}
+    by_source = {s["path"]: s for s in trace["sources"]}
+    by_case = {c["id"]: c for c in spec["cases"]}
+    for p in index["properties"]:
+        pid = p["id"]
+        source_paths = set(p.get("sources", []))
+        if not source_paths or not source_paths <= set(sources):
+            raise ValueError("missing/unmapped source: " + pid)
+        deps = p.get("depends_on", [])
+        if pid in deps or any(d not in by_prop for d in deps):
+            raise ValueError("invalid dependency: " + pid)
+        expected_cases = {c["id"] for c in spec["cases"] if c["property_id"] == pid}
+        if not expected_cases or set(by_trace[pid]["case_ids"]) != expected_cases:
+            raise ValueError("missing or incorrect case link: " + pid)
+        if any(by_case[cid]["model_id"] != p["model_id"] for cid in expected_cases):
+            raise ValueError("case model identity mismatch: " + pid)
+        if source_paths != set(by_trace[pid]["source_paths"]):
+            raise ValueError("forward property-source mismatch: " + pid)
+    for src in sources:
+        actual = {p["id"] for p in index["properties"] if src in p["sources"]}
+        if set(by_source[src]["property_ids"]) != actual:
+            raise ValueError("reverse source-property mismatch: " + src)
+    for c in spec["cases"]:
+        if c["property_id"] not in by_prop:
+            raise ValueError("unmapped case: " + c["id"])
+    visiting, done = set(), set()
+    def visit(pid):
+        if pid in visiting:
+            raise ValueError("cyclic property dependency: " + pid)
+        if pid in done:
+            return
+        visiting.add(pid)
+        for dep in by_prop[pid].get("depends_on", []):
+            visit(dep)
+        visiting.remove(pid)
+        done.add(pid)
+    for pid in props:
+        visit(pid)
+    return {"status": "PASS", "property_count": len(props),
+            "case_count": len(cases), "source_count": len(sources)}
+
+
 def main_v1(options, suite_path, spec):
     root = suite_path.resolve().parents[2]  # formal/v4.19/r1/suite.json -> formal/
     index_path = safe_path(root, spec["source_index"], ".json")
     index = json.loads(index_path.read_text("utf8"))
     source_map = json.loads(safe_path(root, spec["source_map"], ".json").read_text("utf8"))
+    traceability = {"status": "NOT_RUN"}
+    if spec.get("traceability"):
+        trace = json.loads(safe_path(root, spec["traceability"], ".json").read_text("utf8"))
+        traceability = audit_traceability(spec, index, trace, source_map)
     if spec["candidate_head"] != source_map["candidate_head"] or spec["candidate_head"] != index["candidate_head"]:
         raise ValueError("Exact SHA discrepancy among suite, index, source-map")
     props = {p["id"]: p for p in index["properties"]}
@@ -163,6 +226,7 @@ def main_v1(options, suite_path, spec):
         "suite_sha256": sha256(suite_path), "source_index_sha256": sha256(index_path),
         "source_map_sha256": sha256(safe_path(root, spec["source_map"], ".json")),
         "source_alignment": alignment, "tool_versions": tools, "model_verdict": verdict,
+        "traceability_audit": traceability,
         "checks": results, "solver_differential": differential,
         "affected_property_ids": invalidated if options.changed_source else None,
         "coverage": {"modeled_obligations_denominator": len(props),
