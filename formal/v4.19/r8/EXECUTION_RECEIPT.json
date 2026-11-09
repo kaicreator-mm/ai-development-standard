@@ -1,0 +1,180 @@
+{
+  "schema": "ads/formal-r8-executed-receipt/v1",
+  "kind": "BOUNDED_MODEL_DEFECT_REPAIR_NOT_ADS_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "experiment_input_commit": "161b410e3972eb2b4f3140678e02e2569d19bf94",
+  "candidate_pr": 1365,
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_status": "UNMERGED_PROSPECTIVE",
+  "finding": {
+    "id": "R8-MODEL-P1-01",
+    "severity": "P1_MODEL_ONLY",
+    "normative_ads_defect": "NOT_ESTABLISHED",
+    "description": "Original R6 I05 successor Start Record SAT without predecessor accepted Claim, fresh successor authorization or accepted successor Claim; witness does not establish a valid authorized handoff",
+    "old_model": "formal/models/authority/admission-boundaries.smt2",
+    "old_model_blob": "66d89305305541d7e095e053fa8fcb55e9e6a9b4",
+    "observed_old_model_queries": [
+      {
+        "formula": "secondStartRecord AND NOT originalClaim",
+        "z3": "sat",
+        "cvc5": "sat"
+      },
+      {
+        "formula": "secondStartRecord AND NOT successorAuthorized",
+        "z3": "sat",
+        "cvc5": "sat"
+      }
+    ]
+  },
+  "repair": {
+    "normal_model": {
+      "path": "formal/models/authority/admission-boundaries-r8.smt2",
+      "sha256": "ba38ca65e5f4c3982d0295954a75f5041ae1f4131317f01fdb49ea45f2499daf",
+      "git_blob": "debeae540d9ce7faaceb7bb32a17356f545cc9eb"
+    },
+    "mutant_model": {
+      "path": "formal/models/authority/admission-boundaries-r8-mutant.smt2",
+      "sha256": "c47171e6a82faac2bc291dcd94af48684027a65d646c29f4e133f248f2d9fab8",
+      "git_blob": "3c473a28028d3bbdd916ad124b2b4ddf97feba77"
+    },
+    "additional_preconditions": [
+      "originalClaim",
+      "originalTerminal",
+      "not sameDispatch",
+      "currentGeneration",
+      "successorAuthorized",
+      "successorClaimAccepted"
+    ],
+    "preserved_positive_witness": "I05 SAT",
+    "new_forbidden_queries": [
+      "I06 without originalClaim UNSAT",
+      "I07 without successorAuthorized UNSAT",
+      "I08 without successorClaimAccepted UNSAT"
+    ]
+  },
+  "native_execution": {
+    "actual_binary_source": "previously verified offline binaries",
+    "tools": [
+      {
+        "name": "z3",
+        "version": "5.3.3",
+        "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+      },
+      {
+        "name": "cvc5",
+        "version": "1.4.2",
+        "sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+      }
+    ],
+    "cases": [
+      {
+        "id": "ADS-P-ADMISSION-SUCCESSOR-R8-Z3",
+        "tool": "z3",
+        "status": "PASS_MODEL",
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "id": "ADS-P-ADMISSION-SUCCESSOR-R8-CVC5",
+        "tool": "cvc5",
+        "status": "PASS_MODEL",
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3",
+        "tool": "z3",
+        "status": "COUNTEREXAMPLE",
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-CVC5",
+        "tool": "cvc5",
+        "status": "COUNTEREXAMPLE",
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "new_native_cases": 4,
+    "full_suite_rerun": "NOT_RUN"
+  },
+  "unit_regression": {
+    "path": "formal/tests/test_r8_successor.py",
+    "source_sha256": "809493d37b5f9f0dd7c31841a51646ae3a0e7089ce55426291be5f5025925e8f",
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "execution_environment": "local isolated source-byte fixture (not exact full Git worktree)",
+    "status": "PASS_ISOLATED"
+  },
+  "structure": {
+    "suite": "formal/v4.19/r8/suite.json",
+    "declared_cases": 35,
+    "modeled_properties": 10,
+    "source_files": 7,
+    "failures": 0,
+    "verdict": "PASS_STRUCTURAL_READBACK"
+  },
+  "historical_carry": {
+    "r5_strict_model_cases": 27,
+    "r6_incremental_cases": 4,
+    "r8_incremental_cases": 4,
+    "r8_full_strict_source_bound": "NOT_RUN",
+    "r8_independent_fresh_semantic_reviewer": "NOT_RUN"
+  },
+  "limits": [
+    "No real GitHub durable Claim authorization, CAS atomicity or post-terminal publication recovery",
+    "successorAuthorized and successorClaimAccepted are abstract premise Booleans",
+    "No independent reviewer signoff on R8 strengthened correspondence",
+    "R8 exact experiment-head full Python and source-bound integration not executed",
+    "ADS normative rule denominator UNKNOWN"
+  ],
+  "overall": "R8_MODEL_DEFECT_REPRODUCED_AND_BOUNDED_REPAIR_PASS_STRICT_SOURCE_NOT_RUN"
+}

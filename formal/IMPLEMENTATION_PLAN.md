@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R7 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_MODEL_ONLY_PASS / R7_TOOLCHAIN_HARDENING / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R8 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_INCREMENTAL_PLUS_R8_REPAIR / R8_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -177,3 +177,14 @@ Start T00/T01 in parallel; reuse R0 instead of recreating its suite. Then implem
 - **R7 不新增模型性质和模拟用例**。沿用 R5 固定 SHA 的 **27/27 严格通过**及 R6 另行执行的 **4/4 模型结果**；当前最新实验 HEAD 的 31-case 严格 Source/Model/Toolchain 三重绑定尚未重跑，结论仍是 **NOT_RUN**。完整 ADS 规范义务分母依然 UNKNOWN。
 
 R7 执行回执：`formal/v4.19/r7/EXECUTION_RECEIPT.json`。下一轮优先在完整 Git 环境执行 `formal/tests` 及 R6 的 31-case 总套装，复核 R6 新增 Property 的语义；不要因为已有 R5 记录再重复建立工具框架或形式化中间表示。
+
+## 12. R8 对旧模型的独立自对抗检查与修复（2026-11-10）
+
+R8 非简单加测：对 R6 的 `ADS-P-ADMISSION-EXT` 做反例查找，发现 `I05` 的 **false-positive successor witness**：有新的 `secondStartRecord` 并不蕴含 `originalClaim`，更不蕴含后继独立授权或者真实接受的后继 Claim。由 R6 原始模型构造 `secondStartRecord ∧ ¬originalClaim`、`secondStartRecord ∧ ¬successorAuthorized`，在 Z3 和 cvc5 下均为 `SAT`。这是形式化**模型语义覆盖缺陷**，并非 ADS 正式规范已有安全漏洞的证据。
+
+为保留历史复现性，保留 R6 模型和收据原样，新增 `formal/models/authority/admission-boundaries-r8.smt2` 和独立故障变异模型。新的约束显式要求：
+`secondStartRecord ⇒ originalClaim ∧ originalTerminal ∧ ¬sameDispatch ∧ currentGeneration ∧ successorAuthorized ∧ successorClaimAccepted`。在有界范围内新增三条应为 `UNSAT` 的安全检查，保留正向 `I05 SAT` 证明确实存在合法后继，不通过禁止一切 Start Record 的 vacuity 获得绿灯。
+
+**本轮实际工具执行：** 复用已校验的 Z3 5.3.3/cvc5 1.4.2；两套工具对 R8 正常模型的 18 条 SAT/UNSAT 输出逐条一致，对 R8 故障变异的三条禁忌案例均返回 `SAT`。新增 **4 个 R8 原生用例（2 PASS_MODEL + 2 COUNTEREXAMPLE）**；新 `formal/tests/test_r8_successor.py` 在模型原文字节构成的本地隔离测试目录实际 **2/2 PASS**，没有假冒为完整工作树测试。双向 Source→Property→Case 索引检查 **35 用例 / 10 性质 / 7 来源**，无孤儿条目。
+
+**仍需闭环：** 在完整 Git 工作树里，对新 R8 实验 SHA 运行 `formal/v4.19/r8/suite.json` 全部 35 例和 `formal/tests`；执行 `--model-head`、`--source-checkout`、`--strict-source` 及全新 R8 Source→Model 语义独立审核。此前 R5 的 27/27、R6 的 4 个、R8 的 4 个结果分别绑定各自原始 SHA，**不构成 R8 35/35 严格证明通过**。真实 GitHub 预留 CAS、角色/高权威授权读回、跨进程恢复/liveness、ADS 全规范约束总数仍是 `NOT_PROVEN`。
