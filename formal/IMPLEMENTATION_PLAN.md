@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R5 / EXPERIMENT / NO_NORMATIVE_GATE / SOURCE_BOUND_NOT_RUN / NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R6 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_INCREMENTAL_MODEL_ONLY_PASS / NOT_FULL_ADS_PROOF  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -151,3 +151,17 @@ Start T00/T01 in parallel; reuse R0 instead of recreating its suite. Then implem
 | T08 | 传递式受影响属性选择、双向索引检查、双重 Git 来源绑定和已选范围标签 | 当前 R5 严格模式下的完整 Git checkout / Full unittest / 总规则覆盖率 |
 
 **当前 M 阶段：** M0/M1 部分完成；M2 = `MODEL_ONLY_PASS`（9 个声明的有界试点性质，**0 个严格 source-bound 验证通过**）；M3/M4 部分完成。不能将 9/9 的试点性质覆盖说成 ADS 全规范覆盖率。完整规范规则分母 `UNKNOWN`。R5 未引入新 FIR、规范、CI 门禁或授权变更。
+
+## 10. R6 执行更新（2026-11-10；R5 验证结果按 Exact-SHA 继承而非伪造当前 PASS）
+
+- 在此前 R5 文档编写后，真正独立的 Source→Model 审核、严格双 Git worktree 校验及完整原生套装**已经完成**。R5 执行主体 HEAD 为 `e64702c9a9c18c70767cdacc74f086605b38fb39`，最终重跑 HEAD 为 `974dfcf57ca44099bbffa540b0cc273714f99f54`；`R5_SOURCE_BOUND_RECEIPT.json`、`R5_FINAL_RERUN_RECEIPT.json` 记录 **27/27（17 PASS_MODEL + 10 COUNTEREXAMPLE）**、Python **18/18**、模型双输入绑定 PASS、7/7 候选源检查 PASS、独立语义评价 9 个已有性质的 S1–S6 局限。证明范围仅为这些有界试点性质，不是全 ADS 规范证明。
+- R6 把 R5 独立审核的 S1（预留序列化）、S2（同 Operator/Dispatch 幂等 Claim）、S3（兼容组高权威授权）聚合为**一个**新 `ADS-P-ADMISSION-EXT` 性质，不产生 FIR、新状态机或额外控制系统。新增的两个原生 SMT 文件分 15 个正常查询和 3 个故障注入查询；Z3/cvc5 交叉执行产生 **2 PASS_MODEL + 2 COUNTEREXAMPLE**，本轮**新增 4 个实测用例**。已定义 Suite 从 27 扩为 31，用 10 个性质覆盖当前试点模型，但**R6 31/31 严格同 SHA 总套装尚未执行**。
+- 当前新增 `formal/tests/test_r6_admission.py`：支持现有 Python runner 对 R6 原生模型自动正反验证。另增 `formal/tests/test_r6_source_consumer.py`：需在 PR #1365 候选 exact checkout 中验证 `scripts/v34_rules.py` 的真实 generation helper 和 group-reference syntax；当前该测试 **NOT_RUN**，不得把 unittest SKIP 当 PASS。
+- GitHub 源与模型只做实验性源位置核验；真实 GitHub 预留 CAS、并发 Writer 原子性、完整 Grant Readback/Family/Scope/Currentness、恢复/liveness 尚未被有界模型验证。R6 新增性质的**独立语义复核**及双 SHA 严格验证仍 **NOT_RUN**。
+- 继承 R5 的已确认 Source-bound 性质 **9/9（在 R5 固定 HEAD）**；新 R6 性质为 **1/1 MODEL_ONLY**。**不能**以 10/10 声称 R6 全套 Source-bound PASS，也不能把 R5 27 个旧用例计入 R6 新执行数。
+
+### R6 首要剩余工作（T03/T07/T08 增量，而非重建流程）
+
+1. 在两个独立 Git exact worktree 下运行 `formal/v4.19/r6/suite.json` 和 `formal/tests`，对 **新实验 HEAD** 使用 `--model-head`，对候选 SHA 使用 `--source-checkout`、`--strict-source`；设置 `ADS_FORMAL_CANDIDATE_CHECKOUT` 才可执行真实源码消费测试。任何 SKIP/UNKNOWN/FAIL 不能伪装为 PASS。
+2. 对新 `ADS-P-ADMISSION-EXT` 做独立 Source→Model 语义审计，尤其要对齐 `admission_generation_conforms` 的 `IDEMPOTENT` *分类*和授权验证的角色/Dispatch/Operator 差别；检查兼容组 ref 的格式通过绝不等于已验证的高权威 Grant。
+3. 仅在上述源有效性证明产生新的实际收据后升级 R6 `MODEL_AND_SOURCE_PASS`，并继续把实际 GitHub 预留 CAS、liveness 和全规范义务分母保留为 `NOT_PROVEN`。

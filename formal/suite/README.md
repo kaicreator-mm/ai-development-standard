@@ -55,3 +55,32 @@ failure as BLOCKED. Evidence: `formal/v4.19/r5/R5_SOURCE_BOUND_RUN.json`,
 `R5_SOURCE_BOUND_RECEIPT.json`, `SEMANTIC_REVIEW.md`, `R5_FINAL_RERUN_RECEIPT.json`. Still
 NOT_PROVEN: full ADS rule denominator, natural-language equivalence theorem, real GitHub
 Claim/CAS/CI/Host/Release, Freeze or merge.
+
+## R6 — Source-bound follow-up (only the new delta)
+
+The R5 full 27-case suite **already passed** independent strict source-bound replay,
+and its exact-HASH/semantic review records remain immutable. R6 adds only the
+following case family:
+`ADS-P-ADMISSION-EXT-Z3/CVC5` and
+`ADS-P-ADMISSION-EXT-MUTANT-Z3/CVC5`.
+
+Use the R6 versioned suite for current experiment HEAD:
+```bash
+ADS_FORMAL_Z3=/path/to/z3 ADS_FORMAL_CVC5=/path/to/cvc5 \
+ADS_FORMAL_TLC_JAR=/path/to/tla2tools.jar \
+ADS_FORMAL_CANDIDATE_CHECKOUT=/path/to/candidate-worktree \
+python3 -m unittest discover -s formal/tests -v
+
+python3 formal/suite/run.py --suite formal/v4.19/r6/suite.json \
+ --model-head "$(git rev-parse HEAD)" \
+ --source-checkout /path/to/candidate-worktree --strict-source \
+ --z3 /path/to/z3 --cvc5 /path/to/cvc5 \
+ --tlc-jar /path/to/tla2tools.jar --out /tmp/ads-r6-exact-receipt.json
+```
+
+The extra source-consumer tests verify a pinned candidate SHA/blob and the
+actual Python generation classification. They do NOT establish a real provider
+CAS linearization point, an identity-aware idempotent Claim admission, or
+source-to-SMT semantic equivalence. Without an exact candidate checkout, these
+tests are explicitly SKIP/NOT_RUN. The new native SMT 4-case incremental
+execution is separately recorded in `formal/v4.19/r6/INCREMENTAL_RECEIPT.json`.
