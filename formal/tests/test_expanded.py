@@ -36,7 +36,7 @@ class ExpandedTests(unittest.TestCase):
     def test_unknown_solver_is_inconclusive(self):
         with tempfile.TemporaryDirectory() as tmp:
             stub = Path(tmp) / 'fake-solver'
-            stub.write_text('#!/bin/sh\\necho unknown\\n')
+            stub.write_text('#!/bin/sh\necho unknown\n')
             stub.chmod(0o755)
             opts = self.options()
             opts.z3 = str(stub)
