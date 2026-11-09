@@ -33,6 +33,17 @@ class ExpandedTests(unittest.TestCase):
             source_checkout=None, strict_source=False, model=None, property=None,
             changed_source=None, out='/tmp/ads-formal-test-receipt.json')
 
+    def test_unknown_solver_is_inconclusive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / 'fake-solver'
+            stub.write_text('#!/bin/sh\\necho unknown\\n')
+            stub.chmod(0o755)
+            opts = self.options()
+            opts.z3 = str(stub)
+            case = {'id':'unknown','tool':'z3','purpose':'proof','model':'models/authority/claim.smt2',
+                    'model_id':'ADS-M-AUTHORITY','property_id':'ADS-P-AUT', 'expect':['unsat']*4+['sat']}
+            self.assertEqual(runner.run_case(case, ROOT, opts)['status'], 'INCONCLUSIVE')
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'

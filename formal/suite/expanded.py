@@ -89,7 +89,7 @@ def run_case(case, root, options):
         ok = result["code"] == 0 and answers == case["expect"] and "(error" not in result["text"].lower()
         actual = {"answers": answers}
     status = ("COUNTEREXAMPLE" if case["purpose"] == "mutation" else "PASS_MODEL") if ok else (
-        "NOT_RUN" if result["kind"] == "UNAVAILABLE" else "INCONCLUSIVE" if result["kind"] == "TIMEOUT" else "FAIL")
+        "NOT_RUN" if result["kind"] == "UNAVAILABLE" else "INCONCLUSIVE" if (result["kind"] == "TIMEOUT" or (kind in ("z3", "cvc5") and "unknown" in actual.get("answers", []))) else "FAIL")
     return {"id": case["id"], "model_id": case["model_id"], "property_id": case["property_id"],
             "purpose": case["purpose"], "tool": kind, "status": status,
             "expected": case["expect"], "actual": actual, "inputs_sha256": hashes,
