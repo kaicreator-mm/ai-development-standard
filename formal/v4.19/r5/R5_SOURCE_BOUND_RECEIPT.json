@@ -1,0 +1,228 @@
+{
+  "schema": "ads/formal-r5-source-bound-executed-receipt/v1",
+  "kind": "EXPERIMENTAL_EXECUTED_EVIDENCE_NOT_ADS_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED_PROSPECTIVE",
+    "experiment_run_head": "e64702c9a9c18c70767cdacc74f086605b38fb39",
+    "experiment_run_parent": "3d5fd1c6d11eddec313cb25a5a1ea75ac5496b77"
+  },
+  "execution_environment": {
+    "platform": "WSL2 Ubuntu (linux-x86_64), NTFS worktrees via /mnt/c",
+    "python": "3.14.4",
+    "git": "2.53.0",
+    "java": "21.0.12.1",
+    "z3": {
+      "version": "5.3.3",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+    },
+    "tlc_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+    "tool_identity_note": "all three binary digests match formal/tools/inventory.json smokes"
+  },
+  "positive_run": {
+    "command": "python3 formal/suite/run.py --suite formal/v4.19/r4/suite.json --model-head e64702c9a9c18c70767cdacc74f086605b38fb39 --source-checkout <exact dac263fa worktree> --strict-source --z3 <5.3.3> --cvc5 <1.4.2> --tlc-jar <2.19> --out R5_SOURCE_BOUND_RUN.json",
+    "model_verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_total": 27,
+    "case_statuses": {
+      "PASS_MODEL": 17,
+      "COUNTEREXAMPLE": 10
+    },
+    "solver_differential_pairs": 12,
+    "solver_differential_all_pass": true,
+    "traceability_audit": {
+      "status": "PASS",
+      "property_count": 9,
+      "case_count": 27,
+      "source_count": 7
+    },
+    "model_pin_inputs": 24,
+    "model_pin_before": "PASS",
+    "model_pin_after": "PASS",
+    "source_files_checked": 7,
+    "source_alignment": "PASS",
+    "selection": {
+      "all_declared_cases_selected": true,
+      "requested_model": null,
+      "requested_property": null,
+      "requested_changed_sources": null,
+      "selected_case_ids": [
+        "ADS-P-AUT-Z3",
+        "ADS-P-AUT-CVC5",
+        "ADS-P-DEP-Z3",
+        "ADS-P-DEP-CVC5",
+        "ADS-P-EVI-Z3",
+        "ADS-P-EVI-CVC5",
+        "ADS-P-EVO-Z3",
+        "ADS-P-EVO-CVC5",
+        "ADS-P-CROSS-Z3",
+        "ADS-P-CROSS-CVC5",
+        "ADS-P-AUT-MUTANT-Z3",
+        "ADS-P-AUT-MUTANT-CVC5",
+        "ADS-P-DEP-4-Z3",
+        "ADS-P-DEP-4-MUTANT-Z3",
+        "ADS-P-DEP-4-CVC5",
+        "ADS-P-DEP-4-MUTANT-CVC5",
+        "ADS419-R2-LIFECYCLE-TLC",
+        "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+        "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+        "ADS-P-CAS-Z3",
+        "ADS-P-CAS-CVC5",
+        "ADS-P-CAS-MUTANT-Z3",
+        "ADS-P-CAS-MUTANT-CVC5",
+        "ADS-P-WRITER-KEYS-Z3",
+        "ADS-P-WRITER-KEYS-CVC5",
+        "ADS-P-WRITER-KEYS-MUTANT-Z3",
+        "ADS-P-WRITER-KEYS-MUTANT-CVC5"
+      ],
+      "selected_case_count": 27,
+      "declared_case_count": 27,
+      "qualification": "SELECTED_CASES_ONLY_NOT_FULL_ADS_PROOF"
+    },
+    "full_receipt_sha256": "9dbfd8c2db5aa96308c0e9fb2d37c2bfba10cd0a14227dcfe2446d4e74716c39"
+  },
+  "python_regression": {
+    "command": "python3 -m unittest discover -s formal/tests -v (ADS_FORMAL_Z3/CVC5/TLC_JAR exported)",
+    "tests_run": 18,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "log_sha256": "e0659ee649ff17cb01dac7df28f16109583f854a2a8c321f98555e68fa596469",
+    "fix_under_test": "e64702c strict-source must not mask a definite solver failure as BLOCKED"
+  },
+  "adversarial_negatives": {
+    "all_fail_closed": true,
+    "note": "n6a_partial_scope is the eligibility positive: scoped MODEL_AND_SOURCE_PASS with SELECTED_CASES_ONLY_NOT_FULL_ADS_PROOF qualification, 4/27 cases; every negative scenario ends FAIL/BLOCKED/INCONCLUSIVE with exit 2.",
+    "scenarios": [
+      {
+        "id": "n1_tamper_model",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "PASS",
+        "model_pin_before": "FAIL",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "3a7e90e467d64b4210bb2fe22de71858537cfd907d7b639da339b09bdd697019"
+      },
+      {
+        "id": "n2a_wrong_model_head",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "PASS",
+        "model_pin_before": "BLOCKED",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "23b234563452fc3940dcad174989a5a63a32521067b0cf442da0f5bb4ab5da6f"
+      },
+      {
+        "id": "n2b_wrong_source_head",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "BLOCKED",
+        "model_pin_before": "PASS",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "3138ed99e68c5ce240723f76f71dbd71240fa09defd99d8420ec7bf01c8e6f2c"
+      },
+      {
+        "id": "n3_anchor_drift",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "FAIL",
+        "model_pin_before": "PASS",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "43e62f612a53a91c54049ab68fbd1fdfa9fac0700806e81097cae050d38d2b58"
+      },
+      {
+        "id": "n4_solver_divergence",
+        "model_verdict": "FAIL",
+        "source_alignment_status": "PASS",
+        "model_pin_before": "PASS",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "c396fba0a13b65f5b36c9f50bc475b876c7d5aeab41042c1af014f25e7c55576"
+      },
+      {
+        "id": "n5a_invalidation",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "STALE",
+        "model_pin_before": "PASS",
+        "selected_cases": 16,
+        "exit_expected": 2,
+        "receipt_sha256": "00f9c51627f157399282aee72d7ff89123805f73a25de0c666b5f3c524d5fb9d"
+      },
+      {
+        "id": "n5b_invalidation_unmapped",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "STALE",
+        "model_pin_before": "PASS",
+        "selected_cases": 0,
+        "exit_expected": 2,
+        "receipt_sha256": "8bcaa6350b06f4bd0ce277d3cf7487dc2d40811258d36f7d69989bc49dd7f0cd"
+      },
+      {
+        "id": "n6a_partial_scope",
+        "model_verdict": "MODEL_AND_SOURCE_PASS",
+        "source_alignment_status": "PASS",
+        "model_pin_before": "PASS",
+        "selected_cases": 4,
+        "exit_expected": 0,
+        "receipt_sha256": "5038d0e2b7a0c9e875f9be46fe40bef3ba7158e71cec4a4650339e962ddd6cf4"
+      },
+      {
+        "id": "n6b_unknown_property",
+        "model_verdict": "INCONCLUSIVE",
+        "source_alignment_status": "PASS",
+        "model_pin_before": "PASS",
+        "selected_cases": 0,
+        "exit_expected": 2,
+        "receipt_sha256": "664464a03746052bd82f055436d6e45c387a3bcd334b26044f9d837a6b7643ba"
+      },
+      {
+        "id": "n7_strict_no_checkout",
+        "model_verdict": "BLOCKED",
+        "source_alignment_status": "NOT_RUN",
+        "model_pin_before": "PASS",
+        "selected_cases": 27,
+        "exit_expected": 2,
+        "receipt_sha256": "d5a32522dc0c4ca2f8e814899cde2542c876e245b99bde1affb5ddc7f4091df1"
+      }
+    ]
+  },
+  "semantic_review": {
+    "file": "formal/v4.19/r5/SEMANTIC_REVIEW.md",
+    "sha256": "54a9e1f447aa57a514e36d949fc678d91c49794ad3aeae480e3cee14d2ac7c0d",
+    "reviewer": "independent verification session (not an author of the R5 hardening commits)",
+    "aligned_properties": 9,
+    "findings": [
+      "S1 reservation step unmodeled",
+      "S2 idempotent re-claim unmodeled",
+      "S3 compatibility-group authorization assumed",
+      "S4 write-set discipline is model-side",
+      "S5 strict-masking regression restored by e64702c",
+      "S6 anchor honesty"
+    ],
+    "blocking_findings": 0
+  },
+  "receipt_chain": {
+    "R5_SOURCE_BOUND_RUN.json_sha256": "9dbfd8c2db5aa96308c0e9fb2d37c2bfba10cd0a14227dcfe2446d4e74716c39",
+    "SEMANTIC_REVIEW.md_sha256": "54a9e1f447aa57a514e36d949fc678d91c49794ad3aeae480e3cee14d2ac7c0d",
+    "rule": "any later edit of the chained files is detectable by rehashing; this digest is itself hashed into R5_FINAL_RERUN_RECEIPT.json of the follow-up commit"
+  },
+  "not_proven": [
+    "Full ADS normative rule denominator (all_ADS_normative_obligations_denominator stays null)",
+    "Natural-language to formal-model equivalence theorem",
+    "Dispatch-reservation serialization (S1), idempotent re-claim (S2), compatibility-group authorization check (S3)",
+    "Real GitHub Claim/CAS execution, CI, Host, Release, publish",
+    "v4.19 Freeze, merge to main, or any normative ADS gate"
+  ],
+  "constraints_kept": [
+    "no formal ADS normative edits",
+    "no merge to main",
+    "no Freeze",
+    "no publish"
+  ]
+}

@@ -40,3 +40,18 @@ The R5 verifier now checks two independent byte identities:
 - `--strict-source` cannot turn a definite solver failure into a weaker BLOCKED finding, and a partial `--property` or `--changed-source` run must retain its selected-scope evidence and may not masquerade as full ADS verification.
 
 The R5 implementation has direct local regression evidence for `provenance.py` and `differential.py`, but the complete newly integrated `formal/suite/run.py` path with dual Git worktrees and all Python tests is **NOT_RUN**. Mandatory independent semantics evaluation is **NOT_RUN**. Do not change this to PASS on source-only inspection. No new FIR, extra scheduler, Claim writer, normative ADS Gate, GitHub Actions job or mandatory Node-major requirement.
+
+**Execution update 2026-11-10 (experiment round 2).** The integrated path above has now been
+actually executed, not merely inspected: complete `formal/tests` unittest 18/18 on exact repo
+bytes; full r4 suite 27/27 with `--model-head`, `--source-checkout` and `--strict-source`
+returned `MODEL_AND_SOURCE_PASS` at experiment HEAD `e64702c` (Z3 5.3.3 + cvc5 1.4.2 + TLC
+2.19, binary digests matching `formal/tools/inventory.json`); nine adversarial scenarios
+(model tamper, wrong model HEAD, wrong source HEAD, source anchor drift, cross-solver
+divergence, incremental invalidation propagation, unmapped changed-source, partial-scope
+eligibility, strict-without-checkout) all fail closed; independent Source→Model semantic
+review produced with findings S1-S6. Executed defects fixed on the experiment branch:
+`e64702c` restores the R3-era rule that `--strict-source` must not mask a definite solver
+failure as BLOCKED. Evidence: `formal/v4.19/r5/R5_SOURCE_BOUND_RUN.json`,
+`R5_SOURCE_BOUND_RECEIPT.json`, `SEMANTIC_REVIEW.md`, `R5_FINAL_RERUN_RECEIPT.json`. Still
+NOT_PROVEN: full ADS rule denominator, natural-language equivalence theorem, real GitHub
+Claim/CAS/CI/Host/Release, Freeze or merge.
