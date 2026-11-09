@@ -1,0 +1,30 @@
+{
+  "schema": "ads/formal-r5-final-rerun-receipt/v1",
+  "kind": "EXPERIMENTAL_EXECUTED_EVIDENCE_NOT_ADS_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "rerun_at_head": "974dfcf57ca44099bbffa540b0cc273714f99f54",
+  "receipt_carrying_commit": "commit created immediately after this run; it adds only this receipt file, which is outside the pinned model_inputs set (24 pinned inputs unchanged; candidate head still dac263fa…)",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "model_verdict": "MODEL_AND_SOURCE_PASS",
+  "exit_code": 0,
+  "case_statuses": {
+    "PASS_MODEL": 17,
+    "COUNTEREXAMPLE": 10
+  },
+  "solver_differential_all_pass": true,
+  "source_alignment": "PASS",
+  "model_pin_before": "PASS",
+  "model_pin_after": "PASS",
+  "full_rerun_receipt_sha256": "f53a00a3b7e6f10cda7d1c638335764b8973086d4e996ce5a9e717a4017ad099",
+  "chains": {
+    "R5_SOURCE_BOUND_RECEIPT.json_sha256": "be02bbbb9225451d575a3338f8f506e85b839017b4943bacaec95fb3f11bbf69",
+    "SEMANTIC_REVIEW.md_sha256": "54a9e1f447aa57a514e36d949fc678d91c49794ad3aeae480e3cee14d2ac7c0d",
+    "R5_SOURCE_BOUND_RUN.json_sha256": "9dbfd8c2db5aa96308c0e9fb2d37c2bfba10cd0a14227dcfe2446d4e74716c39"
+  },
+  "not_proven": [
+    "Full ADS normative rule denominator",
+    "Natural-language equivalence theorem",
+    "Real GitHub Claim/CAS/CI/Host/Release execution",
+    "v4.19 Freeze or merge"
+  ]
+}
