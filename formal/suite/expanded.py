@@ -229,8 +229,10 @@ def main_v1(options, suite_path, spec):
             model_inputs.add(case["config"])
     model_before = model_alignment(root, model_inputs, getattr(options, "model_head", None))
     # A caller-provided but invalid model pin must not execute or be treated as PASS.
-    blocked_model = model_before["status"] in ("FAIL", "BLOCKED") or (
-        options.strict_source and model_before["status"] != "PASS")
+    # A merely missing pin still executes: a definite solver failure must surface as
+    # FAIL and must not be masked into BLOCKED by --strict-source (which is enforced
+    # at the final gate below).
+    blocked_model = model_before["status"] in ("FAIL", "BLOCKED")
     results = [] if blocked_model else [run_case(c, root, options) for c in selected]
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
