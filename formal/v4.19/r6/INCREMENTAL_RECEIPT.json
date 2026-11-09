@@ -1,0 +1,160 @@
+{
+  "schema": "ads/formal-r6-incremental-receipt/v1",
+  "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF",
+  "observed_utc": "2026-11-09T20:13:11Z",
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_status": "OPEN_PROSPECTIVE",
+    "experiment_model_commit": "4e1d170d356a5ba69808c4ee659e2f02ccaccc84",
+    "experiment_suite_commit": "c79b8ea023f485d58a114090c71b2526b99ba50b"
+  },
+  "scope": {
+    "property_id": "ADS-P-ADMISSION-EXT",
+    "model_id": "ADS-M-AUTHORITY",
+    "new_declared_case_count": 4,
+    "all_suite_declared_case_count": 31,
+    "new_declared_property_count": 1,
+    "pilot_property_count": 10,
+    "previous_R5_full_suite_cases": 27,
+    "previous_R5_full_suite_verdict": "MODEL_AND_SOURCE_PASS (R5 pinned worktree; not rerun by R6)",
+    "targeted_source_semantic_findings": [
+      "R5 S1 reservation serialization",
+      "R5 S2 idempotent re-claim",
+      "R5 S3 compatibility group authority"
+    ]
+  },
+  "toolchain": {
+    "z3": {
+      "version": "5.3.3",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+    },
+    "source": "Offline toolkit binaries verified against prior R5 inventory; executed in local Linux container"
+  },
+  "inputs": [
+    {
+      "path": "formal/models/authority/admission-boundaries.smt2",
+      "git_blob_sha1": "66d89305305541d7e095e053fa8fcb55e9e6a9b4",
+      "sha256": "e41df24adab85a1c50358840b7eba3b32662769cfae4047e26acf4bef53cd4cb",
+      "size_bytes": 4276
+    },
+    {
+      "path": "formal/models/authority/admission-boundaries-mutant.smt2",
+      "git_blob_sha1": "3e8fd89ea20ac420499c630697d212defb3490da",
+      "sha256": "056a2360bec5ff0836fbfdb5a766e89c06ea75ccad5d8e3b9ec9da760010e230",
+      "size_bytes": 1021
+    }
+  ],
+  "checks": [
+    {
+      "id": "ADS-P-ADMISSION-EXT-Z3",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "exit_code": 0,
+      "ordered_answers": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-CVC5",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "exit_code": 0,
+      "ordered_answers": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-Z3",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "exit_code": 0,
+      "ordered_answers": [
+        "sat",
+        "sat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-CVC5",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "exit_code": 0,
+      "ordered_answers": [
+        "sat",
+        "sat",
+        "sat"
+      ]
+    }
+  ],
+  "tool_differential": {
+    "normal_model": "PASS_EXACT_15_ANSWERS",
+    "mutant_model": "PASS_EXACT_3_ANSWERS"
+  },
+  "source_binding": {
+    "candidate_source_anchors": "PASS_FOR_NEW_ANCHORS_IN_THREE_FILES",
+    "source_trace_index": "PASS_STRUCTURAL_GITHUB_READBACK",
+    "source_model_independent_semantic_review": "NOT_RUN_R6",
+    "strict_dual_git_source_checkout": "NOT_RUN_R6"
+  },
+  "python_regression": {
+    "new_test_path": "formal/tests/test_r6_admission.py",
+    "status": "COMMITTED_NOT_RUN_ON_EXACT_GIT_WORKTREE",
+    "previous_R5_tests": "18/18 PASS ON R5 PINNED HEAD; NOT TRANSFERRED AS R6 PASS"
+  },
+  "counts": {
+    "R5_existing_cases_with_full_strict_PASS": 27,
+    "R6_new_native_cases_executed": 4,
+    "R6_new_normal_cases_passed": 2,
+    "R6_new_mutants_detected": 2,
+    "R6_smt_query_answers_per_solver": 18,
+    "current_defined_suite_cases": 31,
+    "total_ADS_normative_rule_denominator": null
+  },
+  "assumptions_and_not_proven": [
+    "Actual GitHub reservation CAS/serialized dispatch publication",
+    "Actual idempotency without duplicate canonical event after worker crash/retry",
+    "Real authorization reference resolution and scope/family/currentness readback",
+    "Arbitrary concurrent schedulers, multi-group compatibility and temporal fairness/liveness",
+    "Independent semantic review of new source-to-model correspondence",
+    "R6 strict source-bound full suite and new unittest not run on the new experiment HEAD",
+    "All ADS normative requirements coverage denominator unknown"
+  ],
+  "verdict": "R6_INCREMENTAL_MODEL_ONLY_PASS_STRICT_SOURCE_PENDING"
+}
