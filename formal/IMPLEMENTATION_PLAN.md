@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R6 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_INCREMENTAL_MODEL_ONLY_PASS / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R7 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_MODEL_ONLY_PASS / R7_TOOLCHAIN_HARDENING / NOT_FULL_ADS_PROOF  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -165,3 +165,15 @@ Start T00/T01 in parallel; reuse R0 instead of recreating its suite. Then implem
 1. 在两个独立 Git exact worktree 下运行 `formal/v4.19/r6/suite.json` 和 `formal/tests`，对 **新实验 HEAD** 使用 `--model-head`，对候选 SHA 使用 `--source-checkout`、`--strict-source`；设置 `ADS_FORMAL_CANDIDATE_CHECKOUT` 才可执行真实源码消费测试。任何 SKIP/UNKNOWN/FAIL 不能伪装为 PASS。
 2. 对新 `ADS-P-ADMISSION-EXT` 做独立 Source→Model 语义审计，尤其要对齐 `admission_generation_conforms` 的 `IDEMPOTENT` *分类*和授权验证的角色/Dispatch/Operator 差别；检查兼容组 ref 的格式通过绝不等于已验证的高权威 Grant。
 3. 仅在上述源有效性证明产生新的实际收据后升级 R6 `MODEL_AND_SOURCE_PASS`，并继续把实际 GitHub 预留 CAS、liveness 和全规范义务分母保留为 `NOT_PROVEN`。
+
+## 11. R7 工具身份与证据资格硬化（2026-11-10）
+
+针对 T02/T08 的一个实际证据完整性缺口：R6 前的 Python runner 虽在 JSON Receipt 中**记录**了 Z3、cvc5、TLC 的二进制/包 SHA256，却没有把该证据与 `MODEL_AND_SOURCE_PASS` 的资格绑定。理论上用户可以传入假冒求解器或替换后的 TLC JAR，而返回期望 SAT 文本；只校验模型和源码本身不能检出工具假冒。
+
+- `formal/suite/toolchain.py` 验证**当前选择的** Z3/cvc5 二进制版本及 SHA256、TLC JAR SHA256 和 Java 命令可用性。对照仓库 Git 固定的 `formal/tools/inventory.json`；未选中的工具不作冗余要求。外部 JVM 二进制、动态库和主机信任根尚未按哈希全覆盖，严格如实披露。
+- `formal/suite/expanded.py` 已接入执行前后两次工具身份校验，将 `suite/toolchain.py` 和 `tools/inventory.json` 加入模型侧 exact-HEAD Git blob 输入闭包。工具哈希/版本错误或缺失不能获得严格 `MODEL_AND_SOURCE_PASS`；确定性求解器 `FAIL` 优先于 `BLOCKED`，保留 R5 原修复。
+- `coverage.source_bound_verified_obligations` 现在要求**最终 Verdict 真正为 `MODEL_AND_SOURCE_PASS`**，解决旧版本即使工具或模型来源不满足资格、也可能给出大于零的 source-bound 计数的问题。
+- `formal/tests/test_toolchain.py` 的 3 个独立测试已在当前容器 Python 3.13.5 实际通过；同环境对仓库登记的真实 Z3 5.3.3、cvc5 1.4.2、TLC JAR 2.19 逐一哈希与版本比对，**3/3 PASS**。所有输入文件 Git blob 和本地生成文件对应一致；完整 runner 的新版集成测试已提交到 `formal/tests/test_expanded.py`，但尚未在真实完整 Git 工作树执行，不冒称通过。
+- **R7 不新增模型性质和模拟用例**。沿用 R5 固定 SHA 的 **27/27 严格通过**及 R6 另行执行的 **4/4 模型结果**；当前最新实验 HEAD 的 31-case 严格 Source/Model/Toolchain 三重绑定尚未重跑，结论仍是 **NOT_RUN**。完整 ADS 规范义务分母依然 UNKNOWN。
+
+R7 执行回执：`formal/v4.19/r7/EXECUTION_RECEIPT.json`。下一轮优先在完整 Git 环境执行 `formal/tests` 及 R6 的 31-case 总套装，复核 R6 新增 Property 的语义；不要因为已有 R5 记录再重复建立工具框架或形式化中间表示。

@@ -84,3 +84,27 @@ CAS linearization point, an identity-aware idempotent Claim admission, or
 source-to-SMT semantic equivalence. Without an exact candidate checkout, these
 tests are explicitly SKIP/NOT_RUN. The new native SMT 4-case incremental
 execution is separately recorded in `formal/v4.19/r6/INCREMENTAL_RECEIPT.json`.
+
+## R7 — tool identity participates in the strict verdict
+
+The v1 Python suite now requires the **selected** native toolchain to match
+the Git-pinned `formal/tools/inventory.json` for `MODEL_AND_SOURCE_PASS`.
+The runner checks tool identity **before and after** model execution. Z3/cvc5
+need matching SHA256 and reported version; TLC needs matching JAR SHA256 and
+a working Java runtime. The Java executable and its dynamic dependencies are
+not fully byte-pinned by the inventory; this is a bounded provenance check,
+not a proof of solver/JVM correctness.
+
+The existing `--strict-source` option now requires all three independent
+checks to pass: exact candidate Git source, exact experiment Git model/runner/
+inventory inputs, **and** selected native binary identities. Unavailable or
+mismatched identities fail closed. A definite solver FAIL is not downgraded to
+BLOCKED. An ordinary non-strict run with unresolved tool identity may be
+INCONCLUSIVE rather than falsely MODEL_ONLY_PASS.
+
+R7 directly executed: three `test_toolchain.py` Python unit tests and live
+native identity readback on Z3 5.3.3, cvc5 1.4.2 and TLC 2.19 JAR — PASS.
+New `test_expanded.py` integration regression is committed, **NOT_RUN** in
+a complete exact Git worktree yet; the **31-case current-HEAD strict rerun**
+is also NOT_RUN. Reuse the R6 command with a newly observed experiment HEAD.
+No new ADS normative gate or requirements for Node/Python major versions.

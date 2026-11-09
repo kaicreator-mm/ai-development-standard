@@ -1,0 +1,108 @@
+{
+  "schema": "ads/formal-r7-execution-receipt/v1",
+  "kind": "EXPERIMENTAL_TOOLCHAIN_HARDENING_NOT_NORMATIVE_PROOF",
+  "date": "2026-11-10",
+  "candidate_pr": 1365,
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_state": "OPEN_PROSPECTIVE",
+  "experiment_tested_code_commit": "1f7f31f9dcbc57bc9420022e7cfcadf7d6c48231",
+  "strict_current_git_integrated_execution": "NOT_RUN",
+  "model_cases_reused_not_rerun": {
+    "r5_strict_cases": 27,
+    "r6_incremental_model_cases": 4,
+    "r7_new_model_cases": 0,
+    "r6_declared_total": 31,
+    "modeled_properties": 10,
+    "r5_source_bound_properties": 9,
+    "r6_new_property_source_bound": "NOT_RUN"
+  },
+  "code_commits": [
+    "761529b388450dbd44ec06a249c66c8256c46608",
+    "1f934b71a00959164fda80cb5382d08cd6af4bfc",
+    "c3675f57da31af8d14335372326c827c410d4371",
+    "1f7f31f9dcbc57bc9420022e7cfcadf7d6c48231"
+  ],
+  "toolchain_inputs": [
+    {
+      "path": "formal/suite/toolchain.py",
+      "blob": "6b020cf089024664137bc713af30f2ac32866368",
+      "sha256": "c3af5a0f8b09200549512ed576c74d78465ae7b29b782711a2d45bdf63163445"
+    },
+    {
+      "path": "formal/tests/test_toolchain.py",
+      "blob": "98aa7068fea8a4b71800b900f45c5cb2ca96b206",
+      "sha256": "7434a6f1711af1e0fb1f3e721f0882eee526ca8b1b99cf8e3c0a0eacdfba1b8f"
+    }
+  ],
+  "actual_execution": [
+    {
+      "id": "R7-ISOLATED-HELPER-UNITTEST",
+      "status": "PASS",
+      "command": "python3 -m unittest discover -s /mnt/data/ads-r7/tests -v",
+      "python": "3.13.5",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "positive": [
+        "valid version+sha of fake executable",
+        "exact TLC JAR sha of fake fixture"
+      ],
+      "negative": [
+        "wrong binary SHA",
+        "wrong version",
+        "binary tampering",
+        "tool missing",
+        "zero selected cases",
+        "TLC JAR tampered"
+      ]
+    },
+    {
+      "id": "R7-PYTHON-COMPILE",
+      "status": "PASS",
+      "paths": [
+        "formal/suite/toolchain.py",
+        "formal/tests/test_toolchain.py"
+      ]
+    },
+    {
+      "id": "R7-REAL-TOOLCHAIN-IDENTITY",
+      "status": "PASS",
+      "tool_count": 3,
+      "python": "3.13.5",
+      "details": [
+        {
+          "tool": "z3",
+          "version": "5.3.3",
+          "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+          "result": "PASS"
+        },
+        {
+          "tool": "cvc5",
+          "version": "1.4.2",
+          "sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+          "result": "PASS"
+        },
+        {
+          "tool": "tlc",
+          "version": "2.19",
+          "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+          "java_version": "21.0.12.1",
+          "result": "PASS"
+        }
+      ]
+    }
+  ],
+  "committed_not_run": [
+    "formal/tests/test_expanded.py new strict toolchain mismatch regression against full Git workspace",
+    "formal/suite/expanded.py full integration and Python unittest on exact experiment HEAD",
+    "31-case R6 full run pinned to current experiment HEAD and candidate PR #1365 HEAD",
+    "New R6 source-to-model independent semantic review and real candidate source-consumer unittest"
+  ],
+  "trust_limits": [
+    "Pinned executable and TLC jar bytes do not independently verify solver implementation correctness",
+    "Java runtime binary and dynamically linked libraries are not fully trust-pinned",
+    "No live GitHub atomic reservation/claim or real CI/Release proof",
+    "No enumeration of all normative ADS rules"
+  ],
+  "verdict": "R7_TOOLCHAIN_IDENTITY_HELPER_PASS_INTEGRATED_STRICT_NOT_RUN"
+}
