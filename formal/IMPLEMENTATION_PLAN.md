@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: PLANNED / EXPERIMENT / NO_NORMATIVE_GATE / NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R5 / EXPERIMENT / NO_NORMATIVE_GATE / SOURCE_BOUND_NOT_RUN / NOT_PROVEN  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -133,3 +133,21 @@ Every round is Git-committed independently with exact source/model/tool versions
 Start T00/T01 in parallel; reuse R0 instead of recreating its suite. Then implement T02 minimally (first cvc5 cross-check; Soufflé for DAG when needed) while T03 continues R0 models. Advance T04/T05 independently, merge via T06 and T07; finish with T08 based on demonstrated need. Local environment is only requested when a selected binary genuinely cannot run in the current execution environment; pass a repair+validation task rather than a validation-only ping-pong.
 
 **Planning status**: the work items above are a proposal; no source-model semantic equivalence or expanded proof is claimed by writing this plan.
+
+## 9. 实际实施进度（R5 补充，2026-11-10；不修改原 R1 实施目标）
+
+权威实证文件：`formal/v4.19/r5/EXECUTION_RECEIPT.json`、`RULE_CROSSWALK.json`；R4 的 27 个模型用例保留原轮次收据，不在 R5 重新计数为新执行。该补充是**实验执行记录**，不是 ADS Product/L2/Task DAG Freeze、模型语义独立审核或 Release Gate。
+
+| Task | 最新落实 | 尚未取得的证据 |
+|---|---|---|
+| T00 | Z3/cvc5/TLC 有已运行的 R2–R4 模型记录；工具来源/哈希登记 | 其它可选工具不以安装数量衡量覆盖 |
+| T01 | 7 个固定候选源码 Git blobs、22 个锚点读回；固定 v4.18 观察 SHA；9 Property 正反索引、历史 #1353 Freeze | 完整 ADS 所有生效规则的分母、逐条独立语义审核 |
+| T02 | 复用 `formal/suite/run.py`；新增 `--model-head`、模型输入工作树前后绑定、跨模型逐项求解器比较、Traceability blob/锚点审计、失败优先级 | 新组合 Python runner 在两个真实 exact-SHA Git worktree 上的全量回归 |
+| T03 | TLC 生命周期安全与变异、Authority/CAS 两求解器有界检查 | 真实 Claim/CAS、显式公平性下可恢复进展的 liveness 证明 |
+| T04 | 4 节点 DAG rank + 写集并发安全正反例；虚假串行边 Python 挑战 | 任意 DAG / 实际 Native Task 依赖自动提取 |
+| T05 | Evidence/Scope 抽象模型与变异；历史 Freeze 与 prospective 候选分别标识 | 真实 CI/Review Evidence、版本合法迁移的实现映射 |
+| T06 | Authority、DAG、Evidence、Writer 共 9 项试点性质关联 | 生产 Claim/CI/Release 的实际执行状态等价性 |
+| T07 | 故障变异 10 例历史累计检出、自对抗审查 | 真正独立 Source→Model 语义评价 |
+| T08 | 传递式受影响属性选择、双向索引检查、双重 Git 来源绑定和已选范围标签 | 当前 R5 严格模式下的完整 Git checkout / Full unittest / 总规则覆盖率 |
+
+**当前 M 阶段：** M0/M1 部分完成；M2 = `MODEL_ONLY_PASS`（9 个声明的有界试点性质，**0 个严格 source-bound 验证通过**）；M3/M4 部分完成。不能将 9/9 的试点性质覆盖说成 ADS 全规范覆盖率。完整规范规则分母 `UNKNOWN`。R5 未引入新 FIR、规范、CI 门禁或授权变更。

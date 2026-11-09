@@ -1,0 +1,151 @@
+{
+  "schema": "ads/formal-r5-implementation-receipt/v1",
+  "kind": "EXPERIMENTAL_SUITE_HARDENING_NOT_ADS_NORMATIVE_PROOF",
+  "date_utc": "2026-11-09",
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED_PROSPECTIVE"
+  },
+  "experiment_commit_under_review": "e0c1c773bd7a5a2b9e2c1a68ca6797fb366f07d0",
+  "implementation_commits": [
+    "abdf1fc8af9001b6753cf00f9afbae1329dc5397",
+    "8a17425623cf42ad90ab30b749070f516780cb9b",
+    "9acec6df37f370df436692eb35a3faba1d9a2f2a",
+    "a801f058b2609fe3cf589d0bc32e8dd11d68b7d1",
+    "e0c1c773bd7a5a2b9e2c1a68ca6797fb366f07d0"
+  ],
+  "inputs": {
+    "provenance_py_blob": "dd2ca232d975a85b892cc4d116f9ba38f0a76c40",
+    "provenance_py_sha256": "d59a4cb14a0c9618b6235d7a62dfde6f0ce0e2ae89b1e07dedc13912604f3b98",
+    "differential_py_blob": "db14c4e5a5fe8de60bf8c0967a925e52adbcc385",
+    "differential_py_sha256": "c42996b418ad00c6a1820112c7bb68f7affe88ff3aa486107e8030a1db444b8e",
+    "test_provenance_blob": "946df0837a45133eb8449f13c99b13fc5c1a8745",
+    "test_provenance_sha256": "77bd2aaa384eb638712f76184b0f55acce82bcbb775f34ebe2f48fc2e30a2b4d",
+    "expanded_py_blob": "28c746b3340febcb3463b5e7c60e0e95b02155cf",
+    "run_py_blob": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e",
+    "rule_crosswalk_blob": "a2920ebb9f20cd9845ff282916b52d01efd5b841"
+  },
+  "actual_checks": [
+    {
+      "id": "R5-PYTHON-PROVENANCE",
+      "environment": "Linux Python 3.13.5 Git 2.47.3",
+      "method": "python -m unittest discover -s /mnt/data/ads-r5/formal/tests -p test_provenance.py -v",
+      "status": "PASS",
+      "tests": 1,
+      "asserted_behaviors": [
+        "clean exact HEAD and blob PASS",
+        "missing pin NOT_RUN",
+        "wrong HEAD BLOCKED",
+        "dirty tracked model FAIL",
+        "untracked model FAIL",
+        "path escape FAIL",
+        "empty selected input set FAIL"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "R5-SOLVER-DIFFERENTIAL-HELPER",
+      "environment": "Linux Python 3.13.5",
+      "method": "direct import of exact differential.py blob using locally created two-model fixture",
+      "status": "PASS",
+      "normal_pair_count": 2,
+      "one_intentionally_changed_pair": "INCONCLUSIVE",
+      "exit_code": 0
+    },
+    {
+      "id": "R5-PYCOMPILE-HELPERS",
+      "status": "PASS",
+      "paths": [
+        "formal/suite/provenance.py",
+        "formal/suite/differential.py"
+      ]
+    },
+    {
+      "id": "R5-GITHUB-SOURCE-READBACK",
+      "status": "PASS_GITHUB_BLOB_ANCHORS_ONLY",
+      "candidate_source_files": 7,
+      "unique_literal_anchors": 22,
+      "missing": 0
+    },
+    {
+      "id": "R5-V418-CROSSWALK",
+      "status": "PASS_METADATA_READBACK",
+      "baseline_head": "ac7e7e51de3a7ac27343f16a96568c0b0f2c5349",
+      "prospective_changed_files": 4,
+      "candidate_only_files": 2,
+      "unchanged_source_files": 1,
+      "properties": 9
+    }
+  ],
+  "not_run": [
+    "Complete formal/tests Python unittest on exact repo bytes",
+    "Integrated run.py with --model-head and --source-checkout and --strict-source",
+    "Real native solver R5 round (no model changes; R4 27 historical cases unchanged)",
+    "Independent source→model semantic review",
+    "Real GitHub Claim CAS, CI, Host, Release and publish"
+  ],
+  "historical_model_cases": {
+    "r2": 19,
+    "r3": 4,
+    "r4": 4,
+    "r5_added": 0,
+    "cumulative_executed_prior_rounds": 27,
+    "normal_pass_prior_rounds": 17,
+    "mutants_detected_prior_rounds": 10
+  },
+  "coverage": {
+    "pilot_properties_with_historical_model_cases": 9,
+    "pilot_properties_denominator": 9,
+    "strict_source_bound_verified": 0,
+    "all_ADS_obligations_denominator": null
+  },
+  "tasks": [
+    {
+      "id": "T00",
+      "status": "PARTIAL_NATIVE_TOOL_VERIFIED_R2_R4",
+      "limitation": "other optional tools not needed"
+    },
+    {
+      "id": "T01",
+      "status": "PARTIAL_FIXED_CROSSWALK",
+      "limitation": "full normative denominator and independent semantics not run"
+    },
+    {
+      "id": "T02",
+      "status": "HARDENING_COMMITTED_PARTIALLY_UNIT_TESTED",
+      "limitation": "integrated two-worktree runner not run"
+    },
+    {
+      "id": "T03",
+      "status": "BOUNDED_MODEL_ONLY",
+      "limitation": "liveness and real claim/CAS not proved"
+    },
+    {
+      "id": "T04",
+      "status": "BOUNDED_MODEL_ONLY",
+      "limitation": "native DAG ingestion and unbounded safety not proved"
+    },
+    {
+      "id": "T05",
+      "status": "BOUNDED_MODEL_ONLY",
+      "limitation": "live CI and version migration not checked"
+    },
+    {
+      "id": "T06",
+      "status": "BOUNDED_MODEL_ONLY",
+      "limitation": "real subsystem consistency not proven"
+    },
+    {
+      "id": "T07",
+      "status": "SELF_CHALLENGED_ONLY",
+      "limitation": "independent semantic reviewer not run"
+    },
+    {
+      "id": "T08",
+      "status": "INCREMENTAL_CODE_COMMITTED",
+      "limitation": "full strict source run not done"
+    }
+  ],
+  "verdict": "R5_HELPER_UNIT_PASS_SOURCE_METADATA_PASS_INTEGRATED_SOURCE_BOUND_NOT_RUN"
+}

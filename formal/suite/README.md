@@ -17,3 +17,26 @@ Without a matching candidate Git checkout, the result is MODEL_ONLY_PASS + sourc
 Mutation cases must produce the specific counterexample; their DETECTED result is an indication that the **checker** catches an intentionally defective model, not a flaw in ADS. Natural-language semantics vs formalized rules must be independently evaluated before wider claims.
 
 To extend: add another version-local test list and native model; add a tool adapter only when needed. Alloy, Lean, pySHACL and Souffle are optional future adapters. Do not install additional frameworks or introduce FIR by default.
+
+## R5 — exact experiment-model provenance (v1 suite only)
+
+For the current v4.19 experiment, use an **experiment Git worktree** containing the formal models and another independent **candidate Git worktree** pinned to PR #1365 candidate HEAD. Execute the existing Python entry point from the experiment worktree.
+
+```bash
+python3 formal/suite/run.py \
+  --suite formal/v4.19/r4/suite.json \
+  --model-head "$(git rev-parse HEAD)" \
+  --source-checkout /path/to/candidate-exact-sha-worktree \
+  --strict-source \
+  --z3 /path/to/z3 --cvc5 /path/to/cvc5 \
+  --tlc-jar /path/to/tla2tools.jar \
+  --out /tmp/ads-formal-source-bound.json
+```
+
+The R5 verifier now checks two independent byte identities:
+
+- `--model-head`: exact experiment HEAD, including the selected native models/configs, suite/index/source-map/Traceability inputs, and the Python runner/helpers; checks them against Git blob SHA **before and after** model execution. Missing model pin limits an ordinary run to MODEL_ONLY_PASS; invalid pin or modified models fail closed; `--strict-source` requires PASS.
+- `--source-checkout`: candidate ADS HEAD and all seven declared source Git blobs. All source-map anchors and additional traceability anchors must be present. The source-readback manifest is a constrained sample, **not** every ADS rule.
+- `--strict-source` cannot turn a definite solver failure into a weaker BLOCKED finding, and a partial `--property` or `--changed-source` run must retain its selected-scope evidence and may not masquerade as full ADS verification.
+
+The R5 implementation has direct local regression evidence for `provenance.py` and `differential.py`, but the complete newly integrated `formal/suite/run.py` path with dual Git worktrees and all Python tests is **NOT_RUN**. Mandatory independent semantics evaluation is **NOT_RUN**. Do not change this to PASS on source-only inspection. No new FIR, extra scheduler, Claim writer, normative ADS Gate, GitHub Actions job or mandatory Node-major requirement.
