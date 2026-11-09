@@ -145,7 +145,7 @@ A Dispatch is the executable handoff from the canonical dispatch architecture (`
 
 Machine contract: `schemas/dispatch.schema.json`.
 
-Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`) configure execution authority. They do not introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol.
+Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`, `WEB_BUILDER`, `LOCAL_VALIDATION`) select bounded execution context within the authority of the Dispatch role. `WEB_BUILDER` is builder-only and maps to WEB; `LOCAL_VALIDATION` is validator-only and maps to LOCAL. For a Task governed by a legally approved prospective v4.19 Product/L2/Task scope, choose the authorized Builder profile by actual capability, risk, total execution cost and handoff/rework; prefer `WEB_BUILDER` when Web can complete the work more cheaply. `LOCAL_BUILDER` remains lawful where that Task Pack and an accepted Builder Claim authorize LOCAL source implementation and repair. Existing v4.18 and #1353-frozen historical subjects preserve their original admission rules until lawfully superseded. `LOCAL_VALIDATION` is exact-SHA, validation-only and used only for genuine local capability gaps after Web/CI evidence is considered. Profiles do not widen role authority or introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol.
 
 ## 5. Authority hierarchy and contradiction routing
 
