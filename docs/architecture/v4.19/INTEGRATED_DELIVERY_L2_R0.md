@@ -91,6 +91,8 @@ Existing candidates (no automatic adoption):
 
 ## 7. Qualification / unresolved owners
 
+**CI applicability is not universally equivalent to a Woodpecker status.** `RELEASE_STANDARD.md` §2 explicitly requires project Minimal CI only when the frozen/project policy selects it; `VALIDATION_STANDARD.md` §8 distinguishes the required profile from its normal provider and permits a trusted equivalent clean executor only when no provider-specific attestation is itself required. **T01 #1357 currently names Woodpecker in its frozen Task Pack**, so its required provider run cannot be casually waived. For the integrated version, re-evaluate each exact-subject/profile obligation under its actual authority; do not add a blanket new Woodpecker gate for unrelated docs-only changes, and do not pretend a two-test Web container result is equivalent to clean-checkout CI.
+
 **No L2 Freeze here.** Sequence: (1) Product Owner explicitly freezes or revises PR #1363 exact source after independent Product Review; (2) bind L2 to resulting immutable Product subject, review architecture; (3) explicit L2 Freeze + approved Task DAG/Task writes; (4) qualify exact source and CI/review for #1358/#1362/#1342 and integration composition; (5) Version Candidate/Release Qualification under inherited release owner. Required real Host or E2E checks stay BLOCKED/NOT_RUN where evidence is unavailable; avoid treating practice-only #1360/#1352 etc. as universal v4.19 blockers unless actual Product Freeze admits them.
 
 No main merge, tag, release, production side effect, cross-project source write, or historic v4.18/1353 rewrite is authorized by this proposal.
