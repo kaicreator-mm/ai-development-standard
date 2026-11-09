@@ -1,0 +1,402 @@
+{
+  "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF",
+  "schema": "ads/formal-receipt/v1",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_status": "PROSPECTIVE_UNFROZEN",
+  "suite_sha256": "52fce6d23c8d3252d63918f71fea07290f71e26ae8642b26fd62a9978e616ad1",
+  "source_index_sha256": "4af9dd55fa73b7ca466afacd5344f1a31d25cfd6573b911ff2f0e19b3d370f01",
+  "source_map_sha256": "589e15cca07059bdd4a18d415a0ccd7247ef86fd042676bb4884d3439d1e2415",
+  "source_alignment": {
+    "status": "NOT_RUN",
+    "reason": "Exact candidate checkout not provided"
+  },
+  "tool_versions": {
+    "z3": {
+      "version_output": [
+        "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e"
+      ],
+      "status": "VERIFIED",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "cvc5": {
+      "version_output": [
+        "cvc5 1.4.2 [git 282d5e0 on branch HEAD]",
+        "compiled as a unrestricted build with GCC version 11.4.0 on Oct  8 2026 01:24:07"
+      ],
+      "status": "VERIFIED",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+    },
+    "java": {
+      "version_output": [
+        "openjdk version \"21.0.12.1\" 2026-08-18",
+        "OpenJDK Runtime Environment (build 21.0.12.1+1-1-deb13u1-Debian)"
+      ],
+      "status": "VERIFIED",
+      "binary_sha256": null
+    },
+    "tlc_jar": {
+      "sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "status": "AVAILABLE"
+    }
+  },
+  "model_verdict": "MODEL_ONLY_PASS",
+  "checks": [
+    {
+      "id": "ADS-P-AUT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-AUT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "d99f2db1daebf5661c4c223f270e21500880d775e1e6cae34e1b59586cdcd591"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "d99f2db1daebf5661c4c223f270e21500880d775e1e6cae34e1b59586cdcd591"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVI-Z3",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "a9f03bfcc7c3d5a719dde249a2a4cf18465d0ceeb4c38f7d0df0e8535148a66d"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVI-CVC5",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "a9f03bfcc7c3d5a719dde249a2a4cf18465d0ceeb4c38f7d0df0e8535148a66d"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVO-Z3",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "d7a7cd43c4520b24268ac7540e493aac41a4f9d235efcb2df6dab2f4882927bb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVO-CVC5",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "d7a7cd43c4520b24268ac7540e493aac41a4f9d235efcb2df6dab2f4882927bb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-CROSS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "a9b8606d9945944da73cf10673f1254fe87a52a769355f22bb0d120f174db852"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-CROSS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "a9b8606d9945944da73cf10673f1254fe87a52a769355f22bb0d120f174db852"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "2e02d244bde3d87f54f1c8b469bc36546bf368965c82f54150ca11c2dca51e92"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "2e02d244bde3d87f54f1c8b469bc36546bf368965c82f54150ca11c2dca51e92"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    }
+  ],
+  "solver_differential": [
+    {
+      "property_id": "ADS-P-AUT",
+      "status": "PASS"
+    },
+    {
+      "property_id": "ADS-P-CROSS",
+      "status": "PASS"
+    },
+    {
+      "property_id": "ADS-P-DEP",
+      "status": "PASS"
+    },
+    {
+      "property_id": "ADS-P-EVI",
+      "status": "PASS"
+    },
+    {
+      "property_id": "ADS-P-EVO",
+      "status": "PASS"
+    }
+  ],
+  "affected_property_ids": null,
+  "coverage": {
+    "modeled_obligations_denominator": 6,
+    "modeled_obligations_with_selected_cases": 5,
+    "source_bound_verified_obligations": 0,
+    "all_ADS_normative_obligations_denominator": null,
+    "note": "Pilot denominator is declared properties; entire ADS rule inventory not enumerated"
+  },
+  "semantic_evaluation": "SELF_CHALLENGED_INDEPENDENT_REVIEW_NOT_RUN",
+  "limitations": [
+    "Bounded abstract states only; no full ADS natural-language equivalence",
+    "No full real GitHub/CI/Release execution evidence",
+    "Model guards require source-to-model review",
+    "TLC liveness/fairness, claim expiry, multi-Task CAS, and full version inheritance not proved"
+  ]
+}
