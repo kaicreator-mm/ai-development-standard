@@ -1,0 +1,167 @@
+{
+  "schema": "ads/formal-r3-incremental-receipt/v1",
+  "kind": "ADS_BOUNDED_FORMAL_R3_NOT_NORMATIVE_PROOF",
+  "date_utc": "2026-11-09",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_authority": "UNFROZEN_PROSPECTIVE",
+  "experiment_source_commit": "671cb646ec1112eba11261ea101c895d0f638121",
+  "suite_git_blob": "68b87e00092bd74306626b0b825f8cd4c6b3b6f9",
+  "source_index_git_blob": "1a9c1868d3cdcff7b1a9d7daeacb4fb8c86eb281",
+  "source_map_git_blob": "0b79d6904f0ca172788691a55c2335f24499f33d",
+  "traceability_git_blob": "399952eaff220241ded4ff7aa444be5801bbb3c8",
+  "defined_suite_cases": 23,
+  "prior_r2_cases_unchanged_not_rerun": 19,
+  "modeled_properties_denominator": 8,
+  "full_ADS_obligations_denominator": null,
+  "toolchain": {
+    "z3": {
+      "version": "5.3.3",
+      "executable_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "status": "VERIFIED"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "executable_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "status": "VERIFIED"
+    },
+    "python": {
+      "version": "3.13.5",
+      "status": "VERIFIED"
+    },
+    "tlc": {
+      "version": "2.19",
+      "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "r3_execution_status": "NOT_RUN_REUSED_R2"
+    }
+  },
+  "source_alignment": {
+    "github_readback": "7/7 expected blob identities and observed anchors (6 reused R2, architecture newly observed)",
+    "strict_exact_checkout": "NOT_RUN",
+    "strict_source_verdict": "BLOCKED_UNTIL_EXACT_CHECKOUT"
+  },
+  "native_model": {
+    "property_id": "ADS-P-CAS",
+    "status": "MODEL_ONLY_PASS_FOR_EXECUTED_INCREMENTAL_CASES",
+    "normal_model_path": "formal/models/authority/serialized-admission.smt2",
+    "normal_git_blob": "a405d543f0de43f1455f6018043fd3002ccba923",
+    "normal_sha256": "3b12e9a44075f6de2e1f76a570ca6f3e5928e65db1b84a11af21c6eca1dab97c",
+    "mutant_model_path": "formal/models/authority/serialized-admission-mutant.smt2",
+    "mutant_git_blob": "be623e0a14df6cea07bc57477a70779b4807c1b8",
+    "mutant_sha256": "b912b076942b7cdd113e4fc85b18aa76085a38c7d97c4be9d952fb53943a3b46",
+    "checks": [
+      {
+        "id": "ADS-P-CAS-Z3",
+        "tool": "z3",
+        "purpose": "proof",
+        "expect": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "observed": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "exit_code": 0,
+        "status": "PASS_MODEL"
+      },
+      {
+        "id": "ADS-P-CAS-CVC5",
+        "tool": "cvc5",
+        "purpose": "proof",
+        "expect": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "observed": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "exit_code": 0,
+        "status": "PASS_MODEL"
+      },
+      {
+        "id": "ADS-P-CAS-MUTANT-Z3",
+        "tool": "z3",
+        "purpose": "mutation",
+        "expect": [
+          "sat"
+        ],
+        "observed": [
+          "sat"
+        ],
+        "exit_code": 0,
+        "status": "COUNTEREXAMPLE"
+      },
+      {
+        "id": "ADS-P-CAS-MUTANT-CVC5",
+        "tool": "cvc5",
+        "purpose": "mutation",
+        "expect": [
+          "sat"
+        ],
+        "observed": [
+          "sat"
+        ],
+        "exit_code": 0,
+        "status": "COUNTEREXAMPLE"
+      }
+    ],
+    "cross_solver_parity": "PASS_2_OF_2_MODEL_TYPES",
+    "witness": {
+      "firstAccepted": true,
+      "secondAccepted": true,
+      "generation": 0,
+      "expectedFirst": 0,
+      "expectedSecond": 1,
+      "classification": "INJECTED_MODEL_DEFECT_NOT_ADS_DEFECT"
+    },
+    "commands": [
+      "z3 -smt2 formal/models/authority/serialized-admission.smt2",
+      "cvc5 --lang=smt2 --incremental formal/models/authority/serialized-admission.smt2",
+      "z3 -smt2 formal/models/authority/serialized-admission-mutant.smt2",
+      "cvc5 --lang=smt2 --incremental formal/models/authority/serialized-admission-mutant.smt2"
+    ]
+  },
+  "semantic_challenge": {
+    "actual_blob": "516733ff79c2e9e1aa7258412b775dcebba9f123",
+    "sha256": "d2077c3e22589d675f17130b29a31ab3605cf5a0a74aefc307971bda5085966b",
+    "command": "python3 formal/v4.19/r3/semantic_challenge.py",
+    "exit_code": 0,
+    "model_states": 256,
+    "legal_release_witnesses": 1,
+    "invalid_stale_evidence_mutant_witnesses": 3,
+    "directed_three_task_graphs": 64,
+    "acyclic_graphs": 25,
+    "other_cases": [
+      "R3-FALSE-SERIAL: MUTANT_DETECTED",
+      "R3-HISTORY-SCOPE: MUTANT_DETECTED"
+    ],
+    "status": "BOUNDED_SELF_CHALLENGE_PASS_NOT_SOURCE_PROOF"
+  },
+  "safety_qualifications": {
+    "expanded_runner_transitive_invalidation_fix": "COMMITTED_UNIT_TEST_NOT_RUN",
+    "expanded_runner_fail_precedence_fix": "COMMITTED_UNIT_TEST_NOT_RUN",
+    "full_r3_suite": "NOT_RUN_ONLY_INCREMENTAL_NATIVE_CASES",
+    "independent_source_semantic_review": "NOT_RUN",
+    "actual_claim_cas_transaction": "NOT_RUN",
+    "real_ci_release": "NOT_RUN",
+    "normative_ads_design_defects_confirmed": 0
+  },
+  "overall": "R3_INCREMENTAL_MODEL_ONLY_PASS__SOURCE_BOUND_AND_INDEPENDENT_REVIEW_NOT_RUN"
+}
