@@ -139,7 +139,7 @@ class ExpandedTests(unittest.TestCase):
     def test_strict_source_rejects_unknown_tool_identity_and_zeroes_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
             fake = Path(tmp) / 'untrusted-z3'
-            fake.write_text('#!/bin/sh\\necho forged-version\\n')
+            fake.write_text('#!/bin/sh\necho "Z3 version 5.3.3 cvc5 1.4.2"\n')
             fake.chmod(0o755)
             opts = self.options()
             opts.z3 = str(fake)
@@ -160,9 +160,11 @@ class ExpandedTests(unittest.TestCase):
                     'expected': case['expect'],
                     'inputs_sha256': {'model': case['model']}
                 }
-            with mock.patch.object(runner, 'model_alignment', return_value={'status':'PASS'}), \\
-                 mock.patch.object(runner, 'source_alignment', return_value={'status':'PASS'}), \\
-                 mock.patch.object(runner, 'run_case', side_effect=mocked_result):
+            with (
+                mock.patch.object(runner, 'model_alignment', return_value={'status':'PASS'}),
+                mock.patch.object(runner, 'source_alignment', return_value={'status':'PASS'}),
+                mock.patch.object(runner, 'run_case', side_effect=mocked_result),
+            ):
                 self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
             receipt = json.loads(Path(opts.out).read_text())
             self.assertEqual(receipt['model_verdict'], 'BLOCKED')
