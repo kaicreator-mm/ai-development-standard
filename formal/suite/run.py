@@ -115,6 +115,7 @@ def main():
     p.add_argument("--tlc-jar", required=True)
     p.add_argument("--source-checkout")
     p.add_argument("--strict-source", action="store_true")
+    p.add_argument("--model-head", help="Exact experiment Git HEAD binding all consumed model/suite/runner bytes")
     p.add_argument("--out", required=True)
     a = p.parse_args()
     suite_path = Path(a.suite).resolve()

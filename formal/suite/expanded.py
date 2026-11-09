@@ -5,6 +5,8 @@ import re
 import subprocess
 import tempfile
 from pathlib import Path
+from provenance import model_alignment
+from differential import solver_differential
 
 ANSWERS = re.compile(r"^(sat|unsat|unknown)$", re.MULTILINE)
 STATES = re.compile(r"(\d+) states generated, (\d+) distinct states found")
@@ -196,13 +198,24 @@ def main_v1(options, suite_path, spec):
     if options.changed_source:
         invalidated = affected_properties(index["properties"], options.changed_source)
         selected = [c for c in selected if c["property_id"] in invalidated]
-    results = [run_case(c, root, options) for c in selected]
-    differential = []
-    for key in sorted({c["property_id"] for c in selected}):
-        solvers = {r["tool"]: r for r in results if r["property_id"] == key and r["tool"] in ("z3", "cvc5") and r["purpose"] == "proof"}
-        if len(solvers) == 2:
-            z, c = solvers["z3"], solvers["cvc5"]
-            differential.append({"property_id": key, "status": "PASS" if z["actual"] == c["actual"] and z["status"] == c["status"] == "PASS_MODEL" else "INCONCLUSIVE"})
+    model_inputs = {str(suite_path.resolve().relative_to(root)),
+                    spec["source_index"], spec["source_map"],
+                    "suite/run.py", "suite/expanded.py",
+                    "suite/provenance.py", "suite/differential.py"}
+    if spec.get("traceability"):
+        model_inputs.add(spec["traceability"])
+    for case in selected:
+        model_inputs.add(case["model"])
+        if case.get("config"):
+            model_inputs.add(case["config"])
+    model_before = model_alignment(root, model_inputs, getattr(options, "model_head", None))
+    # A caller-provided but invalid model pin must not execute or be treated as PASS.
+    blocked_model = model_before["status"] in ("FAIL", "BLOCKED") or (
+        options.strict_source and model_before["status"] != "PASS")
+    results = [] if blocked_model else [run_case(c, root, options) for c in selected]
+    model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
+                   if model_before["status"] == "PASS" else model_before)
+    differential = solver_differential(selected, results)
     alignment = source_alignment(options.source_checkout, source_map)
     if options.changed_source:
         alignment = {"status": "STALE", "reason": "Changed-source selection invalidates old source-bound results until new exact source pinned", "baseline_alignment": alignment}
@@ -210,7 +223,11 @@ def main_v1(options, suite_path, spec):
     good = bool(results) and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"}) and all(d["status"] == "PASS" for d in differential)
     verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
                "INCONCLUSIVE" if not good else "MODEL_AND_SOURCE_PASS" if alignment["status"] == "PASS" else "MODEL_ONLY_PASS")
-    if options.strict_source and alignment["status"] != "PASS" and verdict != "FAIL":
+    if verdict == "MODEL_AND_SOURCE_PASS" and model_after["status"] != "PASS":
+        verdict = "MODEL_ONLY_PASS"
+    if (model_before["status"] in ("FAIL", "BLOCKED") or model_after["status"] in ("FAIL", "BLOCKED")) and verdict != "FAIL":
+        verdict = "BLOCKED"
+    if options.strict_source and (alignment["status"] != "PASS" or model_after["status"] != "PASS") and verdict != "FAIL":
         verdict = "BLOCKED"
     tools = {}
     for k, command in (("z3", options.z3), ("cvc5", options.cvc5), ("java", options.java)):
@@ -227,6 +244,8 @@ def main_v1(options, suite_path, spec):
         "source_map_sha256": sha256(safe_path(root, spec["source_map"], ".json")),
         "source_alignment": alignment, "tool_versions": tools, "model_verdict": verdict,
         "traceability_audit": traceability,
+        "model_input_alignment_before": model_before,
+        "model_input_alignment_after": model_after,
         "checks": results, "solver_differential": differential,
         "affected_property_ids": invalidated if options.changed_source else None,
         "coverage": {"modeled_obligations_denominator": len(props),

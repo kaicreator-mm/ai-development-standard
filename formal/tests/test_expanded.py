@@ -2,12 +2,14 @@ import importlib.util
 import json
 import os
 import shutil
+import sys
 import tempfile
 import types
 import unittest
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parents[1] / 'suite' / 'expanded.py'
+sys.path.insert(0, str(MODULE.parent))  # direct importlib loader needs adjacent helpers
 spec = importlib.util.spec_from_file_location('ads_formal_expanded', MODULE)
 runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runner)
@@ -90,6 +92,38 @@ class ExpandedTests(unittest.TestCase):
         trace["subject_head"]="old"
         with self.assertRaisesRegex(ValueError,"candidate SHA"):
             runner.audit_traceability(spec,index,trace,source)
+
+    def test_bad_model_pin_blocks_before_tool_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            opts = self.options()
+            opts.model_head = "0" * 40
+            opts.strict_source = True
+            opts.property = "ADS-P-AUT"
+            opts.out = str(Path(tmp) / "invalid-head.json")
+            spec = json.loads(SUITE.read_text())
+            self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
+            receipt = json.loads(Path(opts.out).read_text())
+            self.assertEqual(receipt["model_verdict"], "BLOCKED")
+            self.assertEqual(receipt["model_input_alignment_before"]["status"], "BLOCKED")
+            self.assertEqual(receipt["checks"], [])
+
+    def test_solver_differential_does_not_overwrite_model_results(self):
+        from differential import solver_differential
+        cases = []
+        results = []
+        for key, answer in (("model-a.smt2", "unsat"), ("model-b.smt2", "sat")):
+            for tool in ("z3", "cvc5"):
+                cid = key + "-" + tool
+                cases.append({"id": cid, "model": key, "property_id": "P",
+                              "tool": tool, "purpose": "proof"})
+                results.append({"id": cid, "status": "PASS_MODEL",
+                                "expected": [answer], "actual": {"answers": [answer]},
+                                "inputs_sha256": {"model": key}})
+        self.assertEqual([p["status"] for p in solver_differential(cases, results)],
+                         ["PASS", "PASS"])
+        results[-1]["actual"] = {"answers": ["unsat"]}
+        self.assertEqual([p["status"] for p in solver_differential(cases, results)],
+                         ["PASS", "INCONCLUSIVE"])
 
     def test_missing_solver_not_pass(self):
         opts=self.options()
