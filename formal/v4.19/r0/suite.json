@@ -1,0 +1,76 @@
+{
+  "schema": "ads/formal-suite/v0",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "source_map": "source-map.json",
+  "cases": [
+    {
+      "id": "ADS419-R0-ROLES",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "roles.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat"
+      ]
+    },
+    {
+      "id": "ADS419-R0-GATES",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "gates.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS419-R0-ROLE-MUTANT",
+      "tool": "z3",
+      "purpose": "mutation",
+      "model": "roles-mutant.smt2",
+      "expect": [
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS419-R0-LIFECYCLE",
+      "tool": "tlc",
+      "purpose": "proof",
+      "model": "ADSWorkflow.tla",
+      "config": "ADSWorkflow.cfg",
+      "expect": "safe",
+      "min_states": 27
+    },
+    {
+      "id": "ADS419-R0-RELEASE-MUTANT",
+      "tool": "tlc",
+      "purpose": "mutation",
+      "model": "ADSWorkflow.tla",
+      "config": "ADSWorkflow.bad-release.cfg",
+      "expect": "counterexample",
+      "invariant": "LifecycleSafe"
+    },
+    {
+      "id": "ADS419-R0-CLAIM-MUTANT",
+      "tool": "tlc",
+      "purpose": "mutation",
+      "model": "ADSWorkflow.tla",
+      "config": "ADSWorkflow.bad-claim.cfg",
+      "expect": "counterexample",
+      "invariant": "SingleWriter"
+    }
+  ]
+}
