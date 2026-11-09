@@ -106,6 +106,11 @@ def main():
     p = argparse.ArgumentParser(description="Native ADS formal verification suite (no FIR)")
     p.add_argument("--suite", required=True)
     p.add_argument("--z3", default="z3")
+    p.add_argument("--cvc5", default="cvc5")
+    p.add_argument("--all", action="store_true")
+    p.add_argument("--model")
+    p.add_argument("--property")
+    p.add_argument("--changed-source", action="append")
     p.add_argument("--java", default="java")
     p.add_argument("--tlc-jar", required=True)
     p.add_argument("--source-checkout")
@@ -115,6 +120,9 @@ def main():
     suite_path = Path(a.suite).resolve()
     root = suite_path.parent
     spec = json.loads(suite_path.read_text("utf-8"))
+    if spec.get("schema") == "ads/formal-suite/v1":
+        from expanded import main_v1
+        return main_v1(a, suite_path, spec)
     if spec.get("schema") != "ads/formal-suite/v0" or not spec.get("cases"):
         raise ValueError("invalid/empty suite")
     map_path = safe_file(root, spec["source_map"], ".json")
