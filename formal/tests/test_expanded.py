@@ -57,7 +57,7 @@ class ExpandedTests(unittest.TestCase):
     def test_strict_source_does_not_mask_model_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
             stub = Path(tmp) / 'fake-solver'
-            stub.write_text('#!/bin/sh\\necho invalid-proof-output\\n')
+            stub.write_text('#!/bin/sh\necho invalid-proof-output\n')
             stub.chmod(0o755)
             opts = self.options()
             opts.z3 = str(stub)
