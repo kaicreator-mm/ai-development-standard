@@ -6,6 +6,7 @@ import sys
 import tempfile
 import types
 import unittest
+from unittest import mock
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parents[1] / 'suite' / 'expanded.py'
@@ -134,6 +135,40 @@ class ExpandedTests(unittest.TestCase):
         results[-1]["actual"] = {"answers": ["unsat"]}
         self.assertEqual([p["status"] for p in solver_differential(cases, results)],
                          ["PASS", "INCONCLUSIVE"])
+
+    def test_strict_source_rejects_unknown_tool_identity_and_zeroes_coverage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            fake = Path(tmp) / 'untrusted-z3'
+            fake.write_text('#!/bin/sh\\necho forged-version\\n')
+            fake.chmod(0o755)
+            opts = self.options()
+            opts.z3 = str(fake)
+            opts.cvc5 = str(fake)
+            opts.property = 'ADS-P-AUT'
+            opts.strict_source = True
+            opts.model_head = 'a' * 40
+            opts.source_checkout = tmp
+            opts.out = str(Path(tmp) / 'tool-check.json')
+            spec = json.loads(SUITE.read_text())
+            def mocked_result(case, root, options):
+                return {
+                    'id': case['id'], 'tool': case['tool'],
+                    'property_id': case['property_id'], 'model_id': case['model_id'],
+                    'purpose': case['purpose'],
+                    'status': 'COUNTEREXAMPLE' if case['purpose'] == 'mutation' else 'PASS_MODEL',
+                    'actual': {'answers': case['expect']},
+                    'expected': case['expect'],
+                    'inputs_sha256': {'model': case['model']}
+                }
+            with mock.patch.object(runner, 'model_alignment', return_value={'status':'PASS'}), \\
+                 mock.patch.object(runner, 'source_alignment', return_value={'status':'PASS'}), \\
+                 mock.patch.object(runner, 'run_case', side_effect=mocked_result):
+                self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
+            receipt = json.loads(Path(opts.out).read_text())
+            self.assertEqual(receipt['model_verdict'], 'BLOCKED')
+            self.assertEqual(receipt['toolchain_alignment_before']['status'], 'FAIL')
+            self.assertEqual(receipt['toolchain_alignment_after']['status'], 'FAIL')
+            self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
 
     def test_missing_solver_not_pass(self):
         opts=self.options()
