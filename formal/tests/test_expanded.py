@@ -44,6 +44,33 @@ class ExpandedTests(unittest.TestCase):
                     'model_id':'ADS-M-AUTHORITY','property_id':'ADS-P-AUT', 'expect':['unsat']*4+['sat']}
             self.assertEqual(runner.run_case(case, ROOT, opts)['status'], 'INCONCLUSIVE')
 
+    def test_transitive_source_invalidation(self):
+        entries = [
+            {"id": "A", "sources": ["scripts/v34_rules.py"]},
+            {"id": "B", "sources": [], "depends_on": ["A"]},
+            {"id": "C", "sources": ["other"], "depends_on": ["B"]},
+            {"id": "D", "sources": ["unrelated"]}
+        ]
+        self.assertEqual(runner.affected_properties(entries, ["scripts/v34_rules.py"]), ["A", "B", "C"])
+        self.assertEqual(runner.affected_properties(entries, ["unmapped"]), [])
+
+    def test_strict_source_does_not_mask_model_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / 'fake-solver'
+            stub.write_text('#!/bin/sh\\necho invalid-proof-output\\n')
+            stub.chmod(0o755)
+            opts = self.options()
+            opts.z3 = str(stub)
+            opts.cvc5 = str(stub)
+            opts.property = 'ADS-P-AUT'
+            opts.strict_source = True
+            opts.out = str(Path(tmp) / 'receipt.json')
+            spec = json.loads(SUITE.read_text())
+            self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
+            report = json.loads(Path(opts.out).read_text())
+            self.assertEqual(report['model_verdict'], 'FAIL')
+            self.assertEqual(report['source_alignment']['status'], 'NOT_RUN')
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'

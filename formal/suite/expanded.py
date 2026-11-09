@@ -96,6 +96,18 @@ def run_case(case, root, options):
             "exit_code": result["code"], "output_tail": result["text"][-800:]}
 
 
+def affected_properties(properties, changed_sources):
+    """Invalidate direct source users AND dependent properties to a fixed point."""
+    changed = set(changed_sources)
+    invalid = {p["id"] for p in properties if changed.intersection(p.get("sources", []))}
+    while True:
+        next_invalid = invalid | {p["id"] for p in properties
+                                  if invalid.intersection(p.get("depends_on", []))}
+        if next_invalid == invalid:
+            return sorted(invalid)
+        invalid = next_invalid
+
+
 def main_v1(options, suite_path, spec):
     root = suite_path.resolve().parents[2]  # formal/v4.19/r1/suite.json -> formal/
     index_path = safe_path(root, spec["source_index"], ".json")
@@ -119,8 +131,7 @@ def main_v1(options, suite_path, spec):
         selected = [c for c in selected if c["property_id"] == options.property]
     invalidated = []
     if options.changed_source:
-        changed = set(options.changed_source)
-        invalidated = [p["id"] for p in index["properties"] if changed.intersection(p["sources"])]
+        invalidated = affected_properties(index["properties"], options.changed_source)
         selected = [c for c in selected if c["property_id"] in invalidated]
     results = [run_case(c, root, options) for c in selected]
     differential = []
@@ -136,7 +147,7 @@ def main_v1(options, suite_path, spec):
     good = bool(results) and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"}) and all(d["status"] == "PASS" for d in differential)
     verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
                "INCONCLUSIVE" if not good else "MODEL_AND_SOURCE_PASS" if alignment["status"] == "PASS" else "MODEL_ONLY_PASS")
-    if options.strict_source and alignment["status"] != "PASS":
+    if options.strict_source and alignment["status"] != "PASS" and verdict != "FAIL":
         verdict = "BLOCKED"
     tools = {}
     for k, command in (("z3", options.z3), ("cvc5", options.cvc5), ("java", options.java)):
