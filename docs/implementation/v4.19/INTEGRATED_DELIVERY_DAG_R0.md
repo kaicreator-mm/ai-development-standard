@@ -7,36 +7,46 @@
 
 ## 1. Smallest real outcomes and owners
 
-Reuse four existing Draft workfronts and add at most one version-integrator after source qualification. Do not create per-Demo or per-review Task Issues merely to increase progress.
+Reuse the existing source workfronts (some are now Ready for Review) and at most one **legally admitted** version integrator after source qualification. `PROD`/`ARCH`/`EXPL`/`QUAL` below are **descriptive workfront labels**, not ADS P0/P1/P2 defect severity or new canonical Task IDs. Do not create per-Demo or per-review Task Issues merely to increase progress.
 
 | Logical Outcome (not yet native Task) | Existing owner and exact candidate | Draft write ownership, qualification and disposition |
 | --- | --- | --- |
-| P0 — integrated Product/L1 decision | #1347 / PR #1363 | One Product candidate file. Independent Review PASS_WITH_P2 but **Owner exact Product Freeze missing**. Its future Freeze is a prerequisite for prospective policy amendments and normative activation. |
-| A0 — prospective three-domain L2 + DAG | this stacked candidate | Two planning files; await real Product Freeze, actual L2 review/Freeze and Task DAG Freeze. |
+| PROD — integrated Product/L1 decision | #1347 / PR #1363 | One Product candidate file. Independent Review PASS_WITH_P2 but **Owner exact Product Freeze missing**. Its future Freeze is a prerequisite for prospective policy amendments and normative activation. |
+| ARCH — prospective three-domain L2 + DAG | this stacked candidate | Two planning files; await real Product Freeze, actual L2 review/Freeze and Task DAG Freeze. |
 | T01 — additive Dispatch profiles | Task #1357 / PR #1358 (frozen, 7 source/test files) | Preserve historical T01 Claim/write-set and five legacy profiles; actual Python focused/full suite, exact-SHA Woodpecker, required independent final source Review not proven. Prospective global Web-default correction requires lawful approved amendment; no Validator source write. |
-| P1 — optional Demo Stage 1 evidence guidance | #1361 / PR #1362 (4 docs paths) | Product/L1 and Stage 1 owner review; no new schema, no per-Demo issue. `standards/DEVELOPMENT_WORKFLOW.md` is shared with P2. |
-| P2 — source-based quality/issue prevention | #1347, #1341/#1343/#1344 / PR #1342 (17 source/docs/tests paths) | Qualify only actual v4.18 gaps; eight Python source regression tests and 18-case pilot remain *proposed*, not an accepted blind oracle. `standards/DEVELOPMENT_WORKFLOW.md` shared with P1. |
+| EXPL — optional Demo Stage 1 evidence guidance | #1361 / PR #1362 (4 docs paths) | Product/L1 and Stage 1 owner review; no new schema, no per-Demo issue. `standards/DEVELOPMENT_WORKFLOW.md` is shared with P2. |
+| QUAL — source-based quality/issue prevention | #1347, #1341/#1343/#1344 / PR #1342 (17 source/docs/tests paths) | Qualify only actual v4.18 gaps; eight Python source regression tests and 18-case pilot remain *proposed*, not an accepted blind oracle. `standards/DEVELOPMENT_WORKFLOW.md` shared with P1. |
 | I01 — version-owned composition and Outcome acceptance | Existing version integration authority, no Task yet | One authorized Writer composes final overlapping Workflow doc, checks exact SHA/pins, runs qualified tests/CI, handles version candidate and Release gates. Does not perform main merge/tag until independently authorized. |
 
 ## 2. Prospective dependencies
 
+**Do not collapse the historical T01 admission into the new three-domain Product's unissued Freeze.** These are **two independent authority tracks** with a final version integration join. This diagram proposes rationale; the live DAG remains native GitHub Issue Dependencies and exact accepted Task/Claim facts.
+
 ```text
-P0 Product Owner exact Freeze
-        |
-        v
-A0 L2 Review/Freeze + Prospective DAG/Task Owner Freeze
-        |
-        +---- T01 Dispatch profile finalization ----+
-        |                                            |
-        +---- P1 Stage 1 Demo optional evidence -----+--> I01 compose exact version tree
-        |                                            |       --> source tests/current CI/review
-        +---- P2 quality-source deltas --------------+       --> candidate qualification/closure
-                                                               --> RQ --> authorized main/tag/release
+Already frozen #1353 Product@44562165 → L2@b82f201d → DAG@fbf1a7d
+    └── existing #1357 / T01: bounded 7-path implementation
+        → exact Python focused/full tests → required Woodpecker → required Review
+                                                  │
+New prospective v4.19 policy (not yet frozen)     │
+    PROD exact Owner Product Freeze                │
+        → ARCH derived L2 Review/Freeze + approved prospective DAG/Task scope
+             ├── new capability/cost selector policy amendment (not retroactive T01)
+             ├── EXPL Stage 1 source evidence
+             └── QUAL source-quality owner-qualified delta
+                          │                       │
+                          └──────── I01 ──────────┘
+                        one lawful version integration Writer
+                        final composed blobs → affected tests/CI/Review
+                        → native Outcome Closure → RQ → separate release authority
 ```
 
-The three implementation branches can perform **non-authoritative source preparation or already-authorized bounded validation** concurrently as allowed; an accepted Claim/Task Pack is still required before effects. Independent review/CI must use each actual SHA. I01 is a real dependency join, not a fabricated prerequisite that serializes three unrelated source concerns.
+**Exact dependency rules:**
+- **The previously frozen T01's original source/test/CI/Review work is already independently authorized by #1353** and can continue with its existing valid Task Pack/Claim and seven-path Writer. It must **not** await the unrelated three-domain PROD/ARCH Freeze for its original obligations; its explicit provider-specific Woodpecker requirement remains mandatory. Its historical global Web-default still governs its original frozen subject.
+- **Only the new general capability/cost selector and its prospective normative text** require PROD exact Product Freeze → derived ARCH L2/DAG/Task authority before adoption or assignment of newly enabled Local Builders. Proposed amendments are not automatically merged into or authorized by the old T01 Freeze.
+- EXPL/QUAL may do independent previously authorized source/evidence work concurrently where permitted. New normative adoption or implementation effects cannot be claimed without that concern's actual governing Task, Claim and frozen source scope. No false mandatory serial edge for disjoint already-authorized read-only or implementation work.
+- **I01** is a true convergence join for accepted, qualified changes and the independently finished T01. The Workflow file overlap requires one Writer at this join, not three parallel file writers. A Draft PR, this diagram, or an approval comment alone is not a native Task dependency mutation or Claim.
 
-### 2.1 Single Writer for the only known overlapping file
+### 2.1 Original Workflow overlap and separately derived preview copies
 
 `standards/DEVELOPMENT_WORKFLOW.md` is touched by both #1362 and #1342, with different original PR bases. A legitimate I01 version Writer must:
 
@@ -46,17 +56,19 @@ The three implementation branches can perform **non-authoritative source prepara
 4. Run impacted source-only tests, applicable inherited Python/CI suites and independent review on the final composite SHA, not transfer old PASS from component SHA.
 5. Record origin, owned changed-path inventory, failing/negative cases, expected HEAD guard, integrated commit and actual status. If a blocker is unrelated infrastructure rather than source, retain source PASS evidence and classify separately.
 
+**Additional shared planning paths with PR #1365:** the integration preview at HEAD `dac263fa4c0ab155406d2f2117459b34322cc988` contains the two PR #1364 L2/DAG files as copied, derived evidence. #1364 remains the **sole current review/repair Writer for these two source paths**; #1365 must not separately mutate them during this review. Any revised #1364 Blob invalidates the preview copy's currentness and must be treated as `STALE` until a legally admitted *single I01 integration Writer* takes the latest reviewed planning blobs into a **new** integrated HEAD and reruns affected final-source checks/required independent Review. This DAG review neither modifies #1365 nor retroactively qualifies its earlier partial Python receipts.
+
 Do not silently merge old #1342 (main-based) into main. Do not invent a second GitHub-native dependency topology or standalone Claim from this doc.
 
 ## 3. Proposed execution/verification order
 
-**Before any CI:** source syntax/JSON schema parse and Python compile on the exact new source candidate; no unnecessary Node-major rule for semantic Demo content.
+**Before applicable code/schema CI:** retain **all frozen #1357/T01-specific preflight and provider requirements**: exact-tree changed JSON/Python syntax → focused/full applicable Python regression → self-hosted Woodpecker on the exact SHA → mandatory independent source Review. For *other* subjects, require syntax/parse/clean checkout checks **only where their actual changed sources and effective validation/profile owner make them applicable**. Doc-only study edits do not create a universal Python-compile or Woodpecker obligation, but cannot waive an existing project/frozen release-required Minimal CI. `VALIDATION_STANDARD.md` §8 allows a stronger clean alternate executor only when the authority did not explicitly mandate provider-specific evidence. No unrelated Node-major rule for semantic Demo contents.
 
 **T01 focus:** `scripts/test_protocol_schemas.py`, `scripts/test_v410_t06b_multi_dispatch_conformance.py`, `scripts/test_execution_architecture.py`, and existing relevant ADS full conformance; profile/role/environment contradiction, legacy profile semantics and protected-claim-key invariance.
 
-**P1 focus:** old no-exploration fast path; multi-study master Issue/Git-source exact pin; negative/unknown; Stage 1 vs mandatory Stage 2; no automatic Product Freeze. Doc-only tests as applicable; version-level tests still required on integrated candidate.
+**EXPL focus:** old no-exploration fast path; multi-study master Issue/Git-source exact pin; negative/unknown; Stage 1 vs mandatory Stage 2; no automatic Product Freeze. Doc-only tests as applicable; version-level tests still required on integrated candidate.
 
-**P2 focus:** `python -m unittest discover -s tests -p test_v419_issue_prevention.py -v`; owner coverage, 18 cases/3 positive controls, nested discovery synthetic negative, public hook loaded-not-invoked negative, Golden/Forbidden and old normative owner consistency; physical selected-consumer proof remains separate if material.
+**QUAL focus:** `python -m unittest discover -s tests -p test_v419_issue_prevention.py -v`; owner coverage, 18 cases/3 positive controls, nested discovery synthetic negative, public hook loaded-not-invoked negative, Golden/Forbidden and old normative owner consistency; physical selected-consumer proof remains separate if material.
 
 **I01 focus:** final combined file content, all affected Python/schema tests and the inherited applicable suite with historical fixed-SHA failures classified (do not call EXIT 1 PASS), actual exact-SHA CI *only where applicable by frozen/project policy*, source-bound independent normative Review where required, and current Release Standard qualification. For frozen T01 #1357, its explicit self-hosted Woodpecker requirement remains in force; source-only docs or a different concern do **not** automatically inherit that provider-specific requirement. `VALIDATION_STANDARD.md` §8 allows a trusted equivalent clean executor only if the owning gate requires the check profile but not an explicit provider attestation. Web partial unit tests and a GitHub status list with zero entries do not establish either full CI PASS or universal exemption. Do not substitute GitHub Actions. Do not rerun unchanged-tree PASS without a change/required new environment.
 
@@ -68,7 +80,7 @@ For each candidate use separate flags: `PRODUCT_FREEZE`, `L2_FREEZE`, `DAG_FREEZ
 
 | Event | Legal outcome |
 | --- | --- |
-| Product Owner issues exact prospective Product Freeze | P0 can become frozen; qualify derived L2 before new source scope |
+| Product Owner issues exact prospective Product Freeze | PROD can become frozen; qualify derived L2 before new source scope |
 | Source fails focused regression after a repair | Same authorized Writer repairs within original write-set, reruns affected checks on changed SHA |
 | Web cheaper but Local-only environment is required for implementation | Choose existing authorized Local Builder under effective contract, not `LOCAL_VALIDATION` source mutation |
 | Native DAG has true blocked predecessor | Progress upstream only; do not fake readiness from stale `state:ready` |
