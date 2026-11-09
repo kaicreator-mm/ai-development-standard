@@ -1,0 +1,117 @@
+{
+  "schema": "ads/formal-source-index/v2",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "effective_baseline": "Observed version/v4.18 HEAD ac7e7e51de3a7ac27343f16a96568c0b0f2c5349 on 2026-11-09; no assertion this ref is immutable",
+  "candidate_authority": "PROSPECTIVE_ONLY",
+  "historical_scope": "#1353 freeze events in Issue comments: Product #6585179041 44562165d715a347a4ee00c010b8fb6e302530c7, L2 #6585199646 b82f201d02ae9013eb42c3597a8a1768aa63ce4f, DAG #6585213172 fbf1a7d49596c549e955ef36949f4110a0da2d33; candidate cannot retroactively amend",
+  "all_ADS_normative_obligations_denominator": null,
+  "properties": [
+    {
+      "id": "ADS-P-LC",
+      "model_id": "ADS-M-LIFECYCLE",
+      "sources": [
+        "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "hypothesis": "bounded Freeze/Claim/Release order",
+      "limitations": [
+        "R0 TLC 1 Task, two Writers; temporal liveness unknown"
+      ]
+    },
+    {
+      "id": "ADS-P-AUT",
+      "model_id": "ADS-M-AUTHORITY",
+      "sources": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "scripts/v34_rules.py"
+      ],
+      "hypothesis": "source mutation requires effective builder claim, authorized write set, current claim",
+      "limitations": [
+        "claim expiry semantics not modeled"
+      ]
+    },
+    {
+      "id": "ADS-P-DEP",
+      "model_id": "ADS-M-DEPENDENCY",
+      "sources": [
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "hypothesis": "cycle and shared write-set collision prohibited in finite graph",
+      "limitations": [
+        "three node single-cycle only; speculative to generalize"
+      ]
+    },
+    {
+      "id": "ADS-P-EVI",
+      "model_id": "ADS-M-EVIDENCE",
+      "sources": [
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "schemas/dispatch.schema.json"
+      ],
+      "hypothesis": "CI/Review evidence must match exact subject and accepted claim",
+      "limitations": [
+        "abstract equality not cryptographic SHA proof"
+      ]
+    },
+    {
+      "id": "ADS-P-EVO",
+      "model_id": "ADS-M-EVOLUTION",
+      "sources": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "hypothesis": "prospective rule cannot rewrite frozen historical eligibility",
+      "limitations": [
+        "approved historical migration path not modeled"
+      ]
+    },
+    {
+      "id": "ADS-P-CROSS",
+      "model_id": "ADS-M-CROSS",
+      "sources": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "hypothesis": "release and source mutation consume consistent Claim, DAG and current Evidence",
+      "limitations": [
+        "no full original schema-state equivalence"
+      ],
+      "depends_on": [
+        "ADS-P-LC",
+        "ADS-P-AUT",
+        "ADS-P-DEP",
+        "ADS-P-DEP-4",
+        "ADS-P-EVI",
+        "ADS-P-EVO",
+        "ADS-P-CAS"
+      ]
+    },
+    {
+      "id": "ADS-P-DEP-4",
+      "model_id": "ADS-M-DEPENDENCY",
+      "sources": [
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "hypothesis": "every edge of a four-node DAG has a strictly increasing topological rank",
+      "limitations": [
+        "four-node finite abstraction, not an arbitrary DAG theorem or native Task DAG parsing"
+      ]
+    },
+    {
+      "id": "ADS-P-CAS",
+      "model_id": "ADS-M-AUTHORITY",
+      "sources": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "hypothesis": "atomic admission with generation currentness and active key exclusion prevents competing active same-key Claims while permitting sequential handoff and distinct-key parallelism",
+      "limitations": [
+        "two requests only",
+        "linearizability/active-set implementation assumed",
+        "does not verify actual GitHub transaction"
+      ]
+    }
+  ]
+}
