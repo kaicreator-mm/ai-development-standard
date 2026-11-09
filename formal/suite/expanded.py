@@ -268,6 +268,18 @@ def main_v1(options, suite_path, spec):
         "model_input_alignment_before": model_before,
         "model_input_alignment_after": model_after,
         "checks": results, "solver_differential": differential,
+        "selection": {
+            "all_declared_cases_selected": (len(selected) == len(spec["cases"])
+                                           and not options.model and not options.property
+                                           and not options.changed_source),
+            "requested_model": options.model,
+            "requested_property": options.property,
+            "requested_changed_sources": options.changed_source,
+            "selected_case_ids": [c["id"] for c in selected],
+            "selected_case_count": len(selected),
+            "declared_case_count": len(spec["cases"]),
+            "qualification": "SELECTED_CASES_ONLY_NOT_FULL_ADS_PROOF"
+        },
         "affected_property_ids": invalidated if options.changed_source else None,
         "coverage": {"modeled_obligations_denominator": len(props),
                      "modeled_obligations_with_selected_cases": len({x["property_id"] for x in results}),
