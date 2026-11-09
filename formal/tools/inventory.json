@@ -1,0 +1,49 @@
+{
+  "schema": "ads/formal-tool-inventory/v1",
+  "runtime": {
+    "python": "3.13.5",
+    "platform": "linux-x86_64"
+  },
+  "toolkit": {
+    "manifest_sha256": "99337228352c9bacc5057f17e1ac5ebffd51b7a6c272b6995526df017608aab1",
+    "manifest_matches_SHA256SUMS": true,
+    "artifacts_listed": 8,
+    "downloaded_and_sha256_checked": [
+      "cvc5"
+    ],
+    "other_toolkit_artifact_status": "NOT_RUN",
+    "prob_upstream_signature": "NOT_VERIFIED",
+    "clingo_wheel_python": "3.14.4",
+    "current_python_compatible_with_supplied_clingo_wheel": false
+  },
+  "smokes": {
+    "z3": {
+      "version": "5.3.3",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "archive_sha256": "d56f60b06f432f33de5810f7f1a384a339131f361e2d54d08ea83eea14326880",
+      "status": "VERIFIED"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "archive_sha256": "7eb18f8c814c36a46c5a7d003983e9cfbc4b0a9828d6dd596239291bd4cc61d8",
+      "status": "VERIFIED",
+      "incremental_flag": "--incremental"
+    },
+    "tlc": {
+      "version": "2.19",
+      "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "status": "VERIFIED_STARTUP"
+    },
+    "java": {
+      "version": "21.0.12.1",
+      "status": "VERIFIED"
+    }
+  },
+  "notes": [
+    "Only cvc5 artifact bytes were checked against toolkit MANIFEST. Other toolkit artifacts remain NOT_RUN.",
+    "Z3/TLC fetched from supplied App directory and locally smoke-tested.",
+    "TLC startup is not a new R1 TLC model-check pass.",
+    "No mandatory ADS CI or Release gate."
+  ]
+}
