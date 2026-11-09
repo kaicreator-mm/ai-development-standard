@@ -1,0 +1,118 @@
+{
+  "kind": "BOUNDED_FORMAL_MODEL_CHECK_NOT_FULL_ADS_PROOF",
+  "source_binding": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "repo": "kaicreator-mm/ai-development-standard",
+  "z3_version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+  "z3": [
+    {
+      "file": "roles.smt2",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat"
+      ],
+      "actual": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "output": "unsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nsat\nsat\nsat\nunsat\nunsat\n"
+    },
+    {
+      "file": "gates.smt2",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "output": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "file": "roles-mutant.smt2",
+      "expected": [
+        "sat"
+      ],
+      "actual": [
+        "sat"
+      ],
+      "exit_code": 0,
+      "pass": true,
+      "output": "sat\n"
+    }
+  ],
+  "tlc": [
+    {
+      "config": "ADSWorkflow.cfg",
+      "expected_invariant_error": false,
+      "observed_invariant_error": false,
+      "counterexample_expected_marker": null,
+      "counterexample_marker_found": true,
+      "states_generated": 53,
+      "distinct_states": 27,
+      "exit_code": 0,
+      "pass": true,
+      "output_tail": "TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)\nWarning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the \"-XX:+UseParallelGC\" property.\n(Use the -nowarning option to disable this warning.)\nRunning breadth-first search Model-Checking with fp 59 and seed -8693425156739701884 with 1 worker on 4 cores with 1024MB heap and 64MB offheap memory [pid: 1644] (Linux 6.18.57 amd64, Debian 21.0.12.1 x86_64, MSBDiskFPSet, DiskStateQueue).\nParsing file /mnt/data/ads_v419_proof/formal/v4.19/r0/ADSWorkflow.tla\nParsing file /tmp/Naturals.tla\nParsing file /tmp/FiniteSets.tla\nParsing file /tmp/Sequences.tla\nSemantic processing of module Naturals\nSemantic processing of module Sequences\nSemantic processing of module FiniteSets\nSemantic processing of module ADSWorkflow\nStarting... (2026-11-09 12:08:45)\nComputing initial states...\nFinished computing initial states: 1 distinct state generated at 2026-11-09 12:08:46.\nModel checking completed. No error has been found.\n  Estimates of the probability that TLC did not check all reachable states\n  because two distinct states had the same fingerprint:\n  calculated (optimistic):  val = 3.8E-17\n53 states generated, 27 distinct states found, 0 states left on queue.\nThe depth of the complete state graph search is 12.\nThe average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).\nFinished in 00s at (2026-11-09 12:08:46)\n"
+    },
+    {
+      "config": "ADSWorkflow.bad-release.cfg",
+      "expected_invariant_error": true,
+      "observed_invariant_error": true,
+      "counterexample_expected_marker": "LifecycleSafe",
+      "counterexample_marker_found": true,
+      "states_generated": 3,
+      "distinct_states": 3,
+      "exit_code": 12,
+      "pass": true,
+      "output_tail": "TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)\nWarning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the \"-XX:+UseParallelGC\" property.\n(Use the -nowarning option to disable this warning.)\nRunning breadth-first search Model-Checking with fp 50 and seed 2439987563562311449 with 1 worker on 4 cores with 1024MB heap and 64MB offheap memory [pid: 1676] (Linux 6.18.57 amd64, Debian 21.0.12.1 x86_64, MSBDiskFPSet, DiskStateQueue).\nParsing file /mnt/data/ads_v419_proof/formal/v4.19/r0/ADSWorkflow.tla\nParsing file /tmp/Naturals.tla\nParsing file /tmp/FiniteSets.tla\nParsing file /tmp/Sequences.tla\nSemantic processing of module Naturals\nSemantic processing of module Sequences\nSemantic processing of module FiniteSets\nSemantic processing of module ADSWorkflow\nStarting... (2026-11-09 12:08:46)\nComputing initial states...\nFinished computing initial states: 1 distinct state generated at 2026-11-09 12:08:46.\nError: Invariant LifecycleSafe is violated.\nError: The behavior up to this point is:\nState 1: <Initial predicate>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = FALSE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\nState 2: <Release line 51, col 12 to line 53, col 95 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = FALSE\n/\\ releaseQualified = FALSE\n/\\ released = TRUE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\n3 states generated, 3 distinct states found, 1 states left on queue.\nThe depth of the complete state graph search is 2.\nFinished in 00s at (2026-11-09 12:08:46)\n"
+    },
+    {
+      "config": "ADSWorkflow.bad-claim.cfg",
+      "expected_invariant_error": true,
+      "observed_invariant_error": true,
+      "counterexample_expected_marker": "SingleWriter",
+      "counterexample_marker_found": true,
+      "states_generated": 10,
+      "distinct_states": 7,
+      "exit_code": 12,
+      "pass": true,
+      "output_tail": "TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)\nWarning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the \"-XX:+UseParallelGC\" property.\n(Use the -nowarning option to disable this warning.)\nRunning breadth-first search Model-Checking with fp 31 and seed 7980207290947257382 with 1 worker on 4 cores with 1024MB heap and 64MB offheap memory [pid: 1708] (Linux 6.18.57 amd64, Debian 21.0.12.1 x86_64, MSBDiskFPSet, DiskStateQueue).\nParsing file /mnt/data/ads_v419_proof/formal/v4.19/r0/ADSWorkflow.tla\nParsing file /tmp/Naturals.tla\nParsing file /tmp/FiniteSets.tla\nParsing file /tmp/Sequences.tla\nSemantic processing of module Naturals\nSemantic processing of module Sequences\nSemantic processing of module FiniteSets\nSemantic processing of module ADSWorkflow\nStarting... (2026-11-09 12:08:47)\nComputing initial states...\nFinished computing initial states: 1 distinct state generated at 2026-11-09 12:08:47.\nError: Invariant SingleWriter is violated.\nError: The behavior up to this point is:\nState 1: <Initial predicate>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = FALSE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\nState 2: <FreezeProduct line 14, col 18 to line 16, col 111 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\nState 3: <FreezeL2 line 17, col 13 to line 19, col 107 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\nState 4: <FreezeDAG line 20, col 14 to line 22, col 108 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = TRUE\n/\\ claimedEver = FALSE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\nState 5: <Claim line 23, col 13 to line 28, col 90 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {\"web\"}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = TRUE\n/\\ claimedEver = TRUE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\nState 6: <Claim line 23, col 13 to line 28, col 90 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {\"web\", \"local\"}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = TRUE\n/\\ claimedEver = TRUE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\n10 states generated, 7 distinct states found, 1 states left on queue.\nThe depth of the complete state graph search is 6.\nThe average outdegree of the complete state graph is 1 (minimum is 1, the maximum 2 and the 95th percentile is 2).\nFinished in 00s at (2026-11-09 12:08:47)\n"
+    }
+  ],
+  "exact_source_checkout": {
+    "status": "NOT_RUN",
+    "reason": "Exact candidate Git checkout not supplied"
+  },
+  "model_verdict": "PASS",
+  "qualification": "MODEL_ONLY_NOT_NORMATIVE_ADOPTION"
+}
