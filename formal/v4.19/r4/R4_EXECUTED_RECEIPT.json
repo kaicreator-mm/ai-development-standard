@@ -1,0 +1,146 @@
+{
+  "schema": "ads/formal-r4-executed-receipt/v1",
+  "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF",
+  "executed_utc": "2026-11-09T17:15:44.219424+00:00",
+  "source_candidate_pr": 1365,
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_status": "PROSPECTIVE_NOT_FROZEN",
+  "base_experiment_commit": "4fa87d65a313ef7ff7dd62f85770cae0ca5d6e07",
+  "results": {
+    "new_model_property": "ADS-P-WRITER-KEYS",
+    "new_executed_cases": 4,
+    "new_pass_model": 2,
+    "new_mutant_counterexamples": 2,
+    "tool_differential_pairs": 2,
+    "tool_differential_agreement": "PASS",
+    "native_solver_checks": [
+      {
+        "case_id": "ADS-P-WRITER-KEYS-Z3",
+        "tool": "z3",
+        "purpose": "proof",
+        "status": "PASS_MODEL",
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "case_id": "ADS-P-WRITER-KEYS-CVC5",
+        "tool": "cvc5",
+        "purpose": "proof",
+        "status": "PASS_MODEL",
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "case_id": "ADS-P-WRITER-KEYS-MUTANT-Z3",
+        "tool": "z3",
+        "purpose": "mutation",
+        "status": "COUNTEREXAMPLE",
+        "answers": [
+          "sat"
+        ],
+        "exit_code": 0
+      },
+      {
+        "case_id": "ADS-P-WRITER-KEYS-MUTANT-CVC5",
+        "tool": "cvc5",
+        "purpose": "mutation",
+        "status": "COUNTEREXAMPLE",
+        "answers": [
+          "sat"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "normal_model": {
+      "path": "formal/models/cross/writer-exclusion.smt2",
+      "git_blob_sha1": "dd00d7186df5577587f0b3340fe1cbb078bad437",
+      "sha256": "8a702452377b3e687310c2114992cc92246b3a8242dc7e6407225b2e67ea4f86",
+      "finite_queries": 6
+    },
+    "injected_mutant": {
+      "path": "formal/models/cross/writer-exclusion-mutant.smt2",
+      "git_blob_sha1": "b49fb584ad00fd57bbf5d48033983de016683542",
+      "sha256": "4d210e59e4baa32e3991bda0b070de121a873bae3cdff31080283e7252989ca6",
+      "witness": "Two active authorized writers of distinct protected claim keys with overlapping write sets become SAT when overlap exclusion is deliberately omitted",
+      "classification": "INJECTED_MODEL_BUG_NOT_NORMATIVE_ADS_DEFECT"
+    }
+  },
+  "tool_versions": {
+    "z3": {
+      "version": "5.3.3",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "status": "VERIFIED_EXECUTED"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "status": "VERIFIED_EXECUTED"
+    }
+  },
+  "reproduction": {
+    "tool_commands": [
+      "z3 -smt2 formal/models/cross/writer-exclusion.smt2",
+      "cvc5 --lang=smt2 --incremental formal/models/cross/writer-exclusion.smt2",
+      "z3 -smt2 formal/models/cross/writer-exclusion-mutant.smt2",
+      "cvc5 --lang=smt2 --incremental formal/models/cross/writer-exclusion-mutant.smt2"
+    ],
+    "direct_tool_execution_not_main_suite": true
+  },
+  "source_alignment": {
+    "candidate_head_resolved_against_pr": true,
+    "github_blob_and_anchor_readback": "PASS_7_OF_7",
+    "local_exact_git_worktree": "NOT_RUN",
+    "strict_source_verdict": "BLOCKED"
+  },
+  "traceability_audit": {
+    "method": "GitHub connector source/readback, independently recomputed bidirectional edges with JavaScript; not an execution of committed Python runner",
+    "status": "PASS_STRUCTURAL_READBACK",
+    "properties": 9,
+    "source_paths": 7,
+    "defined_suite_cases": 27,
+    "model_files_present": 13,
+    "tlc_config_files_present": 3,
+    "errors": 0,
+    "initial_findings": [
+      "ADS-P-DEP missing reverse source map to EXECUTION_ARCHITECTURE_STANDARD.md",
+      "ADS-P-DEP-4 same missing forward source reference"
+    ],
+    "repair_commit": "4fa87d65a313ef7ff7dd62f85770cae0ca5d6e07",
+    "committed_python_audit_unittest": "NOT_RUN"
+  },
+  "cumulative": {
+    "r2_executed": 19,
+    "r3_incremental_executed": 4,
+    "r4_incremental_executed": 4,
+    "executed_model_cases": 27,
+    "model_cases_pass": 17,
+    "deliberate_mutants_detected": 10,
+    "modeled_property_denominator": 9,
+    "source_bound_verified_properties": 0,
+    "full_ADS_rule_denominator": null
+  },
+  "review_status": "BUILDER_SELF_ADVERSARIAL_ONLY_INDEPENDENT_SEMANTIC_REVIEW_NOT_RUN",
+  "not_run": [
+    "Full Python unit suite on exact Git files",
+    "All R4 declared suite cases on same current commit",
+    "Exact candidate Git worktree checkout, --strict-source",
+    "Live GitHub Claim/CAS execution",
+    "Independent reviewer source-to-model semantic evaluation",
+    "Current-release CI, Freeze, Merge, Release"
+  ],
+  "overall": "R4_INCREMENTAL_MODEL_ONLY_PASS_NOT_SOURCE_BOUND"
+}
