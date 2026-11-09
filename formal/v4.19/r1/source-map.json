@@ -1,0 +1,61 @@
+{
+  "repository": "kaicreator-mm/ai-development-standard",
+  "candidate_pr": 1365,
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "target_status": "DRAFT_CANDIDATE_NOT_FROZEN",
+  "sources": [
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "anchors": [
+        "LOCAL_VALIDATION",
+        "Existing v4.18 and #1353-frozen historical subjects"
+      ]
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "anchors": [
+        "NO_CLAIM_NO_EXECUTION",
+        "protected_claim_key",
+        "LOCAL_VALIDATION"
+      ]
+    },
+    {
+      "path": "schemas/dispatch.schema.json",
+      "blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "anchors": [
+        "WEB_BUILDER",
+        "LOCAL_VALIDATION",
+        "execution_environment"
+      ]
+    },
+    {
+      "path": "scripts/v34_rules.py",
+      "blob": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+      "anchors": [
+        "def validator_may_repair_source",
+        "return dispatch_role == \"builder\"",
+        "EXECUTION_PROFILE_ENVIRONMENTS"
+      ]
+    },
+    {
+      "path": "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+      "blob": "787a412c7eb4bdc09ae4bf9e35e77d266b693825",
+      "anchors": [
+        "PRODUCT_FREEZE=NOT_RUN",
+        "LOCAL_VALIDATION",
+        "Product Freeze"
+      ]
+    },
+    {
+      "path": "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+      "blob": "dd72a092ae6226ba2715aaaf37d29b3766a940b1",
+      "anchors": [
+        "DAG_CANDIDATE",
+        "NO_CLAIM_GRANTED",
+        "one I01 Writer"
+      ]
+    }
+  ]
+}

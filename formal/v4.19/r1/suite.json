@@ -1,0 +1,174 @@
+{
+  "schema": "ads/formal-suite/v1",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "source_map": "v4.19/r1/source-map.json",
+  "source_index": "v4.19/r1/source-index.json",
+  "cases": [
+    {
+      "id": "ADS-P-AUT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/authority/claim.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-AUT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "model": "models/authority/claim.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-DEP-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/dependency/parallel.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-DEP-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "model": "models/dependency/parallel.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-EVI-Z3",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/evidence/exact-sha.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-EVI-CVC5",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "model": "models/evidence/exact-sha.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-EVO-Z3",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/evolution/scopes.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-EVO-CVC5",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "model": "models/evolution/scopes.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-CROSS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/cross/combined.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-CROSS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "model": "models/cross/combined.smt2",
+      "expect": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "z3",
+      "purpose": "mutation",
+      "model": "models/authority/claim-mutant.smt2",
+      "expect": [
+        "sat"
+      ]
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "model": "models/authority/claim-mutant.smt2",
+      "expect": [
+        "sat"
+      ]
+    }
+  ]
+}
