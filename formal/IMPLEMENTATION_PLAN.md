@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R9 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R8_BOUNDED_REPAIR / R9_RUNNER_HARDENED / CURRENT_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R10 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R8_BOUNDED_REPAIR / R10_PAIR_COVERAGE_HARDENED / CURRENT_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -206,3 +206,15 @@ R9 原生增量用例新增 **0 个**，试点仍是 10 个性质与 35 个模�
 本轮在校验器本身的最后一道 `--version` 路径发现并消除了遗漏：**R7 原校验器虽然拒绝哈希不匹配的工具，但仍先执行其 `--version`**；R9 将哈希检查前移到任何原生工具版本探测之前，并增加副作用哨兵负面测试。修复后将 GitHub 的 `formal/suite/toolchain.py` 与 `formal/tests/test_toolchain.py` 逐字节重建到隔离的 Python 工作目录，`git hash-object` 与 GitHub blob 1:1 一致，执行**5/5 unittest PASS**。使用用户提供离线分发归档抽取的 Z3 5.3.3、cvc5 1.4.2 和 TLC 2.19 JAR 真实核对**3/3 PASS**，版本和 SHA256 与 `formal/tools/inventory.json` 一致。
 
 详细实际执行收据在 `formal/v4.19/r9/EXECUTED_RECEIPT.json`，根因与适用边界在 `formal/v4.19/r9/FINDINGS_AND_LIMITS.md`。注意 `test_expanded.py` 新增的完整 runner 测试（缺失 TLC 结果结构、错误工具执行前阻断、R8 真实差量选择）、R8 35-case 严格双 worktree 源绑定及独立语义评价仍未执行；**新轮次不得自称 R9 全套 Source-bound PASS**。当前仍为 10 个试点性质 / 35 个声明模型用例，ADS 全规范义务总数未知。
+
+## 15. R10 双求解器缺失的 Fail-Closed 证明资格（2026-11-10）
+
+**修复缺陷 R10-PY-P1-01：** 旧 `solver_differential(selected, results)` 遇到一个模型只登记了 Z3 或只登记了 cvc5 时直接 `continue`。如果配对用例从 `suite.json` 及索引/Traceability 一同消失，验证器可得到空/不完整差分结果，却没有明确指出缺少独立交叉复核。这与当前正式声明的 Z3/cvc5 交叉比较资格不符。
+
+**最小修复：** `formal/suite/differential.py` 增加 `require_pairs=False`（历史单求解器兼容）；要求配对时，每个 `(property_id, model, purpose)` 的 Z3+cvc5 两侧必须各有唯一用例和一致结果。缺侧、重复 ID、孤立结果、工具来源错位或实际结果不一致都给 `INCONCLUSIVE`。当前 `formal/v4.19/r10/suite.json` 从 R8 35-case suite 复制，只增加 `require_solver_pairs: true`；主运行器根据 Git 固定的 Suite 字段调用比较器。R8 历史文件和所有已有 Case/Property 的内容保持不变。
+
+**实际单元回归（精确文件级）：** Python 3.13.5 的 `formal/tests/test_differential.py` 在隔离工作目录运行 6/6 PASS、exit 0；`formal/suite/differential.py` 和 `formal/tests/test_differential.py` 的本地 `git hash-object` 分别为 `0266543c4edb991472ce781615b2bb8e77a5307b` 和 `34ceb558d67a5a42a9c540dde95471f4059de3dc`，与 GitHub 提交 blob 完全一致。GitHub metadata 校验发现当前 35-case 套装包含 16 对 SMT（32 Case）、3 个 TLC Case、10 个试点性质，反向 Source→Property→Case 链接没有缺失。新增 `test_expanded.py` 集成检查已提交但完整 Git 工作树下尚未执行。
+
+**验收仍受限：** 这不构成 R10 35/35 Source-bound PASS；R5 27/27 历史严格验证仍按旧 HEAD 引用，R6/R8 分别有 4 个增量模型结果。当前缺少双 Exact-SHA Git worktree 的完整 `formal/tests` 回归、35-case 最新 runner 严格重跑、R8 新模型的独立语义复核，真实 GitHub CAS/Claim/Host/CI/Release 也仍未建模验证。ADS 规则义务分母保持 UNKNOWN，不引入正式 Gate、FIR 或 Node 版本限制。
+
+R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。

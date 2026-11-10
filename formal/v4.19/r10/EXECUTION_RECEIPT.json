@@ -1,0 +1,84 @@
+{
+  "schema": "ads/formal-r10-execution-receipt/v1",
+  "kind": "ISOLATED_EXACT_GIT_BLOB_PYTHON_REGRESSION_NOT_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_PROSPECTIVE",
+    "experiment_code_commit": "a320e86e815432aca7162e8612e171b53472daef",
+    "experiment_branch": "experiment/v4.19-formal-proof-r0"
+  },
+  "finding": {
+    "id": "R10-PY-P1-01",
+    "severity": "P1_FORMAL_EVIDENCE",
+    "cause": "solver_differential silently skips a native model when only one of z3/cvc5 is selected or declared",
+    "impact": "An altered suite could omit independent solver corroboration without producing a differential failing row",
+    "normative_ads_defect": "NOT_ESTABLISHED"
+  },
+  "implementation": {
+    "required_dual_solver_flag": "formal/v4.19/r10/suite.json#require_solver_pairs=true",
+    "control": "solver_differential(..., require_pairs=True) with per-(property,model,purpose) missing-pair INCONCLUSIVE",
+    "backward_compatibility": "Old single-Z3 suites retain default require_pairs=false",
+    "new_native_cases": 0,
+    "old_r8_suite_mutated": false,
+    "source_inputs": [
+      {
+        "path": "formal/suite/differential.py",
+        "git_blob": "0266543c4edb991472ce781615b2bb8e77a5307b",
+        "sha256": "7a3cf49d384a22ea8c25e856752ceab4517c275c438a03bd765fa66b9eaffd04"
+      },
+      {
+        "path": "formal/tests/test_differential.py",
+        "git_blob": "34ceb558d67a5a42a9c540dde95471f4059de3dc",
+        "sha256": "aa3e4226625e965bc8de63ee486d727add866f88f6453b65eea4480d6e62ebc7"
+      }
+    ]
+  },
+  "test_execution": {
+    "command": "python3 -m unittest discover -s formal/tests -v (isolated two-file worktree)",
+    "platform": "Linux x86_64",
+    "python": "3.13.5",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "status": "PASS_EXACT_GIT_BLOB_ISOLATED",
+    "test_log_sha256": "2f6d45b63c3f6b804cb983fe4d22d38f02a13e144154cbf84fd4255349a33698",
+    "test_names": [
+      "test_normal_pair_passes",
+      "test_mandatory_pair_rejects_missing_cvc5_or_z3",
+      "test_legacy_single_solver_remains_allowed",
+      "test_mutant_is_an_independent_pair",
+      "test_missing_duplicate_or_wrong_tool_outcomes_fail_closed",
+      "test_distinct_models_not_overwritten"
+    ]
+  },
+  "suite_trace_integrity": {
+    "suite": "formal/v4.19/r10/suite.json",
+    "full_suite_cases_defined": 35,
+    "modeled_properties": 10,
+    "source_files": 7,
+    "SMT_cases": 32,
+    "TLC_cases": 3,
+    "mandatory_independent_solver_pairs": 16,
+    "missing_pairs": 0,
+    "traceability": "PASS_METADATA_ONLY",
+    "actual_source_bound_run": "NOT_RUN"
+  },
+  "historical_receipts": {
+    "R5_strict_cases": 27,
+    "R6_incremental_cases": 4,
+    "R8_incremental_cases": 4,
+    "R10_full_strict_cases": "NOT_RUN"
+  },
+  "pending": [
+    "Complete Python unittest (formal/tests) with current Git experiment HEAD and exact candidate Git checkout",
+    "Run formal/v4.19/r10/suite.json all 35 cases with --model-head and --source-checkout --strict-source",
+    "Independent R8 successor admissibility source-to-model semantic review",
+    "Execute source-consumer tests on actual candidate checkout",
+    "No real GitHub dispatch CAS/CI/Host/Release end-to-end proof",
+    "Full ADS normative rule denominator unknown"
+  ],
+  "verdict": "R10_INDEPENDENT_SOLVER_COVERAGE_REGRESSION_PASS_FULL_INTEGRATION_NOT_RUN"
+}
