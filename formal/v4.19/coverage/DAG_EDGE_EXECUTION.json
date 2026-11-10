@@ -1,0 +1,54 @@
+{
+  "schema": "ads/formal-dag-edge-source-probe-receipt/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "source": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_source_path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+    "candidate_source_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+    "candidate_concern": "section 13.1 material serial dependencies vs later Review/Release join"
+  },
+  "execution": {
+    "platform": "Linux x86_64",
+    "python": "3.13.5",
+    "unit_test_command": "python3 -m unittest discover -s formal/tests -p test_dag_edge_probe.py -v (isolated exact copied files)",
+    "test_count": 7,
+    "passed": 7,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "unittest_log_sha256": "b43285892603c8548ad551983db113c17b490095fd4c12748630fa73b93f8711",
+    "demo_command": "python3 formal/v4.19/coverage/dag_edge_probe.py",
+    "demo_output_sha256": "8eb3ed9bd73c7c117c4d8bdf70806ae57e25ac9b77cba25f6d32683058f95911",
+    "exact_local_git_blobs": {
+      "formal/v4.19/coverage/dag_edge_probe.py": "3ef64b12e5fcee9a7ab3123b98d9f86992084496",
+      "formal/tests/test_dag_edge_probe.py": "d5ee6124f174de80faef06af1425c7c6265af6d2"
+    }
+  },
+  "result": {
+    "join_only": {
+      "classification": "POSSIBLE_FALSE_SERIAL_EDGE",
+      "dispatch": "HOLD_NATIVE_DEPENDENCY"
+    },
+    "real_code_baseline": {
+      "classification": "MATERIAL_SERIAL_EDGE",
+      "dispatch": "HOLD_NATIVE_DEPENDENCY"
+    },
+    "shared_writer": {
+      "classification": "MATERIAL_SERIAL_EDGE",
+      "dispatch": "HOLD_NATIVE_DEPENDENCY"
+    },
+    "unknown": {
+      "classification": "UNKNOWN",
+      "dispatch": "NOT_AUTHORIZED"
+    }
+  },
+  "verdict": "PASS_SYNTHETIC_CONTRADICTION_AND_AUTHORITY_PRESERVATION",
+  "not_proven": [
+    "Synthetic contract/edge evidence; no native GitHub Issue Dependencies read/modify",
+    "No real Task Claim or authorized edge removal",
+    "Does not prove general Task DAG correctness or all ADS normative constraints",
+    "Current full Python 54+7 and native 35-case strict run not executed"
+  ]
+}
