@@ -344,3 +344,15 @@ GitHub 原生读回实际检查了 **12 个仓库的 14 个指定分支元组**�
 在全新审核 HEAD `3dec2ae90f3a8bb6b926be22ecb5e14c9a7572b1` 的 `R13_R16_INDEPENDENT_REVIEW_RECEIPT.json` 中确认 `R13-R16-REV-P2-01`：R13 的原生 runner 对模型与工具 SHA256 做前后钉死，但未对候选协议/Schema 字节做相同绑定。**本轮在原实验 `formal/v4.19/r13/run_proofs.py` 中直接修复**，增加候选 Protocol `935a905d593d7aec027cb54b5b137250ca14a4c1` 和已有候选 Schema `5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f` 的前/后 Git blob 比对，任一漂移或缺失立即 `InputBindingError/BLOCK`；Protocol fixture 使用候选 PR #1365 原始 Git object，不人为重写。增加 `r13/test_source_binding.py` 6 项声明式负例/身份测试，原 SMT/原 R11/R13 历史执行收据不变。
 
 **资格**：本轮对新程序 GitHub blob/结构进行读回验证；如未获得完整 exact-source Python 执行，不将新 runner 标为 Python PASS，更不将 R13 历史 32/32 paired 强行转移到修改后的 runner。冻结协议版本源 SHA 只能说明候选源码字节被钉死；不能推导 PR HEAD 在未来运行时没有变化，亦不能推导真正 Project/Task 有效版本采用、规范 ⇄ SMT 等价、真实 GitHub Claim/CAS 发布。最新状态见 `formal/v4.19/r17/R17_SOURCE_PROVENANCE_REPAIR.md` / `R17_SOURCE_PROVENANCE_RECEIPT.json`；独立审核实验 P2 标记为 `CODE_REPAIRED_AWAITING_TEST`，ADS 正式规范 P0/P1/P2=0/0/0；不增加 Controller toy-model、官方 Gate、GitHub Actions 或自动 Merge/Freeze/Release。
+
+
+## 31. #1366 R17 收敛执行 — exact-source Python 与固定 SHA256 原生双求解器闭环（2026-11-11）
+
+R17 P2 修复代码在其**被测 Exact-SHA `c5eb69c3fcd47ca934b4b87c8004131add6ad5d2`（TREE `762083f7a01355c01e4fc285772e6e926edea032`）**完成 §30 遗留的 `EXACT_SOURCE_TEST`：双 Exact-SHA worktree 全程 tracked 文件零修改，R11/R13 历史收据未重跑、未改写，候选 PR #1365 仍 OPEN/未合并。
+
+- [x] **新旧输入绑定 Python 测试 13/13 双环境零跳过 PASS**：`unittest discover -s formal/v4.19/r13 -p 'test_*binding*.py' -v` 精确命中 2 个文件 13 项（`test_binding_preflight.py` 旧 7 + `test_source_binding.py` 新 6，无 "0 tests" 陷阱）；WSL2 Ubuntu 26.04.1 × Python 3.14.4 与 Windows 10.0.26300 × Python 3.14.7 均 `OK, exit 0`。**无 red 缺陷，无修复需求**。
+- [x] **固定 SHA256 原生双求解器单次正跑 32/32**：修改后 `run_proofs.py`（blob `f2780a16…`）以 Z3 5.3.3（`fcd0ca76…`）+ cvc5 1.4.2（`6aecddf4…`）实跑，每求解器 16 项状态（reservation gap 4 SAT + publish-safety 2 SAT/10 UNSAT）与预期逐项一致、双求解器逐对相同；source/model/tool 前后 **12 项绑定检查全 PASS**。
+- [x] **真实未钉死二进制负探针 BLOCK**：换用 SHA256 不符的真实 cvc5（`cc6781dd…`）执行同一 runner → `exit 2`、`pair_status=BLOCK`、求解器查询 **0 次启动**，fail-closed 源字节+工具绑定路径真实生效。
+- [x] **证据固化**：`formal/v4.19/r17/{R17_PYTHON_BINDING_TESTS_RECEIPT.json, R17_PYTHON_BINDING_TESTS_LOG.txt, R17_NATIVE_DUAL_SOLVER_EXECUTION.json}`（含正跑完整 runner 输出与负探针输出嵌入）。
+
+**资格**：`R17_EXACT_SOURCE_TEST_CLOSED / PYTHON_13_OF_13_DUAL_ENV_ZERO_SKIP / NATIVE_32_OF_32_PAIRED / FAIL_CLOSED_BLOCK_VERIFIED / R13_R16_REV_P2_01_CODE_REPAIR_EXECUTION_QUALIFIED`。独立审核实验 P2（`R13-R16-REV-P2-01`）的代码修复+实测链路闭环；ADS 正式规范 P0/P1/P2 仍 **0/0/0**。源⇄SMT 语义等价、有效 v4.19 项目 pin 的真实生产 Dispatch/Claim/CAS/读回仍 `NOT_PROVEN`，全 ADS 原子义务分母仍 UNKNOWN。不改正式规范、不加 Gate/Actions、不 Merge/Freeze/Release。

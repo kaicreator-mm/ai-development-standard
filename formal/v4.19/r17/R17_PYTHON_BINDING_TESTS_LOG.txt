@@ -1,0 +1,46 @@
+== R17 Python input-binding tests — environment 1: WSL2 Ubuntu 26.04.1 (authoritative command from R17 handoff) ==
+== cmd: python3 -m unittest discover -s formal/v4.19/r13 -p 'test_*binding*.py' -v ==
+
+test_comment_only_model_change_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver) ... ok
+test_each_acceptance_guard_has_explicit_negative_query (test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query)
+Every guard conjunct must have a negative test asserting acceptance. ... ok
+test_missing_model_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver) ... ok
+test_missing_tool_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver) ... ok
+test_postflight_tamper_detected (test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected) ... ok
+test_unpinned_tool_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver) ... ok
+test_valid_exact_model_blobs (test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs) ... ok
+test_comment_only_protocol_change_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver) ... ok
+test_missing_protocol_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver) ... ok
+test_postflight_protocol_drift_is_rejected (test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected) ... ok
+test_real_candidate_fixtures_have_original_git_blobs (test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs) ... ok
+test_runner_cannot_claim_live_pr_adoption_from_fixture (test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture) ... ok
+test_schema_one_byte_drift_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.278s
+
+OK
+
+
+== R17 Python input-binding tests — environment 2: Windows 10.0.26300 x64 (second environment) ==
+== cmd: python -m unittest discover -s formal/v4.19/r13 -p "test_*binding*.py" -v ==
+
+test_comment_only_model_change_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver) ... ok
+test_each_acceptance_guard_has_explicit_negative_query (test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query)
+Every guard conjunct must have a negative test asserting acceptance. ... ok
+test_missing_model_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver) ... ok
+test_missing_tool_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver) ... ok
+test_postflight_tamper_detected (test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected) ... ok
+test_unpinned_tool_fails_before_solver (test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver) ... ok
+test_valid_exact_model_blobs (test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs) ... ok
+test_comment_only_protocol_change_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver) ... ok
+test_missing_protocol_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver) ... ok
+test_postflight_protocol_drift_is_rejected (test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected) ... ok
+test_real_candidate_fixtures_have_original_git_blobs (test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs) ... ok
+test_runner_cannot_claim_live_pr_adoption_from_fixture (test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture) ... ok
+test_schema_one_byte_drift_blocks_solver (test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.031s
+
+OK

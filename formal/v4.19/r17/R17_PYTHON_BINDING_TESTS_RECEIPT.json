@@ -1,0 +1,95 @@
+{
+  "schema": "ads/formal-r17-python-binding-tests/v1",
+  "issue": 1366,
+  "round": "R17",
+  "phase": "EXACT_SOURCE_TEST_EXECUTION_AFTER_P2_CODE_REPAIR",
+  "worktree": {
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "head_at_execution": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+    "tree_at_execution": "762083f7a01355c01e4fc285772e6e926edea032",
+    "tracked_files_modified_during_runs": false
+  },
+  "tested_code": {
+    "runner": {
+      "path": "formal/v4.19/r13/run_proofs.py",
+      "git_blob": "f2780a16c95a517a572b858f672451f5f15a7304"
+    },
+    "test_files": [
+      {
+        "path": "formal/v4.19/r13/test_binding_preflight.py",
+        "git_blob": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+        "tests": 7
+      },
+      {
+        "path": "formal/v4.19/r13/test_source_binding.py",
+        "git_blob": "10702d29c0609cac171a86f8149dd23de88f02a3",
+        "tests": 6
+      }
+    ]
+  },
+  "discovery": {
+    "command": "python -m unittest discover -s formal/v4.19/r13 -p 'test_*binding*.py' -v",
+    "pattern": "test_*binding*.py",
+    "files_matched": 2,
+    "zero_test_guard": {
+      "expected_min": 13,
+      "observed_each_env": 13,
+      "zero_tests_trap": "NOT_TRIGGERED"
+    }
+  },
+  "fixture_git_blobs_verified_preflight": {
+    "formal/v4.19/r17/fixtures/GITHUB_AGENT_INTERACTION_PROTOCOL.md": {
+      "observed": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "pinned": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "status": "PASS"
+    },
+    "formal/v4.19/r15/fixtures/dispatch.schema.json": {
+      "observed": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "pinned": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "status": "PASS"
+    },
+    "formal/v4.19/r13/publish-safety.smt2": {
+      "observed": "515454a82171c668739708ef50c46a254dcd9cc8",
+      "pinned": "515454a82171c668739708ef50c46a254dcd9cc8",
+      "status": "PASS"
+    },
+    "formal/v4.19/r13/weak-admission-gap.smt2": {
+      "observed": "04f85b71b60eea1382b3044d459702d5ba0978e7",
+      "pinned": "04f85b71b60eea1382b3044d459702d5ba0978e7",
+      "status": "PASS"
+    }
+  },
+  "executions": [
+    {
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, Linux 6.18.58.1-microsoft-standard-WSL2 x86_64",
+      "python": "3.14.4",
+      "tests_run": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "result": "OK",
+      "exit_code": 0,
+      "log_sha256": "85b530cfb44b4506fd4c995c3d64e230c6a4d217b4dd5f0cd7ed16050d014dde"
+    },
+    {
+      "environment": "Windows 10.0.26300 x64 (Git Bash)",
+      "python": "3.14.7",
+      "tests_run": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "result": "OK",
+      "exit_code": 0,
+      "log_sha256": "a3da23654fc7195ada4acbde90b76fb6db692bd15401bb44014c0bee978768a9"
+    }
+  ],
+  "defects_found": [],
+  "outcome": "PYTHON_13_OF_13_PASS_ZERO_SKIP_DUAL_ENVIRONMENT_NO_REPAIR_REQUIRED",
+  "scope_limits": [
+    "Old binding tests run without native binaries by design; solver spawn paths are asserted never called",
+    "This does not qualify the full 61-test formal/tests baseline (R11 stays at its own exact SHA)",
+    "Source-byte binding is provenance, not English-to-SMT semantic equivalence or real GitHub CAS"
+  ],
+  "combined_log_file": "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt",
+  "combined_log_sha256": "af1811c650a9412103a35e6c04ce3848eb713c4e24c2e451cd9489c1b7d455ce"
+}
