@@ -272,3 +272,11 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 **最关键的自我修正**：25 项中仅 **14 项**的既有 Property 源索引直接引用同一规范文件，其余 **11 项**只是主题类比，不构成来源关联。即使在 14 项中，**条款语义等价证明仍为 0**；全部 ADS 原子规则分母 `UNKNOWN`，不得写出 `14/25` 的证明率。6 个原子文档结构负面变异、另 7 个复合拆分相关结构负面变异和 3 个 Property 来源误连负面检查均拒绝（不同阶段的局部结构检查，非独立语义证明）。本轮 **仅覆盖源证据文档**，不更改 runner/模型、不重跑已绑定 SHA 的 R11 严格 35/35 与 61/61、不派本地 Agent。
 
 **下一步**：先独立复核 `DP-01S/DP-02/DP-05/DP-06` 的版本绑定/发布瞬间一致性/零接受写入，再决定是否存在可用最小 SMT 反例；无实际源依据不继续堆模拟模型。文件索引：`formal/v4.19/coverage/ATOMIC_RULE_SAMPLE.json`、`ATOMIC_RULE_SAMPLE_REVIEW.md`。
+
+## 22. #1366 R13 — Dispatch 发布前完整对象/有效 Schema/写入同一性最小双求解器验证（2026-11-10）
+
+候选 `GITHUB_AGENT_INTERACTION_PROTOCOL.md` 精确 blob `935a905d593d7aec027cb54b5b137250ca14a4c1` 的 `DP-01F/DP-01S/DP-02/DP-05/DP-06` 义务指出 R8 旧 `reservedA` 模型仅检查 READY/generation/publication ambiguity，并未表达 Schema pin 与 checked-vs-published object。以原 `reservedA` 语义相同的窄抽象跑出 **4 SAT** 非受约束见证，不能把 reservation SAT 解释为真实 Dispatch 已接受。
+
+新增 `formal/v4.19/r13/` 自包含实验模型与真实执行脚本：发布前必要条件模型 **11 项**（2 SAT 正例、9 UNSAT 禁止接受状态）；Z3 5.3.3 与 cvc5 1.4.2 各自 15/15、共 **30/30 求解结果符合预期**。**6/6** 删除关键 guard 的变异均被两个求解器检测；未钉死的工具测试文件在子进程启动前被拒绝。验证脚本及原始 JSON 收据与实际运行文件的 Git blob 一致，二进制 SHA256 与 R11 工具匹配。
+
+这是 `BOUNDED_SOURCE_HYPOTHESIS_PASS`，**不是**真实 GitHub Controller/Claim CAS 证明、自然语言⇄SMT 的已证明等价或全 ADS 合规证书。新模型不修改原 R11 35-case/61-Python 受测基线，R11 历史 PASS 继续按其 Exact-SHA 复用。后续先做独立语义复核并寻找确实采用 v4.19 的版本钉死真实发布者；没有时真实消费维持 `NOT_PROVEN`。无本地 Agent、正式规范修改、Gate、Merge、Freeze、Release。

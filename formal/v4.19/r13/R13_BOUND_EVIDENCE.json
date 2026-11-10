@@ -1,0 +1,102 @@
+{
+  "schema": "ads/formal-r13-exact-source-bounded-admission-integration/v1",
+  "asof": "2026-11-10",
+  "main_issue": 1366,
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED",
+    "source_path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "source_git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    "atoms": [
+      "DP-01F",
+      "DP-01S",
+      "DP-02",
+      "DP-05",
+      "DP-06"
+    ]
+  },
+  "old_model": {
+    "path": "formal/models/authority/admission-boundaries-r8.smt2",
+    "source_git_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3",
+    "source_guard_exact": "reservedA = readyA AND (expectedA == g) AND NOT publicationAmbiguous",
+    "reservation_not_canonical_dispatch": true
+  },
+  "tested": {
+    "scope": "ONE_PROSPECTIVE_NEW_DURABLE_DISPATCH_NECESSARY_GUARD_NOT_REAL_GITHUB_CAS",
+    "runner_git_blob": "b1f3abe8798428c62ab5bd1a7be1e9670edfdee5",
+    "old_reservation_gap_sat_checks": 4,
+    "new_guard_queries": 11,
+    "new_guard_expected_sat": 2,
+    "new_guard_expected_unsat": 9,
+    "both_solvers_queries_each": 15,
+    "paired_status_checks_pass": 15,
+    "actual_solver_outputs_matched": 30,
+    "mutants_deleted_material_guards": 6,
+    "mutants_rejected_by_both_solvers": 6,
+    "unpinned_fake_binary_rejected_before_process_execution": true,
+    "python_runtime": "3.13.5",
+    "native_tool_pins": {
+      "z3": {
+        "version": "5.3.3",
+        "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+      },
+      "cvc5": {
+        "version": "1.4.2",
+        "sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+      }
+    },
+    "raw_result_git_blobs": {
+      "dual_solver": "583c29b86582c31d0890578a41ac4c705b67e7b8",
+      "mutations": "a5f7f9769ff8f777fc696bcb3b45c362193296fb"
+    },
+    "raw_local_sha256": {
+      "dual_solver": "a3843268434aef47f4450b2f03165db412454e9cead43fefcd983194b12ef668",
+      "mutations": "ebbdb244cf64d286b2a2f7132d1bc0d829f2c4522cc567cb23092ebe073cd300"
+    },
+    "full_r11_suite_retest": "NOT_RUN_HISTORICAL_R11_EXACT_SHA_RETAINED"
+  },
+  "verdict": {
+    "bounded_source_hypothesis": "PASS_TWO_SOLVERS",
+    "old_reservation_coverage_gap": "SAT_WITNESS_CONFIRMED_NOT_A_NORMATIVE_DEFECT",
+    "P0": 0,
+    "P1": 0,
+    "P2_normative": 0,
+    "runtime_producer_implemented": "NOT_PROVEN",
+    "formal_semantic_equivalence": "NOT_PROVEN",
+    "full_ads_normative_denominator": "UNKNOWN"
+  },
+  "limitations": [
+    "Old reservedA denotes reservation, not accepted Dispatch/Claim",
+    "The new guard is assumed as a necessary condition, not derived from real controller code",
+    "SMT equality of schema/payload is not cryptographic verification",
+    "No validly adopted v4.19 real producer/CAS/write-readback evidence",
+    "The two new models are not selected by the historical R11 full-suite runner"
+  ],
+  "files": [
+    {
+      "path": "formal/v4.19/r13/weak-admission-gap.smt2",
+      "git_blob": "04f85b71b60eea1382b3044d459702d5ba0978e7"
+    },
+    {
+      "path": "formal/v4.19/r13/publish-safety.smt2",
+      "git_blob": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c"
+    },
+    {
+      "path": "formal/v4.19/r13/run_proofs.py",
+      "git_blob": "b1f3abe8798428c62ab5bd1a7be1e9670edfdee5"
+    },
+    {
+      "path": "formal/v4.19/r13/run_mutations.py",
+      "git_blob": "d825820858bcdfef5a6e4a572d4dbbc805381da8"
+    },
+    {
+      "path": "formal/v4.19/r13/SOLVER_PAIR_EXECUTION.json",
+      "git_blob": "583c29b86582c31d0890578a41ac4c705b67e7b8"
+    },
+    {
+      "path": "formal/v4.19/r13/MUTATION_EXECUTION.json",
+      "git_blob": "a5f7f9769ff8f777fc696bcb3b45c362193296fb"
+    }
+  ]
+}

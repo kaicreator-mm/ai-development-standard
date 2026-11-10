@@ -1,0 +1,95 @@
+; ADS #1366: bounded source-hypothesis of v4.19 Dispatch prepublication safety.
+; NOT a verified production Controller, real CAS algorithm, or full normative proof.
+; Scope: one prospective new durable canonical dispatch/Claim mutation, one publication point.
+(set-logic QF_UF)
+(declare-sort SchemaIdentity 0)
+(declare-sort PayloadIdentity 0)
+(declare-const pinnedSchema SchemaIdentity)
+(declare-const checkedSchema SchemaIdentity)
+(declare-const publishedSchema SchemaIdentity)
+(declare-const validatedPayload PayloadIdentity)
+(declare-const publishedPayload PayloadIdentity)
+(declare-const pinResolved Bool)
+(declare-const schemaBytesVerified Bool)
+(declare-const fullEnrichedPayloadChecked Bool)
+(declare-const prePublicationCheckCompleted Bool)
+(declare-const schemaPass Bool)
+(declare-const authorityAndClaimCurrent Bool)
+(declare-const publicationSerialized Bool)
+(declare-const acceptedDispatch Bool)
+(declare-const acceptedClaimMutation Bool)
+; Necessary guard for acceptance; identity is abstract equality, NOT cryptographic verification.
+(define-fun publishAdmissible () Bool
+ (and pinResolved schemaBytesVerified fullEnrichedPayloadChecked
+      prePublicationCheckCompleted schemaPass authorityAndClaimCurrent
+      publicationSerialized (= checkedSchema pinnedSchema)
+      (= publishedSchema checkedSchema)
+      (= publishedPayload validatedPayload)))
+(assert (=> (or acceptedDispatch acceptedClaimMutation) publishAdmissible))
+; P01: A fully qualified positive accepted dispatch and Claim witness exists.
+(push 1)
+(assert acceptedDispatch)
+(assert acceptedClaimMutation)
+(check-sat)
+(pop 1)
+; N01: Unknown effective source pin cannot be a new accepted dispatch.
+(push 1)
+(assert acceptedDispatch)
+(assert (not pinResolved))
+(check-sat)
+(pop 1)
+; N02: Wrong checked schema relative to effective project pin rejects.
+(push 1)
+(assert acceptedDispatch)
+(assert (distinct checkedSchema pinnedSchema))
+(check-sat)
+(pop 1)
+; N03: Schema used at publication drifts from checked schema.
+(push 1)
+(assert acceptedDispatch)
+(assert (distinct publishedSchema checkedSchema))
+(check-sat)
+(pop 1)
+; N04: Published payload differs from the previously validated enriched object.
+(push 1)
+(assert acceptedDispatch)
+(assert (distinct publishedPayload validatedPayload))
+(check-sat)
+(pop 1)
+; N05: A partial/non-enriched draft check is not an admission.
+(push 1)
+(assert acceptedDispatch)
+(assert (not fullEnrichedPayloadChecked))
+(check-sat)
+(pop 1)
+; N06: A failed schema check cannot mutate a canonical Claim.
+(push 1)
+(assert acceptedClaimMutation)
+(assert (not schemaPass))
+(check-sat)
+(pop 1)
+; N07: Publication before completion of preflight cannot be accepted.
+(push 1)
+(assert acceptedDispatch)
+(assert (not prePublicationCheckCompleted))
+(check-sat)
+(pop 1)
+; N08: Unauthorized/stale Claim cannot mutate accepted canonical facts.
+(push 1)
+(assert acceptedClaimMutation)
+(assert (not authorityAndClaimCurrent))
+(check-sat)
+(pop 1)
+; N09: Unserialized publication must fail closed.
+(push 1)
+(assert acceptedClaimMutation)
+(assert (not publicationSerialized))
+(check-sat)
+(pop 1)
+; P02: Rejected attempt with unknown pin and no accepted mutation is feasible.
+(push 1)
+(assert (not pinResolved))
+(assert (not acceptedDispatch))
+(assert (not acceptedClaimMutation))
+(check-sat)
+(pop 1)

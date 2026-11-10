@@ -1,0 +1,220 @@
+{
+  "schema": "ads/formal-r13-adversarial-mutation/v1",
+  "mutations": [
+    {
+      "mutation": "drop_effective_pin",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        2
+      ],
+      "z3_actual": [
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "141f75fdc8ac26aef2461327acfee1d7807602f2c0d1846868125b4c51b824d1"
+    },
+    {
+      "mutation": "drop_checked_schema_identity",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        3
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "f94cbe548f4993ab3fcf86019acf7d6c2b7fb82f1b5a5b0315c98736a90fa8fd"
+    },
+    {
+      "mutation": "drop_published_payload_identity",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        5
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "8897d70dd2122affb6752a4f535cfbf6d054b610aee1aed944b8b461e4b11dfc"
+    },
+    {
+      "mutation": "drop_schema_pass",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        7
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "e5e8dc21f31486be624441b658ccb9db94dfb698d1b7c0c87086dfe7641f7bf7"
+    },
+    {
+      "mutation": "drop_publish_serialization",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        10
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "mutated_sha256": "a040d62992562e07db8e8488d84a8e9c45beae66a746dca0e46764be8707fabd"
+    },
+    {
+      "mutation": "drop_acceptance_guard",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "z3_actual": [
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "mutated_sha256": "e26441b0377c72a2abb6367d088265607f1e6cd6452a5e785c8f174345e9932b"
+    }
+  ],
+  "tested_count": 6,
+  "rejected_count": 6,
+  "verdict": "PASS"
+}

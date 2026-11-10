@@ -1,0 +1,139 @@
+{
+  "schema": "ads/formal-r13-bound-dispatch-publication/v1",
+  "scope": "ONE_NEW_DISPATCH_ABSTRACT_SOURCE_HYPOTHESIS_AND_OLD_RESERVATION_PROXY",
+  "models": [
+    {
+      "file": "weak-admission-gap.smt2",
+      "git_blob": "04f85b71b60eea1382b3044d459702d5ba0978e7",
+      "file_sha256": "b2240039c6b0a07640ee555cf4b62d8e5b2fd1aee9cea452ea7ae2acfa90de19",
+      "results": [
+        {
+          "tool": "z3",
+          "exit_code": 0,
+          "statuses": [
+            "sat",
+            "sat",
+            "sat",
+            "sat"
+          ],
+          "expected": [
+            "sat",
+            "sat",
+            "sat",
+            "sat"
+          ],
+          "matched": true,
+          "stderr": "",
+          "stdout_sha256": "14ad34f48318712b633bfc4936eedc6e05e1351ebe5525300bb711ab33e44215",
+          "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+        },
+        {
+          "tool": "cvc5",
+          "exit_code": 0,
+          "statuses": [
+            "sat",
+            "sat",
+            "sat",
+            "sat"
+          ],
+          "expected": [
+            "sat",
+            "sat",
+            "sat",
+            "sat"
+          ],
+          "matched": true,
+          "stderr": "",
+          "stdout_sha256": "14ad34f48318712b633bfc4936eedc6e05e1351ebe5525300bb711ab33e44215",
+          "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+        }
+      ],
+      "solver_pair_pass": true
+    },
+    {
+      "file": "publish-safety.smt2",
+      "git_blob": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c",
+      "file_sha256": "f2b6606fd78805e5a5d50347262d0bf4509dd504a93c567f373537345f300088",
+      "results": [
+        {
+          "tool": "z3",
+          "exit_code": 0,
+          "statuses": [
+            "sat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "sat"
+          ],
+          "expected": [
+            "sat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "sat"
+          ],
+          "matched": true,
+          "stderr": "",
+          "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4",
+          "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+        },
+        {
+          "tool": "cvc5",
+          "exit_code": 0,
+          "statuses": [
+            "sat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "sat"
+          ],
+          "expected": [
+            "sat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "unsat",
+            "sat"
+          ],
+          "matched": true,
+          "stderr": "",
+          "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4",
+          "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+        }
+      ],
+      "solver_pair_pass": true
+    }
+  ],
+  "total_checks_per_solver": 15,
+  "pair_status": "PASS",
+  "not_proven": [
+    "No real accepted GitHub Claim/Dispatch CAS was executed",
+    "No source-to-model equivalence theorem or cryptographic schema identity proof",
+    "Model is an asserted necessary-conditions hypothesis; UNSAT follows this hypothesis",
+    "Old R8 reservation is not equivalent to an accepted dispatch event",
+    "Full ADS rule denominator unknown"
+  ]
+}
