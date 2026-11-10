@@ -54,5 +54,53 @@ class InventoryAdmissionTests(unittest.TestCase):
         self.assertTrue(any(p.get("field") == "model_id" for p in report["execution_inventory_audit"]["problems"]))
 
 
+    def test_tlc_success_status_swaps_block_at_real_runner_entrypoint(self):
+        """Native-free main_v1 seam: legitimate IDs and model metadata are not enough."""
+        declared = json.loads(SUITE.read_text("utf8"))
+        self.assertTrue(declared["require_solver_pairs"])
+        self.assertEqual(len(declared["cases"]), 35)
+        swaps = (
+            ("ADS419-R2-LIFECYCLE-TLC", "COUNTEREXAMPLE"),
+            ("ADS419-R2-LIFECYCLE-MUTANT-WRITER", "PASS_MODEL"),
+        )
+        self.assertTrue(all(any(c["id"] == target and c["tool"] == "tlc"
+                                for c in declared["cases"]) for target, _ in swaps))
+        for target_id, wrong_success_status in swaps:
+            with self.subTest(target_id=target_id):
+                seen = []
+
+                def native_result(case, root, options):
+                    seen.append(case["id"])
+                    status = "COUNTEREXAMPLE" if case["purpose"] == "mutation" else "PASS_MODEL"
+                    if case["id"] == target_id:
+                        status = wrong_success_status
+                    return {"id": case["id"], "model_id": case["model_id"],
+                            "property_id": case["property_id"], "tool": case["tool"],
+                            "purpose": case["purpose"], "status": status,
+                            "expected": case["expect"],
+                            "actual": {"answers": case["expect"]} if case["tool"] != "tlc"
+                                      else {"distinct_states": 27},
+                            "inputs_sha256": {case["model"]: "a" * 64}}
+
+                with tempfile.TemporaryDirectory() as tmp:
+                    options = types.SimpleNamespace(
+                        model=None, property=None, changed_source=None,
+                        model_head=None, source_checkout=tmp, strict_source=True,
+                        out=str(Path(tmp) / "receipt.json"))
+                    with (mock.patch.object(runner, "run_case", side_effect=native_result),
+                          mock.patch.object(runner, "model_alignment", return_value={"status": "PASS"}),
+                          mock.patch.object(runner, "toolchain_alignment", return_value={"status": "PASS", "checks": []}),
+                          mock.patch.object(runner, "source_alignment", return_value={"status": "PASS", "checks": []})):
+                        code = runner.main_v1(options, SUITE, declared)
+                    report = json.loads(Path(options.out).read_text("utf8"))
+                self.assertEqual(len(seen), 35)
+                self.assertEqual(code, 2)
+                self.assertEqual(report["model_verdict"], "BLOCKED")
+                self.assertEqual(report["execution_inventory_audit"]["status"], "FAIL")
+                self.assertEqual(report["coverage"]["source_bound_verified_obligations"], 0)
+                self.assertTrue(any(p.get("reason") == "SUCCESS_STATUS_PURPOSE_MISMATCH"
+                                    for p in report["execution_inventory_audit"]["problems"]))
+
+
 if __name__ == "__main__":
     unittest.main()
