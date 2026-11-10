@@ -68,7 +68,15 @@ def run_case(case, root, options):
         hashes[case["config"]] = sha256(cfg)
         jar = Path(options.tlc_jar)
         if not jar.is_file():
-            return {"id": case["id"], "status": "NOT_RUN", "tool": kind, "reason": "TLC JAR unavailable", "inputs_sha256": hashes}
+            # Keep the same typed outcome envelope as every executed SMT/TLC
+            # case.  The coverage aggregator must emit a fail-closed receipt
+            # rather than crashing when an optional native tool is missing.
+            return {"id": case["id"], "model_id": case["model_id"],
+                    "property_id": case["property_id"], "purpose": case["purpose"],
+                    "tool": kind, "status": "NOT_RUN", "reason": "TLC JAR unavailable",
+                    "expected": case["expect"],
+                    "actual": {"distinct_states": None, "invariant_failure": None},
+                    "inputs_sha256": hashes, "exit_code": None, "output_tail": ""}
         with tempfile.TemporaryDirectory(prefix="ads-tlc-v1-") as scratch:
             result = execute([options.java, "-cp", str(jar.resolve()), "tlc2.TLC", "-deadlock",
                               "-metadir", scratch, "-config", str(cfg), model.name],
@@ -236,8 +244,12 @@ def main_v1(options, suite_path, spec):
     # A merely missing pin still executes: a definite solver failure must surface as
     # FAIL and must not be masked into BLOCKED by --strict-source (which is enforced
     # at the final gate below).
-    blocked_model = model_before["status"] in ("FAIL", "BLOCKED")
-    results = [] if blocked_model else [run_case(c, root, options) for c in selected]
+    # Do not execute a binary whose bytes or version failed the pinned tool
+    # identity check. A definitive solver FAIL remains authoritative when the
+    # tool itself was verified (even if candidate source checkout is missing).
+    blocked_preflight = (model_before["status"] in ("FAIL", "BLOCKED")
+                         or toolchain_before["status"] != "PASS")
+    results = [] if blocked_preflight else [run_case(c, root, options) for c in selected]
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
     toolchain_after = toolchain_alignment(options, selected, inventory)

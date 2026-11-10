@@ -69,7 +69,11 @@ class ExpandedTests(unittest.TestCase):
             opts.strict_source = True
             opts.out = str(Path(tmp) / 'receipt.json')
             spec = json.loads(SUITE.read_text())
-            self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
+            # This test isolates the R5 severity-precedence rule.  The stub
+            # only stands in for a trusted solver when identity is mocked PASS.
+            with mock.patch.object(runner, 'toolchain_alignment',
+                                   return_value={'status': 'PASS', 'checks': []}):
+                self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
             report = json.loads(Path(opts.out).read_text())
             self.assertEqual(report['model_verdict'], 'FAIL')
             self.assertEqual(report['source_alignment']['status'], 'NOT_RUN')
@@ -170,6 +174,51 @@ class ExpandedTests(unittest.TestCase):
             self.assertEqual(receipt['model_verdict'], 'BLOCKED')
             self.assertEqual(receipt['toolchain_alignment_before']['status'], 'FAIL')
             self.assertEqual(receipt['toolchain_alignment_after']['status'], 'FAIL')
+            self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
+
+    def test_missing_tlc_emits_typed_not_run_and_nonzero_receipt(self):
+        suite_path = ROOT / 'v4.19' / 'r8' / 'suite.json'
+        with tempfile.TemporaryDirectory() as tmp:
+            opts = self.options()
+            opts.property = 'ADS-P-LC'
+            opts.tlc_jar = str(Path(tmp) / 'absent-tlc.jar')
+            opts.strict_source = True
+            opts.out = str(Path(tmp) / 'tlc-missing-receipt.json')
+            spec = json.loads(suite_path.read_text())
+            selected = [c for c in spec['cases'] if c['property_id'] == 'ADS-P-LC']
+            self.assertEqual(len(selected), 3)
+            for c in selected:
+                row = runner.run_case(c, ROOT, opts)
+                self.assertEqual(row['status'], 'NOT_RUN')
+                self.assertEqual(row['property_id'], 'ADS-P-LC')
+                self.assertEqual(row['purpose'], c['purpose'])
+                self.assertEqual(row['expected'], c['expect'])
+                self.assertIsNone(row['exit_code'])
+            self.assertEqual(runner.main_v1(opts, suite_path, spec), 2)
+            receipt = json.loads(Path(opts.out).read_text())
+            self.assertEqual(receipt['model_verdict'], 'BLOCKED')
+            self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
+            self.assertEqual(receipt['toolchain_alignment_before']['status'], 'NOT_RUN')
+            self.assertEqual(receipt['selection']['selected_case_count'], 3)
+            self.assertTrue(Path(opts.out).is_file())
+
+    def test_tampered_native_tool_never_executes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            opts = self.options()
+            opts.property = 'ADS-P-AUT'
+            opts.z3 = str(Path(tmp) / 'fake-z3')
+            Path(opts.z3).write_text('#!/bin/sh\\necho unsat\\n')
+            Path(opts.z3).chmod(0o755)
+            opts.cvc5 = opts.z3
+            opts.strict_source = True
+            opts.out = str(Path(tmp) / 'untrusted-tool.json')
+            spec = json.loads(SUITE.read_text())
+            with mock.patch.object(runner, 'run_case', side_effect=AssertionError('must not execute')) as run:
+                self.assertEqual(runner.main_v1(opts, SUITE, spec), 2)
+                run.assert_not_called()
+            receipt = json.loads(Path(opts.out).read_text())
+            self.assertEqual(receipt['model_verdict'], 'BLOCKED')
+            self.assertEqual(receipt['checks'], [])
             self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
 
     def test_missing_solver_not_pass(self):
