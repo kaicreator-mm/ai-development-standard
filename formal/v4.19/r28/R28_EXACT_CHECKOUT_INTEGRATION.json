@@ -1,0 +1,137 @@
+{
+  "schema": "ads/formal-r28-exact-checkout-integration/v1",
+  "kind": "R28_EXACT_CHECKOUT_INTEGRATION",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "subject": {
+    "model_head": "d2c511753e000459750b533124c36fc23ca09b80",
+    "model_tree": "4d24fc2c61afbdde29345046c5690ff75d25db20",
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "candidate": {
+      "pr": 1365,
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "status": "OPEN_NOT_MERGED_NOT_FROZEN"
+    },
+    "note": "Tip includes R28 success-status repair (execution_inventory.py blob 6a26878c...) and R29 admission-seam tests. This receipt closes the real-checkout qualification items that R28_NATIVE_PURPOSE_STATUS_REPAIR.json @ 188b0d6 recorded as NOT_RUN (its isolated environment had no Git worktree fetch and no pinned native toolchain)."
+  },
+  "environment": {
+    "qualifying_platform": "WSL2 Ubuntu 26.04 (linux-x86_64), same host and pinned toolchain as the R27 integration receipt executed earlier in this session",
+    "python": "3.14.4",
+    "java": "openjdk 21.0.13.0.3 (AVAILABLE_UNPINNED)"
+  },
+  "execution_anchors": {
+    "model_worktree": {
+      "path": "/home/cc/ads-i1366-r28-tip",
+      "head": "d2c511753e000459750b533124c36fc23ca09b80",
+      "tree": "4d24fc2c61afbdde29345046c5690ff75d25db20",
+      "created_from": "bare mirror worktree add --detach, WSL git 2.53.0",
+      "tracked_files_modified_during_run": 0
+    },
+    "candidate_source_worktree": {
+      "path": "/home/cc/ads-i1366-r27-source",
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tracked_files_modified_during_run": 0
+    },
+    "runner_blobs_at_tip": {
+      "formal/suite/execution_inventory.py": "6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90",
+      "formal/suite/expanded.py": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e",
+      "identity_source": "git ls-tree d2c5117 readback; model_input_alignment binds both blobs pre-run with expected==actual"
+    }
+  },
+  "python_tests": {
+    "command": "python3 -m unittest discover -s tests -v (cwd: tip worktree formal/; pinned native env vars set; candidate checkout bound)",
+    "static_methods_collected": 97,
+    "executed": 97,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "status": "PASS_ZERO_SKIP_ZERO_FAIL",
+    "includes": "15 R27 regressions + 4 R28 success-status regressions + 1 R29 admission-seam method (2 status-swap subTests), all imported from the real Git checkout",
+    "log": "formal/v4.19/r28/R28_PYTHON_TESTS_LOG.txt",
+    "log_sha256": "f02131622710022abd7db5842225d16e740a21caad3d7af0e92a0ca8c74ca7a6",
+    "closes": "R28_NATIVE_PURPOSE_STATUS_REPAIR.json full_checkout_main_v1_integration=NOT_RUN"
+  },
+  "strict_native_suite": {
+    "command": "python3 suite/run.py --suite v4.19/r10/suite.json --z3 <pinned> --cvc5 <pinned> --java java --tlc-jar <pinned jar> --model-head d2c511753e000459750b533124c36fc23ca09b80 --source-checkout /home/cc/ads-i1366-r27-source --strict-source --out <receipt> (cwd: tip worktree formal/)",
+    "verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_selected": "35/35 all declared (21 proof PASS_MODEL + 14 mutation COUNTEREXAMPLE)",
+    "execution_inventory_audit": {
+      "status": "PASS",
+      "expected_count": 35,
+      "observed_count": 35,
+      "problems": 0
+    },
+    "solver_differential": {
+      "pairs": 16,
+      "status": "PASS",
+      "require_solver_pairs": true
+    },
+    "tlc": [
+      {"id": "ADS419-R2-LIFECYCLE-TLC", "status": "PASS_MODEL", "distinct_states": 27},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER", "status": "COUNTEREXAMPLE", "distinct_states": 7},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE", "status": "COUNTEREXAMPLE", "distinct_states": 3}
+    ],
+    "source_alignment": {
+      "status": "PASS",
+      "checks": 7,
+      "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    "traceability_audit": {
+      "status": "PASS",
+      "property_count": 10,
+      "case_count": 35,
+      "source_count": 7
+    },
+    "model_input_alignment_before_after": {
+      "before": "PASS @ d2c5117",
+      "after": "PASS",
+      "bound_blobs": {
+        "suite/execution_inventory.py": "6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90 (expected==actual)",
+        "suite/expanded.py": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e (expected==actual)"
+      }
+    },
+    "toolchain_alignment_before_after": "PASS (3/3 z3/cvc5/tlc) / PASS (3/3)",
+    "tool_identity": {
+      "z3_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "cvc5_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "tlc_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "before_after": "byte-identical before and after the run (cmp PASS); equal to tools/inventory.json pinned values"
+    },
+    "receipt": "formal/v4.19/r28/R28_STRICT_RUN.json",
+    "receipt_sha256": "8a0605b56251ccbf82ece2c1c4f6376e07d5c55d7696ac9b0200d658c16bf5b1",
+    "log": "formal/v4.19/r28/R28_STRICT_RUN_LOG.txt",
+    "log_sha256": "240682869dbf164ba4bdb02394ba0d2258d20efa225e4519a8ab3609d344a47d",
+    "closes": [
+      "R28_NATIVE_PURPOSE_STATUS_REPAIR.json native_strict_35_cases=NOT_RUN",
+      "R28_NATIVE_PURPOSE_STATUS_REPAIR.json z3_cvc5_pairs=NOT_RUN",
+      "R28_NATIVE_PURPOSE_STATUS_REPAIR.json tlc=NOT_RUN",
+      "R28_NATIVE_PURPOSE_STATUS_REPAIR.json source_model_tool_prepost=NOT_RUN"
+    ]
+  },
+  "post_execution_identity": {
+    "dirty_tracked_files_model_worktree": 0,
+    "heads_readback_unchanged": true
+  },
+  "attribution": "Executed by the local workspace session that also completed the R27 exact-checkout integration (receipt formal/v4.19/r27/R27_EXACT_CHECKOUT_INTEGRATION.json, subject ca13e9b), continuing the Delivery-First same-writer repair+retest+solidify rule for the remaining real-environment items this host can actually run.",
+  "findings_summary": {
+    "ads_normative_P0_P1_P2": "0/0/0",
+    "experiment_open_P0_P1_P2": "0/0/0"
+  },
+  "qualification": "R28_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_97_OF_97_ZERO_SKIP_ZERO_FAIL / NATIVE_STRICT_35_OF_35_MODEL_AND_SOURCE_PASS / DIFFERENTIAL_16_OF_16 / TLC_3_OF_3 / EXECUTION_INVENTORY_AUDIT_PASS_35_35 / SOURCE_MODEL_TOOL_BINDING_PASS / TOOL_BEFORE_AFTER_BYTE_IDENTICAL",
+  "limitations": [
+    "Bounded pilot: 10 declared properties / 35 cases; entire ADS normative obligation denominator remains UNKNOWN",
+    "Source<->SMT semantic equivalence, real GitHub production Claim/CAS/Release, liveness/fairness remain NOT_PROVEN"
+  ],
+  "no_unauthorized_actions": {
+    "normative_changes": false,
+    "candidate_pr_mutation": false,
+    "github_actions": false,
+    "claim": false,
+    "release": false,
+    "freeze": false,
+    "merge": false,
+    "historical_receipt_modification": false
+  }
+}
