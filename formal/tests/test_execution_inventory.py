@@ -107,5 +107,38 @@ class ExecutionInventoryTests(unittest.TestCase):
         self.assertEqual(audit.audit_execution_results(self.selected, self.results + [self.results[0]])["status"], "FAIL")
 
 
+    def test_tlc_proof_counterexample_status_must_fail_identity_audit(self):
+        results = [dict(x) for x in self.results]
+        results[2]["status"] = "COUNTEREXAMPLE"
+        report = audit.audit_execution_results(self.selected, results)
+        self.assertEqual(report["status"], "FAIL")
+        self.assertTrue(any(p.get("reason") == "SUCCESS_STATUS_PURPOSE_MISMATCH"
+                            for p in report["problems"]))
+
+    def test_tlc_mutation_pass_model_status_must_fail_identity_audit(self):
+        mutation = case("tlc-mutant", "tlc", purpose="mutation")
+        selected = self.selected + [mutation]
+        results = [dict(x) for x in self.results] + [outcome(mutation)]
+        report = audit.audit_execution_results(selected, results)
+        self.assertEqual(report["status"], "FAIL")
+        self.assertTrue(any(p.get("reason") == "SUCCESS_STATUS_PURPOSE_MISMATCH"
+                            for p in report["problems"]))
+
+    def test_tlc_correct_mutation_success_remains_accepted(self):
+        mutation = case("tlc-mutant", "tlc", purpose="mutation")
+        selected = self.selected + [mutation]
+        mutation_result = outcome(mutation)
+        mutation_result["status"] = "COUNTEREXAMPLE"
+        self.assertEqual(audit.audit_execution_results(
+            selected, self.results + [mutation_result])["status"], "PASS")
+
+    def test_invalid_selected_purpose_is_fail_closed(self):
+        selected = [dict(x) for x in self.selected]
+        selected[2]["purpose"] = "other"
+        results = [dict(x) for x in self.results]
+        results[2]["purpose"] = "other"
+        self.assertEqual(audit.audit_execution_results(selected, results)["status"], "FAIL")
+
+
 if __name__ == "__main__":
     unittest.main()
