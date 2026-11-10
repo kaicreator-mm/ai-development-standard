@@ -107,7 +107,7 @@
       "ref": "main",
       "head": "fee7bac32c9607d6414e6d2c8636420e148259c3",
       "version_blob": "fcdb2e109f68cff5600955a73908885fe8599bb4",
-      "raw": "4.0.0\\n",
+      "raw": "4.0.0\n",
       "class": "UNQUALIFIED_VERSION_ONLY_NO_ADS_REVISION",
       "evidence": "DIRECT_GITHUB_READBACK"
     },
