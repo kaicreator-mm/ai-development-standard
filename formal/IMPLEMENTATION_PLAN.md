@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R0–R18（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R19 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R20 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -374,3 +374,12 @@ R17 P2 修复代码在其**被测 Exact-SHA `c5eb69c3fcd47ca934b4b87c8004131add6
 直接将 R18 **7 项草案**调和为 `formal/v4.19/r19/R19_RECONCILED_ATOMS.json` 中 **5 项待审核候选** `IM43-R1..R5`（选中调用、实际行为、repair OR disclosure、Testing/Integration 证明归属、仅 material packaging seam 时 clean installed public entrypoint），另单列 **1 项不可计数的解释性范围保护** `IM43-SCOPE`。完整保留 R18 七项及其历史 Git blob 不修改，提供 7→5+scope 的精确映射、每项源行位置、条件及反例。基于候选真实源码、历史台账、两份跨 Owner 标准进行 Web-first 源码审查与结构验证；不新增虚构 Gate、Runner、抽象 SMT 模型或非必要本地任务。
 
 **资格边界：** R19 是同一助手场景下的 source-first 自对抗审查与计数纠偏，并**未**由不同真人/独立身份签署 Review；5 个细分未被升格为正式 ADS 全规范已批准“原子规则”，更没有产生源⇄形式模型语义等价、实测公共调用或真实 CAS 的 PASS。全规范义务分母依然 UNKNOWN。源代码和输入的受审 Scope 限于一个真实新增候选段落；R17 Python 13/13 双环境和原生 32/32 保持原精确 SHA 历史资格，不重跑。
+
+
+## 34. #1366 R20 — 测试实际执行清单的源代码/日志/收据闭环（2026-11-11）
+
+R19 后评估下一步：R11/R13/R17 Native/Python 都已各自 Exact-SHA 通过；R18/R19 以一个候选段落原子义务审查纠偏收敛。**不重复验证、不再增加同类抽象 SMT 模型**，改为消费真实历史测试执行结果，检验候选 `standards/TESTING_STANDARD.md:64–68` §6.1 的“实际选中/执行的测试方法清单 ≠ 命令名/绿色汇总数量”约束。
+
+本轮直接从 GitHub 读取 R17 的两个实际 `unittest` 源文件、其双环境逐方法日志、机器收据，在固定 Git blob 下核对 **13 个声明方法的全限定 ID 与 Windows/WSL2 各 13 条执行 ID 完全一致**，无漏测、重复、额外 ID；真实执行是**历史 R17**，本轮是 **20/20 源码与证据回读**，不是原生测试重跑。新增 `formal/v4.19/coverage/executed_inventory_audit.py` 提供可复用的固定输入/源码 AST/日志/收据 fail-closed 读取；新增 `formal/tests/test_executed_inventory_audit.py`，在当前离线 Python 3.13.5 隔离仓库形状的合成 fixture 上实际 **9/9 PASS、零跳过**，其中含绿色但漏测、重复 ID、源码篡改、日志/机器收据篡改等反例。其实际原始输入读回与 Python fixture 执行的资格明确分离。
+
+机器文件 `formal/v4.19/r20/R20_RECORDED_TEST_INVENTORY_READBACK.json`、审查 `R20_RECORDED_TEST_INVENTORY_REVIEW.md`。**新脚本在完整 Git exact-checkout 中对真实 R17 四份源文件进行整体 CLI 执行仍 NOT_RUN**，不可把隔离 9/9 称为完整实际工作树已运行；无新 Z3/cvc5/TLC。真实 v4.19 Claim/CAS 和标准⇄SMT 语义等价 NOT_PROVEN，全 ADS 原子规则分母 UNKNOWN。保持已通过 R17 的历史资格，不新建 FIR/Gate/CI，不合并/Freeze/Release。

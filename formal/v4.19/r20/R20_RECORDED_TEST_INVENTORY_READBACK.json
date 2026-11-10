@@ -1,0 +1,148 @@
+{
+  "schema": "ads/formal-r20-executed-id-inventory-source-evidence/v1",
+  "main_issue": 1366,
+  "source_candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "status": "OPEN_UNMERGED_PROSPECTIVE",
+    "testing_standard_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+    "clause": "TESTING_STANDARD.md:64-68 §6.1"
+  },
+  "reviewed_original_test_run": {
+    "exact_execution_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+    "original_test_file_blobs": [
+      {
+        "path": "formal/v4.19/r13/test_binding_preflight.py",
+        "git_blob": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+        "declared_ids": [
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs"
+        ]
+      },
+      {
+        "path": "formal/v4.19/r13/test_source_binding.py",
+        "git_blob": "10702d29c0609cac171a86f8149dd23de88f02a3",
+        "declared_ids": [
+          "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+          "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+          "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+        ]
+      }
+    ],
+    "combined_log": {
+      "path": "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt",
+      "git_blob": "ccbfc7563a9387b8fe49d879376b8363dfc470ab",
+      "sha256_from_original_receipt": "af1811c650a9412103a35e6c04ce3848eb713c4e24c2e451cd9489c1b7d455ce"
+    },
+    "original_receipt": {
+      "path": "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json",
+      "git_blob": "e0aa244fbb7304a299088ea27139d24bbafe71fc"
+    }
+  },
+  "execution_inventory": {
+    "declared_test_ids": [
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+      "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+      "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+      "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+      "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+      "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+      "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+    ],
+    "expected_count": 13,
+    "observed": [
+      {
+        "environment": "WSL2",
+        "observed_ids": [
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+          "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+          "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+        ],
+        "actual_count": 13,
+        "unique": 13,
+        "summary_count": 13,
+        "method_outcome_ok_count": 13,
+        "missing": [],
+        "extra": [],
+        "duplicates": [],
+        "terminal_ok": true
+      },
+      {
+        "environment": "Windows",
+        "observed_ids": [
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+          "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+          "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+        ],
+        "actual_count": 13,
+        "unique": 13,
+        "summary_count": 13,
+        "method_outcome_ok_count": 13,
+        "missing": [],
+        "extra": [],
+        "duplicates": [],
+        "terminal_ok": true
+      }
+    ],
+    "verdict": "PASS_EXACT_GITHUB_RECORDED_INVENTORY_ONLY"
+  },
+  "performed_now": {
+    "github_source_log_receipt_crosscheck": {
+      "total": 20,
+      "matched": 20
+    },
+    "isolated_python_unittest": {
+      "tests_run": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "version": "Python 3.13.5",
+      "mode": "SYNTHETIC_REPO_SHAPED_FIXTURE",
+      "source_git_blob": "784092466a836552cd0aa351741040fe86a82fc3",
+      "test_git_blob": "91fea8da1613a12c340fca4e9024382cef05b8c2"
+    },
+    "full_real_python_audit_in_exact_github_checkout": "NOT_RUN",
+    "native_z3_cvc5_new": "NOT_RUN"
+  },
+  "receipt_scope_limits": [
+    "Compared actually recorded fully qualified per-method IDs, not only the count",
+    "GitHub source/log readback and isolated fixture Python tests are different evidence layers",
+    "The historical R17 original test execution remains bound to its original exact SHA",
+    "No new R17 tests run in this round",
+    "No independent runtime producer/Claim/CAS or full norm-to-model equivalence proven"
+  ]
+}
