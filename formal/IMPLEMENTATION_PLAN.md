@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R8 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R6_INCREMENTAL_PLUS_R8_REPAIR / R8_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R9 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R8_BOUNDED_REPAIR / R9_RUNNER_HARDENED / CURRENT_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -188,3 +188,15 @@ R8 非简单加测：对 R6 的 `ADS-P-ADMISSION-EXT` 做反例查找，发现 `
 **本轮实际工具执行：** 复用已校验的 Z3 5.3.3/cvc5 1.4.2；两套工具对 R8 正常模型的 18 条 SAT/UNSAT 输出逐条一致，对 R8 故障变异的三条禁忌案例均返回 `SAT`。新增 **4 个 R8 原生用例（2 PASS_MODEL + 2 COUNTEREXAMPLE）**；新 `formal/tests/test_r8_successor.py` 在模型原文字节构成的本地隔离测试目录实际 **2/2 PASS**，没有假冒为完整工作树测试。双向 Source→Property→Case 索引检查 **35 用例 / 10 性质 / 7 来源**，无孤儿条目。
 
 **仍需闭环：** 在完整 Git 工作树里，对新 R8 实验 SHA 运行 `formal/v4.19/r8/suite.json` 全部 35 例和 `formal/tests`；执行 `--model-head`、`--source-checkout`、`--strict-source` 及全新 R8 Source→Model 语义独立审核。此前 R5 的 27/27、R6 的 4 个、R8 的 4 个结果分别绑定各自原始 SHA，**不构成 R8 35/35 严格证明通过**。真实 GitHub 预留 CAS、角色/高权威授权读回、跨进程恢复/liveness、ADS 全规范约束总数仍是 `NOT_PROVEN`。
+
+## 13. R9 验证器可用性、工具安全及真实差量重检（2026-11-10）
+
+针对验收工具本身而非新增 SMT 公式的根缺陷，R9 修改 `formal/suite/expanded.py`：
+
+- **R9-PY-P1-01（缺失 TLC 的收据崩溃风险）**：旧 `run_case()` 的 TLC JAR 缺失分支只返回 `id/status/tool/inputs_sha256/reason`，而 `main_v1()` 汇总会读取 `property_id`。因此缺失可选 TLC 时可能在 Python 汇总阶段抛出 KeyError、无法写出预期 `BLOCKED/NOT_RUN` 收据。修复为完整统一结果结构，新增缺失 TLC 三用例的测试。
+- **R9-PY-P1-02（身份不可信二进制被执行）**：R7 引入了双次工具 SHA 校验，但原 runner 只在结果裁决时拒绝不符工具，仍可能先执行假冒的 Z3/cvc5。R9 把工具身份检测和模型来源检测一同作为**执行前预检**；未登记或错误哈希的工具一律不执行并 fail-closed。由已通过身份检测的工具产生的明确 `FAIL` 继续优先于缺少源码 checkout 的 `BLOCKED`。测试通过 mock 信任边界隔离这两种不同情况。
+- T08 真正利用 v4.18→v4.19 候选的 `formal/v4.19/r5/RULE_CROSSWALK.json` 与 R8 的 10-Property DAG 做增量失效演练，而非只构造 synthetic 输入。已固定的 7 个源中有 **6 个发生候选差异/新建**，传递失效为 **10/10 Property、35/35 Case**；单独变更集成 DAG 文档时为 **5/10 Property、15/35 Case**。未映射文件若输入 `--changed-source` 则返回空选集，正式 source-bound 裁决必须 BLOCKED/STALE，绝不能等同于 PASS。新增回归核对这些数据。
+- **实际执行边界**：本轮已经通过 GitHub 原文/结构核对、固定差量集合的动态依赖分析并提交代码与测试；**完整 Git 源码与工具环境下的 Python unittest 和 35-case R9 严格验证均 NOT_RUN**。R5 曾在它自己的 Exact HEAD 27/27 PASS，R6/R8 有新增原生模型的增量执行收据，不能据此给 R9 当前 HEAD 标注 PASS。工具提供的 `toolchain.py` 字节检测无法证明整个宿主或动态加载库可信，仍按原范围披露。
+- R9 继续不新增 FIR、调度器或新正式 ADS 规范。建议下一步只做**一次完整的当前 HEAD + 候选 HEAD 双工作树修复/验证/独立语义审核**，避免无必要的人工轮次往返。
+
+R9 原生增量用例新增 **0 个**，试点仍是 10 个性质与 35 个模型用例，完整 ADS 规则分母依然 UNKNOWN。

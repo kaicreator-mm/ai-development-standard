@@ -1,0 +1,109 @@
+{
+  "schema": "ads/formal-r9-reliability-receipt/v1",
+  "kind": "EXPERIMENTAL_RUNNER_DEFECTS_AND_INCREMENTAL_SELECTION_NOT_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "experiment_code_head": "787670c87c760dab2182dd6d527a456fe236d68f",
+    "authority": "EXPERIMENT_ONLY"
+  },
+  "repaired": [
+    {
+      "id": "R9-PY-P1-01",
+      "severity": "P1_FORMAL_SUITE",
+      "root_cause": "TLC JAR unavailable return envelope omitted property_id, crashing source-bound coverage aggregation",
+      "fix": "Preserve model_id/property_id/purpose/tool/status/expected/actual/exit_code/output_tail and input hashes even for NOT_RUN",
+      "regression": "test_missing_tlc_emits_typed_not_run_and_nonzero_receipt",
+      "full_integration_status": "NOT_RUN"
+    },
+    {
+      "id": "R9-PY-P1-02",
+      "severity": "P1_FORMAL_SUITE",
+      "root_cause": "toolchain was checked before execution but unverified solver process could still run before fail-closed final verdict",
+      "fix": "blocked_preflight includes toolchain identity, skips run_case entirely for rejected native executables; verified failing solver still has priority",
+      "regressions": [
+        "test_tampered_native_tool_never_executes",
+        "test_strict_source_does_not_mask_model_failure"
+      ],
+      "full_integration_status": "NOT_RUN"
+    }
+  ],
+  "incremental_selection": {
+    "basis": "R5 exact version-source crosswalk + R8 property DAG + R8 suite metadata",
+    "baseline_observed_head": "ac7e7e51de3a7ac27343f16a96568c0b0f2c5349",
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "changed_mapped_source_count": 6,
+    "observed_mapped_source_count": 7,
+    "scenarios": [
+      {
+        "id": "OBSERVED_CANDIDATE_DELTA",
+        "changed_sources": [
+          "standards/EXECUTION_PACK_STANDARD.md",
+          "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "schemas/dispatch.schema.json",
+          "scripts/v34_rules.py",
+          "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+          "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+        ],
+        "affected_properties": [
+          "ADS-P-ADMISSION-EXT",
+          "ADS-P-AUT",
+          "ADS-P-CAS",
+          "ADS-P-CROSS",
+          "ADS-P-DEP",
+          "ADS-P-DEP-4",
+          "ADS-P-EVI",
+          "ADS-P-EVO",
+          "ADS-P-LC",
+          "ADS-P-WRITER-KEYS"
+        ],
+        "affected_cases": 35,
+        "qualification": "NO_SAFE_INCREMENTAL_SHORTCUT_FOR_THIS_VERSION_DELTA"
+      },
+      {
+        "id": "DAG_FILE_ONLY",
+        "changed_sources": [
+          "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+        ],
+        "affected_properties": [
+          "ADS-P-CROSS",
+          "ADS-P-DEP",
+          "ADS-P-DEP-4",
+          "ADS-P-LC",
+          "ADS-P-WRITER-KEYS"
+        ],
+        "affected_cases": 15,
+        "qualification": "METADATA_SELECTION_ONLY_NOT_CURRENT_PROOF"
+      },
+      {
+        "id": "UNMAPPED_SOURCE",
+        "changed_sources": [
+          "no/such-file.md"
+        ],
+        "affected_properties": [],
+        "affected_cases": 0,
+        "qualification": "STALE/BLOCKED_NEVER_PASS"
+      }
+    ],
+    "execution_method": "GitHub connector readback of exact indexed file metadata; transitive closure evaluated by a standalone JavaScript implementation matching the affected_properties algorithm, not by current Git exact Python unittest",
+    "status": "METADATA_IMPACT_RECOMPUTED"
+  },
+  "new_native_smt_cases": 0,
+  "r8_declared_model_cases": 35,
+  "r8_properties": 10,
+  "historical_evidence": {
+    "r5_strict_cases": 27,
+    "r6_incremental_cases": 4,
+    "r8_incremental_cases": 4,
+    "current_r9_strict_full_execution": "NOT_RUN",
+    "new_r9_python_regressions": "COMMITTED_NOT_RUN"
+  },
+  "limits": [
+    "No full exact Git worktree available to this session; cannot claim Python unittest PASS",
+    "No source-bound native 35-case result at R9 final HEAD",
+    "No independent R8/R9 fresh semantic reviewer signoff",
+    "No full ADS source-rule coverage denominator"
+  ],
+  "verdict": "R9_CODE_AND_REAL_DELTA_METADATA_COMMITTED_FULL_STRICT_PENDING"
+}

@@ -221,6 +221,30 @@ class ExpandedTests(unittest.TestCase):
             self.assertEqual(receipt['checks'], [])
             self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
 
+    def test_r8_real_source_delta_invalidates_transitive_dag_properties(self):
+        index = json.loads((ROOT / 'v4.19' / 'r8' / 'source-index.json').read_text())
+        suite = json.loads((ROOT / 'v4.19' / 'r8' / 'suite.json').read_text())
+        crosswalk = json.loads((ROOT / 'v4.19' / 'r5' / 'RULE_CROSSWALK.json').read_text())
+        self.assertEqual(index['candidate_head'], suite['candidate_head'])
+        self.assertEqual(crosswalk['candidate']['head'], suite['candidate_head'])
+        dag = 'docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md'
+        dag_impacted = runner.affected_properties(index['properties'], [dag])
+        self.assertEqual(dag_impacted, [
+            'ADS-P-CROSS', 'ADS-P-DEP', 'ADS-P-DEP-4',
+            'ADS-P-LC', 'ADS-P-WRITER-KEYS'
+        ])
+        self.assertEqual(len([c for c in suite['cases']
+                              if c['property_id'] in dag_impacted]), 15)
+        changed = [s['path'] for s in crosswalk['sources']
+                   if s['classification'] != 'VERBATIM_INHERITED_AT_OBSERVED_V418']
+        impacted = runner.affected_properties(index['properties'], changed)
+        self.assertEqual(len(changed), 6)
+        self.assertEqual(len(impacted), 10)
+        self.assertEqual(len([c for c in suite['cases']
+                              if c['property_id'] in impacted]), 35)
+        self.assertEqual(runner.affected_properties(
+            index['properties'], ['no/such-file.md']), [])
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'
