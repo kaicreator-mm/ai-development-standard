@@ -245,6 +245,27 @@ class ExpandedTests(unittest.TestCase):
         self.assertEqual(runner.affected_properties(
             index['properties'], ['no/such-file.md']), [])
 
+    def test_r10_declared_solver_pairs_complete_and_fail_closed_when_removed(self):
+        from differential import solver_differential
+        spec = json.loads((ROOT / 'v4.19' / 'r10' / 'suite.json').read_text())
+        self.assertTrue(spec['require_solver_pairs'])
+        smt = [c for c in spec['cases'] if c['tool'] in ('z3', 'cvc5')]
+        self.assertEqual(len(smt), 32)
+        groups = {}
+        for c in smt:
+            groups.setdefault((c['property_id'], c['model'], c['purpose']), []).append(c)
+        self.assertEqual(len(groups), 16)
+        self.assertTrue(all({c['tool'] for c in cs} == {'z3', 'cvc5'}
+                            and len(cs) == 2 for cs in groups.values()))
+        for missing in ('z3', 'cvc5'):
+            cs = [c for c in next(iter(groups.values())) if c['tool'] != missing]
+            rs = [{'id': c['id'], 'tool': c['tool'], 'status': 'PASS_MODEL',
+                   'expected': c['expect'], 'actual': {'answers': c['expect']},
+                   'inputs_sha256': {c['model']: 'a' * 64}} for c in cs]
+            diff = solver_differential(cs, rs, require_pairs=True)
+            self.assertEqual(diff[0]['status'], 'INCONCLUSIVE')
+            self.assertEqual(diff[0]['reason'], 'MISSING_INDEPENDENT_SOLVER_PAIR')
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'

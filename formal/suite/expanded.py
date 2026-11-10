@@ -253,7 +253,8 @@ def main_v1(options, suite_path, spec):
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
     toolchain_after = toolchain_alignment(options, selected, inventory)
-    differential = solver_differential(selected, results)
+    differential = solver_differential(
+        selected, results, require_pairs=bool(spec.get("require_solver_pairs", False)))
     alignment = source_alignment(options.source_checkout, effective_source_map)
     if options.changed_source:
         alignment = {"status": "STALE", "reason": "Changed-source selection invalidates old source-bound results until new exact source pinned", "baseline_alignment": alignment}
