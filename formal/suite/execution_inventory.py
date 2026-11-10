@@ -36,6 +36,19 @@ def audit_execution_results(selected, results):
             if result.get("status") not in ("PASS_MODEL", "COUNTEREXAMPLE", "FAIL", "INCONCLUSIVE", "NOT_RUN"):
                 problems.append({"position": index, "field": "status",
                                  "reason": "INVALID_RESULT_STATUS"})
+            # An admissible success result is purpose-specific. In particular,
+            # SMT pair checks do not cover TLC cases, so a correctly identified
+            # TLC proof cannot be promoted from a COUNTEREXAMPLE result (or a
+            # mutation from PASS_MODEL) into source-bound verification.
+            purpose = case.get("purpose")
+            if purpose not in ("proof", "mutation"):
+                problems.append({"position": index, "field": "purpose",
+                                 "reason": "INVALID_SELECTED_PURPOSE"})
+            elif result.get("status") in ("PASS_MODEL", "COUNTEREXAMPLE"):
+                required_status = "PASS_MODEL" if purpose == "proof" else "COUNTEREXAMPLE"
+                if result["status"] != required_status:
+                    problems.append({"position": index, "field": "status",
+                                     "reason": "SUCCESS_STATUS_PURPOSE_MISMATCH"})
             if result.get("expected") != case.get("expect"):
                 problems.append({"position": index, "field": "expected",
                                  "reason": "RESULT_EXPECTATION_MISMATCH"})
