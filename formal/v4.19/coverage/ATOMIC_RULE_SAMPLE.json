@@ -32,7 +32,9 @@
       "DAG_DEPENDENCY",
       "PUBLIC_SELECTED_PATH",
       "PRODUCT_STAGE_EVIDENCE"
-    ]
+    ],
+    "pilot_property_same_file_source_refs": 14,
+    "pilot_property_analogical_only_links": 11
   },
   "model_reference": {
     "pilot_index_git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
@@ -100,10 +102,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -127,10 +130,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -154,10 +158,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -181,10 +186,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -208,10 +214,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -235,10 +242,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVO",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -262,10 +270,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PROFILE_ROLE_SCOPE"
@@ -289,10 +298,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -316,10 +326,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -343,10 +354,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-LC",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -370,10 +382,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -397,10 +410,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-AUT",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -424,10 +438,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-CAS",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -451,10 +466,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-CAS",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -478,10 +494,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVO",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "PILOT_REFERENCES_SAME_SOURCE_FILE_NOT_CLAUSE_EQUIVALENCE",
         "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": true
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DISPATCH_PUBLICATION"
@@ -505,10 +522,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "TEST_EVIDENCE"
@@ -532,10 +550,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "TEST_EVIDENCE"
@@ -559,10 +578,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-DEP",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DAG_DEPENDENCY"
@@ -586,10 +606,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-WRITER-KEYS",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "DAG_DEPENDENCY"
@@ -613,10 +634,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-CROSS",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PUBLIC_SELECTED_PATH"
@@ -640,10 +662,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PUBLIC_SELECTED_PATH"
@@ -667,10 +690,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PUBLIC_SELECTED_PATH"
@@ -694,10 +718,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PUBLIC_SELECTED_PATH"
@@ -721,10 +746,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-EVI",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PRODUCT_STAGE_EVIDENCE"
@@ -748,10 +774,11 @@
       },
       "model_relation": {
         "related_pilot_property_id": "ADS-P-LC",
-        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "link_type": "MODEL_ANALOGY_ONLY_SOURCE_NOT_CITED_IN_PILOT",
         "existing_evidence_tier": "NO_DIRECT_TEST",
         "direct_rule_equivalence": "NOT_PROVEN",
-        "real_subject_consumption": "NOT_PROVEN"
+        "real_subject_consumption": "NOT_PROVEN",
+        "index_cites_same_source_file": false
       },
       "review_status": "PROPOSED_ATOMIC_SOURCE_INTERPRETATION_NOT_INDEPENDENTLY_REVIEWED",
       "review_cluster": "PRODUCT_STAGE_EVIDENCE"
@@ -760,7 +787,9 @@
   "checks": {
     "positive_exact_line_blob_parent_property": "PASS",
     "negative_mutations_rejected": 7,
-    "atomic_splitting_self_critique": "3 compound propositions expanded into 7 independently reviewable conditions"
+    "atomic_splitting_self_critique": "3 compound propositions expanded into 7 independently reviewable conditions",
+    "related_property_sources_checked_against_exact_index": "PASS",
+    "pilot_source_directness_negative_mutants_rejected": 3
   },
   "next_review": {
     "priority": [
@@ -781,6 +810,7 @@
     "reviewer": "same Web Builder self-critique, NOT an independent semantic reviewer",
     "source_files_resolved": "7/7 exact Git blobs",
     "still_not_proven": "Direct source-to-formal semantics and exact runtime effect",
-    "previous_sample_commit": "99e3d84bdf4db069d794e8831026c40519522857"
+    "previous_sample_commit": "99e3d84bdf4db069d794e8831026c40519522857",
+    "second_pass": "Mechanically checked each related pilot property against its real source-index.sources array. Same-file citation is not normative clause semantic proof."
   }
 }
