@@ -1,0 +1,46 @@
+{
+  "schema": "ads/formal-postflight-receipt-metadata-v1",
+  "kind": "EXACT_SOURCE_EXTRACTED_PYTHON_REGRESSION_NOT_FULL_NATIVE_SUITE",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "finding": {
+    "id": "ADS1366-RECEIPT-P2-01",
+    "severity": "P2_EXPERIMENT_EVIDENCE",
+    "old_code_blob": "f70b4adf9cb17232b536170402cf7f3807cda37c",
+    "cause": "tool_versions statuses and binary hashes projected from preflight PASS even when toolchain_after fails; overall verdict still blocked",
+    "normative_ads_defect": "NOT_ESTABLISHED"
+  },
+  "execution": {
+    "environment": "Python 3.13.5 Linux",
+    "negative": {
+      "script": "failing_negative.py",
+      "exit": 1,
+      "negative_log_sha256": "9f51fddbf8ba5629ad9400462951d4bfcf040dc2abfaa43780a0fac2854f9dd2",
+      "observed": "preflight=PASS postflight=FAIL tool_versions.z3=VERIFIED (inconsistent metadata)"
+    },
+    "repair": {
+      "runner_prepended_postflight": "tool_version_report(toolchain_before, toolchain_after)",
+      "status_on_changed_or_failed_postcheck": "REJECTED",
+      "binary_sha_verified_only_if_both_snapshots_match": true,
+      "no_extra_native_binary_launch": true
+    },
+    "unit": {
+      "test_path": "formal/tests/test_tool_version_postflight.py",
+      "declared_tests": 7,
+      "executed_tests": 7,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "unittest_log_sha256": "a9e8cfcc0df707460ddc91969e98fa09a26c9dc7d165d5437bafbade59e063cc"
+    }
+  },
+  "qualification": {
+    "git_exact_blob_runner_full_current_HEAD": "NOT_RUN",
+    "full_formal_tests": "NOT_RUN",
+    "full_35_native_model_suite": "NOT_RUN",
+    "historical_R10_full_strict": "PASS_FOR_HISTORIC_EXACT_HEAD_ONLY",
+    "new_full_suite_declared_test_method_count": 54,
+    "all_ads_normative_rule_proof": "NOT_PROVEN"
+  }
+}

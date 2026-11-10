@@ -195,23 +195,45 @@ def combine_source_anchors(source_map, trace):
     return merged
 
 
-def tool_version_report(preflight):
-    """Project verified preflight facts into the receipt without subprocesses."""
-    checks = {c["tool"]: c for c in preflight.get("checks", [])}
+def tool_version_report(preflight, postflight=None):
+    """Project pre/post identity facts into metadata without launching tools.
+
+    A preflight PASS alone is not enough to claim a tool remained verified
+    after model execution. The legacy one-argument form is retained for unit
+    fixtures; the production runner must pass both checks.
+    """
+    before = {c["tool"]: c for c in preflight.get("checks", [])}
+    after = ({c["tool"]: c for c in postflight.get("checks", [])}
+             if postflight is not None else None)
+
+    def qualified(kind, digest_key):
+        first = before.get(kind)
+        last = after.get(kind) if after is not None else None
+        passed = bool(first and first.get("status") == "PASS")
+        if after is not None:
+            passed = (passed and last is not None
+                      and last.get("status") == "PASS"
+                      and first.get(digest_key) == last.get(digest_key))
+        return first, last, passed
+
     result = {}
     for tool in ("z3", "cvc5"):
-        entry = checks.get(tool)
-        passed = bool(entry and entry["status"] == "PASS")
+        entry, final, passed = qualified(tool, "binary_sha256")
         result[tool] = {
-            "status": "VERIFIED" if passed else "REJECTED" if entry else "NOT_SELECTED",
+            "status": "VERIFIED" if passed else "REJECTED" if entry or final else "NOT_SELECTED",
             "version_output": entry.get("version_output", "").splitlines()[:2] if passed else [],
             "binary_sha256": entry.get("binary_sha256") if passed else None,
+            "preflight_status": entry.get("status") if entry else "NOT_SELECTED",
+            "postflight_status": final.get("status") if final else (
+                "NOT_SELECTED" if after is not None else "NOT_PROVIDED"),
         }
-    tlc = checks.get("tlc")
-    passed = bool(tlc and tlc["status"] == "PASS")
+    tlc, final_tlc, passed = qualified("tlc", "jar_sha256")
     result["tlc_jar"] = {
-        "status": "VERIFIED" if passed else "REJECTED" if tlc else "NOT_SELECTED",
+        "status": "VERIFIED" if passed else "REJECTED" if tlc or final_tlc else "NOT_SELECTED",
         "sha256": tlc.get("jar_sha256") if passed else None,
+        "preflight_status": tlc.get("status") if tlc else "NOT_SELECTED",
+        "postflight_status": final_tlc.get("status") if final_tlc else (
+            "NOT_SELECTED" if after is not None else "NOT_PROVIDED"),
     }
     result["java"] = {
         "status": "AVAILABLE_UNPINNED" if passed else "NOT_ATTESTED",
@@ -301,7 +323,7 @@ def main_v1(options, suite_path, spec):
         verdict = "BLOCKED"
     # Receipt metadata is strictly a projection of the pinned preflight.
     # Do not launch --version on unselected or rejected native commands here.
-    tools = tool_version_report(toolchain_before)
+    tools = tool_version_report(toolchain_before, toolchain_after)
     evidence = {
         "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF", "schema": "ads/formal-receipt/v1",
         "candidate_head": spec["candidate_head"], "candidate_status": "PROSPECTIVE_UNFROZEN",
