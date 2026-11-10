@@ -1,0 +1,144 @@
+{
+  "schema": "ads/formal-r15-schema-shape-boundary/v1",
+  "owner_issue": 1366,
+  "candidate": {
+    "pr": 1365,
+    "exact_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED",
+    "schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+    "protocol_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1"
+  },
+  "execution": {
+    "actual_source_schema_behavior": {
+      "executor": "in-session JavaScript contract-subset evaluator applied to exact GitHub JSON schema",
+      "cases": 14,
+      "matched": 14,
+      "results": [
+        {
+          "id": "valid_web_builder",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "valid_local_validator",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "validator_null_requested_sha",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "validator_null_validation_profile",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "validator_both_null",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "validator_missing_requested_sha",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "wrong_profile_role",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "unknown_profile",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "invalid_requested_sha",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "wrong_pin_but_well_formed",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "missing_builder_task_pack",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "missing_schema_required_dispatch_id",
+          "expected_schema_valid": false,
+          "observed_schema_valid": false
+        },
+        {
+          "id": "claim_ignored_by_schema",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        },
+        {
+          "id": "ready_shape_only",
+          "expected_schema_valid": true,
+          "observed_schema_valid": true
+        }
+      ]
+    },
+    "isolated_python_regression": {
+      "status": "PASS_ISOLATED_SYNTHETIC_FIXTURE_ONLY",
+      "tests_executed": 12,
+      "passed": 12,
+      "host": "available container Python",
+      "scope": "Python source-check boundary logic using independently constructed minimal schema fixture and a local stand-in for existing repository checker"
+    },
+    "source_bound_repo_python": {
+      "status": "NOT_RUN",
+      "reason": "The exact candidate schema and existing repository helper were verified in GitHub but not mounted together in this local Python execution; source fixture committed for reproducible checkout test"
+    },
+    "native_smt_tlc": {
+      "status": "NOT_RUN_NO_CHANGED_R11_R13_MODEL"
+    },
+    "real_github_publisher": {
+      "status": "NOT_PROVEN"
+    }
+  },
+  "discoveries": [
+    {
+      "id": "R15-OBS-01",
+      "classification": "SOURCE_SCHEMA_RUNTIME_GAP",
+      "proof": "Validator required fields requested_head_sha and validation_profile are nullable; schema permits null values",
+      "claim": "A shape-valid LOCAL_VALIDATION record is not evidence of exact-SHA/currentness or real local need",
+      "normative_defect": "NOT_CONFIRMED"
+    },
+    {
+      "id": "R15-OBS-02",
+      "classification": "SOURCE_SCHEMA_RUNTIME_GAP",
+      "proof": "Any 40-hex pinned_standard_revision passes schema even without project/task effective-pin lookup",
+      "claim": "Schema syntax alone cannot prove effective project-pinned ADS revision",
+      "normative_defect": "NOT_CONFIRMED"
+    },
+    {
+      "id": "R15-OBS-03",
+      "classification": "SOURCE_SCHEMA_RUNTIME_GAP",
+      "proof": "dispatch_state READY can be syntactically valid without a measured check-before-publication event",
+      "claim": "The schema does not prove publication ordering, authorized Claim/CAS, or durable readback",
+      "normative_defect": "NOT_CONFIRMED"
+    }
+  ],
+  "evidence_levels": {
+    "source_blob_verified": "PASS",
+    "schema_shape_behavior": "SOURCE_BOUND_SUBSET_JS_14_14",
+    "python_logic_fixture": "SYNTHETIC_12_12",
+    "full_python_source_bound": "NOT_RUN",
+    "semantic_equivalence": "NOT_PROVEN",
+    "live_accepted_dispatch": "NOT_PROVEN"
+  },
+  "errors_and_authority": {
+    "confirmed_ads_normative_p0": 0,
+    "confirmed_ads_normative_p1": 0,
+    "confirmed_ads_normative_p2": 0,
+    "external_independent_review": "NOT_RUN"
+  }
+}

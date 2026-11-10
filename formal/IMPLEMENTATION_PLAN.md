@@ -303,3 +303,12 @@ R13 仍只是在**假设发布必要条件**前提下的一次有界安全性测
 发现并限定三项未覆盖边界：**(1)** 源 §10 要求发布 READY/QUEUED *或* accepted 前的校验，而 R13 模型只看 acceptedDispatch/ClaimMutation；**(2)** `prePublicationCheckCompleted` 是布尔假设而非事件先后关系；**(3)** schema bytes/对象相等/Claim CAS/历史 append-only readback 未由真实生产者证据导出。**不是**已证实的 ADS 规范问题；模型在其有界假设内保持原 R13 历史 32/32 Z3/cvc5 + 7/7 变异资格，本轮 **没有执行新原生 SMT/Python**，未扩大 R13 的 Source-to-Model 等价范围。外部真正独立语义审核仍 `NOT_RUN`，合法 v4.19 发布者仍 `NOT_PROVEN`，条款级总数 `UNKNOWN`。
 
 后续关键路径：先从具有有效项目 v4.19 pin 的真正 Producer / 当前 Task / Accepted Claim 取得校验前后与 READY/QUEUED/accepted 发布读回证据；没有时以独立源码审核和现有边界限制收敛，不继续无界叠加模拟 Controller 或对未修改的 R11 严格套件重复派发 Local Agent。无正式规范修改、CI Gate、Merge、Freeze、Release。
+
+
+## 26. #1366 R15 — 真实 Dispatch Schema 的结构验证与授权边界（2026-11-10）
+
+R14 已确认三个源语义缺口；本轮不再无界增加模拟 Controller/SMT 模型，而是按 Reuse-First 使用候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` 的真实 `schemas/dispatch.schema.json` Git blob `5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f`，复用仓库已有 `scripts/test_protocol_schemas.py` 的 dependency-free Schema subset 检查能力。新增 `formal/v4.19/r15/schema_boundary.py`、`test_schema_boundary.py`，并将候选 Schema **原有 blob** 作为 `r15/fixtures/dispatch.schema.json` 引入，使 Git checkout 可以用同一固定字节复跑。
+
+**真实源码观察**：`LOCAL_VALIDATION` 的 validator 角色条件 Schema 有效，但 `requested_head_sha` 和 `validation_profile` 虽然 required，值仍可以为 null；任意形状合法的 40-hex `pinned_standard_revision` 也不能证明项目有效 revision；`dispatch_state=READY` 的 Schema PASS 不能证明实际发布前检验和 CAS。已基于 GitHub 真实候选 Schema 运行 **14/14 JavaScript subset 结构正反例匹配**，并在隔离容器中以**合成 Schema 子集 + 本地 checker 替身**执行 Python 逻辑回归 **12/12 PASS**；两者均明确标记范围。**真正候选原始 Schema + 仓库原生 Python checker 的组合测试未在本环境执行 = NOT_RUN**，不能把 12/12/14/14 写成 R15 的完整原生 Source-bound Python PASS。运行命令在 `r15/R15_SCHEMA_BOUNDARY_REVIEW.md`；R11/R13 的历史原生证据仅按原 SHA 继承。
+
+新代码只产生 `SHAPE_VALID_ONLY/INVALID_SCHEMA/BLOCK`，永远 `canonical_admission=NOT_PROVEN` 和 `publication_authorized=false`，不建立新的 Dispatch authority。最新优先项为精确仓库组合 Python 验证或已有合法 v4.19 生产者的真实 pre-publication/Claim-CAS readback（未确认时不作实际授信）。独立源码到模型等价审核仍 NOT_RUN，全 ADS 原子义务分母 UNKNOWN；不修改正式规范、不增 Gate、不合并/Freeze/Release。
