@@ -294,3 +294,12 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 **本轮已执行修复**：在原 `formal/v4.19/r13/publish-safety.smt2` 增加 N10 `acceptedDispatch ∧ ¬schemaBytesVerified → UNSAT`，变异脚本加一项删除此 guard；Python 添加对全部 10 项 guard 每项至少有显式禁止接受反例的结构约束（旧模型实际红 9≠10、新模型绿）。经真实 Z3 5.3.3 与 cvc5 1.4.2 **各 16/16、共 32/32 查询符合预期**，**7/7 变异均被两求解器检出**，Python **7/7 PASS**，模型/原生工具双时点 Exact-SHA 与历史固定 SHA256 继续 PASS。原始 negative-red 和新 native 结果分别固定于 `SCHEMA_BYTES_OLD_BLINDSPOT_EXECUTION.json`、`REBOUND_V2_SOLVER_EXECUTION.json`、`REBOUND_V2_MUTATION_EXECUTION.json`，总收据 `SCHEMA_BYTES_COVERAGE_REPAIR.json`。
 
 R13 仍只是在**假设发布必要条件**前提下的一次有界安全性测试：尚无真实 v4.19 项目版本采用、Dispatch/Claim 生产者、完整 Schema bytes 核验／GitHub CAS、时序或独立语义评审收据，严格标注 `NOT_PROVEN`。R11 历史严格执行不重复，本轮只修改实验模型/测试/收据和本实施计划；下一步优先真正独立审核该来源绑定模型再决定是否需要新不变量，不扩大模拟 Demo。
+
+
+## 25. Issue #1366 R14 — R13 规范到模型的 Fresh Source-First 语义边界审核（2026-11-10）
+
+本轮重新读取候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` 的 `GITHUB_AGENT_INTERACTION_PROTOCOL.md` 源 Git blob `935a905d593d7aec027cb54b5b137250ca14a4c1`，实验受审 R13 `publish-safety.smt2` blob `515454a82171c668739708ef50c46a254dcd9cc8`，以及固定 Runner 和 10 项负例结构测试；GitHub 实际读回的静态约束 **16/16 PASS**，完整机器收据保存在 `formal/v4.19/r14/SOURCE_MODEL_READBACK.json`，逐项语义差距在 `R14_SOURCE_FIRST_SCOPE_REVIEW.md`。
+
+发现并限定三项未覆盖边界：**(1)** 源 §10 要求发布 READY/QUEUED *或* accepted 前的校验，而 R13 模型只看 acceptedDispatch/ClaimMutation；**(2)** `prePublicationCheckCompleted` 是布尔假设而非事件先后关系；**(3)** schema bytes/对象相等/Claim CAS/历史 append-only readback 未由真实生产者证据导出。**不是**已证实的 ADS 规范问题；模型在其有界假设内保持原 R13 历史 32/32 Z3/cvc5 + 7/7 变异资格，本轮 **没有执行新原生 SMT/Python**，未扩大 R13 的 Source-to-Model 等价范围。外部真正独立语义审核仍 `NOT_RUN`，合法 v4.19 发布者仍 `NOT_PROVEN`，条款级总数 `UNKNOWN`。
+
+后续关键路径：先从具有有效项目 v4.19 pin 的真正 Producer / 当前 Task / Accepted Claim 取得校验前后与 READY/QUEUED/accepted 发布读回证据；没有时以独立源码审核和现有边界限制收敛，不继续无界叠加模拟 Controller 或对未修改的 R11 严格套件重复派发 Local Agent。无正式规范修改、CI Gate、Merge、Freeze、Release。

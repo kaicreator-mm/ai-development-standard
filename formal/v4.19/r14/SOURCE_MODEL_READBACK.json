@@ -1,0 +1,168 @@
+{
+  "schema": "ads/formal-r14-fresh-source-model-review/v1",
+  "owner_issue": 1366,
+  "status": "SOURCE_BOUND_STATIC_READBACK_PASS_WITH_EXPLICIT_SEMANTIC_LIMITS",
+  "frozen_subject": {
+    "experiment_head": "5822bb85fc6ffcba2da10581db14d52ff680c3a9",
+    "experiment_tree": "52bf0780797643cf544c049f1a8afe3e178126a5",
+    "source_pr": 1365,
+    "source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "source_state": "OPEN_UNMERGED"
+  },
+  "exact_blobs": {
+    "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    "formal/v4.19/r13/publish-safety.smt2": "515454a82171c668739708ef50c46a254dcd9cc8",
+    "formal/v4.19/r13/run_proofs.py": "33464ba56c4d456f87b40c1db999968070898232",
+    "formal/v4.19/r13/test_binding_preflight.py": "b9aff1904388a22203a902dce122b45c56cb0cd9"
+  },
+  "checks": [
+    {
+      "id": "exact_git_blob_norm",
+      "status": "PASS",
+      "meaning": "GitHub readback of canonical exact source"
+    },
+    {
+      "id": "exact_git_blob_model",
+      "status": "PASS",
+      "meaning": "GitHub readback of canonical exact source"
+    },
+    {
+      "id": "exact_git_blob_runner",
+      "status": "PASS",
+      "meaning": "GitHub readback of canonical exact source"
+    },
+    {
+      "id": "exact_git_blob_neg",
+      "status": "PASS",
+      "meaning": "GitHub readback of canonical exact source"
+    },
+    {
+      "id": "source_577_full_pinned",
+      "status": "PASS",
+      "meaning": "New durable canonical READY/QUEUED dispatch must be checked with current pinned schema"
+    },
+    {
+      "id": "source_579_atomicity",
+      "status": "PASS",
+      "meaning": "Source requires same-object validation at write point and fail-closed accepted mutations"
+    },
+    {
+      "id": "source_581_history",
+      "status": "PASS",
+      "meaning": "History correction/readback outside R13 model"
+    },
+    {
+      "id": "source_300_317_admission",
+      "status": "PASS",
+      "meaning": "Older admission predicate still controls authorization and partial write"
+    },
+    {
+      "id": "model_guard_implication",
+      "status": "PASS",
+      "meaning": "Necessary-condition axiom, not observed effect of a real writer"
+    },
+    {
+      "id": "model_ten_negative_queries",
+      "status": "PASS",
+      "meaning": "Ten distinct annotated rejections N01-N10"
+    },
+    {
+      "id": "model_schema_bytes_negative",
+      "status": "PASS",
+      "meaning": "N10 tested a false schemaBytesVerified assumption in the R13 model"
+    },
+    {
+      "id": "runner_model_pin",
+      "status": "PASS",
+      "meaning": "R13 exact model identity binding remains intact"
+    },
+    {
+      "id": "model_temporal_absent",
+      "status": "PASS",
+      "meaning": "No ordered time/event trace of publication-before-check"
+    },
+    {
+      "id": "model_ready_queue_absent",
+      "status": "PASS",
+      "meaning": "R13 checked acceptance variables, not separate unauthorized READY/QUEUED visibility"
+    },
+    {
+      "id": "model_actual_schema_not_proven",
+      "status": "PASS",
+      "meaning": "Schema bytes status assumed and identity is uninterpreted, not real file hash"
+    },
+    {
+      "id": "python_tests_exist",
+      "status": "PASS",
+      "meaning": "Structural guard-to-negative checks are implemented at fixed Git blob"
+    }
+  ],
+  "checked_count": 16,
+  "passed_count": 16,
+  "reviewed_atoms": [
+    "DP-01F",
+    "DP-01S",
+    "DP-02",
+    "DP-05",
+    "DP-06"
+  ],
+  "observations": [
+    {
+      "id": "R14-GAP-01",
+      "kind": "BOUNDARY_NOT_MODELED",
+      "source": "GITHUB_AGENT_INTERACTION_PROTOCOL.md:577",
+      "model": "publish-safety.smt2",
+      "finding": "Source requires validation before publishing READY/QUEUED OR accepted dispatch. R13 has only acceptedDispatch/acceptedClaimMutation and no separate READY/QUEUED publication predicate; it cannot establish the first alternative.",
+      "impact": "Unqualified pre-publication visibility is outside R13 proof scope; no observed production defect.",
+      "next": "Separate real producer/source evidence or minimal transition model, only with lawful effective ADS pin."
+    },
+    {
+      "id": "R14-GAP-02",
+      "kind": "TEMPORAL_RELATION_ASSUMED",
+      "source": "GITHUB_AGENT_INTERACTION_PROTOCOL.md:577-579",
+      "model": "prePublicationCheckCompleted Bool",
+      "finding": "An asserted Boolean does not prove check happens before actual GitHub publication; ordering and atomicity are unmodeled.",
+      "impact": "No temporal/refinement theorem.",
+      "next": "Use a legitimate producer event/serialized publication trace before claiming ordering."
+    },
+    {
+      "id": "R14-GAP-03",
+      "kind": "BYTE_AND_EFFECT_FACTS_ASSUMED",
+      "source": "GITHUB_AGENT_INTERACTION_PROTOCOL.md:579-581",
+      "model": "schemaBytesVerified Bool; SchemaIdentity/PayloadIdentity uninterpreted sorts",
+      "finding": "No proof of actual Git blob/schema hash, JSON Schema invocation, durable Claim CAS/readback, or correction of historical records.",
+      "impact": "No runtime effect/real source-model equivalence.",
+      "next": "Demand real data-derived verification facts, not additional invented Bool conditions."
+    }
+  ],
+  "source_to_model": {
+    "DP-01F": "fullEnrichedPayloadChecked, schemaPass: assumption only",
+    "DP-01S": "pinResolved, schemaBytesVerified, checkedSchema=pinnedSchema: assumption/abstract equality",
+    "DP-02": "prePublicationCheckCompleted: no event order or READY/QUEUED phase",
+    "DP-05": "publishedSchema=checkedSchema, publishedPayload=validatedPayload: abstract equality only",
+    "DP-06": "acceptedDispatch OR acceptedClaimMutation implies publishAdmissible: assumed safety contract only"
+  },
+  "execution_scope": {
+    "performed": "GitHub exact-blob readback, textual static structural assertions and fresh source-first crosswalk",
+    "python_executed_this_round": false,
+    "native_smt_executed_this_round": false,
+    "old_r13_native": "32/32 @ 5822bb85 evidence reused; not rerun",
+    "old_r11_native": "35/35 historical exact SHA; not rerun"
+  },
+  "review_provenance": {
+    "role": "FRESH_WEB_SOURCE_READ",
+    "external_independent_reviewer": "NOT_RUN",
+    "not_claimed": [
+      "Independent source-model equivalence",
+      "Real Controller/Claim/CAS proof",
+      "ADS normative defect"
+    ]
+  },
+  "conclusion": "SOURCE_MAPPING_PASS__SEMANTIC_EQUIVALENCE_BLOCKED__REAL_V419_PRODUCER_NOT_PROVEN",
+  "limitations": [
+    "46 normative files do not imply known clause denominator",
+    "25 curated atoms not complete inventory",
+    "No legal real v4.19 producer established",
+    "No actual timestamp/order nor schema bytes consumed"
+  ]
+}
