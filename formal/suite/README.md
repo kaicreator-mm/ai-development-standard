@@ -1,5 +1,7 @@
 # ADS formal Python runner — optional R1 experiment (no FIR)
 
+**Canonical project tracking Issue**: [ADS Formal #1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366). It indexes R0–R10 exact-SHA evidence, T00–T08, current PASS/NOT_RUN separation, and future Delivery-First / Web-First work. This README documents runner usage; it is **not** the authoritative progress ledger. Historical strict R10 35/35 was executed at model HEAD `671c5fa`; do not treat the latest `c6d6eb7` receipt-only patch as a new full-suite pass.
+
 This is a small Python **verification process**, not a new normative ADS standard, development gate, proof language, or shared intermediate representation.
 
 The runner reads a per-version test list (which identifies native models and expected results), runs Z3/TLA+/TLC in isolated bounded subprocesses, checks the expected result, hashes model inputs, and writes a JSON receipt. The test list contains no executable Python or shell commands. The reasoning remains in the native .smt2/.tla files.

@@ -1,6 +1,9 @@
 # ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R10 / EXPERIMENT / NO_NORMATIVE_GATE / R5_SOURCE_BOUND_PASS / R8_BOUNDED_REPAIR / R10_PAIR_COVERAGE_HARDENED / CURRENT_STRICT_NOT_RUN / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R10 / EXPERIMENT / NO_NORMATIVE_GATE / R10_STRICT_35_CASES_PASS_AT_671c5fa / LATEST_RECEIPT_PATCH_CURRENT_HEAD_NOT_FULLY_RETESTED / NOT_FULL_ADS_PROOF  
+**Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
+**Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
+**Latest web code patch**: `c6d6eb70ab9b844c3808ee9ca9594d9797b7ef55` changes receipt-only native tool reporting, without full current-HEAD exact worktree rerun; no automatic inheritance of prior PASS.  
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -218,3 +221,9 @@ R9 原生增量用例新增 **0 个**，试点仍是 10 个性质与 35 个模�
 **验收仍受限：** 这不构成 R10 35/35 Source-bound PASS；R5 27/27 历史严格验证仍按旧 HEAD 引用，R6/R8 分别有 4 个增量模型结果。当前缺少双 Exact-SHA Git worktree 的完整 `formal/tests` 回归、35-case 最新 runner 严格重跑、R8 新模型的独立语义复核，真实 GitHub CAS/Claim/Host/CI/Release 也仍未建模验证。ADS 规则义务分母保持 UNKNOWN，不引入正式 Gate、FIR 或 Node 版本限制。
 
 R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
+
+## 16. 统一主 Issue 回溯入口（2026-11-10）
+
+历史验证 R0–R10 不再以聊天记录或任意单轮 JSON 作为项目进度入口。**[#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) 是本实验唯一主进度与工作索引**，保存 T00–T08 任务、轮次原始证据、历史 Exact-SHA、R10 的 35/35 与最新 HEAD 的 NOT_RUN 区别、剩余证明义务以及 Delivery-First → Web-First 派发规则。原始收据和模型**仍保留在 Git 版本化目录**，不复制粘贴覆盖、不回写修改历史 PASS。
+
+后续执行前先读 Issue #1366 和本文件，再刷新候选 PR #1365 与实验分支 HEAD；有重要实际结果则提交 Git 固化，并在 Issue #1366 追加对应 Exact-SHA 与 PASS/BLOCK/NOT_RUN。只有真正独立、持续性强的任务才创建按需子 Issue；默认 Web Builder 连续完成实现、修复、测试和收据，本地 Agent 仅限 Web 缺失能力的最小一体化修复与复测。
