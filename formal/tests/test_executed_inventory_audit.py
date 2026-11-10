@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-MODULE = Path(__file__).resolve().parents[1] / "coverage" / "executed_inventory_audit.py"
+MODULE = Path(__file__).resolve().parents[1] / "v4.19" / "coverage" / "executed_inventory_audit.py"
 spec = importlib.util.spec_from_file_location("ads_r20_audit", MODULE)
 audit_mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(audit_mod)
@@ -33,7 +33,7 @@ class TestExecutedInventoryAudit(unittest.TestCase):
     def write(self, path, text):
         file = self.root / path
         file.parent.mkdir(parents=True, exist_ok=True)
-        file.write_text(text, encoding="utf-8")
+        file.write_text(text, encoding="utf-8", newline="")
 
     def make_records(self, status="ok", counts=(13, 13), ids=None):
         if ids is None:
