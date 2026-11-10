@@ -1,0 +1,284 @@
+{
+  "schema": "ads/formal-r13-r16-fresh-independent-source-model-review/v1",
+  "issue": 1366,
+  "review_class": "FRESH_SOURCE_FIRST_SEMANTIC_CRITIQUE_NOT_NATIVE_RERUN",
+  "reviewed_inputs": {
+    "experiment_branch": "experiment/v4.19-formal-proof-r0",
+    "experiment_head": "ceeed4ae5a58b396338217323215497d7325570b",
+    "experiment_tree": "76a4440b49d3ff8bad105e3c785fccd50ba46870",
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED",
+    "protocol_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    "candidate_dispatch_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+    "r13_publish_model_blob": "515454a82171c668739708ef50c46a254dcd9cc8",
+    "r13_weak_model_blob": "04f85b71b60eea1382b3044d459702d5ba0978e7",
+    "r13_runner_blob": "33464ba56c4d456f87b40c1db999968070898232",
+    "r13_mutator_blob": "4bf39cd3c7c4e5ed619042a1a6dfb3424575c0b7",
+    "r15_python_blob": "15a8634e27946fca3c49db4f336687f4cf10bba3",
+    "r15_test_blob": "20443c0dca104cd232cfaa7902dc0e977e242aa3",
+    "r16_survey_blob": "de1a4dcee18bb2ce31054fcb893ac8a844de0dbc"
+  },
+  "review_execution": {
+    "exact_github_source_scope_checks": {
+      "total": 32,
+      "matched": 32,
+      "failed": 0,
+      "checks": [
+        "pin_protocol_blob",
+        "pin_schema_blob",
+        "pin_r13_model_blob",
+        "pin_r13_runner_blob",
+        "pin_r13_mutator_blob",
+        "pin_r15_test_blob",
+        "pin_r15_checker_blob",
+        "r15_schema_exact_fixture",
+        "protocol_prepublication_ready",
+        "protocol_same_object",
+        "protocol_zero_accepted_mutation",
+        "r13_axiomatic_implication",
+        "r13_no_ready_queue_state",
+        "r13_no_event_order",
+        "r13_ten_negative_cases",
+        "r13_twelve_queries",
+        "r13_runner_expected_match",
+        "r13_runner_no_candidate_source_preflight",
+        "r13_evidence_pair_pass",
+        "r13_evidence_tools_pinned",
+        "r13_evidence_model_pinned",
+        "r13_seven_mutants_pass",
+        "r15_nullable_validator_source",
+        "r15_required_validator_source",
+        "r15_not_publication_authority",
+        "r15_checker_import_fix",
+        "r15_13_tests_declared",
+        "r15_source_checker_core_equal",
+        "r15_repaired_head_2env",
+        "r16_14_observations",
+        "r16_non_global_negative",
+        "r16_missing_ref_heads_unpinned"
+      ]
+    },
+    "independent_propositional_countermodel": {
+      "type": "MANUALLY_TRANSLATED_TEN_GUARD_BOOLEAN_WITNESSES_NOT_SMT_OR_PUBLISHER",
+      "total": 10,
+      "expected_countermodel_without_axiom": 10,
+      "found": 10,
+      "witnesses": [
+        {
+          "missing": "pinResolved",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "schemaBytesVerified",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "fullEnrichedPayloadChecked",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "prePublicationCheckCompleted",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "schemaPass",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "authorityAndClaimCurrent",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "publicationSerialized",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "checkedSchemaEqualsPinned",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "publishedSchemaEqualsChecked",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        },
+        {
+          "missing": "publishedPayloadEqualsValidated",
+          "acceptedDispatch": true,
+          "otherGuardsTrue": true,
+          "modelWithoutR13SafetyImplicationSatisfiable": true,
+          "modelWithR13ImplicationSatisfiable": false
+        }
+      ]
+    },
+    "r16_original_positive_file_blob_rereads": {
+      "exact_historical_head_cases": 9,
+      "sha_matched": 9
+    },
+    "r16_new_immutable_missing_file_rechecks": {
+      "path": ".dev-standard/VERSION",
+      "cases": [
+        {
+          "repository": "kaicreator-mm/formal-tools",
+          "commit": "77de1d375d4292497f7dbfb98b16a177cda95d4b",
+          "github_result": "404_NOT_FOUND_AT_THIS_EXACT_COMMIT",
+          "interpretation": "UNKNOWN_USAGE_NOT_GLOBAL_NEGATIVE"
+        },
+        {
+          "repository": "kaicreator-mm/devkit",
+          "commit": "303c5627ad95a321895c09f45a778cc0322668db",
+          "github_result": "404_NOT_FOUND_AT_THIS_EXACT_COMMIT",
+          "interpretation": "UNKNOWN_USAGE_NOT_GLOBAL_NEGATIVE"
+        },
+        {
+          "repository": "kaicreator-mm/task-meta",
+          "commit": "320bcaaa4007459192e9c7d122eb4191f2ea7a65",
+          "github_result": "404_NOT_FOUND_AT_THIS_EXACT_COMMIT",
+          "interpretation": "UNKNOWN_USAGE_NOT_GLOBAL_NEGATIVE"
+        },
+        {
+          "repository": "kaicreator-mm/task-meta-e2e",
+          "commit": "15460003ebfd4b127b3a496edab1088712bd6c21",
+          "github_result": "404_NOT_FOUND_AT_THIS_EXACT_COMMIT",
+          "interpretation": "UNKNOWN_USAGE_NOT_GLOBAL_NEGATIVE"
+        },
+        {
+          "repository": "kaicreator-mm/ai-dev-pilot",
+          "commit": "eb1a7328a6d7429fc5ffa502ed762f469c5aedcc",
+          "github_result": "404_NOT_FOUND_AT_THIS_EXACT_COMMIT",
+          "interpretation": "UNKNOWN_USAGE_NOT_GLOBAL_NEGATIVE"
+        }
+      ],
+      "confirmed_at_five_pinned_heads": 5
+    },
+    "r13_historical_solver_results": {
+      "observed_receipt": "formal/v4.19/r13/REBOUND_V2_SOLVER_EXECUTION.json",
+      "z3": 16,
+      "cvc5": 16,
+      "pairs": 16,
+      "paired_results": 32,
+      "status": "HISTORICAL_EXACT_BLOBS_ONLY_NOT_RERUN"
+    },
+    "r13_historical_mutations": {
+      "observed_receipt": "formal/v4.19/r13/REBOUND_V2_MUTATION_EXECUTION.json",
+      "detected": 7,
+      "total": 7,
+      "status": "HISTORICAL_NOT_RERUN"
+    },
+    "r15_historical_python": {
+      "observed_receipt": "formal/v4.19/r15/EXACT_SOURCE_PYTHON_RECEIPT.json",
+      "repaired_head": "4de398a02f4c96d20ad763ea11d81a9a40ff0266",
+      "wsl": "13/13_ZERO_SKIP_PASS",
+      "windows": "13/13_ZERO_SKIP_PASS",
+      "cli": "3_CASES_X_2_HOSTS",
+      "status": "HISTORICAL_NOT_RERUN"
+    },
+    "current_native_z3_cvc5_tlc": "NOT_RUN",
+    "current_full_python": "NOT_RUN",
+    "real_producer_claim_CAS": "NOT_PROVEN"
+  },
+  "findings": [
+    {
+      "id": "R13-R16-REV-P2-01",
+      "class": "EXPERIMENT_SOURCE_PROVENANCE_LIMIT",
+      "severity": "P2",
+      "scope": "run_proofs.py pre/post binds two SMT blobs and both binaries, but does not preflight candidate protocol blob/HEAD; source relation remains documented interpretation, not a native source-bound equivalence result",
+      "disposition": "ACKNOWLEDGED_NOT_A_PRODUCTION_DEFECT; any future source-equivalence claim requires separate source pin+semantic reviewer"
+    },
+    {
+      "id": "R13-R16-REV-P2-02",
+      "class": "R16_NEGATIVE_REFERENCE_CURRENTNESS",
+      "severity": "P2",
+      "scope": "five original R16 404 rows recorded main branch ref but no immutable repo HEAD, hence the historic 404 is not reproducible as an exact-SHA assertion; this review rechecks 404 at five explicit observed current commits, without editing old receipt",
+      "disposition": "MITIGATED_IN_NEW_FROZEN_READBACK; old R16 historical 404 remains ref-only"
+    }
+  ],
+  "open_coverage": [
+    {
+      "id": "R14-GAP-01",
+      "description": "No READY/QUEUED early visibility predicate in accepted-only R13 model",
+      "classification": "COVERAGE_NOT_PROVEN"
+    },
+    {
+      "id": "R14-GAP-02",
+      "description": "prePublicationCheckCompleted Bool is not measured event ordering",
+      "classification": "TEMPORAL_NOT_PROVEN"
+    },
+    {
+      "id": "R14-GAP-03",
+      "description": "real schema bytes, object equality, GitHub serialized CAS/readback and invalid-history remain uninterpreted/unobserved",
+      "classification": "RUNTIME_REFINEMENT_NOT_PROVEN"
+    },
+    {
+      "id": "R15-OBS-01",
+      "description": "validator required requested_head_sha and validation_profile are nullable; shape-valid is not exact-SHA authorization",
+      "classification": "SOURCE_SCHEMA_RUNTIME_BOUNDARY"
+    },
+    {
+      "id": "R15-OBS-02",
+      "description": "40-hex source pin syntax does not resolve active project/task pin",
+      "classification": "SOURCE_PIN_RUNTIME_BOUNDARY"
+    },
+    {
+      "id": "R15-OBS-03",
+      "description": "READY JSON shape does not encode check-before-write proof",
+      "classification": "STATE_RUNTIME_BOUNDARY"
+    }
+  ],
+  "severity": {
+    "ads_normative_confirmed": {
+      "p0": 0,
+      "p1": 0,
+      "p2": 0
+    },
+    "experiment_open": {
+      "p0": 0,
+      "p1": 0,
+      "p2": 1
+    },
+    "experiment_addressed_in_new_review": {
+      "p2": 1
+    },
+    "semantic_coverage_not_proven": 6
+  },
+  "conclusion": {
+    "scoped_review": "PASS_SCOPED_SOURCE_MODEL_REVIEW_WITH_P2",
+    "semantic_equivalence": "NOT_PROVEN",
+    "candidate_v419_adoption": "NOT_PROVEN",
+    "r13_guard_strength": "ASSERTED_NECESSARY_CONDITION_NOT_DERIVED_CONTROLLER_INVARIANT",
+    "r15_schema_strength": "EXACT_BLOB_AND_SHAPE_ONLY",
+    "r16_eligible_subject": "NO_CONFIRMED_EXACT_PIN_IN_14_SAMPLED_TUPLES",
+    "source_identity_independent_human": "NOT_ATTESTED_BY_SHARED_GITHUB_ACTOR",
+    "full_ads_atomic_rule_denominator": "UNKNOWN",
+    "normative_change": "NONE",
+    "merge": "NONE",
+    "freeze": "NONE",
+    "release": "NONE"
+  }
+}
