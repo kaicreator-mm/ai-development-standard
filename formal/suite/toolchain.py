@@ -51,12 +51,26 @@ def toolchain_alignment(options, selected, inventory):
             if not exe:
                 checks.append({"tool": kind, "status": "NOT_RUN", "reason": "Tool executable unavailable"})
                 continue
-            observed = _digest(exe)
+            try:
+                observed = _digest(exe)
+            except OSError as exc:
+                checks.append({"tool": kind, "status": "FAIL",
+                               "reason": "Cannot hash solver executable", "error": str(exc)})
+                continue
+            if not (isinstance(required_hash, str) and len(required_hash) == 64
+                    and observed == required_hash):
+                # Never call --version on an unknown binary. Version probing
+                # itself executes executable code.
+                checks.append({"tool": kind, "status": "FAIL",
+                               "reason": "Solver SHA256 mismatch; version probe suppressed",
+                               "binary_path": str(exe), "binary_sha256": observed,
+                               "inventory_sha256": required_hash,
+                               "version_probe_executed": False})
+                continue
             code, output = _version(exe, "-version" if kind == "z3" else "--version")
             expected_version = expected.get("version")
-            ok = (isinstance(required_hash, str) and len(required_hash) == 64
-                  and observed == required_hash and code == 0
-                  and isinstance(expected_version, str) and expected_version in output)
+            ok = (code == 0 and isinstance(expected_version, str)
+                  and expected_version in output)
             checks.append({"tool": kind, "status": "PASS" if ok else "FAIL",
                            "binary_path": str(exe), "binary_sha256": observed,
                            "inventory_sha256": required_hash, "expected_version": expected_version,
@@ -68,11 +82,24 @@ def toolchain_alignment(options, selected, inventory):
             if not jar or not jar.is_file() or not java:
                 checks.append({"tool": kind, "status": "NOT_RUN", "reason": "Java or TLC JAR unavailable"})
                 continue
-            observed = _digest(jar)
+            try:
+                observed = _digest(jar)
+            except OSError as exc:
+                checks.append({"tool": kind, "status": "FAIL",
+                               "reason": "Cannot hash TLC JAR", "error": str(exc)})
+                continue
             required_hash = expected.get("jar_sha256")
+            if not (isinstance(required_hash, str) and len(required_hash) == 64
+                    and observed == required_hash):
+                checks.append({"tool": kind, "status": "FAIL",
+                               "reason": "TLC JAR SHA256 mismatch; Java probe suppressed",
+                               "jar_sha256": observed, "inventory_sha256": required_hash,
+                               "java_version_probe_executed": False})
+                continue
+            # Java itself is not byte-pinned by this inventory; this probe
+            # establishes runtime availability, not Java provenance.
             code, output = _version(java, "-version")
-            ok = (isinstance(required_hash, str) and len(required_hash) == 64
-                  and observed == required_hash and code == 0)
+            ok = code == 0
             checks.append({"tool": kind, "status": "PASS" if ok else "FAIL",
                            "jar_sha256": observed, "inventory_sha256": required_hash,
                            "java_path": str(java), "java_version_output": output[:180],

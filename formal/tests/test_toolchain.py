@@ -32,6 +32,42 @@ class ToolchainTests(unittest.TestCase):
             executable.write_text("#!/bin/sh\necho tampered\n")
             self.assertEqual(mod.toolchain_alignment(opts, selected, inventory)["status"], "FAIL")
 
+    def test_mismatched_hash_never_runs_executable_even_for_version(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in ("z3", "cvc5"):
+                with self.subTest(tool=name):
+                    sentinel = Path(tmp) / (name + ".executed")
+                    executable = Path(tmp) / ("fake-" + name)
+                    executable.write_text(
+                        "#!/bin/sh\\nprintf 'EXECUTED' > '" + str(sentinel) +
+                        "'\\necho 'Z3 version 5.3.3 cvc5 1.4.2'\\n"
+                    )
+                    executable.chmod(0o755)
+                    opts = types.SimpleNamespace(z3=str(executable), cvc5=str(executable))
+                    inventory = {"smokes": {name: {"binary_sha256": "0" * 64,
+                                                   "version": "5.3.3"}}}
+                    report = mod.toolchain_alignment(opts, [{"tool": name}], inventory)
+                    self.assertEqual(report["status"], "FAIL")
+                    self.assertFalse(report["checks"][0]["version_probe_executed"])
+                    self.assertFalse(sentinel.exists(),
+                                     "untrusted --version execution is prohibited")
+
+    def test_bad_tlc_jar_never_starts_java_probe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sentinel = Path(tmp) / "java.executed"
+            java = Path(tmp) / "fake-java"
+            java.write_text("#!/bin/sh\\nprintf 'EXECUTED' > '" + str(sentinel) +
+                            "'\\necho openjdk\\n")
+            java.chmod(0o755)
+            jar = Path(tmp) / "tla2tools.jar"
+            jar.write_bytes(b"tampered TLC")
+            opts = types.SimpleNamespace(java=str(java), tlc_jar=str(jar))
+            inventory = {"smokes": {"tlc": {"jar_sha256": "0" * 64}}}
+            report = mod.toolchain_alignment(opts, [{"tool": "tlc"}], inventory)
+            self.assertEqual(report["status"], "FAIL")
+            self.assertFalse(report["checks"][0]["java_version_probe_executed"])
+            self.assertFalse(sentinel.exists())
+
     def test_missing_and_zero_selected_cases(self):
         self.assertEqual(mod.toolchain_alignment(None, [], {})["status"], "NOT_RUN")
         opts = types.SimpleNamespace(z3="/definitely/nonexistent/z3")
