@@ -1,0 +1,145 @@
+{
+  "schema": "ads/formal-r11-final-convergence-receipt/v1",
+  "kind": "EXACT_SHA_DUAL_WORKTREE_FINAL_INTEGRATION_CONVERGENCE_LOCAL_EXECUTION_NOT_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "executed_at": {
+    "model_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+    "model_tree": "635cbf53b24a652cb5fcb9c28c9b4289f9f334c6",
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_pr": "https://github.com/kaicreator-mm/ai-development-standard/pull/1365",
+    "candidate_status": "OPEN_UNMERGED_UNFROZEN"
+  },
+  "worktrees": {
+    "model": "ads-i1366-model @ 9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff (detached, byte-exact checkout, tracked files unmodified)",
+    "candidate": "ads-i1366-source @ dac263fa4c0ab155406d2f2117459b34322cc988 (detached, read-only during execution)",
+    "note": "Both registered to the bare mirror _mirror/ai-development-standard.git; created directly at exact SHAs per Issue #1366 dual-Exact-SHA worktree requirement (not via task-new, which bases on origin/main)."
+  },
+  "environment": {
+    "execution": "WSL2 Ubuntu 26.04.1 (linux-x86_64) on Windows host, matching the historical R0-R10 linux-x86_64 runtime family",
+    "python": "3.14.4",
+    "java": "openjdk 21.0.13.0.3 (version probe PASS; not byte-pinned, consistent with inventory java_binary_hash_pinned=false)",
+    "git_linux": "2.53.0",
+    "deviation_note": "Historical receipts recorded Python 3.13.5 in the Web container; this local convergence used Python 3.14.4 (stdlib-only suite). No suite code changes were required."
+  },
+  "tools_restored_without_download": {
+    "z3": {
+      "path": "/home/cc/ads-i1366-tools/z3-5.3.3-x64-glibc-2.39/bin/z3",
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "version": "5.3.3",
+      "source_archive_sha256": "d56f60b06f432f33de5810f7f1a384a339131f361e2d54d08ea83eea14326880",
+      "identity": "MATCHES tools/inventory.json smokes.z3 (binary + archive)"
+    },
+    "cvc5": {
+      "path": "/home/cc/ads-i1366-tools/cvc5-Linux-x86_64-static/bin/cvc5",
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "version": "1.4.2",
+      "source_archive_sha256": "7eb18f8c814c36a46c5a7d003983e9cfbc4b0a9828d6dd596239291bd4cc61d8",
+      "identity": "MATCHES tools/inventory.json smokes.cvc5 (binary + archive)"
+    },
+    "tlc_jar": {
+      "path": "/home/cc/ads-i1366-tools/tla2tools.jar",
+      "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "identity": "MATCHES tools/inventory.json smokes.tlc (jar)"
+    },
+    "re_download": false,
+    "historical_r10_review_repeated": false
+  },
+  "python_tests": {
+    "command": "python3 -m unittest discover -s tests -v (cwd: formal/; env ADS_FORMAL_Z3, ADS_FORMAL_CVC5, ADS_FORMAL_TLC_JAR, ADS_FORMAL_CANDIDATE_CHECKOUT set to verified native paths so no gate degrades to skip)",
+    "ran": 61,
+    "ok": 61,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "static_declared_methods": 61,
+    "log": "formal/v4.19/r11/PYTHON_TESTS_LOG.txt",
+    "log_sha256": "e9b75147a6b4e1a0fd81a3d9b397fe5144ce68b95c85628fb7b30e83848e8909",
+    "candidate_consumer_binding": "test_r6_source_consumer executed against ads-i1366-source (HEAD dac263f, scripts/v34_rules.py blob 0829be09f46dde75710bc54607a14edd7a2c4cea verified)"
+  },
+  "strict_suite_run": {
+    "command": "python3 suite/run.py --suite v4.19/r10/suite.json --z3 <z3> --cvc5 <cvc5> --java java --tlc-jar <jar> --model-head 9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff --source-checkout <candidate worktree> --strict-source --out formal/v4.19/r11/R11_FINAL_STRICT_RUN.json",
+    "verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_declared": 35,
+    "cases_selected": 35,
+    "all_declared_cases_selected": true,
+    "case_results": { "PASS_MODEL": 21, "COUNTEREXAMPLE": 14 },
+    "tools_used": { "z3": 16, "cvc5": 16, "tlc": 3 },
+    "solver_differential": { "pairs": 16, "PASS": 16, "require_solver_pairs": true },
+    "tlc_cases": [
+      { "id": "ADS419-R2-LIFECYCLE-TLC", "status": "PASS_MODEL", "distinct_states": 27 },
+      { "id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER", "status": "COUNTEREXAMPLE", "distinct_states": 7 },
+      { "id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE", "status": "COUNTEREXAMPLE", "distinct_states": 3 }
+    ],
+    "model_input_alignment_before": "PASS",
+    "model_input_alignment_after": "PASS",
+    "toolchain_alignment_before": "PASS",
+    "toolchain_alignment_after": "PASS",
+    "tool_versions_in_receipt": {
+      "z3": "VERIFIED (pre+post, binary_sha256 pinned)",
+      "cvc5": "VERIFIED (pre+post, binary_sha256 pinned)",
+      "tlc_jar": "VERIFIED (pre+post, jar_sha256 pinned)",
+      "java": "AVAILABLE_UNPINNED"
+    },
+    "source_alignment": "PASS (7/7 candidate sources, blob + anchors, candidate HEAD dac263f)",
+    "traceability_audit": "PASS (10 properties / 35 cases / 7 sources, bidirectional, fail-closed)",
+    "receipt": "formal/v4.19/r11/R11_FINAL_STRICT_RUN.json",
+    "receipt_sha256": "94be98338bbcd5de90c21e7e806070d2e9f1a5b668adb2f9d88a1efb9de85d99",
+    "log": "formal/v4.19/r11/R11_STRICT_RUN_LOG.txt",
+    "log_sha256": "6ee0170ec97ea8b8be43384a1c2ad56d5c51726932fba1229d449c97d4dba25f"
+  },
+  "acceptance_stop_condition": {
+    "required": "strict MODEL_AND_SOURCE_PASS; Python actually collected+executed zero fail/zero skip; 35/35 cases; 16/16 dual-solver pairs; source/model/toolchain before+after; traceability PASS",
+    "met": true,
+    "residual": "Bounded-pilot qualification only; see limitations"
+  },
+  "issues_and_grading": [
+    {
+      "id": "INC-1",
+      "severity": "P3-infrastructure",
+      "kind": "bootstrap/environment",
+      "description": "Worktree .git pointers were written Windows-style (gitdir: C:/...) by Windows git, so Linux git inside WSL could not resolve either worktree (exit 128), blocking provenance/source alignment and the R6 consumer test.",
+      "resolution": "Rewrote both worktree .git pointers to /mnt/c gitdir paths; both HEADs then verified from WSL. No tracked file changed.",
+      "product_impact": "none",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "INC-2",
+      "severity": "P3-environment",
+      "kind": "external concurrent deletion",
+      "description": "The local toolkit directory C:/Application/formal-toolkit-bundler/formal-toolkit-dist (previously hash-verified this session) was removed mid-session by an external process. z3 and cvc5 had already been extracted and hash-verified into WSL home before deletion.",
+      "resolution": "Recovered TLC jar from C:/Application/formal-tools-assets/cache/native/tla-tlc/v1.7.4/tla2tools.jar; sha256 936a2620...e50e88 matches the pinned inventory hash byte-for-byte; re-verified after copy into WSL.",
+      "product_impact": "none",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "INC-3",
+      "severity": "P4-operator",
+      "kind": "bootstrap misconfiguration",
+      "description": "First python test run used /root/... solver paths while the WSL default user is cc (/home/cc), producing 3 failures + 5 errors, all OSError-derived NOT_RUN; no assertion-level product defect involved.",
+      "resolution": "Corrected env paths; full rerun green (61/61, 0 skipped).",
+      "product_impact": "none",
+      "status": "RESOLVED"
+    }
+  ],
+  "issues_summary": "No P0/P1/P2. No formal/ tracked file required modification; both worktrees remained byte-exact at their pinned SHAs for the entire execution. Zero-skip/zero-fail achieved on the full 61-method collection; strict suite MODEL_AND_SOURCE_PASS on the full 35-case selection.",
+  "formal_source_changes": "NONE (write set of this convergence = evidence files under formal/v4.19/r11/ only)",
+  "scope_guards": {
+    "merge": false,
+    "freeze": false,
+    "release": false,
+    "github_actions": false,
+    "ads_normative_spec_modified": false,
+    "historical_r0_r10_receipts_modified": false,
+    "pr_1365_untouched": true
+  },
+  "limitations": [
+    "Bounded abstract models only; no full natural-language ADS semantic-equivalence proof",
+    "Pilot denominator stays UNKNOWN; 10 modeled properties and 7 mapped sources are not an ADS rule-coverage claim",
+    "Java runtime is version-probed but not byte-pinned; shared-library and host provenance not fully pinned",
+    "Real GitHub Claim/CAS/CI/Release, persistent authorization, Publication read-back, liveness/fairness/expiry remain unproved",
+    "Local execution host experienced a concurrent external deletion (INC-2); restored bytes were hash-verified, but the deleted original toolkit directory was not preserved for diff",
+    "Historical R0-R10 PASS inheritance remains bound to their own Exact SHAs; this receipt extends strict PASS only to executed_at SHAs and the evidence commit that freezes it"
+  ]
+}

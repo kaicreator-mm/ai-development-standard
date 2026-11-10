@@ -1,0 +1,1711 @@
+{
+  "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF",
+  "schema": "ads/formal-receipt/v1",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_status": "PROSPECTIVE_UNFROZEN",
+  "suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3",
+  "source_index_sha256": "ffa37b146205ada594dbcd5d10b7d3f28518ce5c69816629b65d8d4cf404122c",
+  "source_map_sha256": "5e8d85e99881cc8107a9f374523ce592e7ff40b02b814a8ea3737b95111ea8e6",
+  "traceability_sha256": "08953c59258b8f682151c41be1c965e1a8608858bb17572f915d6eef627e46da",
+  "source_alignment": {
+    "status": "PASS",
+    "checks": [
+      {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "status": "PASS"
+      },
+      {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "status": "PASS"
+      },
+      {
+        "path": "schemas/dispatch.schema.json",
+        "blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+        "status": "PASS"
+      },
+      {
+        "path": "scripts/v34_rules.py",
+        "blob": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+        "status": "PASS"
+      },
+      {
+        "path": "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+        "blob": "787a412c7eb4bdc09ae4bf9e35e77d266b693825",
+        "status": "PASS"
+      },
+      {
+        "path": "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+        "blob": "dd72a092ae6226ba2715aaaf37d29b3766a940b1",
+        "status": "PASS"
+      },
+      {
+        "path": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "blob": "1f1601a20db08d263955241607dfd08d8b8f77e1",
+        "status": "PASS"
+      }
+    ]
+  },
+  "tool_versions": {
+    "z3": {
+      "status": "VERIFIED",
+      "version_output": [
+        "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e"
+      ],
+      "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "preflight_status": "PASS",
+      "postflight_status": "PASS"
+    },
+    "cvc5": {
+      "status": "VERIFIED",
+      "version_output": [
+        "cvc5 1.4.2 [git 282d5e0 on branch HEAD]",
+        "compiled as a unrestricted build with GCC version 11.4.0 on Oct  8 2026 01:24:07"
+      ],
+      "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "preflight_status": "PASS",
+      "postflight_status": "PASS"
+    },
+    "tlc_jar": {
+      "status": "VERIFIED",
+      "sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "preflight_status": "PASS",
+      "postflight_status": "PASS"
+    },
+    "java": {
+      "status": "AVAILABLE_UNPINNED",
+      "version_output": [
+        "openjdk version \"21.0.13.0.3\" 2026-10-24",
+        "OpenJDK Runtime Environment (build 21.0.13.0.3+1-1-26.04.1-Ubuntu)"
+      ],
+      "binary_sha256": null
+    }
+  },
+  "model_verdict": "MODEL_AND_SOURCE_PASS",
+  "traceability_audit": {
+    "status": "PASS",
+    "property_count": 10,
+    "case_count": 35,
+    "source_count": 7
+  },
+  "model_input_alignment_before": {
+    "status": "PASS",
+    "experiment_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+    "checks": [
+      {
+        "path": "models/authority/admission-boundaries-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "3e8fd89ea20ac420499c630697d212defb3490da",
+        "actual_blob": "3e8fd89ea20ac420499c630697d212defb3490da"
+      },
+      {
+        "path": "models/authority/admission-boundaries-r8-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "3c473a28028d3bbdd916ad124b2b4ddf97feba77",
+        "actual_blob": "3c473a28028d3bbdd916ad124b2b4ddf97feba77"
+      },
+      {
+        "path": "models/authority/admission-boundaries-r8.smt2",
+        "status": "PASS",
+        "git_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3",
+        "actual_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3"
+      },
+      {
+        "path": "models/authority/admission-boundaries.smt2",
+        "status": "PASS",
+        "git_blob": "66d89305305541d7e095e053fa8fcb55e9e6a9b4",
+        "actual_blob": "66d89305305541d7e095e053fa8fcb55e9e6a9b4"
+      },
+      {
+        "path": "models/authority/claim-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "c4b5b5d575cbed35947e46169f9e0c74fc8d0a61",
+        "actual_blob": "c4b5b5d575cbed35947e46169f9e0c74fc8d0a61"
+      },
+      {
+        "path": "models/authority/claim.smt2",
+        "status": "PASS",
+        "git_blob": "865f1c6876598be9c4eaa4b4f496367324793cca",
+        "actual_blob": "865f1c6876598be9c4eaa4b4f496367324793cca"
+      },
+      {
+        "path": "models/authority/serialized-admission-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "be623e0a14df6cea07bc57477a70779b4807c1b8",
+        "actual_blob": "be623e0a14df6cea07bc57477a70779b4807c1b8"
+      },
+      {
+        "path": "models/authority/serialized-admission.smt2",
+        "status": "PASS",
+        "git_blob": "a405d543f0de43f1455f6018043fd3002ccba923",
+        "actual_blob": "a405d543f0de43f1455f6018043fd3002ccba923"
+      },
+      {
+        "path": "models/cross/combined.smt2",
+        "status": "PASS",
+        "git_blob": "de8ed76539edba903c3dad4293c17bae704cee46",
+        "actual_blob": "de8ed76539edba903c3dad4293c17bae704cee46"
+      },
+      {
+        "path": "models/cross/writer-exclusion-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "b49fb584ad00fd57bbf5d48033983de016683542",
+        "actual_blob": "b49fb584ad00fd57bbf5d48033983de016683542"
+      },
+      {
+        "path": "models/cross/writer-exclusion.smt2",
+        "status": "PASS",
+        "git_blob": "dd00d7186df5577587f0b3340fe1cbb078bad437",
+        "actual_blob": "dd00d7186df5577587f0b3340fe1cbb078bad437"
+      },
+      {
+        "path": "models/dependency/parallel.smt2",
+        "status": "PASS",
+        "git_blob": "a64cd37957fe739c9c960785668bf1a5f7129ed6",
+        "actual_blob": "a64cd37957fe739c9c960785668bf1a5f7129ed6"
+      },
+      {
+        "path": "models/dependency/ranked-4-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "f394b693faa119845e8b620dccfe93f2e0bf02cb",
+        "actual_blob": "f394b693faa119845e8b620dccfe93f2e0bf02cb"
+      },
+      {
+        "path": "models/dependency/ranked-4.smt2",
+        "status": "PASS",
+        "git_blob": "f8582023565a71bf06fb50a1efd53366979e434c",
+        "actual_blob": "f8582023565a71bf06fb50a1efd53366979e434c"
+      },
+      {
+        "path": "models/evidence/exact-sha.smt2",
+        "status": "PASS",
+        "git_blob": "eb257ce15f0fb562e83674261f3d2cfd6cb71e9a",
+        "actual_blob": "eb257ce15f0fb562e83674261f3d2cfd6cb71e9a"
+      },
+      {
+        "path": "models/evolution/scopes.smt2",
+        "status": "PASS",
+        "git_blob": "b8f4fd14f7fb8deacd3e0d94d1f0c60144a103ae",
+        "actual_blob": "b8f4fd14f7fb8deacd3e0d94d1f0c60144a103ae"
+      },
+      {
+        "path": "suite/differential.py",
+        "status": "PASS",
+        "git_blob": "0266543c4edb991472ce781615b2bb8e77a5307b",
+        "actual_blob": "0266543c4edb991472ce781615b2bb8e77a5307b"
+      },
+      {
+        "path": "suite/expanded.py",
+        "status": "PASS",
+        "git_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b",
+        "actual_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b"
+      },
+      {
+        "path": "suite/provenance.py",
+        "status": "PASS",
+        "git_blob": "dd2ca232d975a85b892cc4d116f9ba38f0a76c40",
+        "actual_blob": "dd2ca232d975a85b892cc4d116f9ba38f0a76c40"
+      },
+      {
+        "path": "suite/run.py",
+        "status": "PASS",
+        "git_blob": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e",
+        "actual_blob": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e"
+      },
+      {
+        "path": "suite/toolchain.py",
+        "status": "PASS",
+        "git_blob": "6705dcb31957dc49efbf6c303b2f08f33d721206",
+        "actual_blob": "6705dcb31957dc49efbf6c303b2f08f33d721206"
+      },
+      {
+        "path": "tools/inventory.json",
+        "status": "PASS",
+        "git_blob": "0b995fd5802ceddfd7827106210e496fb5590046",
+        "actual_blob": "0b995fd5802ceddfd7827106210e496fb5590046"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.bad-claim.cfg",
+        "status": "PASS",
+        "git_blob": "699a27556746f52fe60cf0dba04dcc5364fcff75",
+        "actual_blob": "699a27556746f52fe60cf0dba04dcc5364fcff75"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.bad-release.cfg",
+        "status": "PASS",
+        "git_blob": "1fa83bfab5b7f3b55b6820db8c4c6aa0a4fd9375",
+        "actual_blob": "1fa83bfab5b7f3b55b6820db8c4c6aa0a4fd9375"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.cfg",
+        "status": "PASS",
+        "git_blob": "73b77f106e2055d546ab41178074bacdae336354",
+        "actual_blob": "73b77f106e2055d546ab41178074bacdae336354"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.tla",
+        "status": "PASS",
+        "git_blob": "a1ed4d67716f2c836e8eed5337f003b4da8570d9",
+        "actual_blob": "a1ed4d67716f2c836e8eed5337f003b4da8570d9"
+      },
+      {
+        "path": "v4.19/r10/suite.json",
+        "status": "PASS",
+        "git_blob": "4852ccc6a6ac840926274de26bde16f90d36eebf",
+        "actual_blob": "4852ccc6a6ac840926274de26bde16f90d36eebf"
+      },
+      {
+        "path": "v4.19/r4/source-map.json",
+        "status": "PASS",
+        "git_blob": "0b79d6904f0ca172788691a55c2335f24499f33d",
+        "actual_blob": "0b79d6904f0ca172788691a55c2335f24499f33d"
+      },
+      {
+        "path": "v4.19/r8/TRACEABILITY.json",
+        "status": "PASS",
+        "git_blob": "f45f49c22ef819387d1d758326d414e224de944a",
+        "actual_blob": "f45f49c22ef819387d1d758326d414e224de944a"
+      },
+      {
+        "path": "v4.19/r8/source-index.json",
+        "status": "PASS",
+        "git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
+        "actual_blob": "1dbfb2132fdeb227a33063d66390ede4db249894"
+      }
+    ]
+  },
+  "model_input_alignment_after": {
+    "status": "PASS",
+    "experiment_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+    "checks": [
+      {
+        "path": "models/authority/admission-boundaries-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "3e8fd89ea20ac420499c630697d212defb3490da",
+        "actual_blob": "3e8fd89ea20ac420499c630697d212defb3490da"
+      },
+      {
+        "path": "models/authority/admission-boundaries-r8-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "3c473a28028d3bbdd916ad124b2b4ddf97feba77",
+        "actual_blob": "3c473a28028d3bbdd916ad124b2b4ddf97feba77"
+      },
+      {
+        "path": "models/authority/admission-boundaries-r8.smt2",
+        "status": "PASS",
+        "git_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3",
+        "actual_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3"
+      },
+      {
+        "path": "models/authority/admission-boundaries.smt2",
+        "status": "PASS",
+        "git_blob": "66d89305305541d7e095e053fa8fcb55e9e6a9b4",
+        "actual_blob": "66d89305305541d7e095e053fa8fcb55e9e6a9b4"
+      },
+      {
+        "path": "models/authority/claim-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "c4b5b5d575cbed35947e46169f9e0c74fc8d0a61",
+        "actual_blob": "c4b5b5d575cbed35947e46169f9e0c74fc8d0a61"
+      },
+      {
+        "path": "models/authority/claim.smt2",
+        "status": "PASS",
+        "git_blob": "865f1c6876598be9c4eaa4b4f496367324793cca",
+        "actual_blob": "865f1c6876598be9c4eaa4b4f496367324793cca"
+      },
+      {
+        "path": "models/authority/serialized-admission-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "be623e0a14df6cea07bc57477a70779b4807c1b8",
+        "actual_blob": "be623e0a14df6cea07bc57477a70779b4807c1b8"
+      },
+      {
+        "path": "models/authority/serialized-admission.smt2",
+        "status": "PASS",
+        "git_blob": "a405d543f0de43f1455f6018043fd3002ccba923",
+        "actual_blob": "a405d543f0de43f1455f6018043fd3002ccba923"
+      },
+      {
+        "path": "models/cross/combined.smt2",
+        "status": "PASS",
+        "git_blob": "de8ed76539edba903c3dad4293c17bae704cee46",
+        "actual_blob": "de8ed76539edba903c3dad4293c17bae704cee46"
+      },
+      {
+        "path": "models/cross/writer-exclusion-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "b49fb584ad00fd57bbf5d48033983de016683542",
+        "actual_blob": "b49fb584ad00fd57bbf5d48033983de016683542"
+      },
+      {
+        "path": "models/cross/writer-exclusion.smt2",
+        "status": "PASS",
+        "git_blob": "dd00d7186df5577587f0b3340fe1cbb078bad437",
+        "actual_blob": "dd00d7186df5577587f0b3340fe1cbb078bad437"
+      },
+      {
+        "path": "models/dependency/parallel.smt2",
+        "status": "PASS",
+        "git_blob": "a64cd37957fe739c9c960785668bf1a5f7129ed6",
+        "actual_blob": "a64cd37957fe739c9c960785668bf1a5f7129ed6"
+      },
+      {
+        "path": "models/dependency/ranked-4-mutant.smt2",
+        "status": "PASS",
+        "git_blob": "f394b693faa119845e8b620dccfe93f2e0bf02cb",
+        "actual_blob": "f394b693faa119845e8b620dccfe93f2e0bf02cb"
+      },
+      {
+        "path": "models/dependency/ranked-4.smt2",
+        "status": "PASS",
+        "git_blob": "f8582023565a71bf06fb50a1efd53366979e434c",
+        "actual_blob": "f8582023565a71bf06fb50a1efd53366979e434c"
+      },
+      {
+        "path": "models/evidence/exact-sha.smt2",
+        "status": "PASS",
+        "git_blob": "eb257ce15f0fb562e83674261f3d2cfd6cb71e9a",
+        "actual_blob": "eb257ce15f0fb562e83674261f3d2cfd6cb71e9a"
+      },
+      {
+        "path": "models/evolution/scopes.smt2",
+        "status": "PASS",
+        "git_blob": "b8f4fd14f7fb8deacd3e0d94d1f0c60144a103ae",
+        "actual_blob": "b8f4fd14f7fb8deacd3e0d94d1f0c60144a103ae"
+      },
+      {
+        "path": "suite/differential.py",
+        "status": "PASS",
+        "git_blob": "0266543c4edb991472ce781615b2bb8e77a5307b",
+        "actual_blob": "0266543c4edb991472ce781615b2bb8e77a5307b"
+      },
+      {
+        "path": "suite/expanded.py",
+        "status": "PASS",
+        "git_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b",
+        "actual_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b"
+      },
+      {
+        "path": "suite/provenance.py",
+        "status": "PASS",
+        "git_blob": "dd2ca232d975a85b892cc4d116f9ba38f0a76c40",
+        "actual_blob": "dd2ca232d975a85b892cc4d116f9ba38f0a76c40"
+      },
+      {
+        "path": "suite/run.py",
+        "status": "PASS",
+        "git_blob": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e",
+        "actual_blob": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e"
+      },
+      {
+        "path": "suite/toolchain.py",
+        "status": "PASS",
+        "git_blob": "6705dcb31957dc49efbf6c303b2f08f33d721206",
+        "actual_blob": "6705dcb31957dc49efbf6c303b2f08f33d721206"
+      },
+      {
+        "path": "tools/inventory.json",
+        "status": "PASS",
+        "git_blob": "0b995fd5802ceddfd7827106210e496fb5590046",
+        "actual_blob": "0b995fd5802ceddfd7827106210e496fb5590046"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.bad-claim.cfg",
+        "status": "PASS",
+        "git_blob": "699a27556746f52fe60cf0dba04dcc5364fcff75",
+        "actual_blob": "699a27556746f52fe60cf0dba04dcc5364fcff75"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.bad-release.cfg",
+        "status": "PASS",
+        "git_blob": "1fa83bfab5b7f3b55b6820db8c4c6aa0a4fd9375",
+        "actual_blob": "1fa83bfab5b7f3b55b6820db8c4c6aa0a4fd9375"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.cfg",
+        "status": "PASS",
+        "git_blob": "73b77f106e2055d546ab41178074bacdae336354",
+        "actual_blob": "73b77f106e2055d546ab41178074bacdae336354"
+      },
+      {
+        "path": "v4.19/r0/ADSWorkflow.tla",
+        "status": "PASS",
+        "git_blob": "a1ed4d67716f2c836e8eed5337f003b4da8570d9",
+        "actual_blob": "a1ed4d67716f2c836e8eed5337f003b4da8570d9"
+      },
+      {
+        "path": "v4.19/r10/suite.json",
+        "status": "PASS",
+        "git_blob": "4852ccc6a6ac840926274de26bde16f90d36eebf",
+        "actual_blob": "4852ccc6a6ac840926274de26bde16f90d36eebf"
+      },
+      {
+        "path": "v4.19/r4/source-map.json",
+        "status": "PASS",
+        "git_blob": "0b79d6904f0ca172788691a55c2335f24499f33d",
+        "actual_blob": "0b79d6904f0ca172788691a55c2335f24499f33d"
+      },
+      {
+        "path": "v4.19/r8/TRACEABILITY.json",
+        "status": "PASS",
+        "git_blob": "f45f49c22ef819387d1d758326d414e224de944a",
+        "actual_blob": "f45f49c22ef819387d1d758326d414e224de944a"
+      },
+      {
+        "path": "v4.19/r8/source-index.json",
+        "status": "PASS",
+        "git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
+        "actual_blob": "1dbfb2132fdeb227a33063d66390ede4db249894"
+      }
+    ]
+  },
+  "toolchain_alignment_before": {
+    "status": "PASS",
+    "checks": [
+      {
+        "tool": "cvc5",
+        "status": "PASS",
+        "binary_path": "/home/cc/ads-i1366-tools/cvc5-Linux-x86_64-static/bin/cvc5",
+        "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+        "inventory_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+        "expected_version": "1.4.2",
+        "version_output": "cvc5 1.4.2 [git 282d5e0 on branch HEAD]\ncompiled as a unrestricted build with GCC version 11.4.0 on Oct  8 2026 01:24:07\n\nCopyright (c) 2009-2026 by the authors and their instituti",
+        "version_exit": 0
+      },
+      {
+        "tool": "tlc",
+        "status": "PASS",
+        "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+        "inventory_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+        "java_path": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+        "java_version_output": "openjdk version \"21.0.13.0.3\" 2026-10-24\nOpenJDK Runtime Environment (build 21.0.13.0.3+1-1-26.04.1-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.13.0.3+1-1-26.04.1-Ubuntu, mixed mo",
+        "java_version_exit": 0,
+        "java_binary_hash_pinned": false
+      },
+      {
+        "tool": "z3",
+        "status": "PASS",
+        "binary_path": "/home/cc/ads-i1366-tools/z3-5.3.3-x64-glibc-2.39/bin/z3",
+        "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+        "inventory_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+        "expected_version": "5.3.3",
+        "version_output": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e\n",
+        "version_exit": 0
+      }
+    ],
+    "note": "Binary/JAR hashes identify bytes only; Java and shared libraries are not fully provenance-pinned"
+  },
+  "toolchain_alignment_after": {
+    "status": "PASS",
+    "checks": [
+      {
+        "tool": "cvc5",
+        "status": "PASS",
+        "binary_path": "/home/cc/ads-i1366-tools/cvc5-Linux-x86_64-static/bin/cvc5",
+        "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+        "inventory_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+        "expected_version": "1.4.2",
+        "version_output": "cvc5 1.4.2 [git 282d5e0 on branch HEAD]\ncompiled as a unrestricted build with GCC version 11.4.0 on Oct  8 2026 01:24:07\n\nCopyright (c) 2009-2026 by the authors and their instituti",
+        "version_exit": 0
+      },
+      {
+        "tool": "tlc",
+        "status": "PASS",
+        "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+        "inventory_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+        "java_path": "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+        "java_version_output": "openjdk version \"21.0.13.0.3\" 2026-10-24\nOpenJDK Runtime Environment (build 21.0.13.0.3+1-1-26.04.1-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.13.0.3+1-1-26.04.1-Ubuntu, mixed mo",
+        "java_version_exit": 0,
+        "java_binary_hash_pinned": false
+      },
+      {
+        "tool": "z3",
+        "status": "PASS",
+        "binary_path": "/home/cc/ads-i1366-tools/z3-5.3.3-x64-glibc-2.39/bin/z3",
+        "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+        "inventory_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+        "expected_version": "5.3.3",
+        "version_output": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e\n",
+        "version_exit": 0
+      }
+    ],
+    "note": "Binary/JAR hashes identify bytes only; Java and shared libraries are not fully provenance-pinned"
+  },
+  "tool_inventory_sha256": "f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2",
+  "checks": [
+    {
+      "id": "ADS-P-AUT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-AUT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "d99f2db1daebf5661c4c223f270e21500880d775e1e6cae34e1b59586cdcd591"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "d99f2db1daebf5661c4c223f270e21500880d775e1e6cae34e1b59586cdcd591"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVI-Z3",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "a9f03bfcc7c3d5a719dde249a2a4cf18465d0ceeb4c38f7d0df0e8535148a66d"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVI-CVC5",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "a9f03bfcc7c3d5a719dde249a2a4cf18465d0ceeb4c38f7d0df0e8535148a66d"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVO-Z3",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "d7a7cd43c4520b24268ac7540e493aac41a4f9d235efcb2df6dab2f4882927bb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-EVO-CVC5",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "d7a7cd43c4520b24268ac7540e493aac41a4f9d235efcb2df6dab2f4882927bb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-CROSS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "a9b8606d9945944da73cf10673f1254fe87a52a769355f22bb0d120f174db852"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-CROSS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "a9b8606d9945944da73cf10673f1254fe87a52a769355f22bb0d120f174db852"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "2e02d244bde3d87f54f1c8b469bc36546bf368965c82f54150ca11c2dca51e92"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "2e02d244bde3d87f54f1c8b469bc36546bf368965c82f54150ca11c2dca51e92"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-DEP-4-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4.smt2": "85e5f2a36e2f038d4b9107b5c9b438df8a7c98149eff4d86599ec80555bffcc2"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-4-MUTANT-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4-mutant.smt2": "41af28940106d6058ec8bc216629a9ba89451ca721add2ec68bddc0b20a58cd9"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-DEP-4-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4.smt2": "85e5f2a36e2f038d4b9107b5c9b438df8a7c98149eff4d86599ec80555bffcc2"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-DEP-4-MUTANT-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4-mutant.smt2": "41af28940106d6058ec8bc216629a9ba89451ca721add2ec68bddc0b20a58cd9"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-TLC",
+      "model_id": "ADS-M-LIFECYCLE",
+      "property_id": "ADS-P-LC",
+      "purpose": "proof",
+      "tool": "tlc",
+      "status": "PASS_MODEL",
+      "expected": "safe",
+      "actual": {
+        "distinct_states": 27,
+        "invariant_failure": false
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "1fe7cf99badf3517bd60fd90464529a275b55abc88ff0f33bb0f6365c78f027a",
+        "v4.19/r0/ADSWorkflow.cfg": "957600a096412219da7c8494e4d98e8882e21f3923604401000425d9266887a7"
+      },
+      "exit_code": 0,
+      "output_tail": "essing of module Naturals\nSemantic processing of module Sequences\nSemantic processing of module FiniteSets\nSemantic processing of module ADSWorkflow\nStarting... (2026-11-10 20:05:57)\nComputing initial states...\nFinished computing initial states: 1 distinct state generated at 2026-11-10 20:05:57.\nModel checking completed. No error has been found.\n  Estimates of the probability that TLC did not check all reachable states\n  because two distinct states had the same fingerprint:\n  calculated (optimistic):  val = 3.8E-17\n53 states generated, 27 distinct states found, 0 states left on queue.\nThe depth of the complete state graph search is 12.\nThe average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 2).\nFinished in 00s at (2026-11-10 20:05:57)\n"
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+      "model_id": "ADS-M-LIFECYCLE",
+      "property_id": "ADS-P-LC",
+      "purpose": "mutation",
+      "tool": "tlc",
+      "status": "COUNTEREXAMPLE",
+      "expected": "counterexample",
+      "actual": {
+        "distinct_states": 7,
+        "invariant_failure": true
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "1fe7cf99badf3517bd60fd90464529a275b55abc88ff0f33bb0f6365c78f027a",
+        "v4.19/r0/ADSWorkflow.bad-claim.cfg": "a4c2db29bd686e0dd00563025b8564375f8dfc8e3a9ecc081162ee84dbb4013c"
+      },
+      "exit_code": 12,
+      "output_tail": " FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = TRUE\n/\\ claimedEver = TRUE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\nState 6: <Claim line 23, col 13 to line 28, col 90 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {\"web\", \"local\"}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = TRUE\n/\\ claimedEver = TRUE\n/\\ productFrozen = TRUE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = TRUE\n\n10 states generated, 7 distinct states found, 1 states left on queue.\nThe depth of the complete state graph search is 6.\nThe average outdegree of the complete state graph is 1 (minimum is 1, the maximum 2 and the 95th percentile is 2).\nFinished in 00s at (2026-11-10 20:05:58)\n"
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+      "model_id": "ADS-M-LIFECYCLE",
+      "property_id": "ADS-P-LC",
+      "purpose": "mutation",
+      "tool": "tlc",
+      "status": "COUNTEREXAMPLE",
+      "expected": "counterexample",
+      "actual": {
+        "distinct_states": 3,
+        "invariant_failure": true
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "1fe7cf99badf3517bd60fd90464529a275b55abc88ff0f33bb0f6365c78f027a",
+        "v4.19/r0/ADSWorkflow.bad-release.cfg": "8770c407131f90cb4b8ef735fd293f2a678316a09218a138259e5c5968b9d19b"
+      },
+      "exit_code": 12,
+      "output_tail": "he behavior up to this point is:\nState 1: <Initial predicate>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = FALSE\n/\\ releaseQualified = FALSE\n/\\ released = FALSE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\nState 2: <Release line 51, col 12 to line 53, col 95 of module ADSWorkflow>\n/\\ sourceVerified = FALSE\n/\\ activeWriters = {}\n/\\ ciPass = FALSE\n/\\ outcomeClosed = FALSE\n/\\ dagFrozen = FALSE\n/\\ claimedEver = FALSE\n/\\ productFrozen = FALSE\n/\\ releaseQualified = FALSE\n/\\ released = TRUE\n/\\ reviewPass = FALSE\n/\\ l2Frozen = FALSE\n\n3 states generated, 3 distinct states found, 1 states left on queue.\nThe depth of the complete state graph search is 2.\nFinished in 00s at (2026-11-10 20:05:59)\n"
+    },
+    {
+      "id": "ADS-P-CAS-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission.smt2": "3b12e9a44075f6de2e1f76a570ca6f3e5928e65db1b84a11af21c6eca1dab97c"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\n"
+    },
+    {
+      "id": "ADS-P-CAS-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission.smt2": "3b12e9a44075f6de2e1f76a570ca6f3e5928e65db1b84a11af21c6eca1dab97c"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\n"
+    },
+    {
+      "id": "ADS-P-CAS-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission-mutant.smt2": "b912b076942b7cdd113e4fc85b18aa76085a38c7d97c4be9d952fb53943a3b46"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-CAS-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission-mutant.smt2": "b912b076942b7cdd113e4fc85b18aa76085a38c7d97c4be9d952fb53943a3b46"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion.smt2": "8a702452377b3e687310c2114992cc92246b3a8242dc7e6407225b2e67ea4f86"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\n"
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion.smt2": "8a702452377b3e687310c2114992cc92246b3a8242dc7e6407225b2e67ea4f86"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\n"
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-MUTANT-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion-mutant.smt2": "4d210e59e4baa32e3991bda0b070de121a873bae3cdff31080283e7252989ca6"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-MUTANT-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion-mutant.smt2": "4d210e59e4baa32e3991bda0b070de121a873bae3cdff31080283e7252989ca6"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries.smt2": "e41df24adab85a1c50358840b7eba3b32662769cfae4047e26acf4bef53cd4cb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries.smt2": "e41df24adab85a1c50358840b7eba3b32662769cfae4047e26acf4bef53cd4cb"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-mutant.smt2": "056a2360bec5ff0836fbfdb5a766e89c06ea75ccad5d8e3b9ec9da760010e230"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-mutant.smt2": "056a2360bec5ff0836fbfdb5a766e89c06ea75ccad5d8e3b9ec9da760010e230"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "proof",
+      "tool": "z3",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8.smt2": "448c01e7e309102e61bbb784975db212b589f23aee9fe3210f5eccf38a4867d0"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "proof",
+      "tool": "cvc5",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8.smt2": "448c01e7e309102e61bbb784975db212b589f23aee9fe3210f5eccf38a4867d0"
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nsat\nsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nunsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "mutation",
+      "tool": "z3",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8-mutant.smt2": "c47171e6a82faac2bc291dcd94af48684027a65d646c29f4e133f248f2d9fab8"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\nsat\nsat\n"
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "purpose": "mutation",
+      "tool": "cvc5",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8-mutant.smt2": "c47171e6a82faac2bc291dcd94af48684027a65d646c29f4e133f248f2d9fab8"
+      },
+      "exit_code": 0,
+      "output_tail": "sat\nsat\nsat\n"
+    }
+  ],
+  "solver_differential": [
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-r8-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-r8.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-AUT",
+      "model": "models/authority/claim-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-AUT",
+      "model": "models/authority/claim.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CAS",
+      "model": "models/authority/serialized-admission-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CAS",
+      "model": "models/authority/serialized-admission.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CROSS",
+      "model": "models/cross/combined.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP",
+      "model": "models/dependency/parallel.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP-4",
+      "model": "models/dependency/ranked-4-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP-4",
+      "model": "models/dependency/ranked-4.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-EVI",
+      "model": "models/evidence/exact-sha.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-EVO",
+      "model": "models/evolution/scopes.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-WRITER-KEYS",
+      "model": "models/cross/writer-exclusion-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-WRITER-KEYS",
+      "model": "models/cross/writer-exclusion.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    }
+  ],
+  "selection": {
+    "all_declared_cases_selected": true,
+    "requested_model": null,
+    "requested_property": null,
+    "requested_changed_sources": null,
+    "selected_case_ids": [
+      "ADS-P-AUT-Z3",
+      "ADS-P-AUT-CVC5",
+      "ADS-P-DEP-Z3",
+      "ADS-P-DEP-CVC5",
+      "ADS-P-EVI-Z3",
+      "ADS-P-EVI-CVC5",
+      "ADS-P-EVO-Z3",
+      "ADS-P-EVO-CVC5",
+      "ADS-P-CROSS-Z3",
+      "ADS-P-CROSS-CVC5",
+      "ADS-P-AUT-MUTANT-Z3",
+      "ADS-P-AUT-MUTANT-CVC5",
+      "ADS-P-DEP-4-Z3",
+      "ADS-P-DEP-4-MUTANT-Z3",
+      "ADS-P-DEP-4-CVC5",
+      "ADS-P-DEP-4-MUTANT-CVC5",
+      "ADS419-R2-LIFECYCLE-TLC",
+      "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+      "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+      "ADS-P-CAS-Z3",
+      "ADS-P-CAS-CVC5",
+      "ADS-P-CAS-MUTANT-Z3",
+      "ADS-P-CAS-MUTANT-CVC5",
+      "ADS-P-WRITER-KEYS-Z3",
+      "ADS-P-WRITER-KEYS-CVC5",
+      "ADS-P-WRITER-KEYS-MUTANT-Z3",
+      "ADS-P-WRITER-KEYS-MUTANT-CVC5",
+      "ADS-P-ADMISSION-EXT-Z3",
+      "ADS-P-ADMISSION-EXT-CVC5",
+      "ADS-P-ADMISSION-EXT-MUTANT-Z3",
+      "ADS-P-ADMISSION-EXT-MUTANT-CVC5",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-Z3",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-CVC5",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-CVC5"
+    ],
+    "selected_case_count": 35,
+    "declared_case_count": 35,
+    "qualification": "SELECTED_CASES_ONLY_NOT_FULL_ADS_PROOF"
+  },
+  "affected_property_ids": null,
+  "coverage": {
+    "modeled_obligations_denominator": 10,
+    "modeled_obligations_with_selected_cases": 10,
+    "source_bound_verified_obligations": 10,
+    "all_ADS_normative_obligations_denominator": null,
+    "note": "Pilot denominator is declared properties; entire ADS rule inventory not enumerated"
+  },
+  "semantic_evaluation": "SELF_CHALLENGED_INDEPENDENT_REVIEW_NOT_RUN",
+  "limitations": [
+    "Bounded abstract states only; no full ADS natural-language equivalence",
+    "No full real GitHub/CI/Release execution evidence",
+    "Model guards require source-to-model review",
+    "TLC liveness/fairness, claim expiry, multi-Task CAS, and full version inheritance not proved"
+  ]
+}

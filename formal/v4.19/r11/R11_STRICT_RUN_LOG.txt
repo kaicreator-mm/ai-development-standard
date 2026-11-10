@@ -1,0 +1,1 @@
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/mnt/c/xDev/kAiCreator/ai-development-standard/ads-i1366-model/formal/v4.19/r11/R11_FINAL_STRICT_RUN.json"}
