@@ -1,0 +1,91 @@
+{
+  "schema": "ads/formal-r27-native-result-identity-admission-repair/v1",
+  "main_issue": 1366,
+  "date_utc": "2026-11-11",
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "status": "OPEN_UNMERGED_NOT_EFFECTIVE"
+  },
+  "experiment": {
+    "pre_repair_head": "16956152a5985af5866629bfe4ba477541c66f36",
+    "pre_repair_tree": "5af7e02896aa76251c541a20a1f7f868cef49100",
+    "scope": "FORMAL_EXPERIMENT_RUNNER_NOT_NORMATIVE_ADS"
+  },
+  "finding": {
+    "id": "R27-TOOL-IDENTITY-P2-01",
+    "severity": "P2_EXPERIMENT_TOOL_PROOF_ADMISSION",
+    "status": "CODE_REPAIRED_PENDING_REAL_EXACT_CHECKOUT_INTEGRATION",
+    "source": [
+      "formal/suite/expanded.py",
+      "formal/suite/differential.py"
+    ],
+    "root_cause": "The final main_v1 good predicate accepted positive statuses and a PASS from SMT solver_differential but did not compare each emitted result's tool/property/model/purpose/expected identity with its selected case. solver_differential checked all IDs as a set and SMT pair payload consistency, but not TLC metadata/selected-index identity.",
+    "counterexample": "With original differential.py and main_v1 good logic, selected SMT Z3+cvc5 pair identities/answers PASS, selected TLC ID is present, but its result model_id is replaced by a foreign model_id; original native differential PASS and old good=True while new audit FAIL. Different orphan TLC IDs or duplicate IDs already fail the original global differential: those are not the actual bypass.",
+    "impact": "Potential false MODEL_AND_SOURCE_PASS in a native case-result corruption/implementation regression even when the TLC result does not correspond to the declared selected model property; not an observed live GitHub Claim/CAS defect."
+  },
+  "repair": {
+    "new_helper": {
+      "path": "formal/suite/execution_inventory.py",
+      "blob": "a907a4a42f50651549cde8d84ce810f9fc9f3d90"
+    },
+    "modified_runner": {
+      "path": "formal/suite/expanded.py",
+      "old_blob": "bcbff21ab471c1e25e0c529c27ea59aeb346c0d7",
+      "new_blob": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e"
+    },
+    "tests": [
+      {
+        "path": "formal/tests/test_execution_inventory.py",
+        "blob": "f121a818ce8f370b9b3adcab7d2f8bdf546ed6f3",
+        "methods": 14
+      },
+      {
+        "path": "formal/tests/test_execution_inventory_admission.py",
+        "blob": "59263389492d3825862e1c6b683060ac852c543b",
+        "methods": 1
+      }
+    ],
+    "behavior": "Audit every selected case in order against actual returned result ID/tool/property_id/model_id/purpose/expected and known status; block on missing/extra/duplicated/reordered/misidentified/malformed results; if corrupt do not consume SMT pairing as proof. Retain real solver FAIL precedence and emit audit in receipt.",
+    "identity_closure": "The runner's model_inputs now includes suite/execution_inventory.py; model hash pre/post checks must cover this newly used admission code."
+  },
+  "execution": {
+    "local_python_version": "3.13.5",
+    "pure_unit_tests": {
+      "count": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "kind": "ACTUAL_LOCAL_TEST_EXECUTION_OF_BYTE_IDENTICAL_NEW_MODULE_AND_UNIT_TEST_SOURCE"
+    },
+    "negative_reproduction": {
+      "kind": "ACTUAL_LOCAL_PYTHON_RECONSTRUCTED_FROM_EXACT_GITHUB_DIFFERENTIAL_SOURCE",
+      "original_smt_differential": "PASS",
+      "original_main_v1_good_predicate": true,
+      "corrupt_tlc_model_id": "WRONG-MODEL",
+      "new_inventory_status": "FAIL",
+      "caution": "Reconstructed isolated source seam, not the real imported Git worktree runner"
+    },
+    "actual_full_repo_integration_test": "NOT_RUN",
+    "new_head_native_solver_and_strict_suite": "NOT_RUN",
+    "previous_r25_strict_subject": "6edd2bad98b455e1bcdd2895f50830412af25cff",
+    "previous_r25_strict_result": "35/35 MODEL_AND_SOURCE_PASS; 77/77 WSL2 Python at old exact SHA",
+    "qualification": "FIXED_CODE_LOCALLY_UNIT_TESTED_PENDING_EXACT_SHA_REQUALIFICATION"
+  },
+  "limits": [
+    "Formal experiment tool bug only; no newly confirmed ADS normative defect",
+    "The r10 35-case regression and new main_v1 integration test need a full exact Git checkout and pinned native inputs",
+    "Prior R25 evidence may not be promoted to the new runner HEAD because its pinned model input closure has changed",
+    "All ADS normative atomic clauses remain unenumerated; full source↔SMT equivalence and real GitHub production Claim/CAS remain NOT_PROVEN"
+  ],
+  "no_unauthorized_actions": {
+    "normative_changes": false,
+    "candidate_pr_mutation": false,
+    "github_actions": false,
+    "claim": false,
+    "release": false,
+    "freeze": false,
+    "merge": false
+  }
+}

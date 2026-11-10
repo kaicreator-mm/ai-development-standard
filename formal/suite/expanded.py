@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 from provenance import model_alignment
 from differential import solver_differential
+from execution_inventory import audit_execution_results
 from toolchain import toolchain_alignment
 
 ANSWERS = re.compile(r"^(sat|unsat|unknown)$", re.MULTILINE)
@@ -288,6 +289,7 @@ def main_v1(options, suite_path, spec):
                     spec["source_index"], spec["source_map"],
                     "suite/run.py", "suite/expanded.py",
                     "suite/provenance.py", "suite/differential.py",
+                     "suite/execution_inventory.py",
                     "suite/toolchain.py", "tools/inventory.json"}
     if spec.get("traceability"):
         model_inputs.add(spec["traceability"])
@@ -311,14 +313,23 @@ def main_v1(options, suite_path, spec):
     model_after = (model_alignment(root, model_inputs, getattr(options, "model_head", None))
                    if model_before["status"] == "PASS" else model_before)
     toolchain_after = toolchain_alignment(options, selected, inventory)
-    differential = solver_differential(
+    execution_inventory = audit_execution_results(selected, results)
+    # Solver pairing alone cannot attest the identity/expectation of TLC results.
+    # If the returned inventory is corrupt, don't consume SMT-pair PASS as proof.
+    differential = (solver_differential(
         selected, results, require_pairs=bool(spec.get("require_solver_pairs", False)))
+        if execution_inventory["status"] == "PASS" else
+        [{"property_id": None, "model": None, "purpose": None,
+          "status": "INCONCLUSIVE", "reason": "EXECUTION_RESULT_IDENTITY_MISMATCH"}])
     alignment = source_alignment(options.source_checkout, effective_source_map)
     if options.changed_source:
         alignment = {"status": "STALE", "reason": "Changed-source selection invalidates old source-bound results until new exact source pinned", "baseline_alignment": alignment}
-    statuses = {r["status"] for r in results}
-    good = bool(results) and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"}) and all(d["status"] == "PASS" for d in differential)
-    verdict = ("FAIL" if "FAIL" in statuses else "BLOCKED" if alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
+    statuses = {r.get("status") if isinstance(r, dict) else None for r in results}
+    good = (execution_inventory["status"] == "PASS" and bool(results)
+            and statuses.issubset({"PASS_MODEL", "COUNTEREXAMPLE"})
+            and all(d["status"] == "PASS" for d in differential))
+    verdict = ("FAIL" if "FAIL" in statuses else
+               "BLOCKED" if execution_inventory["status"] != "PASS" or alignment["status"] in ("BLOCKED", "FAIL", "STALE") else
                "INCONCLUSIVE" if not good else "MODEL_AND_SOURCE_PASS" if alignment["status"] == "PASS" else "MODEL_ONLY_PASS")
     if verdict == "MODEL_AND_SOURCE_PASS" and (model_after["status"] != "PASS"
                                               or toolchain_before["status"] != "PASS"
@@ -349,6 +360,7 @@ def main_v1(options, suite_path, spec):
         "toolchain_alignment_after": toolchain_after,
         "tool_inventory_sha256": sha256(safe_path(root, "tools/inventory.json", ".json")),
         "checks": results, "solver_differential": differential,
+        "execution_inventory_audit": execution_inventory,
         "selection": {
             "all_declared_cases_selected": (len(selected) == len(spec["cases"])
                                            and not options.model and not options.property
@@ -363,8 +375,8 @@ def main_v1(options, suite_path, spec):
         },
         "affected_property_ids": invalidated if options.changed_source else None,
         "coverage": {"modeled_obligations_denominator": len(props),
-                     "modeled_obligations_with_selected_cases": len({x["property_id"] for x in results}),
-                     "source_bound_verified_obligations": len({x["property_id"] for x in results}) if verdict == "MODEL_AND_SOURCE_PASS" else 0,
+                     "modeled_obligations_with_selected_cases": len({x.get("property_id") for x in results if isinstance(x, dict) and isinstance(x.get("property_id"), str)}),
+                     "source_bound_verified_obligations": len({x.get("property_id") for x in results if isinstance(x, dict) and isinstance(x.get("property_id"), str)}) if verdict == "MODEL_AND_SOURCE_PASS" else 0,
                      "all_ADS_normative_obligations_denominator": None,
                      "note": "Pilot denominator is declared properties; entire ADS rule inventory not enumerated"},
         "semantic_evaluation": "SELF_CHALLENGED_INDEPENDENT_REVIEW_NOT_RUN",

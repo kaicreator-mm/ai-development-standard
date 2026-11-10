@@ -450,3 +450,12 @@ R24 遗留两项 NOT_RUN（真实 checkout 导入单测、受影响 strict 原�
 **有证据的新资格提升**仅针对 `TEST-01`：R20 已实际在双环境检验历史 R17 13 个逐项执行的 test IDs/原始日志/收据（辅以 R25 WSL2 全部 77 个 Python 测试），故可标 **BOUNDED_REAL_EXECUTED_TEST_INVENTORY**；`TEST-02`“被遗漏的真实生产 Suite 必须 NOT_RUN”负例仍是合成 fixture 演示，不伪造生产漏测；其余候选语义不提升为已证明。R23 对权限角色矩阵仅源/schema 静态审查。修正主 Issue 顶部误指 R11 为“最新完整严格被测 HEAD”的旧状态，重新标注 R25 实际测试 HEAD，不改历史收据。
 
 本轮代码、模型及工具无变化；不重复全套 Python/Native，不创造 Gate/Task/Claim，也不提前合并冻结未生效 PR #1365。下一项只在真实外部消费证据或确有独立语义反例时执行。
+
+
+## 42. #1366 R27 — 真正修复 Native 执行结果身份缺失导致的假 PASS 风险（2026-11-11）
+
+在 R26 后实际重新读取主 Issue、PR #1365 未合并态、实验 `16956152a5985af5866629bfe4ba477541c66f36`、`formal/suite/expanded.py` 及其 `solver_differential` 和既有单测。复盘后不重复 R25 原生套件也不扩展无 Consumer 的布尔 SMT。发现当前严格 Runner 的结果聚合仅要求“执行结果状态集合正向 + SMT 双求解器差分 PASS”，而`solver_differential` **虽然检查全局 ID 的缺失/重叠并核对 SMT 组，却不核对 TLC 的 `model_id/property_id/purpose/expected` 及原 selected 逐项身份**。使用与原 GitHub 源码同构的独立 Python 复现，可令有效 TLC ID + 假 `model_id` 与正确 Z3/cvc5 差分同时导致旧 `good=True`，并被新 Auditor `FAIL` 拒绝。这是**实验 Runner 的 P2 证明资格缺口**，不是正式 ADS 规范 P1。
+
+已在原实验分支修改 `formal/suite/expanded.py` 并新增 `formal/suite/execution_inventory.py`，所有选中 native Case 必须与返回结果的数量、顺序、ID、tool、property/model、purpose、expected 完全对应；失配直接 `BLOCKED` 且在收据留下 `execution_inventory_audit`。新模块还进入模型 Exact-SHA `model_inputs`，防止 guard 代码本身不被钉死。新 `formal/tests/test_execution_inventory.py` **14/14 本地 CPython 3.13.5 PASS/0 skip**（纯逻辑测试，源码 Git blob 与仓库相同），另有 `test_execution_inventory_admission.py` 通过真实 r10 suite 文件注入 TLC 欺骗的 `main_v1` 集成负例，**在完整 Git 工作树导入执行前仍 NOT_RUN**。独立根因、Source/Test SHA、证明边界固化于 `formal/v4.19/r27/`。此轮是**实际代码修复**而非状态更新；由于 Runner 的受测代码闭包变化，R25 35/35、77/77 不能冒充新 HEAD 的原生完整验收。
+
+后续仅需一次真实 Git exact-checkout 的新 15 项 + 既有受影响 `formal/tests`、以及必要 strict native Source-bound 35 Case 及工具/source/model pre/post 检查。失败直接同分支修复+复测，不派单纯 VALIDATION；无正式规范更改、无 Gate/Actions/Claim、无 PR #1365 Merge/Freeze/Release。实际生产 Claim/CAS、独立全语义等价继续 NOT_PROVEN。
