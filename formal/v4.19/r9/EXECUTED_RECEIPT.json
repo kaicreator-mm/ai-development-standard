@@ -1,0 +1,121 @@
+{
+  "schema": "ads/formal-r9-executed-receipt/v1",
+  "kind": "EXACT_GIT_BLOB_ISOLATED_PYTHON_AND_NATIVE_TOOLCHAIN_VALIDATION_NOT_FULL_ADS_PROOF",
+  "date_utc": "2026-11-10",
+  "source_subject": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "experiment_branch": "experiment/v4.19-formal-proof-r0",
+    "source_commit": "a49f691e8537c847183dc991bf275ba330210352",
+    "verification_scope": "TOOLCHAIN_HELPER_ONLY",
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED_PROSPECTIVE"
+  },
+  "fixed_findings": [
+    {
+      "id": "R9-PY-P1-01",
+      "fix_commit": "787670c87c760dab2182dd6d527a456fe236d68f",
+      "finding": "Missing TLC JAR returned incomplete NOT_RUN envelope, could crash aggregate with KeyError",
+      "state": "CODE_REPAIRED_EXACT_WORKTREE_REGRESSION_NOT_RUN"
+    },
+    {
+      "id": "R9-PY-P1-02",
+      "fix_commits": [
+        "787670c87c760dab2182dd6d527a456fe236d68f",
+        "9d4498a5ec49ef3842efc1616a3a09e92d8fee13"
+      ],
+      "finding": "Unverified native binary could execute via run_case or --version probe before final verdict rejected identity",
+      "state": "FIXED_AND_ISOLATED_UNIT_TESTED"
+    }
+  ],
+  "local_execution": {
+    "environment": {
+      "os": "Linux x86_64",
+      "python": "3.13.5",
+      "git": "2.47.3",
+      "java": "21.0.12.1"
+    },
+    "source_integrity": [
+      {
+        "repository_path": "formal/suite/toolchain.py",
+        "git_blob": "6705dcb31957dc49efbf6c303b2f08f33d721206",
+        "sha256": "0f5b841b27e99f0c433724c21e08208aacebd12cc98db737236afc7dd8624b94",
+        "local_git_hash_object_match": true
+      },
+      {
+        "repository_path": "formal/tests/test_toolchain.py",
+        "git_blob": "edbab0352f174443f8a76b318873b7a1f8618c4e",
+        "sha256": "f783a9a8c69829c802f772ea8c9e3f1b157af6e01e28216cd496edd2cfa66fcf",
+        "local_git_hash_object_match": true
+      }
+    ],
+    "unit_tests": {
+      "command": "python3 -m unittest discover -s isolated/formal/tests -p test_toolchain.py -v",
+      "actual_tests_run": 5,
+      "failures": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "status": "PASS_ISOLATED_EXACT_BLOB",
+      "log_sha256": "9a23016933a9f6a59442b79613fdba9a85c405f7d26002228f31c03906c106cf",
+      "test_names": [
+        "test_bad_tlc_jar_never_starts_java_probe",
+        "test_exact_version_and_hash_required",
+        "test_mismatched_hash_never_runs_executable_even_for_version",
+        "test_missing_and_zero_selected_cases",
+        "test_tlc_jar_is_pinned_independently_of_java"
+      ]
+    },
+    "actual_toolchain": {
+      "command": "toolchain_alignment(selected=[z3,cvc5,tlc], pinned inventory.smokes)",
+      "status": "PASS",
+      "receipt_sha256": "156931cb31cb5ecfc8edcd20fcf183fa0859990e2533d516089f16a0c0804637",
+      "checks": [
+        {
+          "tool": "z3",
+          "version": "5.3.3",
+          "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+          "result": "PASS"
+        },
+        {
+          "tool": "cvc5",
+          "version": "1.4.2",
+          "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+          "result": "PASS"
+        },
+        {
+          "tool": "tlc",
+          "jar_version": "2.19",
+          "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+          "java_version": "21.0.12.1",
+          "java_binary_hash_pinned": false,
+          "result": "PASS"
+        }
+      ]
+    }
+  },
+  "real_source_impact": {
+    "reference": "formal/v4.19/r9/RELIABILITY_AND_IMPACT_RECEIPT.json",
+    "R8_pilot_properties": 10,
+    "R8_declared_cases": 35,
+    "observed_v418_to_candidate_changed_source_paths": 6,
+    "affected_properties": 10,
+    "affected_cases": 35,
+    "dag_file_only_affected_properties": 5,
+    "dag_file_only_affected_cases": 15,
+    "execution": "GITHUB_METADATA_DEPENDENCY_ANALYSIS_ONLY"
+  },
+  "pending": [
+    "Complete formal/tests Python unittest on two exact Git worktrees including R9 runner tests (NOT_RUN)",
+    "Full 35-case R8 suite under --model-head --source-checkout --strict-source at R9 code HEAD (NOT_RUN)",
+    "Independent R8 successor source-to-model semantic audit and actual candidate source consumer tests (NOT_RUN)",
+    "Real GitHub Claim CAS, CI, Host, Release effects (NOT_RUN)",
+    "All ADS normative obligations denominator UNKNOWN"
+  ],
+  "limits": [
+    "Exact Git blob bytes of two Python helper/test files were reconstructed and tested; this is not a full Git checkout",
+    "Java executable/dynamic dependencies unpinned; toolchain check attests hashes, not a host trust proof",
+    "There remains a hash-check-versus-execute time-of-check/time-of-use interval outside the bounded verifier, with host trust assumed",
+    "R5 27 strict checks, R6 four new solver cases and R8 four new solver cases remain historical evidence tied to other exact SHAs"
+  ],
+  "verdict": "R9_TOOLCHAIN_SOURCE_EXACT_5_UNIT_PASS_3_REAL_TOOLS_PASS_FULL_SUITE_NOT_RUN"
+}

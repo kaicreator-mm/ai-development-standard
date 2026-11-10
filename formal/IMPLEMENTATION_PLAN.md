@@ -200,3 +200,9 @@ R8 非简单加测：对 R6 的 `ADS-P-ADMISSION-EXT` 做反例查找，发现 `
 - R9 继续不新增 FIR、调度器或新正式 ADS 规范。建议下一步只做**一次完整的当前 HEAD + 候选 HEAD 双工作树修复/验证/独立语义审核**，避免无必要的人工轮次往返。
 
 R9 原生增量用例新增 **0 个**，试点仍是 10 个性质与 35 个模型用例，完整 ADS 规则分母依然 UNKNOWN。
+
+## 14. R9 已执行的精确 Git-blob 工具侧回归（2026-11-10）
+
+本轮在校验器本身的最后一道 `--version` 路径发现并消除了遗漏：**R7 原校验器虽然拒绝哈希不匹配的工具，但仍先执行其 `--version`**；R9 将哈希检查前移到任何原生工具版本探测之前，并增加副作用哨兵负面测试。修复后将 GitHub 的 `formal/suite/toolchain.py` 与 `formal/tests/test_toolchain.py` 逐字节重建到隔离的 Python 工作目录，`git hash-object` 与 GitHub blob 1:1 一致，执行**5/5 unittest PASS**。使用用户提供离线分发归档抽取的 Z3 5.3.3、cvc5 1.4.2 和 TLC 2.19 JAR 真实核对**3/3 PASS**，版本和 SHA256 与 `formal/tools/inventory.json` 一致。
+
+详细实际执行收据在 `formal/v4.19/r9/EXECUTED_RECEIPT.json`，根因与适用边界在 `formal/v4.19/r9/FINDINGS_AND_LIMITS.md`。注意 `test_expanded.py` 新增的完整 runner 测试（缺失 TLC 结果结构、错误工具执行前阻断、R8 真实差量选择）、R8 35-case 严格双 worktree 源绑定及独立语义评价仍未执行；**新轮次不得自称 R9 全套 Source-bound PASS**。当前仍为 10 个试点性质 / 35 个声明模型用例，ADS 全规范义务总数未知。
