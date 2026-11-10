@@ -195,6 +195,32 @@ def combine_source_anchors(source_map, trace):
     return merged
 
 
+def tool_version_report(preflight):
+    """Project verified preflight facts into the receipt without subprocesses."""
+    checks = {c["tool"]: c for c in preflight.get("checks", [])}
+    result = {}
+    for tool in ("z3", "cvc5"):
+        entry = checks.get(tool)
+        passed = bool(entry and entry["status"] == "PASS")
+        result[tool] = {
+            "status": "VERIFIED" if passed else "REJECTED" if entry else "NOT_SELECTED",
+            "version_output": entry.get("version_output", "").splitlines()[:2] if passed else [],
+            "binary_sha256": entry.get("binary_sha256") if passed else None,
+        }
+    tlc = checks.get("tlc")
+    passed = bool(tlc and tlc["status"] == "PASS")
+    result["tlc_jar"] = {
+        "status": "VERIFIED" if passed else "REJECTED" if tlc else "NOT_SELECTED",
+        "sha256": tlc.get("jar_sha256") if passed else None,
+    }
+    result["java"] = {
+        "status": "AVAILABLE_UNPINNED" if passed else "NOT_ATTESTED",
+        "version_output": tlc.get("java_version_output", "").splitlines()[:2] if passed else [],
+        "binary_sha256": None,
+    }
+    return result
+
+
 def main_v1(options, suite_path, spec):
     root = suite_path.resolve().parents[2]  # formal/v4.19/r1/suite.json -> formal/
     index_path = safe_path(root, spec["source_index"], ".json")
@@ -273,14 +299,9 @@ def main_v1(options, suite_path, spec):
             verdict = "BLOCKED" if options.strict_source else "INCONCLUSIVE"
     if options.strict_source and (alignment["status"] != "PASS" or model_after["status"] != "PASS") and verdict != "FAIL":
         verdict = "BLOCKED"
-    tools = {}
-    for k, command in (("z3", options.z3), ("cvc5", options.cvc5), ("java", options.java)):
-        r = execute([command, "-version"] if k != "cvc5" else [command, "--version"])
-        p = Path(command)
-        tools[k] = {"version_output": r["text"].splitlines()[:2], "status": "VERIFIED" if r["code"] == 0 else "NOT_RUN",
-                    "binary_sha256": sha256(p) if p.is_file() else None}
-    jar = Path(options.tlc_jar)
-    tools["tlc_jar"] = {"sha256": sha256(jar) if jar.is_file() else None, "status": "AVAILABLE" if jar.is_file() else "NOT_RUN"}
+    # Receipt metadata is strictly a projection of the pinned preflight.
+    # Do not launch --version on unselected or rejected native commands here.
+    tools = tool_version_report(toolchain_before)
     evidence = {
         "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF", "schema": "ads/formal-receipt/v1",
         "candidate_head": spec["candidate_head"], "candidate_status": "PROSPECTIVE_UNFROZEN",

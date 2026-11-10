@@ -266,6 +266,49 @@ class ExpandedTests(unittest.TestCase):
             self.assertEqual(diff[0]['status'], 'INCONCLUSIVE')
             self.assertEqual(diff[0]['reason'], 'MISSING_INDEPENDENT_SOLVER_PAIR')
 
+
+    def test_rejected_tool_never_launched_by_receipt_writer(self):
+        suite_path = ROOT / 'v4.19' / 'r10' / 'suite.json'
+        with tempfile.TemporaryDirectory() as tmp:
+            sentinel = Path(tmp) / 'launched'
+            fake = Path(tmp) / 'fake-binary'
+            fake.write_text("#!/bin/sh\nprintf UNSAFE > '" + str(sentinel) + "'\n")
+            fake.chmod(0o755)
+            opts = self.options()
+            opts.z3 = str(fake)
+            opts.cvc5 = str(fake)
+            opts.java = str(fake)
+            opts.property = 'ADS-P-AUT'
+            opts.strict_source = True
+            opts.out = str(Path(tmp) / 'receipt.json')
+            spec = json.loads(suite_path.read_text('utf8'))
+            with mock.patch.object(runner, 'execute', side_effect=AssertionError('untrusted binary launch')) as spy:
+                self.assertEqual(runner.main_v1(opts, suite_path, spec), 2)
+                spy.assert_not_called()
+            self.assertFalse(sentinel.exists())
+            receipt = json.loads(Path(opts.out).read_text('utf8'))
+            self.assertEqual(receipt['model_verdict'], 'BLOCKED')
+            self.assertEqual(receipt['tool_versions']['z3']['status'], 'REJECTED')
+            self.assertEqual(receipt['tool_versions']['cvc5']['status'], 'REJECTED')
+            self.assertEqual(receipt['tool_versions']['java']['status'], 'NOT_ATTESTED')
+            self.assertEqual(receipt['coverage']['source_bound_verified_obligations'], 0)
+
+    def test_receipt_version_projection_requires_no_native_process(self):
+        facts = {'checks': [
+            {'tool': 'z3', 'status': 'PASS', 'version_output': 'Z3 version 5.3.3\n', 'binary_sha256': 'a' * 64},
+            {'tool': 'cvc5', 'status': 'FAIL', 'binary_sha256': 'b' * 64},
+            {'tool': 'tlc', 'status': 'PASS', 'jar_sha256': 'c' * 64, 'java_version_output': 'openjdk 21\n'},
+        ]}
+        with mock.patch.object(runner, 'execute', side_effect=AssertionError('receipt called executable')):
+            receipt = runner.tool_version_report(facts)
+        self.assertEqual(receipt['z3']['status'], 'VERIFIED')
+        self.assertEqual(receipt['z3']['binary_sha256'], 'a' * 64)
+        self.assertEqual(receipt['cvc5']['status'], 'REJECTED')
+        self.assertIsNone(receipt['cvc5']['binary_sha256'])
+        self.assertEqual(receipt['tlc_jar']['sha256'], 'c' * 64)
+        self.assertEqual(receipt['java']['status'], 'AVAILABLE_UNPINNED')
+        self.assertIsNone(receipt['java']['binary_sha256'])
+
     def test_missing_solver_not_pass(self):
         opts=self.options()
         opts.z3='__missing_ads_solver__'
