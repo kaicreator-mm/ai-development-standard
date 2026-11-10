@@ -1,0 +1,600 @@
+{
+  "schema": "ads/formal-modal-batch-v1",
+  "ref": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "source_manifest_blob": "b0836c3b75cec1e1b20c127a256ac6e963d4c92a",
+  "source_matrix_blob": "0ce4d7e463e4d8805c5880e29b671cea38b0ca29",
+  "start": 30,
+  "end": 40,
+  "docs": [
+    {
+      "path": "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "blob": "dd4f3fcadf38263f4f5cf99739d41d1c0a0bd847",
+      "line_count": 261,
+      "changed": false,
+      "candidates": 40,
+      "code_lines_skipped": 29,
+      "tag_counts": {
+        "MUST_SHALL": 31,
+        "PROHIBITION": 12,
+        "SHOULD": 1,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 7,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Supported executors include Codex, Claude Code, Build Host agents, other coding agents, or humans operating the required environment.",
+          "truncated": false
+        },
+        {
+          "line": 11,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Once a handoff is complete enough to execute, the user-visible invocation MUST be pointer-only.",
+          "truncated": false
+        },
+        {
+          "line": 19,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "or, when role/dispatch disambiguation is required:",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "The trigger MAY identify repository, Issue/PR, role and dispatch id when needed. It MUST NOT duplicate baseline SHA, branch rules, scope, commands, gates, review procedure, repair instructions, evidence requirements or closeout rules.",
+          "truncated": false
+        },
+        {
+          "line": 29,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Do not copy the full task contract into chat. If the Issue is incomplete, repair/materialize the Issue or its authoritative referenced artifact first. A long chat prompt MUST NOT be used to make an incomplete handoff executable.",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 35
+    },
+    {
+      "path": "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
+      "blob": "9fe8d46bd6bb20b6210d912481b0a54102e61cb7",
+      "line_count": 55,
+      "changed": false,
+      "candidates": 7,
+      "code_lines_skipped": 5,
+      "tag_counts": {
+        "MUST_SHALL": 7,
+        "PROHIBITION": 1,
+        "SHOULD": 1,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 11,
+          "tags": [
+            "MUST_SHALL",
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "A supported line or baseline MUST be established by durable project/product maintenance authority. The policy SHOULD state the applicable support status vocabulary, supported baseline/reference and allowed maintenance change classes.",
+          "truncated": false
+        },
+        {
+          "line": 23,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Deprecation/EOL decisions MUST have durable authority and, where material, reference replacement/upgrade/migration guidance. EOL does not erase historical artifacts or prior evidence; it changes current support posture under the owning policy.",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A backport/cherry-pick/hotfix result MUST preserve provenance linking:",
+          "truncated": false
+        },
+        {
+          "line": 39,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Source-branch evidence belongs to the source subject. It MUST NOT automatically transfer to a new maintenance/backport result SHA.",
+          "truncated": false
+        },
+        {
+          "line": 46,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "The resulting exact SHA must obtain its own applicable current Testing/Validation/Review/Release evidence.",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 2
+    },
+    {
+      "path": "standards/MODEL_USAGE_POLICY.md",
+      "blob": "79b3590c7fe4b0b085ed346cbac9e24509e7fa66",
+      "line_count": 50,
+      "changed": false,
+      "candidates": 1,
+      "code_lines_skipped": 5,
+      "tag_counts": {
+        "MUST_SHALL": 0,
+        "PROHIBITION": 1,
+        "SHOULD": 0,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 45,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "执行自由度按 Task Pack / Execution Pack 的 `agent_freedom`（F0–F3）机器可读地约束；executor 不得自我提升到更高权威级别。",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 0
+    },
+    {
+      "path": "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
+      "blob": "3dddb3b5b81f44491b198a5496ba70f64942a561",
+      "line_count": 61,
+      "changed": false,
+      "candidates": 8,
+      "code_lines_skipped": 4,
+      "tag_counts": {
+        "MUST_SHALL": 7,
+        "PROHIBITION": 1,
+        "SHOULD": 0,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 11,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Deployment success proves only the deployment result it owns. It MUST NOT be interpreted as runtime health.",
+          "truncated": false
+        },
+        {
+          "line": 17,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "Likewise, runtime evidence cannot rewrite the historical Deployment or Release result that preceded it.",
+          "truncated": false
+        },
+        {
+          "line": 21,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Where material, health/readiness, liveness, performance/resource, error/failure and business/domain signals MUST remain distinguishable. A project may map or extend signal classes according to its Product/Architecture needs.",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A material runtime observation MUST identify enough of the observed subject to prevent evidence substitution. As applicable, bind:",
+          "truncated": false
+        },
+        {
+          "line": 40,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Signal/backend availability is capability, not product truth. Missing, quiet or unavailable telemetry MUST NOT be upgraded into healthy behavior.",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 3
+    },
+    {
+      "path": "standards/PROJECT_ADOPTION.md",
+      "blob": "e6d2a9886d74ddaf29843f1c6410b947733f0aaa",
+      "line_count": 521,
+      "changed": false,
+      "candidates": 91,
+      "code_lines_skipped": 90,
+      "tag_counts": {
+        "MUST_SHALL": 49,
+        "PROHIBITION": 31,
+        "SHOULD": 6,
+        "MUST_ZH": 23
+      },
+      "examples": [
+        {
+          "line": 18,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "业务项目 MUST 固定到本标准的 immutable commit SHA，不得只引用 `main`、`latest` 或聊天中的“当前版本”。",
+          "truncated": false
+        },
+        {
+          "line": 28,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "其中 `revision` 是最终、不可变、机器解析的 identity authority。",
+          "truncated": false
+        },
+        {
+          "line": 54,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "1. 不得 fallback 到 `main/latest`。",
+          "truncated": false
+        },
+        {
+          "line": 55,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "2. exact revision 无法解析时不得用其它 revision 替代。",
+          "truncated": false
+        },
+        {
+          "line": 56,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "LIST",
+          "anchor": "3. 已验证本地 cache 可复用，但必须证明 object identity。",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 86
+    },
+    {
+      "path": "standards/PROJECT_STRUCTURE.md",
+      "blob": "525380339dd25f6520202f859cfa41db635c1189",
+      "line_count": 143,
+      "changed": false,
+      "candidates": 15,
+      "code_lines_skipped": 24,
+      "tag_counts": {
+        "MUST_SHALL": 1,
+        "PROHIBITION": 6,
+        "SHOULD": 3,
+        "MUST_ZH": 6
+      },
+      "examples": [
+        {
+          "line": 14,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "LIST",
+          "anchor": "- **结构必须支持验证**：实现、测试、fixture、文档和发布事实应能从目录结构快速定位。",
+          "truncated": false
+        },
+        {
+          "line": 36,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "不要求同时存在 `apps/`、`services/`、`packages/`。例如单一 Python service 可以只保留自己的源码目录和 `tests/`；只有复杂度出现时再升级结构。",
+          "truncated": false
+        },
+        {
+          "line": 60,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "每个 package SHOULD 有稳定名称、明确 public API、自己的最小 README（当用途非显而易见时）和与复杂度匹配的测试。",
+          "truncated": false
+        },
+        {
+          "line": 74,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "`packages` 不得反向依赖具体 `apps`。共享逻辑如果需要从 app 被复用，应抽到职责明确的 package，而不是跨目录相对引用。",
+          "truncated": false
+        },
+        {
+          "line": 81,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 跨模块 integration、E2E、Critical Journey、共享 fixture SHOULD 放根 `tests/` 下的明确子目录。",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 10
+    },
+    {
+      "path": "standards/RELEASE_STANDARD.md",
+      "blob": "da3b78b113be238bdce650ccb646f5aa23bc1f9b",
+      "line_count": 501,
+      "changed": false,
+      "candidates": 60,
+      "code_lines_skipped": 66,
+      "tag_counts": {
+        "MUST_SHALL": 43,
+        "PROHIBITION": 19,
+        "SHOULD": 2,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 16,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- required Validation reports/tuples;",
+          "truncated": false
+        },
+        {
+          "line": 22,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- project-required Minimal CI/profile evidence;",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Every mandatory input must trace to Gate Authority. CI is release-required only when frozen/project policy makes it so.",
+          "truncated": false
+        },
+        {
+          "line": 39,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "A freeze record SHOULD include:",
+          "truncated": false
+        },
+        {
+          "line": 63,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "If any required content change is needed:",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 55
+    },
+    {
+      "path": "standards/REPOSITORY_STANDARD.md",
+      "blob": "c9cafee2571079d0d14402370973761bcd26fc54",
+      "line_count": 139,
+      "changed": false,
+      "candidates": 19,
+      "code_lines_skipped": 22,
+      "tag_counts": {
+        "MUST_SHALL": 4,
+        "PROHIBITION": 5,
+        "SHOULD": 10,
+        "MUST_ZH": 2
+      },
+      "examples": [
+        {
+          "line": 9,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "业务项目 SHOULD 至少具备：",
+          "truncated": false
+        },
+        {
+          "line": 38,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "README SHOULD 能在几分钟内回答：",
+          "truncated": false
+        },
+        {
+          "line": 51,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "`AGENTS.md` 是跨 coding-agent 的首要工程入口。特定 Agent 文件（例如 `CLAUDE.md`）应引用 AGENTS 和本标准，不得维护冲突的平行规则。",
+          "truncated": false
+        },
+        {
+          "line": 53,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "业务项目 MUST 在 `.dev-standard/VERSION` 固定本标准的 immutable revision；不得只写 `main/latest`。",
+          "truncated": false
+        },
+        {
+          "line": 57,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "`.github/` SHOULD 承载与 GitHub 平台相关的内容：",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 14
+    },
+    {
+      "path": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md",
+      "blob": "b4ba0074600dc3a3802663093b663e0f23b57da5",
+      "line_count": 56,
+      "changed": false,
+      "candidates": 9,
+      "code_lines_skipped": 4,
+      "tag_counts": {
+        "MUST_SHALL": 6,
+        "PROHIBITION": 7,
+        "SHOULD": 0,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 7,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "A Skill is a reusable, versioned procedure with bounded applicability, provenance, maintained instructions, input/output contracts and failure/escalation routing. It is **not** Product, Architecture, Task, Execution Pack, Dispatch, Review, Validation, Release ",
+          "truncated": true
+        },
+        {
+          "line": 11,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "`schemas/skill-metadata-v1.schema.json` (T01) is the only v4.6 default Skill machine-contract family. Its mandatory `schema_version`, `skill_id`, `skill_version`, `purpose`, `scope`, `applicability`, `source_ref`, `procedure_ref`, `failure_escalation_ref`, `ma",
+          "truncated": true
+        },
+        {
+          "line": 15,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "An imported or discovered Skill MUST retain attributable source/procedure/version provenance when material. A repository/project owner MUST explicitly assess whether the Skill is accepted for the requested applicability, version, inputs and security profile be",
+          "truncated": true
+        },
+        {
+          "line": 19,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "`tool_capability_refs` and `side_effect_classes` declare possible procedural needs; they **never grant mutation/merge/deployment/production authority**. `required_authority_refs` declare the applicable authority prerequisites, not an authorization token. Befor",
+          "truncated": true
+        },
+        {
+          "line": 30,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "`required_input_refs` link material input contracts and their current identity; `output_contract_refs` describe the output form; `durable_result_surface_refs` point to the owning execution/Issue/PR/evidence surfaces. An output reference is not a completed or v",
+          "truncated": true
+        }
+      ],
+      "omitted_examples": 4
+    },
+    {
+      "path": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+      "blob": "d1ce81f9b66b6b9d9b7005928609a55a0f3d8b94",
+      "line_count": 114,
+      "changed": false,
+      "candidates": 14,
+      "code_lines_skipped": 16,
+      "tag_counts": {
+        "MUST_SHALL": 11,
+        "PROHIBITION": 6,
+        "SHOULD": 0,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 13,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Body text, Markdown status tables, PR stacks, branch names and cherry-pick order MUST NOT substitute for native live dependency edges.",
+          "truncated": false
+        },
+        {
+          "line": 31,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "The vocabulary may be extended where needed; classification alone never authorizes mutation.",
+          "truncated": false
+        },
+        {
+          "line": 35,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Before applying a material live-DAG mutation, durable evidence MUST identify:",
+          "truncated": false
+        },
+        {
+          "line": 52,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "A Task may not silently absorb materially different work merely to avoid DAG mutation. If scope changes the concern identity, authority boundary, dependency relationship, merge owner or required evidence materially, use an explicit DAG mutation such as SPLIT/M",
+          "truncated": true
+        },
+        {
+          "line": 56,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Removing a dependency is a material authority decision. The removal MUST NOT fabricate readiness when the removed edge encoded a still-material contract, evidence or integration dependency.",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 9
+    }
+  ]
+}

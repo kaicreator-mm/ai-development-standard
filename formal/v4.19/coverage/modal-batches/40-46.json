@@ -1,0 +1,790 @@
+{
+  "schema": "ads/formal-modal-batch-v1",
+  "ref": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "source_manifest_blob": "b0836c3b75cec1e1b20c127a256ac6e963d4c92a",
+  "source_matrix_blob": "0ce4d7e463e4d8805c5880e29b671cea38b0ca29",
+  "start": 40,
+  "end": 46,
+  "docs": [
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+      "line_count": 205,
+      "changed": true,
+      "candidates": 22,
+      "code_lines_skipped": 20,
+      "tag_counts": {
+        "MUST_SHALL": 19,
+        "PROHIBITION": 2,
+        "SHOULD": 4,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 17,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Every material execution Task MUST make these facts recoverable from durable planning authority:",
+          "truncated": false
+        },
+        {
+          "line": 37,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Issue text may point to a Frozen Task Pack rather than duplicate the whole contract. The durable authority must still exist and be current.",
+          "truncated": false
+        },
+        {
+          "line": 39,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A Task is **Agent-dispatchable** only when a qualified Agent can resolve identity, allowed scope, required gates and completion from these durable facts plus the frozen authority they reference, without hidden conversation or chat context. A decomposition that",
+          "truncated": true
+        },
+        {
+          "line": 43,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A material execution Task MUST resolve, before dispatch, its acting role denominator from durable authority: the declared role/job/profile/archetype that acts on the Task, the transport (WEB/LOCAL) it acts through, and a legality reference resolving to that du",
+          "truncated": true
+        },
+        {
+          "line": 45,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Every material actor-subject resolves one conduct trace per the Workflow role-conduct section — input, allowed acts, required evidence, refusal grounds, exit/handoff — consuming the effective-rule floor and the affected-source materiality inventory read-only.",
+          "truncated": false
+        },
+        {
+          "line": 47,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "A Task entry whose material role/job/profile/archetype denominator cannot be resolved from these durable facts is not agent-dispatchable and stays `GAP/UNVERIFIED`, never READY by default. Incomplete material role/job/profile coverage MUST NOT be reported comp",
+          "truncated": true
+        },
+        {
+          "line": 53,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "One Task SHOULD have one primary concern that can be described without joining unrelated authority domains with “and also”.",
+          "truncated": false
+        },
+        {
+          "line": 59,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "File count, line count or estimated token count alone MUST NOT define Task boundaries. Time or effort estimates carry the same prohibition and MUST NOT define Task boundaries alone.",
+          "truncated": false
+        },
+        {
+          "line": 66,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- there is no unmerged code baseline required from the sibling;",
+          "truncated": false
+        },
+        {
+          "line": 71,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Do not fake parallelism by splitting an atomic invariant across branches that must be understood/merged together before either is valid.",
+          "truncated": false
+        },
+        {
+          "line": 102,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Stacked PR MUST NOT be used as the general representation of the Task DAG.",
+          "truncated": false
+        },
+        {
+          "line": 118,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Central wiring MUST reference sibling owners rather than become a semantic rewrite task.",
+          "truncated": false
+        },
+        {
+          "line": 151,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A good Task boundary supports a stable exact subject for its required evidence.",
+          "truncated": false
+        },
+        {
+          "line": 153,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Where concern Validation or Fresh Independent Review is required, the reviewer/validator should not need unrelated sibling changes merely to determine whether the Task passed.",
+          "truncated": false
+        },
+        {
+          "line": 161,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Fast Path MUST NOT combine multiple unrelated authorities merely to avoid Task materialization, nor remove real dependencies/gates.",
+          "truncated": false
+        },
+        {
+          "line": 174,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "8. Is a stacked PR really required by code-baseline dependency?",
+          "truncated": false
+        },
+        {
+          "line": 177,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "For a substantial or mostly serial candidate, the Planner SHOULD compare at least one **safe alternative Task DAG topology**, or record a concrete reason why serial execution is necessary; compare frozen contracts, atomic invariants, disjoint writers, true int",
+          "truncated": true
+        },
+        {
+          "line": 183,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION",
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "For a substantial multi-package or runtime-replacement DAG, the Planner SHOULD test the **reason for each material serial edge** against the frozen contract and actual artifact prerequisites: is upstream **integrated code** required to begin the downstream con",
+          "truncated": true
+        },
+        {
+          "line": 185,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "Before freezing extensive write sets for a material package/toolchain migration, the Planner SHOULD use available **cheap physical/source feasibility evidence** (current package import/pack graph, generated source/dist ownership, manifest/lockfile writer, CI s",
+          "truncated": true
+        },
+        {
+          "line": 189,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Sources: [DomainHarness #530](https://github.com/kaicreator-mm/domain-harness/issues/530) false v0.6→v0.7 serial dependency; [#586](https://github.com/kaicreator-mm/domain-harness/issues/586) one cross-cutting verification campaign; [v0.10.2 A5 #1354](https://",
+          "truncated": true
+        },
+        {
+          "line": 195,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Before splitting an already ACTIVE Task because of newly discovered independent concerns, the controller MUST first re-read accepted current Claim/operator/Task Pack, all overlapping open PR heads, precise source write sets, native Issue Dependency edges and s",
+          "truncated": true
+        },
+        {
+          "line": 199,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Do not split independent Review/Hidden/Release qualification into Builder authority merely to reduce Task count. Stop repeating expensive full-suite runs on unchanged unrelated work; targeted deltas may reuse genuinely current evidence, while previously requir",
+          "truncated": true
+        }
+      ],
+      "omitted_examples": 0
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+      "line_count": 171,
+      "changed": true,
+      "candidates": 32,
+      "code_lines_skipped": 11,
+      "tag_counts": {
+        "MUST_SHALL": 8,
+        "PROHIBITION": 9,
+        "SHOULD": 15,
+        "MUST_ZH": 8
+      },
+      "examples": [
+        {
+          "line": 5,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "测试用于证明行为和边界，不用于制造漂亮数字。测试策略必须与风险、contract、用户关键路径和 release gate 对齐，并能在本地、Agent 执行环境与 CI 之间重复运行。",
+          "truncated": false
+        },
+        {
+          "line": 15,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "验证 public API、schema、serialization、CLI contract、事件格式、adapter interface 等稳定边界。公共 contract 发生变化时必须有对应测试或明确的兼容性决策。",
+          "truncated": false
+        },
+        {
+          "line": 19,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "验证多个真实组件组合，例如 API + DB、service + filesystem、frontend + backend、queue/worker、storage adapter。外部第三方可在 PR Gate 使用可信 mock/stub/test double，但不得把 mock 结果当作真实外部服务通过。",
+          "truncated": false
+        },
+        {
+          "line": 36,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 跨模块 integration/e2e/critical-journey tests SHOULD 放根 `tests/` 的明确目录。",
+          "truncated": false
+        },
+        {
+          "line": 37,
+          "tags": [
+            "PROHIBITION",
+            "MUST_ZH"
+          ],
+          "kind": "LIST",
+          "anchor": "- fixture/testdata 必须有用途和所有权，不得把生产 dump 直接复制进仓库。",
+          "truncated": false
+        },
+        {
+          "line": 38,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 大型二进制 fixture SHOULD 使用生成器、外部 artifact 或最小化样本，避免仓库无界增长。",
+          "truncated": false
+        },
+        {
+          "line": 42,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "测试数据 MUST：",
+          "truncated": false
+        },
+        {
+          "line": 52,
+          "tags": [
+            "PROHIBITION",
+            "SHOULD",
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "测试 SHOULD 可独立运行并清理自身状态。不得依赖“必须先运行另一个测试”或开发机历史数据才能通过。",
+          "truncated": false
+        },
+        {
+          "line": 58,
+          "tags": [
+            "PROHIBITION",
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- Bug fix SHOULD 添加能复现该 bug 的 regression test，除非客观不可测试并在 PR 中说明。",
+          "truncated": false
+        },
+        {
+          "line": 59,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 新 public contract SHOULD 先定义或同步 contract test。",
+          "truncated": false
+        },
+        {
+          "line": 60,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 数据迁移 SHOULD 测试升级路径；高风险迁移还应验证失败恢复/重试/兼容窗口。",
+          "truncated": false
+        },
+        {
+          "line": 61,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- 错误处理 SHOULD 测真实 failure behavior，不仅验证 happy path。",
+          "truncated": false
+        },
+        {
+          "line": 62,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "- UI 变化对关键交互 SHOULD 有 component 或 E2E 证据；纯视觉变化按项目需要使用 screenshot/visual regression。",
+          "truncated": false
+        },
+        {
+          "line": 66,
+          "tags": [
+            "MUST_SHALL",
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "When a Test/CI profile materially claims coverage of a declared contract, recovery, security or other required suite, its owner SHOULD compare the **actual discovered/executed test inventory** against the suite(s) that profile claims to cover. An entrypoint ex",
+          "truncated": true
+        },
+        {
+          "line": 72,
+          "tags": [
+            "MUST_SHALL",
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "For material public SDK/framework/plug-in or architecture-replacement acceptance, distinguish **declared/exported/imported/initialized** components from components **actually selected, invoked and behaviorally verified** through the supported public entrypoint",
+          "truncated": true
+        },
+        {
+          "line": 80,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "禁止：",
+          "truncated": false
+        },
+        {
+          "line": 86,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "项目可以定义 coverage threshold，但必须与风险和历史基线合理对应。",
+          "truncated": false
+        },
+        {
+          "line": 96,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "LIST",
+          "anchor": "3. 必须临时 quarantine 时，创建明确 Task/Issue、owner 与退出条件；",
+          "truncated": false
+        },
+        {
+          "line": 97,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "4. 不得仅通过无限 retry 或扩大 timeout 掩盖确定性问题。",
+          "truncated": false
+        },
+        {
+          "line": 101,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "Snapshot/golden test 适合复杂结构化输出，但必须可审查。大面积 snapshot 更新不能仅因为“测试需要更新”就接受；PR 必须能解释语义变化。",
+          "truncated": false
+        },
+        {
+          "line": 107,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "外部 API、云服务、LLM provider、支付、邮件等边界建议分层：",
+          "truncated": false
+        },
+        {
+          "line": 113,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "真实外部服务不可用时应写 `BLOCKED/NOT_RUN`，不能用 mock PASS 冒充真实验证 PASS。",
+          "truncated": false
+        },
+        {
+          "line": 117,
+          "tags": [
+            "MUST_ZH"
+          ],
+          "kind": "PROSE",
+          "anchor": "当 PRD/Architecture 声明性能、容量、安全或可靠性目标时，必须有相应可执行验证或清晰的人工 gate。不要在没有目标值和基线时把“性能测试”变成无结论 benchmark。",
+          "truncated": false
+        },
+        {
+          "line": 125,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- Version Closure 再执行 Critical Journey、Hidden Validation、真实 packaging/platform 和 required external boundary。",
+          "truncated": false
+        },
+        {
+          "line": 129,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "CI profile SHOULD 选择与其真实 execution environment 相容的 tests。不要为了“一个命令覆盖全部”把不同 Validation Tuple 混成粗粒度 `npm test` / `pytest` / equivalent aggregate，然后把 Windows-only、GPU-only、visual/golden、packaged-runtime、real-device 等不兼容失败压成一个低信息 FAIL。",
+          "truncated": false
+        },
+        {
+          "line": 147,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION",
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "如果 full repository suite 本身跨越多个 tuple，项目 SHOULD 将其拆成可审计 profiles，并明确每个 profile 的 scope/exclusions。拆分 profile 不得删除 required test；它只是把 test 放回正确的执行环境和 Gate。",
+          "truncated": false
+        },
+        {
+          "line": 149,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "当 CI evidence 发布到外部 store 时，test/check result、log/report path 和 profile scope SHOULD 按 `CI_EVIDENCE_STANDARD.md` 结构化发布，以便消费者先读 summary/diagnostic，再按需读取完整日志或大 artifact。",
+          "truncated": false
+        },
+        {
+          "line": 153,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "自动化测试 Evidence SHOULD 优先减少远端读取和存储开销：",
+          "truncated": false
+        },
+        {
+          "line": 159,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "- 未 PASS 的 producer 不得把历史/stale workspace artifact 当成有效测试产物。",
+          "truncated": false
+        },
+        {
+          "line": 161,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "这些性能优化不能降低 required test coverage 或 Gate authority。",
+          "truncated": false
+        },
+        {
+          "line": 166,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- 将 required test 标记 skip/xpass 而没有批准的原因。",
+          "truncated": false
+        },
+        {
+          "line": 170,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "- 通过缩小 CI profile 来隐瞒本应属于该 profile 的 required test。",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 0
+    },
+    {
+      "path": "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
+      "blob": "5e234f9ab806565a5e728660a3e30dd17fad22d7",
+      "line_count": 291,
+      "changed": false,
+      "candidates": 37,
+      "code_lines_skipped": 57,
+      "tag_counts": {
+        "MUST_SHALL": 27,
+        "PROHIBITION": 5,
+        "SHOULD": 10,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 13,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A Test Data / Scenario Gate is **not automatically mandatory for every project**. It becomes required only when the normal Gate Authority chain requires it:",
+          "truncated": false
+        },
+        {
+          "line": 25,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "1. Test data MUST derive from contracts, schema, domain rules, approved examples, incidents, public/approved datasets, or explicit evidence; an LLM must not invent domain truth.",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL",
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "3. Golden cases MUST state expected behavior, invariants, forbidden behavior, allowed variation, rationale, provenance, and approval authority.",
+          "truncated": false
+        },
+        {
+          "line": 29,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "LIST",
+          "anchor": "5. LLM-generated data used as formal evidence MUST pass independent schema/rule/invariant validation.",
+          "truncated": false
+        },
+        {
+          "line": 30,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "LIST",
+          "anchor": "6. Synthetic generators SHOULD be replayable and record generator revision, seed, and relevant runtime/dependency identity.",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 32
+    },
+    {
+      "path": "standards/VALIDATION_STANDARD.md",
+      "blob": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+      "line_count": 243,
+      "changed": false,
+      "candidates": 21,
+      "code_lines_skipped": 43,
+      "tag_counts": {
+        "MUST_SHALL": 17,
+        "PROHIBITION": 4,
+        "SHOULD": 2,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 11,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "`PASS` requires actual execution. `FAIL` means an executed required check did not meet acceptance. `BLOCKED` means a prerequisite/environment/tool prevents execution. `NOT_RUN` means it has not executed. `NOT_APPLICABLE` means the gate genuinely does not apply",
+          "truncated": true
+        },
+        {
+          "line": 13,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "`NOT_APPLICABLE` is an authority-derived determination about applicability, not an executor convenience. It MUST NOT be produced from cost, effort/turnaround, change size/file count, a docs-only or mechanical appearance, Agent/model confidence, historical habi",
+          "truncated": true
+        },
+        {
+          "line": 19,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Mandatory gates must trace to, in priority order:",
+          "truncated": false
+        },
+        {
+          "line": 42,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "A tuple proves only itself. Cross-build, another platform/toolchain, CI provider success, or an older SHA cannot be inferred as PASS for an unexecuted tuple.",
+          "truncated": false
+        },
+        {
+          "line": 48,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "Every Task/validation request SHOULD resolve a validation scope:",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 16
+    },
+    {
+      "path": "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+      "blob": "d2bf9b4486e8223ebb11b093f9affbcf935deeeb",
+      "line_count": 171,
+      "changed": false,
+      "candidates": 25,
+      "code_lines_skipped": 0,
+      "tag_counts": {
+        "MUST_SHALL": 19,
+        "PROHIBITION": 10,
+        "SHOULD": 1,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 7,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "It intentionally does **not** define the future full v4.4 build/package Artifact Manifest, package/distribution format or Release Qualification verdict. File existence never creates Validation or Release truth.",
+          "truncated": false
+        },
+        {
+          "line": 21,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "TABLE",
+          "anchor": "| `RUNTIME_STATE` | State required by a running or recoverable system/process; not disposable cache by default. |",
+          "truncated": false
+        },
+        {
+          "line": 25,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "TABLE",
+          "anchor": "| `SECRET_MATERIAL` | Credential/key/token/private/bearer material requiring secret-handling rules; never ordinary evidence/release content. |",
+          "truncated": false
+        },
+        {
+          "line": 27,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "A path/extension alone MUST NOT determine class when semantics differ.",
+          "truncated": false
+        },
+        {
+          "line": 29,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "PROSE",
+          "anchor": "Class also cannot be granted by untrusted labels: renaming, moving or relabeling — for example a `BUILD_OUTPUT` copied under a `release/` name or output stamped as `VALIDATION_EVIDENCE` — changes neither class nor authority. Untrusted tool/GitHub/MCP/A2A asser",
+          "truncated": true
+        }
+      ],
+      "omitted_examples": 20
+    },
+    {
+      "path": "standards/ASSURANCE_PLAN_STANDARD.md",
+      "blob": "ddc39f2843e7af4b41b1cf2e6b34675c23bcb614",
+      "line_count": 245,
+      "changed": false,
+      "candidates": 24,
+      "code_lines_skipped": 49,
+      "tag_counts": {
+        "MUST_SHALL": 18,
+        "PROHIBITION": 5,
+        "SHOULD": 2,
+        "MUST_ZH": 0
+      },
+      "examples": [
+        {
+          "line": 16,
+          "tags": [
+            "SHOULD"
+          ],
+          "kind": "PROSE",
+          "anchor": "The v4.0 Assurance Plan semantics and `assurance-plan-v1` records remain valid history and compatible inputs. Consumers SHOULD resolve the legacy implementation document and the canonical standard above to the same semantic owner identity.",
+          "truncated": false
+        },
+        {
+          "line": 20,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "The Assurance Plan selects and orders required assurance work. Each owning standard still defines what its result means.",
+          "truncated": false
+        },
+        {
+          "line": 30,
+          "tags": [
+            "MUST_SHALL"
+          ],
+          "kind": "PROSE",
+          "anchor": "Canonicalization MUST NOT be interpreted as permission to translate one evidence family into another or to treat missing/`NOT_RUN` work as PASS.",
+          "truncated": false
+        },
+        {
+          "line": 47,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "2. a PASS from another reviewer cannot cancel an unresolved valid blocker;",
+          "truncated": false
+        },
+        {
+          "line": 48,
+          "tags": [
+            "PROHIBITION"
+          ],
+          "kind": "LIST",
+          "anchor": "3. majority vote cannot create correctness;",
+          "truncated": false
+        }
+      ],
+      "omitted_examples": 19
+    }
+  ]
+}
