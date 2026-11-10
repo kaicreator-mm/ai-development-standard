@@ -1,0 +1,337 @@
+{
+  "schema": "ads/formal-r23-profile-schema-source-two-layer-crosswalk/v1",
+  "main_issue": 1366,
+  "experiment": {
+    "input_head": "1017c6ca411a5a170142c21455c04272fc775fa9",
+    "input_tree": "5ec940215aedfedbe62f623987cecf7104abf852",
+    "change_type": "EXACT_SOURCE_SCHEMA_TEST_CROSSWALK_ONLY"
+  },
+  "prospective": {
+    "pr": 1365,
+    "actual_base": "fbf1a7d49596c549e955ef36949f4110a0da2d33",
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "pr_state": "OPEN_UNMERGED_NOT_EFFECTIVE_POLICY"
+  },
+  "exact_git_inputs": [
+    {
+      "path": "schemas/dispatch.schema.json",
+      "git_blob": "90bea62524beb0215d5f40cf0be9986786648fec",
+      "ref": "fbf1a7d49596c549e955ef36949f4110a0da2d33"
+    },
+    {
+      "path": "schemas/dispatch.schema.json",
+      "git_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "ref": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    {
+      "path": "scripts/v34_rules.py",
+      "git_blob": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+      "ref": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    {
+      "path": "scripts/test_protocol_schemas.py",
+      "git_blob": "96edf2413e35a90d8049e529c11e832637dbaabd",
+      "ref": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "ref": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "source_line": 148
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "ref": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "source_line": 573
+    }
+  ],
+  "findings": [
+    {
+      "id": "R23-SEM-01",
+      "status": "KNOWN_BOUNDARY_EXISTING_PYTHON_GUARD",
+      "severity": "QUALIFICATION_GAP_NOT_A_PRODUCTION_DEFECT",
+      "fact": "Candidate dispatch Schema allows valid role+profile with mismatched valid execution_environment; v34_rules.project_dispatch_environment detects contradiction; existing tests explicitly exercise schema-valid-but-projection-rejected",
+      "implication": "A schema PASS is necessary for the new enriched Dispatch but insufficient for correct route/admission",
+      "next": "Require selected producer to invoke appropriate environment projection/authorization at actual serialized write boundary; not proven"
+    },
+    {
+      "id": "R23-SEM-02",
+      "status": "RUNTIME_EFFECTIVE_REVISION_UNATTESTED",
+      "severity": "QUALIFICATION_GAP_NOT_A_PRODUCTION_DEFECT",
+      "fact": "pinned_standard_revision is a 40-hex Schema string check only; neither revision currentness nor lawful Task/Project scope can be proven by that pattern",
+      "implication": "A v4.18-pinned Task must not inherit candidate WEB_BUILDER or LOCAL_VALIDATION permission from syntax-only evidence",
+      "next": "Require real current lawful effective pin, accepted Claim and CAS/durable readback; no actor is authorized by this audit"
+    },
+    {
+      "id": "R23-SEM-03",
+      "status": "SOURCE_SCHEMA_ROLE_ENUM_ALIGNED",
+      "severity": "NO_CONFIRMED_DEFECT",
+      "fact": "Base has 5 profiles, prospective has 7; all 7 have unique role assignments in 3 schema conditionals, 7 accepted role/profile combinations and 14 rejected",
+      "implication": "Finite structural role/profile crosswalk aligns with both changed standard paragraphs; does not prove dynamic admission"
+    }
+  ],
+  "counts": {
+    "historical_profile_enum": 5,
+    "candidate_profile_enum": 7,
+    "new_profiles": [
+      "WEB_BUILDER",
+      "LOCAL_VALIDATION"
+    ],
+    "candidate_role_options": 3,
+    "schema_role_profile_cartesian_cases": 21,
+    "accepted_shape_role_profile": 7,
+    "rejected_shape_role_profile": 14,
+    "exercised_concrete_source_semantic_counterexample_descriptions": 5,
+    "actual_python_tests_executed_this_round": 0,
+    "new_native_smt_cases_executed_this_round": 0
+  },
+  "profile_role_truth_table": [
+    {
+      "profile": "LOCAL_BUILDER",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_BUILDER",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_BUILDER",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATOR",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATOR",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATOR",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "WEB_REVIEWER",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "reviewer",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "WEB_REVIEWER",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "reviewer",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "WEB_REVIEWER",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "reviewer",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "PLATFORM_VALIDATOR",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "PLATFORM_VALIDATOR",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "PLATFORM_VALIDATOR",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "CLOSURE_VALIDATOR",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "CLOSURE_VALIDATOR",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "CLOSURE_VALIDATOR",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "WEB_BUILDER",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "WEB_BUILDER",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "WEB_BUILDER",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "builder",
+      "projected_environment": "WEB"
+    },
+    {
+      "profile": "LOCAL_VALIDATION",
+      "role": "builder",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATION",
+      "role": "validator",
+      "profile_role_schema_conditional_verdict": "ACCEPT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATION",
+      "role": "reviewer",
+      "profile_role_schema_conditional_verdict": "REJECT_SHAPE",
+      "expected_role": "validator",
+      "projected_environment": "LOCAL"
+    }
+  ],
+  "environment_projection": {
+    "known_mapping": {
+      "LOCAL_BUILDER": "LOCAL",
+      "LOCAL_VALIDATOR": "LOCAL",
+      "WEB_REVIEWER": "WEB",
+      "WEB_BUILDER": "WEB",
+      "LOCAL_VALIDATION": "LOCAL"
+    },
+    "orthogonal_environment_profiles": [
+      "PLATFORM_VALIDATOR",
+      "CLOSURE_VALIDATOR"
+    ],
+    "schema_has_profile_environment_pair_constraint": false,
+    "source_verifier_has_contradiction_check": true
+  },
+  "counterexamples": [
+    {
+      "id": "R23-N1",
+      "payload": {
+        "role": "builder",
+        "execution_profile": "WEB_BUILDER",
+        "execution_environment": "LOCAL",
+        "pinned_standard_revision": "dac263fa4c0ab155406d2f2117459b34322cc988"
+      },
+      "schema_role_profile": "ACCEPT_SHAPE",
+      "schema_env_enum": "ACCEPT_SHAPE",
+      "projection": "ENVIRONMENT_PROFILE_CONTRADICTION",
+      "existing_test_ref": "scripts/test_protocol_schemas.py::test_v419_profiles_reject_contradictory_explicit_environments",
+      "proof_boundary": "A passed Schema check alone must not admit a routed/accepted Dispatch"
+    },
+    {
+      "id": "R23-N2",
+      "payload": {
+        "role": "validator",
+        "execution_profile": "LOCAL_VALIDATION",
+        "execution_environment": "WEB",
+        "pinned_standard_revision": "dac263fa4c0ab155406d2f2117459b34322cc988"
+      },
+      "schema_role_profile": "ACCEPT_SHAPE",
+      "schema_env_enum": "ACCEPT_SHAPE",
+      "projection": "ENVIRONMENT_PROFILE_CONTRADICTION",
+      "existing_test_ref": "scripts/test_protocol_schemas.py::test_v419_profiles_reject_contradictory_explicit_environments",
+      "proof_boundary": "Validator-only local validation is not WEB by reinterpretation"
+    },
+    {
+      "id": "R23-N3",
+      "payload": {
+        "role": "builder",
+        "execution_profile": "WEB_BUILDER",
+        "execution_environment": "WEB",
+        "pinned_standard_revision": "fbf1a7d49596c549e955ef36949f4110a0da2d33"
+      },
+      "schema_role_profile": "ACCEPT_SHAPE_WITH_NEW_SCHEMA",
+      "schema_pin_format": "ACCEPT_SHAPE",
+      "actual_effective_pin": "NOT_PROVEN",
+      "proof_boundary": "A syntactically well formed historical SHA does not establish lawful prospective policy adoption"
+    },
+    {
+      "id": "R23-N4",
+      "payload": {
+        "role": "builder",
+        "execution_profile": "LOCAL_VALIDATION",
+        "execution_environment": "LOCAL",
+        "pinned_standard_revision": "dac263fa4c0ab155406d2f2117459b34322cc988"
+      },
+      "schema_role_profile": "REJECT_SHAPE",
+      "proof_boundary": "Builder role cannot use validator-only profile"
+    },
+    {
+      "id": "R23-N5",
+      "payload": {
+        "role": "validator",
+        "execution_profile": "WEB_BUILDER",
+        "execution_environment": "WEB",
+        "pinned_standard_revision": "dac263fa4c0ab155406d2f2117459b34322cc988"
+      },
+      "schema_role_profile": "REJECT_SHAPE",
+      "proof_boundary": "Validator role cannot gain source-write builder authority"
+    }
+  ],
+  "execution": {
+    "github_source_and_structural_checks": {
+      "passed": 25,
+      "total": 25,
+      "qualification": "GITHUB_EXACT_BLOB_AND_CONDITIONAL_STRUCTURE_ONLY"
+    },
+    "existing_python_test_source_checked": true,
+    "existing_python_tests_rerun": "NOT_RUN",
+    "real_jsonschema_instance_validator_run": "NOT_RUN",
+    "real_effective_task_revision_and_accepted_claim": "NOT_PROVEN",
+    "natural_language_to_model_equivalence": "NOT_PROVEN"
+  },
+  "limitations": [
+    "Cross-product is a structural interpretation of exact JSON Schema if/then profile role clauses, not a full runtime dispatch admission test",
+    "Schema-valid environment contradictions are intentionally left to existing environment projection helper; negative source tests are present but were not executed anew",
+    "A future producer must apply actual effective project-pinned Schema and authorization/currentness at serialized boundary",
+    "No validated global ADS atomic-obligation denominator; no production-v4.19 adoption inferred",
+    "No source/std/schema modifications; this is non-normative formal experiment evidence"
+  ]
+}

@@ -411,3 +411,12 @@ R19 后评估下一步：R11/R13/R17 Native/Python 都已各自 Exact-SHA 通过
 复盘最新实验分支 `9ca01393584aa6c0f1c067f2e47191a0d967fa97`，R20 的真实 Exact-SHA checkout 双环境 **9/9 Python PASS** 且审计器 CLI 正跑通过，两项实验 P2 已在原分支 red→green 修复；不重复原生套件。继续 §6-B 前先从 PR #1365 的实际 BASE `fbf1a7d49596c549e955ef36949f4110a0da2d33` 和候选 HEAD `dac263fa4c0ab155406d2f2117459b34322cc988` 的全量 Git tree 验证 manifest 46 份规范文件：7 改动、39 不变。随后通过 GitHub 实际 pinned compare patch 对 7 份规范的每条新增/删除文本及物理行号作**穷尽的增量盘点**，共 **8 个连续变更文本段，新增 45 物理行（其中非空 26），删除/替换 2 行旧文本**。两处是 profile 权限语义的整行替换，而不是单纯增补关键词。
 
 固化 `formal/v4.19/r22/R22_EXACT_CHANGED_TEXT_CENSUS.json` 和 `R22_CHANGED_TEXT_REVIEW.md`。此处**完整的是 46 份文件的变更文本面，不是规则/逻辑义务分母**；8 个文本段和 26 行非空文本不能作为规范原子义务数，Rule/Model 全等价与真实 GitHub accepted Claim/CAS 仍 NOT_PROVEN。R11/R17/R20 已有历史实测资格按 Exact-SHA 继承，本轮是 GitHub 差分审计，Python/SMT/TLC 均 NOT_RUN，严禁伪造新性质或把候选政策激活。
+
+
+## 38. #1366 R23 — 扩展到实际 Schema 与 Python Owner 的跨层权限审查（2026-11-11）
+
+R22 已对 46 份 manifest 规范文档的 7 份变更、8 个文本差量段进行精确盘点；但 PR #1365 的完整 GitHub compare 实际共有 **30 文件变更**，其中 `schemas/dispatch.schema.json` **从原 BASE blob `90bea62524beb0215d5f40cf0be9986786648fec` 到候选 `5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f`**，并同步变更 `scripts/v34_rules.py` 与现有 Python 验证测试。仅有“规范变更文本覆盖”不能声称 Schema/执行层逻辑一致。
+
+本轮重新从 GitHub exact blobs 读取候选的两条权限标准、旧/新 Dispatch Schema、Python 环境投影实现、已有 `test_protocol_schemas.py` 反例；检查 **21/21** 精确源与条件结构预期（七种执行 Profile × 三种 Role = 21，Schema 允许 7 种匹配、拒绝 14 种，新增两 Profile 均绑定已有 Role）。新增 `formal/v4.19/r23/R23_PROFILE_SCHEMA_ROLE_AUTHORITY_MATRIX.json` 全量保持 21 项矩阵及 5 个**说明性、未另起实际执行**反例，`R23_CROSS_LAYER_SOURCE_REVIEW.md` 描述两个关键限界：一是 Schema 字段合法并不排除 profile↔environment 矛盾，已有 `project_dispatch_environment` 与其 Python 负测专责拒绝；二是 `pinned_standard_revision` 的 40-hex **形状**并不证明真实有效 Task 项目准入或 CAS。旧 v4.18/#1353 历史义务不得由 v4.19 候选 Schema 字面内容偷偷激活。
+
+本轮是对**已有实施代码是否保持规范源边界**的精确阅读/结构检查，**不是**新原生求解/完整 JSON Schema 实例运行，更不是实际生产发布链证明。未发现可确认的新的正式 ADS P0/P1/P2；不重复 Python 验证器、不改候选标准/Schema/工具运行时、不模拟合法 accepted Claim。真实 effective v4.19 项目 Task pin → selected publisher → READY/QUEUED preflight → accepted Claim/CAS/durable readback 仍 NOT_PROVEN。

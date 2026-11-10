@@ -1,0 +1,24 @@
+# ADS #1366 — R23 Source → Dispatch Schema → Python validator cross-layer review
+
+**Why this adjustment matters:** R22 deliberately completed only the *46 normative standards' changed-text* surface. Actual prospective PR #1365 contains 30 changed files including a consequential **dispatch JSON Schema** change, `scripts/v34_rules.py`, Python owner regression tests and model docs. An analysis that stops at seven standards can overclaim conformance while missing an executable contract drift.
+
+**Pinned candidate:** PR #1365 BASE `fbf1a7d49596c549e955ef36949f4110a0da2d33`, HEAD `dac263fa4c0ab155406d2f2117459b34322cc988` OPEN/unmerged. Base Dispatch Schema Git blob `90bea62524beb0215d5f40cf0be9986786648fec`, prospective Schema blob `5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f`. Executable environmental projection blob `0829be09f46dde75710bc54607a14edd7a2c4cea`; unit regression source blob `96edf2413e35a90d8049e529c11e832637dbaabd`. Versioned standards: `EXECUTION_PACK_STANDARD.md:148` blob `1bd8631dd7120ef56747731e304632b60d7cb5e1`, `GITHUB_AGENT_INTERACTION_PROTOCOL.md:573` blob `935a905d593d7aec027cb54b5b137250ca14a4c1`.
+
+## Independent source-first exact crosswalk
+
+Historical schema lists **five** execution profiles; candidate schema lists **seven**, adding exactly `WEB_BUILDER` and `LOCAL_VALIDATION`. Its three `if/then` role groups yield **21** concrete profile-role combinations: exactly **7 allowed shapes** (one per profile) and **14 disallowed shapes**. Roles remain `builder|validator|reviewer`. Python's projection source gives `WEB_BUILDER→WEB`, `LOCAL_VALIDATION→LOCAL`, legacy `LOCAL_BUILDER/LOCAL_VALIDATOR→LOCAL` and `WEB_REVIEWER→WEB`. `PLATFORM_VALIDATOR` and `CLOSURE_VALIDATOR` remain environment-orthogonal: without explicit WEB/LOCAL the projector returns `UNKNOWN`.
+
+The existing tests explicitly cover rejected role/profile mismatches and **schema-valid but environment-verifier-rejected** conditions. This is existing purposeful responsibility separation, **not** newly discovered ADS P1 or a reason to edit candidate standards.
+
+## Two important distinct proof gaps, illustrated with actual source contracts
+
+1. **Two-layer environment check.** Candidate `dispatch.schema.json` has enum `execution_environment∈{WEB,LOCAL}` but no profile↔environment conditional, so a `role=builder, execution_profile=WEB_BUILDER, execution_environment=LOCAL` example passes the **role/profile and field shape** check. `project_dispatch_environment` rejects it as `ENVIRONMENT_PROFILE_CONTRADICTION`, and `scripts/test_protocol_schemas.py` already records that negative case. Therefore Schema PASS alone **does not** authorize route or publication. A real producer must actually call appropriate effective predicates at the write boundary.
+2. **Pinned revision syntax is not effective authority.** `pinned_standard_revision` in Schema checks only forty hex characters; it does **not** attest an approved project/Task pin, that the same immutable schema bytes were used at read/write, or that an accepted Claim/CAS occurred. A candidate `WEB_BUILDER` with a 40-hex older revision is **syntactically** acceptable to the candidate schema but that does **not** legalize prospective policy for an older frozen Task. The two candidate standards explicitly preserve v4.18 and #1353 historical authority.
+
+The machine receipt enumerates all **21** conditional role/profile combinations and five focused illustrative negative/equivalence-boundary examples, each anchored to exact Git input blobs. **They are source-structural checks, not new actual Python/Z3 results or real producer evidence.** We also inspected existing `scripts/test_v410_t06b_multi_dispatch_conformance.py` and `scripts/test_execution_architecture.py` source for contrary-environment and claim-key invariance checks; their presence avoids writing redundant validators.
+
+## Decision / stop rule
+
+No confirmed ADS normative P0/P1/P2 was found. The new proof value is a narrower statement of what **must not** be inferred from an existing Schema PASS, and clarification of which layer owns the runtime precondition. The only unresolved high-value execution is the lawful, **effective v4.19** project/Task producer's actual source-pinned schema validation + environment/role authorization + serialized READY/QUEUED publication / accepted Claim / CAS / durable readback. Neither unmerged PR #1365 nor a static schema fixture grants authority for that live test.
+
+**DO NOT** add a second run-time validation standard, invent an authoritative Gate, mutate historical frozen tasks, or create duplicate Boolean SMT "proofs" of a relation that the schema intentionally delegates to a separate runtime verifier. Previously qualified R11/R17/R20 exact-subject results remain unchanged. No Python/native execution or new test suite required for this source-only review.
