@@ -1,0 +1,239 @@
+{
+  "schema": "ads/formal-r18-changed-clause-split/v1",
+  "owner_issue": 1366,
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED",
+    "candidate_authority": "PROSPECTIVE_ONLY"
+  },
+  "observed_baseline": {
+    "head": "ac7e7e51de3a7ac27343f16a96568c0b0f2c5349",
+    "blob": "3beba2d0324d95674b7bad2ef621e2aa81c66563",
+    "line_count": 92,
+    "qualification": "OBSERVED_BASELINE_NOT_A_LIVE_PROJECT_PIN"
+  },
+  "changed_source": {
+    "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+    "line_count": 94
+  },
+  "byte_bound_line_diff": {
+    "method": "LONGEST_IDENTICAL_PREFIX_SUFFIX_OVER_EXACT_GITHUB_TEXT_LINES",
+    "prefix_unchanged_lines": 42,
+    "suffix_unchanged_lines": 50,
+    "deleted_line_count": 0,
+    "added_physical_line_numbers": [
+      43,
+      44
+    ],
+    "added_nonempty_line_count": 1,
+    "only_added_normative_paragraph_line": 43,
+    "added_blank_separator_line": 44
+  },
+  "cross_source_owners": [
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+      "line": 51,
+      "role": "DESIGN_SELECTED_COMPOSITION_PATH_ONLY",
+      "not_claimed": "Executable contract proof"
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+      "line": 72,
+      "role": "TESTING_SELECTED_PUBLIC_ENTRYPOINT_AND_BEHAVIOR",
+      "not_claimed": "Release-wide full suite"
+    }
+  ],
+  "prior_curated": {
+    "id": "IM-01",
+    "existing_sample_blob": "9c52aa4f6ac7b43978a89ba29dbdbe53d94602a7",
+    "source_file": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+    "source_line": 43,
+    "relation_to_ads_p_evi": "ANALOGY_ONLY_PILOT_SOURCE_FILE_NOT_CITED",
+    "prior_direct_equivalence": "NOT_PROVEN"
+  },
+  "source_scan": {
+    "scan_blob": "0f3f2141532e537a97c4bbaa9de663379b5d4ec9",
+    "modal_candidate_lines_in_this_document": 17,
+    "scanned_doc_total_lines": 94,
+    "all_canonical_normative_files": 46,
+    "total_modal_candidate_lines": 1509,
+    "ads_rule_denominator": null
+  },
+  "draft_leaf_facets": [
+    {
+      "id": "IM43-01",
+      "anchor": "`SOURCE_PRESENT`",
+      "precondition": "Material shipped public/plugin-facing implementation evidence is reported",
+      "obligation": "Evidence cannot equate source presence with selected-path invocation",
+      "negative": "SOURCE_PRESENT_ONLY_CLAIMED_SUPPORTED",
+      "owner": "IMPLEMENTATION_QUALITY",
+      "type": "EVIDENCE_DISTINCTION",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "`SOURCE_PRESENT`"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-02",
+      "anchor": "`EXPORTED_OR_LOADED`",
+      "precondition": "A module, hook, or plug-in is exported/loaded",
+      "obligation": "Loading/export alone is insufficient to claim selected behavior",
+      "negative": "LOADED_BUT_NOT_ROUTED",
+      "owner": "IMPLEMENTATION_QUALITY",
+      "type": "EVIDENCE_DISTINCTION",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "`EXPORTED_OR_LOADED`"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-03",
+      "anchor": "actual selected-path invocation and observable contract behavior",
+      "precondition": "Selected public or plug-in-facing functionality is claimed supported",
+      "obligation": "Distinguish actual invocation and observed contract result from mere registration",
+      "negative": "SELECTED_WITHOUT_OBSERVED_BEHAVIOR",
+      "owner": "TESTING_INTEGRATION",
+      "type": "PUBLIC_EXECUTION_EVIDENCE",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "actual selected-path invocation and observable contract behavior"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-04",
+      "anchor": "not new workflow/Gate states",
+      "precondition": "Evidence categories SOURCE_PRESENT/EXPORTED_OR_LOADED are used",
+      "obligation": "These explanatory categories must not be promoted to new normative Gate states",
+      "negative": "EXPLANATORY_EVIDENCE_CATEGORY_AS_GATE",
+      "owner": "EXISTING_ADS_WORKFLOW_AUTHORITY",
+      "type": "SCOPE_GUARD",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "not new workflow/Gate states"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-05",
+      "anchor": "must repair the real composition or state the missing integration evidence honestly",
+      "precondition": "Only import/activation happened but selected-feature support was claimed",
+      "obligation": "Repair missing selected composition OR disclose missing integration evidence",
+      "negative": "IMPORT_ONLY_PUBLISHED_AS_SELECTED_SUPPORT",
+      "owner": "IMPLEMENTATION_QUALITY",
+      "type": "REMEDIATION_OR_CLAIM_LIMIT",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "must repair the real composition or state the missing integration evidence honestly"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-06",
+      "anchor": "Testing/Integration owner alone issues the executable proof",
+      "precondition": "Executable public-entrypoint proof is needed",
+      "obligation": "Do not grant Implementation Quality owner the Testing/Integration executable-proof authority",
+      "negative": "CROSS_OWNER_FALSE_PROOF_GRANT",
+      "owner": "TESTING_INTEGRATION",
+      "type": "OWNER_AUTHORITY_BOUNDARY",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "Testing/Integration owner alone issues the executable proof"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    },
+    {
+      "id": "IM43-07",
+      "anchor": "include it where the public packaging seam is material",
+      "precondition": "Public packaging seam can conceal installed-package dependency/import issues and is material",
+      "obligation": "Include clean installed public package entrypoint evidence for the material packaging seam",
+      "negative": "WORKSPACE_ONLY_PASS_INSTALL_BREAKS",
+      "owner": "TESTING_INTEGRATION",
+      "type": "CONDITIONAL_PACKAGING_EVIDENCE",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "include it where the public packaging seam is material"
+      },
+      "prior_curated_parent": "IM-01",
+      "candidate_only": true,
+      "review_status": "BUILDER_PROPOSED_NOT_INDEPENDENTLY_ATOMIZED",
+      "direct_test": "NOT_RUN",
+      "semantic_equivalence": "NOT_PROVEN",
+      "runtime_subject": "NOT_PROVEN"
+    }
+  ],
+  "counts": {
+    "existing_selected_sample_items": 25,
+    "facets_split_from_one_selected_compound_atom": 7,
+    "net_if_independently_accepted_and_reconciled": 6,
+    "full_document_atomic_denominator": null,
+    "full_ads_atomic_denominator": null
+  },
+  "testing_and_proof": {
+    "fresh_native_tests": "NOT_RUN_DATA_ONLY_SOURCE_AUDIT",
+    "fresh_python_tests": "NOT_RUN_DATA_ONLY_SOURCE_AUDIT",
+    "actual_github_source_checks_passed": 14,
+    "actual_github_source_checks_total": 14,
+    "independent_semantic_review": "NOT_RUN",
+    "project_v419_accepted_runtime": "NOT_PROVEN",
+    "existing_r17": "HISTORICAL_EXACT_SHA_13_PYTHON_BOTH_HOSTS_AND_32_SOLVER_QUERIES_NOT_RERUN"
+  },
+  "limitations": [
+    "Seven facets are a proposed segmentation, not verified atomic equivalence",
+    "No independent normative line-by-line census across 46 files",
+    "Blank separator line is not an obligation",
+    "Baseline is a frozen observed source, not proof of active project adoption",
+    "Cross-owner source relevance does not establish execution or Release authority"
+  ]
+}

@@ -1,6 +1,6 @@
-# ADS Model-Based Formal Verification — 实施计划 R0–R13（实验性，非规范）
+# ADS Model-Based Formal Verification — 实施计划 R0–R18（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R13 / EXPERIMENT / NO_NORMATIVE_GATE / R11_STRICT_61_PYTHON_35_NATIVE_PASS_AT_9a6fb6f / 46_NORMATIVE_DOC_BLOBS_INDEXED / MODAL_CENSUS_HEURISTIC_NOT_RULE_DENOMINATOR / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R18 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -356,3 +356,12 @@ R17 P2 修复代码在其**被测 Exact-SHA `c5eb69c3fcd47ca934b4b87c8004131add6
 - [x] **证据固化**：`formal/v4.19/r17/{R17_PYTHON_BINDING_TESTS_RECEIPT.json, R17_PYTHON_BINDING_TESTS_LOG.txt, R17_NATIVE_DUAL_SOLVER_EXECUTION.json}`（含正跑完整 runner 输出与负探针输出嵌入）。
 
 **资格**：`R17_EXACT_SOURCE_TEST_CLOSED / PYTHON_13_OF_13_DUAL_ENV_ZERO_SKIP / NATIVE_32_OF_32_PAIRED / FAIL_CLOSED_BLOCK_VERIFIED / R13_R16_REV_P2_01_CODE_REPAIR_EXECUTION_QUALIFIED`。独立审核实验 P2（`R13-R16-REV-P2-01`）的代码修复+实测链路闭环；ADS 正式规范 P0/P1/P2 仍 **0/0/0**。源⇄SMT 语义等价、有效 v4.19 项目 pin 的真实生产 Dispatch/Claim/CAS/读回仍 `NOT_PROVEN`，全 ADS 原子义务分母仍 UNKNOWN。不改正式规范、不加 Gate/Actions、不 Merge/Freeze/Release。
+
+
+## 32. #1366 R18 — 将一个真实候选改动从“单行/单义务”细化为可审查的跨 Owner 原子片段（2026-11-11）
+
+推进前核对最新 HEAD `5a81503d6f2a16b0f31ce053353bbdcadfcf9582`：R17 新旧输入绑定 Python 在 WSL2/Windows 各 **13/13 PASS**、修改后的 Runner 双原生 **32/32 PASS**、错误 cvc5 fail-closed BLOCK，实验 P2 已闭环。R11、R13 历史模型均无需重跑。下一主线转向 §6-B 的规范义务真实盘点，不再以增加重复求解用例作为进度指标。
+
+**真实源码比较**：候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` 与观察基线 `ac7e7e51de3a7ac27343f16a96568c0b0f2c5349` 的 `IMPLEMENTATION_QUALITY_STANDARD.md` Git blob 分别 `c37c4a223e21764ebe211f0e7bdd886a2060c5e2` / `3beba2d0324d95674b7bad2ef621e2aa81c66563`；精确行比较保留开头 **42** 行、结尾 **50** 行不变，只插入**第 43 行一条复合规范段落＋第 44 行空行**。既有 `ATOMIC_RULE_SAMPLE.json` 仅以 `IM-01` 表示这条长规范段落。本轮新增 `formal/v4.19/r18/R18_DELTA_ATOMICITY_LEDGER.json` 中 **7 个待独立审核的候选叶子约束**（源码存在/加载不等于实际 selected path、可观察 contract behavior、禁止凭空产生新 Gate、未集成时 repair 或保留缺证、Testing/Integration 独占可执行证明、packaging seam material 时 clean installed entrypoint），明确条件、Owner、负面场景、精确源码锚点。联合读回 `ARCHITECTURE_DESIGN_STANDARD.md:51` 与 `TESTING_STANDARD.md:72`，确认设计/测试/实现 Quality 的语义 owner 分离。
+
+**实际执行**：直接 GitHub exact-blob 与逐行源码对照、历史 `IM-01` 对照及文档交叉约束审计 **14/14 PASS**。这是 **source audit**，本轮没有重新执行 Python/SMT 或真实项目运行。7 个叶子仅为同一源段的待审细分，**不是**已批准的 7 条原子规则，更不等于将原 25 项台账升级为 31 项已证明性质。完整 ADS 全规范义务分母仍 **UNKNOWN**，外部独立语义审核与真实 v4.19 Dispatch/Claim/CAS 仍 **NOT_PROVEN**。源差量审查文档 `formal/v4.19/r18/R18_SOURCE_DELTA_REVIEW.md`；下阶段优先独立审核这 7 项的原子性/适用条件，再决定是否需要源消费者的最小可执行验证，不新增通用 FIR/Gate/Release 流程。
