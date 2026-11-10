@@ -39,8 +39,8 @@ class ToolchainTests(unittest.TestCase):
                     sentinel = Path(tmp) / (name + ".executed")
                     executable = Path(tmp) / ("fake-" + name)
                     executable.write_text(
-                        "#!/bin/sh\\nprintf 'EXECUTED' > '" + str(sentinel) +
-                        "'\\necho 'Z3 version 5.3.3 cvc5 1.4.2'\\n"
+                        "#!/bin/sh\nprintf 'EXECUTED' > '" + str(sentinel) +
+                        "'\necho 'Z3 version 5.3.3 cvc5 1.4.2'\n"
                     )
                     executable.chmod(0o755)
                     opts = types.SimpleNamespace(z3=str(executable), cvc5=str(executable))
@@ -56,8 +56,8 @@ class ToolchainTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             sentinel = Path(tmp) / "java.executed"
             java = Path(tmp) / "fake-java"
-            java.write_text("#!/bin/sh\\nprintf 'EXECUTED' > '" + str(sentinel) +
-                            "'\\necho openjdk\\n")
+            java.write_text("#!/bin/sh\nprintf 'EXECUTED' > '" + str(sentinel) +
+                            "'\necho openjdk\n")
             java.chmod(0o755)
             jar = Path(tmp) / "tla2tools.jar"
             jar.write_bytes(b"tampered TLC")
