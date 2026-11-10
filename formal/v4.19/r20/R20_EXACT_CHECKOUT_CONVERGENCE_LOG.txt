@@ -1,0 +1,298 @@
+===== PRE-FIX CLI @ baseline 8a244dd6 (Windows Python 3.14.7, exit 0) =====
+{
+  "schema": "ads/formal-r20-executed-inventory-audit/v1",
+  "source_execution_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+  "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+  "declared_count": 13,
+  "declared_ids": [
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+    "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+    "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+  ],
+  "source_git_blobs": {
+    "formal/v4.19/r13/test_binding_preflight.py": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+    "formal/v4.19/r13/test_source_binding.py": "10702d29c0609cac171a86f8149dd23de88f02a3",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt": "ccbfc7563a9387b8fe49d879376b8363dfc470ab",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json": "e0aa244fbb7304a299088ea27139d24bbafe71fc"
+  },
+  "environments": [
+    {
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, Linux 6.18.58.1-microsoft-standard-WSL2 x86_64",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    },
+    {
+      "environment": "Windows 10.0.26300 x64 (Git Bash)",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    }
+  ],
+  "limits": [
+    "Readback of existing execution logs; tests were NOT rerun",
+    "Does not independently attest the host or reconstruct raw per-host log digests",
+    "Does not prove candidate natural-language/SMT equivalence, real Claim/CAS or all ADS rules"
+  ]
+}
+
+===== PRE-FIX test discovery @ baseline 8a244dd6 (Windows Python 3.14.7, exit 1, 0 of 9 collected) =====
+test_executed_inventory_audit (unittest.loader._FailedTest.test_executed_inventory_audit) ... ERROR
+
+======================================================================
+ERROR: test_executed_inventory_audit (unittest.loader._FailedTest.test_executed_inventory_audit)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_executed_inventory_audit
+Traceback (most recent call last):
+  File "C:\Python314\Lib\unittest\loader.py", line 433, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "C:\Python314\Lib\unittest\loader.py", line 374, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_executed_inventory_audit.py", line 13, in <module>
+    spec.loader.exec_module(audit_mod)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 755, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 892, in get_code
+  File "<frozen importlib._bootstrap_external>", line 950, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\xDev\\kAiCreator\\ai-development-standard\\ads-i1366-r20-zcode\\formal\\coverage\\executed_inventory_audit.py'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+
+===== POST-FIX CLI @ fix commit 40bec68a (Windows Python 3.14.7, exit 0) =====
+{
+  "schema": "ads/formal-r20-executed-inventory-audit/v1",
+  "source_execution_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+  "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+  "declared_count": 13,
+  "declared_ids": [
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+    "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+    "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+  ],
+  "source_git_blobs": {
+    "formal/v4.19/r13/test_binding_preflight.py": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+    "formal/v4.19/r13/test_source_binding.py": "10702d29c0609cac171a86f8149dd23de88f02a3",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt": "ccbfc7563a9387b8fe49d879376b8363dfc470ab",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json": "e0aa244fbb7304a299088ea27139d24bbafe71fc"
+  },
+  "environments": [
+    {
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, Linux 6.18.58.1-microsoft-standard-WSL2 x86_64",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    },
+    {
+      "environment": "Windows 10.0.26300 x64 (Git Bash)",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    }
+  ],
+  "limits": [
+    "Readback of existing execution logs; tests were NOT rerun",
+    "Does not independently attest the host or reconstruct raw per-host log digests",
+    "Does not prove candidate natural-language/SMT equivalence, real Claim/CAS or all ADS rules"
+  ]
+}
+
+===== POST-FIX test discovery @ fix commit 40bec68a (Windows Python 3.14.7, exit 0) =====
+test_bad_receipt_subject_head_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_bad_receipt_subject_head_blocks) ... ok
+test_credible_count_but_false_receipt_test_blob_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_credible_count_but_false_receipt_test_blob_blocks) ... ok
+test_exact_declared_executed_id_set_passes (test_executed_inventory_audit.TestExecutedInventoryAudit.test_exact_declared_executed_id_set_passes) ... ok
+test_green_summary_cannot_hide_duplicate_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_duplicate_method) ... ok
+test_green_summary_cannot_hide_missing_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_missing_method) ... ok
+test_log_drift_without_new_pin_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_log_drift_without_new_pin_blocks) ... ok
+test_non_ok_method_cannot_pass_green_summary (test_executed_inventory_audit.TestExecutedInventoryAudit.test_non_ok_method_cannot_pass_green_summary) ... ok
+test_source_tamper_blocks_before_semantic_read (test_executed_inventory_audit.TestExecutedInventoryAudit.test_source_tamper_blocks_before_semantic_read) ... ok
+test_wrong_execution_environment_disallowed (test_executed_inventory_audit.TestExecutedInventoryAudit.test_wrong_execution_environment_disallowed) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.059s
+
+OK
+
+===== POST-FIX CLI @ fix commit 40bec68a (WSL2 Ubuntu 26.04.1, Python 3.14.4, exit 0) =====
+{
+  "schema": "ads/formal-r20-executed-inventory-audit/v1",
+  "source_execution_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+  "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+  "declared_count": 13,
+  "declared_ids": [
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+    "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+    "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+    "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+    "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+    "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+  ],
+  "source_git_blobs": {
+    "formal/v4.19/r13/test_binding_preflight.py": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+    "formal/v4.19/r13/test_source_binding.py": "10702d29c0609cac171a86f8149dd23de88f02a3",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt": "ccbfc7563a9387b8fe49d879376b8363dfc470ab",
+    "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json": "e0aa244fbb7304a299088ea27139d24bbafe71fc"
+  },
+  "environments": [
+    {
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, Linux 6.18.58.1-microsoft-standard-WSL2 x86_64",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    },
+    {
+      "environment": "Windows 10.0.26300 x64 (Git Bash)",
+      "observed_ids": [
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+        "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+        "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+        "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+        "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+        "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+      ],
+      "executed_count": 13,
+      "missing": [],
+      "extra": [],
+      "result": "PASS_RECORDED_LOG_INVENTORY"
+    }
+  ],
+  "limits": [
+    "Readback of existing execution logs; tests were NOT rerun",
+    "Does not independently attest the host or reconstruct raw per-host log digests",
+    "Does not prove candidate natural-language/SMT equivalence, real Claim/CAS or all ADS rules"
+  ]
+}
+
+===== POST-FIX test discovery @ fix commit 40bec68a (WSL2 Ubuntu 26.04.1, Python 3.14.4, exit 0) =====
+test_bad_receipt_subject_head_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_bad_receipt_subject_head_blocks) ... ok
+test_credible_count_but_false_receipt_test_blob_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_credible_count_but_false_receipt_test_blob_blocks) ... ok
+test_exact_declared_executed_id_set_passes (test_executed_inventory_audit.TestExecutedInventoryAudit.test_exact_declared_executed_id_set_passes) ... ok
+test_green_summary_cannot_hide_duplicate_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_duplicate_method) ... ok
+test_green_summary_cannot_hide_missing_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_missing_method) ... ok
+test_log_drift_without_new_pin_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_log_drift_without_new_pin_blocks) ... ok
+test_non_ok_method_cannot_pass_green_summary (test_executed_inventory_audit.TestExecutedInventoryAudit.test_non_ok_method_cannot_pass_green_summary) ... ok
+test_source_tamper_blocks_before_semantic_read (test_executed_inventory_audit.TestExecutedInventoryAudit.test_source_tamper_blocks_before_semantic_read) ... ok
+test_wrong_execution_environment_disallowed (test_executed_inventory_audit.TestExecutedInventoryAudit.test_wrong_execution_environment_disallowed) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.022s
+
+OK

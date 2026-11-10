@@ -392,3 +392,15 @@ R19 后评估下一步：R11/R13/R17 Native/Python 都已各自 Exact-SHA 通过
 本轮将 M0–M4、§6 A–D、R20 单独待跑事项、R14 真实发布者资格/Claim/CAS 三个未证明边界固化于 `formal/v4.19/r21/R21_PROOF_QUALIFICATION_MATRIX.json` 和 `R21_CONVERGENCE_DECISION.md`：**A 只对已执行 R11 exact subject 已完成；M2 有界试点已通过；B/C/D 并非自动全部通过**。46 文件/7 变更/25 草案不是完整 ADS 原子义务分母；R20 Python 审计器最新 exact-checkout CLI 仍 `NOT_RUN`；PR #1365 OPEN/未合并、R16 14 refs 中 0 个合法候选 pin；R14-GAP-01/02/03 依赖真实有效 producer、serialized READY/QUEUED/Claim-CAS 与持久读回，不能用抽象 guard 替代。
 
 本轮实际执行的是 **14/14 GitHub 收据/状态一致性读取**、原始状态纠偏；**不**执行全量 Python/Z3/cvc5/TLC 或伪造真实 CAS。R11、R17 的历史 exact-SHA PASS 仅作为已存在证据复用。主 Issue 顶端恢复到该轮最新 Git 提交与正确 §6-A 分类，旧 §7–§10 历史记录照存、不追认或覆盖。**止损规则：**无真实新增失败/代码变动时停止生成细碎同类验证轮次；下一个可执行的新代码门槛仅为 R20 精确工作树针对性执行，真实生产 E2E 门槛只在合法有效版本/producer 可识别后启动。
+
+
+## 36. #1366 R20 精确工作树收敛 — exact-checkout CLI 与 9 项测试 red→green 闭环（2026-11-11）
+
+按 R21 止损规则的唯一新代码门槛执行：在 GitHub 权威读回确认的实验分支基线 `8a244dd6c29189ac476b41db0f332ba009631926`（TREE `56d1986bf0f78db355941199ccf5a1b4838ac15f`）的 Exact-SHA 工位中，对 R20 新增审计器与其测试做针对性 Python 执行；R11/R17 历史收据未重跑、未改写，候选 PR #1365 仍 OPEN/未合并。
+
+- [x] **审计器 CLI 真实 checkout 正跑 PASS**：`python formal/v4.19/coverage/executed_inventory_audit.py`（blob `78409246…` 未改动）在基线即 `exit 0 / PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY`，13 项声明 ID 与 R17 双环境逐方法日志/收据在 4/4 钉死 blob 下核对一致。
+- [x] **R20-EXACT-CHECKOUT-P2-01（实验 P2）**：基线上 `unittest discover` 实际收集 **0/9**——模块加载器按 Web 合成 fixture 布局找 `formal/coverage/`，真实 checkout 为 `formal/v4.19/coverage/`，`FileNotFoundError`。修复：MODULE 路径补 `v4.19` 段（测试 blob `91fea8da…` → `42865f3c…`）。
+- [x] **R20-EXACT-CHECKOUT-P2-02（实验 P2）**：路径修复后 9 项收集但 Windows 上 5 失败 + 1 错误——fixture `write_text` 把 LF 翻译成 CRLF，而收据哈希按 LF 计算，6 项在"combined original log SHA256 mismatch"提前 BLOCK（3 项因守卫顺序更早而通过）。修复：`write(..., newline="")` 字节精确写盘。两项均为实验测试基础设施缺陷，非 ADS 正式规范缺陷。
+- [x] **修复后双环境零跳过绿**：修复提交 `40bec68a1cdb9f918c39e65e8ca25cf9770e3f92`（TREE `aebf9b8e80000f584a66954ee1ac67809d12823f`）上，Windows 10.0.26300 × Python 3.14.7 与 WSL2 Ubuntu 26.04.1 × Python 3.14.4 均 `Ran 9 tests / OK / exit 0`，无跳过、无 "Ran 0 tests" 陷阱；CLI 双环境同 PASS。历史 R20 收据与其记录 blob 未改写。
+
+**资格**：`R20_EXACT_CHECKOUT_QUALIFICATION_CLOSED / AUDIT_CLI_PASS_REAL_CHECKOUT / TESTS_9_OF_9_ZERO_SKIP_DUAL_ENV / TWO_EXPERIMENT_P2_REPAIRED`。审计器本身是对 R17 已执行证据的 fail-closed 回读，本轮不重跑 R17 测试；9/9 仍是 fixture 级回归，完整 `formal/tests` 与 R11/R17 套件未重跑。标准⇄SMT 语义等价、真实 v4.19 生产者 Claim/CAS/读回仍 NOT_PROVEN，全 ADS 原子义务分母 UNKNOWN。确认 ADS 正式规范 P0/P1/P2 = 0/0/0，实验 open P2 = 0（两项本轮内闭环）。无 Gate/GitHub Actions/Merge/Freeze/Release。

@@ -1,0 +1,191 @@
+{
+  "schema": "ads/formal-r20-exact-checkout-convergence/v1",
+  "issue": 1366,
+  "round": "R20 exact-checkout convergence (per R21 direction 1)",
+  "baseline": {
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "head": "8a244dd6c29189ac476b41db0f332ba009631926",
+    "tree": "56d1986bf0f78db355941199ccf5a1b4838ac15f",
+    "remote_tip_readback": "GitHub ls-remote == 8a244dd6 before execution"
+  },
+  "fix_commit": {
+    "head": "40bec68a1cdb9f918c39e65e8ca25cf9770e3f92",
+    "tree": "aebf9b8e80000f584a66954ee1ac67809d12823f",
+    "files": [
+      "formal/tests/test_executed_inventory_audit.py"
+    ]
+  },
+  "audited_code": {
+    "audit_cli": {
+      "path": "formal/v4.19/coverage/executed_inventory_audit.py",
+      "git_blob": "784092466a836552cd0aa351741040fe86a82fc3",
+      "changed_by_this_round": false
+    },
+    "test_file_old_blob": "91fea8da1613a12c340fca4e9024382cef05b8c2",
+    "test_file_new_blob": "42865f3c9630aa28714d2ad7c607cd533da4c7e0",
+    "pinned_r17_inputs": "verified byte-exact by the audit CLI itself (4/4 git blob checks PASS)"
+  },
+  "defects_found_and_repaired": [
+    {
+      "id": "R20-EXACT-CHECKOUT-P2-01",
+      "class": "EXPERIMENT_TEST_INFRASTRUCTURE",
+      "severity": "P2",
+      "symptom": "unittest discovery at exact baseline collected 0 of 9 tests: module-level FileNotFoundError formal/coverage/executed_inventory_audit.py (loader assumed the Web synthetic-fixture layout; real checkout keeps the auditor at formal/v4.19/coverage/)",
+      "repair": "MODULE path now parents[1]/v4.19/coverage/executed_inventory_audit.py",
+      "normative_ads_defect": false
+    },
+    {
+      "id": "R20-EXACT-CHECKOUT-P2-02",
+      "class": "EXPERIMENT_TEST_INFRASTRUCTURE_PLATFORM",
+      "severity": "P2",
+      "symptom": "after path fix, 9 collected but 5 failures + 1 error on Windows: fixture write_text translated LF to CRLF while receipt hashes were computed over LF bytes, so tests hash-blocked at 'combined original log SHA256 mismatch' before their intended assertion (3 tests with earlier guard order passed)",
+      "repair": "fixture write() uses newline='' for byte-exact LF files",
+      "normative_ads_defect": false
+    }
+  ],
+  "executions": [
+    {
+      "phase": "PRE-FIX",
+      "head": "8a244dd6c29189ac476b41db0f332ba009631926",
+      "environment": "Windows 10.0.26300 x64, Python 3.14.7",
+      "cli": {
+        "exit_code": 0,
+        "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+        "declared_count": 13
+      },
+      "tests": {
+        "exit_code": 1,
+        "collected": 0,
+        "errors": 1,
+        "detail": "FileNotFoundError module path"
+      }
+    },
+    {
+      "phase": "POST-FIX",
+      "head": "40bec68a1cdb9f918c39e65e8ca25cf9770e3f92",
+      "environment": "Windows 10.0.26300 x64, Python 3.14.7",
+      "cli": {
+        "exit_code": 0,
+        "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+        "declared_count": 13
+      },
+      "tests": {
+        "exit_code": 0,
+        "collected": 9,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "result": "OK"
+      }
+    },
+    {
+      "phase": "POST-FIX",
+      "head": "40bec68a1cdb9f918c39e65e8ca25cf9770e3f92",
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, Python 3.14.4",
+      "cli": {
+        "exit_code": 0,
+        "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+        "declared_count": 13
+      },
+      "tests": {
+        "exit_code": 0,
+        "collected": 9,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0,
+        "result": "OK"
+      }
+    }
+  ],
+  "zero_skip_confirmation": {
+    "expected_min": 9,
+    "observed_each_env": 9,
+    "zero_tests_trap": "NOT_TRIGGERED"
+  },
+  "cli_result_embedded": {
+    "schema": "ads/formal-r20-executed-inventory-audit/v1",
+    "source_execution_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2",
+    "status": "PASS_RECORDED_EXACT_BLOB_EXECUTION_INVENTORY",
+    "declared_count": 13,
+    "declared_ids": [
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+      "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+      "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+      "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+      "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+      "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+      "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+      "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+    ],
+    "source_git_blobs": {
+      "formal/v4.19/r13/test_binding_preflight.py": "b9aff1904388a22203a902dce122b45c56cb0cd9",
+      "formal/v4.19/r13/test_source_binding.py": "10702d29c0609cac171a86f8149dd23de88f02a3",
+      "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_LOG.txt": "ccbfc7563a9387b8fe49d879376b8363dfc470ab",
+      "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json": "e0aa244fbb7304a299088ea27139d24bbafe71fc"
+    },
+    "environments": [
+      {
+        "environment": "WSL2 Ubuntu 26.04.1 LTS, Linux 6.18.58.1-microsoft-standard-WSL2 x86_64",
+        "observed_ids": [
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+          "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+          "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+        ],
+        "executed_count": 13,
+        "missing": [],
+        "extra": [],
+        "result": "PASS_RECORDED_LOG_INVENTORY"
+      },
+      {
+        "environment": "Windows 10.0.26300 x64 (Git Bash)",
+        "observed_ids": [
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_comment_only_model_change_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_each_acceptance_guard_has_explicit_negative_query",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_model_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_missing_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_postflight_tamper_detected",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_unpinned_tool_fails_before_solver",
+          "test_binding_preflight.ExactGitBindingPreflightTests.test_valid_exact_model_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_comment_only_protocol_change_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_missing_protocol_blocks_solver",
+          "test_source_binding.CandidateSourceBindingTests.test_postflight_protocol_drift_is_rejected",
+          "test_source_binding.CandidateSourceBindingTests.test_real_candidate_fixtures_have_original_git_blobs",
+          "test_source_binding.CandidateSourceBindingTests.test_runner_cannot_claim_live_pr_adoption_from_fixture",
+          "test_source_binding.CandidateSourceBindingTests.test_schema_one_byte_drift_blocks_solver"
+        ],
+        "executed_count": 13,
+        "missing": [],
+        "extra": [],
+        "result": "PASS_RECORDED_LOG_INVENTORY"
+      }
+    ],
+    "limits": [
+      "Readback of existing execution logs; tests were NOT rerun",
+      "Does not independently attest the host or reconstruct raw per-host log digests",
+      "Does not prove candidate natural-language/SMT equivalence, real Claim/CAS or all ADS rules"
+    ]
+  },
+  "evidence_log": "formal/v4.19/r20/R20_EXACT_CHECKOUT_CONVERGENCE_LOG.txt",
+  "evidence_log_sha256": "e2da451df9ec438159a0ac3fb2f732308dbd21282cde21c0bdc30c7886f1ed92",
+  "outcome": "R20_EXACT_CHECKOUT_QUALIFICATION_CLOSED / CLI_PASS_REAL_CHECKOUT / TESTS_9_OF_9_ZERO_SKIP_DUAL_ENV / TWO_EXPERIMENT_P2_REPAIRED",
+  "scope_limits": [
+    "The CLI is a readback of recorded R17 execution evidence; the R17 tests were NOT rerun here",
+    "9/9 regression remains fixture-level; the full formal/tests suite and R11/R17 suites were not rerun (per Exact-SHA inheritance)",
+    "Does not prove natural-language/SMT equivalence, real Claim/CAS, effective v4.19 adoption, or the full ADS obligation denominator"
+  ]
+}
