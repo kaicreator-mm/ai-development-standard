@@ -1,0 +1,65 @@
+{
+  "schema": "ads/formal-r13-exact-byte-repair/v1",
+  "main_issue": 1366,
+  "date": "2026-11-10",
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "source_path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "source_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1"
+  },
+  "prior_experiment_head": "ffe25023aa6652b9ac796b037ed5216bbfaa53c9",
+  "finding": {
+    "id": "R13-RECEIPT-P2-01",
+    "severity": "P2_EVIDENCE_NOT_ADS_NORMATIVE",
+    "cause": "Report-only model Git blob without enforcing reviewed expected model identity",
+    "status": "FIXED"
+  },
+  "updated_exact_tested_blobs": {
+    "run_proofs.py": "3d4af3622e8051a6d161371d55d61d98ce3dfb2a",
+    "run_mutations.py": "058c3b0073e9ed6c5666b4b0b4da83ec84dee2cb",
+    "test_binding_preflight.py": "1a38a2d402d4c25d2eb2ba7b1421bbf227bcd469",
+    "REBOUND_SOLVER_EXECUTION.json": "aece22437c9329f5ad11922cc1a3a318a7148905",
+    "REBOUND_MUTATION_EXECUTION.json": "ecb0bfce2d0530b3db2c2e5651cb2e37769b945f"
+  },
+  "model_pins": {
+    "weak-admission-gap.smt2": "04f85b71b60eea1382b3044d459702d5ba0978e7",
+    "publish-safety.smt2": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c"
+  },
+  "native_tool_sha256": {
+    "z3": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+    "cvc5": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+  },
+  "actual_execution": {
+    "python": "3.13.5",
+    "python_tests_passed": 6,
+    "python_tests_run": 6,
+    "python_test_log_sha256": "43454030d8401f41dd06fd205f359b941f52306b9dbead31615bf76de0205459",
+    "model_pre_and_post": "2/2 PASS",
+    "tool_pre_and_post": "2/2 PASS",
+    "z3_queries": "15/15 PASS",
+    "cvc5_queries": "15/15 PASS",
+    "dual_solver_results": "30/30 MATCH",
+    "native_mutation_sensitivity": "6/6 PASS",
+    "untrusted_model_or_tool_fails_before_process": true,
+    "postflight_tamper_rejected": true,
+    "raw_pair_receipt": {
+      "path": "formal/v4.19/r13/REBOUND_SOLVER_EXECUTION.json",
+      "sha256": "a8af8b5c1c802a56ab4d20b1ea3e2a10ae630e49964728ce73066d12152f0661"
+    },
+    "raw_mutation_receipt": {
+      "path": "formal/v4.19/r13/REBOUND_MUTATION_EXECUTION.json",
+      "sha256": "a3b6262d9e39ec067400842ca394af0275f843198595a5e4f2e62522054b2d39"
+    }
+  },
+  "historical_r13_results": "PRESERVED_UNCHANGED",
+  "source_semantic_review": "SAME_WEB_BUILDER_SELF_ADVERSARIAL_NOT_INDEPENDENT",
+  "verdict": "PASS_EXACT_MODEL_TOOL_BINDING_BOUNDED_R13",
+  "not_proven": [
+    "real accepted GitHub Claim/Dispatch CAS",
+    "actual effective ADS v4.19 project adoption",
+    "source-to-model refinement/equivalence",
+    "model verifies cryptographic schema or physical chronological ordering",
+    "all ADS atomic rules; independent external reviewer"
+  ]
+}

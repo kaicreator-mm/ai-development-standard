@@ -15,6 +15,8 @@ MUTATIONS = [
 ]
 
 def test():
+    proof.assert_model_hashes("mutation-source-preflight")
+    proof.assert_tool_hashes()
     source = (proof.ROOT / "publish-safety.smt2").read_text()
     results = []
     with tempfile.TemporaryDirectory(prefix="ads1366-mutate-") as tmp:
@@ -32,7 +34,9 @@ def test():
             results.append({"mutation":name,"rejected":rejected,"changed_query_indices_one_based":first_difference,
                 "z3_actual":checks[0]["statuses"],"cvc5_actual":checks[1]["statuses"],
                 "mutated_sha256":hashlib.sha256(trial.read_bytes()).hexdigest()})
-    return {"schema":"ads/formal-r13-adversarial-mutation/v1","mutations":results,
+    proof.assert_model_hashes("mutation-source-postflight")
+    proof.assert_tool_hashes()
+    return {"schema":"ads/formal-r13-adversarial-mutation/v2","mutations":results,
        "tested_count":len(results),"rejected_count":sum(r["rejected"] for r in results),
        "verdict":"PASS" if all(r["rejected"] for r in results) else "FAIL"}
 if __name__ == "__main__":

@@ -280,3 +280,9 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 新增 `formal/v4.19/r13/` 自包含实验模型与真实执行脚本：发布前必要条件模型 **11 项**（2 SAT 正例、9 UNSAT 禁止接受状态）；Z3 5.3.3 与 cvc5 1.4.2 各自 15/15、共 **30/30 求解结果符合预期**。**6/6** 删除关键 guard 的变异均被两个求解器检测；未钉死的工具测试文件在子进程启动前被拒绝。验证脚本及原始 JSON 收据与实际运行文件的 Git blob 一致，二进制 SHA256 与 R11 工具匹配。
 
 这是 `BOUNDED_SOURCE_HYPOTHESIS_PASS`，**不是**真实 GitHub Controller/Claim CAS 证明、自然语言⇄SMT 的已证明等价或全 ADS 合规证书。新模型不修改原 R11 35-case/61-Python 受测基线，R11 历史 PASS 继续按其 Exact-SHA 复用。后续先做独立语义复核并寻找确实采用 v4.19 的版本钉死真实发布者；没有时真实消费维持 `NOT_PROVEN`。无本地 Agent、正式规范修改、Gate、Merge、Freeze、Release。
+
+## 23. #1366 R13 原生输入绑定 fail-closed 修复（2026-11-10）
+
+执行复盘发现 `R13-RECEIPT-P2-01`：R13 runner 原来记录模型 Git blob，却没有与固定的受审 Blob 作硬性比较；同一 SAT/UNSAT 的非授权模型微调可能被错误判作 PASS。**已在原实验写集直接修复** `run_proofs.py`（模型 2/2 Git blob＋Z3/cvc5 2/2 binary SHA256 前后检验），并使 `run_mutations.py` 同样钉死其源输入/工具，临时变异模型单独允许变化。实际 Python fail-closed **6/6 PASS**；双原生求解器 **30/30 PASS**，6/6 删除约束变异被检出；模型与工具 pre/post **2/2 PASS**。原 R13 收据及其旧 Exact-SHA 历史证据保留，新收据为 `REBOUND_SOLVER_EXECUTION.json`、`REBOUND_MUTATION_EXECUTION.json`、`RECEIPT_BINDING_REPAIR.json`。
+
+经同一 Builder 自对抗源码审查，R13 的 `DP-01F/01S/02/05/06` 仍只是单个拟议新 Dispatch 发布的必要条件**假设**：未验证实际 pin 读取、Schema bytes、时间顺序、GitHub CAS/write-readback，旧 R8 `reservedA` 的 SAT 亦仅针对 reservation。**独立语义审核 NOT_RUN**，源规范↔模型严格等价和正式 ADS 全规则证明仍 `NOT_PROVEN`。R11 历史 61 Python/35 原生 strict 不重跑，未修改其固定模型或 ADS 标准；后续优先独立语义复核，而非继续堆积 Demo。
