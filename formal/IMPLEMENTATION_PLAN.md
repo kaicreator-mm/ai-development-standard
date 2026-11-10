@@ -312,3 +312,10 @@ R14 已确认三个源语义缺口；本轮不再无界增加模拟 Controller/S
 **真实源码观察**：`LOCAL_VALIDATION` 的 validator 角色条件 Schema 有效，但 `requested_head_sha` 和 `validation_profile` 虽然 required，值仍可以为 null；任意形状合法的 40-hex `pinned_standard_revision` 也不能证明项目有效 revision；`dispatch_state=READY` 的 Schema PASS 不能证明实际发布前检验和 CAS。已基于 GitHub 真实候选 Schema 运行 **14/14 JavaScript subset 结构正反例匹配**，并在隔离容器中以**合成 Schema 子集 + 本地 checker 替身**执行 Python 逻辑回归 **12/12 PASS**；两者均明确标记范围。**真正候选原始 Schema + 仓库原生 Python checker 的组合测试未在本环境执行 = NOT_RUN**，不能把 12/12/14/14 写成 R15 的完整原生 Source-bound Python PASS。运行命令在 `r15/R15_SCHEMA_BOUNDARY_REVIEW.md`；R11/R13 的历史原生证据仅按原 SHA 继承。
 
 新代码只产生 `SHAPE_VALID_ONLY/INVALID_SCHEMA/BLOCK`，永远 `canonical_admission=NOT_PROVEN` 和 `publication_authorized=false`，不建立新的 Dispatch authority。最新优先项为精确仓库组合 Python 验证或已有合法 v4.19 生产者的真实 pre-publication/Claim-CAS readback（未确认时不作实际授信）。独立源码到模型等价审核仍 NOT_RUN，全 ADS 原子义务分母 UNKNOWN；不修改正式规范、不增 Gate、不合并/Freeze/Release。
+
+
+## 27. #1366 R15-P2-01 — 精确 Schema 身份验证入口加固（2026-11-10）
+
+在 R15 新代码提交后复盘发现 `assess(..., expected_blob=...)` 允许调用者覆盖应固定的 source Git blob，产生虚假的 `EXACT_BLOB_PASS` 元数据（虽仍不授予发布权限）。已移除外部覆盖参数，固定使用 `PINNED_SCHEMA_BLOB`，并新增 `test_cannot_inject_expected_blob` 负例。代码和测试文件已按相同实验写集提交；当前 Python 声明 **13 项**，修改后真实仓库源组合 Python 执行仍 `NOT_RUN`，不得把提交前基于合成夹具的 12/12 直接提升为最新代码 13/13。
+
+同时对实验分支与 PR #1365 的 `scripts/test_protocol_schemas.py` 真实 Git blob 作版本差异检查：文件 SHA 不同（`248d652...` vs `96edf241...`），但 `assert_supported_schema` + `validate_subset` 源码函数体 **5,706 字符逐字一致**。继续复用现有校验器，不创造新 Schema Engine。R15 的真实候选 Schema 结构正反案例仍只具备已记录的 JS 14/14 证据，完整 Python 最新 HEAD = NOT_RUN；没有修改 ADS 正式规范、CI Gate、PR #1365 或 R11/R13 历史收据。

@@ -95,7 +95,7 @@
     },
     "source_bound_repo_python": {
       "status": "NOT_RUN",
-      "reason": "The exact candidate schema and existing repository helper were verified in GitHub but not mounted together in this local Python execution; source fixture committed for reproducible checkout test"
+      "reason": "13 checked-in Python tests include new caller-overriding-negative; exact candidate schema fixture and real checker not executed together in current environment"
     },
     "native_smt_tlc": {
       "status": "NOT_RUN_NO_CHANGED_R11_R13_MODEL"
@@ -140,5 +140,20 @@
     "confirmed_ads_normative_p1": 0,
     "confirmed_ads_normative_p2": 0,
     "external_independent_review": "NOT_RUN"
+  },
+  "post_publication_repair": {
+    "issue": "R15-P2-01",
+    "classification": "EXPERIMENT_RECEIPT_IDENTITY_BYPASS",
+    "finding": "A Python caller could inject expected_blob and cause arbitrary schema bytes to be labeled EXACT_BLOB_PASS (without authorizing publication)",
+    "fix": "Remove assess expected_blob override; force constant PINNED_SCHEMA_BLOB and add rejection test",
+    "scope": "Python API evidence label integrity; no actual ADS normative defect confirmed",
+    "full_repo_python_suite_after_fix": "NOT_RUN",
+    "extra_test_declared": 1,
+    "reused_checker_core": {
+      "experiment_sha": "248d652a890dd069322308bce90da2528ba0ad82",
+      "candidate_sha": "96edf2413e35a90d8049e529c11e832637dbaabd",
+      "core_body_characters": 5706,
+      "exact_core_identical": true
+    }
   }
 }

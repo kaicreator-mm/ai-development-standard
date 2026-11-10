@@ -85,6 +85,10 @@ class CandidateSchemaShapeVsAuthority(unittest.TestCase):
         del d["task_pack_ref"]
         self.check_case(d, "INVALID_SCHEMA")
 
+    def test_cannot_inject_expected_blob(self):
+        with self.assertRaises(TypeError):
+            assess(self.raw, builder(), expected_blob="0" * 40)
+
     def test_tampered_schema_rejected_before_validation(self):
         output = assess(self.raw + b"\n", builder())
         self.assertEqual(output["source_binding"], "BLOCK")

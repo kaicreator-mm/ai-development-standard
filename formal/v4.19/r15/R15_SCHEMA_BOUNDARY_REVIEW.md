@@ -24,3 +24,12 @@
 - **Real v4.19 producer / project pin / Claim/CAS/readback: NOT_PROVEN.** External independent source-model reviewer: NOT_RUN. Full ADS rule denominator: UNKNOWN. Normative defect P0/P1/P2 = 0/0/0 (none confirmed in this bounded audit).
 
 **Decision:** Reuse the original Schema checker, never treat a syntactically valid Schema/READY as an accepted Dispatch. Next highest-value work is source-bound Python full-suite readback or a genuinely authorized v4.19 real publisher, whichever is available first. No formal standard edits, new Gate, GitHub Actions, merge, Freeze, Release or unnecessary Local dispatch.
+
+
+## R15 post-publication source audit correction
+
+**Evidence-hardening defect (R15-P2-01, experiment-only):** the first Python `assess(..., expected_blob=...)` signature let a library caller override the exact expected Git blob, potentially presenting an arbitrary Schema as `EXACT_BLOB_PASS`. The CLI did not expose this parameter and all results still returned `publication_authorized=false`, but the evidence label itself could be misleading.
+
+**Fix:** remove the caller-controlled override; `assess` now reads the fixed constant internally. A new negative unittest rejects an `expected_blob` argument. This changes the checked-in test declaration from 12 to **13**, but the new full exact-blob Python integration test is **NOT_RUN** in this environment; the prior 12/12 synthetic fixture result is a historic, narrower verification of the pre-fix logic and is **not transferred** to this exact revision.
+
+**Dependency reuse check:** experimental `scripts/test_protocol_schemas.py` blob `248d652a890dd069322308bce90da2528ba0ad82` differs from candidate PR source blob `96edf2413e35a90d8049e529c11e832637dbaabd`, but direct fresh source comparison of the full `assert_supported_schema` + `validate_subset` function bodies (5,706 characters) was **byte-for-byte identical**. This is source-level alignment of the reused checker core, not a run against actual full source. No replacement checker or new JSON Schema framework was introduced.

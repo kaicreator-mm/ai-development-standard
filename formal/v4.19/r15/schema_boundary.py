@@ -24,8 +24,9 @@ def git_blob(data: bytes) -> str:
     return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
 
 
-def assess(schema_bytes: bytes, dispatch: object, *, expected_blob: str = PINNED_SCHEMA_BLOB) -> dict:
+def assess(schema_bytes: bytes, dispatch: object) -> dict:
     """Fail closed on source drift. Shape validity is never publication authority."""
+    expected_blob = PINNED_SCHEMA_BLOB
     observed = git_blob(schema_bytes)
     result = {
         "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
