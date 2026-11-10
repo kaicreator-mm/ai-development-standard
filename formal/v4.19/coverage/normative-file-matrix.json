@@ -1,0 +1,675 @@
+{
+  "schema": "ads/formal-normative-document-gap-matrix/v1",
+  "kind": "DOCUMENT_LEVEL_SOURCE_COVERAGE_NOT_ADS_NORMATIVE_OBLIGATION_PROOF",
+  "owner_main_issue": 1366,
+  "asof_date_utc": "2026-11-10",
+  "source_authority": {
+    "effective_observed_baseline": {
+      "commit": "ac7e7e51de3a7ac27343f16a96568c0b0f2c5349",
+      "tree": "cdf032f629668008a940993713a2bfaa219f5653",
+      "qualification": "OBSERVED_V418_BASELINE_NOT_ASSERTED_LIVE_PROJECT_PIN"
+    },
+    "prospective_candidate": {
+      "pr": 1365,
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "state": "OPEN_UNMERGED_NOT_RELEASED"
+    },
+    "manifest": {
+      "path": "standard-manifest.json",
+      "git_blob": "b0836c3b75cec1e1b20c127a256ac6e963d4c92a",
+      "section": "sections.normative_standards",
+      "baseline_blob_equal_candidate": true
+    },
+    "formal_index": {
+      "path": "formal/v4.19/r8/source-index.json",
+      "git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
+      "indexed_properties": 10,
+      "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    }
+  },
+  "scope": {
+    "canonical_normative_document_count": 46,
+    "compatibility_entry_count": 2,
+    "pilot_mapped_normative_documents": 3,
+    "pilot_unmapped_normative_documents": 43,
+    "changed_normative_documents": 7,
+    "changed_pilot_mapped_documents": 2,
+    "changed_pilot_unmapped_documents": 5,
+    "unchanged_normative_documents": 39,
+    "full_ADS_normative_obligations_denominator": null,
+    "full_ADS_normative_obligations_covered": null,
+    "interpretation": "Document source references are not obligation proofs; only selected abstract property checks were verified at R10 historical exact HEAD"
+  },
+  "historical_pilot": {
+    "modeled_properties": [
+      "ADS-P-LC",
+      "ADS-P-AUT",
+      "ADS-P-DEP",
+      "ADS-P-EVI",
+      "ADS-P-EVO",
+      "ADS-P-CROSS",
+      "ADS-P-DEP-4",
+      "ADS-P-CAS",
+      "ADS-P-WRITER-KEYS",
+      "ADS-P-ADMISSION-EXT"
+    ],
+    "r10_full_strict_case_count": 35,
+    "r10_model_head": "671c5fac858de000c867d03284413add204d2b01",
+    "r10_evidence_commit": "62b00b070744887e39b37b514ffb2390f4cb2666",
+    "newer_runner_fix": "c6d6eb70ab9b844c3808ee9ca9594d9797b7ef55",
+    "newer_runner_full_strict_result": "NOT_RUN"
+  },
+  "entries": [
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "baseline_git_blob": "19ba240a15016f8381989f20f20d6d5443c4e716",
+      "candidate_git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+      "candidate_bytes": 11682,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/ARCHITECTURE_RESEARCH_DEMO_STANDARD.md",
+      "baseline_git_blob": "acf9be390a3cad77abbcccc9ce3b953cc1acad2a",
+      "candidate_git_blob": "acf9be390a3cad77abbcccc9ce3b953cc1acad2a",
+      "candidate_bytes": 11109,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/BUILD_ARTIFACT_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "5b74bcbcd475809996c7c6794e5dbdf80895ffd5",
+      "candidate_git_blob": "5b74bcbcd475809996c7c6794e5dbdf80895ffd5",
+      "candidate_bytes": 5488,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CHATGPT_WEB_ROLE.md",
+      "baseline_git_blob": "1ba58e51ddfa392c3b985cd03c917982decac548",
+      "candidate_git_blob": "1ba58e51ddfa392c3b985cd03c917982decac548",
+      "candidate_bytes": 16128,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CI_EVIDENCE_STANDARD.md",
+      "baseline_git_blob": "35f387f257aac5505a1153abf7180dfd83daa556",
+      "candidate_git_blob": "35f387f257aac5505a1153abf7180dfd83daa556",
+      "candidate_bytes": 15733,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CI_EXECUTION_STANDARD.md",
+      "baseline_git_blob": "79b11fb686be0712d71bc21c7a126b55b05dc21c",
+      "candidate_git_blob": "79b11fb686be0712d71bc21c7a126b55b05dc21c",
+      "candidate_bytes": 11733,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CI_RUNNER_CAPABILITY_STANDARD.md",
+      "baseline_git_blob": "6922ebd7624213db6e8b753930babc617012c7a3",
+      "candidate_git_blob": "6922ebd7624213db6e8b753930babc617012c7a3",
+      "candidate_bytes": 6086,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CODEX_HANDOFF_PROTOCOL.md",
+      "baseline_git_blob": "d53f507b7227621b148caa1e5ea72f2e890a1214",
+      "candidate_git_blob": "d53f507b7227621b148caa1e5ea72f2e890a1214",
+      "candidate_bytes": 2472,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CODEX_ROLE.md",
+      "baseline_git_blob": "781139b364b5d34e7839dbce70581c3f0e2afffa",
+      "candidate_git_blob": "781139b364b5d34e7839dbce70581c3f0e2afffa",
+      "candidate_bytes": 3977,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CONFIGURATION_SECRETS_STANDARD.md",
+      "baseline_git_blob": "b12374fa17cd3e139f56ae42df18ebe9fa1b17f4",
+      "candidate_git_blob": "b12374fa17cd3e139f56ae42df18ebe9fa1b17f4",
+      "candidate_bytes": 11085,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/CONTEXT_ENGINEERING_STANDARD.md",
+      "baseline_git_blob": "f41135fc95b75c1b077cbbd37e9645bd4bc7ff29",
+      "candidate_git_blob": "f41135fc95b75c1b077cbbd37e9645bd4bc7ff29",
+      "candidate_bytes": 5637,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DATA_MIGRATION_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "bf15f3f387cb81a78ecb54169b1cfec00dc8340a",
+      "candidate_git_blob": "bf15f3f387cb81a78ecb54169b1cfec00dc8340a",
+      "candidate_bytes": 9927,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DEPENDENCY_TOOLCHAIN_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "22401f7ce93ad62d0ba4047154e2f047529a9e57",
+      "candidate_git_blob": "22401f7ce93ad62d0ba4047154e2f047529a9e57",
+      "candidate_bytes": 16800,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DEPLOYMENT_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "6f4fdfbac6a0a4c5f226ca5da9aeda4a29494fbd",
+      "candidate_git_blob": "6f4fdfbac6a0a4c5f226ca5da9aeda4a29494fbd",
+      "candidate_bytes": 4825,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "baseline_git_blob": "8d14b25dff70991b07d6ea2d963c86bf0e5a6286",
+      "candidate_git_blob": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+      "candidate_bytes": 60578,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DISTRIBUTION_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "79a8fc6931bacac99bcef54a02f26af69a6101ca",
+      "candidate_git_blob": "79a8fc6931bacac99bcef54a02f26af69a6101ca",
+      "candidate_bytes": 4305,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/DOCUMENTATION_STANDARD.md",
+      "baseline_git_blob": "9d534f738ed504748d5d8aadde21388254f9765f",
+      "candidate_git_blob": "9d534f738ed504748d5d8aadde21388254f9765f",
+      "candidate_bytes": 4624,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+      "baseline_git_blob": "1f1601a20db08d263955241607dfd08d8b8f77e1",
+      "candidate_git_blob": "1f1601a20db08d263955241607dfd08d8b8f77e1",
+      "candidate_bytes": 90945,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [
+        "ADS-P-DEP",
+        "ADS-P-DEP-4",
+        "ADS-P-CAS",
+        "ADS-P-WRITER-KEYS",
+        "ADS-P-ADMISSION-EXT"
+      ],
+      "pilot_file_mapping_status": "PILOT_SOURCE_REFERENCED",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "baseline_git_blob": "c7bd2e4ffb87a0ac7fabc54fd78c4eb1fae6ef0d",
+      "candidate_git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "candidate_bytes": 15219,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [
+        "ADS-P-AUT",
+        "ADS-P-EVO",
+        "ADS-P-CROSS",
+        "ADS-P-WRITER-KEYS"
+      ],
+      "pilot_file_mapping_status": "PILOT_SOURCE_REFERENCED",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/EXTERNAL_SYSTEM_EXECUTION_STANDARD.md",
+      "baseline_git_blob": "3f7189301f7292200a98ebd027372513a801bc03",
+      "candidate_git_blob": "3f7189301f7292200a98ebd027372513a801bc03",
+      "candidate_bytes": 14276,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "baseline_git_blob": "49ecd802c5bf14237e23d5e321c56c220eb8974e",
+      "candidate_git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "candidate_bytes": 118290,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [
+        "ADS-P-AUT",
+        "ADS-P-EVI",
+        "ADS-P-EVO",
+        "ADS-P-CROSS",
+        "ADS-P-CAS",
+        "ADS-P-WRITER-KEYS",
+        "ADS-P-ADMISSION-EXT"
+      ],
+      "pilot_file_mapping_status": "PILOT_SOURCE_REFERENCED",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/GITHUB_CAPABILITY_FALLBACK.md",
+      "baseline_git_blob": "30306ae2a491c77b031ff98129f157387c5ab648",
+      "candidate_git_blob": "30306ae2a491c77b031ff98129f157387c5ab648",
+      "candidate_bytes": 6105,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/GITHUB_WORK_ITEM_CONTRACT_STANDARD.md",
+      "baseline_git_blob": "ce191ddeade78ff822895b0eb8dd2eff48bbf2a6",
+      "candidate_git_blob": "ce191ddeade78ff822895b0eb8dd2eff48bbf2a6",
+      "candidate_bytes": 15961,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/GIT_EXECUTION_STANDARD.md",
+      "baseline_git_blob": "23568a9a289ede80c8d27e6bf4bd73fc51d2ba10",
+      "candidate_git_blob": "23568a9a289ede80c8d27e6bf4bd73fc51d2ba10",
+      "candidate_bytes": 7862,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/GOLDEN_TEMPLATE_STANDARD.md",
+      "baseline_git_blob": "d7f73f107c9cbd72a89113419b2c3252670aadda",
+      "candidate_git_blob": "d7f73f107c9cbd72a89113419b2c3252670aadda",
+      "candidate_bytes": 5658,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "baseline_git_blob": "3beba2d0324d95674b7bad2ef621e2aa81c66563",
+      "candidate_git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+      "candidate_bytes": 6894,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/INCIDENT_RECOVERY_FEEDBACK_STANDARD.md",
+      "baseline_git_blob": "c7f1dd6823cd6504321e47308342af3239113ddf",
+      "candidate_git_blob": "c7f1dd6823cd6504321e47308342af3239113ddf",
+      "candidate_bytes": 6318,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/INTENT_ASSUMPTION_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "dbc2b955c4b707d204cfec7d0124af81582a1f4c",
+      "candidate_git_blob": "dbc2b955c4b707d204cfec7d0124af81582a1f4c",
+      "candidate_bytes": 7618,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/INTERFACE_COMPATIBILITY_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "15e355f6ec86370599f2dda7b61963d93fead66f",
+      "candidate_git_blob": "15e355f6ec86370599f2dda7b61963d93fead66f",
+      "candidate_bytes": 11764,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/ISSUE_FIRST_TASK_TRIGGER.md",
+      "baseline_git_blob": "e6e0c0e637d064e01cc48f10cb84e0150ed05a27",
+      "candidate_git_blob": "e6e0c0e637d064e01cc48f10cb84e0150ed05a27",
+      "candidate_bytes": 9597,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/LOCAL_AGENT_HANDOFF_PROTOCOL.md",
+      "baseline_git_blob": "dd4f3fcadf38263f4f5cf99739d41d1c0a0bd847",
+      "candidate_git_blob": "dd4f3fcadf38263f4f5cf99739d41d1c0a0bd847",
+      "candidate_bytes": 14203,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/MAINTENANCE_EOL_HOTFIX_STANDARD.md",
+      "baseline_git_blob": "9fe8d46bd6bb20b6210d912481b0a54102e61cb7",
+      "candidate_git_blob": "9fe8d46bd6bb20b6210d912481b0a54102e61cb7",
+      "candidate_bytes": 2395,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/MODEL_USAGE_POLICY.md",
+      "baseline_git_blob": "79b3590c7fe4b0b085ed346cbac9e24509e7fa66",
+      "candidate_git_blob": "79b3590c7fe4b0b085ed346cbac9e24509e7fa66",
+      "candidate_bytes": 2041,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/OBSERVABILITY_RUNTIME_EVIDENCE_STANDARD.md",
+      "baseline_git_blob": "3dddb3b5b81f44491b198a5496ba70f64942a561",
+      "candidate_git_blob": "3dddb3b5b81f44491b198a5496ba70f64942a561",
+      "candidate_bytes": 2776,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/PROJECT_ADOPTION.md",
+      "baseline_git_blob": "e6d2a9886d74ddaf29843f1c6410b947733f0aaa",
+      "candidate_git_blob": "e6d2a9886d74ddaf29843f1c6410b947733f0aaa",
+      "candidate_bytes": 42244,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/PROJECT_STRUCTURE.md",
+      "baseline_git_blob": "525380339dd25f6520202f859cfa41db635c1189",
+      "candidate_git_blob": "525380339dd25f6520202f859cfa41db635c1189",
+      "candidate_bytes": 6146,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/RELEASE_STANDARD.md",
+      "baseline_git_blob": "da3b78b113be238bdce650ccb646f5aa23bc1f9b",
+      "candidate_git_blob": "da3b78b113be238bdce650ccb646f5aa23bc1f9b",
+      "candidate_bytes": 32544,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/REPOSITORY_STANDARD.md",
+      "baseline_git_blob": "c9cafee2571079d0d14402370973761bcd26fc54",
+      "candidate_git_blob": "c9cafee2571079d0d14402370973761bcd26fc54",
+      "candidate_bytes": 4432,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/SKILL_PROCEDURE_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "b4ba0074600dc3a3802663093b663e0f23b57da5",
+      "candidate_git_blob": "b4ba0074600dc3a3802663093b663e0f23b57da5",
+      "candidate_bytes": 6616,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/TASK_DAG_GOVERNANCE_STANDARD.md",
+      "baseline_git_blob": "d1ce81f9b66b6b9d9b7005928609a55a0f3d8b94",
+      "candidate_git_blob": "d1ce81f9b66b6b9d9b7005928609a55a0f3d8b94",
+      "candidate_bytes": 8903,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "baseline_git_blob": "b7ffab0b94f4476786956f1b160c58d4f4f5110d",
+      "candidate_git_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+      "candidate_bytes": 14173,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "baseline_git_blob": "c32bc97695f5fd05cbee43492a3b6fb01e6a54aa",
+      "candidate_git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+      "candidate_bytes": 9806,
+      "changed_from_observed_baseline": true,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/TEST_DATA_AND_SCENARIO_STANDARD.md",
+      "baseline_git_blob": "5e234f9ab806565a5e728660a3e30dd17fad22d7",
+      "candidate_git_blob": "5e234f9ab806565a5e728660a3e30dd17fad22d7",
+      "candidate_bytes": 12450,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/VALIDATION_STANDARD.md",
+      "baseline_git_blob": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+      "candidate_git_blob": "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+      "candidate_bytes": 11457,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/WORKSPACE_ARTIFACT_STANDARD.md",
+      "baseline_git_blob": "d2bf9b4486e8223ebb11b093f9affbcf935deeeb",
+      "candidate_git_blob": "d2bf9b4486e8223ebb11b093f9affbcf935deeeb",
+      "candidate_bytes": 12218,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    },
+    {
+      "path": "standards/ASSURANCE_PLAN_STANDARD.md",
+      "baseline_git_blob": "ddc39f2843e7af4b41b1cf2e6b34675c23bcb614",
+      "candidate_git_blob": "ddc39f2843e7af4b41b1cf2e6b34675c23bcb614",
+      "candidate_bytes": 11070,
+      "changed_from_observed_baseline": false,
+      "pilot_property_ids": [],
+      "pilot_file_mapping_status": "NOT_MAPPED_TO_PILOT",
+      "normative_obligation_count": null,
+      "normative_obligation_review": "NOT_ENUMERATED",
+      "individual_normative_rule_formal_proof": "NOT_CLAIMED"
+    }
+  ],
+  "compatibility_files_excluded_from_normative_denominator": [
+    "standards/GITHUB_WORKFLOW.md",
+    "standards/VERSION_INTEGRATION_WORKFLOW.md"
+  ],
+  "next_source_delta_review": [
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "focus": "actual discovered/executed test inventory vs declared suite; source presence is not selected public behavior",
+      "priority": "NEXT_HIGH_VALUE_DEMO"
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "focus": "material serial DAG edge backed by real prerequisites vs evidence/integration join",
+      "priority": "HIGH"
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "focus": "SOURCE_PRESENT/EXPORTED_OR_LOADED vs actual public selected path and observable outcome",
+      "priority": "HIGH"
+    },
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "focus": "public consumer-to-observable selected composition and retained invariants",
+      "priority": "HIGH"
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "focus": "versioned Product Exploration main Issue evidence and non-converging repair/root-cause routing",
+      "priority": "MEDIUM"
+    }
+  ],
+  "limitations": [
+    "A count of 46 is the candidate manifest's canonical normative document inventory, not count of testable rule clauses",
+    "No line-by-line MUST/SHOULD/authority obligation extraction yet; full normative denominator UNKNOWN",
+    "Byte-different documents do not establish semantically changed obligations or ADS defects",
+    "Current candidate is prospective; do not substitute this inventory for effective project pin/Release authority",
+    "The R8 source index is deliberately partial: even mapped documents have only bounded pilot hypotheses",
+    "No validation of full current experiment HEAD's native strict run performed in this metadata audit"
+  ]
+}

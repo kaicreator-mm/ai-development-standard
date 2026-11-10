@@ -1,0 +1,47 @@
+{
+  "schema": "ads/formal-normative-document-index-audit/v1",
+  "status": "PASS_METADATA_ONLY_NOT_CLAUSE_COVERAGE",
+  "owner_main_issue": 1366,
+  "observation": {
+    "baseline_commit": "ac7e7e51de3a7ac27343f16a96568c0b0f2c5349",
+    "candidate_commit": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "manifest_blob": "b0836c3b75cec1e1b20c127a256ac6e963d4c92a",
+    "model_index_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
+    "baseline_tree": "cdf032f629668008a940993713a2bfaa219f5653",
+    "candidate_tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f"
+  },
+  "checks": {
+    "manifest_lists_46_distinct": true,
+    "manifest_identical_at_base_candidate": true,
+    "both_git_trees_complete": true,
+    "all_46_paths_have_base_candidate_git_blob": true,
+    "pilot_source_reference_index_consistent": true,
+    "changed_files_exact7": true,
+    "changed_unmapped_exact5": true,
+    "matrix_positive_check": "PASS",
+    "four_negative_matrix_mutants_rejected": 4
+  },
+  "counts": {
+    "canonical_normative_document_count": 46,
+    "compatibility_entry_count": 2,
+    "pilot_mapped_normative_documents": 3,
+    "pilot_unmapped_normative_documents": 43,
+    "changed_normative_documents": 7,
+    "changed_pilot_mapped_documents": 2,
+    "changed_pilot_unmapped_documents": 5,
+    "unchanged_normative_documents": 39,
+    "full_ADS_normative_obligations_denominator": null,
+    "full_ADS_normative_obligations_covered": null,
+    "interpretation": "Document source references are not obligation proofs; only selected abstract property checks were verified at R10 historical exact HEAD"
+  },
+  "execution_note": "Actual GitHub tree/Manifest/source-index readback and deterministic JavaScript structural assertions executed in this Web Builder session; not a Python/native strict run",
+  "source_authority": "OPEN_PR_NOT_FROZEN",
+  "not_proven": [
+    "A count of 46 is the candidate manifest's canonical normative document inventory, not count of testable rule clauses",
+    "No line-by-line MUST/SHOULD/authority obligation extraction yet; full normative denominator UNKNOWN",
+    "Byte-different documents do not establish semantically changed obligations or ADS defects",
+    "Current candidate is prospective; do not substitute this inventory for effective project pin/Release authority",
+    "The R8 source index is deliberately partial: even mapped documents have only bounded pilot hypotheses",
+    "No validation of full current experiment HEAD's native strict run performed in this metadata audit"
+  ]
+}
