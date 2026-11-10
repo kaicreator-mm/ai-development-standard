@@ -1,0 +1,54 @@
+{
+  "schema": "ads/formal-r17-source-byte-binding-repair/v1",
+  "issue": 1366,
+  "predecessor_experiment": {
+    "head": "3dec2ae90f3a8bb6b926be22ecb5e14c9a7572b1",
+    "review_receipt_blob": "1871383d99fe4c2fee0fdd4d28435d1f3f1553ff"
+  },
+  "candidate": {
+    "pr": 1365,
+    "exact_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "open_unmerged": true,
+    "protocol_git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    "schema_git_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f"
+  },
+  "original": {
+    "r13_runner_blob": "33464ba56c4d456f87b40c1db999968070898232",
+    "r13_model_blobs": [
+      "04f85b71b60eea1382b3044d459702d5ba0978e7",
+      "515454a82171c668739708ef50c46a254dcd9cc8"
+    ]
+  },
+  "changed_scope": [
+    "formal/v4.19/r13/run_proofs.py",
+    "formal/v4.19/r13/test_source_binding.py",
+    "formal/v4.19/r17/fixtures/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "formal/IMPLEMENTATION_PLAN.md"
+  ],
+  "checks_planned": {
+    "source_preflight": 2,
+    "source_postflight": 2,
+    "negative_test_declarations": 6
+  },
+  "actual_execution": {
+    "github_exact_git_blob_verification": "PASS_SOURCE_OBJECTS",
+    "source_structure": "INSPECTED_BUILDER_ONLY",
+    "exact_repo_python": "NOT_RUN",
+    "native_smt": "NOT_RUN",
+    "real_github_claim_cas": "NOT_PROVEN"
+  },
+  "defect": {
+    "id": "R13-R16-REV-P2-01",
+    "class": "EXPERIMENT_SOURCE_PROVENANCE",
+    "severity": "P2",
+    "code_disposition": "REPAIR_COMMITTED_PYTHON_RUN_PENDING",
+    "normative_ads_defect": false
+  },
+  "caveats": [
+    "Do not claim full source-model semantic equivalence",
+    "Frozen source Git blob != confirmed current PR HEAD at offline execution",
+    "Frozen prospective version not effective project pin",
+    "No accepted Claim/READY/QUEUED runtime readback",
+    "R13 old native results not automatically transferred to new runner"
+  ]
+}

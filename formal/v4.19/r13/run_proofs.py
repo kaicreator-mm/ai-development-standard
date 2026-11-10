@@ -21,6 +21,21 @@ PINNED_SHA256 = {
     "z3": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
     "cvc5": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
 }
+# Prospective source *bytes*, not a proof of legal project adoption or
+# English-to-SMT equivalence. The fixture is the exact Git blob from PR #1365.
+SOURCE_ROOT = Path(__file__).resolve().parents[1]
+FROZEN_CANDIDATE_PR = 1365
+FROZEN_CANDIDATE_HEAD = "dac263fa4c0ab155406d2f2117459b34322cc988"
+SOURCE_BINDINGS = {
+    "candidate_protocol": (
+        SOURCE_ROOT / "r17" / "fixtures" / "GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    ),
+    "candidate_dispatch_schema": (
+        SOURCE_ROOT / "r15" / "fixtures" / "dispatch.schema.json",
+        "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+    ),
+}
 COMMANDS = {
     "z3": [os.environ.get("ADS_Z3", "z3"), "-smt2"],
     "cvc5": [os.environ.get("ADS_CVC5", "cvc5"), "--lang=smt2", "--incremental"],
@@ -47,7 +62,25 @@ def run_solver(tool: str, path: Path) -> dict:
 
 
 class InputBindingError(RuntimeError):
-    """A model or executable does not match the reviewed exact bytes."""
+    """A source fixture, model or executable does not match pinned bytes."""
+
+
+def assert_source_hashes(stage: str) -> list[dict]:
+    """Fail closed on prospective protocol/schema drift before native execution."""
+    checks = []
+    for name, (path, expected) in SOURCE_BINDINGS.items():
+        try:
+            observed = git_blob(path.read_bytes())
+        except OSError as exc:
+            raise InputBindingError(f"{stage}: missing/unreadable candidate source {name}: {exc}") from exc
+        if observed != expected:
+            raise InputBindingError(
+                f"{stage}: candidate source {name} blob {observed} != {expected}"
+            )
+        checks.append({"name": name, "path": str(path),
+                       "expected_git_blob": expected,
+                       "observed_git_blob": observed, "status": "PASS"})
+    return checks
 
 
 def assert_model_hashes(stage: str) -> list[dict]:
@@ -82,6 +115,7 @@ def assert_tool_hashes() -> list[dict]:
 
 
 def verify():
+    source_before = assert_source_hashes("preflight")
     model_before = assert_model_hashes("preflight")
     tool_before = assert_tool_hashes()
     details = []
@@ -93,18 +127,24 @@ def verify():
                         "results": results,
                         "solver_pair_pass": all(r["matched"] for r in results) and
                             results[0]["statuses"] == results[1]["statuses"]})
+    source_after = assert_source_hashes("postflight")
     model_after = assert_model_hashes("postflight")
     tool_after = assert_tool_hashes()
     return {"schema": "ads/formal-r13-bound-dispatch-publication/v3",
             "scope": "ONE_NEW_DISPATCH_ABSTRACT_SOURCE_HYPOTHESIS_AND_OLD_RESERVATION_PROXY",
-            "input_binding": {"model_before": model_before,
+            "candidate_source": {"pr": FROZEN_CANDIDATE_PR, "head": FROZEN_CANDIDATE_HEAD,
+                                 "status": "FROZEN_BYTES_ONLY_NOT_LIVE_HEAD_OR_ADOPTION"},
+            "input_binding": {"source_before": source_before,
+                              "source_after": source_after,
+                              "model_before": model_before,
                               "model_after": model_after,
                               "tool_before": tool_before, "tool_after": tool_after},
             "models": details,
             "total_checks_per_solver": sum(len(x) for x in EXPECTED.values()),
             "pair_status": "PASS" if all(x["solver_pair_pass"] for x in details) else "FAIL",
             "not_proven": ["No real accepted GitHub Claim/Dispatch CAS was executed",
-                "No source-to-model equivalence theorem or cryptographic schema identity proof",
+                "No source-to-model equivalence theorem or actual project effective pin/accepted Claim",
+                "Candidate PR HEAD frozen as provenance; offline runner does not re-query live PR status",
                 "Model is an asserted necessary-conditions hypothesis; UNSAT follows this hypothesis",
                 "Old R8 reservation is not equivalent to an accepted dispatch event",
                 "Full ADS rule denominator unknown"]}

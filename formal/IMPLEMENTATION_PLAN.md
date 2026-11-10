@@ -337,3 +337,10 @@ R15 exact-source Python 已由本地 Agent 在修复后实验 HEAD `4de398a02f4c
 GitHub 原生读回实际检查了 **12 个仓库的 14 个指定分支元组**、每个 `.dev-standard/VERSION`：**8** 个具备明确旧版本 ADS pin（4.0/4.9/4.14/4.18），**1** 个仅有 `4.0.0` 且不含 ADS revision，**5** 个在所查 `main` 分支未找到该文件。**0/14** 能确认有效采用候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988`。细节精确 HEAD/blob 与失败分类见 `formal/v4.19/r16/R16_CONSUMER_ELIGIBILITY_READBACK.json`；8 个合成资格负控都未被误判为真实 PASS。尤其 `domain-harness/dis/0.2.0-element-intelligence-r1` 和 `tally/version/v2` 的直接文件读取均明确钉在 ADS 4.18，不能作为 v4.19 Dispatch/Claim 生产 E2E。**本调查不是全组织/全分支穷举，未找到文件 ≠ 未采用 ADS**，更不代表全球没有 v4.19 使用者。
 
 因此真实 v4.19 `enrich→effective pinned schema→authorized Task/Claim→serialized READY/QUEUED/accepted publication→durable readback` 仍 `NOT_PROVEN`，不为了完成指标强行借用旧项目或伪造 Claim。已将下一轮**真正独立源码/模型审核**的准确输入与 P0/P1/P2/缺口/实际执行收据要求固化于 `formal/v4.19/r16/INDEPENDENT_REVIEW_SCOPE.md`，当前仍 `NOT_RUN`；这只是待独立执行的审查合同而非独立审核通过。完整 ADS 原子规则分母 UNKNOWN。无规范/原模型/CI Gate/Merge/Freeze/Release 改动。
+
+
+## 30. #1366 R17 — 独立审核实验 P2 源规范输入身份证据补链（2026-11-11）
+
+在全新审核 HEAD `3dec2ae90f3a8bb6b926be22ecb5e14c9a7572b1` 的 `R13_R16_INDEPENDENT_REVIEW_RECEIPT.json` 中确认 `R13-R16-REV-P2-01`：R13 的原生 runner 对模型与工具 SHA256 做前后钉死，但未对候选协议/Schema 字节做相同绑定。**本轮在原实验 `formal/v4.19/r13/run_proofs.py` 中直接修复**，增加候选 Protocol `935a905d593d7aec027cb54b5b137250ca14a4c1` 和已有候选 Schema `5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f` 的前/后 Git blob 比对，任一漂移或缺失立即 `InputBindingError/BLOCK`；Protocol fixture 使用候选 PR #1365 原始 Git object，不人为重写。增加 `r13/test_source_binding.py` 6 项声明式负例/身份测试，原 SMT/原 R11/R13 历史执行收据不变。
+
+**资格**：本轮对新程序 GitHub blob/结构进行读回验证；如未获得完整 exact-source Python 执行，不将新 runner 标为 Python PASS，更不将 R13 历史 32/32 paired 强行转移到修改后的 runner。冻结协议版本源 SHA 只能说明候选源码字节被钉死；不能推导 PR HEAD 在未来运行时没有变化，亦不能推导真正 Project/Task 有效版本采用、规范 ⇄ SMT 等价、真实 GitHub Claim/CAS 发布。最新状态见 `formal/v4.19/r17/R17_SOURCE_PROVENANCE_REPAIR.md` / `R17_SOURCE_PROVENANCE_RECEIPT.json`；独立审核实验 P2 标记为 `CODE_REPAIRED_AWAITING_TEST`，ADS 正式规范 P0/P1/P2=0/0/0；不增加 Controller toy-model、官方 Gate、GitHub Actions 或自动 Merge/Freeze/Release。
