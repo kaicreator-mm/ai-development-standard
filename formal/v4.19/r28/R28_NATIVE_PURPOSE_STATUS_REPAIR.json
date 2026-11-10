@@ -1,0 +1,105 @@
+{
+  "schema": "ads/formal-r28-native-purpose-status-repair/v1",
+  "main_issue": 1366,
+  "utc_date": "2026-11-11",
+  "scope": "FORMAL_EXPERIMENT_RUNNER_ONLY_NOT_ADS_NORMATIVE",
+  "pre_repair": {
+    "head": "ca13e9b563ebfc7913ff94427e56673a227e75e8",
+    "helper_blob": "a907a4a42f50651549cde8d84ce810f9fc9f3d90",
+    "test_blob": "f121a818ce8f370b9b3adcab7d2f8bdf546ed6f3"
+  },
+  "tested_subject": {
+    "git_head": "236489e14d7b95349bd78a293fda64032f7fbc18",
+    "tree": "d69e8cdbc87a56f649228ccc92fa9f7790be2732",
+    "helper_blob": "6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90",
+    "test_blob": "d0b3ce350ef1f606eee526fa134692a4e89b644b",
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_effective": false
+  },
+  "finding": {
+    "id": "R28-EXPERIMENT-TOOL-P2-01",
+    "severity": "P2_EXPERIMENT_TOOL_PROOF_QUALIFICATION",
+    "root_cause": "Audit compared TLC result identity and allowed success-status set but not success-status↔declared purpose; aggregate good accepted both PASS_MODEL and COUNTEREXAMPLE, while solver_differential only covers Z3/cvc5 pairs.",
+    "negative_cases": [
+      {
+        "purpose": "proof",
+        "returned_status": "COUNTEREXAMPLE",
+        "old_helper": "PASS",
+        "new_helper": "FAIL"
+      },
+      {
+        "purpose": "mutation",
+        "returned_status": "PASS_MODEL",
+        "old_helper": "PASS",
+        "new_helper": "FAIL"
+      }
+    ],
+    "qualification": "EXACT_GIT_BLOB_HELPER_REPRODUCTION_NOT_REAL_MAIN_V1_E2E"
+  },
+  "repair": {
+    "description": "Reject unrecognized declared purpose and reject a successful native result whose status does not match case purpose; keep FAIL/INCONCLUSIVE/NOT_RUN as non-success outcomes; same exact model-input guard path as R27.",
+    "code_commits": [
+      "2e0babcfb3326c7d59ecf6d7ba34b7cccbc8506d",
+      "236489e14d7b95349bd78a293fda64032f7fbc18"
+    ],
+    "test_additions": 4
+  },
+  "execution": {
+    "environment": "isolated Python 3.13.5, exact Git-object-byte reconstructed helper and test sources, no complete Git checkout",
+    "git_blob_verified": true,
+    "python_unittest": {
+      "discovered": 18,
+      "passed": 18,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit": 0
+    },
+    "old_helper_two_negative_reproductions": {
+      "count": 2,
+      "old_pass": 2
+    },
+    "full_checkout_main_v1_integration": "NOT_RUN",
+    "native_strict_35_cases": "NOT_RUN",
+    "z3_cvc5_pairs": "NOT_RUN",
+    "tlc": "NOT_RUN",
+    "source_model_tool_prepost": "NOT_RUN",
+    "reason": "Isolated runtime cannot fetch full Git worktrees (GitHub DNS not resolvable); no pinned solver toolchain available here. GitHub connector enabled exact source/commit writes and Git blob identity checks."
+  },
+  "prior_evidence": {
+    "r25_tested_model_head": "6edd2bad98b455e1bcdd2895f50830412af25cff",
+    "r25_python": "77/77 (WSL2 only)",
+    "r25_native": "35/35 at old exact model SHA",
+    "inherited_for_new_head": false
+  },
+  "outstanding": [
+    "New branch HEAD must be tested in a real exact SHA Git checkout including main_v1 negative entrypoint",
+    "Run affected formal/tests with zero skipped and no zero-discovery",
+    "Run strict r10/suite.json native 35 cases/16 solver pairs/3 TLC plus source/model/tool before+after; fix findings in same branch and reexecute",
+    "Effective v4.19 lawful production Claim/CAS/durable readback still NOT_PROVEN",
+    "Full ADS normative atomic rule denominator UNKNOWN; source-to-SMT semantic equivalence NOT_PROVEN"
+  ],
+  "severity_report": {
+    "ads_normative": {
+      "p0": 0,
+      "p1": 0,
+      "p2": 0
+    },
+    "experiment_open": {
+      "p0": 0,
+      "p1": 0,
+      "p2": 0
+    },
+    "qualification": "code repaired and isolated-unit-executed, pending full exact-SHA integration"
+  },
+  "forbidden_actions": {
+    "candidate_pr_mutation": false,
+    "normative_change": false,
+    "new_gate": false,
+    "github_actions": false,
+    "release": false,
+    "freeze": false,
+    "merge": false
+  }
+}
