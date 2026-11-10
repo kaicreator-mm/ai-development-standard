@@ -1,0 +1,765 @@
+{
+  "schema": "ads/formal-r26-r25-real-evidence-vs-prospective-source-coverage/v1",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "subject": {
+    "evidence_commit_before_this_round": "13ff89c5e9610747839eed21b5b61647bcbf6b0a",
+    "r25_actual_executed_model_sha": "6edd2bad98b455e1bcdd2895f50830412af25cff",
+    "r25_actual_candidate_sha": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "pr_1365": "OPEN_UNMERGED_NOT_EFFECTIVE"
+  },
+  "inputs": [
+    {
+      "id": "r25",
+      "path": "formal/v4.19/r25/R25_EXACT_CHECKOUT_INTEGRATION.json",
+      "blob": "499ebf1a18293c7be31af362df0ed54a428933c9"
+    },
+    {
+      "id": "strict",
+      "path": "formal/v4.19/r25/R25_STRICT_RUN.json",
+      "blob": "32c420663b79a650d34250748c06a7f451b4a87b"
+    },
+    {
+      "id": "r20",
+      "path": "formal/v4.19/r20/R20_EXACT_CHECKOUT_CONVERGENCE.json",
+      "blob": "b0d3cd9228ee9fc34bf34324962f789476e90b6f"
+    },
+    {
+      "id": "r23",
+      "path": "formal/v4.19/r23/R23_PROFILE_SCHEMA_ROLE_AUTHORITY_MATRIX.json",
+      "blob": "e644e4d3cbccf9ad31721c45551f2204366b7f77"
+    },
+    {
+      "id": "index",
+      "path": "formal/v4.19/r8/source-index.json",
+      "blob": "1dbfb2132fdeb227a33063d66390ede4db249894"
+    },
+    {
+      "id": "trace",
+      "path": "formal/v4.19/r8/TRACEABILITY.json",
+      "blob": "f45f49c22ef819387d1d758326d414e224de944a"
+    },
+    {
+      "id": "triage",
+      "path": "formal/v4.19/coverage/candidate-delta-obligations.json",
+      "blob": "245f9ebfa8807cb45b49e1d08d4c4e71716082f7"
+    },
+    {
+      "id": "r22",
+      "path": "formal/v4.19/r22/R22_EXACT_CHANGED_TEXT_CENSUS.json",
+      "blob": "273caea2b9c681f392af3be9e4ad7d460a635020"
+    }
+  ],
+  "method": "Exact GitHub existing Git blobs and real R25 native receipt, source-index/property links, R20 bounded real-log readback and R23 schema-structure audit; this readback itself performs no new Python/Solver run.",
+  "full_ads_rule_denominator": null,
+  "full_semantic_equivalence_proved_count": 0,
+  "scope_counts": {
+    "manifest_normative_docs": 46,
+    "pr_candidate_changed_normative_docs": 7,
+    "changed_normative_directly_referenced_in_r25_pilot": 2,
+    "changed_normative_without_direct_r25_pilot_source_ref": 5,
+    "curated_candidate_items": 21,
+    "r25_modeled_pilot_properties": 10,
+    "r25_actual_model_cases": 35,
+    "r25_actual_python_tests": 77,
+    "actual_runtime_v419_producer_verified": false,
+    "source_to_model_semantic_alignment_of_ten_properties": "PENDING_INDEPENDENT_REVIEW"
+  },
+  "changed_normative_documents": [
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "r25_pilot_direct_source_reference": false,
+      "relevant_curated_candidate_items": [
+        "ARCH-01",
+        "ARCH-02",
+        "ARCH-03"
+      ]
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "r25_pilot_direct_source_reference": false,
+      "relevant_curated_candidate_items": [
+        "DEV-01",
+        "DEV-02",
+        "DEV-03",
+        "DEV-04",
+        "DEV-05"
+      ]
+    },
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "r25_pilot_direct_source_reference": true,
+      "relevant_curated_candidate_items": [
+        "EXEC-01",
+        "EXEC-02"
+      ]
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "r25_pilot_direct_source_reference": true,
+      "relevant_curated_candidate_items": [
+        "GITHUB-01",
+        "GITHUB-02"
+      ]
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "r25_pilot_direct_source_reference": false,
+      "relevant_curated_candidate_items": [
+        "IMPL-01",
+        "IMPL-02"
+      ]
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "r25_pilot_direct_source_reference": false,
+      "relevant_curated_candidate_items": [
+        "TASK-01",
+        "TASK-02",
+        "TASK-03",
+        "TASK-04"
+      ]
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "r25_pilot_direct_source_reference": false,
+      "relevant_curated_candidate_items": [
+        "TEST-01",
+        "TEST-02",
+        "TEST-03"
+      ]
+    }
+  ],
+  "r25_pilot_model_properties": [
+    {
+      "property_id": "ADS-P-LC",
+      "model_id": "ADS-M-LIFECYCLE",
+      "pilot_source_paths": [
+        "docs/architecture/v4.19/INTEGRATED_DELIVERY_L2_R0.md",
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "changed_normative_source_refs": [],
+      "r25_model_case_count": 3,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "TLA+ state machine uses hypothetical freeze transitions, not real Product Owner/Task decisions, valid actor proofs or liveness; R25 verifies bounded safety only.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-AUT",
+      "model_id": "ADS-M-AUTHORITY",
+      "pilot_source_paths": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "scripts/v34_rules.py"
+      ],
+      "changed_normative_source_refs": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 4,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Model assumes acceptedClaim/writeSetAuthorized/current Boolean predicates; the effective Task Pack and accepted real Claim are not reconstructed.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-DEP",
+      "model_id": "ADS-M-DEPENDENCY",
+      "pilot_source_paths": [
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
+      ],
+      "changed_normative_source_refs": [],
+      "r25_model_case_count": 2,
+      "r25_case_statuses": [
+        "PASS_MODEL"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Three-node cycle and two-writer finite assumptions; no complete live GitHub DAG or cross-project scheduling extraction.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-EVI",
+      "model_id": "ADS-M-EVIDENCE",
+      "pilot_source_paths": [
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "schemas/dispatch.schema.json"
+      ],
+      "changed_normative_source_refs": [
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 2,
+      "r25_case_statuses": [
+        "PASS_MODEL"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Abstract Sha identity equality, not cryptographic/current CI and reviewer source provenance of actual execution events.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-EVO",
+      "model_id": "ADS-M-EVOLUTION",
+      "pilot_source_paths": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "changed_normative_source_refs": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 2,
+      "r25_case_statuses": [
+        "PASS_MODEL"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "HistoricalEligible and prospectiveApproved are model inputs, not an attested legal frozen Product/Task policy revision.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-CROSS",
+      "model_id": "ADS-M-CROSS",
+      "pilot_source_paths": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md"
+      ],
+      "changed_normative_source_refs": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 2,
+      "r25_case_statuses": [
+        "PASS_MODEL"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Compound release/Claim/CI booleans and equalities are necessary abstractions; no selected real closure/release authority or durable readback.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-DEP-4",
+      "model_id": "ADS-M-DEPENDENCY",
+      "pilot_source_paths": [
+        "docs/implementation/v4.19/INTEGRATED_DELIVERY_DAG_R0.md",
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md"
+      ],
+      "changed_normative_source_refs": [],
+      "r25_model_case_count": 4,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "HYPOTHESIS_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Finite four-node topological rank, not arbitrary GitHub native DAG mutation proof.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-CAS",
+      "model_id": "ADS-M-AUTHORITY",
+      "pilot_source_paths": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "changed_normative_source_refs": [
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 4,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "BUILDER_ADVERSARIAL_CHALLENGE_INDEPENDENT_REVIEW_NOT_RUN",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Two-request serialization and generation checks are idealized; no real git/API atomic CAS and durable acceptance log.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-WRITER-KEYS",
+      "model_id": "ADS-M-CROSS",
+      "pilot_source_paths": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "changed_normative_source_refs": [
+        "standards/EXECUTION_PACK_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 4,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "BUILDER_CHALLENGED_ONLY_INDEPENDENT_REVIEW_NOT_RUN",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Known write-set overlap and active Claim are Boolean inputs, not parsed real Task Pack writes at concurrent time.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model_id": "ADS-M-AUTHORITY",
+      "pilot_source_paths": [
+        "standards/EXECUTION_ARCHITECTURE_STANDARD.md",
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "scripts/v34_rules.py"
+      ],
+      "changed_normative_source_refs": [
+        "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md"
+      ],
+      "r25_model_case_count": 8,
+      "r25_case_statuses": [
+        "PASS_MODEL",
+        "COUNTEREXAMPLE"
+      ],
+      "trace_semantic_alignment": "BOUNDED_HYPOTHESIS_SOURCE_REVIEW_PENDING",
+      "source_to_model_semantic_equivalence": "NOT_PROVEN",
+      "missing_real_semantics": "Compatibility grant scope/generation/second Start Record ownership are assumed inputs; no real legal grant or serialized producer.",
+      "qualified_model_result": "BOUNDED_MODEL_AND_SOURCE_INPUT_VERIFIED_AT_R25_EXACT_TEST_HEAD_ONLY"
+    }
+  ],
+  "candidate_delta_item_evidence_updates": [
+    {
+      "id": "ARCH-01",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 51,
+        "patch_added_exact_anchor": "selected executable composition path"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "ARCH-02",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 51,
+        "patch_added_exact_anchor": "record the material unproven seam as `UNKNOWN`"
+      },
+      "concern": "UNPROVEN_BOUNDARY",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "ARCH-03",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 53,
+        "patch_added_exact_anchor": "material** invariant set"
+      },
+      "concern": "RETAINED_INVARIANTS",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "DEV-01",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 137,
+        "patch_added_exact_anchor": "优先复用一个现有 Product Issue"
+      },
+      "concern": "PRODUCT_EXPLORATION_EVIDENCE",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "DEV-02",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 137,
+        "patch_added_exact_anchor": "真实运行收据、失败记录、报告和修订历史存放 Git 版本化内容"
+      },
+      "concern": "PRODUCT_EXPLORATION_EVIDENCE",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "DEV-03",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 141,
+        "patch_added_exact_anchor": "未运行须 `NOT_RUN`"
+      },
+      "concern": "EVIDENCE_NON_ESCALATION",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "DEV-04",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 142,
+        "patch_added_exact_anchor": "Stage 2 Architecture Demo 提前"
+      },
+      "concern": "AUTHORITY_STAGE_SEPARATION",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "DEV-05",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 742,
+        "patch_added_exact_anchor": "minimum sufficient correction"
+      },
+      "concern": "REPAIR_CONTINUITY",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "EXEC-01",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "blob_sha": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "line": 148,
+        "patch_added_exact_anchor": "Profiles do not widen role authority"
+      },
+      "concern": "PROFILE_ROLE_AUTHORITY",
+      "prior_review_evidence": "ABSTRACT_PILOT_ONLY",
+      "evidence_update": {
+        "class": "SOURCE_SCHEMA_STRUCTURAL_ONLY",
+        "evidence": [
+          "r23"
+        ],
+        "meaning": "7 profiles × 3 roles: exactly 7 schema role/profile shape pairs allowed and 14 rejected; real Task pin and Claim authorization remain untested."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "EXEC-02",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "blob_sha": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "line": 148,
+        "patch_added_exact_anchor": "preserve their original admission rules"
+      },
+      "concern": "FROZEN_AUTHORITY_CURRENTNESS",
+      "prior_review_evidence": "ABSTRACT_PILOT_ONLY",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "GITHUB-01",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "blob_sha": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "line": 573,
+        "patch_added_exact_anchor": "never widens authority"
+      },
+      "concern": "PROFILE_ROLE_AUTHORITY",
+      "prior_review_evidence": "ABSTRACT_PILOT_ONLY",
+      "evidence_update": {
+        "class": "SOURCE_SCHEMA_STRUCTURAL_ONLY",
+        "evidence": [
+          "r23"
+        ],
+        "meaning": "Schema profile-role coupling matches candidate normative clause; this does not establish actual Dispatcher publication."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "GITHUB-02",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "blob_sha": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "line": 573,
+        "patch_added_exact_anchor": "validation-only, and is used only for a genuine local capability gap"
+      },
+      "concern": "PROFILE_LOCAL_VALIDATION_BOUNDARY",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "IMPL-01",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "blob_sha": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "line": 43,
+        "patch_added_exact_anchor": "implementation evidence MUST distinguish"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "IMPL-02",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "blob_sha": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "line": 43,
+        "patch_added_exact_anchor": "clean installed public package entrypoint"
+      },
+      "concern": "PUBLIC_PACKAGE_CONSUMER",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TASK-01",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 183,
+        "patch_added_exact_anchor": "reason for each material serial edge"
+      },
+      "concern": "FALSE_SERIAL_EDGE",
+      "prior_review_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TASK-02",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 183,
+        "patch_added_exact_anchor": "native dependency, shared write ownership, or unresolved atomic security invariant MUST NOT be waived"
+      },
+      "concern": "DAG_AUTHORITY_NO_BYPASS",
+      "prior_review_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TASK-03",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 185,
+        "patch_added_exact_anchor": "or mark the material gap `UNKNOWN`"
+      },
+      "concern": "FEASIBILITY_EVIDENCE",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TASK-04",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 187,
+        "patch_added_exact_anchor": "does not automatically justify a new executable Issue"
+      },
+      "concern": "COORDINATION_COST",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TEST-01",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 66,
+        "patch_added_exact_anchor": "actual discovered/executed test inventory"
+      },
+      "concern": "TEST_DISCOVERY_TRUTH",
+      "prior_review_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "evidence_update": {
+        "class": "ACTUAL_RECORDED_TEST_INVENTORY_BOUND",
+        "evidence": [
+          "r20",
+          "r25"
+        ],
+        "meaning": "R20 real Git exact-checkout auditor verified the original R17 13 qualified test method IDs in each Windows/WSL2 source-log-receipt and passed 9/9 harness tests on both systems. R25 later ran complete 77/77 full Python suite on its own exact SHA. No claim about all ADS or universal test discovery."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TEST-02",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 66,
+        "patch_added_exact_anchor": "omitted scope remains `NOT_RUN`"
+      },
+      "concern": "TEST_DISCOVERY_TRUTH",
+      "prior_review_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "evidence_update": {
+        "class": "NEGATIVE_SIMULATION_ONLY",
+        "evidence": [
+          "r20"
+        ],
+        "meaning": "The R20 auditor's negative tests reject missing method IDs against synthetic fixture logs. No real production Test/CI profile omission was newly observed; NOT_RUN classification remains conditional."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    },
+    {
+      "id": "TEST-03",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 72,
+        "patch_added_exact_anchor": "actually selected, invoked and behaviorally verified"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "prior_review_evidence": "NOT_TESTED",
+      "evidence_update": {
+        "class": "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND",
+        "evidence": [],
+        "meaning": "Keep the prior bounded/source/synthetic evidence class unchanged; no candidate-clause semantic equivalence theorem."
+      },
+      "adjudication": "CLAUSE_LEVEL_SEMANTIC_EQUIVALENCE_NOT_PROVEN"
+    }
+  ],
+  "evidence_upgrade_counts": {
+    "NO_NEW_DIRECT_REAL_EVIDENCE_THIS_ROUND": 17,
+    "SOURCE_SCHEMA_STRUCTURAL_ONLY": 2,
+    "ACTUAL_RECORDED_TEST_INVENTORY_BOUND": 1,
+    "NEGATIVE_SIMULATION_ONLY": 1
+  },
+  "priority_disposition": [
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "decision": "PARTIAL_REAL_EVIDENCE_AT_TEST_DISCOVERY_CLAUSE_NOT_SMT_PROOF",
+      "next": "Reuse R20 real executed-test inventory evidence for the specifically pinned R17 suite; preserve synthetic-only classification of omitted-suite counterexample."
+    },
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "decision": "NO_REAL_SELECTED_PUBLIC_CONSUMER",
+      "next": "A materially selected actual consumer path and observed result, not another model-only proof; hold UNKNOWN until legally executable."
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "decision": "NO_REAL_SELECTED_PUBLIC_INTEGRATION_EXECUTION",
+      "next": "Re-use actual public entrypoint integration evidence from the eventual owning consumer; keep mere loaded-hook demo as synthetic."
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "decision": "NO_ACTUAL_FROZEN_TASK_DAG_EXTRACTION",
+      "next": "Native DAG edges, real artifact prerequisites and write ownership are necessary for proving proposed parallelization against Task authority; no new DAG Gate."
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "decision": "PRACTICE_EVIDENCE_NOT_MODEL_THEOREM",
+      "next": "Check actual product research Git evidence/Issue owner and repair lineage; no generalized SMT model for optional issue count preference."
+    },
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "decision": "ABSTRACT_PLUS_STATIC_SCHEMA_ONLY",
+      "next": "Needs effective legal Task/Project pin and real accepted Claim before production authorization statements."
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "decision": "ABSTRACT_PLUS_STATIC_SCHEMA_ONLY",
+      "next": "Needs actual serialized producer pre-publication and CAS/readback to qualify beyond schema/source structure."
+    }
+  ],
+  "verification": {
+    "source_receipt_consistency": {
+      "passed": 17,
+      "total": 17
+    },
+    "crosswalk_negative_claim_checks": {
+      "passed": 11,
+      "total": 11
+    },
+    "new_native_solver_execution": "NOT_RUN_DATA_ONLY",
+    "new_python_execution": "NOT_RUN_DATA_ONLY",
+    "issue_status_change_intended": true
+  },
+  "limitations": [
+    "The 2/7 document source-reference count is not 2/7 ADS semantic coverage and not a norm to be met.",
+    "The source-map 7/7 are verified specific files, not all seven changed normative files (two overlap).",
+    "No R25 model-level PASS can be promoted into a theorem for 21 curated clause interpretations.",
+    "Only TEST-01 received additional bounded real log evidence; TEST-02 remains synthetic negative counterexample logic.",
+    "No claims of independent human semantic review, actual production effective v4.19 source adoption or GitHub Claim/CAS."
+  ],
+  "stop_condition": "No new native solver reruns, generic formal tools or fabricated Gate. Continue only when a real new candidate-clause counterexample/independent semantic adjudication or lawful v4.19 consumer/producer evidence exists."
+}

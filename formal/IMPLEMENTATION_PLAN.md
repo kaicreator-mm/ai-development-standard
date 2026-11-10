@@ -439,3 +439,14 @@ R24 遗留两项 NOT_RUN（真实 checkout 导入单测、受影响 strict 原�
 - [ ] **边界不变**：条款级义务分母 UNKNOWN；真实 v4.19 生产者 Claim/CAS/持久读回 NOT_PROVEN；R11/R17/R20 历史收据保持原 SHA 资格。
 
 证据：`formal/v4.19/r25/`（主收据 `R25_EXACT_CHECKOUT_INTEGRATION.json`、`R25_STRICT_RUN.json`、Python/套件/负探针/Windows 补充日志、身份复核）。资格：`R24_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_77_OF_77_ZERO_SKIP / STRICT_35_OF_35_PASS / DIFFERENTIAL_16_OF_16 / REAL_CLI_RED_GREEN_CLOSED / NO_NEW_REPAIR_REQUIRED`。ADS 正式规范 P0/P1/P2=0/0/0；实验 open P0/P1/P2=0/0/0。不合并、不 Freeze、不发布、无 Gate/Actions。
+
+
+## 41. #1366 R26 — R25 真实验收证据回填到条款级 Crosswalk，纠正过度覆盖风险（2026-11-11）
+
+重新读取实际实验 `13ff89c5e9610747839eed21b5b61647bcbf6b0a` / HEAD TREE `811d0a36f964f7cbe4f7eb310e0e7aca58cf6ce7`、候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` OPEN、R25 真执行收据、R20 双环境 test inventory 收据、R23 Schema 结构审查、R22 的 **7 份变更规范**、R8 pilot Source Index/Traceability 和 R12 **21 条选定候选义务**。数据一致性检查 **17/17**、交叉覆盖错误断言检查 **11/11** 均 PASS，固化 `formal/v4.19/r26/R26_EXACT_EVIDENCE_TO_RULE_CROSSWALK.json` 与说明。
+
+**重要修正：** R25 在模型实际 `6edd2bad98b455e1bcdd2895f50830412af25cff` 上的 77/77 Python + 35/35 严格原生与 10 pilot property/7 pinned source `MODEL_AND_SOURCE_PASS` 是 **有界模型及真实来源身份验证**，不是 21 条 v4.19 规范候选义务独立语义证明。v4.19 候选 7 份修改的规范文档中仅 **2 份**被 10 个 pilot property 直接引用；另外 **5 份**需要按真实业务证据方式归责（Architecture/Implementation 实际 selected public consumer、Development Workflow 实践证据、Task Decomposition 真实 frozen/native DAG、Testing 实际 Test/CI discovery）。此处的 2/7 **不是** ADS 规则覆盖率。R8 十个模型性质的语义独立审查均仍待做；全规范原子义务分母仍 UNKNOWN。
+
+**有证据的新资格提升**仅针对 `TEST-01`：R20 已实际在双环境检验历史 R17 13 个逐项执行的 test IDs/原始日志/收据（辅以 R25 WSL2 全部 77 个 Python 测试），故可标 **BOUNDED_REAL_EXECUTED_TEST_INVENTORY**；`TEST-02`“被遗漏的真实生产 Suite 必须 NOT_RUN”负例仍是合成 fixture 演示，不伪造生产漏测；其余候选语义不提升为已证明。R23 对权限角色矩阵仅源/schema 静态审查。修正主 Issue 顶部误指 R11 为“最新完整严格被测 HEAD”的旧状态，重新标注 R25 实际测试 HEAD，不改历史收据。
+
+本轮代码、模型及工具无变化；不重复全套 Python/Native，不创造 Gate/Task/Claim，也不提前合并冻结未生效 PR #1365。下一项只在真实外部消费证据或确有独立语义反例时执行。
