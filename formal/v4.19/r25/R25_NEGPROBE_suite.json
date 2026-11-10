@@ -1,0 +1,16 @@
+{
+  "schema": "ads/formal-suite/v0",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "source_map": "neg-source-map.json",
+  "cases": [
+    {
+      "id": "NEG-AUT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "z3",
+      "purpose": "proof",
+      "model": "models/authority/claim.smt2",
+      "expect": ["unsat", "unsat", "unsat", "unsat", "sat"]
+    }
+  ]
+}

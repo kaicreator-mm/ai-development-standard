@@ -427,3 +427,15 @@ R22 已对 46 份 manifest 规范文档的 7 份变更、8 个文本差量段进
 Delivery-First 复盘时，候选 PR #1365 及 v4.19 Product 均尚未合并/冻结，因此真实有效生产者 CAS 不可假造；转而审核验证套装自身。发现 `formal/suite/run.py:source_check` 与 `formal/suite/expanded.py:source_alignment` 的候选 HEAD 一致时均采用 `all(c["status"] == "PASS" for c in checks)`，但未阻止 `sources=[]`，导致空来源时 **all([]) → True → source_alignment/source_check PASS**。无 traceability 的合法调用入口有可能把无源模型提升为 `MODEL_AND_SOURCE_PASS`；相同地单条来源的 `anchors=[]` 可使锚点匹配 `all([])` 默认为 True。属于实验工具自身的证据准入缺陷，**不是 ADS 正式规范缺陷**。
 
 在原实验分支对两入口增加 **非空、类型有效的 source-map 条目和非空锚点负例阻断**，保留无 checkout 的 `NOT_RUN`、HEAD 不匹配的 `BLOCKED` 和真实来源存在时的原判定。新增 `formal/tests/test_source_binding_nonvacuity.py`，用小型真实 Git blob 字节与模拟 HEAD 读回来验证 legacy/expanded 两个入口（无来源、缺来源、空锚点、非字符串锚点、正确来源、错误来源、无 checkout）。不篡改 R11/R17/R20 的历史 exact-SHA 收据；本轮源码改变了 model tool input 闭包，**原 R11 的 35/35 strict 不能宣称是在本次新 HEAD 重跑**。若当前 Git 完整 checkout 不可在 Web 取得，局部 Python fixture 结果应与源码提交资格区分，需要具备环境时只做受影响回归与 strict Source-bound 重新验证（验证+修复统一）。候选 PR、正式规范、Gate/Actions、Freeze/Release 均不修改。
+
+## 40. #1366 R25 — R24 修复的 Exact-SHA 集成复测闭环（2026-11-11）
+
+R24 遗留两项 NOT_RUN（真实 checkout 导入单测、受影响 strict 原生验证）在本轮以双 Exact-SHA 工作树闭合：模型工作树 `6edd2bad98b455e1bcdd2895f50830412af25cff`（TREE `4380d122…`，WSL git 自 bare mirror 建，规避 INC-1 指针问题）× 候选 `dac263fa4c0ab155406d2f2117459b34322cc988`（TREE `def156ce…`），全程 tracked 文件零修改。修复后 Runner blob 与 R24 收据核验一致；`suite_sha256`/`tool_inventory_sha256` 与 R11 收据相等——自 R11 起唯一套件输入变化就是 R24 的两个 Runner 文件，本轮正是对该输入变化的受影响复测。
+
+- [x] **Python 77/77 零跳过零失败（权威 WSL2）**：`unittest discover` 全量收集执行 exit 0，含 R24 新增 7 项从真实 Git checkout 导入；Windows 补充 7/7 PASS。
+- [x] **严格套件 35/35 `MODEL_AND_SOURCE_PASS`**：21 proof + 14 mutation，z3×16+cvc5×16+TLC×3，差分 16/16，TLC 27/7/3 states，traceability 10/35/7 PASS，source 7/7 @ dac263f，model/tool before+after 全 PASS（三工具 sha256 与 inventory 钉死值一致，执行后复核不变）。
+- [x] **真实 CLI 红绿负探针**：空 `sources`/真实行空 `anchors` × 新旧 Runner——旧（9ca0139，`4a469557…`）在真实 z3+真实候选树上复现 vacuous `MODEL_AND_SOURCE_PASS`（exit 0）；新（`90f36453…`）分别 `SOURCE_BINDINGS_EMPTY_OR_MALFORMED`/`SOURCE_ANCHORS_EMPTY_OR_MALFORMED`（exit 1）。探针重跑字节确定。
+- [x] **Windows 5 项全量失败归因**：与 9ca0139 基线失败集合逐 ID 相同（POSIX `#!/bin/sh` 桩 ×4、`write_text` CRLF/autocrlf ×1），权威 linux-x86_64 全绿——先于 R24 的环境限制，非本轮回归，本收据不改其代码以保持 HEAD 精确对应。
+- [ ] **边界不变**：条款级义务分母 UNKNOWN；真实 v4.19 生产者 Claim/CAS/持久读回 NOT_PROVEN；R11/R17/R20 历史收据保持原 SHA 资格。
+
+证据：`formal/v4.19/r25/`（主收据 `R25_EXACT_CHECKOUT_INTEGRATION.json`、`R25_STRICT_RUN.json`、Python/套件/负探针/Windows 补充日志、身份复核）。资格：`R24_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_77_OF_77_ZERO_SKIP / STRICT_35_OF_35_PASS / DIFFERENTIAL_16_OF_16 / REAL_CLI_RED_GREEN_CLOSED / NO_NEW_REPAIR_REQUIRED`。ADS 正式规范 P0/P1/P2=0/0/0；实验 open P0/P1/P2=0/0/0。不合并、不 Freeze、不发布、无 Gate/Actions。

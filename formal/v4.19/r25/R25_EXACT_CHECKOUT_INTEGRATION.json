@@ -1,0 +1,146 @@
+{
+  "schema": "ads/formal-r25-exact-checkout-integration/v1",
+  "kind": "EXACT_SHA_DUAL_WORKTREE_INTEGRATION_REVIEW_LOCAL_EXECUTION_NOT_NORMATIVE_PROOF",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "subject": "R24 fail-closed source-binding repair (formal/suite/run.py + formal/suite/expanded.py) must be requalified at its exact code commit with full Python tests, affected strict native suite, solver differential, TLC and pre/post identity checks; R24 originally reported isolated-seam 7/7 only with real_exact_checkout_imported_tests=NOT_RUN and strict_native_solver_after_source_change=NOT_RUN.",
+  "execution_anchors": {
+    "model_worktree": {
+      "path": "/home/cc/ads-i1366-r25-model",
+      "branch": "experiment/v4.19-formal-proof-r0",
+      "head": "6edd2bad98b455e1bcdd2895f50830412af25cff",
+      "tree": "4380d12244be6a3166f96f2f688fa44315707115",
+      "created_from": "bare mirror worktree add --detach, WSL git 2.53.0 (avoids R11 INC-1 Windows/WSL .git pointer incompatibility)",
+      "tracked_files_modified_during_run": 0
+    },
+    "candidate_source_worktree": {
+      "path": "/home/cc/ads-i1366-r25-source",
+      "pr": 1365,
+      "pr_state": "OPEN_NOT_MERGED_NOT_FROZEN",
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "tracked_files_modified_during_run": 0
+    },
+    "repaired_runner_blobs_at_model_head": {
+      "formal/suite/run.py": "8a7dd3656e34ab42c7265fec94efa21016a1058a",
+      "formal/suite/expanded.py": "bcbff21ab471c1e25e0c529c27ea59aeb346c0d7",
+      "formal/tests/test_source_binding_nonvacuity.py": "441027a75ff50e9fe349926fa51343ad14fd8003",
+      "identity_source": "R24_FAIL_CLOSED_SOURCE_BINDING_REPAIR.json repaired_blobs + git ls-tree HEAD readback match"
+    },
+    "suite_inputs_unchanged_since_r11": {
+      "suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3",
+      "tool_inventory_sha256": "f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2",
+      "note": "Both equal the R11 receipt values; the only strict-suite model-input deltas since R11 are the R24-repaired runner files themselves."
+    }
+  },
+  "environment": {
+    "qualifying_platform": "WSL2 Ubuntu 26.04.1 (linux-x86_64), matching formal/tools/inventory.json runtime family and R0-R11 historical execution",
+    "python": "3.14.4",
+    "git_linux": "2.53.0",
+    "java": "openjdk 21.0.13.0.3 (AVAILABLE_UNPINNED, consistent with inventory)",
+    "windows_supplement": "Windows 10.0.26300 x64, Python 3.14.7 (supplementary only; no pinned Windows-native solvers)"
+  },
+  "tool_identity": {
+    "z3": {"version": "5.3.3", "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01", "pre": "PASS", "post": "PASS", "receipt_status": "VERIFIED"},
+    "cvc5": {"version": "1.4.2", "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102", "pre": "PASS", "post": "PASS", "receipt_status": "VERIFIED"},
+    "tlc_jar": {"version": "2.19", "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88", "pre": "PASS", "post": "PASS", "receipt_status": "VERIFIED"},
+    "java": {"status": "AVAILABLE_UNPINNED"},
+    "post_execution_recheck": "All three sha256 recomputed after every execution phase; unchanged. See R25_POSTCHECK_IDENTITY.txt."
+  },
+  "python_tests": {
+    "qualifying_wsl2_full_suite": {
+      "command": "python3 -m unittest discover -s tests -v (cwd: model worktree formal/; ADS_FORMAL_Z3/ADS_FORMAL_CVC5/ADS_FORMAL_TLC_JAR/ADS_FORMAL_CANDIDATE_CHECKOUT set to verified native paths and candidate worktree)",
+      "static_methods_collected": 77,
+      "executed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "status": "PASS_ZERO_SKIP_ZERO_FAIL",
+      "includes": "R24 test_source_binding_nonvacuity 7/7 imported from the real Git checkout (closes R24 real_exact_checkout_imported_tests=NOT_RUN)",
+      "log": "formal/v4.19/r25/R25_PYTHON_TESTS_LOG.txt",
+      "log_sha256": "4a30b73bd8b6db8dc18e2c9ccef4927cf550977f6ce909eb0ac3ffcf4d2140b4"
+    },
+    "windows_supplement": {
+      "new_tests_only": {"result": "7/7 PASS, exit 0", "log_sha256": "371cf7aaab45a8afab7ca4f8b2feed6e392f4998051bfcc72643184c0ae009c0"},
+      "full_suite": {
+        "result": "Ran 77 tests, failures=5, skipped=8, exit 1",
+        "classification": "PRE_EXISTING_WINDOWS_ENVIRONMENT_LIMITATION_NOT_R24_REGRESSION",
+        "attribution": "Same 5 failure IDs reproduce at pre-R24 baseline 9ca0139 on Windows (identical FAIL sets, see R25_WINDOWS_SUPPLEMENT_LOG.txt). Root causes: POSIX '#!/bin/sh' stub executables not executable via Windows subprocess (4 failures in test_expanded/test_toolchain) and text-mode write_text CRLF vs autocrlf blob mismatch in test_provenance temp repo. All 5 pass in the qualifying linux-x86_64 environment. formal/tools/inventory.json runtime is linux-x86_64; full-suite qualification has only ever been claimed on that family (R11).",
+        "log_sha256": "47f108e5aa1c82f0623168a63377dccefe119e193acf0f0824d87f1432f0e279"
+      },
+      "note": "sha256 values in this receipt refer to the runtime artifact bytes on their execution hosts; Git blob normalization may differ for Windows-produced text logs."
+    }
+  },
+  "strict_native_suite": {
+    "command": "python3 suite/run.py --suite v4.19/r10/suite.json --z3 <pinned> --cvc5 <pinned> --java java --tlc-jar <pinned jar> --model-head 6edd2bad98b455e1bcdd2895f50830412af25cff --source-checkout /home/cc/ads-i1366-r25-source --strict-source --out <receipt> (cwd: model worktree formal/)",
+    "verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_selected": "35/35 all declared (21 proof PASS_MODEL + 14 mutation COUNTEREXAMPLE)",
+    "tools_used": {"z3": 16, "cvc5": 16, "tlc": 3},
+    "solver_differential": {"pairs": 16, "status": "PASS", "require_solver_pairs": true},
+    "tlc": [
+      {"id": "ADS419-R2-LIFECYCLE-TLC", "status": "PASS_MODEL", "distinct_states": 27},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER", "status": "COUNTEREXAMPLE", "distinct_states": 7},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE", "status": "COUNTEREXAMPLE", "distinct_states": 3}
+    ],
+    "source_alignment": {"status": "PASS", "checks": 7, "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988", "blob_and_anchor_checks_all_pass": true},
+    "traceability_audit": {"status": "PASS", "property_count": 10, "case_count": 35, "source_count": 7},
+    "model_input_alignment_before_after": {"before": "PASS @ 6edd2bad98b455e1bcdd2895f50830412af25cff", "after": "PASS"},
+    "toolchain_alignment_before_after": "PASS / PASS",
+    "receipt": "formal/v4.19/r25/R25_STRICT_RUN.json",
+    "receipt_sha256": "9155807f890ecdbd432fcc4c4a4f293d5b952b6234514d1cdcfb122c2421f351",
+    "log": "formal/v4.19/r25/R25_STRICT_RUN_LOG.txt",
+    "log_sha256": "0dfe349fa5e97be7e62f9fe5f04767b7f940cce07b2e3f0712c73e8dce03f981",
+    "closes": "R24 strict_native_solver_after_source_change=NOT_RUN"
+  },
+  "negative_probe_real_cli": {
+    "purpose": "Demonstrate the R24 vacuous-source PASS defect was real at the actual CLI level (not only mocked seams) and is closed by the repaired runner, using identical negative inputs against both runner generations.",
+    "setup": "Scratch dir /home/cc/ads-i1366-r25-negprobe with byte-exact copy of formal/models/authority/claim.smt2 (sha256 5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39), minimal ads/formal-suite/v0 suite (1 real z3 case), real pinned z3, real candidate worktree as --source-checkout; run_old.py = git show 9ca0139:formal/suite/run.py, run_new.py = git show 6edd2bad:formal/suite/run.py",
+    "runner_identities": {
+      "run_old_sha256": "4a469557994203d9b13fe98b2439a872ef05590fdb563fd326260d1795d47ea4",
+      "run_new_sha256": "90f36453530c591af977dedc1f834cff675572f89f6e5b8743857e0073acafb9"
+    },
+    "scenario_A_empty_sources": {
+      "old": {"verdict": "MODEL_AND_SOURCE_PASS", "source_status": "PASS", "exit_code": 0, "interpretation": "VACUOUS_PASS_REPRODUCED (real model executed by real z3; zero source objects checked) — confirms R24-FORMAL-TOOL-P1-01 was a real defect"},
+      "new": {"verdict": "FAIL", "source_status": "FAIL", "reason": "SOURCE_BINDINGS_EMPTY_OR_MALFORMED", "exit_code": 1}
+    },
+    "scenario_B_empty_anchors_on_real_row": {
+      "source_row": {"path": "standards/EXECUTION_PACK_STANDARD.md", "blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1", "anchors": []},
+      "old": {"verdict": "MODEL_AND_SOURCE_PASS", "source_status": "PASS", "exit_code": 0, "interpretation": "VACUOUS_PASS_REPRODUCED — confirms R24-FORMAL-TOOL-P2-01 was a real defect"},
+      "new": {"verdict": "FAIL", "source_status": "FAIL", "reason": "SOURCE_ANCHORS_EMPTY_OR_MALFORMED", "exit_code": 1}
+    },
+    "determinism": "Probe re-run reproduced byte-identical out-*.json receipts (sha256 match against first execution).",
+    "artifacts": ["R25_NEGATIVE_PROBE_LOG.txt", "R25_NEGPROBE_driver.sh", "R25_NEGPROBE_suite.json", "R25_NEGPROBE_source_map_empty.json", "R25_NEGPROBE_source_map_emptyanchors.json", "R25_NEGPROBE_OUT_A_OLD.json", "R25_NEGPROBE_OUT_A_NEW.json", "R25_NEGPROBE_OUT_B_OLD.json", "R25_NEGPROBE_OUT_B_NEW.json"]
+  },
+  "post_execution_identity": {
+    "model_worktree_head": "6edd2bad98b455e1bcdd2895f50830412af25cff",
+    "model_worktree_tree": "4380d12244be6a3166f96f2f688fa44315707115",
+    "source_worktree_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "source_worktree_tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+    "tracked_files_modified": 0,
+    "tools_reshashed_unchanged": 3,
+    "artifact": "formal/v4.19/r25/R25_POSTCHECK_IDENTITY.txt"
+  },
+  "events": [
+    {"id": "R25-ENV-1", "severity": "P4", "status": "RESOLVED", "summary": "wsl.exe inline shell loops/quotes were mangled by MSYS argument conversion; mitigated by executing script files via MSYS_NO_PATHCONV=1 (established Git-Bash escape discipline). No evidence impact."},
+    {"id": "R25-ENV-2", "severity": "P4", "status": "RESOLVED_NOT_A_DEFECT", "summary": "5 Windows-only full-suite failures documented as pre-existing environment limitation with 9ca0139 baseline attribution; qualifying environment is linux-x86_64. No formal/ code change made for them in this round, so this receipt remains valid at the exact HEAD it was executed on."}
+  ],
+  "findings_summary": {
+    "ads_normative_P0": 0,
+    "ads_normative_P1": 0,
+    "ads_normative_P2": 0,
+    "experiment_open_P0": 0,
+    "experiment_open_P1": 0,
+    "experiment_open_P2": 0,
+    "experiment_closed_this_round": ["R24-FORMAL-TOOL-P1-01 (empty-sources vacuous PASS): code repair @6edd2bad + full-suite + strict + real-CLI red/green evidence", "R24-FORMAL-TOOL-P2-01 (empty-anchors vacuous PASS): code repair @6edd2bad + full-suite + strict + real-CLI red/green evidence"],
+    "new_repairs_required_this_round": 0
+  },
+  "qualification": "R24_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_77_OF_77_ZERO_SKIP_ZERO_FAIL_WSL2 / STRICT_MODEL_AND_SOURCE_PASS_35_OF_35 / SOLVER_DIFFERENTIAL_16_OF_16 / TLC_3_OF_3_MUTANTS_DETECTED / SOURCE_7_OF_7_MODEL_TOOL_PREPOST_PASS / REAL_CLI_RED_GREEN_NEGATIVE_PROBE_CLOSED / NO_NEW_REPAIR_REQUIRED",
+  "limitations": [
+    "Bounded pilot only; not a full ADS normative proof; atomic obligation denominator UNKNOWN",
+    "Real GitHub Claim/CAS/CI/Release, durable publication readback, liveness/fairness/expiry remain NOT_PROVEN",
+    "R11/R17/R20 historical receipts remain bound to their original tested SHAs and were not re-run",
+    "Windows full-suite environment sensitivity documented, not repaired in this write set (out of R24 subject scope; repairing it would change test blobs and require a fresh exact-checkout round)",
+    "Java and shared libraries not byte-pinned, consistent with inventory"
+  ]
+}

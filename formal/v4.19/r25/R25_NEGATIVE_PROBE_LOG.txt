@@ -1,0 +1,17 @@
+run_old sha256: 4a469557994203d9b13fe98b2439a872ef05590fdb563fd326260d1795d47ea4
+run_new sha256: 90f36453530c591af977dedc1f834cff675572f89f6e5b8743857e0073acafb9
+model sha256:   5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39
+===== SCENARIO A: sources=[] =====
+== A-old EXIT=0
+{"model_verdict": "MODEL_AND_SOURCE_PASS", "cases": 1, "source": "PASS", "receipt": "/home/cc/ads-i1366-r25-negprobe/out-A-old.json"}
+== A-new EXIT=1
+{"model_verdict": "FAIL", "cases": 1, "source": "FAIL", "receipt": "/home/cc/ads-i1366-r25-negprobe/out-A-new.json"}
+===== SCENARIO B: anchors=[] on real source row =====
+== B-old EXIT=0
+{"model_verdict": "MODEL_AND_SOURCE_PASS", "cases": 1, "source": "PASS", "receipt": "/home/cc/ads-i1366-r25-negprobe/out-B-old.json"}
+== B-new EXIT=1
+{"model_verdict": "FAIL", "cases": 1, "source": "FAIL", "receipt": "/home/cc/ads-i1366-r25-negprobe/out-B-new.json"}
+A-old: verdict=MODEL_AND_SOURCE_PASS source=PASS reason=None cases=1
+A-new: verdict=FAIL source=FAIL reason=SOURCE_BINDINGS_EMPTY_OR_MALFORMED cases=1
+B-old: verdict=MODEL_AND_SOURCE_PASS source=PASS reason=None cases=1
+B-new: verdict=FAIL source=FAIL reason=SOURCE_ANCHORS_EMPTY_OR_MALFORMED cases=1

@@ -1,0 +1,58 @@
+{
+  "kind": "ADS_BOUNDED_FORMAL_SUITE_NOT_FULL_ADS_PROOF",
+  "suite_sha256": "600171dae838035a83a4e42e69d5a16b1e156756813f46791a5f357b50d4595f",
+  "source_map_sha256": "f41bbf1554ed88ad7a21b134535070dc26405247909bedadc6752c517a468cb2",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "model_verdict": "MODEL_AND_SOURCE_PASS",
+  "tool_versions": {
+    "z3": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+    "java": [
+      "openjdk version \"21.0.13.0.3\" 2026-10-24"
+    ],
+    "tlc_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+  },
+  "source_alignment": {
+    "status": "PASS",
+    "checks": [
+      {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "status": "PASS",
+        "actual_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "missing_anchors": []
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "NEG-AUT-Z3",
+      "tool": "z3",
+      "purpose": "proof",
+      "model_hashes": {
+        "claim.smt2": "5b5e3562df3857646491c6f67c1ef509c5b99b7a8b1ba117ac89317711d75f39"
+      },
+      "status": "PASS",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "queries": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "exit_code": 0,
+      "output_tail": "unsat\nunsat\nunsat\nunsat\nsat\n"
+    }
+  ],
+  "limitations": [
+    "No full natural-language semantic-equivalence proof",
+    "No normative ADS qualification, Freeze or CI gate"
+  ]
+}
