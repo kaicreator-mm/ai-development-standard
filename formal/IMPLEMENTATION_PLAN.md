@@ -328,3 +328,12 @@ R14 已确认三个源语义缺口；本轮不再无界增加模拟 Controller/S
 同写集最小修复：`schema_boundary.py` 将 `REPO_ROOT/scripts` 与 `REPO_ROOT` 一并加入 sys.path（新 blob `15a8634e27946fca3c49db4f336687f4cf10bba3`），共享 checker 不改动。修复后双环境复跑 **13/13、零跳过、exit 0**：WSL2 Ubuntu 26.04.1（Python 3.14.4）与 Windows 10.0.26300（Python 3.14.7）。CLI `main()` 冒烟双环境各 3 案例：正例与可空 validator 形态 exit 0（`EXACT_BLOB_PASS` + `SHAPE_VALID_ONLY`，`publication_authorized=false` 恒成立），篡改 schema（fixture 字节+换行，置于工作树外）exit 2 `BLOCK`，observed blob `45a510f5...` ≠ 钉死值。
 
 **资格口径**：exact-source Python 集成 PASS 绑定**修复后 HEAD** × 两个实测环境；`3257080` 原样提交在该项上是 FAIL（exit 1），不得回溯标记为 PASS。机器收据 `formal/v4.19/r15/EXACT_SOURCE_PYTHON_RECEIPT.json`，逐字日志 `EXACT_SOURCE_PYTHON_LOG.txt`（SHA256 `d1f1614d...`）。边界不变：真实 v4.19 publisher/Claim/CAS/readback `NOT_PROVEN`，源↔模型语义等价 `NOT_PROVEN`，外部独立审核 `NOT_RUN`，全 ADS 原子义务分母 `UNKNOWN`。无正式规范修改、无新 Gate、不合并/Freeze/Release。
+
+
+## 29. #1366 R16 — 下游精确版本资格调查与独立审核准入准备（2026-11-11）
+
+R15 exact-source Python 已由本地 Agent 在修复后实验 HEAD `4de398a02f4c96d20ad763ea11d81a9a40ff0266` 完成 WSL2 + Windows 双环境 **13/13 zero-skip PASS**（CLI 正负 3×2 实跑）；此前 HEAD `3257080` 的确切源组合曾因 `v34_rules` 导入失败，**不得后向提升 PASS**。本轮不重复 R15/R11/R13 未改动模型与用例，转向 R14 仍缺的真实发布者资格来源。
+
+GitHub 原生读回实际检查了 **12 个仓库的 14 个指定分支元组**、每个 `.dev-standard/VERSION`：**8** 个具备明确旧版本 ADS pin（4.0/4.9/4.14/4.18），**1** 个仅有 `4.0.0` 且不含 ADS revision，**5** 个在所查 `main` 分支未找到该文件。**0/14** 能确认有效采用候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988`。细节精确 HEAD/blob 与失败分类见 `formal/v4.19/r16/R16_CONSUMER_ELIGIBILITY_READBACK.json`；8 个合成资格负控都未被误判为真实 PASS。尤其 `domain-harness/dis/0.2.0-element-intelligence-r1` 和 `tally/version/v2` 的直接文件读取均明确钉在 ADS 4.18，不能作为 v4.19 Dispatch/Claim 生产 E2E。**本调查不是全组织/全分支穷举，未找到文件 ≠ 未采用 ADS**，更不代表全球没有 v4.19 使用者。
+
+因此真实 v4.19 `enrich→effective pinned schema→authorized Task/Claim→serialized READY/QUEUED/accepted publication→durable readback` 仍 `NOT_PROVEN`，不为了完成指标强行借用旧项目或伪造 Claim。已将下一轮**真正独立源码/模型审核**的准确输入与 P0/P1/P2/缺口/实际执行收据要求固化于 `formal/v4.19/r16/INDEPENDENT_REVIEW_SCOPE.md`，当前仍 `NOT_RUN`；这只是待独立执行的审查合同而非独立审核通过。完整 ADS 原子规则分母 UNKNOWN。无规范/原模型/CI Gate/Merge/Freeze/Release 改动。

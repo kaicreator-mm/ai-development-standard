@@ -1,0 +1,290 @@
+{
+  "schema": "ads/formal-r16-real-producer-eligibility-survey/v1",
+  "issue": 1366,
+  "source_reference": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED"
+  },
+  "experiment_input": {
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "head": "4de398a02f4c96d20ad763ea11d81a9a40ff0266",
+    "tree": "b533ac4cee2225c6d0b82f5a80af8a1867e28937"
+  },
+  "observation_scope": {
+    "project_branch_tuples": 14,
+    "distinct_repositories": 12,
+    "explicitly_checked_path": ".dev-standard/VERSION",
+    "readback_with_valid_older_ads_exact_revision": 8,
+    "version_file_without_ads_revision": 1,
+    "version_file_not_found": 5,
+    "verified_v419_exact_candidate_pin_in_sample": 0,
+    "limitation": "Not a census of all repos, branches, external producers, or historical active subjects. Missing path != no ADS adoption."
+  },
+  "observations": [
+    {
+      "repository": "kaicreator-mm/domain-harness",
+      "ref": "main",
+      "head": "b1b2c182c1cb49c1b63b1efaf57ff9132d9cf4b0",
+      "version_blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "declared_ads_version": "4.18.0",
+      "declared_ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/domain-forge",
+      "ref": "main",
+      "head": "5725b292ba2b6634bb526cd0791228894f7104b1",
+      "version_blob": "54398dec1b93431c6eb3996855082f01e1dd104a",
+      "declared_ads_version": "4.0.0",
+      "declared_ads_revision": "1edaee9291e25b6dd99303493bed75132cb54881",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/runx",
+      "ref": "main",
+      "head": "b9e0c953d9bfd5834315012426fd8e10c21bdd7c",
+      "version_blob": "bf6fefccbdcfaf72c0d8346a5bb21167d2ab8807",
+      "declared_ads_version": "4.14.0",
+      "declared_ads_revision": "584512e8566408bed479192753c12a036309d277",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/shun-assistant",
+      "ref": "main",
+      "head": "217364b0c308e6089ea884ef7cb84eda752f7102",
+      "version_blob": "7a0c7dcfb6b2a408ad044fecebf646c2e1347282",
+      "declared_ads_version": "4.9.0",
+      "declared_ads_revision": "7929012f36a2202dcc2edc7a414b8163adc7afbd",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/xDownload",
+      "ref": "main",
+      "head": "e904f08c478b15147b1c07fbe53c610d2d81851f",
+      "version_blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "declared_ads_version": "4.18.0",
+      "declared_ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/tally",
+      "ref": "main",
+      "head": "e988321439f65b55936a691c02250b6d62a29409",
+      "version_blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "declared_ads_version": "4.18.0",
+      "declared_ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/domain-harness",
+      "ref": "dis/0.2.0-element-intelligence-r1",
+      "head": "4964edbc9e1c8a0152a90ee1c121b8620c961d3f",
+      "version_blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "declared_ads_version": "4.18.0",
+      "declared_ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/tally",
+      "ref": "version/v2",
+      "head": "7ebb1cdd0a79fc82cc938e35f852a80dd8e15332",
+      "version_blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "declared_ads_version": "4.18.0",
+      "declared_ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "class": "EXACT_PIN_OTHER_ADS_VERSION_NOT_ELIGIBLE_V419",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/ads-plane",
+      "ref": "main",
+      "head": "fee7bac32c9607d6414e6d2c8636420e148259c3",
+      "version_blob": "fcdb2e109f68cff5600955a73908885fe8599bb4",
+      "raw": "4.0.0\\n",
+      "class": "UNQUALIFIED_VERSION_ONLY_NO_ADS_REVISION",
+      "evidence": "DIRECT_GITHUB_READBACK"
+    },
+    {
+      "repository": "kaicreator-mm/formal-tools",
+      "ref": "main",
+      "head": null,
+      "version_blob": null,
+      "class": "PIN_FILE_NOT_FOUND_AT_CHECKED_REF",
+      "evidence": "GITHUB_FETCH_FILE_404_ONLY_DO_NOT_EXTRAPOLATE"
+    },
+    {
+      "repository": "kaicreator-mm/devkit",
+      "ref": "main",
+      "head": null,
+      "version_blob": null,
+      "class": "PIN_FILE_NOT_FOUND_AT_CHECKED_REF",
+      "evidence": "GITHUB_FETCH_FILE_404_ONLY_DO_NOT_EXTRAPOLATE"
+    },
+    {
+      "repository": "kaicreator-mm/task-meta",
+      "ref": "main",
+      "head": null,
+      "version_blob": null,
+      "class": "PIN_FILE_NOT_FOUND_AT_CHECKED_REF",
+      "evidence": "GITHUB_FETCH_FILE_404_ONLY_DO_NOT_EXTRAPOLATE"
+    },
+    {
+      "repository": "kaicreator-mm/task-meta-e2e",
+      "ref": "main",
+      "head": null,
+      "version_blob": null,
+      "class": "PIN_FILE_NOT_FOUND_AT_CHECKED_REF",
+      "evidence": "GITHUB_FETCH_FILE_404_ONLY_DO_NOT_EXTRAPOLATE"
+    },
+    {
+      "repository": "kaicreator-mm/ai-dev-pilot",
+      "ref": "main",
+      "head": null,
+      "version_blob": null,
+      "class": "PIN_FILE_NOT_FOUND_AT_CHECKED_REF",
+      "evidence": "GITHUB_FETCH_FILE_404_ONLY_DO_NOT_EXTRAPOLATE"
+    }
+  ],
+  "decisions": [
+    {
+      "repository": "kaicreator-mm/domain-harness",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/domain-forge",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/runx",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/shun-assistant",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/xDownload",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/tally",
+      "ref": "main",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/domain-harness",
+      "ref": "dis/0.2.0-element-intelligence-r1",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/tally",
+      "ref": "version/v2",
+      "result": "NOT_ELIGIBLE_V419_PROSPECTIVE_CANDIDATE"
+    },
+    {
+      "repository": "kaicreator-mm/ads-plane",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    },
+    {
+      "repository": "kaicreator-mm/formal-tools",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    },
+    {
+      "repository": "kaicreator-mm/devkit",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    },
+    {
+      "repository": "kaicreator-mm/task-meta",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    },
+    {
+      "repository": "kaicreator-mm/task-meta-e2e",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    },
+    {
+      "repository": "kaicreator-mm/ai-dev-pilot",
+      "ref": "main",
+      "result": "UNKNOWN_NO_VALID_CANDIDATE_PIN"
+    }
+  ],
+  "negative_controls": {
+    "origin": "In-session JS eligibility/classification checks over synthetic perturbations; no GitHub write, Python runtime, CAS or accepted dispatch",
+    "cases": [
+      {
+        "id": "old_4_18",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "label_4_19_wrong_sha",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "unknown_pin",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "version_only",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "candidate_pin_no_task",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "candidate_pin_no_claim",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "candidate_pin_no_readback",
+        "expected": "NOT_PROVEN",
+        "observed": "NOT_PROVEN"
+      },
+      {
+        "id": "fully_synthetic_claim_not_authenticated",
+        "expected": "NOT_PROVEN",
+        "observed": "STRUCTURALLY_COMPLETE_SYNTHETIC_NOT_REAL_PROOF"
+      }
+    ],
+    "fail_closed": true
+  },
+  "readback_source_status": "DIRECT_GITHUB_READBACK_RECORDED_FOR_REVIEW",
+  "result": "NO_ELIGIBLE_REAL_V419_PRODUCER_CONFIRMED_IN_SAMPLED_REFS",
+  "unproven": [
+    "actual v4.19 project/task adoption on any unexamined branch",
+    "current accepted Claim and authorized writer",
+    "prepublication schema validation and stable checked-vs-published bytes",
+    "GitHub serialized Claim/CAS and durable readback",
+    "external independent R13 model/source review",
+    "full ADS clause-level proof denominator"
+  ],
+  "no_claims": [
+    "No 4.19 adopter exists anywhere",
+    "ADS official normative defect",
+    "Review PASS",
+    "Live CAS unsafe",
+    "Real production Dispatch validated"
+  ]
+}
