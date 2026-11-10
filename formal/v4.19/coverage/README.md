@@ -44,3 +44,15 @@ These observations are based on the exact changed PR #1365 file patches and rema
 4. Full clause/obligation inventory is not materialized yet. Keep its denominator `null`; adding a full automation effort requires concrete benefit and reliable source segmentation.
 
 This document is an **index and future experiment selection**, not an assertion that uncovered rules are incorrect or normative Release gates.
+
+## Actual Python test-discovery Demo (2026-11-10)
+
+`discovery_probe.py` is a bounded **real Python subprocess** experiment drawn from the *candidate* `standards/TESTING_STANDARD.md` §6.1 source-delta premise. Every required test writes a physical `.ran` sentinel; the script checks the actually executed IDs against a declared two-test suite. It does not accept `unittest` exit code 0 or a test filename as proof of complete collection.
+
+- **Negative:** `python -m unittest discover -p test_root.py` exits green after **1/2 actual test executions**; the nested required test is missing → **`required_suite_status=NOT_RUN`**, even while the executed subset is PASS.
+- **Positive:** `-p test_*.py` executes both test IDs → the declared suite is PASS.
+- **Local Python 3.13.5**: four isolated regression tests actually executed **4/4 PASS** on copied source in a repository-like path. Evidence log SHA256 `ae1481edad2e8e05e8791c8c269fbde2038495d50654604fd235bf0f0c381c5e` and machine result in `DISCOVERY_DEMO_EXECUTION.json`.
+- First in-process `TestLoader.discover` prototype incorrectly reused `sys.modules` across temporary fixture directories and failed (3 errors). It was **repaired before commit** by switching to independent subprocesses with actual sentinel readback. The failed prototype is not a qualifying success run.
+- **Scope:** synthetic fixtures, not the real project CI profile, external runner or all ADS rules. A demo validates an *observable behavioral gap*, not natural-language⇄formal-model equivalence.
+
+Current `formal/tests` suite gains **4 new tests**. The historical R10 41/41 full strict outcome at the old Exact HEAD is preserved; full suite after this new commit remains **NOT_RUN**, not 45/45.

@@ -1,0 +1,89 @@
+{
+  "schema": "ads/formal-demo-execution-provenance/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "source_reference": {
+    "candidate_pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "path": "standards/TESTING_STANDARD.md",
+    "source_git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+    "candidate_section": "6.1 Executed-test discovery"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "os": "Linux x86_64"
+  },
+  "files": [
+    {
+      "path": "formal/v4.19/coverage/discovery_probe.py",
+      "local_git_blob": "37b5b3852ce01c518c0ce1afe1ee7a01f739373f",
+      "sha256": "ac29c68d787fe9fbda84a36626e6aa153c47349539e5ce6a8695e3b924a7c420"
+    },
+    {
+      "path": "formal/tests/test_discovery_probe.py",
+      "local_git_blob": "bffd765812ba3e261c94e08b88166c160e61fe83",
+      "sha256": null
+    }
+  ],
+  "execution": {
+    "command": "python3 -m unittest discover -s formal/tests -p test_discovery_probe.py -v (isolated repository-shaped layout)",
+    "unit_tests": 4,
+    "unit_passed": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "log_sha256": "ae1481edad2e8e05e8791c8c269fbde2038495d50654604fd235bf0f0c381c5e",
+    "demo_command": "python3 discovery_probe.py (same contents copied into standalone scratch source)",
+    "demo_result_sha256": "3df0e8aab32bc4b482b83118eb9e8888fc1d7733af1807f13be3b581f30ac565"
+  },
+  "result": {
+    "schema": "ads/formal-test-discovery-probe/v1",
+    "kind": "SYNTHETIC_PYTHON_NEGATIVE_AND_POSITIVE_DEMO_NOT_ADS_RULE_PROOF",
+    "scenario": "One root test and one nested required test, with execution sentinels",
+    "negative": {
+      "pattern": "test_root.py",
+      "declared_required_test_ids": [
+        "nested.test_nested.NestedTests.test_nested",
+        "test_root.RootTests.test_root"
+      ],
+      "observed_executed_test_ids": [
+        "test_root.RootTests.test_root"
+      ],
+      "command_reported_test_count": 1,
+      "observed_executed_count": 1,
+      "subset_execution_status": "PASS",
+      "missing_required_test_ids": [
+        "nested.test_nested.NestedTests.test_nested"
+      ],
+      "unclaimed_extra_test_ids": [],
+      "required_suite_status": "NOT_RUN",
+      "declared_coverage_qualified": false
+    },
+    "positive": {
+      "pattern": "test_*.py",
+      "declared_required_test_ids": [
+        "nested.test_nested.NestedTests.test_nested",
+        "test_root.RootTests.test_root"
+      ],
+      "observed_executed_test_ids": [
+        "nested.test_nested.NestedTests.test_nested",
+        "test_root.RootTests.test_root"
+      ],
+      "command_reported_test_count": 2,
+      "observed_executed_count": 2,
+      "subset_execution_status": "PASS",
+      "missing_required_test_ids": [],
+      "unclaimed_extra_test_ids": [],
+      "required_suite_status": "PASS",
+      "declared_coverage_qualified": true
+    },
+    "verdict": "PASS_GREEN_COMMAND_WITH_OMITTED_REQUIRED_TEST_DETECTED",
+    "not_proven": [
+      "No real project CI profile or external test runner was exercised",
+      "No ADS normative language-to-runtime equivalence theorem"
+    ]
+  },
+  "initial_failed_prototype": "In-process unittest discovery across temporary fixtures caused module cache import errors; fixture isolation fixed by subprocess. Not counted as PASS.",
+  "qualification": "NEW_DEMO_ISOLATED_PASS_NOT_FULL_FORMAL_TEST_SUITE_OR_ADS_PROOF"
+}
