@@ -1,0 +1,111 @@
+{
+  "schema": "ads/formal-profile-role-source-model-semantic-gap/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "subjects": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "experiment_inspected_head": "6670603a22de9dcf48268d9771fd2825923e65d8",
+    "source_schema": {
+      "path": "schemas/dispatch.schema.json",
+      "git_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f"
+    },
+    "abstract_authority_model": {
+      "path": "formal/models/authority/claim.smt2",
+      "git_blob": "865f1c6876598be9c4eaa4b4f496367324793cca"
+    },
+    "admission_model": {
+      "path": "formal/models/authority/admission-boundaries-r8.smt2",
+      "git_blob": "73c7ab4d845129b5f6335e275c9e696bc3a5b3d3"
+    },
+    "pilot_property_index": {
+      "path": "formal/v4.19/r8/source-index.json",
+      "git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894"
+    }
+  },
+  "source_schema_check": {
+    "checked_execution_profiles": 7,
+    "conditional_role_match_pass": 7,
+    "role_profile_pairs": [
+      {
+        "profile": "LOCAL_BUILDER",
+        "required_role": "builder",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "WEB_BUILDER",
+        "required_role": "builder",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "LOCAL_VALIDATOR",
+        "required_role": "validator",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "PLATFORM_VALIDATOR",
+        "required_role": "validator",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "CLOSURE_VALIDATOR",
+        "required_role": "validator",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "LOCAL_VALIDATION",
+        "required_role": "validator",
+        "source_conditional_mapping": "PASS"
+      },
+      {
+        "profile": "WEB_REVIEWER",
+        "required_role": "reviewer",
+        "source_conditional_mapping": "PASS"
+      }
+    ],
+    "validator_required_keys": [
+      "requested_head_sha",
+      "validation_profile"
+    ],
+    "requested_head_sha_nullable": true,
+    "validation_profile_nullable": true,
+    "explanation": "Schema enforces key presence and profile-role relationship, not non-null validator operands at the schema-only layer; actual exact-SHA/currentness admission must be checked by the owning runtime/Task authority. This is NOT classified as a demonstrated source defect."
+  },
+  "model_gap": {
+    "generic_authority_variables_present": [
+      "writerIsBuilder",
+      "acceptedClaim",
+      "writeSetAuthorized",
+      "claimCurrent"
+    ],
+    "specific_profile_tokens_in_examined_SMT_models": [],
+    "pilot_related": [
+      "ADS-P-AUT",
+      "ADS-P-EVO"
+    ],
+    "claim": "Generic bounded AUTHORITY/EVO invariants exist and were strictly executed at R11, but profile-specific dispatch/admission and historically pinned grandfathering are NOT proven equivalent to the candidate clauses.",
+    "qualification": "PARTIAL_ABSTRACT_MODEL_NOT_PROFILE_CLAUSE_PROOF"
+  },
+  "evidence_quality": {
+    "actual_schema_data_readback": "PASS",
+    "actual_candidate_schema_role_conditional_checks": "7/7 PASS",
+    "profile_specific_SMT_semantic_equivalence": "NOT_PROVEN",
+    "real_claim_controller_validation": "NOT_RUN",
+    "real_candidate_workflow_execution": "NOT_RUN",
+    "new_native_models_or_python_tests_added": 0,
+    "prior_R11_full_suite": "VALID_FOR_HISTORIC_EXACT_MODEL_SHA_ONLY"
+  },
+  "risk_and_next_action": {
+    "risk": "HIGH_COVERAGE_GAP_NOT_A_SOURCE_DEFECT",
+    "value": "A concrete cross-source profile/role and frozen-currentness distinction is more valuable to check next than generic toy models",
+    "next": "Review actual dispatch/controller profile authorization and frozen Task Pack currentness in existing candidate source before deciding if a new SMT invariant is warranted; do not assert that nullable JSON-schema fields alone authorize validation"
+  },
+  "limitations": [
+    "Source schema conditional mapping confirms only local schema syntax for role/profile fields",
+    "Nullability of requested_head_sha and validation_profile is not an authorization grant; no vulnerability claim",
+    "Examined two bounded authority models; other existing ADS code/evidence may enforce profile semantics elsewhere",
+    "Candidate v4.19 PR is open, not merged/frozen/effective published authority",
+    "Entire ADS normative obligation denominator UNKNOWN",
+    "No model, test, tool or normative source was changed"
+  ]
+}
