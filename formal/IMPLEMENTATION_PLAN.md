@@ -227,3 +227,13 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 历史验证 R0–R10 不再以聊天记录或任意单轮 JSON 作为项目进度入口。**[#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) 是本实验唯一主进度与工作索引**，保存 T00–T08 任务、轮次原始证据、历史 Exact-SHA、R10 的 35/35 与最新 HEAD 的 NOT_RUN 区别、剩余证明义务以及 Delivery-First → Web-First 派发规则。原始收据和模型**仍保留在 Git 版本化目录**，不复制粘贴覆盖、不回写修改历史 PASS。
 
 后续执行前先读 Issue #1366 和本文件，再刷新候选 PR #1365 与实验分支 HEAD；有重要实际结果则提交 Git 固化，并在 Issue #1366 追加对应 Exact-SHA 与 PASS/BLOCK/NOT_RUN。只有真正独立、持续性强的任务才创建按需子 Issue；默认 Web Builder 连续完成实现、修复、测试和收据，本地 Agent 仅限 Web 缺失能力的最小一体化修复与复测。
+
+## 17. Issue #1366 / T01 有效规范文件映射与真实 Discovery Demo（2026-11-10）
+
+**由主 Issue [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) 统一跟踪，不建立每轮子 Issue。** 从观察 v4.18 baseline `ac7e7e51de3a7ac27343f16a96568c0b0f2c5349` 到未合并候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988`，使用两份完整 Git Tree 与完全一致的 `standard-manifest.json` Git blob，逐字节枚举 Manifest `normative_standards` 的 **46 份**正式规范文件（另有 2 个兼容入口不计作重复规范 authority）。`formal/v4.19/coverage/normative-file-matrix.json` 固定每份文档的两端 Git blob/候选大小/映射 Property IDs；`INVENTORY_READBACK.json` 记录 4 个负面矩阵变异的拒绝与结构审计。结果：**3/46 规范文档由现有试点性质引用，43/46 尚无映射；候选相对于该观察基线 7/46 文档发生 blob 变更，包含 5 份尚未映射的变更文件**。R5 选定的七条 crosswalk source 只是试点子集，不是整个 Manifest 的变更分母。**规范条款/证明义务的计数仍 UNKNOWN**，不得将 3/46 与 10/10 pilot Property 误认为规则级证明覆盖率。
+
+五份发生变更但尚未映射的候选正式文件：`ARCHITECTURE_DESIGN_STANDARD.md`、`DEVELOPMENT_WORKFLOW.md`、`IMPLEMENTATION_QUALITY_STANDARD.md`、`TASK_DECOMPOSITION_STANDARD.md`、`TESTING_STANDARD.md`。其中优先对 PR #1365 增补的 `TESTING_STANDARD.md` §6.1（执行测试发现清单应匹配声明范围）进行实际 Python 正反 Demo，避免新增无必要的 SMT 公式。
+
+**真实最小 Demo：** `formal/v4.19/coverage/discovery_probe.py` 生成一个根测试和一个嵌套测试，以独立 Python 子进程执行 `unittest discover`，由被执行测试写 `.ran` 哨兵，按真实运行 ID 对照声明套装。`-p test_root.py` 虽然进程 PASS，却只执行 **1/2**，嵌套要求保持 **NOT_RUN**；`-p test_*.py` 实际执行 **2/2**，声明套装才可 PASS。第一次进程内复用 `unittest.TestLoader` 曾因 `sys.modules` 跨临时目录缓存失败，已改为独立子进程修复。**隔离的仓库形态 Python 3.13.5 unittest 4/4 PASS**（原始日志 SHA256 `ae1481edad2e8e05e8791c8c269fbde2038495d50654604fd235bf0f0c381c5e`），GitHub 提交的两份 Python blob 与实际运行过的本地 Git blob 一致：`37b5b3852ce01c518c0ce1afe1ee7a01f739373f` / `bffd765812ba3e261c94e08b88166c160e61fe83`。完整收据在 `formal/v4.19/coverage/DISCOVERY_DEMO_EXECUTION.json`。这仅证明 synthetic test collection 情形，不证明真实 CI/provider、全部 ADS 规则或 LTL/SMT 语义等价。
+
+**新 HEAD 的完整验收边界：** GitHub 静态盘点当前 `formal/tests/test_*.py` **47 个测试方法**，不是可冒称的 47/47 实际 PASS；R10 历史 41/41 绑定旧 SHA、当前独立运行了新增 4/4。最新 HEAD 严格 `formal/tests` + R10 的 35 原生模型全套仍 **NOT_RUN**；无新 Gate、冻结、合并或发布。
