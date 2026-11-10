@@ -1,0 +1,172 @@
+{
+  "schema": "ads/formal-source-consumer-boundary-audit/v1",
+  "main_issue": 1366,
+  "date_utc": "2026-11-10",
+  "scope": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "observed_candidate_base": "fbf1a7d49596c549e955ef36949f4110a0da2d33",
+    "experiment_review_input_head": "1346ba0b82b8fa5442770fe83970d5ea5e4d5c2f",
+    "downstream_observation": {
+      "repo": "kaicreator-mm/tally",
+      "head": "e988321439f65b55936a691c02250b6d62a29409",
+      "qualification": "FOREIGN_PROJECT_CONTRACT_NOT_PROVEN_ADS_V419_ADOPTION"
+    }
+  },
+  "version_diff": {
+    "base_schema_blob": "90bea62524beb0215d5f40cf0be9986786648fec",
+    "candidate_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+    "base_profile_count": 5,
+    "candidate_profile_count": 7,
+    "new_profiles": [
+      "WEB_BUILDER",
+      "LOCAL_VALIDATION"
+    ],
+    "prospective_not_retroactive": true
+  },
+  "source_bindings": [
+    {
+      "path": "schemas/dispatch.schema.json",
+      "sha": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+      "kind": "MACHINE_SCHEMA",
+      "status": "LOCAL_SCHEMA_ROLE_GUARDS_PRESENT"
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "sha": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "kind": "PROSPECTIVE_NORMATIVE",
+      "status": "PRODUCER_PREPUBLICATION_REQUIREMENT_ASSERTED"
+    },
+    {
+      "path": "scripts/v34_rules.py",
+      "sha": "0829be09f46dde75710bc54607a14edd7a2c4cea",
+      "kind": "PURE_NONAUTHORITATIVE_REFERENCE",
+      "status": "ENVIRONMENT_PROJECTION_AND_CLAIM_KEY_HELPERS"
+    },
+    {
+      "path": "scripts/test_protocol_schemas.py",
+      "sha": "96edf2413e35a90d8049e529c11e832637dbaabd",
+      "kind": "UNIT_CONFORMANCE_ORACLE",
+      "status": "PROFILE_INVALID_POSITIVE_NEGATIVE_FIXTURES_PRESENT"
+    },
+    {
+      "path": "scripts/test_v411_t06_claim_admission.py",
+      "sha": "4c36998f9e86a8a7d6e05486d9740fb0910cea69",
+      "kind": "SIMULATED_CLAIM_ADMISSION_ORACLE",
+      "status": "NOT_REAL_GITHUB_CAS"
+    },
+    {
+      "repo": "kaicreator-mm/tally",
+      "path": "internal/controlplane/dispatch.go",
+      "sha": "3c9cc4f757dcaaba602900b458ce8d79720e3757",
+      "kind": "EXTERNAL_SERVICE_IMPLEMENTATION",
+      "status": "ADS_V419_ADOPTION_NOT_ESTABLISHED"
+    },
+    {
+      "repo": "kaicreator-mm/tally",
+      "path": "internal/taskexecution/contracts.go",
+      "sha": "0c4d02fee5e4bae3e5374a1f565b189983aeb638",
+      "kind": "EXTERNAL_TASK_EXECUTION_CONTRACT",
+      "status": "DIFFERENT_LOCAL_CONTRACT_NO_DIRECT_CANONICAL_DISPATCH_BINDING_ESTABLISHED"
+    }
+  ],
+  "role_profiles": [
+    {
+      "profile": "LOCAL_BUILDER",
+      "role": "builder",
+      "in_base": true,
+      "schema_conditional_count": 1,
+      "schema_role": "builder",
+      "helper_environment": "LOCAL"
+    },
+    {
+      "profile": "LOCAL_VALIDATOR",
+      "role": "validator",
+      "in_base": true,
+      "schema_conditional_count": 1,
+      "schema_role": "validator",
+      "helper_environment": "LOCAL"
+    },
+    {
+      "profile": "WEB_REVIEWER",
+      "role": "reviewer",
+      "in_base": true,
+      "schema_conditional_count": 1,
+      "schema_role": "reviewer",
+      "helper_environment": "WEB"
+    },
+    {
+      "profile": "PLATFORM_VALIDATOR",
+      "role": "validator",
+      "in_base": true,
+      "schema_conditional_count": 1,
+      "schema_role": "validator",
+      "helper_environment": "ORTHOGONAL_EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "CLOSURE_VALIDATOR",
+      "role": "validator",
+      "in_base": true,
+      "schema_conditional_count": 1,
+      "schema_role": "validator",
+      "helper_environment": "ORTHOGONAL_EXPLICIT_OR_UNKNOWN"
+    },
+    {
+      "profile": "WEB_BUILDER",
+      "role": "builder",
+      "in_base": false,
+      "schema_conditional_count": 1,
+      "schema_role": "builder",
+      "helper_environment": "WEB"
+    },
+    {
+      "profile": "LOCAL_VALIDATION",
+      "role": "validator",
+      "in_base": false,
+      "schema_conditional_count": 1,
+      "schema_role": "validator",
+      "helper_environment": "LOCAL"
+    }
+  ],
+  "actual_source_checks": {
+    "base_profiles_5_candidate_profiles_7": "PASS",
+    "new_profiles_are_exactly_WEB_BUILDER_and_LOCAL_VALIDATION": "PASS",
+    "candidate_schema_all_profile_role_mappings": "7/7 PASS",
+    "python_helper_mapping_5_plus_2_orthogonal": "PASS",
+    "source_test_oracles_present": "4/4 SOURCE_ASSERTION_PRESENT_NOT_EXECUTED",
+    "normative_prepublication_conditions_present": "4/4",
+    "claim_admission_test_oracle_is_simulation": true,
+    "tally_service_dispatch_exists": true,
+    "tally_taskexecution_type_exists": true,
+    "tally_contract_contains_canonical_execution_profile": false,
+    "negative_structural_mutations_rejected": 4
+  },
+  "semantic_boundary": {
+    "source_schema_role_contract": "SUPPORTED_BY_SCHEMA_AND_REFERENCE_TESTS",
+    "profile_environment_routing": "SUPPORTED_BY_PURE_HELPER_AND_REFERENCE_TESTS",
+    "native_dispatch_producer_uses_exact_pinned_candidate_schema": "NOT_PROVEN",
+    "native_dispatch_producer_revalidates_complete_payload_at_write_boundary": "NOT_PROVEN",
+    "live_claim_CAS_and_durable_dispatch_publication": "NOT_PROVEN",
+    "tally_v419_canonical_dispatch_eligibility": "NOT_ESTABLISHED",
+    "full_source_to_runtime_equivalence": "NOT_PROVEN",
+    "ADS_normative_defect": "NOT_ESTABLISHED"
+  },
+  "next_smallest_action": {
+    "focus": "Locate the exact downstream project's approved ADS version pin and the actual production Dispatch publication call; only then inspect one supported canonical dispatch through enrich→schema→claim→publish→readback",
+    "do_not_do": [
+      "Do not rerun R11 61/61 and 35/35 for data-only audit",
+      "Do not add a generic mock controller or another SMT state machine",
+      "Do not assume an unrelated Tally TaskExecutionRequest conforms to ADS canonical dispatch",
+      "Do not mutate PR #1365, official standards, Claim or release"
+    ],
+    "when_to_create_model": "Only a real counterexample or material cross-rule source obligation not established by existing schema and test oracles"
+  },
+  "limitations": [
+    "GitHub exact-source readback and static assertion, not an executable producer integration acceptance",
+    "No evidence Tally at observed HEAD has adopted prospective v4.19 rules",
+    "Five historical profiles preserved in base and two new in candidate; historical frozen Task authority not inferred from schema diff alone",
+    "Tally contract absence of canonical execution_profile string in examined file is not proof of absence of an adapter elsewhere",
+    "Full ADS atomic normative denominator still UNKNOWN"
+  ],
+  "verdict": "SOURCE_BOUNDARY_STATIC_AUDIT_PASS_REAL_DISPATCH_PRODUCER_UNPROVEN"
+}
