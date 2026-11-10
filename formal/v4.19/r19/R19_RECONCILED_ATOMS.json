@@ -1,0 +1,398 @@
+{
+  "schema": "ads/formal-r19-exact-source-atom-review-and-reconciliation/v1",
+  "issue": 1366,
+  "input_experiment": {
+    "head": "4044557fcf28a9a1b2beda8fcd0d7850f943c633",
+    "tree": "08234b554913ec3450f191cc1d2221689d6af028",
+    "r18_blob": "79f8b7411b3532bf8098345497a5353e3246e917"
+  },
+  "source": {
+    "candidate_pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED",
+    "implementation_quality": {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "line": 43,
+      "blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2"
+    },
+    "cross_owner": [
+      {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "line": 51,
+        "blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93"
+      },
+      {
+        "path": "standards/TESTING_STANDARD.md",
+        "line": 72,
+        "blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2"
+      }
+    ]
+  },
+  "finding": {
+    "id": "R19-REVIEW-QUALITY-P2-01",
+    "class": "EXPERIMENT_DRAFT_ATOMIC_GRANULARITY",
+    "severity": "P2",
+    "description": "R18 seven facets treated two examples as separate atomic obligations and promoted an explanatory no-new-Gate caveat to a prospective operational obligation; IM43-03 combined two independently falsifiable checks",
+    "status": "CORRECTED_IN_SEPARATE_R19_LEDGER",
+    "ads_normative_defect": "NOT_CONFIRMED"
+  },
+  "reconciled_candidates": [
+    {
+      "id": "IM43-R1",
+      "review_type": "INDEPENDENTLY_FALSIFIABLE_CLAUSE_CANDIDATE",
+      "title": "Actual selected public-entrypoint invocation",
+      "preconditions": [
+        "Shipped public/plugin-facing behavior is material",
+        "Evidence claims that selected functionality is supported"
+      ],
+      "requirement": "The claimed supported implementation must distinguish an actually selected invocation from source-present, exported, imported, initialized, or loaded components",
+      "negative_witness": "A hook is present and registered but routing never selects it; support cannot be claimed",
+      "disposition": "SOURCE_INTERPRETATION_APPROVED_FOR_BOUNDED_REVIEW_NOT_FORMAL_PROOF",
+      "primary_owner": "IMPLEMENTATION_QUALITY_EVIDENCE",
+      "testing_proof_owner": "EXISTING_TESTING_INTEGRATION",
+      "source_anchor": "actual selected-path invocation",
+      "related_r18": [
+        "IM43-01",
+        "IM43-02",
+        "IM43-03"
+      ],
+      "not_universal": "Material shipped public/plugin-facing behavior only",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "line": 43,
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "anchor": "actual selected-path invocation"
+      },
+      "supplemental_sources": [
+        {
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "line": 51,
+          "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+          "role": "DESIGN_SHOULD_PATH_DECLARATION_NOT_EXECUTABLE_PROOF"
+        },
+        {
+          "path": "standards/TESTING_STANDARD.md",
+          "line": 72,
+          "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+          "role": "SELECTED_PATH_CONTRACT_EVIDENCE_OWNER"
+        }
+      ],
+      "proof_status": "NOT_PROVEN",
+      "runtime_test_status": "NOT_RUN",
+      "fresh_source_adversarial_review": "IN_SESSION_SOURCE_FIRST_NOT_INDEPENDENT_PERSON"
+    },
+    {
+      "id": "IM43-R2",
+      "review_type": "INDEPENDENTLY_FALSIFIABLE_CLAUSE_CANDIDATE",
+      "title": "Observable public contract behavior beyond invocation",
+      "preconditions": [
+        "Material public entrypoint was actually selected and invoked",
+        "Evidence claims behavior supported"
+      ],
+      "requirement": "Actual selected invocation alone does not establish the promised observable contract outcome; record behavioral evidence or leave missing proof unqualified",
+      "negative_witness": "The selected hook is invoked but outputs the wrong contract result; the integration claim remains unsupported",
+      "disposition": "SOURCE_INTERPRETATION_APPROVED_FOR_BOUNDED_REVIEW_NOT_FORMAL_PROOF",
+      "primary_owner": "IMPLEMENTATION_QUALITY_EVIDENCE",
+      "testing_proof_owner": "EXISTING_TESTING_INTEGRATION",
+      "source_anchor": "observable contract behavior",
+      "related_r18": [
+        "IM43-03"
+      ],
+      "not_universal": "No mandatory full release-wide E2E for leaf changes",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "line": 43,
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "anchor": "observable contract behavior"
+      },
+      "supplemental_sources": [
+        {
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "line": 51,
+          "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+          "role": "DESIGN_SHOULD_PATH_DECLARATION_NOT_EXECUTABLE_PROOF"
+        },
+        {
+          "path": "standards/TESTING_STANDARD.md",
+          "line": 72,
+          "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+          "role": "SELECTED_PATH_CONTRACT_EVIDENCE_OWNER"
+        }
+      ],
+      "proof_status": "NOT_PROVEN",
+      "runtime_test_status": "NOT_RUN",
+      "fresh_source_adversarial_review": "IN_SESSION_SOURCE_FIRST_NOT_INDEPENDENT_PERSON"
+    },
+    {
+      "id": "IM43-R3",
+      "review_type": "CONDITIONAL_REMEDIATION_CANDIDATE",
+      "title": "Repair composition OR disclose missing integration evidence",
+      "preconditions": [
+        "An implementation claims selected feature support",
+        "Only import/activation evidence exists without selected contract execution"
+      ],
+      "requirement": "Choose real composition repair OR an honest NOT_PROVEN/NOT_RUN disclosure; disclosure is not itself proof of feature support",
+      "negative_witness": "An implementation claims supported with no selected routing evidence and neither repair nor qualification",
+      "disposition": "SOURCE_INTERPRETATION_APPROVED_FOR_BOUNDED_REVIEW_NOT_FORMAL_PROOF",
+      "primary_owner": "IMPLEMENTATION_QUALITY_EVIDENCE",
+      "testing_proof_owner": "EXISTING_TESTING_INTEGRATION",
+      "source_anchor": "repair the real composition or state the missing integration evidence honestly",
+      "related_r18": [
+        "IM43-05"
+      ],
+      "not_universal": "No requirement to force a repair rather than truthfully disclose missing integration evidence",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "line": 43,
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "anchor": "repair the real composition or state the missing integration evidence honestly"
+      },
+      "supplemental_sources": [
+        {
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "line": 51,
+          "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+          "role": "DESIGN_SHOULD_PATH_DECLARATION_NOT_EXECUTABLE_PROOF"
+        },
+        {
+          "path": "standards/TESTING_STANDARD.md",
+          "line": 72,
+          "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+          "role": "SELECTED_PATH_CONTRACT_EVIDENCE_OWNER"
+        }
+      ],
+      "proof_status": "NOT_PROVEN",
+      "runtime_test_status": "NOT_RUN",
+      "fresh_source_adversarial_review": "IN_SESSION_SOURCE_FIRST_NOT_INDEPENDENT_PERSON"
+    },
+    {
+      "id": "IM43-R4",
+      "review_type": "EXISTING_OWNER_AUTHORITY_CANDIDATE",
+      "title": "Testing/Integration owner alone issues executable proof",
+      "preconditions": [
+        "Executable proof of the material selected public path is necessary"
+      ],
+      "requirement": "Implementation-quality evidence categorization does not create executable-proof or release certification authority; the applicable Testing/Integration owner owns that evidence",
+      "negative_witness": "A Builder promotes loaded-source evidence to PASS of a different Testing owner without actual selected contract verification",
+      "disposition": "SOURCE_INTERPRETATION_APPROVED_FOR_BOUNDED_REVIEW_NOT_FORMAL_PROOF",
+      "primary_owner": "EXISTING_TESTING_INTEGRATION",
+      "testing_proof_owner": "EXISTING_TESTING_INTEGRATION",
+      "source_anchor": "Testing/Integration owner alone issues the executable proof",
+      "related_r18": [
+        "IM43-06"
+      ],
+      "not_universal": "Do not invent a new Gate or change ownership of Release/Hidden",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "line": 43,
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "anchor": "Testing/Integration owner alone issues the executable proof"
+      },
+      "supplemental_sources": [
+        {
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "line": 51,
+          "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+          "role": "DESIGN_SHOULD_PATH_DECLARATION_NOT_EXECUTABLE_PROOF"
+        },
+        {
+          "path": "standards/TESTING_STANDARD.md",
+          "line": 72,
+          "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+          "role": "SELECTED_PATH_CONTRACT_EVIDENCE_OWNER"
+        }
+      ],
+      "proof_status": "NOT_PROVEN",
+      "runtime_test_status": "NOT_RUN",
+      "fresh_source_adversarial_review": "IN_SESSION_SOURCE_FIRST_NOT_INDEPENDENT_PERSON"
+    },
+    {
+      "id": "IM43-R5",
+      "review_type": "MATERIAL_SEAM_CONDITIONAL_CANDIDATE",
+      "title": "Clean installed public entrypoint when packaging seam is material",
+      "preconditions": [
+        "There is a shipped public package/plugin entrypoint",
+        "The installed-package/build dependency or import seam is material for the claim"
+      ],
+      "requirement": "Include a representative clean installed public-entrypoint check for the material seam; a workspace-only import/compile success is not enough",
+      "negative_witness": "Workspace test passes, clean installed public consumer fails to import required dependency",
+      "disposition": "SOURCE_INTERPRETATION_APPROVED_FOR_BOUNDED_REVIEW_NOT_FORMAL_PROOF",
+      "primary_owner": "EXISTING_TESTING_INTEGRATION",
+      "testing_proof_owner": "EXISTING_TESTING_INTEGRATION",
+      "source_anchor": "include it where the public packaging seam is material",
+      "related_r18": [
+        "IM43-07"
+      ],
+      "not_universal": "No unconditional installed-package/large E2E requirement for nonpublic or immaterial seams",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "line": 43,
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "anchor": "include it where the public packaging seam is material"
+      },
+      "supplemental_sources": [
+        {
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "line": 51,
+          "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+          "role": "DESIGN_SHOULD_PATH_DECLARATION_NOT_EXECUTABLE_PROOF"
+        },
+        {
+          "path": "standards/TESTING_STANDARD.md",
+          "line": 72,
+          "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+          "role": "SELECTED_PATH_CONTRACT_EVIDENCE_OWNER"
+        }
+      ],
+      "proof_status": "NOT_PROVEN",
+      "runtime_test_status": "NOT_RUN",
+      "fresh_source_adversarial_review": "IN_SESSION_SOURCE_FIRST_NOT_INDEPENDENT_PERSON"
+    }
+  ],
+  "scope_guard_metadata": {
+    "id": "IM43-SCOPE",
+    "source": {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "line": 43,
+      "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+      "anchor": "not new workflow/Gate states"
+    },
+    "source_sentence": "These are explanatory evidence categories, not new workflow/Gate states.",
+    "classification": "META_INTERPRETIVE_SCOPE_GUARD_NOT_COUNTABLE_ATOMIC_PROOF_OBLIGATION",
+    "prior_r18": "IM43-04",
+    "behavior": "Do not infer an independent state transition or new release gate; this limits what other facet claims can mean"
+  },
+  "r18_to_r19_mapping": [
+    {
+      "r18": "IM43-01",
+      "r19": [
+        "IM43-R1"
+      ],
+      "reason": "SOURCE_PRESENT is a nonqualifying example, not an independent rule"
+    },
+    {
+      "r18": "IM43-02",
+      "r19": [
+        "IM43-R1"
+      ],
+      "reason": "EXPORTED_OR_LOADED is a parallel nonqualifying example"
+    },
+    {
+      "r18": "IM43-03",
+      "r19": [
+        "IM43-R1",
+        "IM43-R2"
+      ],
+      "reason": "Actually selected invocation and observable correct behavior can fail separately; independently falsifiable"
+    },
+    {
+      "r18": "IM43-04",
+      "r19": [
+        "IM43-SCOPE"
+      ],
+      "reason": "Explanatory no-new-Gate caveat is metadata, not a newly created operational proof obligation"
+    },
+    {
+      "r18": "IM43-05",
+      "r19": [
+        "IM43-R3"
+      ],
+      "reason": "Conditional disjunctive repair OR honest disclosure, not two mandatory repairs"
+    },
+    {
+      "r18": "IM43-06",
+      "r19": [
+        "IM43-R4"
+      ],
+      "reason": "Reaffirms the existing Testing/Integration proof ownership; not a novel Gate"
+    },
+    {
+      "r18": "IM43-07",
+      "r19": [
+        "IM43-R5"
+      ],
+      "reason": "Only required when installed public packaging seam is materially relevant"
+    }
+  ],
+  "review_negative_scenarios": [
+    {
+      "id": "W1",
+      "premise": "Source present; not selected",
+      "target": "IM43-R1",
+      "expected": "CLAIM_NOT_QUALIFIED"
+    },
+    {
+      "id": "W2",
+      "premise": "Exported/loaded but never routed",
+      "target": "IM43-R1",
+      "expected": "CLAIM_NOT_QUALIFIED"
+    },
+    {
+      "id": "W3",
+      "premise": "Selected invocation, wrong observable output",
+      "target": "IM43-R2",
+      "expected": "CLAIM_NOT_QUALIFIED"
+    },
+    {
+      "id": "W4",
+      "premise": "Import-only, repair absent, honest missing-integration disclosure",
+      "target": "IM43-R3",
+      "expected": "CLAIM_NOT_QUALIFIED_BUT_DISCLOSURE_ACCEPTABLE"
+    },
+    {
+      "id": "W5",
+      "premise": "Import-only, no repair and no disclosure, yet support claimed",
+      "target": "IM43-R3",
+      "expected": "UNQUALIFIED_SUPPORT_CLAIM"
+    },
+    {
+      "id": "W6",
+      "premise": "Implementation Quality claims Testing executable PASS based only on import",
+      "target": "IM43-R4",
+      "expected": "CROSS_OWNER_CLAIM_REJECTED"
+    },
+    {
+      "id": "W7",
+      "premise": "Material installed package entrypoint breaks after workspace PASS",
+      "target": "IM43-R5",
+      "expected": "PACKAGING_PROOF_MISSING"
+    },
+    {
+      "id": "W8",
+      "premise": "No material installed-package seam",
+      "target": "IM43-R5",
+      "expected": "NO_UNCONDITIONAL_INSTALLED_TEST"
+    },
+    {
+      "id": "W9",
+      "premise": "Someone treats SOURCE_PRESENT as new canonical Gate state",
+      "target": "IM43-SCOPE",
+      "expected": "UNSUPPORTED_NEW_GATE_INTERPRETATION"
+    }
+  ],
+  "counts": {
+    "r18_original_draft_facets": 7,
+    "r19_distinct_provisional_obligations": 5,
+    "r19_scope_guard_not_countable": 1,
+    "r18_selected_25_atom_ledger": "UNCHANGED_NOT_REQUALIFIED",
+    "full_ads_atomic_rule_denominator": null,
+    "official_formal_proved_implementation_quality_clause_count": 0
+  },
+  "executed_checks": {
+    "scope": "IN_SESSION_GITHUB_SOURCE_REVIEW_JS_STRUCTURAL_AND_SEMANTIC_INSPECTION_NOT_PYTHON_OR_NATIVE",
+    "pre_commit_checked": 17,
+    "pre_commit_passed": 17,
+    "review_consistency_checked": 16,
+    "review_consistency_passed": 16
+  },
+  "bounds": {
+    "human_independent_reviewer": "NOT_ATTESTED",
+    "semantically_verified_by_external_reviewer": "NOT_RUN",
+    "new_native_proof": "NOT_RUN",
+    "new_python_test": "NOT_RUN",
+    "real_selected_consumer": "NOT_RUN",
+    "real_v419_cas": "NOT_PROVEN",
+    "r17_historical": "13_13_TWO_ENVS_AND_NATIVE_32_32_UNCHANGED",
+    "qualifying_statement": "This is source-faithfulness and scope correction, not normative approval or executable-path proof"
+  }
+}

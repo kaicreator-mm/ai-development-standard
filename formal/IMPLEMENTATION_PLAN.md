@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R0–R18（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R18 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R19 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -365,3 +365,12 @@ R17 P2 修复代码在其**被测 Exact-SHA `c5eb69c3fcd47ca934b4b87c8004131add6
 **真实源码比较**：候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` 与观察基线 `ac7e7e51de3a7ac27343f16a96568c0b0f2c5349` 的 `IMPLEMENTATION_QUALITY_STANDARD.md` Git blob 分别 `c37c4a223e21764ebe211f0e7bdd886a2060c5e2` / `3beba2d0324d95674b7bad2ef621e2aa81c66563`；精确行比较保留开头 **42** 行、结尾 **50** 行不变，只插入**第 43 行一条复合规范段落＋第 44 行空行**。既有 `ATOMIC_RULE_SAMPLE.json` 仅以 `IM-01` 表示这条长规范段落。本轮新增 `formal/v4.19/r18/R18_DELTA_ATOMICITY_LEDGER.json` 中 **7 个待独立审核的候选叶子约束**（源码存在/加载不等于实际 selected path、可观察 contract behavior、禁止凭空产生新 Gate、未集成时 repair 或保留缺证、Testing/Integration 独占可执行证明、packaging seam material 时 clean installed entrypoint），明确条件、Owner、负面场景、精确源码锚点。联合读回 `ARCHITECTURE_DESIGN_STANDARD.md:51` 与 `TESTING_STANDARD.md:72`，确认设计/测试/实现 Quality 的语义 owner 分离。
 
 **实际执行**：直接 GitHub exact-blob 与逐行源码对照、历史 `IM-01` 对照及文档交叉约束审计 **14/14 PASS**。这是 **source audit**，本轮没有重新执行 Python/SMT 或真实项目运行。7 个叶子仅为同一源段的待审细分，**不是**已批准的 7 条原子规则，更不等于将原 25 项台账升级为 31 项已证明性质。完整 ADS 全规范义务分母仍 **UNKNOWN**，外部独立语义审核与真实 v4.19 Dispatch/Claim/CAS 仍 **NOT_PROVEN**。源差量审查文档 `formal/v4.19/r18/R18_SOURCE_DELTA_REVIEW.md`；下阶段优先独立审核这 7 项的原子性/适用条件，再决定是否需要源消费者的最小可执行验证，不新增通用 FIR/Gate/Release 流程。
+
+
+## 33. #1366 R19 — R18 复合规则盲审式语义纠偏，消除候选义务虚增（2026-11-11）
+
+重新读取实验 HEAD `4044557fcf28a9a1b2beda8fcd0d7850f943c633`、R18 原始七项 `79f8b7411b3532bf8098345497a5353e3246e917` 与候选 PR #1365 精确规范源码 `c37c4a223e21764ebe211f0e7bdd886a2060c5e2`，并对照 Architecture `51fad2c5b35779bcd402eb62cab9a6e563e6dd93` / Testing `746ec1da78b45f2d2c1fa2177549acbcc6587ca2`。发现 `R19-REVIEW-QUALITY-P2-01`（**实验台账原子性 P2，不是 ADS 正式规范缺陷**）：R18 将 `SOURCE_PRESENT` 与 `EXPORTED_OR_LOADED` 两个不充分证据示例作为两条候选规则，且把 “not new workflow/Gate states” 解释性限制提升为单独可计数约束；而 `IM43-03` 的“实际选中调用”与“可观察契约结果”可以独立失败，应分别审查。
+
+直接将 R18 **7 项草案**调和为 `formal/v4.19/r19/R19_RECONCILED_ATOMS.json` 中 **5 项待审核候选** `IM43-R1..R5`（选中调用、实际行为、repair OR disclosure、Testing/Integration 证明归属、仅 material packaging seam 时 clean installed public entrypoint），另单列 **1 项不可计数的解释性范围保护** `IM43-SCOPE`。完整保留 R18 七项及其历史 Git blob 不修改，提供 7→5+scope 的精确映射、每项源行位置、条件及反例。基于候选真实源码、历史台账、两份跨 Owner 标准进行 Web-first 源码审查与结构验证；不新增虚构 Gate、Runner、抽象 SMT 模型或非必要本地任务。
+
+**资格边界：** R19 是同一助手场景下的 source-first 自对抗审查与计数纠偏，并**未**由不同真人/独立身份签署 Review；5 个细分未被升格为正式 ADS 全规范已批准“原子规则”，更没有产生源⇄形式模型语义等价、实测公共调用或真实 CAS 的 PASS。全规范义务分母依然 UNKNOWN。源代码和输入的受审 Scope 限于一个真实新增候选段落；R17 Python 13/13 双环境和原生 32/32 保持原精确 SHA 历史资格，不重跑。
