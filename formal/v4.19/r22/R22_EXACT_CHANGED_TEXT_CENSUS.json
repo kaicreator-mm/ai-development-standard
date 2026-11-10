@@ -1,0 +1,501 @@
+{
+  "schema": "ads/formal-r22-github-actual-pr-patch-normative-delta/v1",
+  "owner_issue": 1366,
+  "github_pr": {
+    "number": 1365,
+    "actual_base": "fbf1a7d49596c549e955ef36949f4110a0da2d33",
+    "actual_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "status": "OPEN_UNMERGED_PROSPECTIVE"
+  },
+  "branch_subject": {
+    "pre_update_head": "9ca01393584aa6c0f1c067f2e47191a0d967fa97",
+    "pre_update_tree": "517e8d43fdc22930247c90969207cd925b7aa9fb"
+  },
+  "scope": {
+    "exact_manifest_source": "standard-manifest.json",
+    "normative_manifest_files": 46,
+    "verified_candidate_changed_normative_file_paths": [
+      "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "standards/DEVELOPMENT_WORKFLOW.md",
+      "standards/EXECUTION_PACK_STANDARD.md",
+      "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "standards/TESTING_STANDARD.md"
+    ],
+    "method": "GitHub REST compare exact PR BASE...HEAD; parse all normative unified hunks; preserve every added and removed literal line with target physical line numbers; prior complete-46 Git tree comparison matched 7 changed and 39 unchanged",
+    "text_segments_are_not_rule_denominator": true
+  },
+  "counts": {
+    "normative_documents_from_pinned_manifest": 46,
+    "changed_normative_docs": 7,
+    "unchanged_normative_docs": 39,
+    "changed_text_segments": 8,
+    "added_physical_lines": 45,
+    "removed_physical_lines": 2,
+    "added_nonblank_lines": 26,
+    "removed_nonblank_lines": 2,
+    "total_admitted_atomic_normative_obligations": null,
+    "full_ads_normative_obligation_denominator": null
+  },
+  "files": [
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+      "github_additions": 6,
+      "github_deletions": 0,
+      "added_nonempty_lines": 3,
+      "removed_nonempty_lines": 0,
+      "changes": [
+        {
+          "old_start": 51,
+          "new_start": 51,
+          "added": [
+            {
+              "line": 51,
+              "text": "For a material public API, package-selected behavior, plug-in system or architecture replacement, the design SHOULD identify the **selected executable composition path** (public consumer entry → BUILD/installer or equivalent → Host/adapter → selected implementation → observable result) and its owning integration/Validation concern. A module being defined, imported, initialized or exported is not evidence that the promised hook, authorization, routing or public operation is invoked. Where full physical execution is not yet feasible, use source/contract inspection, record the material unproven seam as `UNKNOWN`, and allocate one bounded representative integration check at the first legal dependency-complete point; do not demand a full release demo before L2 Freeze."
+            },
+            {
+              "line": 52,
+              "text": ""
+            },
+            {
+              "line": 53,
+              "text": "For retained critical behavior after architecture replacement, carry only the **material** invariant set into explicit current-version selected-path acceptance (e.g. replay/dedup, stale-CAS exclusion, effect authorization, multi-package routing). Merely copying a retained-feature checklist or green component tests into the new version does not prove those behaviors. The owning Product/L2 and Testing/Validation paths still decide applicability; this paragraph grants no new automatic Gate."
+            },
+            {
+              "line": 54,
+              "text": ""
+            },
+            {
+              "line": 55,
+              "text": "Sources: [DomainHarness v0.8 integration #1013](https://github.com/kaicreator-mm/domain-harness/issues/1013), [post-release stale CAS #1100](https://github.com/kaicreator-mm/domain-harness/issues/1100), [multi-B #1102](https://github.com/kaicreator-mm/domain-harness/issues/1102), [K hook #1264](https://github.com/kaicreator-mm/domain-harness/issues/1264)."
+            },
+            {
+              "line": 56,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-1-1",
+          "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            51,
+            56
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Selected public composition path; design vs executable proof"
+        }
+      ]
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+      "github_additions": 13,
+      "github_deletions": 0,
+      "added_nonempty_lines": 9,
+      "removed_nonempty_lines": 0,
+      "changes": [
+        {
+          "old_start": 135,
+          "new_start": 135,
+          "added": [
+            {
+              "line": 135,
+              "text": "#### Stage 1 — Product Exploration 的轻量证据组织（按需，ADS #1361 候选）"
+            },
+            {
+              "line": 136,
+              "text": ""
+            },
+            {
+              "line": 137,
+              "text": "当多个 Product Research 问题无法依靠已有证据解决、需要重复 Demo/真实实验来判断是否值得构建产品时，SHOULD **优先复用一个现有 Product Issue 作为探索索引**；没有合适索引时 MAY 建一个主 Issue，记录问题/可证伪假设、下一个最小证据、真实进展、阻塞和 Owner 决策。**实验本身的输入、协议、Demo 代码、正反例、真实运行收据、失败记录、报告和修订历史存放 Git 版本化内容；Issue 只索引这些 exact refs**。参见 [Product Exploration Evidence Reference](../references/PRODUCT_EXPLORATION_EVIDENCE_REFERENCE.md) 和 [可选索引模板](../templates/product-exploration-index.md)。"
+            },
+            {
+              "line": 138,
+              "text": ""
+            },
+            {
+              "line": 139,
+              "text": "- **具体执行 Issue 按需创建**：跨项目/责任方、独立写集或外部副作用、高风险/阻塞/并行工作需要明确独立任务或适用规范本身要求时才创建；不能为了每次实验 r0/r1 创建 Issue，也不能因为试验 r1 创建新的产品 `vX.Y.Z`。研究分支只作隔离，**实际结论须绑定 Git commit/tree/blob、输入/执行回执**，不能只留会移动的 branch head。"
+            },
+            {
+              "line": 140,
+              "text": "- **不强制**：单问题、低风险、已有等价证据或 `NO_RESEARCH_REQUIRED` 时保持 inline；不得机械要求每个产品都建立探索索引、Demo、PR、LLM Critic 或新的阶段。既有必需 Product Evidence/Review/Freeze 仍按原 owner 和风险适用性执行。"
+            },
+            {
+              "line": 141,
+              "text": "- **真实证明边界**：每个实质性实验声明 Product question、预期与反证、数据/实际环境版本、positive/negative/UNKNOWN、观察结果和 `What was proven / What was NOT proven`；未运行须 `NOT_RUN`，模拟/结构 PASS 不能被称为真实业务资格或 Product Freeze。建议 `ADOPT | REVISE | CONTINUE | REJECT` 仅作为自然语言研究结论，**不是 ADS 新 machine Gate/Task status**，也不自行发起 Freeze。"
+            },
+            {
+              "line": 142,
+              "text": "- **Stage 1/2 不越界**：此模式是 Stage 1 Product Research 的组织方法，**不把 Stage 2 Architecture Demo 提前**。若 Frozen Product 后的 Architecture UNKNOWN 需要研究，必须按 `ARCHITECTURE_RESEARCH_DEMO_STANDARD.md` 已有 Research Demo Issue/isolated branch、E1/E2/E3 和 L2 Review 规则执行。其研究发现否定 Frozen Scope 时复用既有 Thaw/Contradiction owner。"
+            },
+            {
+              "line": 143,
+              "text": "- **持续演化**：通过 [ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361) 归集来自项目的实际精确证据、失败反例、Issue/branch 额外成本及最小修订建议；具体 Demo 仍由产生实验的项目/版本记录持有。若产物进入 Task 实施则遵循 [ADS #1359](https://github.com/kaicreator-mm/ai-development-standard/issues/1359) 的 Delivery-First；不替代 Frozen Task DAG、Claim、CI、独立 Review 或 Release 权威。"
+            },
+            {
+              "line": 144,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-2-1",
+          "path": "standards/DEVELOPMENT_WORKFLOW.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            135,
+            144
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Stage 1 Product exploration Git evidence index"
+        },
+        {
+          "old_start": 732,
+          "new_start": 742,
+          "added": [
+            {
+              "line": 742,
+              "text": "- 对跨组件/公共契约、持续复现或明显影响关键用户路径的 root class，owning repair decision SHOULD 在现有 Issue/PR 中简短比较 **局部实现修复、共享适配/成熟依赖、合法契约/架构修订或明确允许的延期**，根据可证伪的第一处因果偏差和对下游消费者、验证/复审、集成、维护总成本的影响选择 **minimum sufficient correction**；不能以 diff 最小、DAG 不变或已有分支写集小作为先验的修复正确性证明。普通单点可复现 Bug 可直接 Fast Path，**不新增 Architecture Review Gate**。参考 [DomainHarness A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) 与 [Host CAS adapter #1394](https://github.com/kaicreator-mm/domain-harness/issues/1394)。"
+            },
+            {
+              "line": 743,
+              "text": "- 同一 root class 的反复 Review/repair SHOULD 复用同一 concern 的现有 Issue/PR 和 exact-SHA finding/attempt lineage；只有出现实际独立 source owner/Task/环境 obligation 时才另建 Issue。减少跟踪对象不允许合并角色、伪造独立 Review、遗漏 required CI/Validation、转移旧 SHA PASS 或掩盖安全关键问题。参考 [DomainHarness #363](https://github.com/kaicreator-mm/domain-harness/issues/363)、[#378](https://github.com/kaicreator-mm/domain-harness/issues/378) 与 [#586](https://github.com/kaicreator-mm/domain-harness/issues/586)。"
+            },
+            {
+              "line": 744,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-2-2",
+          "path": "standards/DEVELOPMENT_WORKFLOW.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            742,
+            744
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Bounded root cause and repair ownership"
+        }
+      ]
+    },
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+      "github_additions": 1,
+      "github_deletions": 1,
+      "added_nonempty_lines": 1,
+      "removed_nonempty_lines": 1,
+      "changes": [
+        {
+          "old_start": 148,
+          "new_start": 148,
+          "added": [
+            {
+              "line": 148,
+              "text": "Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`, `WEB_BUILDER`, `LOCAL_VALIDATION`) select bounded execution context within the authority of the Dispatch role. `WEB_BUILDER` is builder-only and maps to WEB; `LOCAL_VALIDATION` is validator-only and maps to LOCAL. For a Task governed by a legally approved prospective v4.19 Product/L2/Task scope, choose the authorized Builder profile by actual capability, risk, total execution cost and handoff/rework; prefer `WEB_BUILDER` when Web can complete the work more cheaply. `LOCAL_BUILDER` remains lawful where that Task Pack and an accepted Builder Claim authorize LOCAL source implementation and repair. Existing v4.18 and #1353-frozen historical subjects preserve their original admission rules until lawfully superseded. `LOCAL_VALIDATION` is exact-SHA, validation-only and used only for genuine local capability gaps after Web/CI evidence is considered. Profiles do not widen role authority or introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol."
+            }
+          ],
+          "removed": [
+            {
+              "line": 148,
+              "text": "Execution profiles (`LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`) configure execution authority. They do not introduce separate lifecycle models; all profiles share the canonical dispatch lifecycle and event protocol."
+            }
+          ],
+          "id": "ADS419-CHANGED-TEXT-3-1",
+          "path": "standards/EXECUTION_PACK_STANDARD.md",
+          "type": "REPLACEMENT",
+          "candidate_range": [
+            148,
+            148
+          ],
+          "original_range": [
+            148,
+            148
+          ],
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Execution profile cannot widen Dispatch role authority"
+        }
+      ]
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+      "github_additions": 1,
+      "github_deletions": 1,
+      "added_nonempty_lines": 1,
+      "removed_nonempty_lines": 1,
+      "changes": [
+        {
+          "old_start": 573,
+          "new_start": 573,
+          "added": [
+            {
+              "line": 573,
+              "text": "Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`, `WEB_BUILDER`, `LOCAL_VALIDATION`. The Dispatch role determines responsibility and authority; the profile selects bounded execution context within that role and never widens authority. For Tasks governed by a legally approved prospective v4.19 Product/L2/Task policy, the Builder profile is selected by effective Task authority, environment capability, total execution cost and repair continuity. Prefer `WEB_BUILDER` (builder/WEB) for cheaper Web-completable source work; `LOCAL_BUILDER` (builder/LOCAL) can implement and repair a new Task only when its effective frozen Task Pack, accepted Claim and write set permit it. `LOCAL_VALIDATION` (validator/LOCAL) is exact-SHA and validation-only, and is used only for a genuine local capability gap not already satisfied by Web/CI. Older v4.18 and #1353-frozen Task subjects retain their historical admission rules; this prospective policy does not retroactively mutate their authority. Profiles never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections."
+            }
+          ],
+          "removed": [
+            {
+              "line": 573,
+              "text": "Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`. Profiles configure execution authority; they never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections."
+            }
+          ],
+          "id": "ADS419-CHANGED-TEXT-4-1",
+          "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+          "type": "REPLACEMENT",
+          "candidate_range": [
+            573,
+            573
+          ],
+          "original_range": [
+            573,
+            573
+          ],
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Canonical dispatch role vs profile and approved prospective policy"
+        }
+      ]
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+      "github_additions": 2,
+      "github_deletions": 0,
+      "added_nonempty_lines": 1,
+      "removed_nonempty_lines": 0,
+      "changes": [
+        {
+          "old_start": 43,
+          "new_start": 43,
+          "added": [
+            {
+              "line": 43,
+              "text": "For material shipped public/plugin-facing behavior, implementation evidence MUST distinguish `SOURCE_PRESENT` / `EXPORTED_OR_LOADED` from **actual selected-path invocation and observable contract behavior**. These are explanatory evidence categories, not new workflow/Gate states. An implementation claiming \"selected feature supported\" when only import/activation occurred must repair the real composition or state the missing integration evidence honestly; applicable Testing/Integration owner alone issues the executable proof. A clean installed public package entrypoint can expose dependency/import breakage hidden by workspace-only tests; include it where the public packaging seam is material. See [DomainHarness #139](https://github.com/kaicreator-mm/domain-harness/issues/139), [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264), and [#1394](https://github.com/kaicreator-mm/domain-harness/issues/1394)."
+            },
+            {
+              "line": 44,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-5-1",
+          "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            43,
+            44
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Selected public path actual behavior not import-only"
+        }
+      ]
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+      "github_additions": 10,
+      "github_deletions": 0,
+      "added_nonempty_lines": 5,
+      "removed_nonempty_lines": 0,
+      "changes": [
+        {
+          "old_start": 181,
+          "new_start": 181,
+          "added": [
+            {
+              "line": 181,
+              "text": "### 13.1 Feasibility, evidence barriers and coordination cost (v4.19 candidate)"
+            },
+            {
+              "line": 182,
+              "text": ""
+            },
+            {
+              "line": 183,
+              "text": "For a substantial multi-package or runtime-replacement DAG, the Planner SHOULD test the **reason for each material serial edge** against the frozen contract and actual artifact prerequisites: is upstream **integrated code** required to begin the downstream concern, or is the relationship only a later compatibility/Review/Host/Release join? A final integration obligation MUST NOT by itself make independent refactor source preparation serial. Conversely, a native dependency, shared write ownership, or unresolved atomic security invariant MUST NOT be waived for concurrency. Any material DAG correction follows existing owning L2/Task-DAG mutation and accepted Claim authority; edge annotations cannot silently grant work."
+            },
+            {
+              "line": 184,
+              "text": ""
+            },
+            {
+              "line": 185,
+              "text": "Before freezing extensive write sets for a material package/toolchain migration, the Planner SHOULD use available **cheap physical/source feasibility evidence** (current package import/pack graph, generated source/dist ownership, manifest/lockfile writer, CI selected Node/runtime profile and one selected consumer seam) or mark the material gap `UNKNOWN` and allocate it to an existing authorized integration/validation owner. It is not a universal pre-Freeze build/Host Gate; static evidence is sufficient when it genuinely establishes the boundary. Avoid freezing a plan that presumes artifact packaging and shared generated writes work without checking the readily available contradiction."
+            },
+            {
+              "line": 186,
+              "text": ""
+            },
+            {
+              "line": 187,
+              "text": "Consider total handoff/review/merge cost when splitting. **A review iteration, CI rerun or campaign checkpoint does not automatically justify a new executable Issue**; keep it under the owning concern's append-only Review/evidence history unless a distinct authority, independently dispatchable repair or real dependency demands a separate work item. Preserve independent Reviewer/Validator roles and exact-subject evidence even when the tracking surface is shared."
+            },
+            {
+              "line": 188,
+              "text": ""
+            },
+            {
+              "line": 189,
+              "text": "Sources: [DomainHarness #530](https://github.com/kaicreator-mm/domain-harness/issues/530) false v0.6→v0.7 serial dependency; [#586](https://github.com/kaicreator-mm/domain-harness/issues/586) one cross-cutting verification campaign; [v0.10.2 A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) late manifest/BUILD ordering repair. This is a decision/evidence rule, not a new scheduler, required Task field, or dispatch state."
+            },
+            {
+              "line": 190,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-6-1",
+          "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            181,
+            190
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Material serial edge feasibility and evidence prerequisites"
+        }
+      ]
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "status": "modified",
+      "base_blob": null,
+      "candidate_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+      "github_additions": 12,
+      "github_deletions": 0,
+      "added_nonempty_lines": 6,
+      "removed_nonempty_lines": 0,
+      "changes": [
+        {
+          "old_start": 64,
+          "new_start": 64,
+          "added": [
+            {
+              "line": 64,
+              "text": "### 6.1 Executed-test discovery: actual suite, not command name (v4.19 candidate)"
+            },
+            {
+              "line": 65,
+              "text": ""
+            },
+            {
+              "line": 66,
+              "text": "When a Test/CI profile materially claims coverage of a declared contract, recovery, security or other required suite, its owner SHOULD compare the **actual discovered/executed test inventory** against the suite(s) that profile claims to cover. An entrypoint existing, source tests being typechecked, or a green aggregate command does not prove that nested/filtered/renamed tests were executed. If a material required suite was omitted, the omitted scope remains `NOT_RUN` under the existing Validation owner; the actually executed scope retains its honest result. Correct test selection/discovery and rerun the affected profile at the proper exact subject. Prefer the ecosystem runner's actual collection/list output or small sentinel/fixture test; do not create a universal test-count target or require exhaustive discovery inventories for trivial Fast Path checks."
+            },
+            {
+              "line": 67,
+              "text": ""
+            },
+            {
+              "line": 68,
+              "text": "Source case: [DomainHarness #162](https://github.com/kaicreator-mm/domain-harness/issues/162) (`npm test` glob excluded nested tests). This is test evidence, not an excuse to rewrite productive code or rerun every expensive unrelated suite."
+            },
+            {
+              "line": 69,
+              "text": ""
+            },
+            {
+              "line": 70,
+              "text": "### 6.2 Selected public path and retained behavior (v4.19 candidate)"
+            },
+            {
+              "line": 71,
+              "text": ""
+            },
+            {
+              "line": 72,
+              "text": "For material public SDK/framework/plug-in or architecture-replacement acceptance, distinguish **declared/exported/imported/initialized** components from components **actually selected, invoked and behaviorally verified** through the supported public entrypoint. The owning integration/contract test SHOULD prove the applicable call/dispatch chain and observable result with one representative clean consumer, plus high-impact negative(s) where authorization, replay, concurrency or multi-binding routing is material. A compiled module, loaded hook count, mock-only path, or standalone component PASS alone MUST NOT be presented as proof of required integration behavior. Release-wide full/Hidden/platform evidence stays with the existing closure owner; a new full App test is not automatically required for every leaf."
+            },
+            {
+              "line": 73,
+              "text": ""
+            },
+            {
+              "line": 74,
+              "text": "Sources: [DomainHarness #1013](https://github.com/kaicreator-mm/domain-harness/issues/1013), [#1102](https://github.com/kaicreator-mm/domain-harness/issues/1102), [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264). If the relevant public integration requires unfinished upstream source, record the executable-path check under the appropriate future integration Task and keep that particular claim `NOT_RUN`; no fabricated early PASS."
+            },
+            {
+              "line": 75,
+              "text": ""
+            }
+          ],
+          "removed": [],
+          "id": "ADS419-CHANGED-TEXT-7-1",
+          "path": "standards/TESTING_STANDARD.md",
+          "type": "ADDITION",
+          "candidate_range": [
+            64,
+            75
+          ],
+          "original_range": null,
+          "semantic_review_status": "SOURCE_TEXT_INDEXED_NOT_ATOMIC_RULE",
+          "source_model_semantic_equivalence": "NOT_PROVEN",
+          "real_runtime_verification": "NOT_PROVEN",
+          "review_theme": "Actually executed tests vs nominal green command; selected public path"
+        }
+      ]
+    }
+  ],
+  "evidence_claims": {
+    "source_diff": "EXACT_GITHUB_PATCH_LINES_ONLY",
+    "historical_r11": "35_35_NATIVE_61_61_PYTHON_EXACT_OLD_SHA",
+    "historical_r17": "32_32_NATIVE_13_13_EACH_HOST_OLD_SHA",
+    "r20": "EXACT_CHECKOUT_PYTHON_AUDITOR_AND_9_9_EACH_HOST_CLOSED",
+    "r14": "R14_GAP_01_02_03_NOT_PROVEN",
+    "r16": "14_PROJECT_REF_SAMPLES_NO_CONFIRMED_CANDIDATE_PIN_NOT_GLOBAL_CENSUS",
+    "r19": "SELECTED_PATH_SOURCE_REVIEW_ONLY",
+    "full_source_model_equivalence": "NOT_PROVEN",
+    "real_accepted_CLAIM_CAS": "NOT_PROVEN"
+  },
+  "checks": {
+    "pr_state_checks": 8,
+    "pr_state_passed": 8,
+    "diff_checks": 7,
+    "diff_passed": 7,
+    "real_python_run_this_round": "NOT_RUN",
+    "real_native_smt_run_this_round": "NOT_RUN"
+  },
+  "limits": [
+    "This is the exhaustive physical normative changed-text surface of PR #1365 relative to its actual base, NOT a full authoritative atomic obligation inventory",
+    "Changed spans may include headings, blank lines, multiple clauses, exceptions and prose; no total rule denominator follows",
+    "Long replaced lines in Execution Pack and GitHub Protocol revise inherited profile authority; do not count as harmless metadata",
+    "Existing Python/SMT PASS is valid only at recorded exact historical executed SHAs",
+    "No legal production v4.19 adoption or durable GitHub READY/QUEUED/Claim-CAS verified"
+  ]
+}

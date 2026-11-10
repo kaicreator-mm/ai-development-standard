@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R0–R18（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R21 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R22 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -404,3 +404,10 @@ R19 后评估下一步：R11/R13/R17 Native/Python 都已各自 Exact-SHA 通过
 - [x] **修复后双环境零跳过绿**：修复提交 `40bec68a1cdb9f918c39e65e8ca25cf9770e3f92`（TREE `aebf9b8e80000f584a66954ee1ac67809d12823f`）上，Windows 10.0.26300 × Python 3.14.7 与 WSL2 Ubuntu 26.04.1 × Python 3.14.4 均 `Ran 9 tests / OK / exit 0`，无跳过、无 "Ran 0 tests" 陷阱；CLI 双环境同 PASS。历史 R20 收据与其记录 blob 未改写。
 
 **资格**：`R20_EXACT_CHECKOUT_QUALIFICATION_CLOSED / AUDIT_CLI_PASS_REAL_CHECKOUT / TESTS_9_OF_9_ZERO_SKIP_DUAL_ENV / TWO_EXPERIMENT_P2_REPAIRED`。审计器本身是对 R17 已执行证据的 fail-closed 回读，本轮不重跑 R17 测试；9/9 仍是 fixture 级回归，完整 `formal/tests` 与 R11/R17 套件未重跑。标准⇄SMT 语义等价、真实 v4.19 生产者 Claim/CAS/读回仍 NOT_PROVEN，全 ADS 原子义务分母 UNKNOWN。确认 ADS 正式规范 P0/P1/P2 = 0/0/0，实验 open P2 = 0（两项本轮内闭环）。无 Gate/GitHub Actions/Merge/Freeze/Release。
+
+
+## 37. #1366 R22 — 候选 PR 实际 BASE→HEAD 的完整规范变更文本盘点（2026-11-11）
+
+复盘最新实验分支 `9ca01393584aa6c0f1c067f2e47191a0d967fa97`，R20 的真实 Exact-SHA checkout 双环境 **9/9 Python PASS** 且审计器 CLI 正跑通过，两项实验 P2 已在原分支 red→green 修复；不重复原生套件。继续 §6-B 前先从 PR #1365 的实际 BASE `fbf1a7d49596c549e955ef36949f4110a0da2d33` 和候选 HEAD `dac263fa4c0ab155406d2f2117459b34322cc988` 的全量 Git tree 验证 manifest 46 份规范文件：7 改动、39 不变。随后通过 GitHub 实际 pinned compare patch 对 7 份规范的每条新增/删除文本及物理行号作**穷尽的增量盘点**，共 **8 个连续变更文本段，新增 45 物理行（其中非空 26），删除/替换 2 行旧文本**。两处是 profile 权限语义的整行替换，而不是单纯增补关键词。
+
+固化 `formal/v4.19/r22/R22_EXACT_CHANGED_TEXT_CENSUS.json` 和 `R22_CHANGED_TEXT_REVIEW.md`。此处**完整的是 46 份文件的变更文本面，不是规则/逻辑义务分母**；8 个文本段和 26 行非空文本不能作为规范原子义务数，Rule/Model 全等价与真实 GitHub accepted Claim/CAS 仍 NOT_PROVEN。R11/R17/R20 已有历史实测资格按 Exact-SHA 继承，本轮是 GitHub 差分审计，Python/SMT/TLC 均 NOT_RUN，严禁伪造新性质或把候选政策激活。
