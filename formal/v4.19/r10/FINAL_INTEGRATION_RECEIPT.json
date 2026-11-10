@@ -1,0 +1,100 @@
+{
+  "schema": "ads/formal-r10-final-integration-receipt/v1",
+  "kind": "EXACT_SHA_DUAL_WORKTREE_FULL_INTEGRATION_AND_INDEPENDENT_SEMANTIC_REVIEW_NOT_NORMATIVE_PROOF",
+  "date_utc": "2026-11-10",
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED_PROSPECTIVE_UNCHANGED",
+    "experiment_branch": "experiment/v4.19-formal-proof-r0",
+    "review_base_commit": "cd4d291edc41114ecc26a3853f5f3afbdc0f13ee",
+    "repair_commit": "671c5fac858de000c867d03284413add204d2b01",
+    "freeze_commit": "THIS_COMMIT"
+  },
+  "worktrees": {
+    "experiment_model": "/home/cc/ads-v419-r10final-exp @ cd4d291 -> 671c5fa (detached, mirror-registered)",
+    "candidate_source": "/home/cc/ads-v419-r10final-cand @ dac263fa4c0ab155406d2f2117459b34322cc988 (detached, mirror-registered)"
+  },
+  "environment": {
+    "platform": "Linux x86_64 (WSL2 Ubuntu, user cc)",
+    "python": "3.14.4",
+    "git": "2.53.0",
+    "z3": {"version": "5.3.3", "path": "/opt/formal-toolkit/bundle/installed/bin/z3", "binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"},
+    "cvc5": {"version": "1.4.2", "path": "/home/cc/ads-r3-tools/cvc5-1.4.2/cvc5-Linux-x86_64-static/bin/cvc5", "binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102", "note": "bundle/installed/bin/cvc5 is a wrapper script, not the pinned binary; the pinned bytes live in the extracted static build"},
+    "tlc": {"version": "2.19", "jar_path": "/opt/formal-toolkit/tla2tools.jar", "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"},
+    "java": {"version": "21.0.12.1", "path": "/usr/bin/java", "binary_hash_pinned": false},
+    "tool_inventory_sha256": "f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2"
+  },
+  "commands": [
+    "python3 -m unittest discover -s formal/tests -v (env: ADS_FORMAL_Z3, ADS_FORMAL_CVC5, ADS_FORMAL_TLC_JAR, ADS_FORMAL_CANDIDATE_CHECKOUT)",
+    "python3 formal/suite/run.py --suite formal/v4.19/r10/suite.json --model-head <exp HEAD> --source-checkout /home/cc/ads-v419-r10final-cand --strict-source --z3 <z3> --cvc5 <cvc5> --java /usr/bin/java --tlc-jar <jar> --out <receipt>"
+  ],
+  "baseline_run_cd4d291": {
+    "python_tests": {"ran": 41, "failures": 0, "errors": 0, "skipped": 0, "exit_code": 0, "log_sha256": "f86058e1918b6c786f0b6bc6945444ea15344c9fd39848ba306a15f240f03f54"},
+    "strict_suite": {"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "solver_pairs": 16, "pairs_all_pass": true, "source_alignment": "PASS", "receipt_sha256": "a7584ef616b30c5c7a9393cf09ccc56d42a8911bc45ce876d3a49a79b223b8ee"}
+  },
+  "finding": {
+    "id": "R10-SEM-P2-01",
+    "severity": "P2_FORMAL_MODEL_FIDELITY",
+    "cause": "R8 successor clause admitted a post-terminal successor Start Record with an ambiguous publication outcome; candidate source requires publication facts to reconcile and ambiguous publication to fail closed before another operator may take over",
+    "false_witness": "I05 witness satisfiable with publicationAmbiguous=true (same family as the R6 I05 defect repaired in R8)",
+    "normative_ads_defect": "NOT_ESTABLISHED"
+  },
+  "repair": {
+    "commit": "671c5fac858de000c867d03284413add204d2b01",
+    "files": [
+      {"path": "formal/models/authority/admission-boundaries-r8.smt2", "old_sha256": "ba38ca65e5f4c3982d0295954a75f5041ae1f4131317f01fdb49ea45f2499daf", "new_sha256": "448c01e7e309102e61bbb784975db212b589f23aee9fe3210f5eccf38a4867d0", "change": "successor clause requires (not publicationAmbiguous); new I09 query"},
+      {"path": "formal/v4.19/r10/suite.json", "old_suite_sha256": "0d34dfea56b77936cead1bd3feb5a0285c11e9c5199930f4fda4ebdb91467ea7", "new_suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3", "change": "both ADS-P-ADMISSION-SUCCESSOR-R8-Z3/CVC5 expect lists 18 -> 19 answers (I09 unsat inserted at position 14)"},
+      {"path": "formal/tests/test_r8_successor.py", "change": "model pin ba38ca65 -> 448c01e7; EXPECTED 18 -> 19 answers; mutant pin c47171e6 unchanged"}
+    ]
+  },
+  "final_run_671c5fa": {
+    "python_tests": {"ran": 41, "failures": 0, "errors": 0, "skipped": 0, "exit_code": 0, "log_sha256": "81d2207f8b378315a75868eee16c7fe34a6dd96a8d32bb5227915f43df25e6c2"},
+    "strict_suite": {
+      "verdict": "MODEL_AND_SOURCE_PASS",
+      "cases": 35,
+      "statuses": {"PASS_MODEL": 21, "COUNTEREXAMPLE": 14},
+      "solver_pairs": 16,
+      "pairs_all_pass": true,
+      "i09_answer": "unsat (identical in Z3 and cvc5)",
+      "successor_answer_sequences": "19 answers identical across both solvers",
+      "mutants": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3/CVC5 -> 3x SAT, detected",
+      "tlc_lifecycle": "27 distinct states safe; both mutants detected (7 / 3 states)",
+      "committed_receipt": "formal/v4.19/r10/R10_FINAL_STRICT_RUN.json"
+    },
+    "per_case_status_diff_vs_baseline": "NO_CASE_CHANGED (only delta: inserted unsat at position 14 of the two SUCCESSOR-R8 cases)"
+  },
+  "alignments": {
+    "SOURCE_ALIGNMENT": "PASS (candidate HEAD exact match; 7/7 source blobs + all source-map and traceability anchors)",
+    "MODEL_ALIGNMENT": "PASS (30 model inputs bound to Git blob of experiment HEAD before and after execution; 671c5fa)",
+    "TOOLCHAIN_ALIGNMENT": "PASS (before and after; z3/cvc5 byte-pinned and version-verified; TLC JAR byte-pinned; Java runtime probe only)",
+    "TRACEABILITY_AUDIT": "PASS (10 properties, 7 sources, bidirectional links, dependency acyclic)"
+  },
+  "coverage": {
+    "declared_cases": 35,
+    "selected_cases": 35,
+    "all_declared_selected": true,
+    "pilot_properties": 10,
+    "source_bound_verified_obligations": 10,
+    "all_ADS_normative_obligations_denominator": null
+  },
+  "severity_summary": {
+    "P0": "NONE_FOUND",
+    "P1": "NONE_FOUND (R9-PY-P1-01/02 negative regressions verified green in the full unittest run)",
+    "P2": "1 found (R10-SEM-P2-01), repaired in the formal write set, re-verified green"
+  },
+  "verdict": "R10_FULL_INTEGRATION_PASS_WITH_ONE_P2_MODEL_FIDELITY_REPAIR_NOT_NORMATIVE_ADS_PROOF",
+  "not_proven": [
+    "Full ADS normative rule denominator unknown",
+    "No natural-language semantic-equivalence theorem",
+    "No real GitHub Claim CAS / CI / Host / Release end-to-end evidence",
+    "Publication/resource facts remain abstract Boolean inputs; not verified against a real provider",
+    "TLC liveness/fairness, claim expiry, multi-Task CAS, full version inheritance",
+    "Java/host provenance beyond pinned bytes; hash-check/execute TOCTOU window",
+    "Historical R5 27-case, R6 4-case and R8 4-case receipts remain tied to earlier exact SHAs"
+  ],
+  "limits": [
+    "No ADS normative Gate, merge, Freeze or release is performed or authorized by this receipt",
+    "Candidate PR #1365 remains OPEN and unchanged at dac263fa4c0ab155406d2f2117459b34322cc988"
+  ]
+}
