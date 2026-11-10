@@ -459,3 +459,12 @@ R24 遗留两项 NOT_RUN（真实 checkout 导入单测、受影响 strict 原�
 已在原实验分支修改 `formal/suite/expanded.py` 并新增 `formal/suite/execution_inventory.py`，所有选中 native Case 必须与返回结果的数量、顺序、ID、tool、property/model、purpose、expected 完全对应；失配直接 `BLOCKED` 且在收据留下 `execution_inventory_audit`。新模块还进入模型 Exact-SHA `model_inputs`，防止 guard 代码本身不被钉死。新 `formal/tests/test_execution_inventory.py` **14/14 本地 CPython 3.13.5 PASS/0 skip**（纯逻辑测试，源码 Git blob 与仓库相同），另有 `test_execution_inventory_admission.py` 通过真实 r10 suite 文件注入 TLC 欺骗的 `main_v1` 集成负例，**在完整 Git 工作树导入执行前仍 NOT_RUN**。独立根因、Source/Test SHA、证明边界固化于 `formal/v4.19/r27/`。此轮是**实际代码修复**而非状态更新；由于 Runner 的受测代码闭包变化，R25 35/35、77/77 不能冒充新 HEAD 的原生完整验收。
 
 后续仅需一次真实 Git exact-checkout 的新 15 项 + 既有受影响 `formal/tests`、以及必要 strict native Source-bound 35 Case 及工具/source/model pre/post 检查。失败直接同分支修复+复测，不派单纯 VALIDATION；无正式规范更改、无 Gate/Actions/Claim、无 PR #1365 Merge/Freeze/Release。实际生产 Claim/CAS、独立全语义等价继续 NOT_PROVEN。
+
+
+## 43. #1366 R28 — TLC 成功结果与 Property Purpose 必须一致（2026-11-11）
+
+R27 修复后的 `execution_inventory.py` 虽已检查 TLC 返回身份和正常状态集合，但没有拒绝 **TLC proof→COUNTEREXAMPLE / TLC mutation→PASS_MODEL** 的状态类别替换；`main_v1.good` 对两种成功状态不区分，而 `solver_differential` 只校验 SMT Z3/cvc5 Pair。按源 First 的独立局部输入审查，R27 原始 Python helper 原封 Git blob `a907a4a4…` 被重建、`git hash-object` 核对，一对 TLC 反例在原代码均错误 `PASS`。此为 **实验形式化工具证据资格 P2**，不是 ADS 正式规范 P2 或真实生产安全事件。
+
+直接在原实验分支修复：`suite/execution_inventory.py` 对选中 Purpose 限定 `proof/mutation`，并强制仅 `proof→PASS_MODEL` 与 `mutation→COUNTEREXAMPLE` 可以成为正向 native 结果，其它类型化 `FAIL/INCONCLUSIVE/NOT_RUN` 不变；`main_v1` 既有身份不符 `BLOCKED` 路径继续使用，不额外制造 Guard。代码 Git blob `6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90`；测试 Git blob `d0b3ce350ef1f606eee526fa134692a4e89b644b`；代码提交 `2e0babcfb3326c7d59ecf6d7ba34b7cccbc8506d`，测试提交/被测 SUBJECT `236489e14d7b95349bd78a293fda64032f7fbc18`，TREE `d69e8cdbc87a56f649228ccc92fa9f7790be2732`。隔离 CPython 3.13.5 实际导入原测试与新 helper，**18/18 PASS / 0 skip**，以上两文件均逐字节与 GitHub `git blob` 一致。此结果 **不是完整 Git checkout**。
+
+本执行环境 `git ls-remote` 因 `Could not resolve host: github.com` 无法取得真实完整 Git checkout 与钉死原生工具。因此 R27 新入口回归、R28 `main_v1` 真入口 status-swap 负例、完整 `formal/tests`、35 Native / 16 对 SMT / 3 TLC 与 source/model/tool 前后验收 **NOT_RUN**。要求将 R27+R28 一次性在真实双 Exact-SHA 工作树按“有缺陷同分支修复+复测”闭环，不能把 R25 的旧 `6edd2bad` 严格 PASS 继承到新代码，也不能派纯 Validation-only。收据 `formal/v4.19/r28/R28_NATIVE_PURPOSE_STATUS_REPAIR.json` 和 `R28_SOURCE_FIRST_REVIEW.md`；R29 优先实施受影响严格验收。v4.19 #1347 未 Frozen / PR #1365 OPEN 不变；源→模型全语义等价、有效 Project/Task pin、实际发布/Claim/CAS/持久读回仍 **NOT_PROVEN**；正式规范无新确认 P0/P1/P2。
