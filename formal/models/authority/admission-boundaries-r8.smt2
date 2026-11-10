@@ -40,9 +40,13 @@
 (declare-const successorClaimAccepted Bool)
 ; R8: a successor is a NEW accepted Claim, not an idempotent re-claim.
 ; It can follow a durable terminal only when original claim and successor authority are explicit.
+; R10: the prior publication outcome must also be unambiguous before a successor Start
+; Record may exist; ambiguous publication/release state fails closed (candidate source
+; EXECUTION_ARCHITECTURE_STANDARD.md terminal/release handling: takeover requires the
+; related publication/resource/generation facts to reconcile).
 (assert (=> secondStartRecord
   (and originalClaim originalTerminal (not sameDispatch) currentGeneration
-       successorAuthorized successorClaimAccepted)))
+       (not publicationAmbiguous) successorAuthorized successorClaimAccepted)))
 ; I01: resume must not create a second Start Record.
 (push 1) (assert resume) (assert secondStartRecord) (check-sat) (pop 1)
 ; I02: stale generation cannot authorize idempotent resume.
@@ -51,7 +55,7 @@
 (push 1) (assert resume) (assert (not sameOperator)) (check-sat) (pop 1)
 ; I04: legal same-operator resume with one Start Record exists.
 (push 1) (assert resume) (assert (not secondStartRecord)) (check-sat) (pop 1)
-; I05: post-terminal different-dispatch new Claim may start.
+; I05: post-terminal different-dispatch new Claim may start (publication unambiguous).
 (push 1) (assert secondStartRecord) (check-sat) (pop 1)
 ; I06: no original Claim, therefore no legitimate post-terminal successor.
 (push 1) (assert secondStartRecord) (assert (not originalClaim)) (check-sat) (pop 1)
@@ -59,6 +63,8 @@
 (push 1) (assert secondStartRecord) (assert (not successorAuthorized)) (check-sat) (pop 1)
 ; I08: an unaccepted proposed successor is never a canonical Start Record.
 (push 1) (assert secondStartRecord) (assert (not successorClaimAccepted)) (check-sat) (pop 1)
+; I09: ambiguous publication blocks any successor Start Record.
+(push 1) (assert secondStartRecord) (assert publicationAmbiguous) (check-sat) (pop 1)
 ; S3: compatible parallel Claims of this same work/role require verified grants.
 ; Scope: two distinct non-default compatibility groups, not arbitrary independent Tasks.
 (declare-const parallelSameWorkRole Bool)

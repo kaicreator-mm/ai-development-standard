@@ -6,9 +6,9 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / "models" / "authority"
-EXPECTED = ["unsat"] * 3 + ["sat"] * 2 + ["unsat"] * 3 + ["sat"] * 2 + ["unsat"] * 3 + ["unsat"] * 4 + ["sat"]
+EXPECTED = ["unsat"] * 3 + ["sat"] * 2 + ["unsat"] * 3 + ["sat"] * 2 + ["unsat"] * 3 + ["unsat"] * 5 + ["sat"]
 SOURCES = {
-    "admission-boundaries-r8.smt2": ("ba38ca65e5f4c3982d0295954a75f5041ae1f4131317f01fdb49ea45f2499daf", EXPECTED),
+    "admission-boundaries-r8.smt2": ("448c01e7e309102e61bbb784975db212b589f23aee9fe3210f5eccf38a4867d0", EXPECTED),
     "admission-boundaries-r8-mutant.smt2": ("c47171e6a82faac2bc291dcd94af48684027a65d646c29f4e133f248f2d9fab8", ["sat"] * 3),
 }
 SOLVERS = {"z3": ["z3", "-smt2"], "cvc5": ["cvc5", "--lang=smt2", "--incremental"]}
