@@ -1,0 +1,165 @@
+test_composite_demo (test_dag_edge_probe.DagEdgeProbeTests.test_composite_demo) ... ok
+test_join_only_reports_candidate_but_no_admission (test_dag_edge_probe.DagEdgeProbeTests.test_join_only_reports_candidate_but_no_admission) ... ok
+test_overlapping_writes_remain_serial (test_dag_edge_probe.DagEdgeProbeTests.test_overlapping_writes_remain_serial) ... ok
+test_source_baseline_requirement_is_material (test_dag_edge_probe.DagEdgeProbeTests.test_source_baseline_requirement_is_material) ... ok
+test_source_preparation_is_not_task_dispatch (test_dag_edge_probe.DagEdgeProbeTests.test_source_preparation_is_not_task_dispatch) ... ok
+test_type_confusion_fails_closed (test_dag_edge_probe.DagEdgeProbeTests.test_type_confusion_fails_closed) ... ok
+test_unknown_contract_cannot_authorize (test_dag_edge_probe.DagEdgeProbeTests.test_unknown_contract_cannot_authorize) ... ok
+test_distinct_models_not_overwritten (test_differential.DifferentialCoverageTests.test_distinct_models_not_overwritten) ... ok
+test_legacy_single_solver_remains_allowed (test_differential.DifferentialCoverageTests.test_legacy_single_solver_remains_allowed) ... ok
+test_mandatory_pair_rejects_missing_cvc5_or_z3 (test_differential.DifferentialCoverageTests.test_mandatory_pair_rejects_missing_cvc5_or_z3) ... ok
+test_missing_duplicate_or_wrong_tool_outcomes_fail_closed (test_differential.DifferentialCoverageTests.test_missing_duplicate_or_wrong_tool_outcomes_fail_closed) ... ok
+test_mutant_is_an_independent_pair (test_differential.DifferentialCoverageTests.test_mutant_is_an_independent_pair) ... ok
+test_normal_pair_passes (test_differential.DifferentialCoverageTests.test_normal_pair_passes) ... ok
+test_accurate_discovery_executes_both (test_discovery_probe.TestDiscoveryProbe.test_accurate_discovery_executes_both) ... ok
+test_demo_negative_and_positive (test_discovery_probe.TestDiscoveryProbe.test_demo_negative_and_positive) ... ok
+test_green_filtered_run_does_not_qualify_required_suite (test_discovery_probe.TestDiscoveryProbe.test_green_filtered_run_does_not_qualify_required_suite) ... ok
+test_missing_nested_required_id_is_provable (test_discovery_probe.TestDiscoveryProbe.test_missing_nested_required_id_is_provable) ... ok
+test_bad_receipt_subject_head_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_bad_receipt_subject_head_blocks) ... ok
+test_credible_count_but_false_receipt_test_blob_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_credible_count_but_false_receipt_test_blob_blocks) ... ok
+test_exact_declared_executed_id_set_passes (test_executed_inventory_audit.TestExecutedInventoryAudit.test_exact_declared_executed_id_set_passes) ... ok
+test_green_summary_cannot_hide_duplicate_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_duplicate_method) ... ok
+test_green_summary_cannot_hide_missing_method (test_executed_inventory_audit.TestExecutedInventoryAudit.test_green_summary_cannot_hide_missing_method) ... ok
+test_log_drift_without_new_pin_blocks (test_executed_inventory_audit.TestExecutedInventoryAudit.test_log_drift_without_new_pin_blocks) ... ok
+test_non_ok_method_cannot_pass_green_summary (test_executed_inventory_audit.TestExecutedInventoryAudit.test_non_ok_method_cannot_pass_green_summary) ... ok
+test_source_tamper_blocks_before_semantic_read (test_executed_inventory_audit.TestExecutedInventoryAudit.test_source_tamper_blocks_before_semantic_read) ... ok
+test_wrong_execution_environment_disallowed (test_executed_inventory_audit.TestExecutedInventoryAudit.test_wrong_execution_environment_disallowed) ... ok
+test_complete_correct_inventory_passes (test_execution_inventory.ExecutionInventoryTests.test_complete_correct_inventory_passes) ... ok
+test_duplicate_smt_result_must_fail (test_execution_inventory.ExecutionInventoryTests.test_duplicate_smt_result_must_fail) ... ok
+test_empty_or_invalid_selection_fail (test_execution_inventory.ExecutionInventoryTests.test_empty_or_invalid_selection_fail) ... ok
+test_expected_answer_swapped_rejected (test_execution_inventory.ExecutionInventoryTests.test_expected_answer_swapped_rejected) ... ok
+test_extra_result_rejected (test_execution_inventory.ExecutionInventoryTests.test_extra_result_rejected) ... ok
+test_malformed_result_rejected (test_execution_inventory.ExecutionInventoryTests.test_malformed_result_rejected) ... ok
+test_missing_or_invalid_status_rejected (test_execution_inventory.ExecutionInventoryTests.test_missing_or_invalid_status_rejected) ... ok
+test_old_aggregator_can_false_pass_with_wrong_tlc_metadata (test_execution_inventory.ExecutionInventoryTests.test_old_aggregator_can_false_pass_with_wrong_tlc_metadata) ... ok
+test_permuted_valid_tlc_case_ids_fail (test_execution_inventory.ExecutionInventoryTests.test_permuted_valid_tlc_case_ids_fail) ... ok
+test_reordered_results_fail (test_execution_inventory.ExecutionInventoryTests.test_reordered_results_fail) ... ok
+test_swapped_purpose_is_not_a_proof (test_execution_inventory.ExecutionInventoryTests.test_swapped_purpose_is_not_a_proof) ... ok
+test_tlc_identity_corrupted_after_correct_smt_pairs_fails (test_execution_inventory.ExecutionInventoryTests.test_tlc_identity_corrupted_after_correct_smt_pairs_fails) ... ok
+test_tlc_result_missing_after_correct_smt_pairs_fails (test_execution_inventory.ExecutionInventoryTests.test_tlc_result_missing_after_correct_smt_pairs_fails) ... ok
+test_wrong_model_or_property_rejected (test_execution_inventory.ExecutionInventoryTests.test_wrong_model_or_property_rejected) ... ok
+test_wrong_tlc_model_id_blocks_even_when_smt_pairs_agree (test_execution_inventory_admission.InventoryAdmissionTests.test_wrong_tlc_model_id_blocks_even_when_smt_pairs_agree) ... ok
+test_bad_model_pin_blocks_before_tool_execution (test_expanded.ExpandedTests.test_bad_model_pin_blocks_before_tool_execution) ... ok
+test_diff_recheck_never_claims_current_source (test_expanded.ExpandedTests.test_diff_recheck_never_claims_current_source) ... skipped 'native solvers not configured'
+test_missing_solver_not_pass (test_expanded.ExpandedTests.test_missing_solver_not_pass) ... ok
+test_missing_tlc_emits_typed_not_run_and_nonzero_receipt (test_expanded.ExpandedTests.test_missing_tlc_emits_typed_not_run_and_nonzero_receipt) ... ok
+test_paths_are_restricted (test_expanded.ExpandedTests.test_paths_are_restricted) ... ok
+test_proof_and_mutant (test_expanded.ExpandedTests.test_proof_and_mutant) ... skipped 'native solvers not configured'
+test_r10_declared_solver_pairs_complete_and_fail_closed_when_removed (test_expanded.ExpandedTests.test_r10_declared_solver_pairs_complete_and_fail_closed_when_removed) ... ok
+test_r8_real_source_delta_invalidates_transitive_dag_properties (test_expanded.ExpandedTests.test_r8_real_source_delta_invalidates_transitive_dag_properties) ... ok
+test_receipt_version_projection_requires_no_native_process (test_expanded.ExpandedTests.test_receipt_version_projection_requires_no_native_process) ... ok
+test_rejected_tool_never_launched_by_receipt_writer (test_expanded.ExpandedTests.test_rejected_tool_never_launched_by_receipt_writer) ... ok
+test_solver_differential_does_not_overwrite_model_results (test_expanded.ExpandedTests.test_solver_differential_does_not_overwrite_model_results) ... ok
+test_source_not_guessed (test_expanded.ExpandedTests.test_source_not_guessed) ... ok
+test_strict_source_does_not_mask_model_failure (test_expanded.ExpandedTests.test_strict_source_does_not_mask_model_failure) ... FAIL
+test_strict_source_rejects_unknown_tool_identity_and_zeroes_coverage (test_expanded.ExpandedTests.test_strict_source_rejects_unknown_tool_identity_and_zeroes_coverage) ... ok
+test_strict_without_exact_checkout_blocked (test_expanded.ExpandedTests.test_strict_without_exact_checkout_blocked) ... skipped 'native solvers not configured'
+test_tampered_native_tool_never_executes (test_expanded.ExpandedTests.test_tampered_native_tool_never_executes) ... ok
+test_traceability_bidirectional_and_dependency_cycle (test_expanded.ExpandedTests.test_traceability_bidirectional_and_dependency_cycle) ... ok
+test_transitive_source_invalidation (test_expanded.ExpandedTests.test_transitive_source_invalidation) ... ok
+test_unknown_solver_is_inconclusive (test_expanded.ExpandedTests.test_unknown_solver_is_inconclusive) ... FAIL
+test_clean_dirty_wrong_head_missing_and_untracked (test_provenance.ProvenanceTests.test_clean_dirty_wrong_head_missing_and_untracked) ... FAIL
+test_actual_runner_native_adapter_and_mutants (test_r6_admission.AdmissionExtendedTests.test_actual_runner_native_adapter_and_mutants) ... skipped 'R6 native regression needs both verified Z3 and cvc5'
+test_registration_and_positive_negative_queries (test_r6_admission.AdmissionExtendedTests.test_registration_and_positive_negative_queries) ... ok
+test_generation_invalid_inputs_fail_closed (test_r6_source_consumer.CandidateGenerationConsumerTests.test_generation_invalid_inputs_fail_closed) ... skipped 'Exact candidate checkout not available; SOURCE_CONSUMER_NOT_RUN'
+test_generation_transition_bounded_exhaustive (test_r6_source_consumer.CandidateGenerationConsumerTests.test_generation_transition_bounded_exhaustive)
+Helper classifies generations; it is NOT a full Claim identity/authority check. ... skipped 'Exact candidate checkout not available; SOURCE_CONSUMER_NOT_RUN'
+test_group_ref_syntax_not_authority (test_r6_source_consumer.CandidateGenerationConsumerTests.test_group_ref_syntax_not_authority) ... skipped 'Exact candidate checkout not available; SOURCE_CONSUMER_NOT_RUN'
+test_checked_in_inputs (test_r8_successor.R8Targeted.test_checked_in_inputs) ... ok
+test_native_answers (test_r8_successor.R8Targeted.test_native_answers) ... skipped 'native solver not installed: z3'
+test_empty_list_must_fail_both_runners (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_empty_list_must_fail_both_runners) ... ok
+test_invalid_anchor_entries_must_fail (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_invalid_anchor_entries_must_fail) ... ok
+test_missing_or_invalid_source_collection_fails (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_missing_or_invalid_source_collection_fails) ... ok
+test_no_checkout_retains_not_run (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_no_checkout_retains_not_run) ... ok
+test_real_nonempty_matching_source_keeps_pass (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_real_nonempty_matching_source_keeps_pass) ... ok
+test_wrong_or_missing_anchor_still_fails (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_wrong_or_missing_anchor_still_fails) ... ok
+test_zero_anchors_must_not_vacuously_pass (test_source_binding_nonvacuity.SourceBindingNonVacuityTests.test_zero_anchors_must_not_vacuously_pass) ... ok
+test_missing_tool_does_not_pass (test_suite.SuiteTests.test_missing_tool_does_not_pass) ... ok
+test_no_checkout_not_run (test_suite.SuiteTests.test_no_checkout_not_run) ... ok
+test_safe_paths (test_suite.SuiteTests.test_safe_paths) ... ok
+test_unknown_not_unsat (test_suite.SuiteTests.test_unknown_not_unsat) ... ok
+test_wrong_checkout_blocked (test_suite.SuiteTests.test_wrong_checkout_blocked) ... ok
+test_both_verified (test_tool_version_postflight.PostflightReceiptTests.test_both_verified) ... ok
+test_no_native_subprocess (test_tool_version_postflight.PostflightReceiptTests.test_no_native_subprocess) ... ok
+test_old_one_argument_signature (test_tool_version_postflight.PostflightReceiptTests.test_old_one_argument_signature) ... ok
+test_post_failure_does_not_claim_verified (test_tool_version_postflight.PostflightReceiptTests.test_post_failure_does_not_claim_verified) ... ok
+test_post_hash_mismatch_rejected (test_tool_version_postflight.PostflightReceiptTests.test_post_hash_mismatch_rejected) ... ok
+test_post_missing_rejected (test_tool_version_postflight.PostflightReceiptTests.test_post_missing_rejected) ... ok
+test_tlc_and_java_downgraded_together (test_tool_version_postflight.PostflightReceiptTests.test_tlc_and_java_downgraded_together) ... ok
+test_bad_tlc_jar_never_starts_java_probe (test_toolchain.ToolchainTests.test_bad_tlc_jar_never_starts_java_probe) ... ok
+test_exact_version_and_hash_required (test_toolchain.ToolchainTests.test_exact_version_and_hash_required) ... FAIL
+test_mismatched_hash_never_runs_executable_even_for_version (test_toolchain.ToolchainTests.test_mismatched_hash_never_runs_executable_even_for_version) ... ok
+test_missing_and_zero_selected_cases (test_toolchain.ToolchainTests.test_missing_and_zero_selected_cases) ... ok
+test_tlc_jar_is_pinned_independently_of_java (test_toolchain.ToolchainTests.test_tlc_jar_is_pinned_independently_of_java) ... FAIL
+
+======================================================================
+FAIL: test_strict_source_does_not_mask_model_failure (test_expanded.ExpandedTests.test_strict_source_does_not_mask_model_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_expanded.py", line 78, in test_strict_source_does_not_mask_model_failure
+    self.assertEqual(report['model_verdict'], 'FAIL')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'BLOCKED' != 'FAIL'
+- BLOCKED
++ FAIL
+
+
+======================================================================
+FAIL: test_unknown_solver_is_inconclusive (test_expanded.ExpandedTests.test_unknown_solver_is_inconclusive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_expanded.py", line 48, in test_unknown_solver_is_inconclusive
+    self.assertEqual(runner.run_case(case, ROOT, opts)['status'], 'INCONCLUSIVE')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'NOT_RUN' != 'INCONCLUSIVE'
+- NOT_RUN
++ INCONCLUSIVE
+
+
+======================================================================
+FAIL: test_clean_dirty_wrong_head_missing_and_untracked (test_provenance.ProvenanceTests.test_clean_dirty_wrong_head_missing_and_untracked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_provenance.py", line 31, in test_clean_dirty_wrong_head_missing_and_untracked
+    self.assertEqual(module.model_alignment(formal, inputs, head)["status"], "PASS")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'FAIL' != 'PASS'
+- FAIL
++ PASS
+
+
+======================================================================
+FAIL: test_exact_version_and_hash_required (test_toolchain.ToolchainTests.test_exact_version_and_hash_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_toolchain.py", line 25, in test_exact_version_and_hash_required
+    self.assertEqual(mod.toolchain_alignment(opts, selected, inventory)["status"], "PASS")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'FAIL' != 'PASS'
+- FAIL
++ PASS
+
+
+======================================================================
+FAIL: test_tlc_jar_is_pinned_independently_of_java (test_toolchain.ToolchainTests.test_tlc_jar_is_pinned_independently_of_java)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\xDev\kAiCreator\ai-development-standard\ads-i1366-r20-zcode\formal\tests\test_toolchain.py", line 87, in test_tlc_jar_is_pinned_independently_of_java
+    self.assertEqual(res["status"], "PASS")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'FAIL' != 'PASS'
+- FAIL
++ PASS
+
+
+----------------------------------------------------------------------
+Ran 92 tests in 1.236s
+
+FAILED (failures=5, skipped=8)
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpeeu7eyh4\\receipt.json"}
+{"verdict": "BLOCKED", "cases": 0, "source": "NOT_RUN", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpt57r6ymu\\invalid-head.json"}
+{"verdict": "BLOCKED", "cases": 0, "source": "NOT_RUN", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpvy7u3ebm\\tlc-missing-receipt.json"}
+{"verdict": "BLOCKED", "cases": 0, "source": "NOT_RUN", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpths5jelp\\receipt.json"}
+{"verdict": "BLOCKED", "cases": 4, "source": "NOT_RUN", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpqv8tyxwt\\receipt.json"}
+{"verdict": "BLOCKED", "cases": 0, "source": "PASS", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpoie79f36\\tool-check.json"}
+{"verdict": "BLOCKED", "cases": 0, "source": "NOT_RUN", "receipt": "C:\\Users\\15549\\AppData\\Local\\Temp\\tmpwxmnp946\\untrusted-tool.json"}

@@ -1,0 +1,246 @@
+{
+  "schema": "ads/formal-r27-exact-checkout-integration/v1",
+  "kind": "R27_EXACT_CHECKOUT_INTEGRATION",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "subject": {
+    "model_head": "ca13e9b563ebfc7913ff94427e56673a227e75e8",
+    "model_tree": "01e42681a7589ef8075e43d1207eff6e617a40b9",
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "candidate": {
+      "pr": 1365,
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "status": "OPEN_NOT_MERGED_NOT_FROZEN"
+    },
+    "closes": [
+      "R27 execution.actual_full_repo_integration_test=NOT_RUN",
+      "R27 execution.new_head_native_solver_and_strict_suite=NOT_RUN",
+      "R27-TOOL-IDENTITY-P2-01 status CODE_REPAIRED_PENDING_REAL_EXACT_CHECKOUT_INTEGRATION"
+    ]
+  },
+  "environment": {
+    "qualifying_platform": "WSL2 Ubuntu 26.04 (linux-x86_64; kernel 6.18.58.1-microsoft-standard-WSL2), matching formal/tools/inventory.json runtime family and R0-R25 historical execution",
+    "python": "3.14.4",
+    "git_linux": "2.53.0",
+    "java": "openjdk 21.0.13.0.3 (AVAILABLE_UNPINNED, consistent with inventory)",
+    "windows_supplement": "Windows 10.0.26300 x64, Python 3.14.7 (supplementary only; no pinned Windows-native solvers)"
+  },
+  "execution_anchors": {
+    "model_worktree": {
+      "path": "/home/cc/ads-i1366-r27-model",
+      "head": "ca13e9b563ebfc7913ff94427e56673a227e75e8",
+      "tree": "01e42681a7589ef8075e43d1207eff6e617a40b9",
+      "created_from": "bare mirror worktree add --detach, WSL git 2.53.0 (R25 pattern; avoids R11 INC-1 Windows/WSL .git pointer incompatibility)",
+      "tracked_files_modified_during_run": 0
+    },
+    "candidate_source_worktree": {
+      "path": "/home/cc/ads-i1366-r27-source",
+      "pr": 1365,
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "tracked_files_modified_during_run": 0
+    },
+    "old_runner_worktree_for_probe": {
+      "path": "/home/cc/ads-i1366-r27-oldrunner",
+      "head": "16956152a5985af5866629bfe4ba477541c66f36",
+      "note": "pre-repair runner generation (expanded.py blob bcbff21a...) used only by the negative probe",
+      "tracked_files_modified_during_run": 0
+    },
+    "runner_blobs_at_model_head": {
+      "formal/suite/execution_inventory.py": "a907a4a42f50651549cde8d84ce810f9fc9f3d90",
+      "formal/suite/expanded.py": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e",
+      "formal/tests/test_execution_inventory.py": "f121a818ce8f370b9b3adcab7d2f8bdf546ed6f3",
+      "formal/tests/test_execution_inventory_admission.py": "59263389492d3825862e1c6b683060ac852c543b",
+      "identity_source": "R27_EXECUTION_IDENTITY_REPAIR.json repair blobs + git ls-tree HEAD readback match"
+    }
+  },
+  "tool_identity": {
+    "pinned_source": "tools/inventory.json smokes (sha256 f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2, unchanged since R11)",
+    "z3": {
+      "version": "5.3.3",
+      "path": "/home/cc/ads-i1366-tools/z3-5.3.3-x64-glibc-2.39/bin/z3",
+      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "cvc5": {
+      "version": "1.4.2",
+      "path": "/home/cc/ads-i1366-tools/cvc5-Linux-x86_64-static/bin/cvc5",
+      "sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102"
+    },
+    "tlc_jar": {
+      "version": "2.19",
+      "path": "/home/cc/ads-i1366-tools/tla2tools.jar",
+      "sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+    },
+    "before_after": "sha256sum captured before and after the strict run; all three byte-identical (before file sha256 == after file sha256 == 4caaf941b510dd9e18b86687a4866915b492cb53d699620435b7658f61d5137c) and equal to pinned inventory values",
+    "unrelated_build_warning": "/opt/formal-toolkit/bundle/installed/bin/cvc5 (sha256 cc6781dd...) is a different build and was NOT used"
+  },
+  "python_tests": {
+    "qualifying_wsl2_full_suite": {
+      "command": "python3 -m unittest discover -s tests -v (cwd: model worktree formal/; ADS_FORMAL_Z3/ADS_FORMAL_CVC5/ADS_FORMAL_TLC_JAR/ADS_FORMAL_CANDIDATE_CHECKOUT set to verified native paths and candidate worktree)",
+      "static_methods_collected": 92,
+      "executed": 92,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "status": "PASS_ZERO_SKIP_ZERO_FAIL",
+      "includes": "all 15 R27 regression tests executed from the real Git checkout: 14 test_execution_inventory unit tests + 1 test_execution_inventory_admission actual-r10-entrypoint integration test (real expanded.py main_v1 + real 35-case suite.json; forged TLC model_id yields exit 2 / BLOCKED) — closes R27 actual_full_repo_integration_test=NOT_RUN",
+      "log": "formal/v4.19/r27/R27_PYTHON_TESTS_LOG.txt",
+      "log_sha256": "d1afdb3b13b17486028b56fbfb880fd96f6ab208067f417ddbe01cb864af0dd3"
+    },
+    "windows_supplement": {
+      "full_suite": {
+        "result": "Ran 92 tests, failures=5, skipped=8, exit 1",
+        "classification": "PRE_EXISTING_WINDOWS_ENVIRONMENT_LIMITATION_NOT_R27_REGRESSION",
+        "attribution": "Failure IDs identical to the R25 Windows baseline set (R25_WINDOWS_SUPPLEMENT_LOG.txt @ 13ff89c5): test_expanded x2 + test_provenance x1 + test_toolchain x2 (POSIX '#!/bin/sh' stub executables and text-mode write_text CRLF vs autocrlf blob mismatch). All 5 pass in the qualifying linux-x86_64 environment.",
+        "new_tests_result": "15/15 R27 tests OK on Windows (pure Python, no native binaries required)",
+        "log_sha256": "2dd727f855d418d7648a7fd4ac684b747e963f19ae8d7284417e57bae18ce621"
+      },
+      "note": "sha256 values in this receipt refer to the runtime artifact bytes on their execution hosts; Git blob normalization may differ for Windows-produced text logs."
+    }
+  },
+  "strict_native_suite": {
+    "command": "python3 suite/run.py --suite v4.19/r10/suite.json --z3 <pinned> --cvc5 <pinned> --java java --tlc-jar <pinned jar> --model-head ca13e9b563ebfc7913ff94427e56673a227e75e8 --source-checkout /home/cc/ads-i1366-r27-source --strict-source --out <receipt> (cwd: model worktree formal/)",
+    "verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_selected": "35/35 all declared (21 proof PASS_MODEL + 14 mutation COUNTEREXAMPLE)",
+    "execution_inventory_audit": {
+      "status": "PASS",
+      "expected_count": 35,
+      "observed_count": 35,
+      "problems": 0
+    },
+    "tools_used": {
+      "z3": 16,
+      "cvc5": 16,
+      "tlc": 3
+    },
+    "solver_differential": {
+      "pairs": 16,
+      "status": "PASS",
+      "require_solver_pairs": true
+    },
+    "tlc": [
+      {
+        "id": "ADS419-R2-LIFECYCLE-TLC",
+        "status": "PASS_MODEL",
+        "distinct_states": 27
+      },
+      {
+        "id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+        "status": "COUNTEREXAMPLE",
+        "distinct_states": 7
+      },
+      {
+        "id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+        "status": "COUNTEREXAMPLE",
+        "distinct_states": 3
+      }
+    ],
+    "source_alignment": {
+      "status": "PASS",
+      "checks": 7,
+      "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "blob_and_anchor_checks_all_pass": true
+    },
+    "traceability_audit": {
+      "status": "PASS",
+      "property_count": 10,
+      "case_count": 35,
+      "source_count": 7
+    },
+    "model_input_alignment_before_after": {
+      "before": "PASS @ ca13e9b563ebfc7913ff94427e56673a227e75e8",
+      "after": "PASS",
+      "includes_new_admission_code": "suite/execution_inventory.py bound pre-run with expected git_blob == actual_blob == a907a4a42f50651549cde8d84ce810f9fc9f3d90 (R27 identity_closure satisfied)"
+    },
+    "toolchain_alignment_before_after": "PASS (3/3 z3/cvc5/tlc) / PASS (3/3)",
+    "suite_inputs_unchanged_since_r11": {
+      "suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3",
+      "tool_inventory_sha256": "f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2",
+      "note": "Both equal the R11/R25 receipt values; the strict-suite model-input deltas since R11 are the R24-repaired and R27-repaired runner files themselves, all now hash-bound."
+    },
+    "receipt": "formal/v4.19/r27/R27_STRICT_RUN.json",
+    "receipt_sha256": "4aaad2e7cb7c20fcd2474f7ce91441b297b3b4113027fbf289c911c11b89006f",
+    "log": "formal/v4.19/r27/R27_STRICT_RUN_LOG.txt",
+    "log_sha256": "ab3b93dc23a0e61041aef248b43c59ba78c5ae370342673411222947de8f080c",
+    "closes": "R27 new_head_native_solver_and_strict_suite=NOT_RUN"
+  },
+  "negative_probe_real_runner": {
+    "purpose": "Demonstrate the R27 TLC result-identity bypass was real at the actual runner main_v1 level (not only the unit seam) and is closed by the repaired runner, using identical forged inputs against both runner generations loaded from exact Git worktrees.",
+    "setup": "Scratch dir /home/cc/ads-i1366-r27-negprobe; real r10 suite (35 cases, require_solver_pairs=true) loaded from each generation's own tree; ONLY the native result seam (run_case) and the three binding aligners are patched; all TLC ids stay legal while the TLC results carry model_id=FORGED-TLC-MODEL (the exact R27 counterexample). Runner code itself unmodified, loaded from exact Git trees.",
+    "runner_identities": {
+      "old_head": "16956152a5985af5866629bfe4ba477541c66f36 (expanded.py blob bcbff21a..., no audit in receipt)",
+      "new_head": "ca13e9b563ebfc7913ff94427e56673a227e75e8 (expanded.py blob 0e004cd0..., execution_inventory.py blob a907a4a4...)"
+    },
+    "scenario_P1_old_forged": {
+      "verdict": "MODEL_AND_SOURCE_PASS",
+      "exit_code": 0,
+      "source_bound_verified_obligations": 10,
+      "execution_inventory_audit": "ABSENT (key not emitted by pre-repair runner)",
+      "interpretation": "FALSE_PASS_REPRODUCED_AT_REAL_RUNNER_LEVEL — confirms R27-TOOL-IDENTITY-P2-01 was a real defect"
+    },
+    "scenario_P2_new_forged": {
+      "verdict": "BLOCKED",
+      "exit_code": 2,
+      "execution_inventory_audit": "FAIL with field=model_id problem",
+      "solver_differential": "degraded to INCONCLUSIVE (EXECUTION_RESULT_IDENTITY_MISMATCH), SMT pairing not consumed as proof",
+      "source_bound_verified_obligations": 0,
+      "interpretation": "REPAIRED_RUNNER_BLOCKS — TLC result identity error now blocks before proof PASS"
+    },
+    "scenario_P3_new_correct": {
+      "verdict": "MODEL_AND_SOURCE_PASS",
+      "exit_code": 0,
+      "execution_inventory_audit": "PASS 35/35, no problems",
+      "solver_differential": "16/16 PASS",
+      "source_bound_verified_obligations": 10,
+      "interpretation": "CORRECT_RESULTS_KEEP_PASS — genuine Z3/cvc5/TLC results still yield full PASS with the repaired runner"
+    },
+    "assertions": "19/19 PASS (verdicts, audit fields, coverage zeroing, differential degradation, exit codes 0/2/0, byte-identical determinism reruns)",
+    "determinism": "All three scenario receipts reproduced byte-identical on rerun (sha256 match).",
+    "artifacts": [
+      "formal/v4.19/r27/R27_NEGATIVE_PROBE_LOG.txt",
+      "formal/v4.19/r27/R27_NEGPROBE_driver.sh",
+      "formal/v4.19/r27/R27_NEGPROBE_runner.py",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P1_OLD.json",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P1_OLD_RERUN.json",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P2_NEW.json",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P2_NEW_RERUN.json",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P3_NEW.json",
+      "formal/v4.19/r27/R27_NEGPROBE_OUT_P3_NEW_RERUN.json"
+    ]
+  },
+  "post_execution_identity": {
+    "dirty_tracked_files_model_worktree": 0,
+    "dirty_tracked_files_candidate_worktree": 0,
+    "dirty_tracked_files_old_runner_worktree": 0,
+    "heads_readback_unchanged": true
+  },
+  "events": [
+    "INC-A (P4 operational): bare mirror was one round stale (experiment tip 6edd2bad); refreshed via fetch from origin before worktree creation; tip readback ca13e9b matched the issue baseline before any execution.",
+    "INC-B (P4 operational): pinned native tools recovered from local cache /home/cc/ads-i1366-tools (z3/cvc5/tla2tools.jar), sha256-verified against inventory before use; no downloads.",
+    "No P0/P1/P2 findings during execution; no formal/ code repair needed in this round."
+  ],
+  "findings_summary": {
+    "ads_normative_P0_P1_P2": "0/0/0",
+    "experiment_open_P0_P1_P2": "0/0/0",
+    "closed_this_round": "R27-TOOL-IDENTITY-P2-01 (code was repaired at ca13e9b; this round supplies the real Exact-SHA integration evidence that closes it)"
+  },
+  "qualification": "R27_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_92_OF_92_ZERO_SKIP_ZERO_FAIL_WSL2 / NATIVE_STRICT_35_OF_35_MODEL_AND_SOURCE_PASS / DIFFERENTIAL_16_OF_16 / TLC_3_OF_3 / EXECUTION_INVENTORY_AUDIT_PASS_35_35 / SOURCE_MODEL_TOOL_BINDING_PASS / NEGATIVE_PROBE_19_OF_19_REAL_RUNNER_RED_GREEN / DETERMINISTIC_RERUNS_BYTE_IDENTICAL",
+  "limitations": [
+    "Bounded pilot: 10 declared properties / 35 cases; entire ADS normative obligation denominator remains UNKNOWN",
+    "Source<->SMT semantic equivalence, real GitHub production Claim/CAS/Release, liveness/fairness remain NOT_PROVEN",
+    "Java runtime AVAILABLE_UNPINNED (consistent with inventory); Windows full-suite has the same 5 pre-existing environment failures as R25 (no pinned Windows-native solvers)",
+    "Negative probe patches the run_case seam and the three aligners by design: the forged identity is a runner-implementation regression that can only be injected at that seam; the unmocked strict run in the same receipt proves the real bindings"
+  ],
+  "no_unauthorized_actions": {
+    "normative_changes": false,
+    "candidate_pr_mutation": false,
+    "github_actions": false,
+    "claim": false,
+    "release": false,
+    "freeze": false,
+    "merge": false,
+    "historical_receipt_modification": false
+  }
+}

@@ -1,0 +1,1 @@
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-strict-run.json"}

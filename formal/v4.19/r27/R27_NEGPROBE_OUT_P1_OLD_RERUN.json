@@ -1,0 +1,1161 @@
+{
+  "kind": "ADS_BOUNDED_MODEL_CHECK_NOT_NORMATIVE_PROOF",
+  "schema": "ads/formal-receipt/v1",
+  "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "candidate_status": "PROSPECTIVE_UNFROZEN",
+  "suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3",
+  "source_index_sha256": "ffa37b146205ada594dbcd5d10b7d3f28518ce5c69816629b65d8d4cf404122c",
+  "source_map_sha256": "5e8d85e99881cc8107a9f374523ce592e7ff40b02b814a8ea3737b95111ea8e6",
+  "traceability_sha256": "08953c59258b8f682151c41be1c965e1a8608858bb17572f915d6eef627e46da",
+  "source_alignment": {
+    "status": "PASS",
+    "checks": []
+  },
+  "tool_versions": {
+    "z3": {
+      "status": "NOT_SELECTED",
+      "version_output": [],
+      "binary_sha256": null,
+      "preflight_status": "NOT_SELECTED",
+      "postflight_status": "NOT_SELECTED"
+    },
+    "cvc5": {
+      "status": "NOT_SELECTED",
+      "version_output": [],
+      "binary_sha256": null,
+      "preflight_status": "NOT_SELECTED",
+      "postflight_status": "NOT_SELECTED"
+    },
+    "tlc_jar": {
+      "status": "NOT_SELECTED",
+      "sha256": null,
+      "preflight_status": "NOT_SELECTED",
+      "postflight_status": "NOT_SELECTED"
+    },
+    "java": {
+      "status": "NOT_ATTESTED",
+      "version_output": [],
+      "binary_sha256": null
+    }
+  },
+  "model_verdict": "MODEL_AND_SOURCE_PASS",
+  "traceability_audit": {
+    "status": "PASS",
+    "property_count": 10,
+    "case_count": 35,
+    "source_count": 7
+  },
+  "model_input_alignment_before": {
+    "status": "PASS"
+  },
+  "model_input_alignment_after": {
+    "status": "PASS"
+  },
+  "toolchain_alignment_before": {
+    "status": "PASS",
+    "checks": []
+  },
+  "toolchain_alignment_after": {
+    "status": "PASS",
+    "checks": []
+  },
+  "tool_inventory_sha256": "f4591e8a7d6e610b5917890d3fae64a7022ecca19dff3404d6f52c2efa4368a2",
+  "checks": [
+    {
+      "id": "ADS-P-AUT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-AUT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/parallel.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-EVI-Z3",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-EVI-CVC5",
+      "model_id": "ADS-M-EVIDENCE",
+      "property_id": "ADS-P-EVI",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evidence/exact-sha.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-EVO-Z3",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-EVO-CVC5",
+      "model_id": "ADS-M-EVOLUTION",
+      "property_id": "ADS-P-EVO",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/evolution/scopes.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CROSS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CROSS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-CROSS",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/combined.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-AUT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-AUT",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/claim-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-4-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-4-MUTANT-Z3",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-4-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-DEP-4-MUTANT-CVC5",
+      "model_id": "ADS-M-DEPENDENCY",
+      "property_id": "ADS-P-DEP-4",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/dependency/ranked-4-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-TLC",
+      "model_id": "FORGED-TLC-MODEL",
+      "property_id": "ADS-P-LC",
+      "tool": "tlc",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": "safe",
+      "actual": {
+        "distinct_states": 27
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+      "model_id": "FORGED-TLC-MODEL",
+      "property_id": "ADS-P-LC",
+      "tool": "tlc",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": "counterexample",
+      "actual": {
+        "distinct_states": 27
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+      "model_id": "FORGED-TLC-MODEL",
+      "property_id": "ADS-P-LC",
+      "tool": "tlc",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": "counterexample",
+      "actual": {
+        "distinct_states": 27
+      },
+      "inputs_sha256": {
+        "v4.19/r0/ADSWorkflow.tla": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CAS-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CAS-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CAS-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-CAS-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-CAS",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/serialized-admission-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-MUTANT-Z3",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-WRITER-KEYS-MUTANT-CVC5",
+      "model_id": "ADS-M-CROSS",
+      "property_id": "ADS-P-WRITER-KEYS",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/cross/writer-exclusion-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-EXT-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "z3",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "cvc5",
+      "purpose": "proof",
+      "status": "PASS_MODEL",
+      "expected": [
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat",
+          "sat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "unsat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "z3",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "id": "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-CVC5",
+      "model_id": "ADS-M-AUTHORITY",
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "tool": "cvc5",
+      "purpose": "mutation",
+      "status": "COUNTEREXAMPLE",
+      "expected": [
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "actual": {
+        "answers": [
+          "sat",
+          "sat",
+          "sat"
+        ]
+      },
+      "inputs_sha256": {
+        "models/authority/admission-boundaries-r8-mutant.smt2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  ],
+  "solver_differential": [
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-r8-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries-r8.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-ADMISSION-EXT",
+      "model": "models/authority/admission-boundaries.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-AUT",
+      "model": "models/authority/claim-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-AUT",
+      "model": "models/authority/claim.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CAS",
+      "model": "models/authority/serialized-admission-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CAS",
+      "model": "models/authority/serialized-admission.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-CROSS",
+      "model": "models/cross/combined.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP",
+      "model": "models/dependency/parallel.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP-4",
+      "model": "models/dependency/ranked-4-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-DEP-4",
+      "model": "models/dependency/ranked-4.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-EVI",
+      "model": "models/evidence/exact-sha.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-EVO",
+      "model": "models/evolution/scopes.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-WRITER-KEYS",
+      "model": "models/cross/writer-exclusion-mutant.smt2",
+      "purpose": "mutation",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "property_id": "ADS-P-WRITER-KEYS",
+      "model": "models/cross/writer-exclusion.smt2",
+      "purpose": "proof",
+      "status": "PASS",
+      "reason": null
+    }
+  ],
+  "selection": {
+    "all_declared_cases_selected": true,
+    "requested_model": null,
+    "requested_property": null,
+    "requested_changed_sources": null,
+    "selected_case_ids": [
+      "ADS-P-AUT-Z3",
+      "ADS-P-AUT-CVC5",
+      "ADS-P-DEP-Z3",
+      "ADS-P-DEP-CVC5",
+      "ADS-P-EVI-Z3",
+      "ADS-P-EVI-CVC5",
+      "ADS-P-EVO-Z3",
+      "ADS-P-EVO-CVC5",
+      "ADS-P-CROSS-Z3",
+      "ADS-P-CROSS-CVC5",
+      "ADS-P-AUT-MUTANT-Z3",
+      "ADS-P-AUT-MUTANT-CVC5",
+      "ADS-P-DEP-4-Z3",
+      "ADS-P-DEP-4-MUTANT-Z3",
+      "ADS-P-DEP-4-CVC5",
+      "ADS-P-DEP-4-MUTANT-CVC5",
+      "ADS419-R2-LIFECYCLE-TLC",
+      "ADS419-R2-LIFECYCLE-MUTANT-WRITER",
+      "ADS419-R2-LIFECYCLE-MUTANT-RELEASE",
+      "ADS-P-CAS-Z3",
+      "ADS-P-CAS-CVC5",
+      "ADS-P-CAS-MUTANT-Z3",
+      "ADS-P-CAS-MUTANT-CVC5",
+      "ADS-P-WRITER-KEYS-Z3",
+      "ADS-P-WRITER-KEYS-CVC5",
+      "ADS-P-WRITER-KEYS-MUTANT-Z3",
+      "ADS-P-WRITER-KEYS-MUTANT-CVC5",
+      "ADS-P-ADMISSION-EXT-Z3",
+      "ADS-P-ADMISSION-EXT-CVC5",
+      "ADS-P-ADMISSION-EXT-MUTANT-Z3",
+      "ADS-P-ADMISSION-EXT-MUTANT-CVC5",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-Z3",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-CVC5",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-Z3",
+      "ADS-P-ADMISSION-SUCCESSOR-R8-MUTANT-CVC5"
+    ],
+    "selected_case_count": 35,
+    "declared_case_count": 35,
+    "qualification": "SELECTED_CASES_ONLY_NOT_FULL_ADS_PROOF"
+  },
+  "affected_property_ids": null,
+  "coverage": {
+    "modeled_obligations_denominator": 10,
+    "modeled_obligations_with_selected_cases": 10,
+    "source_bound_verified_obligations": 10,
+    "all_ADS_normative_obligations_denominator": null,
+    "note": "Pilot denominator is declared properties; entire ADS rule inventory not enumerated"
+  },
+  "semantic_evaluation": "SELF_CHALLENGED_INDEPENDENT_REVIEW_NOT_RUN",
+  "limitations": [
+    "Bounded abstract states only; no full ADS natural-language equivalence",
+    "No full real GitHub/CI/Release execution evidence",
+    "Model guards require source-to-model review",
+    "TLC liveness/fairness, claim expiry, multi-Task CAS, and full version inheritance not proved"
+  ]
+}

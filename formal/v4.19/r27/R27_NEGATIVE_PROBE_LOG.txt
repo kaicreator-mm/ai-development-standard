@@ -1,0 +1,74 @@
+=== runner generation identities ===
+OLD worktree HEAD/TREE:
+16956152a5985af5866629bfe4ba477541c66f36
+5af7e02896aa76251c541a20a1f7f868cef49100
+100644 blob bcbff21ab471c1e25e0c529c27ea59aeb346c0d7	formal/suite/expanded.py
+NEW worktree HEAD/TREE:
+ca13e9b563ebfc7913ff94427e56673a227e75e8
+01e42681a7589ef8075e43d1207eff6e617a40b9
+100644 blob a907a4a42f50651549cde8d84ce810f9fc9f3d90	formal/suite/execution_inventory.py
+100644 blob 0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e	formal/suite/expanded.py
+candidate source worktree HEAD/TREE:
+dac263fa4c0ab155406d2f2117459b34322cc988
+def156ce156c7301c30cf7df1f4bf956b7817c5f
+driver sha256:
+48894708d253e7585e4fff7891c38c2ec582cb34d117fa768fd41ec00f14f805  /home/cc/ads-i1366-r27-negprobe/r27_negprobe_runner.py
+=== scenario P1_old_forged forge=tlc_model_id ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P1_OLD.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-oldrunner/formal", "forge": "tlc_model_id", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": null, "audit_expected": null, "audit_observed": null, "model_id_problem": false, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== scenario P2_new_forged forge=tlc_model_id ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P2_NEW.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-model/formal", "forge": "tlc_model_id", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "model_id_problem": true, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P3_new_correct forge=none ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P3_NEW.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-model/formal", "forge": "none", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": "PASS", "audit_expected": 35, "audit_observed": 35, "model_id_problem": false, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== scenario P1_old_forged_rerun forge=tlc_model_id ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P1_OLD_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-oldrunner/formal", "forge": "tlc_model_id", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": null, "audit_expected": null, "audit_observed": null, "model_id_problem": false, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== scenario P2_new_forged_rerun forge=tlc_model_id ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P2_NEW_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-model/formal", "forge": "tlc_model_id", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "model_id_problem": true, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P3_new_correct_rerun forge=none ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P3_NEW_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r27-model/formal", "forge": "none", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": "PASS", "audit_expected": 35, "audit_observed": 35, "model_id_problem": false, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== receipt sha256 (determinism) ===
+49f2bed1bd8d939956de3427da133342a22d5afd17d1f8f21d03dd78ff7cce57  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P1_OLD.json
+49f2bed1bd8d939956de3427da133342a22d5afd17d1f8f21d03dd78ff7cce57  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P1_OLD_RERUN.json
+31327aecae89e38c9b47eda471feec315ce45e17c665126a8b01a506c3db06ad  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P2_NEW.json
+31327aecae89e38c9b47eda471feec315ce45e17c665126a8b01a506c3db06ad  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P2_NEW_RERUN.json
+c276fa0c5fec72e6ce0f797d5889c0d94907b51b596da85f7ec1c384fe519c8f  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P3_NEW.json
+c276fa0c5fec72e6ce0f797d5889c0d94907b51b596da85f7ec1c384fe519c8f  /home/cc/ads-i1366-r27-negprobe/R27_NEGPROBE_OUT_P3_NEW_RERUN.json
+=== scenario exit codes ===
+R27_NEGPROBE_EXIT_P1=0
+R27_NEGPROBE_EXIT_P1_RERUN=0
+R27_NEGPROBE_EXIT_P2=2
+R27_NEGPROBE_EXIT_P2_RERUN=2
+R27_NEGPROBE_EXIT_P3=0
+R27_NEGPROBE_EXIT_P3_RERUN=0
+ASSERT[P1_verdict_false_pass]: OK
+ASSERT[P1_no_audit_key]: OK
+ASSERT[P1_source_bound_10]: OK
+ASSERT[P1_differential_pass]: OK
+ASSERT[P2_verdict_blocked]: OK
+ASSERT[P2_audit_fail]: OK
+ASSERT[P2_model_id_problem]: OK
+ASSERT[P2_source_bound_zero]: OK
+ASSERT[P2_differential_inconclusive]: OK
+ASSERT[P3_verdict_pass]: OK
+ASSERT[P3_audit_pass_35]: OK
+ASSERT[P3_differential_pass]: OK
+ASSERT[P3_source_bound_10]: OK
+ASSERT[P1_exit_0]: OK
+ASSERT[P2_exit_2]: OK
+ASSERT[P3_exit_0]: OK
+ASSERT[DETERMINISM[P1]]: OK
+ASSERT[DETERMINISM[P2]]: OK
+ASSERT[DETERMINISM[P3]]: OK
+PROBE_RESULT: ALL_ASSERTIONS_PASS
+DRIVER_FINAL: PASS
