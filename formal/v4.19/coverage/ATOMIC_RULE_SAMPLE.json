@@ -1,0 +1,641 @@
+{
+  "schema": "ads/formal-atomic-rule-crosswalk-pilot/v1",
+  "owner_issue": 1366,
+  "date_utc": "2026-11-10",
+  "candidate": {
+    "pr": 1365,
+    "source_commit": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "source_state": "UNMERGED_PROSPECTIVE_ONLY"
+  },
+  "experiment_source_head": "4ce8460ab3ac1d21578a7b9de9421ea4515affb7",
+  "scope": {
+    "curated_atom_interpretations": 21,
+    "covered_changed_normative_files": 7,
+    "concern_families": 21,
+    "source_curated_links": {
+      "with_21_curated_parent": 14,
+      "new_source_direct_obligations": 7,
+      "parent_unique": 12
+    },
+    "tiers": {
+      "SOURCE_SCHEMA_ONLY": 5,
+      "ABSTRACT_MODEL_ONLY": 5,
+      "NO_DIRECT_TEST": 7,
+      "SYNTHETIC_DEMO_ONLY": 4
+    },
+    "ADS_all_rule_obligation_denominator": null,
+    "independent_semantic_equivalence_proven": 0
+  },
+  "model_reference": {
+    "pilot_index_git_blob": "1dbfb2132fdeb227a33063d66390ede4db249894",
+    "index_path": "formal/v4.19/r8/source-index.json",
+    "r11_receipt_blob": "22a2c36c5ecf8e604ec08ac148595f67e0dc3830",
+    "r11_exact_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+    "qualification": "Historical bounded model/source PASS, not equivalence for new atomized clauses"
+  },
+  "strictness": {
+    "review_interpretations_are_proposals": true,
+    "model_mapping_is_relevance_only": true,
+    "source_line_contains_anchor_not_full_semantic_context": true,
+    "negative_witness_labels_are_unexecuted_scenarios": true,
+    "examples_are_not_validated_runtime_counterexamples": true,
+    "independent_human_source_semantics_review": "NOT_RUN",
+    "current_experiment_python_native_tests": "NOT_RUN_NOT_APPLICABLE_TO_DATA_ONLY_CHANGE"
+  },
+  "source_files": [
+    {
+      "path": "standards/EXECUTION_PACK_STANDARD.md",
+      "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1"
+    },
+    {
+      "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+      "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1"
+    },
+    {
+      "path": "standards/TESTING_STANDARD.md",
+      "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2"
+    },
+    {
+      "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+      "git_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf"
+    },
+    {
+      "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+      "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93"
+    },
+    {
+      "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+      "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2"
+    },
+    {
+      "path": "standards/DEVELOPMENT_WORKFLOW.md",
+      "git_blob": "7b867e174b9d2a939b4e704180b3088b65625a5d"
+    }
+  ],
+  "atomic_obligations": [
+    {
+      "id": "PR-01",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "physical_line": 148,
+        "anchor_exact": "`WEB_BUILDER` is builder-only and maps to WEB",
+        "existing_curated_delta_item": "EXEC-01"
+      },
+      "normalized_review_proposition": {
+        "family": "PROFILE_ROLE_AUTHORITY",
+        "subject_scope": "PROSPECTIVE_APPROVED_TASK",
+        "precondition": "A new authorized dispatch selects WEB_BUILDER",
+        "one_expected_obligation": "Require builder role and WEB environment; profile alone grants no mutation",
+        "proposed_negative_witness": "WRONG_ROLE_OR_ENVIRONMENT",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "PR-02",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "physical_line": 148,
+        "anchor_exact": "`LOCAL_VALIDATION` is exact-SHA, validation-only and used only for genuine local capability gaps",
+        "existing_curated_delta_item": "EXEC-01"
+      },
+      "normalized_review_proposition": {
+        "family": "PROFILE_LOCAL_VALIDATION_BOUNDARY",
+        "subject_scope": "PROSPECTIVE_APPROVED_TASK",
+        "precondition": "A dispatch selects LOCAL_VALIDATION",
+        "one_expected_obligation": "Require validator-only operation and exact-SHA subject; no source edits",
+        "proposed_negative_witness": "VALIDATOR_WRITES_SOURCE",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "PR-03",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "physical_line": 148,
+        "anchor_exact": "`LOCAL_BUILDER` remains lawful where that Task Pack and an accepted Builder Claim authorize LOCAL source implementation and repair",
+        "existing_curated_delta_item": "EXEC-01"
+      },
+      "normalized_review_proposition": {
+        "family": "BUILDER_CLAIM_WRITE_SCOPE",
+        "subject_scope": "EFFECTIVE_FROZEN_TASK",
+        "precondition": "LOCAL_BUILDER attempts a source edit",
+        "one_expected_obligation": "Source edit requires effective Task Pack and accepted Builder Claim authorizing scope",
+        "proposed_negative_witness": "SOURCE_EDIT_WITHOUT_ACCEPTED_AUTHORITY",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "PR-04",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "git_blob": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "physical_line": 148,
+        "anchor_exact": "Existing v4.18 and #1353-frozen historical subjects preserve their original admission rules until lawfully superseded",
+        "existing_curated_delta_item": "EXEC-02"
+      },
+      "normalized_review_proposition": {
+        "family": "FROZEN_SCOPE_NO_RETROACTIVE_ADMISSION",
+        "subject_scope": "HISTORIC_FROZEN_SUBJECT",
+        "precondition": "Prospective v4.19 profile rule would be applied to legacy subject",
+        "one_expected_obligation": "Continue historic admission until a separately legitimate supersession",
+        "proposed_negative_witness": "RETROACTIVE_AUTHORITY_REWRITE",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVO",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "PR-05",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 573,
+        "anchor_exact": "profile selects bounded execution context within that role and never widens authority",
+        "existing_curated_delta_item": "GITHUB-01"
+      },
+      "normalized_review_proposition": {
+        "family": "PROFILE_CANNOT_ESCALATE_ROLE",
+        "subject_scope": "PROSPECTIVE_APPROVED_TASK",
+        "precondition": "A role/profile pair is materialized",
+        "one_expected_obligation": "Profile changes environment only, never effective role authority",
+        "proposed_negative_witness": "PROFILE_AS_NEW_ROLE_PERMISSION",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-01",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 577,
+        "anchor_exact": "validate the **fully enriched dispatch object** against the exact `schemas/dispatch.schema.json` at the **effective project-pinned ADS revision**",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "PRODUCER_EXACT_PINNED_SCHEMA",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Producer prepares a new durable canonical dispatch",
+        "one_expected_obligation": "Validate the completed payload with schema from the actual effective project pin",
+        "proposed_negative_witness": "WRONG_SCHEMA_OR_PARTIAL_PAYLOAD",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-02",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 577,
+        "anchor_exact": "publishing it as READY/QUEUED or accepted canonical dispatch",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "PREPUBLICATION_VALIDATION_ORDER",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Producer is about to publish READY, QUEUED or accepted dispatch",
+        "one_expected_obligation": "Complete admission before canonical publication",
+        "proposed_negative_witness": "PUBLISH_BEFORE_VALIDATION",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-LC",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-03",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 577,
+        "anchor_exact": "Producer normalization MUST map proposed free-form role/profile text to the **actual schema enum** only when uniquely justified by current facts",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "NO_PROFILE_GUESSING",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Producer receives a free-form profile proposal",
+        "one_expected_obligation": "Map to current pinned schema value only with unique fact-supported resolution",
+        "proposed_negative_witness": "GUESS_ROLE_OR_PROFILE",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-04",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 577,
+        "anchor_exact": "it MUST NOT invent aliases, guess a profile or silently accept an invalid `execution_profile`",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "STRICT_PROFILE_CANONICALITY",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Role/profile text cannot be justified against active schema",
+        "one_expected_obligation": "Reject invalid aliases and unsanctioned profile guessing",
+        "proposed_negative_witness": "INVALID_PROFILE_ACCEPTED",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-AUT",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SOURCE_SCHEMA_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-05",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 579,
+        "anchor_exact": "the exact validation result still matches the object at the write boundary",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "WRITE_BOUNDARY_VALIDATION_CURRENCY",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Between validation and durable publication",
+        "one_expected_obligation": "Keep validated object and actual written object identical",
+        "proposed_negative_witness": "TOCTOU_VALIDATION_DRIFT",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-CAS",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-06",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 579,
+        "anchor_exact": "zero accepted canonical dispatch/Claim mutation",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "FAIL_CLOSED_ZERO_ACCEPTED_MUTATION",
+        "subject_scope": "NEW_CANONICAL_DISPATCH",
+        "precondition": "Pinned source missing/ambiguous, invalid enum, schema rejected or checked object drifted",
+        "one_expected_obligation": "Accept no new canonical Dispatch/Claim mutation",
+        "proposed_negative_witness": "SCHEMA_FAILURE_WITH_ACCEPTED_CLAIM",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-CAS",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DP-07",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "physical_line": 581,
+        "anchor_exact": "Historical invalid dispatch records are **append-only evidence**",
+        "existing_curated_delta_item": null
+      },
+      "normalized_review_proposition": {
+        "family": "HISTORICAL_INVALID_RECORD_PRESERVATION",
+        "subject_scope": "HISTORIC_INVALID_RECORD",
+        "precondition": "A prior dispatch record is invalid under its own governing contract",
+        "one_expected_obligation": "Preserve original record, use distinct authorized correction/supersession",
+        "proposed_negative_witness": "IN_PLACE_HISTORY_REWRITE",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVO",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "ABSTRACT_MODEL_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "TE-01",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "physical_line": 66,
+        "anchor_exact": "a green aggregate command does not prove that nested/filtered/renamed tests were executed",
+        "existing_curated_delta_item": "TEST-01"
+      },
+      "normalized_review_proposition": {
+        "family": "NO_GREEN_COMMAND_COVERAGE_PROMOTION",
+        "subject_scope": "MATERIAL_REQUIRED_TEST_SUITE",
+        "precondition": "Test runner exits zero but test selection may be filtered",
+        "one_expected_obligation": "Qualify coverage only from actual discovered/executed inventory for required scope",
+        "proposed_negative_witness": "UNDISCOVERED_TEST_COUNTED_PASS",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "TE-02",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "git_blob": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "physical_line": 66,
+        "anchor_exact": "the omitted scope remains `NOT_RUN`",
+        "existing_curated_delta_item": "TEST-02"
+      },
+      "normalized_review_proposition": {
+        "family": "OMITTED_REQUIRED_SUITE_NOT_RUN",
+        "subject_scope": "MATERIAL_REQUIRED_TEST_SUITE",
+        "precondition": "Declared required tests are absent from executed inventory",
+        "one_expected_obligation": "Keep omitted scope NOT_RUN; preserve executed subset result",
+        "proposed_negative_witness": "OMISSION_MARKED_SUITE_PASS",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DG-01",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "git_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "physical_line": 183,
+        "anchor_exact": "A final integration obligation MUST NOT by itself make independent refactor source preparation serial",
+        "existing_curated_delta_item": "TASK-01"
+      },
+      "normalized_review_proposition": {
+        "family": "FALSE_SERIAL_EDGE_NOT_IMPLIED",
+        "subject_scope": "MATERIAL_PARALLEL_PLANNING",
+        "precondition": "Only a later integration/Review/Release join exists",
+        "one_expected_obligation": "Do not infer serial source-preparation dependency solely from final join",
+        "proposed_negative_witness": "FAKE_SERIAL_DEPENDENCY",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-DEP",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DG-02",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "git_blob": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "physical_line": 183,
+        "anchor_exact": "a native dependency, shared write ownership, or unresolved atomic security invariant MUST NOT be waived for concurrency",
+        "existing_curated_delta_item": "TASK-02"
+      },
+      "normalized_review_proposition": {
+        "family": "NATIVE_DAG_CLAIM_NOT_BYPASSED",
+        "subject_scope": "MATERIAL_PARALLEL_PLANNING",
+        "precondition": "Native dependency, writer conflict, or unresolved security invariant exists",
+        "one_expected_obligation": "Preserve native dependency/ownership/security until authorized resolution",
+        "proposed_negative_witness": "ADVISORY_REMOVES_NATIVE_DEP",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-WRITER-KEYS",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "SYNTHETIC_DEMO_ONLY",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "AR-01",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "physical_line": 51,
+        "anchor_exact": "design SHOULD identify the **selected executable composition path**",
+        "existing_curated_delta_item": "ARCH-01"
+      },
+      "normalized_review_proposition": {
+        "family": "PUBLIC_PATH_DESIGN_EVIDENCE",
+        "subject_scope": "MATERIAL_PUBLIC_OR_REPLACEMENT_ARCH",
+        "precondition": "Product architecture proposes material public/plug-in behavior",
+        "one_expected_obligation": "Identify executable entry→adapter→selected implementation→result and owner of integration check",
+        "proposed_negative_witness": "IMPORT_ONLY_CLAIMED_OPERATIONAL",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-CROSS",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "AR-02",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "git_blob": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "physical_line": 51,
+        "anchor_exact": "record the material unproven seam as `UNKNOWN`",
+        "existing_curated_delta_item": "ARCH-02"
+      },
+      "normalized_review_proposition": {
+        "family": "PHYSICAL_GAP_NOT_SILENT_PASS",
+        "subject_scope": "MATERIAL_PUBLIC_OR_REPLACEMENT_ARCH",
+        "precondition": "Representative physical check is not yet feasible",
+        "one_expected_obligation": "Record material seam UNKNOWN and assign later bounded integration owner",
+        "proposed_negative_witness": "UNEXECUTED_SEAM_MARKED_PASS",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "IM-01",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "git_blob": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "physical_line": 43,
+        "anchor_exact": "implementation evidence MUST distinguish `SOURCE_PRESENT` / `EXPORTED_OR_LOADED`",
+        "existing_curated_delta_item": "IMPL-01"
+      },
+      "normalized_review_proposition": {
+        "family": "SELECTED_PATH_NOT_SOURCE_PRESENCE",
+        "subject_scope": "MATERIAL_PUBLIC_IMPLEMENTATION",
+        "precondition": "Implementation asserts selected public/plugin behavior is supported",
+        "one_expected_obligation": "Differentiate source/export/load facts from actual selected invocation and observable behavior",
+        "proposed_negative_witness": "LOADED_HOOK_AS_E2E_PASS",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DE-01",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "git_blob": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "physical_line": 141,
+        "anchor_exact": "未运行须 `NOT_RUN`",
+        "existing_curated_delta_item": "DEV-03"
+      },
+      "normalized_review_proposition": {
+        "family": "UNEXECUTED_EXPLORATION_NOT_RUN",
+        "subject_scope": "STAGE_1_PRODUCT_EXPLORATION",
+        "precondition": "Material Product research experiment not executed",
+        "one_expected_obligation": "Record NOT_RUN, do not promote simulation to Product/Freeze evidence",
+        "proposed_negative_witness": "SYNTHETIC_PRODUCT_FREEZE_PASS",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-EVI",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    },
+    {
+      "id": "DE-02",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "git_blob": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "physical_line": 142,
+        "anchor_exact": "**不把 Stage 2 Architecture Demo 提前**",
+        "existing_curated_delta_item": "DEV-04"
+      },
+      "normalized_review_proposition": {
+        "family": "STAGE_BOUNDARY_NO_BACKDOOR",
+        "subject_scope": "STAGE_1_PRODUCT_EXPLORATION",
+        "precondition": "Product has not reached authorized Freeze",
+        "one_expected_obligation": "Stage 1 research cannot substitute post-Freeze Architecture Demo",
+        "proposed_negative_witness": "PRE_FREEZE_ARCH_DEMO_AS_FROZEN_PRODUCT",
+        "documented_exceptions": "NOT_FULLY_ATOMIZED_PENDING_INDEPENDENT_REVIEW"
+      },
+      "model_relation": {
+        "related_pilot_property_id": "ADS-P-LC",
+        "link_type": "RELEVANT_ABSTRACTION_NOT_SEMANTIC_EQUIVALENCE",
+        "existing_evidence_tier": "NO_DIRECT_TEST",
+        "direct_rule_equivalence": "NOT_PROVEN",
+        "real_subject_consumption": "NOT_PROVEN"
+      },
+      "review_status": "SOURCE_EXACT_BOUND_INTERPRETIVE_DRAFT"
+    }
+  ],
+  "checks": {
+    "positive_exact_line_blob_parent_property": "PASS",
+    "negative_mutations_rejected": 6
+  },
+  "next_review": {
+    "priority": [
+      "DP-01",
+      "DP-02",
+      "DP-05",
+      "DP-06",
+      "PR-04",
+      "PR-02",
+      "TE-02",
+      "DG-02"
+    ],
+    "why": "Cross-source authority, time-of-check/time-of-write, historical scope and evidence non-escalation; prioritize independent adversarial semantic readback, not new toy cases",
+    "model_gate": "New SMT/TLC only for independent source contradiction or unmodeled cross-rule invariant with concrete negative witness"
+  }
+}
