@@ -1,0 +1,104 @@
+{
+  "schema": "ads/formal-r24-empty-source-provenance-fail-closed/v1",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "source_experiment": {
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "prior_head": "2aa53205bd2fcb9bb95753137900804fce2d9395",
+    "prior_tree": "046b86854a4bd540bcf42d7d5e4d146592cf6e6a",
+    "prior_blobs": {
+      "formal/suite/run.py": "7af42fb6a36ab0d22ad0fb18f7936814d45d9a2e",
+      "formal/suite/expanded.py": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b"
+    },
+    "repaired_blobs": {
+      "formal/suite/run.py": "8a7dd3656e34ab42c7265fec94efa21016a1058a",
+      "formal/suite/expanded.py": "bcbff21ab471c1e25e0c529c27ea59aeb346c0d7",
+      "formal/tests/test_source_binding_nonvacuity.py": "441027a75ff50e9fe349926fa51343ad14fd8003"
+    }
+  },
+  "findings": [
+    {
+      "id": "R24-FORMAL-TOOL-P1-01",
+      "classification": "EXPERIMENT_VALIDATION_TOOL_PROOF_QUALIFICATION",
+      "severity": "P1",
+      "root_cause": "Candidate Git HEAD could match while source_map.sources=[]; source_check/source_alignment compute all([]) == True and report PASS with zero actual source objects",
+      "unrepaired_effect": "Possible MODEL_AND_SOURCE_PASS label in generic no-traceability path without a single source blob/anchor actually checked",
+      "repair": "Both entrypoints return FAIL for absent, malformed or empty source row collection"
+    },
+    {
+      "id": "R24-FORMAL-TOOL-P2-01",
+      "classification": "EXPERIMENT_SOURCE_ANCHOR_ADMISSION",
+      "severity": "P2",
+      "root_cause": "Entry anchors=[] yields all([]) == True, so blob present but no source quotation anchor can be marked PASS",
+      "repair": "Both entrypoints now require nonempty lists of nonempty string anchors per source row; missing or invalid rows fail-closed"
+    }
+  ],
+  "historical_inputs_checked": [
+    {
+      "path": "formal/v4.19/r0/source-map.json",
+      "git_blob": "018e7b0b844223214536400053b49eee7a044d25",
+      "rows": 6,
+      "all_rows_compatible": true
+    },
+    {
+      "path": "formal/v4.19/r1/source-map.json",
+      "git_blob": "709c35cb5c8d52c3060278630e100389c9777ab1",
+      "rows": 6,
+      "all_rows_compatible": true
+    },
+    {
+      "path": "formal/v4.19/r3/source-map.json",
+      "git_blob": "0b79d6904f0ca172788691a55c2335f24499f33d",
+      "rows": 7,
+      "all_rows_compatible": true
+    },
+    {
+      "path": "formal/v4.19/r4/source-map.json",
+      "git_blob": "0b79d6904f0ca172788691a55c2335f24499f33d",
+      "rows": 7,
+      "all_rows_compatible": true
+    }
+  ],
+  "execution": {
+    "kind": "ISOLATED_PYTHON_3_13_5_FUNCTION_SEAM_WITH_SYNTHETIC_CHECKOUT_AND_MOCKED_GIT_HEAD",
+    "actual_interpreter": "CPython 3.13.5",
+    "runner_modules": "isolation versions containing the reviewed source helper bodies, not the full actual exact-Git worktree imports",
+    "test_scenarios": [
+      "empty list",
+      "missing or invalid source map",
+      "empty anchors",
+      "invalid anchor values",
+      "valid source bytes and matching anchor",
+      "wrong blob/missing marker",
+      "no checkout still NOT_RUN"
+    ],
+    "pre_repair": {
+      "tested_methods": 7,
+      "status": "EXPECTED_RED",
+      "process_exit": 1,
+      "failures": 4,
+      "errors": 5,
+      "raw_local_log_sha256": "baf954be56fac02b035b39b77e5be518149f7f59e94180e355a605e563d79ae4"
+    },
+    "post_repair": {
+      "tested_methods": 7,
+      "status": "PASS_ISOLATED_SEAM",
+      "process_exit": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "raw_local_log_sha256": "a8fc0ca4013b042ed2312e2cdc3bdd0a88c5cf3dcaa0622a6e47cb32ecd38e6c"
+    },
+    "source_map_compatibility": "4/4 existing source map files all nonempty, every anchor list valid; only historical source-map schema structure compared",
+    "real_exact_checkout_imported_tests": "NOT_RUN",
+    "strict_native_solver_after_source_change": "NOT_RUN",
+    "reason": "Current Web runtime has no clone or pinned Z3/cvc5/TLC native tool assets; do not claim source-bound exact-worktree full qualification from isolated replicated helper functions"
+  },
+  "limitations": [
+    "These are tool-level defects, no ADS normative standards P0/P1/P2 confirmed",
+    "Historical R11/R17/R20 exact-SHA runs stay immutable; new suite source hashes invalidate use of historical results as tests of the new suite code",
+    "True semantic model↔normative equivalence and real v4.19 Project/Task effective pin→published READY/QUEUED→accepted Claim/CAS durable readback remain unproven",
+    "Need targeted test run in actual exact Git checkout and necessary impacted strict suite before asserting new HEAD integration PASS; local agent only for remaining actual environment gap",
+    "No GitHub Actions, no PR #1365 modifications, no effective policy promotion, Merge/Freeze/Release"
+  ]
+}

@@ -46,8 +46,18 @@ def source_check(checkout, source_map):
     if head["code"] != 0 or head["text"].strip() != source_map["candidate_head"]:
         return {"status": "BLOCKED_WRONG_HEAD", "found": head["text"].strip(),
                 "expected": source_map["candidate_head"]}
+    entries = source_map.get("sources")
+    if not isinstance(entries, list) or not entries:
+        return {"status": "FAIL", "reason": "SOURCE_BINDINGS_EMPTY_OR_MALFORMED", "checks": []}
     checks = []
-    for row in source_map["sources"]:
+    for row in entries:
+        anchors = row.get("anchors") if isinstance(row, dict) else None
+        if not isinstance(anchors, list) or not anchors or any(
+            not isinstance(anchor, str) or not anchor for anchor in anchors
+        ):
+            checks.append({"path": row.get("path") if isinstance(row, dict) else None,
+                           "status": "FAIL", "reason": "SOURCE_ANCHORS_EMPTY_OR_MALFORMED"})
+            continue
         try:
             raw = safe_file(root, row["path"]).read_bytes()
             actual = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()

@@ -45,8 +45,18 @@ def source_alignment(checkout, source_map):
     r = execute(["git", "rev-parse", "HEAD"], cwd=root)
     if r["code"] != 0 or r["text"].strip() != source_map["candidate_head"]:
         return {"status": "BLOCKED", "reason": "candidate HEAD mismatch", "observed": r["text"].strip()}
+    entries = source_map.get("sources")
+    if not isinstance(entries, list) or not entries:
+        return {"status": "FAIL", "reason": "SOURCE_BINDINGS_EMPTY_OR_MALFORMED", "checks": []}
     checks = []
-    for s in source_map["sources"]:
+    for s in entries:
+        anchors = s.get("anchors") if isinstance(s, dict) else None
+        if not isinstance(anchors, list) or not anchors or any(
+            not isinstance(anchor, str) or not anchor for anchor in anchors
+        ):
+            checks.append({"path": s.get("path") if isinstance(s, dict) else None,
+                           "status": "FAIL", "reason": "SOURCE_ANCHORS_EMPTY_OR_MALFORMED"})
+            continue
         try:
             raw = safe_path(root, s["path"]).read_bytes()
             blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()

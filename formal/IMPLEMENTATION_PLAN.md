@@ -420,3 +420,10 @@ R22 已对 46 份 manifest 规范文档的 7 份变更、8 个文本差量段进
 本轮重新从 GitHub exact blobs 读取候选的两条权限标准、旧/新 Dispatch Schema、Python 环境投影实现、已有 `test_protocol_schemas.py` 反例；检查 **21/21** 精确源与条件结构预期（七种执行 Profile × 三种 Role = 21，Schema 允许 7 种匹配、拒绝 14 种，新增两 Profile 均绑定已有 Role）。新增 `formal/v4.19/r23/R23_PROFILE_SCHEMA_ROLE_AUTHORITY_MATRIX.json` 全量保持 21 项矩阵及 5 个**说明性、未另起实际执行**反例，`R23_CROSS_LAYER_SOURCE_REVIEW.md` 描述两个关键限界：一是 Schema 字段合法并不排除 profile↔environment 矛盾，已有 `project_dispatch_environment` 与其 Python 负测专责拒绝；二是 `pinned_standard_revision` 的 40-hex **形状**并不证明真实有效 Task 项目准入或 CAS。旧 v4.18/#1353 历史义务不得由 v4.19 候选 Schema 字面内容偷偷激活。
 
 本轮是对**已有实施代码是否保持规范源边界**的精确阅读/结构检查，**不是**新原生求解/完整 JSON Schema 实例运行，更不是实际生产发布链证明。未发现可确认的新的正式 ADS P0/P1/P2；不重复 Python 验证器、不改候选标准/Schema/工具运行时、不模拟合法 accepted Claim。真实 effective v4.19 项目 Task pin → selected publisher → READY/QUEUED preflight → accepted Claim/CAS/durable readback 仍 NOT_PROVEN。
+
+
+## 39. #1366 R24 — 修复 Python 源绑定的 vacuous PASS（2026-11-11）
+
+Delivery-First 复盘时，候选 PR #1365 及 v4.19 Product 均尚未合并/冻结，因此真实有效生产者 CAS 不可假造；转而审核验证套装自身。发现 `formal/suite/run.py:source_check` 与 `formal/suite/expanded.py:source_alignment` 的候选 HEAD 一致时均采用 `all(c["status"] == "PASS" for c in checks)`，但未阻止 `sources=[]`，导致空来源时 **all([]) → True → source_alignment/source_check PASS**。无 traceability 的合法调用入口有可能把无源模型提升为 `MODEL_AND_SOURCE_PASS`；相同地单条来源的 `anchors=[]` 可使锚点匹配 `all([])` 默认为 True。属于实验工具自身的证据准入缺陷，**不是 ADS 正式规范缺陷**。
+
+在原实验分支对两入口增加 **非空、类型有效的 source-map 条目和非空锚点负例阻断**，保留无 checkout 的 `NOT_RUN`、HEAD 不匹配的 `BLOCKED` 和真实来源存在时的原判定。新增 `formal/tests/test_source_binding_nonvacuity.py`，用小型真实 Git blob 字节与模拟 HEAD 读回来验证 legacy/expanded 两个入口（无来源、缺来源、空锚点、非字符串锚点、正确来源、错误来源、无 checkout）。不篡改 R11/R17/R20 的历史 exact-SHA 收据；本轮源码改变了 model tool input 闭包，**原 R11 的 35/35 strict 不能宣称是在本次新 HEAD 重跑**。若当前 Git 完整 checkout 不可在 Web 取得，局部 Python fixture 结果应与源码提交资格区分，需要具备环境时只做受影响回归与 strict Source-bound 重新验证（验证+修复统一）。候选 PR、正式规范、Gate/Actions、Freeze/Release 均不修改。
