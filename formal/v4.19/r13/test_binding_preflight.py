@@ -2,6 +2,7 @@
 import hashlib
 import importlib
 import pathlib
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -64,6 +65,27 @@ class ExactGitBindingPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(proof.InputBindingError, "postflight: model publish-safety.smt2 blob"):
                 proof.verify()
 
+
+    def test_each_acceptance_guard_has_explicit_negative_query(self):
+        """Every guard conjunct must have a negative test asserting acceptance."""
+        source = (proof.ROOT / "publish-safety.smt2").read_text()
+        guard = source.split("(define-fun publishAdmissible () Bool", 1)[1].split("(assert (=>", 1)[0]
+        equalities = re.findall(r"\(= (\w+) (\w+)\)", guard)
+        simple = re.sub(r"\(= \w+ \w+\)", "", guard)
+        boolean_terms = set(re.findall(r"\b[a-z][a-zA-Z0-9]*\b", simple)) - {"and"}
+        negatives = re.findall(r"; N\d\d:.*?\n\(push 1\)(.*?)\(check-sat\)", source, re.S)
+        self.assertEqual(len(boolean_terms) + len(equalities), 10)
+        self.assertEqual(len(negatives), 10)
+        for term in boolean_terms:
+            self.assertTrue(any(f"(assert (not {term}))" in block and
+                                ("(assert acceptedDispatch)" in block or
+                                 "(assert acceptedClaimMutation)" in block)
+                                for block in negatives), f"missing rejection query: {term}")
+        for left, right in equalities:
+            self.assertTrue(any(f"(assert (distinct {left} {right}))" in block and
+                                ("(assert acceptedDispatch)" in block or
+                                 "(assert acceptedClaimMutation)" in block)
+                                for block in negatives), f"missing rejection query: {left} != {right}")
 
 if __name__ == "__main__":
     unittest.main()

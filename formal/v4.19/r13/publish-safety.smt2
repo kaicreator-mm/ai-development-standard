@@ -86,6 +86,12 @@
 (assert (not publicationSerialized))
 (check-sat)
 (pop 1)
+; N10: Unverified effective schema bytes cannot authorize accepted canonical Dispatch/Claim.
+(push 1)
+(assert acceptedDispatch)
+(assert (not schemaBytesVerified))
+(check-sat)
+(pop 1)
 ; P02: Rejected attempt with unknown pin and no accepted mutation is feasible.
 (push 1)
 (assert (not pinResolved))

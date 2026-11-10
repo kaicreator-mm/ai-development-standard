@@ -11,11 +11,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 EXPECTED = {
     "weak-admission-gap.smt2": ["sat"] * 4,
-    "publish-safety.smt2": ["sat"] + ["unsat"] * 9 + ["sat"],
+    "publish-safety.smt2": ["sat"] + ["unsat"] * 10 + ["sat"],
 }
 PINNED_MODEL_GIT_BLOBS = {
     "weak-admission-gap.smt2": "04f85b71b60eea1382b3044d459702d5ba0978e7",
-    "publish-safety.smt2": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c",
+    "publish-safety.smt2": "515454a82171c668739708ef50c46a254dcd9cc8",
 }
 PINNED_SHA256 = {
     "z3": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
@@ -95,7 +95,7 @@ def verify():
                             results[0]["statuses"] == results[1]["statuses"]})
     model_after = assert_model_hashes("postflight")
     tool_after = assert_tool_hashes()
-    return {"schema": "ads/formal-r13-bound-dispatch-publication/v2",
+    return {"schema": "ads/formal-r13-bound-dispatch-publication/v3",
             "scope": "ONE_NEW_DISPATCH_ABSTRACT_SOURCE_HYPOTHESIS_AND_OLD_RESERVATION_PROXY",
             "input_binding": {"model_before": model_before,
                               "model_after": model_after,

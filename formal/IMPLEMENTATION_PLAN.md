@@ -1,6 +1,6 @@
-# ADS Model-Based Formal Verification — 实施计划 R0–R12（实验性，非规范）
+# ADS Model-Based Formal Verification — 实施计划 R0–R13（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R12 / EXPERIMENT / NO_NORMATIVE_GATE / R11_STRICT_61_PYTHON_35_NATIVE_PASS_AT_9a6fb6f / 46_NORMATIVE_DOC_BLOBS_INDEXED / MODAL_CENSUS_HEURISTIC_NOT_RULE_DENOMINATOR / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R13 / EXPERIMENT / NO_NORMATIVE_GATE / R11_STRICT_61_PYTHON_35_NATIVE_PASS_AT_9a6fb6f / 46_NORMATIVE_DOC_BLOBS_INDEXED / MODAL_CENSUS_HEURISTIC_NOT_RULE_DENOMINATOR / NOT_FULL_ADS_PROOF  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -286,3 +286,11 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 执行复盘发现 `R13-RECEIPT-P2-01`：R13 runner 原来记录模型 Git blob，却没有与固定的受审 Blob 作硬性比较；同一 SAT/UNSAT 的非授权模型微调可能被错误判作 PASS。**已在原实验写集直接修复** `run_proofs.py`（模型 2/2 Git blob＋Z3/cvc5 2/2 binary SHA256 前后检验），并使 `run_mutations.py` 同样钉死其源输入/工具，临时变异模型单独允许变化。实际 Python fail-closed **6/6 PASS**；双原生求解器 **30/30 PASS**，6/6 删除约束变异被检出；模型与工具 pre/post **2/2 PASS**。原 R13 收据及其旧 Exact-SHA 历史证据保留，新收据为 `REBOUND_SOLVER_EXECUTION.json`、`REBOUND_MUTATION_EXECUTION.json`、`RECEIPT_BINDING_REPAIR.json`。
 
 经同一 Builder 自对抗源码审查，R13 的 `DP-01F/01S/02/05/06` 仍只是单个拟议新 Dispatch 发布的必要条件**假设**：未验证实际 pin 读取、Schema bytes、时间顺序、GitHub CAS/write-readback，旧 R8 `reservedA` 的 SAT 亦仅针对 reservation。**独立语义审核 NOT_RUN**，源规范↔模型严格等价和正式 ADS 全规则证明仍 `NOT_PROVEN`。R11 历史 61 Python/35 原生 strict 不重跑，未修改其固定模型或 ADS 标准；后续优先独立语义复核，而非继续堆积 Demo。
+
+## 24. #1366 R13 Schema bytes 必要条件的真实测试覆盖修复（2026-11-10）
+
+推进前先对前一 R13 的 native 查询与变异覆盖作源对抗审核：`publishAdmissible` 有 **10 个原子 guard conjuncts**（7 Boolean + 3 equality），但 R13 只有 9 个禁止接受查询，遗漏了 `schemaBytesVerified` 的假条件。实际将 guard 中 `schemaBytesVerified` 删除而不改变其他内容，Z3/cvc5 的 11 项旧查询全部同结果，证明现有套装有真实盲区，属于 **R13-TEST-P2-02 实验验证覆盖**，非 ADS 规范缺陷。旧原始/变异收据不改写。
+
+**本轮已执行修复**：在原 `formal/v4.19/r13/publish-safety.smt2` 增加 N10 `acceptedDispatch ∧ ¬schemaBytesVerified → UNSAT`，变异脚本加一项删除此 guard；Python 添加对全部 10 项 guard 每项至少有显式禁止接受反例的结构约束（旧模型实际红 9≠10、新模型绿）。经真实 Z3 5.3.3 与 cvc5 1.4.2 **各 16/16、共 32/32 查询符合预期**，**7/7 变异均被两求解器检出**，Python **7/7 PASS**，模型/原生工具双时点 Exact-SHA 与历史固定 SHA256 继续 PASS。原始 negative-red 和新 native 结果分别固定于 `SCHEMA_BYTES_OLD_BLINDSPOT_EXECUTION.json`、`REBOUND_V2_SOLVER_EXECUTION.json`、`REBOUND_V2_MUTATION_EXECUTION.json`，总收据 `SCHEMA_BYTES_COVERAGE_REPAIR.json`。
+
+R13 仍只是在**假设发布必要条件**前提下的一次有界安全性测试：尚无真实 v4.19 项目版本采用、Dispatch/Claim 生产者、完整 Schema bytes 核验／GitHub CAS、时序或独立语义评审收据，严格标注 `NOT_PROVEN`。R11 历史严格执行不重复，本轮只修改实验模型/测试/收据和本实施计划；下一步优先真正独立审核该来源绑定模型再决定是否需要新不变量，不扩大模拟 Demo。

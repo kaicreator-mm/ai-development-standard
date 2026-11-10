@@ -7,6 +7,7 @@ import run_proofs as proof
 
 MUTATIONS = [
     ("drop_effective_pin", "pinResolved schemaBytesVerified", "schemaBytesVerified"),
+    ("drop_schema_bytes_verified", "pinResolved schemaBytesVerified", "pinResolved"),
     ("drop_checked_schema_identity", "(= checkedSchema pinnedSchema)", "true"),
     ("drop_published_payload_identity", "(= publishedPayload validatedPayload)", "true"),
     ("drop_schema_pass", "prePublicationCheckCompleted schemaPass authorityAndClaimCurrent", "prePublicationCheckCompleted authorityAndClaimCurrent"),
@@ -36,7 +37,7 @@ def test():
                 "mutated_sha256":hashlib.sha256(trial.read_bytes()).hexdigest()})
     proof.assert_model_hashes("mutation-source-postflight")
     proof.assert_tool_hashes()
-    return {"schema":"ads/formal-r13-adversarial-mutation/v2","mutations":results,
+    return {"schema":"ads/formal-r13-adversarial-mutation/v3","mutations":results,
        "tested_count":len(results),"rejected_count":sum(r["rejected"] for r in results),
        "verdict":"PASS" if all(r["rejected"] for r in results) else "FAIL"}
 if __name__ == "__main__":

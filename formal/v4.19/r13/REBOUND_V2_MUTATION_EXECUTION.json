@@ -1,0 +1,269 @@
+{
+  "schema": "ads/formal-r13-adversarial-mutation/v3",
+  "mutations": [
+    {
+      "mutation": "drop_effective_pin",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        2
+      ],
+      "z3_actual": [
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "ab09ce7929ccad59637981d7ae8032d10893a83f1ea8313d4cd8a990639724b3"
+    },
+    {
+      "mutation": "drop_schema_bytes_verified",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        11
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "sat"
+      ],
+      "mutated_sha256": "1c7df734ca5854048c2328b2c3ddd0a56d291130f7d6a3323240c883a86db4f6"
+    },
+    {
+      "mutation": "drop_checked_schema_identity",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        3
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "2f8a7ec14b3b931374c41299dfc3de6c25b02d33f02acffb4cbd2c324e0d976c"
+    },
+    {
+      "mutation": "drop_published_payload_identity",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        5
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "3fe6e2a0449a7f628b47ad851970fbcce7906b925d6a1ce3c001ca5229fab89a"
+    },
+    {
+      "mutation": "drop_schema_pass",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        7
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "93b43090d7fbec45370321955abecaa737213b0d07573d8ed1b4a7fabcd1a372"
+    },
+    {
+      "mutation": "drop_publish_serialization",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        10
+      ],
+      "z3_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat",
+        "unsat",
+        "sat"
+      ],
+      "mutated_sha256": "8d31c612188a5382f42e9e6585c31187116e3e6e8b140100e70c30ead002c4d9"
+    },
+    {
+      "mutation": "drop_acceptance_guard",
+      "rejected": true,
+      "changed_query_indices_one_based": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "z3_actual": [
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "cvc5_actual": [
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat",
+        "sat"
+      ],
+      "mutated_sha256": "0ec29aafc4051d3cda9b9a9b5e70b6af3a26e4f05354783eb0c57f9039f76896"
+    }
+  ],
+  "tested_count": 7,
+  "rejected_count": 7,
+  "verdict": "PASS"
+}

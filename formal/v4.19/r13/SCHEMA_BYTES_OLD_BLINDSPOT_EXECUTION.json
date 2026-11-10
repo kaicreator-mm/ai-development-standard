@@ -1,0 +1,88 @@
+{
+  "schema": "ads/formal-r13-schema-byte-negative-blindspot-reproduction/v1",
+  "issue": 1366,
+  "original_source_model_git_blob": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c",
+  "mutated_model_git_blob": "d510c6174a47fdaadd058247979c740934174bbc",
+  "mutation": "delete schemaBytesVerified from publishAdmissible but retain old 11 queries",
+  "query_count_per_solver": 11,
+  "executions": [
+    {
+      "model": "prior",
+      "tool": "z3",
+      "exit_code": 0,
+      "statuses": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4"
+    },
+    {
+      "model": "prior",
+      "tool": "cvc5",
+      "exit_code": 0,
+      "statuses": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4"
+    },
+    {
+      "model": "removed",
+      "tool": "z3",
+      "exit_code": 0,
+      "statuses": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4"
+    },
+    {
+      "model": "removed",
+      "tool": "cvc5",
+      "exit_code": 0,
+      "statuses": [
+        "sat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "unsat",
+        "sat"
+      ],
+      "stdout_sha256": "0f2d8302b433f234d9aed8228efc52bd29859afe22ab458b00c986090aee64c4"
+    }
+  ],
+  "old_suite_missed_mutation": true,
+  "verdict": "CONFIRMED_UNDETECTED_REGRESSION"
+}

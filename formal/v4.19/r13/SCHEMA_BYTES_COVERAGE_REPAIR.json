@@ -1,0 +1,120 @@
+{
+  "schema": "ads/formal-r13-schema-bytes-guard-coverage-repair/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "source": {
+    "candidate_pr": 1365,
+    "candidate_sha": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "source_path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+    "source_git_blob": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+    "provenance": "prospective_v4.19_unmerged"
+  },
+  "previous": {
+    "experiment_sha": "2986dde4525d33bad51d7a57de154ab1511935d1",
+    "old_model_git_blob": "df743519bf2e7f9ed3aa356b5f0175e7e3fb360c",
+    "finding": "R13-TEST-P2-02",
+    "kind": "P2_TEST_SUITE_COVERAGE_NOT_NORMATIVE_ADS_DEFECT"
+  },
+  "observed_gap": {
+    "source": "SCHEMA_BYTES_OLD_BLINDSPOT_EXECUTION.json",
+    "source_blob": "0ab3eb7bcf957a51a5512bbaca4c18a9c72c987e",
+    "old_query_count_per_solver": 11,
+    "mutant_model_git_blob": "d510c6174a47fdaadd058247979c740934174bbc",
+    "description": "Deleting schemaBytesVerified from publishAdmissible kept all 11 sat/unsat outputs unchanged with BOTH Z3 and cvc5",
+    "status": "CONFIRMED_REAL_SOLVER_NEGATIVE_REPRO"
+  },
+  "repair": {
+    "model_git_blob": "515454a82171c668739708ef50c46a254dcd9cc8",
+    "guard_independent_conjuncts": 10,
+    "guard_boolean_conjuncts": 7,
+    "guard_equality_conjuncts": 3,
+    "negative_checks": 10,
+    "positive_checks": 2,
+    "source": "explicit N10 acceptedDispatch AND NOT schemaBytesVerified must be UNSAT",
+    "added_mutant": "drop_schema_bytes_verified",
+    "new_guard_to_negative_coverage_test": "test_each_acceptance_guard_has_explicit_negative_query",
+    "pinned_runner_updated_for_new_model_blob": true
+  },
+  "actual_execution": {
+    "environment": "Python 3.13.5 Linux x86_64",
+    "z3_binary_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+    "cvc5_binary_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+    "python_test_before_fix": "FAIL_EXPECTED_9_NE_10",
+    "python_regression_after": {
+      "executed": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0
+    },
+    "solvers": {
+      "old_weak_reservation_checks": 4,
+      "updated_publish_safety_checks": 12,
+      "expected_sat_new_guard": 2,
+      "expected_unsat_new_guard": 10,
+      "z3_correct": 16,
+      "cvc5_correct": 16,
+      "total_correct": 32,
+      "raw_pair_git_blob": "6e6c56dc938da4e42f418b08e09ca18b43bd6e0b",
+      "raw_pair_sha256": "8b7a19ae5f0a1b6a21fd4707c34f4e69cd883da7699876d52941e14ec8c12805"
+    },
+    "mutations": {
+      "executed": 7,
+      "detected_by_both": 7,
+      "added_mutant_changed_query_index_one_based": 11,
+      "raw_mutation_git_blob": "f72334d727cad2b0860afba7b334ad18ae42d480",
+      "raw_mutation_sha256": "c3658a06db3ead7e7333742895cad5532b10e9942ed60ab1b29091a8355361e4"
+    },
+    "model_pre_post": "2_OF_2_EXACT_GIT_BLOBS_PASS",
+    "tool_pre_post": "2_OF_2_PINNED_BINARY_SHA256_PASS",
+    "actual_executable_source_git_blobs": {
+      "runner": "33464ba56c4d456f87b40c1db999968070898232",
+      "mutations": "4bf39cd3c7c4e5ed619042a1a6dfb3424575c0b7",
+      "unit": "b9aff1904388a22203a902dce122b45c56cb0cd9"
+    }
+  },
+  "status": {
+    "result": "R13_SCHEMA_BYTES_NEGATIVE_BLINDSPOT_FIXED_TESTS_EXECUTED",
+    "independent_source_to_smt_semantic_review": "NOT_RUN",
+    "actual_production_dispatch_claim_CAS": "NOT_PROVEN",
+    "R11_old_full_suite": "NOT_RERUN_HISTORICAL_EXACT_SHA_PASS",
+    "normative_source_defect": "NOT_ESTABLISHED",
+    "complete_ads_proof_denominator": "UNKNOWN"
+  },
+  "limitations": [
+    "One necessary-condition guard is assumed; UNSAT is not a derivation from real Controller code",
+    "The schemaBytesVerified predicate is an uninterpreted Boolean input, not an executable SHA/Schema verification",
+    "No time-ordered publication trace or GitHub atomic readback",
+    "Source marker coverage regex checks 10 current guard conjuncts, not full semantic proof of all possible future model syntaxes",
+    "Old R13 receipts remain accessible at previous exact experiment commit; newly committed R13 source and receipt supersede only this test suite revision"
+  ],
+  "git_blobs": [
+    {
+      "path": "formal/v4.19/r13/publish-safety.smt2",
+      "sha": "515454a82171c668739708ef50c46a254dcd9cc8"
+    },
+    {
+      "path": "formal/v4.19/r13/run_proofs.py",
+      "sha": "33464ba56c4d456f87b40c1db999968070898232"
+    },
+    {
+      "path": "formal/v4.19/r13/run_mutations.py",
+      "sha": "4bf39cd3c7c4e5ed619042a1a6dfb3424575c0b7"
+    },
+    {
+      "path": "formal/v4.19/r13/test_binding_preflight.py",
+      "sha": "b9aff1904388a22203a902dce122b45c56cb0cd9"
+    },
+    {
+      "path": "formal/v4.19/r13/REBOUND_V2_SOLVER_EXECUTION.json",
+      "sha": "6e6c56dc938da4e42f418b08e09ca18b43bd6e0b"
+    },
+    {
+      "path": "formal/v4.19/r13/REBOUND_V2_MUTATION_EXECUTION.json",
+      "sha": "f72334d727cad2b0860afba7b334ad18ae42d480"
+    },
+    {
+      "path": "formal/v4.19/r13/SCHEMA_BYTES_OLD_BLINDSPOT_EXECUTION.json",
+      "sha": "0ab3eb7bcf957a51a5512bbaca4c18a9c72c987e"
+    }
+  ]
+}
