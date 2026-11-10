@@ -1,9 +1,10 @@
-# ADS Model-Based Formal Verification — 实施计划 R1（实验性，非规范）
+# ADS Model-Based Formal Verification — 实施计划 R0–R12（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R10 / EXPERIMENT / NO_NORMATIVE_GATE / R10_STRICT_35_CASES_PASS_AT_671c5fa / LATEST_RECEIPT_PATCH_CURRENT_HEAD_NOT_FULLY_RETESTED / NOT_FULL_ADS_PROOF  
+**Status**: ACTIVE_PILOT_R12 / EXPERIMENT / NO_NORMATIVE_GATE / R11_STRICT_61_PYTHON_35_NATIVE_PASS_AT_9a6fb6f / 46_NORMATIVE_DOC_BLOBS_INDEXED / MODAL_CENSUS_HEURISTIC_NOT_RULE_DENOMINATOR / NOT_FULL_ADS_PROOF  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
-**Latest web code patch**: `c6d6eb70ab9b844c3808ee9ca9594d9797b7ef55` changes receipt-only native tool reporting, without full current-HEAD exact worktree rerun; no automatic inheritance of prior PASS.  
+**R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
+
 **Repository**: `kaicreator-mm/ai-development-standard`  
 **Work branch**: `experiment/v4.19-formal-proof-r0`  
 **Known branch HEAD before this plan**: `af710115af0863a9909b84e05bf2ff9916bd2680`  
@@ -255,3 +256,11 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 为防止用错误版本系统重复证明，本轮进一步真实读取 `kaicreator-mm/tally` 的 **main**（`e988321439f65b55936a691c02250b6d62a29409`）和 **version/v2**（`7ebb1cdd0a79fc82cc938e35f852a80dd8e15332`）Git HEAD/TREE 和 `.dev-standard/VERSION` / `.dev-standard/PROJECT_OVERRIDES.md`：两个 `VERSION` 都精确声明 **ADS 4.18.0** `revision=2c395c55569fe2edf3f4135f12d3d069e526d0b7`，且 Overrides 将 A1_MANUAL_PROTOCOL v4.18 接入限制为 v2 版本线，保留历史 `main`/旧 Claim 的原准入。**Tally 本次观察分支不能作为 v4.19 Profile/Claim/生产发布的真实消费者**，不能把其同名 `Service.Dispatch` 当作 ADS Canonical Dispatch 的实现。两个分支 Git blob 一致，5 个负面准入变体拒绝、1 个正面控制通过，只是来源/资格判别，不是运行时验证。证据 `PROJECT_PIN_CONSUMER_ELIGIBILITY.json` 与 `PROJECT_PIN_CONSUMER_DECISION.md`。
 
 **调整：** 先取得一个实际有效的 v4.19 项目版本 pin、冻结 Task/Claim 与生产者发布路径，再做最小真实消费链检查（enriched→pinned-schema→role/profile→Claim/currentness→atomic publication→readback）。未满足版本准入时 `NOT_PROVEN`，不再添加模拟状态机/重复 R11 全量测试，不派本地 Agent；无 ADS 规范修改、Merge、Freeze 或 Release。
+
+## 20. #1366 46 文件规范措辞候选扫描与源义务分母（2026-11-10）
+
+**交付：** 由主 Issue #1366 继续管理，针对候选 PR #1365 `dac263fa4c0ab155406d2f2117459b34322cc988` 按其 `standard-manifest.json.sections.normative_standards` **逐一实际读取 46/46 份规范文件**，每份完整 Git blob 和已有 `normative-file-matrix.json` 精确匹配。因连接器单次调用数限制，分成 5 个 Git blob 暂存批次（10/10/10/10/6），最终**一个 Git 提交**将五批与 `NORMATIVE_MODAL_SCAN.json`、`NORMATIVE_MODAL_SCAN.md` 固化。完整来源检查与 5 个结构负面变异均 PASS。
+
+**实际扫描数据：** 46 份规范文本中，**1,509 条 Markdown 物理行**包含选定英语或中文模态标记（MUST/SHALL/REQUIRED、NEVER/PROHIBITED、SHOULD、必须/不得/禁止等），其中 **7 份变更文件的 420 行**满足扫描条件。扫描排除部分代码块和标题，保留了候选源码行号、Git blob 与有限示例。**1,509 不是原子规范义务数，420 不是新义务数，均不构成证明覆盖率分母。** 一个源行可能有多个规则，也可能仅是举例；没有明确模态词的规则会漏检。条款/义务总分母仍 `UNKNOWN`。这是为下一阶段人工语义拆分建立导航索引，而不是批量生成 SMT 用例。
+
+**优先级调整：** 下游 Tally 两条被检查分支确实采用 ADS 4.18，故不能充当 v4.19 候选 Dispatch 真实消费的证据；但这只阻塞真实 Producer/Claim 端到端证据，**不阻塞规范本身的源语义建模**。下一步应从现有 21 项已人工筛选的高风险候选差异入手，少量逐条拆分权限/前置/例外/未知/反例/版本适用并对照既有 `ADS-P-*`；有可证伪且现有模型未覆盖的真实跨规则矛盾才新增最小 SMT/TLC。R11 全部 native/Python 验收可按原 Exact-SHA 复用，无须重复 Local Agent 验证；不得把词法索引当成模型证明或正式 Release Gate。
