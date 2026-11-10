@@ -1,0 +1,391 @@
+{
+  "schema": "ads/formal-candidate-diff-obligation-triage/v1",
+  "kind": "CURATED_ADS_PR1365_CANDIDATE_DELTA_OBLIGATION_FAMILIES_NOT_EXHAUSTIVE_NORMATIVE_RULE_INVENTORY",
+  "main_issue": 1366,
+  "scope": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED_UNFROZEN",
+    "observed_experiment_evidence_head": "a501dead1ab0b44c3cb460f891a1a7ff47cba8d2",
+    "source_manifest": "standard-manifest.json",
+    "normative_documents_in_manifest": 46,
+    "changed_normative_documents": 7,
+    "selected_changed_documents": 7,
+    "curated_candidate_delta_items": 21,
+    "distinct_concern_families": 16,
+    "all_ADS_normative_clause_denominator": null,
+    "candidate_PR_all_atomic_new_clause_denominator": null
+  },
+  "counts": {
+    "priority_high": 15,
+    "priority_medium": 5,
+    "priority_low": 1,
+    "synthetic_demo_only": 4,
+    "abstract_pilot_only": 3,
+    "not_directly_tested": 14,
+    "formal_semantic_equivalence_proven": 0
+  },
+  "auditing": {
+    "candidate_all_7_document_blobs_matched_manifest_matrix": true,
+    "source_anchor_in_candidate_actual_blob": true,
+    "source_anchor_was_added_in_PR1365_patch": true,
+    "unique_ids": 21,
+    "deterministic_positive_check": "PASS",
+    "negative_mutant_checks_rejected": 4,
+    "test_environment": "GitHub exact source/patch readback and JS structural assertions; NOT native SMT/Python execution"
+  },
+  "prior_qualified_evidence": {
+    "r11_experiment_model_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+    "r11_evidence_commit": "a501dead1ab0b44c3cb460f891a1a7ff47cba8d2",
+    "actual_python": "61/61 PASS",
+    "actual_model_cases": "35/35 PASS",
+    "meaning": "Historically qualified 10 pilot properties; no individual candidate-delta obligation proven equivalent unless audited separately"
+  },
+  "families": [
+    "AUTHORITY_STAGE_SEPARATION",
+    "COORDINATION_COST",
+    "DAG_AUTHORITY_NO_BYPASS",
+    "EVIDENCE_NON_ESCALATION",
+    "FALSE_SERIAL_EDGE",
+    "FEASIBILITY_EVIDENCE",
+    "FROZEN_AUTHORITY_CURRENTNESS",
+    "PRODUCT_EXPLORATION_EVIDENCE",
+    "PROFILE_LOCAL_VALIDATION_BOUNDARY",
+    "PROFILE_ROLE_AUTHORITY",
+    "PUBLIC_PACKAGE_CONSUMER",
+    "PUBLIC_SELECTED_PATH",
+    "REPAIR_CONTINUITY",
+    "RETAINED_INVARIANTS",
+    "TEST_DISCOVERY_TRUTH",
+    "UNPROVEN_BOUNDARY"
+  ],
+  "items": [
+    {
+      "id": "ARCH-01",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 51,
+        "patch_added_exact_anchor": "selected executable composition path"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Source-selected public consumer→observable operation, not definition/import",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "ARCH-02",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 51,
+        "patch_added_exact_anchor": "record the material unproven seam as `UNKNOWN`"
+      },
+      "concern": "UNPROVEN_BOUNDARY",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "When physical execution not feasible, preserve UNKNOWN and assign later actual integration",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "ARCH-03",
+      "source": {
+        "path": "standards/ARCHITECTURE_DESIGN_STANDARD.md",
+        "blob_sha": "51fad2c5b35779bcd402eb62cab9a6e563e6dd93",
+        "line": 53,
+        "patch_added_exact_anchor": "material** invariant set"
+      },
+      "concern": "RETAINED_INVARIANTS",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Retained critical behavior cannot inherit successful component checks",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "DEV-01",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 137,
+        "patch_added_exact_anchor": "优先复用一个现有 Product Issue"
+      },
+      "concern": "PRODUCT_EXPLORATION_EVIDENCE",
+      "triage_priority": "MEDIUM",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Reuse Product research Issue; avoid repeated issue proliferation",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "DEV-02",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 137,
+        "patch_added_exact_anchor": "真实运行收据、失败记录、报告和修订历史存放 Git 版本化内容"
+      },
+      "concern": "PRODUCT_EXPLORATION_EVIDENCE",
+      "triage_priority": "MEDIUM",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Versioned Demo evidence Git-bound, not branch-name-only",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "DEV-03",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 141,
+        "patch_added_exact_anchor": "未运行须 `NOT_RUN`"
+      },
+      "concern": "EVIDENCE_NON_ESCALATION",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Unexecuted simulated evidence never qualifies actual business or Freeze",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "DEV-04",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 142,
+        "patch_added_exact_anchor": "Stage 2 Architecture Demo 提前"
+      },
+      "concern": "AUTHORITY_STAGE_SEPARATION",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Stage 1 Product Research cannot replace post-Freeze Stage 2 Architecture Demo",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "DEV-05",
+      "source": {
+        "path": "standards/DEVELOPMENT_WORKFLOW.md",
+        "blob_sha": "7b867e174b9d2a939b4e704180b3088b65625a5d",
+        "line": 742,
+        "patch_added_exact_anchor": "minimum sufficient correction"
+      },
+      "concern": "REPAIR_CONTINUITY",
+      "triage_priority": "MEDIUM",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Cross-module defect repaired to first falsifiable causal deviation; preserve ownership",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "EXEC-01",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "blob_sha": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "line": 148,
+        "patch_added_exact_anchor": "Profiles do not widen role authority"
+      },
+      "concern": "PROFILE_ROLE_AUTHORITY",
+      "triage_priority": "HIGH",
+      "existing_evidence": "ABSTRACT_PILOT_ONLY",
+      "semantic_interpretation_for_review": "Execution profile cannot expand Dispatch Role permissions",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "EXEC-02",
+      "source": {
+        "path": "standards/EXECUTION_PACK_STANDARD.md",
+        "blob_sha": "1bd8631dd7120ef56747731e304632b60d7cb5e1",
+        "line": 148,
+        "patch_added_exact_anchor": "preserve their original admission rules"
+      },
+      "concern": "FROZEN_AUTHORITY_CURRENTNESS",
+      "triage_priority": "HIGH",
+      "existing_evidence": "ABSTRACT_PILOT_ONLY",
+      "semantic_interpretation_for_review": "Prospective v4.19 cannot retroactively rewrite historically frozen admissions",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "GITHUB-01",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "blob_sha": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "line": 573,
+        "patch_added_exact_anchor": "never widens authority"
+      },
+      "concern": "PROFILE_ROLE_AUTHORITY",
+      "triage_priority": "HIGH",
+      "existing_evidence": "ABSTRACT_PILOT_ONLY",
+      "semantic_interpretation_for_review": "Profile and Dispatch role distinction maintained",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "GITHUB-02",
+      "source": {
+        "path": "standards/GITHUB_AGENT_INTERACTION_PROTOCOL.md",
+        "blob_sha": "935a905d593d7aec027cb54b5b137250ca14a4c1",
+        "line": 573,
+        "patch_added_exact_anchor": "validation-only, and is used only for a genuine local capability gap"
+      },
+      "concern": "PROFILE_LOCAL_VALIDATION_BOUNDARY",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "LOCAL_VALIDATION is validator-only for a genuine gap, not new authority",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "IMPL-01",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "blob_sha": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "line": 43,
+        "patch_added_exact_anchor": "implementation evidence MUST distinguish"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "SOURCE_PRESENT/EXPORTED_OR_LOADED cannot qualify selected public behavior",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "IMPL-02",
+      "source": {
+        "path": "standards/IMPLEMENTATION_QUALITY_STANDARD.md",
+        "blob_sha": "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+        "line": 43,
+        "patch_added_exact_anchor": "clean installed public package entrypoint"
+      },
+      "concern": "PUBLIC_PACKAGE_CONSUMER",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Material packaging seam requires public-consumer acceptance evidence",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TASK-01",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 183,
+        "patch_added_exact_anchor": "reason for each material serial edge"
+      },
+      "concern": "FALSE_SERIAL_EDGE",
+      "triage_priority": "MEDIUM",
+      "existing_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "semantic_interpretation_for_review": "Final join alone does not justify serial source preparation",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TASK-02",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 183,
+        "patch_added_exact_anchor": "native dependency, shared write ownership, or unresolved atomic security invariant MUST NOT be waived"
+      },
+      "concern": "DAG_AUTHORITY_NO_BYPASS",
+      "triage_priority": "HIGH",
+      "existing_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "semantic_interpretation_for_review": "Never use advisory edge analysis to mutate native DAG or Claim authorization",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TASK-03",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 185,
+        "patch_added_exact_anchor": "or mark the material gap `UNKNOWN`"
+      },
+      "concern": "FEASIBILITY_EVIDENCE",
+      "triage_priority": "MEDIUM",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Material feasibility gap must be grounded or explicitly UNKNOWN",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TASK-04",
+      "source": {
+        "path": "standards/TASK_DECOMPOSITION_STANDARD.md",
+        "blob_sha": "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+        "line": 187,
+        "patch_added_exact_anchor": "does not automatically justify a new executable Issue"
+      },
+      "concern": "COORDINATION_COST",
+      "triage_priority": "LOW",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "A Review checkpoint or CI rerun is not automatically separate Task work",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TEST-01",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 66,
+        "patch_added_exact_anchor": "actual discovered/executed test inventory"
+      },
+      "concern": "TEST_DISCOVERY_TRUTH",
+      "triage_priority": "HIGH",
+      "existing_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "semantic_interpretation_for_review": "Green test command does not establish declared test inventory was executed",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TEST-02",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 66,
+        "patch_added_exact_anchor": "omitted scope remains `NOT_RUN`"
+      },
+      "concern": "TEST_DISCOVERY_TRUTH",
+      "triage_priority": "HIGH",
+      "existing_evidence": "SYNTHETIC_PYTHON_DEMO_ONLY",
+      "semantic_interpretation_for_review": "Required undiscovered suite stays NOT_RUN; executed subset retains PASS",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    },
+    {
+      "id": "TEST-03",
+      "source": {
+        "path": "standards/TESTING_STANDARD.md",
+        "blob_sha": "746ec1da78b45f2d2c1fa2177549acbcc6587ca2",
+        "line": 72,
+        "patch_added_exact_anchor": "actually selected, invoked and behaviorally verified"
+      },
+      "concern": "PUBLIC_SELECTED_PATH",
+      "triage_priority": "HIGH",
+      "existing_evidence": "NOT_TESTED",
+      "semantic_interpretation_for_review": "Supported public entrypoint requires observed execution not loaded module",
+      "exact_clause_semantic_equivalence": "NOT_PROVEN",
+      "required_next_proof": "SELECTED_REAL_CONSUMER_OR_AUTHORITY_EVIDENCE_IF_MATERIAL"
+    }
+  ],
+  "prioritization": [
+    "First source-to-model semantic audit for PROFILE_ROLE_AUTHORITY across EXECUTION_PACK + GITHUB_AGENT: check actual profile→Dispatch authority mapping and frozen-scope exceptions rather than treating generic AUTHORITY property as proof",
+    "Second concrete selected-public-path consumer evidence across ARCHITECTURE_DESIGN + IMPLEMENTATION_QUALITY + TESTING: avoid mock-only paths, reuse DomainHarness evidence only when exact source/version is established",
+    "Third actual test collection and native Task DAG authority probes only if real consumer prerequisites make them material: existing synthetic Demo is not sufficient for real program claims"
+  ],
+  "limitations": [
+    "Exactly 21 chosen source-added obligation family observations, not a complete atomized candidate PR delta inventory or global ADS rule denominator",
+    "Source modality, preconditions, authorization exception and norm owner need human semantic evaluation; line anchor is a locator not formal proof",
+    "All entries are prospective candidate clauses, not effective published ADS authority",
+    "SYNTHETIC_PYTHON_DEMO_ONLY and ABSTRACT_PILOT_ONLY do not establish source-to-model equivalence",
+    "No new normative Gate, formal model, tool dependency, Task Claim, CI/Host/Release execution or merged release"
+  ]
+}
