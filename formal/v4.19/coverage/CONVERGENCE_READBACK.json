@@ -1,0 +1,107 @@
+{
+  "schema": "ads/formal-1366-convergence-readback/v1",
+  "asof_date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "authority": {
+    "experiment_base_for_delta": "671c5fac858de000c867d03284413add204d2b01",
+    "current_observed_experiment_head": "390db1ec8e438d892a6aa3e6661fa0ebdb0a7216",
+    "current_observed_experiment_tree": "94acb95cef7cfb25b19b511c0eb0ef8beafcb19e",
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "candidate_state": "OPEN_UNMERGED"
+  },
+  "r10_exact_model_binding": {
+    "source_receipt": "formal/v4.19/r10/R10_FINAL_STRICT_RUN.json",
+    "historical_strict_verdict": "MODEL_AND_SOURCE_PASS",
+    "historical_r10_selected_cases": 35,
+    "historical_python_tests": 41,
+    "historical_source_alignment": "PASS",
+    "historical_toolchain_alignment": "PASS",
+    "historical_model_alignment": "PASS",
+    "git_pinned_model_inputs": 30,
+    "unchanged_pinned_model_inputs": 29,
+    "changed_pinned_model_inputs": 1,
+    "changed_paths": [
+      {
+        "path": "formal/suite/expanded.py",
+        "historic_git_blob": "7eabb53f2378f87458adab26bc6d506c8e76f5f4",
+        "current_git_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b",
+        "kind": "runner evidence-reporting/identity metadata"
+      }
+    ],
+    "suite_35_cases_git_blob_unchanged": true,
+    "all_native_model_git_blobs_unchanged": true,
+    "tool_inventory_git_blob_unchanged": true,
+    "source_candidate_sha_unchanged": true,
+    "reuse_limit": "Model bytes + previous outcomes are historical evidence; changed runner cannot inherit strict PASS at current SHA without new integrated execution"
+  },
+  "current_python_test_inventory": {
+    "test_files": 11,
+    "static_test_method_definitions": 61,
+    "full_test_execution": "NOT_RUN",
+    "qualification": "STATIC_DECLARATION_NOT_EXECUTED_TEST_COUNT"
+  },
+  "actual_local_recheck": {
+    "python": "3.13.5",
+    "combined_subset_cases": 14,
+    "combined_subset_pass": 14,
+    "combined_subset_errors": 0,
+    "combined_subset_failures": 0,
+    "combined_subset_log_sha256": "083a53df9aec4a557ad8224b806119c37f0319e89d1662dfe2b0429be4fb6718",
+    "exact_test_source_git_blobs": [
+      {
+        "path": "formal/tests/test_dag_edge_probe.py",
+        "git_blob": "d5ee6124f174de80faef06af1425c7c6265af6d2"
+      },
+      {
+        "path": "formal/tests/test_tool_version_postflight.py",
+        "git_blob": "09be2680ea47a915cde27c0918f01f4537036bbb"
+      }
+    ],
+    "local_runner_git_blob": "0adf8ec02375a26f34de34557f7642505ad42400",
+    "current_runner_git_blob": "3a7bbbedb9420b62e5722d8c817f61983dd6d77b",
+    "runner_exact_head_equal": false,
+    "limitation": "14-test isolated local copy is evidence for exact test blobs and postflight helper, NOT the current full runner file in an exact Git worktree"
+  },
+  "native_tool_identity_actual_recheck": {
+    "z3_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+    "z3_version": "5.3.3",
+    "cvc5_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+    "cvc5_version": "1.4.2",
+    "tlc_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+    "java_version": "21.0.12.1",
+    "pins_matched": 3,
+    "java_hash_pinned": false
+  },
+  "environment_blocker": {
+    "container_python_and_offline_native_tools_available": true,
+    "git": "2.47.3",
+    "github_git_transport": "BLOCKED_DNS_NO_RESOLVE",
+    "candidate_source_exact_worktree_available": false,
+    "experiment_source_exact_worktree_available": false,
+    "alternative": "GitHub connector can read blobs/trees and verify impact but current container cannot build independently verified complete exact git checkouts from remote",
+    "web_permitted_remaining": "GitHub impact analysis, documentation, source review, issue evidence and partial isolated Python/native checks"
+  },
+  "execution_decision": {
+    "strategy": "DELIVERY_FIRST_WEB_FIRST_CONVERGENCE",
+    "next_action": "ONE_SHOT_FULL_EXACT_SHA_INTEGRATION",
+    "stop_new_demo": true,
+    "avoid_rerunning_old_history_for_new_model_claims": true,
+    "acceptance": [
+      "fresh actual experiment and candidate exact-SHA checkout",
+      "run complete current formal/tests; zero failures/errors/skips, actual discovered test names and expected 61 checked",
+      "run R10 suite 35 cases with --model-head current HEAD --source-checkout exact candidate --strict-source",
+      "check all 16/16 paired and 3 TLC, source/model/toolchain before+after and traceability PASS",
+      "if defects, same writer repair + rerun affected scope and reconverge new exact SHA",
+      "freeze result and append #1366; do not mutate normative source, merge/Freeze/Release"
+    ],
+    "local_agent_use": "Only if exact two Git checkout cannot be obtained in Web environment, one combined execute/repair/validate, never validation-only"
+  },
+  "verdict": "SOURCE_IMPACT_PASS_AND_NATIVE_TOOLS_3_OF_3_MATCH_14_ISOLATED_TESTS_PASS_CURRENT_EXACT_INTEGRATION_NOT_RUN",
+  "not_proven": [
+    "Full ADS normative obligations denominator",
+    "current exact-head 61-test full executed result",
+    "current exact-head 35-case strict result",
+    "real GitHub CAS/CI/Host/Release semantics"
+  ]
+}
