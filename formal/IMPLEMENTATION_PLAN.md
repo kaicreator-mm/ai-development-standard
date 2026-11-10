@@ -237,3 +237,13 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 **真实最小 Demo：** `formal/v4.19/coverage/discovery_probe.py` 生成一个根测试和一个嵌套测试，以独立 Python 子进程执行 `unittest discover`，由被执行测试写 `.ran` 哨兵，按真实运行 ID 对照声明套装。`-p test_root.py` 虽然进程 PASS，却只执行 **1/2**，嵌套要求保持 **NOT_RUN**；`-p test_*.py` 实际执行 **2/2**，声明套装才可 PASS。第一次进程内复用 `unittest.TestLoader` 曾因 `sys.modules` 跨临时目录缓存失败，已改为独立子进程修复。**隔离的仓库形态 Python 3.13.5 unittest 4/4 PASS**（原始日志 SHA256 `ae1481edad2e8e05e8791c8c269fbde2038495d50654604fd235bf0f0c381c5e`），GitHub 提交的两份 Python blob 与实际运行过的本地 Git blob 一致：`37b5b3852ce01c518c0ce1afe1ee7a01f739373f` / `bffd765812ba3e261c94e08b88166c160e61fe83`。完整收据在 `formal/v4.19/coverage/DISCOVERY_DEMO_EXECUTION.json`。这仅证明 synthetic test collection 情形，不证明真实 CI/provider、全部 ADS 规则或 LTL/SMT 语义等价。
 
 **新 HEAD 的完整验收边界：** GitHub 静态盘点当前 `formal/tests/test_*.py` **47 个测试方法**，不是可冒称的 47/47 实际 PASS；R10 历史 41/41 绑定旧 SHA、当前独立运行了新增 4/4。最新 HEAD 严格 `formal/tests` + R10 的 35 原生模型全套仍 **NOT_RUN**；无新 Gate、冻结、合并或发布。
+
+## 18. 主 Issue #1366 — 收据 postflight 资格与 Task DAG 虚假串行最小反例（2026-11-10）
+
+**根因与真实负面：** 在 `expanded.py` 的收据摘要中，工具 `tool_versions` 曾只从执行前的 `toolchain_before` 派生。隔离 Python 负例用 `preflight=PASS, postflight=FAIL` 证明 `tool_versions.z3.status` 仍可能是 `VERIFIED`（负面断言如期失败）；**原本的整体 strict verdict 仍已根据 after-check 阻断**，故问题为 P2 证据元数据一致性，而不是已确认 ADS 规范缺陷。现在生产 runner 使用 `tool_version_report(toolchain_before, toolchain_after)`：仅两端 PASS、二进制/JAR 摘要一致才显示 `VERIFIED`，否则 `REJECTED`；收据写入不再次启动原生工具。保留一个参数形式只作历史单测兼容。固定 `formal/v4.19/coverage/POSTFLIGHT_RECEIPT.json` 及修复说明。
+
+**真实最小 Task DAG Demo：** 从未映射的候选 `standards/TASK_DECOMPOSITION_STANDARD.md` §13.1 提取一个可证伪区分：仅为了后续 Review/Release 汇合而形成的边与真正需要上游集成代码或共享写集的边不同；脚本 `dag_edge_probe.py` 给出 `POSSIBLE_FALSE_SERIAL_EDGE` **建议**，但原生依赖存在时仍 `HOLD_NATIVE_DEPENDENCY`，不变更真实 GitHub Issue Dependency、不发 Task Claim、不授权并行执行。实际代码/共享写集依赖维持 `MATERIAL_SERIAL_EDGE`；缺乏冻结依据或类型错误保持 `UNKNOWN / NOT_AUTHORIZED`。`formal/v4.19/coverage/DAG_EDGE_EXECUTION.json` 绑定模型与源规范的候选 SHA。此脚本仅用于 synthetic bounded evidence 试点，不替代真正 Task DAG authority 或工作流引擎。
+
+**已实际执行：** Python 3.13.5 下新增两组源代码回归各 **7/7 PASS**，在同一隔离仓库形态组合再次运行 **14/14 PASS**，组合日志 SHA256 `083a53df9aec4a557ad8224b806119c37f0319e89d1662dfe2b0429be4fb6718`。两组 Python test 文件和 DAG Demo 源文件在本地测试后取得 Git blob，GitHub readback 与本地 exact blobs 一致。另实际执行了前一版本收据错误的**预期失败**负面重放：非 PASS，不得计入通过项。
+
+**覆盖口径：** 当前 Git `formal/tests/test_*.py` 有 **11 个源文件、61 个静态声明测试方法**（原来 47 + 当前两组各 7）；这不等于最新 HEAD 全部 61/61 已执行。历史 R10 的 35/35 native strict + 41/41 Python PASS 只绑定 `671c5fac...` 的模型/对应候选 Git SHA；最新 HEAD 的完整 strict suite 和全 61 Python `NOT_RUN`。脚本 Source→Model 自然语言等价、全部 ADS 规范义务分母和实际 GitHub CAS/CI/Host/Release 均未证明。**后续首要工作应集中一次精确 SHA 全量集成，不继续无界增加工具/测试轮次。**

@@ -1,0 +1,57 @@
+{
+  "schema": "ads/formal-1366-r11-consolidation/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "subject": {
+    "candidate_pr": 1365,
+    "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "experiment_fixed_input_commit": "307587b65aa337c0a1a7e5872532b60612be83fd"
+  },
+  "evidence": [
+    {
+      "concern": "POSTFLIGHT_TOOL_RECEIPT_METADATA",
+      "finding": "P2 checker metadata semantics: pre PASS + post FAIL could produce VERIFIED tool_versions even though verdict blocks",
+      "repair": "formal/suite/expanded.py uses pre+post native identity without subprocess during receipt",
+      "negative_reproduction_exit": 1,
+      "negative_log_sha256": "9f51fddbf8ba5629ad9400462951d4bfcf040dc2abfaa43780a0fac2854f9dd2",
+      "tests_actual_pass": 7,
+      "test_source_blob": "09be2680ea47a915cde27c0918f01f4537036bbb",
+      "receipt": "formal/v4.19/coverage/POSTFLIGHT_RECEIPT.json"
+    },
+    {
+      "concern": "PROSPECTIVE_TASK_DAG_FALSE_SERIAL_EDGE",
+      "finding": "Join-only final integration dependency is not necessarily a code/preparation prerequisite; no native Task mutation authority implied",
+      "repair": "bounded source-first advisory Python demo no Task/Claim mutation",
+      "tests_actual_pass": 7,
+      "source_blob": "3ef64b12e5fcee9a7ab3123b98d9f86992084496",
+      "test_source_blob": "d5ee6124f174de80faef06af1425c7c6265af6d2",
+      "receipt": "formal/v4.19/coverage/DAG_EDGE_EXECUTION.json"
+    }
+  ],
+  "local_combined_test": {
+    "platform": "Linux x86_64",
+    "python": "3.13.5",
+    "command": "python3 -m unittest discover -s formal/tests -v (isolated exact-copy helper and DAG source)",
+    "actual_tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "errors": 0,
+    "exit_code": 0,
+    "sha256_log": "083a53df9aec4a557ad8224b806119c37f0319e89d1662dfe2b0429be4fb6718"
+  },
+  "full_repo_static_discovery": {
+    "test_files": 11,
+    "test_method_definitions": 61,
+    "source": "GitHub recursive tree + all 11 test_*.py file fetches",
+    "actual_full_test_execution": "NOT_RUN"
+  },
+  "strict_native_35_case_current_experiment_head": "NOT_RUN",
+  "R10_historical_bound_full_suite": "PASS_35_NATIVE_41_PYTHON_AT_671c5fac_ONLY",
+  "not_proven": [
+    "Real GitHub native Task DAG changes and Claim CAS",
+    "Entire ADS normative obligation denominator",
+    "Real CI/Host/Release execution",
+    "Full latest Git experiment HEAD strict native test and complete Python tests"
+  ],
+  "verdict": "TWO_BOUNDED_PYTHON_CONCERNS_14_OF_14_ISOLATED_PASS_CURRENT_FULL_INTEGRATION_NOT_RUN"
+}
