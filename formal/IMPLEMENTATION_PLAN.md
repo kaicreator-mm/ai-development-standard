@@ -319,3 +319,12 @@ R14 已确认三个源语义缺口；本轮不再无界增加模拟 Controller/S
 在 R15 新代码提交后复盘发现 `assess(..., expected_blob=...)` 允许调用者覆盖应固定的 source Git blob，产生虚假的 `EXACT_BLOB_PASS` 元数据（虽仍不授予发布权限）。已移除外部覆盖参数，固定使用 `PINNED_SCHEMA_BLOB`，并新增 `test_cannot_inject_expected_blob` 负例。代码和测试文件已按相同实验写集提交；当前 Python 声明 **13 项**，修改后真实仓库源组合 Python 执行仍 `NOT_RUN`，不得把提交前基于合成夹具的 12/12 直接提升为最新代码 13/13。
 
 同时对实验分支与 PR #1365 的 `scripts/test_protocol_schemas.py` 真实 Git blob 作版本差异检查：文件 SHA 不同（`248d652...` vs `96edf241...`），但 `assert_supported_schema` + `validate_subset` 源码函数体 **5,706 字符逐字一致**。继续复用现有校验器，不创造新 Schema Engine。R15 的真实候选 Schema 结构正反案例仍只具备已记录的 JS 14/14 证据，完整 Python 最新 HEAD = NOT_RUN；没有修改 ADS 正式规范、CI Gate、PR #1365 或 R11/R13 历史收据。
+
+
+## 28. #1366 R15-P2-02 — exact-source Python 集成的真实 red→green 闭环（2026-11-11）
+
+本地 Agent 在 detached Exact-SHA 工作树（`3257080` / TREE `5d93648`，运行前四个关键文件 blob 经 `git hash-object` 与提交 blob 逐一相符，fixture blob 与候选 `dac263f` 的 `schemas/dispatch.schema.json` 同 blob）首次真实执行 R15 记录的标准命令 `python -m unittest discover -s formal/v4.19/r15 -p 'test_schema_boundary.py' -v`，结果 **exit 1、0 项执行**：真身 `scripts/test_protocol_schemas.py` 第 619 行的模块级兄弟导入 `from v34_rules import ...` 在仅 REPO_ROOT 进 sys.path 时不可解析。此前隔离 12/12 用的是本地 checker 替身，从未覆盖这条真实接线——**R15-P2-02 实验证据基础设施缺陷**（非 ADS 规范缺陷，P0/P1/P2 仍 0/0/0）。
+
+同写集最小修复：`schema_boundary.py` 将 `REPO_ROOT/scripts` 与 `REPO_ROOT` 一并加入 sys.path（新 blob `15a8634e27946fca3c49db4f336687f4cf10bba3`），共享 checker 不改动。修复后双环境复跑 **13/13、零跳过、exit 0**：WSL2 Ubuntu 26.04.1（Python 3.14.4）与 Windows 10.0.26300（Python 3.14.7）。CLI `main()` 冒烟双环境各 3 案例：正例与可空 validator 形态 exit 0（`EXACT_BLOB_PASS` + `SHAPE_VALID_ONLY`，`publication_authorized=false` 恒成立），篡改 schema（fixture 字节+换行，置于工作树外）exit 2 `BLOCK`，observed blob `45a510f5...` ≠ 钉死值。
+
+**资格口径**：exact-source Python 集成 PASS 绑定**修复后 HEAD** × 两个实测环境；`3257080` 原样提交在该项上是 FAIL（exit 1），不得回溯标记为 PASS。机器收据 `formal/v4.19/r15/EXACT_SOURCE_PYTHON_RECEIPT.json`，逐字日志 `EXACT_SOURCE_PYTHON_LOG.txt`（SHA256 `d1f1614d...`）。边界不变：真实 v4.19 publisher/Claim/CAS/readback `NOT_PROVEN`，源↔模型语义等价 `NOT_PROVEN`，外部独立审核 `NOT_RUN`，全 ADS 原子义务分母 `UNKNOWN`。无正式规范修改、无新 Gate、不合并/Freeze/Release。

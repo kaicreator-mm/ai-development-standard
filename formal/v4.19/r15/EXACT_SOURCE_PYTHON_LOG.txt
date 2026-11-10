@@ -1,0 +1,151 @@
+# R15 exact-source Python integration — combined execution log bundle (#1366)
+# Local agent execution, 2026-11-11. Each section below is verbatim captured output.
+
+===== SECTION 1: pre-fix red run — WSL2 Ubuntu 26.04.1 LTS, linux-x86_64, Python 3.14.4, experiment HEAD 3257080 (TREE 5d93648) =====
+test_schema_boundary (unittest.loader._FailedTest.test_schema_boundary) ... ERROR
+
+======================================================================
+ERROR: test_schema_boundary (unittest.loader._FailedTest.test_schema_boundary)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_schema_boundary
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 426, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.14/unittest/loader.py", line 367, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/mnt/c/xDev/kAiCreator/ai-development-standard/ads-i1366-model/formal/v4.19/r15/test_schema_boundary.py", line 5, in <module>
+    from schema_boundary import PINNED_SCHEMA_BLOB, assess, git_blob
+  File "/mnt/c/xDev/kAiCreator/ai-development-standard/ads-i1366-model/formal/v4.19/r15/schema_boundary.py", line 17, in <module>
+    from scripts.test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/xDev/kAiCreator/ai-development-standard/ads-i1366-model/scripts/test_protocol_schemas.py", line 619, in <module>
+    from v34_rules import project_dispatch_environment  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'v34_rules'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (errors=1)
+
+===== SECTION 2: post-fix green run — WSL2 Ubuntu 26.04.1 LTS, linux-x86_64, Python 3.14.4 =====
+test_cannot_inject_expected_blob (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_cannot_inject_expected_blob) ... ok
+test_exact_candidate_fixture_bytes (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_exact_candidate_fixture_bytes) ... ok
+test_local_validator_shape_only (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_local_validator_shape_only) ... ok
+test_malformed_sha_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_malformed_sha_rejected) ... ok
+test_missing_builder_task_pack_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_missing_builder_task_pack_rejected) ... ok
+test_null_requested_sha_schema_valid_not_admitted (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_null_requested_sha_schema_valid_not_admitted) ... ok
+test_null_validation_profile_schema_valid_not_admitted (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_null_validation_profile_schema_valid_not_admitted) ... ok
+test_profile_role_mismatch_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_profile_role_mismatch_rejected) ... ok
+test_tampered_schema_rejected_before_validation (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_tampered_schema_rejected_before_validation) ... ok
+test_unknown_profile_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_unknown_profile_rejected) ... ok
+test_validator_missing_requested_head_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_validator_missing_requested_head_rejected) ... ok
+test_web_builder_shape_only (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_web_builder_shape_only) ... ok
+test_wrong_well_formed_project_pin_still_shape_valid (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_wrong_well_formed_project_pin_still_shape_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.020s
+
+OK
+
+===== SECTION 3: post-fix green run — Windows 10.0.26300 x64, Python 3.14.7 (Git Bash) =====
+test_cannot_inject_expected_blob (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_cannot_inject_expected_blob) ... ok
+test_exact_candidate_fixture_bytes (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_exact_candidate_fixture_bytes) ... ok
+test_local_validator_shape_only (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_local_validator_shape_only) ... ok
+test_malformed_sha_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_malformed_sha_rejected) ... ok
+test_missing_builder_task_pack_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_missing_builder_task_pack_rejected) ... ok
+test_null_requested_sha_schema_valid_not_admitted (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_null_requested_sha_schema_valid_not_admitted) ... ok
+test_null_validation_profile_schema_valid_not_admitted (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_null_validation_profile_schema_valid_not_admitted) ... ok
+test_profile_role_mismatch_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_profile_role_mismatch_rejected) ... ok
+test_tampered_schema_rejected_before_validation (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_tampered_schema_rejected_before_validation) ... ok
+test_unknown_profile_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_unknown_profile_rejected) ... ok
+test_validator_missing_requested_head_rejected (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_validator_missing_requested_head_rejected) ... ok
+test_web_builder_shape_only (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_web_builder_shape_only) ... ok
+test_wrong_well_formed_project_pin_still_shape_valid (test_schema_boundary.CandidateSchemaShapeVsAuthority.test_wrong_well_formed_project_pin_still_shape_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.004s
+
+OK
+
+===== SECTION 4: CLI smoke (main() path) — WSL2 Python 3.14.4: positive / nullable-validator / tampered-schema =====
+[positive exit 0]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "SHAPE_VALID_ONLY",
+  "source_binding": "EXACT_BLOB_PASS"
+}
+[nullable-validator exit 0]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "SHAPE_VALID_ONLY",
+  "source_binding": "EXACT_BLOB_PASS"
+}
+[tampered-schema exit 2]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [
+    "SCHEMA_BLOB_MISMATCH"
+  ],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "45a510f51c491e7721684910af4468e939418993",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "NOT_RUN",
+  "source_binding": "BLOCK"
+}
+
+===== SECTION 5: CLI smoke (main() path) — Windows Python 3.14.7: positive / nullable-validator / tampered-schema =====
+[positive exit 0]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "SHAPE_VALID_ONLY",
+  "source_binding": "EXACT_BLOB_PASS"
+}
+[nullable-validator exit 0]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "SHAPE_VALID_ONLY",
+  "source_binding": "EXACT_BLOB_PASS"
+}
+[tampered-schema exit 2]
+{
+  "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+  "canonical_admission": "NOT_PROVEN",
+  "diagnostics": [
+    "SCHEMA_BLOB_MISMATCH"
+  ],
+  "expected_schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+  "observed_schema_blob": "45a510f51c491e7721684910af4468e939418993",
+  "publication_authorized": false,
+  "schema": "ads/formal-r15-dispatch-schema-boundary/v1",
+  "shape_status": "NOT_RUN",
+  "source_binding": "BLOCK"
+}

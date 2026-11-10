@@ -11,8 +11,14 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+# scripts/test_protocol_schemas.py has a module-level sibling import
+# (`from v34_rules import ...`) that only resolves when scripts/ itself is on
+# sys.path; the exact-source integration run (R15-P2-02) proved REPO_ROOT
+# alone is not sufficient for the package-style import below.
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+for _path_entry in (str(REPO_ROOT), str(SCRIPTS_DIR)):
+    if _path_entry not in sys.path:
+        sys.path.insert(0, _path_entry)
 
 from scripts.test_protocol_schemas import assert_supported_schema, validate_subset  # noqa: E402
 

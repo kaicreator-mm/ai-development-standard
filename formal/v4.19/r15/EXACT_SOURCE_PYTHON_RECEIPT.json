@@ -1,0 +1,109 @@
+{
+  "schema": "ads/formal-r15-exact-source-python/v1",
+  "owner_issue": 1366,
+  "round": "R15 follow-up: exact-source repository Python integration (local agent execution, 2026-11-11)",
+  "candidate": {
+    "pr": 1365,
+    "exact_head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_UNMERGED",
+    "schema_blob": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f"
+  },
+  "experiment_head_before_local_run": {
+    "commit": "3257080680f3ae4e31edb563932b5c5564b2ef2e",
+    "tree": "5d9364894b44f0615cad6a1b0e84ea666655fe72"
+  },
+  "preflight_identity": {
+    "worktree": "detached exact-SHA worktree at 3257080; tracked files unmodified at run time; git status clean before runs",
+    "schema_boundary_py_blob_committed": "53255090cf96dd535f29593945fc8c8cb0fd8a65",
+    "test_schema_boundary_py_blob_committed": "20443c0dca104cd232cfaa7902dc0e977e242aa3",
+    "fixture_blob_committed": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f",
+    "checker_blob_committed": "248d652a890dd069322308bce90da2528ba0ad82",
+    "working_tree_hash_object_matched_committed_blobs": true,
+    "candidate_schema_blob_crosscheck": "git ls-tree dac263f -- schemas/dispatch.schema.json == fixture blob == PINNED_SCHEMA_BLOB"
+  },
+  "red_run_before_fix": {
+    "environment": "WSL2 Ubuntu 26.04.1 LTS, linux-x86_64, Python 3.14.4",
+    "command": "python3 -m unittest discover -s formal/v4.19/r15 -p 'test_schema_boundary.py' -v",
+    "exit_code": 1,
+    "tests_executed": 0,
+    "error": "ModuleNotFoundError: No module named 'v34_rules' at scripts/test_protocol_schemas.py:619 module-level sibling import",
+    "log_sha256": "ac5a9aadd2e4f61fb0fe0b697eeb29392eddb46617d31e047ed21712757414e9"
+  },
+  "defect": {
+    "id": "R15-P2-02",
+    "classification": "EXPERIMENT_EVIDENCE_INFRASTRUCTURE",
+    "normative_defect": "NOT_CONFIRMED (0 ADS normative P0/P1/P2)",
+    "finding": "The checked-in R15 checker could not be imported from an exact checkout: the prior isolated validation used a local stand-in checker, so the real scripts/test_protocol_schemas.py module-level `from v34_rules import ...` sibling-import requirement was never exercised. REPO_ROOT on sys.path alone does not resolve it.",
+    "fix": "formal/v4.19/r15/schema_boundary.py now inserts REPO_ROOT/scripts next to REPO_ROOT in sys.path; the shared scripts/test_protocol_schemas.py is NOT modified",
+    "fixed_schema_boundary_py_blob": "15a8634e27946fca3c49db4f336687f4cf10bba3"
+  },
+  "green_runs_after_fix": [
+    {
+      "environment": "WSL2 Ubuntu 26.04.1 LTS, linux-x86_64, Python 3.14.4",
+      "command": "python3 -m unittest discover -s formal/v4.19/r15 -p 'test_schema_boundary.py' -v",
+      "tests_ran": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "log_sha256": "5b9e4adf55e456b58a0965509835cb0f16877ef55ae31993683b8796370cfb36"
+    },
+    {
+      "environment": "Windows 10.0.26300 x64 (Git Bash), Python 3.14.7",
+      "command": "python -m unittest discover -s formal/v4.19/r15 -p 'test_schema_boundary.py' -v",
+      "tests_ran": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "log_sha256": "71676f0ff1734c2595c730e49a7b2e50ed95d68abe227f06a8673bbbc3d9acfa"
+    }
+  ],
+  "cli_smoke_main_path": {
+    "scope": "exercises main() CLI wiring, which the 13 unittest cases do not cover",
+    "cases": [
+      {
+        "name": "positive_builder",
+        "expected": "exit 0 with EXACT_BLOB_PASS + SHAPE_VALID_ONLY",
+        "observed_exit": {"wsl": 0, "windows": 0},
+        "observed_verdict": "EXACT_BLOB_PASS / SHAPE_VALID_ONLY / publication_authorized=false / canonical_admission=NOT_PROVEN"
+      },
+      {
+        "name": "nullable_validator_fields",
+        "expected": "exit 0 with SHAPE_VALID_ONLY (R15-OBS-01 reproduced on the CLI path)",
+        "observed_exit": {"wsl": 0, "windows": 0},
+        "observed_verdict": "EXACT_BLOB_PASS / SHAPE_VALID_ONLY / publication_authorized=false / canonical_admission=NOT_PROVEN"
+      },
+      {
+        "name": "tampered_schema",
+        "expected": "exit 2 with BLOCK before any schema semantics",
+        "observed_exit": {"wsl": 2, "windows": 2},
+        "observed_verdict": "BLOCK / NOT_RUN / publication_authorized=false",
+        "observed_blob_of_tampered_bytes": "45a510f51c491e7721684910af4468e939418993",
+        "note": "tampered input is fixture bytes + trailing newline, kept outside the worktree"
+      }
+    ],
+    "log_bundle_sha256": "d1f1614df92136ecf5936b959f0322811acc28cde3a24b3592f7d18c4d363feb"
+  },
+  "post_run_identity": {
+    "test_schema_boundary_py": "20443c0dca104cd232cfaa7902dc0e977e242aa3 (unchanged)",
+    "fixture": "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f (unchanged)",
+    "checker": "248d652a890dd069322308bce90da2528ba0ad82 (unchanged)",
+    "schema_boundary_py": "15a8634e27946fca3c49db4f336687f4cf10bba3 (intended R15-P2-02 fix)",
+    "tracked_changes_after_runs": "formal/v4.19/r15/schema_boundary.py only; __pycache__ ignored by .gitignore"
+  },
+  "qualification": {
+    "exact_source_python_integration": "PASS at the repaired HEAD x {WSL2 Python 3.14.4, Windows Python 3.14.7}; NOT at 3257080 as committed (that exact HEAD fails the exact-source import with exit 1)",
+    "prior_r15_isolated_12_of_12": "historic, narrower verification (synthetic fixture + local stand-in checker); not transferred to this revision",
+    "shape_vs_authority": "every observed output keeps publication_authorized=false and canonical_admission=NOT_PROVEN; SHAPE_VALID_ONLY is never promoted to authorization"
+  },
+  "boundaries": {
+    "confirmed_ads_normative_p0": 0,
+    "confirmed_ads_normative_p1": 0,
+    "confirmed_ads_normative_p2": 0,
+    "real_v419_publisher_claim_cas_readback": "NOT_PROVEN",
+    "source_to_model_semantic_equivalence": "NOT_PROVEN",
+    "external_independent_review": "NOT_RUN",
+    "full_ads_atomic_obligation_denominator": "UNKNOWN"
+  }
+}
