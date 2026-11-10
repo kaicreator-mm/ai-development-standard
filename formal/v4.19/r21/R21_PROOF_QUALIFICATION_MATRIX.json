@@ -1,0 +1,212 @@
+{
+  "schema": "ads/formal-main-issue-convergence-gates/v1",
+  "main_issue": 1366,
+  "date_utc": "2026-11-11",
+  "experiment": {
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "pre_decision_head": "5b65e0a8a2567e187783448ad7b1c2942c051289",
+    "pre_decision_tree": "798285aa4b4e7e135819f25db5fd45d3eb3fdfdd",
+    "change_scope": "R21 evidence/index-only, no source/models/runner execution"
+  },
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "status": "OPEN_UNMERGED_PROSPECTIVE",
+    "effective_project_pin": "NOT_VERIFIED_IN_R16_SAMPLE"
+  },
+  "sources": [
+    {
+      "id": "r11",
+      "path": "formal/v4.19/r11/EXECUTION_RECEIPT.json",
+      "blob": "22a2c36c5ecf8e604ec08ac148595f67e0dc3830",
+      "executed_model_head": "9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff",
+      "candidate_source_head": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    {
+      "id": "r14",
+      "path": "formal/v4.19/r14/SOURCE_MODEL_READBACK.json",
+      "blob": "c9f17fc41beaa246ed4a69a79a9f9b03e072303b"
+    },
+    {
+      "id": "r16",
+      "path": "formal/v4.19/r16/R16_CONSUMER_ELIGIBILITY_READBACK.json",
+      "blob": "de1a4dcee18bb2ce31054fcb893ac8a844de0dbc"
+    },
+    {
+      "id": "r17py",
+      "path": "formal/v4.19/r17/R17_PYTHON_BINDING_TESTS_RECEIPT.json",
+      "blob": "e0aa244fbb7304a299088ea27139d24bbafe71fc",
+      "executed_model_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2"
+    },
+    {
+      "id": "r17native",
+      "path": "formal/v4.19/r17/R17_NATIVE_DUAL_SOLVER_EXECUTION.json",
+      "blob": "18d7789d5bec77e5e516d6c468095081a571e9c8",
+      "executed_model_head": "c5eb69c3fcd47ca934b4b87c8004131add6ad5d2"
+    },
+    {
+      "id": "r20",
+      "path": "formal/v4.19/r20/R20_RECORDED_TEST_INVENTORY_READBACK.json",
+      "blob": "85168f02a3235fac9267615c63a33eb9314edcea"
+    },
+    {
+      "id": "normative_docs",
+      "path": "formal/v4.19/coverage/normative-file-matrix.json",
+      "blob": "0ce4d7e463e4d8805c5880e29b671cea38b0ca29"
+    },
+    {
+      "id": "selected_atoms",
+      "path": "formal/v4.19/coverage/ATOMIC_RULE_SAMPLE.json",
+      "blob": "9c52aa4f6ac7b43978a89ba29dbdbe53d94602a7"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "status": "PASS_SCOPED_HISTORICAL",
+      "evidence": [
+        "r11"
+      ],
+      "meaning": "Pinned Z3/cvc5/TLC core environment and strict native receipt; no need to run optional tools"
+    },
+    {
+      "id": "M1",
+      "status": "PARTIAL_BOUNDED_SOURCE_MODEL",
+      "evidence": [
+        "r11",
+        "r14"
+      ],
+      "meaning": "Lifecycle/authority pilot has exact source links and tested counterexamples; English-to-SMT equivalence and real Claim semantics not established"
+    },
+    {
+      "id": "M2",
+      "status": "PASS_BOUNDED_PILOT_NOT_ALL_ADS",
+      "evidence": [
+        "r11"
+      ],
+      "meaning": "10 selected properties; 35/35 native cases,16/16 SMT solver pairs,61/61 Python, source/model/tool pre/post; applies to historical exact HEAD, not whole ADS"
+    },
+    {
+      "id": "M3",
+      "status": "PARTIAL_SEMANTIC_INDEPENDENCE",
+      "evidence": [
+        "r14",
+        "r17native",
+        "selected_atoms"
+      ],
+      "meaning": "R13/R14 scoped adversarial model/source reviews and negative probes; full semantic equivalence and independently attested reviewer for every new clause not established"
+    },
+    {
+      "id": "M4",
+      "status": "PARTIAL_REAL_DELTA_NO_LIVE_ACTOR",
+      "evidence": [
+        "normative_docs",
+        "r16",
+        "r20"
+      ],
+      "meaning": "Real v4.18→candidate-v4.19 diff and evidence selection audits exist; no verified lawful v4.19 publisher/Claim-CAS durable readback"
+    }
+  ],
+  "issue_section_6": [
+    {
+      "id": "A",
+      "status": "DONE_EXACT_SHA_SCOPED",
+      "evidence": [
+        "r11"
+      ],
+      "exit_condition": "R11 acceptance met at 9a6fb6f model×dac263f source; do not re-open unless changed executable dependency closure merits new run"
+    },
+    {
+      "id": "B",
+      "status": "PARTIAL_NOT_A_GLOBAL_DENOMINATOR",
+      "evidence": [
+        "normative_docs",
+        "selected_atoms"
+      ],
+      "measured": {
+        "normative_documents": 46,
+        "changed_documents": 7,
+        "curated_atoms": 25,
+        "official_atomic_obligation_denominator": null
+      },
+      "exit_condition": "A reviewed and explicitly bounded obligation subset with honest not-mapped/unproved entries; full ADS coverage cannot be claimed from chosen sample"
+    },
+    {
+      "id": "C",
+      "status": "FEASIBILITY_ASSESSED_REAL_SUBJECT_BLOCKED",
+      "evidence": [
+        "r14",
+        "r16"
+      ],
+      "observed_sampled_project_refs": 14,
+      "observed_candidate_pins": 0,
+      "exit_condition": "Real effective v4.19 project/Task revision + lawful accepted Claim/serialized publisher + native durable CAS/readback; otherwise NOT_PROVEN, not model PASS"
+    },
+    {
+      "id": "D",
+      "status": "PARTIAL_RECORDED_IMPACT_BASED",
+      "evidence": [
+        "r11",
+        "r17py",
+        "r20"
+      ],
+      "exit_condition": "Keep exact-SHA receipts and root-cause corrections in same issue; only propose normative change via authorized policy process"
+    }
+  ],
+  "nonblocking_incremental": [
+    {
+      "id": "R20-AUDITOR-EXACT-WORKTREE",
+      "status": "NOT_RUN",
+      "change_scope": [
+        "formal/v4.19/coverage/executed_inventory_audit.py",
+        "formal/tests/test_executed_inventory_audit.py"
+      ],
+      "historical_actual_log_method_readback": "13_OF_13_EACH_HOST_SOURCE_AND_LOG_MATCH",
+      "isolation_test_claim": "REPORTED_9_OF_9_SYNTHETIC_FIXTURE",
+      "exit_condition": "At exact current code HEAD, run auditor CLI on four intact recorded inputs plus targeted unittest, zero skip, pinned blob readback. Repair if red; no need for unchanged R11/R17 solver rerun",
+      "priority": "P2_EXPERIMENT_EVIDENCE_NOT_PRODUCTION_BLOCKER"
+    }
+  ],
+  "external_dependencies": [
+    {
+      "id": "PROSPECTIVE_POLICY_NOT_EFFECTIVE",
+      "status": "BLOCKED_BY_AUTHORITY_NOT_A_TOOL_FAILURE",
+      "requires": [
+        "PR1365 lawfully effective or explicit legal project/Task pin with approved revision",
+        "actual selected producer/dispatch actor"
+      ],
+      "do_not_do": "No fabricated adoption, fake accepted Claim or independent publication"
+    },
+    {
+      "id": "R14-PREPUBLICATION_AND_CAS",
+      "status": "NOT_PROVEN",
+      "gap_ids": [
+        "R14-GAP-01",
+        "R14-GAP-02",
+        "R14-GAP-03"
+      ],
+      "requires": [
+        "effective source/pinned schema from actual project",
+        "real payload and serialized readiness/acceptance action",
+        "successful/failed native conditional write plus immutable before-after GitHub durable readback"
+      ],
+      "do_not_do": "No replacement with additional asserted booleans or old fixture admission adapters"
+    }
+  ],
+  "no_fabricated_claims": {
+    "latest_branch_full_70_method_strict_run": "NOT_RUN",
+    "total_full_ADS_atomic_rule_denominator": null,
+    "source_model_global_equivalence": "NOT_PROVEN",
+    "real_dispatch_claim_cas": "NOT_PROVEN",
+    "new_solver_run_this_round": "NOT_RUN",
+    "new_python_run_this_round": "NOT_RUN",
+    "no_normative_change": true,
+    "no_new_gate": true,
+    "formal_experiment_issue_open": true
+  },
+  "github_readback_checks": {
+    "passed": 14,
+    "total": 14,
+    "kind": "GITHUB_RECEIPT_CONSISTENCY_NOT_EXECUTABLE_PROOF"
+  }
+}

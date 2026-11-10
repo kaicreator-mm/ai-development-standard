@@ -1,6 +1,6 @@
 # ADS Model-Based Formal Verification — 实施计划 R0–R18（实验性，非规范）
 
-**Status**: ACTIVE_PILOT_R20 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
+**Status**: ACTIVE_PILOT_R21 / EXPERIMENT / NO_NORMATIVE_GATE / R17_PINNED_13_PYTHON_BOTH_HOSTS_32_NATIVE_PASS_AT_5a81503 / R11_STRICT_61_PYTHON_35_NATIVE_HISTORICAL / 46_NORMATIVE_DOC_BLOBS_INDEXED / 25_SELECTED_ATOMS_NOT_FULL_DENOMINATOR / FULL_ADS_SEMANTIC_PROOF_NOT_PROVEN  
 **Canonical main Issue (all progress and future handoffs)**: [#1366](https://github.com/kaicreator-mm/ai-development-standard/issues/1366) — all prior R0–R10 evidence, T00–T08, status, open obligations and Delivery-First/Web-First execution ownership.  
 **Historical full strict integration**: experiment model SHA `671c5fac858de000c867d03284413add204d2b01` (35/35 model; 41/41 Python; 16/16 paired; Source/Model/Toolchain PASS), frozen in `formal/v4.19/r10/FINAL_INTEGRATION_RECEIPT.json` at `62b00b070744887e39b37b514ffb2390f4cb2666`.  
 **R11 actual strict integration**: model HEAD `9a6fb6f5a2b93fa45ed75e4dc39b29c367efacff` and candidate source HEAD `dac263fa4c0ab155406d2f2117459b34322cc988`; 61/61 actual Python tests, 35/35 native cases, 16/16 independent SMT pairs, tool/source/model/trace pre/post PASS, committed as `formal/v4.19/r11/EXECUTION_RECEIPT.json` at `a501dead1ab0b44c3cb460f891a1a7ff47cba8d2`. Later `formal/v4.19/coverage/` source-audit commits have not changed those pinned executable subjects; their metadata-only checks are not fresh native model runs.  
@@ -383,3 +383,12 @@ R19 后评估下一步：R11/R13/R17 Native/Python 都已各自 Exact-SHA 通过
 本轮直接从 GitHub 读取 R17 的两个实际 `unittest` 源文件、其双环境逐方法日志、机器收据，在固定 Git blob 下核对 **13 个声明方法的全限定 ID 与 Windows/WSL2 各 13 条执行 ID 完全一致**，无漏测、重复、额外 ID；真实执行是**历史 R17**，本轮是 **20/20 源码与证据回读**，不是原生测试重跑。新增 `formal/v4.19/coverage/executed_inventory_audit.py` 提供可复用的固定输入/源码 AST/日志/收据 fail-closed 读取；新增 `formal/tests/test_executed_inventory_audit.py`，在当前离线 Python 3.13.5 隔离仓库形状的合成 fixture 上实际 **9/9 PASS、零跳过**，其中含绿色但漏测、重复 ID、源码篡改、日志/机器收据篡改等反例。其实际原始输入读回与 Python fixture 执行的资格明确分离。
 
 机器文件 `formal/v4.19/r20/R20_RECORDED_TEST_INVENTORY_READBACK.json`、审查 `R20_RECORDED_TEST_INVENTORY_REVIEW.md`。**新脚本在完整 Git exact-checkout 中对真实 R17 四份源文件进行整体 CLI 执行仍 NOT_RUN**，不可把隔离 9/9 称为完整实际工作树已运行；无新 Z3/cvc5/TLC。真实 v4.19 Claim/CAS 和标准⇄SMT 语义等价 NOT_PROVEN，全 ADS 原子规则分母 UNKNOWN。保持已通过 R17 的历史资格，不新建 FIR/Gate/CI，不合并/Freeze/Release。
+
+
+## 35. #1366 R21 — 主 Issue 当前性修复与有限证明验收矩阵（2026-11-11）
+
+重新读取当前实验 `5b65e0a8a2567e187783448ad7b1c2942c051289`、主 Issue #1366、候选 PR #1365 和 R11/R14/R16/R17/R20 精确 Git blob，发现主 Issue 顶端仍错误标记 R11 固化 HEAD `a501dead...` 为 **latest**，§6-A 仍保留 `[ ]`，但后面的 §10 和本实验 R11 机器回执已明确 `acceptance_stop_condition.met=true`（61/61 Python，35/35 Native，16/16 Z3/cvc5，source/model/tool pre/post PASS）。这是主 Issue 进度消费的当前性缺陷（项目管理/证据索引，**不是 ADS 正式规范缺陷**），应修正主入口而不是重复执行全套。
+
+本轮将 M0–M4、§6 A–D、R20 单独待跑事项、R14 真实发布者资格/Claim/CAS 三个未证明边界固化于 `formal/v4.19/r21/R21_PROOF_QUALIFICATION_MATRIX.json` 和 `R21_CONVERGENCE_DECISION.md`：**A 只对已执行 R11 exact subject 已完成；M2 有界试点已通过；B/C/D 并非自动全部通过**。46 文件/7 变更/25 草案不是完整 ADS 原子义务分母；R20 Python 审计器最新 exact-checkout CLI 仍 `NOT_RUN`；PR #1365 OPEN/未合并、R16 14 refs 中 0 个合法候选 pin；R14-GAP-01/02/03 依赖真实有效 producer、serialized READY/QUEUED/Claim-CAS 与持久读回，不能用抽象 guard 替代。
+
+本轮实际执行的是 **14/14 GitHub 收据/状态一致性读取**、原始状态纠偏；**不**执行全量 Python/Z3/cvc5/TLC 或伪造真实 CAS。R11、R17 的历史 exact-SHA PASS 仅作为已存在证据复用。主 Issue 顶端恢复到该轮最新 Git 提交与正确 §6-A 分类，旧 §7–§10 历史记录照存、不追认或覆盖。**止损规则：**无真实新增失败/代码变动时停止生成细碎同类验证轮次；下一个可执行的新代码门槛仅为 R20 精确工作树针对性执行，真实生产 E2E 门槛只在合法有效版本/producer 可识别后启动。
