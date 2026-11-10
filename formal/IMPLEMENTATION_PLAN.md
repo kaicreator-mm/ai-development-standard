@@ -247,3 +247,11 @@ R10 机器化收据：`formal/v4.19/r10/EXECUTION_RECEIPT.json`。
 **已实际执行：** Python 3.13.5 下新增两组源代码回归各 **7/7 PASS**，在同一隔离仓库形态组合再次运行 **14/14 PASS**，组合日志 SHA256 `083a53df9aec4a557ad8224b806119c37f0319e89d1662dfe2b0429be4fb6718`。两组 Python test 文件和 DAG Demo 源文件在本地测试后取得 Git blob，GitHub readback 与本地 exact blobs 一致。另实际执行了前一版本收据错误的**预期失败**负面重放：非 PASS，不得计入通过项。
 
 **覆盖口径：** 当前 Git `formal/tests/test_*.py` 有 **11 个源文件、61 个静态声明测试方法**（原来 47 + 当前两组各 7）；这不等于最新 HEAD 全部 61/61 已执行。历史 R10 的 35/35 native strict + 41/41 Python PASS 只绑定 `671c5fac...` 的模型/对应候选 Git SHA；最新 HEAD 的完整 strict suite 和全 61 Python `NOT_RUN`。脚本 Source→Model 自然语言等价、全部 ADS 规范义务分母和实际 GitHub CAS/CI/Host/Release 均未证明。**后续首要工作应集中一次精确 SHA 全量集成，不继续无界增加工具/测试轮次。**
+
+## 19. #1366 真实 Dispatch 消费者的项目版本准入（2026-11-10）
+
+主 Issue #1366 的 R12 源码审查确认：候选 v4.19 的 `schemas/dispatch.schema.json` **7/7 Profile→Role** 条件正确，辅助函数与模拟 Claim Admission 测试不能直接证明生产者按当前项目钉死 ADS revision 完成原子 Dispatch。原始收据 `formal/v4.19/coverage/CANONICAL_DISPATCH_CONSUMER_READBACK.json`。
+
+为防止用错误版本系统重复证明，本轮进一步真实读取 `kaicreator-mm/tally` 的 **main**（`e988321439f65b55936a691c02250b6d62a29409`）和 **version/v2**（`7ebb1cdd0a79fc82cc938e35f852a80dd8e15332`）Git HEAD/TREE 和 `.dev-standard/VERSION` / `.dev-standard/PROJECT_OVERRIDES.md`：两个 `VERSION` 都精确声明 **ADS 4.18.0** `revision=2c395c55569fe2edf3f4135f12d3d069e526d0b7`，且 Overrides 将 A1_MANUAL_PROTOCOL v4.18 接入限制为 v2 版本线，保留历史 `main`/旧 Claim 的原准入。**Tally 本次观察分支不能作为 v4.19 Profile/Claim/生产发布的真实消费者**，不能把其同名 `Service.Dispatch` 当作 ADS Canonical Dispatch 的实现。两个分支 Git blob 一致，5 个负面准入变体拒绝、1 个正面控制通过，只是来源/资格判别，不是运行时验证。证据 `PROJECT_PIN_CONSUMER_ELIGIBILITY.json` 与 `PROJECT_PIN_CONSUMER_DECISION.md`。
+
+**调整：** 先取得一个实际有效的 v4.19 项目版本 pin、冻结 Task/Claim 与生产者发布路径，再做最小真实消费链检查（enriched→pinned-schema→role/profile→Claim/currentness→atomic publication→readback）。未满足版本准入时 `NOT_PROVEN`，不再添加模拟状态机/重复 R11 全量测试，不派本地 Agent；无 ADS 规范修改、Merge、Freeze 或 Release。

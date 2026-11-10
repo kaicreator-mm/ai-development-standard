@@ -1,0 +1,138 @@
+{
+  "schema": "ads/formal-project-pin-consumer-eligibility-readback/v1",
+  "date_utc": "2026-11-10",
+  "main_issue": 1366,
+  "candidate": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "state": "OPEN_NOT_EFFECTIVE_ADOPTED_BY_OBSERVED_TALLY_BRANCHES",
+    "required_exact_version_for_future_consumer": "4.19.0"
+  },
+  "cross_repo_observed": {
+    "repo": "kaicreator-mm/tally",
+    "branch_audits": [
+      {
+        "branch": "main",
+        "head": "e988321439f65b55936a691c02250b6d62a29409",
+        "tree": "cef13f696b5d0362ab94c61aad0c5569da41256d",
+        "version_file": {
+          "path": ".dev-standard/VERSION",
+          "blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+          "parsed": {
+            "repository": "kaicreator-mm/ai-development-standard",
+            "version": "4.18.0",
+            "revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7"
+          }
+        },
+        "project_overrides": {
+          "path": ".dev-standard/PROJECT_OVERRIDES.md",
+          "blob": "eea65d979d0c08522a2a5e9eee376e94391cb0cb",
+          "scope_v2_only": true,
+          "level_A1": true,
+          "legacy_roles_preserved": true
+        },
+        "verified_format": true,
+        "candidate_sha_same_as_project_pin": false,
+        "candidate_version_same_as_project_pin": false
+      },
+      {
+        "branch": "version/v2",
+        "head": "7ebb1cdd0a79fc82cc938e35f852a80dd8e15332",
+        "tree": "4c3529b612f0e5a80de8f7508cd7d178e8069980",
+        "version_file": {
+          "path": ".dev-standard/VERSION",
+          "blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+          "parsed": {
+            "repository": "kaicreator-mm/ai-development-standard",
+            "version": "4.18.0",
+            "revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7"
+          }
+        },
+        "project_overrides": {
+          "path": ".dev-standard/PROJECT_OVERRIDES.md",
+          "blob": "eea65d979d0c08522a2a5e9eee376e94391cb0cb",
+          "scope_v2_only": true,
+          "level_A1": true,
+          "legacy_roles_preserved": true
+        },
+        "verified_format": true,
+        "candidate_sha_same_as_project_pin": false,
+        "candidate_version_same_as_project_pin": false
+      }
+    ],
+    "version_file_git_blob_same_across_both": true,
+    "version_head": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+    "claimed_v2_scope": "A1_MANUAL_PROTOCOL on version/v2, with historical main/Claims scoped to previous authority",
+    "candidate_v419_consumer_qualification": "NOT_ELIGIBLE_OBSERVED_PIN_IS_4_18",
+    "relevance": "Tally main Go Service.Dispatch is its own TaskExecutionRequest service; no ADS v4.19 consumer claim follows from similar function names"
+  },
+  "producer_acceptance_obligations": [
+    {
+      "id": "D1",
+      "name": "effective_project_ads_pin",
+      "qualification": "PRECONDITION_FAILED_FOR_OBSERVED_TALLY"
+    },
+    {
+      "id": "D2",
+      "name": "exact_pinned_dispatch_schema_sha_and_contract",
+      "qualification": "NOT_OBSERVED_IN_PRODUCTION"
+    },
+    {
+      "id": "D3",
+      "name": "enriched_dispatch_profile_role_validation",
+      "qualification": "SCHEMA_AND_REFERENCE_ORACLE_ONLY"
+    },
+    {
+      "id": "D4",
+      "name": "frozen_task_and_actor_claim_and_write_set",
+      "qualification": "BOUNDED_TEST_ORACLE_ONLY"
+    },
+    {
+      "id": "D5",
+      "name": "serialized_currentness_before_persist",
+      "qualification": "NOT_OBSERVED_IN_PRODUCTION"
+    },
+    {
+      "id": "D6",
+      "name": "actual_durable_git_claim_and_dispatch_write_readback",
+      "qualification": "NOT_OBSERVED_IN_PRODUCTION"
+    },
+    {
+      "id": "D7",
+      "name": "negative_invalid_schema_causes_zero_accepted_mutation",
+      "qualification": "NOT_OBSERVED_IN_PRODUCTION"
+    },
+    {
+      "id": "D8",
+      "name": "old_scope_unmodified_and_no_retroactive_admission",
+      "qualification": "V4_18_SCOPE_NOTE_ONLY_NOT_V419_RUNTIME_PROOF"
+    }
+  ],
+  "executed_structural_checks": {
+    "actual_remote_git_branches_read": 2,
+    "exact_version_blobs_readback": 2,
+    "exact_project_override_blobs_readback": 2,
+    "same_version_git_blob": true,
+    "expected_version_mismatch_vs_v419": 2,
+    "scope_v2_manual_A1_notes_present": 2,
+    "negative_guard_variants_rejected": 5,
+    "synthetic_eligibility_helper_positive_control": true,
+    "admission_runtime_test_count": 0,
+    "scope": "REAL_GITHUB_SOURCE_PIN_EVIDENCE_PLUS_JS_ASSERTIONS_NOT_RUNTIME_ACCEPTANCE"
+  },
+  "execution_adjustment": {
+    "decision": "STOP_SIMULATED_DISPATCH_MODELS_UNTIL_ELIGIBLE_PRODUCER_IDENTIFIED",
+    "next": "Obtain an explicitly effective ADS v4.19 project adoption pin and specific real canonical Dispatch publisher, then inspect schema-at-write and accepted GitHub Claim with actual immutable publication/readback.",
+    "local_agent": "NOT_NEEDED_FOR_SOURCE_VERSION_TRIAGE",
+    "native_solver_rerun": "NOT_NEEDED_SAME_MODEL_INPUTS"
+  },
+  "verdict": "TALLY_4_18_PIN_PROVED_NOT_V419_ADOPTION_AND_REAL_V419_PRODUCER_NOT_ESTABLISHED",
+  "limitations": [
+    "Only observed Tally main and version/v2 heads; do not extrapolate to all branches or other repositories",
+    "A .dev-standard/VERSION file is source metadata; exact project effective scope still follows project authority and frozen Task/Claim",
+    "Candidate ADS v4.19 PR #1365 is OPEN and not automatically in effect",
+    "No live producer execution, durable GitHub Claim CAS, or actual schema write-boundary verification",
+    "No real ADS normative source defect established, no model rule-level equivalence established",
+    "R11 strict results remain historically bound to their original exact model/candidate pair"
+  ]
+}
