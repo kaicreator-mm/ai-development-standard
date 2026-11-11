@@ -477,3 +477,18 @@ R27 修复后的 `execution_inventory.py` 虽已检查 TLC 返回身份和正常
 **直接 Web 侧代码推进而非另派 Review-only**：为已有 `formal/tests/test_execution_inventory_admission.py` 补充真正调用 `expanded.main_v1` 的状态交换场景：保留有效 35 Case ID、模型与规范映射、正确 SMT 配对，仅对 TLC `ADS419-R2-LIFECYCLE-TLC` 注入 `COUNTEREXAMPLE`，对 `ADS419-R2-LIFECYCLE-MUTANT-WRITER` 注入 `PASS_MODEL`；要求 `execution_inventory_audit=FAIL`、`model_verdict=BLOCKED`、`source_bound_verified_obligations=0`。仅 mock 原生 `run_case` 与来源/工具的宿主检查，**不能宣称真实求解器或外部 Git checkout 已运行**。Git 提交 `d2c511753e000459750b533124c36fc23ca09b80`，新测试 blob `69eb1bbe759dd770bf4dbb8e2dbf8cf84fa6de9f`。基线→增量 Git compare 仅 **一个测试文件 +48 行**；R27 原独立入口负例保持，R28 18/18 原本执行的 helper/test bytes 没有修改。新 `main_v1` 入口测试 **已写入并 GitHub 精确源码读回，执行 NOT_RUN**。
 
 **停止追加抽象模型，等待唯一的 R29 真实修复+验收**：使用最新实验 HEAD × candidate `dac263fa4c0ab155406d2f2117459b34322cc988` 在真实双 Git 工作树先执行新增入口负例和受影响 Python，再执行 35 Native/16 SMT pair/3 TLC 与 source/model/tool pre/post。若红即原分支一次性修复+重验，固化真实日志及 machine receipt，更新 #1366；不得派 `LOCAL_VALIDATION_ONLY`。本轮无新的 Native PASS、没有正式 ADS 规范缺陷、无 Gate/Actions/Merge/Freeze/Release，真实业务授权链及语言↔SMT 全等价仍 `NOT_PROVEN`。
+
+
+## 45. #1366 R29 实测闭环与下一证明关键路径（2026-11-11）
+
+**先以真实执行证据纠正之前 §44 的时态**：R29 的真实双 Exact-SHA checkout 已在被测实验源码 `151e218d638a184a74a59df2cf0ede0f388dea42`（TREE `0dc2fdcfff9a5199f99230608089bb136f849063`）× PR #1365 候选源 `dac263fa4c0ab155406d2f2117459b34322cc988`（TREE `def156ce156c7301c30cf7df1f4bf956b7817c5f`）完成。版本化集成收据固化于 `963d3ffec795554476d47063fe7a2e4dc3adf1f6` 的 `formal/v4.19/r29/R29_EXACT_CHECKOUT_INTEGRATION.json`；真实 Python 97/97、0 skipped，35/35 Native 严格 `MODEL_AND_SOURCE_PASS`（21 proof + 14 mutation）、16/16 Z3/cvc5 差分、TLC 3/3、source 7/7、model/tool before/after PASS、3 个 Main Runner 伪造结果全部 BLOCKED / 绿色对照 PASS（29/29 断言）。R27/R28 两轮代码修复已在当前被测源码闭环，**不得再派 R29 验证/修复任务**；历史 §44 的 NOT_RUN 是旧时间点记录，不应作为当前阻塞。
+
+**本轮 Web-only 真实收据复读（不假冒重新运行）**：R29 `R29_STRICT_RUN.json` 中 `selection.all_declared_cases_selected=true`，35 个 Case 都存在，21 个 `PASS_MODEL`、14 个 `COUNTEREXAMPLE`，16 个 solver pairs 均为 PASS，traceability 为 10 Property / 35 Case / 7 Source PASS，source/model/tool pre/post 全 PASS；`R29_NEGATIVE_PROBE_LOG.txt` 3 个破坏场景 exit=2、绿色对照 exit=0，29/29 assertions `OK`，全部重跑结果哈希一致；`R29_PYTHON_TESTS_LOG.txt` 包含 97 个 `test_...` 标识及 `Ran 97 tests / OK`，其中两项带方法 docstring 导致 verbose 结果采用续行输出，**不是漏测**。这是对原始日志的 GitHub **readback**，不是新的运行收据，也不改变 R29 subject 身份。
+
+**后续顺序（停止碎片化重复验证）：**
+
+1. **§6-B/M3 第一优先：独立的 Source-first 语义审核**，先取真实执行边界最关键的 `ADS-P-CAS`、`ADS-P-WRITER-KEYS`、`ADS-P-ADMISSION-EXT` 三项，按固定候选规范 `EXECUTION_ARCHITECTURE_STANDARD.md §11.1` 与 `GITHUB_AGENT_INTERACTION_PROTOCOL.md §8.5` 自顶向下建立验收标准，对照 `formal/models/{authority/serialized-admission.smt2,cross/writer-exclusion.smt2,authority/admission-boundaries-r8.smt2}` 与原生 `suite.json` 的正反例。明确哪些是“应被模型判定的状态/冲突”，哪些是未验证的 `authorized/current/active/write-set-known/accepted/durable` 输入。审查必须由**独立于前述 Builder 的新审核上下文**完成；不得用本次自读回冒充独立签署，也不得将新语义假设写成已证明/已生效规范。若发现可证伪的实际模型错误，按 Delivery-First 在同一 repair task 内修复+重跑受影响模型闭包。
+2. **§6-C 第二优先：先满足真实消费者资格，再做发布链证明**。PR #1365 OPEN、Product #1347 NOT_FROZEN；实际有效 Project/Task pin 与 selected Producer 未被证明。直到有可审的合法主体，READY/QUEUED→accepted Claim/CAS→GitHub 持久读回保持 NOT_PROVEN；不模拟事件、不创造新 Gate、无需扩展通用工具栈。
+3. **§6-D 经验反馈**只根据独立发现的实际模型/规范缺陷与真实项目证据推进，不把 R29 的 10/10 pilot Property 转写成完整 ADS 规范义务覆盖率；全量原子规范分母仍 UNKNOWN，完整 Source↔SMT 语义等价仍 NOT_PROVEN。
+
+R29 是严格验证工具**基础闭环**，不是 §6-B 全规范语义结论或 §6-C 生产系统通过。ADS 正式规范暂无新 P0/P1/P2，实验 R27/R28 修复的 P2 已在 R29 集成闭环；不改候选 PR、无新增 FIR/Gate/Actions/Merge/Freeze/Release。
