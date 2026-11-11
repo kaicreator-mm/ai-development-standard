@@ -1,0 +1,210 @@
+{
+  "schema": "ads/formal-r31-real-consumer-candidate-qualification/v1",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "round": "R31",
+  "output_label": "ADS_1366_R31_TALLY_SOURCE_CONSUMER_QUALIFICATION",
+  "purpose": "Consume R30's three bounded evidence P2s using real external repository source, without inventing effective v4.19 authority or executing GitHub Claim mutations.",
+  "reviewer_scope": "WEB_SOURCE_FIRST_SAME_ASSISTANT_CONTEXT_NOT_NEW_INDEPENDENT_REVIEW",
+  "ads": {
+    "repository": "kaicreator-mm/ai-development-standard",
+    "experiment_head_before": "1d44182ebf90a009d9a17addf18a6b7054a1ee04",
+    "r30_review_path": "formal/v4.19/r30/R30_FRESH_INDEPENDENT_CAS_WRITER_SEMANTIC_REVIEW.md",
+    "r30_review_blob": "7ec4166d9b55fb2b9fe432161a07e1f28dd825c0",
+    "r29_tested_model_head": "151e218d638a184a74a59df2cf0ede0f388dea42",
+    "r29_native": "HISTORIC_35_35_PASS_EXACT_SUBJECT_NOT_REEXECUTED"
+  },
+  "candidate_policy": {
+    "pr": 1365,
+    "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+    "status": "OPEN_NOT_FROZEN_NOT_EFFECTIVE",
+    "product_issue": 1347
+  },
+  "consumer": {
+    "repository": "kaicreator-mm/tally",
+    "ref": "main",
+    "exact_head": "e988321439f65b55936a691c02250b6d62a29409",
+    "project_ads_pin": {
+      "path": ".dev-standard/VERSION",
+      "blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "version": "4.18.0",
+      "revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+      "qualifies_for_prospective_v419": false
+    },
+    "project_issue": {
+      "number": 125,
+      "state": "OPEN",
+      "title": "[v2 T06] GitHub-native accepted Task Claim and dependencies → Engineering B → DomainHarness K admission",
+      "declares_claim_and_K_not_yet_qualified": true
+    }
+  },
+  "source_inventory": [
+    {
+      "path": "experiments/v2/t06d-host-claim-publication/single-writer.mjs",
+      "blob": "7df6426ffd0086b7480cf9258ffe1e71d2d15bb5",
+      "kind": "ACTUAL_HOST_CONTROLLER_SOURCE",
+      "observed": [
+        "uses store.put(key,reservation,{mustBeAbsent:true})",
+        "uses store.put(key,result,{mustMatchRevision:rev})",
+        "preserves PENDING_GITHUB_PUBLISH on lost ACK",
+        "requires Host-owned single writer and native source/readback ports",
+        "restricts expectedGeneration=0 and compatibilityGroup=__default__",
+        "returns VERIFIED_PENDING_KERNEL_ADMISSION, not Kernel authorization"
+      ]
+    },
+    {
+      "path": "experiments/v2/t06d-host-claim-publication/host-admission-source.mjs",
+      "blob": "0b493e0cd85769ab654538d2edd7b94bd7bef17e",
+      "kind": "ACTUAL_HOST_READ_ONLY_ADMISSION_ADAPTER_SOURCE",
+      "observed": [
+        "binds native Task facts to Host-only taskAuthority and writerAuthority",
+        "double-checks CAS registry snapshot",
+        "rejects incomplete/unknown native facts",
+        "derives no Task permission or accepted claim from source data"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/src/task-claim-host-preflight.mjs",
+      "blob": "5b161ee6b5cac22275ce15b09ffb24deb451a580",
+      "kind": "READ_ONLY_PREFLIGHT",
+      "observed": [
+        "requires real current GitHub source and no claim-event candidates",
+        "reports nativePreflightReady only, no atomic CAS",
+        "dispatchSourceBound and publisherSourceBound are false until selected Host binds them"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/src/task-claim-github-publisher.mjs",
+      "blob": "f895b99fc5a97c69bd0cae56b9365d81791ec927",
+      "kind": "NATIVE_GITHUB_TRANSPORT_SOURCE",
+      "observed": [
+        "writes one structured DISPATCH_CLAIMED comment through privileged Octokit",
+        "verifies exact readback and comment hash",
+        "does not retry ambiguous POST",
+        "reports claimAccepted=false, authorized=false, admitted=false"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/src/task-claim-host-readback-port.mjs",
+      "blob": "39daecbcf4b421e908e27acb4ddce8dec49f18fa",
+      "kind": "NATIVE_CLAIM_COMMENT_READBACK",
+      "observed": [
+        "matches trusted Host reservation fields and native event ID",
+        "reports observational source facts, no Task admission"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/src/task-claim-publication-witness.mjs",
+      "blob": "e1f044d11b079cf107d9e067b1e52d532aa33784",
+      "kind": "OBSERVATIONAL_NATIVE_PUBLICATION_WITNESS",
+      "observed": [
+        "detects exact matching comment",
+        "does not establish accepted Claim or CAS by comment presence"
+      ]
+    },
+    {
+      "path": "experiments/v2/t06d-host-claim-publication/single-writer.test.mjs",
+      "blob": "a98b9053e3674e5c3a5946f7f2826e4c33972da6",
+      "kind": "TEST_SOURCE_NOT_RUN_THIS_ROUND",
+      "observed": [
+        "uses actual openSqliteCasStore in tests",
+        "tests competing reservations and durable restart with mocked GitHub ports",
+        "tests ambiguous publication retention, fail-closed denials"
+      ]
+    },
+    {
+      "path": "experiments/v2/t06d-host-claim-publication/host-admission-source.test.mjs",
+      "blob": "e40ffb2c44194e76780a048ce38a940ba84b6e82",
+      "kind": "TEST_SOURCE_NOT_RUN_THIS_ROUND",
+      "observed": [
+        "tests source/preflight/admission/registry composition with mocked Octokit",
+        "tests readback rejection and fail-closed behavior"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/test/task-claim-github-publisher.test.mjs",
+      "blob": "2d2f76f82144981f5c450771c06d46a394e8181b",
+      "kind": "TEST_SOURCE_NOT_RUN_THIS_ROUND",
+      "observed": [
+        "mocks GitHub createComment/getComment",
+        "does not demonstrate a live GitHub post or accepted production Claim"
+      ]
+    },
+    {
+      "path": "packages/tally-github-native-c/test/task-claim-host-readback-port.test.mjs",
+      "blob": "ae07fe70871566fbecc36c65c2250e4b351d90e7",
+      "kind": "TEST_SOURCE_NOT_RUN_THIS_ROUND",
+      "observed": [
+        "tests readback DTO and rejection controls using mocked native client"
+      ]
+    }
+  ],
+  "r30_boundaries": [
+    {
+      "id": "R30-P2-01",
+      "topic": "CAS_KEY_AND_GENERATION",
+      "current_reusable_evidence": "DEFAULT_GROUP_GENERATION_ONE_CAS_SOURCE_AND_TESTS_PRESENT",
+      "scope": "Host controller's protected key = repo#issue:role:__default__, initialized generation=1; physically conditional SQLite store in test, not current v4.19 project/Task admission.",
+      "missing": [
+        "valid v4.19 project/task pin",
+        "current trusted canonical key including compatible nondefault group semantics",
+        "actual deployed single-writer/linearizable proof",
+        "actual accepted Claim and publication reconciliation"
+      ],
+      "status": "PARTIAL_SOURCE_REUSE_NO_V419_PROOF"
+    },
+    {
+      "id": "R30-P2-02",
+      "topic": "WRITER_WRITESET_AND_PARALLELISM",
+      "current_reusable_evidence": "CLAIM_KEY_EXCLUSION_SOURCE_ONLY",
+      "scope": "Host claim controller does not derive authoritative Task Pack write-set overlap/disjointness; claim key exclusion is not file/write ownership proof.",
+      "missing": [
+        "native frozen Task Pack and write set",
+        "checked overlap against real concurrent writers",
+        "actual accepted Builder Claim and source mutation"
+      ],
+      "status": "NOT_PROVEN"
+    },
+    {
+      "id": "R30-P2-03",
+      "topic": "SUCCESSOR_START_AND_GRANT",
+      "current_reusable_evidence": "ONE_SHOT_POST_AND_READBACK_SOURCE_ONLY",
+      "scope": "Expected generation=0, reservation generation=1, group=__default__; ambiguous POST remains pending. No nondefault grant, terminal reconciliation or successor Start Record qualified.",
+      "missing": [
+        "legitimate newer generation and terminal readback",
+        "current compatibility grant with authority/scoped revision",
+        "real accepted successor Claim",
+        "durable GitHub + Host + resource reconciliation"
+      ],
+      "status": "NOT_PROVEN"
+    }
+  ],
+  "execution": {
+    "this_round_github_source_readback": true,
+    "actual_python_tests": "NOT_RUN",
+    "actual_node_tests": "NOT_RUN",
+    "native_solver": "NOT_RUN",
+    "native_github_mutation": "NOT_RUN",
+    "actual_claim_cas": "NOT_RUN",
+    "independent_review": "NOT_RUN",
+    "one_real_source_repository_verified": true
+  },
+  "decisions": [
+    "DO_NOT_PROMOTE_TALLY_V418_MAIN_TO_V419_CONSUMER",
+    "REUSE_EXISTING_TALLY_HOST_CAS_REFERENCE_AS_FUTURE_VERSION_BOUND_SOURCE_CANDIDATE",
+    "DO_NOT_COPY_OR_REIMPLEMENT_SECOND_ADS_CONTROLLER",
+    "DO_NOT_RUN_LIVE_GITHUB_CLAIM_ON_UNQUALIFIED_PRODUCT",
+    "R30_THREE_P2_REMAIN_OPEN_EVIDENCE_GAPS",
+    "DO_NOT_REPEAT_R29_97_35_OR_CREATE_MODEL_ONLY_FOLLOWUP"
+  ],
+  "next_trigger": "Only after effective approved v4.19 Task/Project source and selected Host/producer authority exist, bind that revision and real Task Pack/accepted Claim/Host reservation/immutable GitHub readbacks; test the three specific R30 edges with one repair+verification round.",
+  "formal_ads_normative_confirmed_defects": {
+    "p0": 0,
+    "p1": 0,
+    "p2": 0
+  },
+  "r30_coverage_evidence_p2_remaining": 3,
+  "full_ads_atomic_denominator": null,
+  "source_model_semantic_equivalence": "NOT_PROVEN",
+  "real_v419_claim_cas": "NOT_PROVEN"
+}
