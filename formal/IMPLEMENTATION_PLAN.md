@@ -492,3 +492,12 @@ R27 修复后的 `execution_inventory.py` 虽已检查 TLC 返回身份和正常
 3. **§6-D 经验反馈**只根据独立发现的实际模型/规范缺陷与真实项目证据推进，不把 R29 的 10/10 pilot Property 转写成完整 ADS 规范义务覆盖率；全量原子规范分母仍 UNKNOWN，完整 Source↔SMT 语义等价仍 NOT_PROVEN。
 
 R29 是严格验证工具**基础闭环**，不是 §6-B 全规范语义结论或 §6-C 生产系统通过。ADS 正式规范暂无新 P0/P1/P2，实验 R27/R28 修复的 P2 已在 R29 集成闭环；不改候选 PR、无新增 FIR/Gate/Actions/Merge/Freeze/Release。
+
+
+## 46. #1366 R31 — R30 三项 P2 的真实跨仓消费者候选资格审查（2026-11-11）
+
+R30 已在 `1d44182ebf90a009d9a17addf18a6b7054a1ee04` 固化 3 个 **未关闭证据/覆盖 P2**（Claim Key/generation、实际 Task Pack write-set、Successor Start Record/Grant），不再重复独立审核或 R29 严格原生套件。遵照 §6-C 的真实消费者优先规则，本轮通过 GitHub **直接读取** `kaicreator-mm/tally` `main@e988321439f65b55936a691c02250b6d62a29409`，发现已有 T06d Host 单写入 `SQLite CAS` 控制器（`single-writer.mjs` Git blob `7df6426f…`）、原生 Claim Publisher（`f895b99f…`）、Host Preflight/Admission Source（`5b161ee6…`/`0b493e0c…`）、Native GitHub 读回（`39daecbc…`）与匹配测试源码。源码内确有物理 `mustBeAbsent` CAS 预留、`mustMatchRevision` 持久转移、失败保留 PENDING、GitHub POST 后精确读回的正反控制；**本轮未运行测试、未发布真实 GitHub Claim**，存在的 Node 测试仍用 Host/Octokit fake ports，不能把源码或测试定义冒充实际部署。
+
+**最关键准入区别**：Tally `.dev-standard/VERSION` blob `27c31b08…` 固定的是 **ADS 4.18.0 / revision `2c395c55569fe2edf3f4135f12d3d069e526d0b7`**；Tally Issue #125 OPEN，明确实际 Native Claim→Kernel Task 许可未完整证明。当前 Host 实现只支持 `__default__` Group 与 initial Generation 1；不存在新 v4.19 授权、真实并发 Task 写集提取、compatibility grants 或 post-terminal successor 资格。所以 `R30-P2-01=PARTIAL_SOURCE_REUSE_NO_V419_PROOF`，`P2-02/03=NOT_PROVEN`。**3 个 P2 均保持未关闭**，没有正式 ADS 新确证 P0/P1/P2。
+
+**本轮版本化实物**：`formal/v4.19/r31/R31_TALLY_REAL_CONSUMER_SOURCE_QUALIFICATION.json`（精确 Tally Git HEAD、源 blob、三个 P2 分项、合法版本边界）与 `R31_TALLY_REAL_CONSUMER_SOURCE_REVIEW.md`（Source-first 审查和复用决策）。选择**复用**既有 Tally/DH Host 来源作为未来有效 Task Pin 的消费者候选，不在 ADS 复制/建立第二个 Controller。待真实批准的 v4.19 Project/Task pin 与 selected Host/Producer 出现后，一次性核对 actual canonical Key / Task Pack write-set / admitted Claim / Host CAS / GitHub readback / terminal reconciliation；有真实反例才同一批修复并重验。现在不增加第三方版本权限、模型、Gate、GitHub Actions 或生产 Claim，R29 97/97 Python + 35/35 Native 继续仅属于固定历史被测 HEAD `151e218d...`。完整 ADS 原子义务分母 UNKNOWN，源↔SMT 全语义等价/真正 v4.19 Claim/CAS 仍 NOT_PROVEN。
