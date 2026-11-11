@@ -7,7 +7,8 @@
   "experiment": {
     "branch": "experiment/v4.19-formal-proof-r0",
     "pre_r34_head": "2728bfcba4c76412a0aca4b64df5236c8a2fa342",
-    "model_commit": "87093e7a46da6157f5da6cdb16a1e1d5d5cfc4ee"
+    "model_commit": "87093e7a46da6157f5da6cdb16a1e1d5d5cfc4ee",
+    "latest_evidence_head": "2a9d4444f10a86ce3b5447f9e16af4479478a872"
   },
   "authority": {
     "baseline_ads": {
@@ -186,5 +187,12 @@
     "new_claim_created": false,
     "gate_or_actions_added": false,
     "merge_freeze_release": false
+  },
+  "operational_correction": {
+    "issue": "The initial R34 model create_file omitted branch and briefly created commit 8df840931186ea2111532ff650e2974f40168a45 on main.",
+    "revert_commit": "165fd8c8af77d5ebc893b070de8adc5b3d7d725e",
+    "main_pre_write_head": "326aaf5b0188b53cb0ed5c38752a9e299e3f9efd",
+    "main_after_revert_head": "165fd8c8af77d5ebc893b070de8adc5b3d7d725e",
+    "compare_result": "GitHub compare reports zero changed files between pre-write and post-revert main; no force-push; R34 artifact exists only on experiment/v4.19-formal-proof-r0."
   }
 }
