@@ -1,0 +1,195 @@
+{
+  "schema": "ads/formal-r29-exact-checkout-integration/v1",
+  "kind": "R29_EXACT_CHECKOUT_INTEGRATION",
+  "issue": 1366,
+  "date_utc": "2026-11-11",
+  "subject": {
+    "model_head": "151e218d638a184a74a59df2cf0ede0f388dea42",
+    "model_tree": "0dc2fdcfff9a5199f99230608089bb136f849063",
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "candidate": {
+      "pr": 1365,
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "status": "OPEN_NOT_MERGED_NOT_FROZEN",
+      "readback": "PR #1365 state re-verified via GitHub API immediately before execution: OPEN at dac263fa4c0ab155406d2f2117459b34322cc988 (branch proposal/v4.19-integrated-source-preview-r0)"
+    },
+    "note": "R29 one-pass integration+repair closure of the merged R27+R28 runner repairs at the current experiment tip (which includes the R29 admission-seam regressions from d2c5117). All phases executed fresh from real dual Exact-SHA Git worktrees; no historical receipt reused."
+  },
+  "environment": {
+    "qualifying_platform": "WSL2 Ubuntu 26.04 (linux-x86_64), same host and pinned toolchain as the R25/R27/R28 integration receipts (R25-verified Linux/x64 native environment reused)",
+    "python": "3.14.4",
+    "java": "openjdk 21.0.13.0.3 (AVAILABLE_UNPINNED)",
+    "git": "WSL git 2.53.0; worktrees created from the workspace bare mirror via git worktree add --detach"
+  },
+  "execution_anchors": {
+    "model_worktree": {
+      "path": "/home/cc/ads-i1366-r29-tip",
+      "head": "151e218d638a184a74a59df2cf0ede0f388dea42",
+      "tree": "0dc2fdcfff9a5199f99230608089bb136f849063",
+      "created_from": "bare mirror worktree add --detach, WSL git 2.53.0",
+      "tracked_files_modified_during_run": 0
+    },
+    "candidate_source_worktree": {
+      "path": "/home/cc/ads-i1366-r29-source",
+      "head": "dac263fa4c0ab155406d2f2117459b34322cc988",
+      "tree": "def156ce156c7301c30cf7df1f4bf956b7817c5f",
+      "tracked_files_modified_during_run": 0
+    },
+    "runner_blobs_at_tip": {
+      "suite/execution_inventory.py": "6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90 (R28-repaired helper; expected==actual in model_input_alignment)",
+      "suite/expanded.py": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e (expected==actual)",
+      "suite/run.py": "8a7dd3656e34ab42c7265fec94efa21016a1058a"
+    }
+  },
+  "python_tests": {
+    "command": "python3 -m unittest discover -s tests -v (cwd: tip worktree formal/; ADS_FORMAL_Z3/ADS_FORMAL_CVC5/ADS_FORMAL_TLC_JAR pinned; ADS_FORMAL_CANDIDATE_CHECKOUT bound to the exact candidate worktree)",
+    "static_methods_collected": 97,
+    "executed": 97,
+    "failed": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "unittest_summary": "Ran 97 tests in 3.406s / OK",
+    "status": "PASS_ZERO_SKIP_ZERO_FAIL",
+    "includes": "15 R27 regressions + 4 R28 success-status regressions + R29 admission-seam regressions (foreign TLC model_id + both TLC success-status swaps at the real main_v1 entry), all imported from the real Git checkout",
+    "log": "formal/v4.19/r29/R29_PYTHON_TESTS_LOG.txt",
+    "log_sha256": "fb10784934e31b8f2d2ee78dbd81c35243bac0c36341cc0a69752130f3c4cfbc",
+    "closes": "R29 当前性门槛: 新增入口测试实际运行 = NOT_RUN (在真实双 Exact-SHA checkout 中补齐)"
+  },
+  "strict_native_suite": {
+    "command": "python3 suite/run.py --suite v4.19/r10/suite.json --z3 <pinned> --cvc5 <pinned> --java java --tlc-jar <pinned jar> --model-head 151e218d638a184a74a59df2cf0ede0f388dea42 --source-checkout /home/cc/ads-i1366-r29-source --strict-source --out <receipt> (cwd: tip worktree formal/)",
+    "verdict": "MODEL_AND_SOURCE_PASS",
+    "exit_code": 0,
+    "cases_selected": "35/35 all declared (21 proof PASS_MODEL + 14 mutation COUNTEREXAMPLE)",
+    "execution_inventory_audit": {
+      "status": "PASS",
+      "expected_count": 35,
+      "observed_count": 35,
+      "problems": 0
+    },
+    "solver_differential": {
+      "pairs": 16,
+      "status": "PASS",
+      "require_solver_pairs": true
+    },
+    "tlc": [
+      {"id": "ADS419-R2-LIFECYCLE-TLC", "status": "PASS_MODEL", "distinct_states": 27},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-WRITER", "status": "COUNTEREXAMPLE", "distinct_states": 7},
+      {"id": "ADS419-R2-LIFECYCLE-MUTANT-RELEASE", "status": "COUNTEREXAMPLE", "distinct_states": 3}
+    ],
+    "source_alignment": {
+      "status": "PASS",
+      "checks": 7,
+      "candidate_head": "dac263fa4c0ab155406d2f2117459b34322cc988"
+    },
+    "traceability_audit": {
+      "status": "PASS",
+      "property_count": 10,
+      "case_count": 35,
+      "source_count": 7
+    },
+    "model_input_alignment_before_after": {
+      "before": "PASS @ 151e218d (31 inputs checked)",
+      "after": "PASS",
+      "bound_blobs": {
+        "suite/execution_inventory.py": "6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90 (expected==actual)",
+        "suite/expanded.py": "0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e (expected==actual)"
+      }
+    },
+    "toolchain_alignment_before_after": "PASS (3/3 z3/cvc5/tlc) / PASS (3/3)",
+    "tool_identity": {
+      "z3_sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "cvc5_sha256": "6aecddf466552b83bb5883756c7955e0c9d5ddcc6d7f45b48c2f6e06a741b102",
+      "tlc_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+      "before_after": "byte-identical before and after the run (pre-run explicit sha256sum, runner preflight/postflight PASS, post-run sha256sum re-read; equal to tools/inventory.json pinned values)"
+    },
+    "receipt": "formal/v4.19/r29/R29_STRICT_RUN.json",
+    "receipt_sha256": "7631214e65ffa4237723d91066045dcd299bdd89714b451bd64c18a4a14e9dd0",
+    "log": "formal/v4.19/r29/R29_STRICT_RUN_LOG.txt",
+    "log_sha256": "f0a45633f35e95e6f760d75440afc46cd86869a50a10312ac2e6149fec14bc77",
+    "suite_sha256": "7462f1e492b2381574f0779e669e7e4292c582d837690c490d81c9970c5433a3"
+  },
+  "negative_probe_real_runner": {
+    "purpose": "Demonstrate at the actual runner main_v1 level that (a) a forged TLC model identity and (b) both TLC success-status swaps (legal proof returning COUNTEREXAMPLE; legal mutation returning PASS_MODEL) are BLOCKED without producing any false source-bound proof, while identical correct results keep full PASS.",
+    "setup": "Scratch dir /home/cc/ads-i1366-r29-negprobe; real r10 suite (35 cases, require_solver_pairs=true) loaded from the exact tip worktree; ONLY the native result seam (run_case) and the three binding aligners are patched; runner code itself unmodified, loaded from exact Git worktree bytes (probe scripts sha256-identical to the committed evidence copies).",
+    "probe_runner_sha256": "9faf6f848a3df17ede2d63bb166e4d4e96515e246096f46ad4c5391deda08354",
+    "probe_driver_sha256": "7a4d0a56042267f0dff6a590643991d288750453eac667ded497c746b849c561",
+    "scenarios": {
+      "P1_tlc_model_id": {
+        "forge": "all TLC results carry model_id=FORGED-TLC-MODEL (R27 counterexample), ids otherwise legal",
+        "verdict": "BLOCKED",
+        "exit_code": 2,
+        "execution_inventory_audit": "FAIL, problem field=model_id (RESULT_IDENTITY_MISMATCH)",
+        "solver_differential": "INCONCLUSIVE (EXECUTION_RESULT_IDENTITY_MISMATCH), SMT pairing not consumed as proof",
+        "source_bound_verified_obligations": 0
+      },
+      "P2_tlc_proof_swap": {
+        "forge": "legal TLC proof ADS419-R2-LIFECYCLE-TLC returns COUNTEREXAMPLE",
+        "verdict": "BLOCKED",
+        "exit_code": 2,
+        "execution_inventory_audit": "FAIL, reason=SUCCESS_STATUS_PURPOSE_MISMATCH, no model_id problem (identity stays legal)",
+        "solver_differential": "INCONCLUSIVE",
+        "source_bound_verified_obligations": 0
+      },
+      "P3_mutation_swap": {
+        "forge": "legal TLC mutation ADS419-R2-LIFECYCLE-MUTANT-WRITER returns PASS_MODEL",
+        "verdict": "BLOCKED",
+        "exit_code": 2,
+        "execution_inventory_audit": "FAIL, reason=SUCCESS_STATUS_PURPOSE_MISMATCH, no model_id problem",
+        "solver_differential": "INCONCLUSIVE",
+        "source_bound_verified_obligations": 0
+      },
+      "P4_green_control": {
+        "forge": "none (correct results through the same seam)",
+        "verdict": "MODEL_AND_SOURCE_PASS",
+        "exit_code": 0,
+        "execution_inventory_audit": "PASS 35/35, no problems",
+        "solver_differential": "16/16 PASS",
+        "source_bound_verified_obligations": 10
+      }
+    },
+    "assertions": "29/29 PASS (verdicts, audit fields, coverage zeroing, differential degradation, identity legality, exit codes 2/2/2/0 x reruns, byte-identical determinism reruns)",
+    "determinism": "All four scenario receipts reproduced byte-identical on rerun (sha256 match).",
+    "log": "formal/v4.19/r29/R29_NEGATIVE_PROBE_LOG.txt",
+    "log_sha256": "14041cab4b72b0db904ae8b257e151c44772bf3992f203a5d357eddc18252277",
+    "scenario_receipts": [
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID_RERUN.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP_RERUN.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P3_MUTATION_SWAP.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P3_MUTATION_SWAP_RERUN.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P4_GREEN_CONTROL.json",
+      "formal/v4.19/r29/R29_NEGPROBE_OUT_P4_GREEN_CONTROL_RERUN.json"
+    ],
+    "interpretation": "No forged TLC identity or success-status swap can produce a source-bound proof receipt at the real main_v1 entry; no false source proof is possible through these seams."
+  },
+  "post_execution_identity": {
+    "dirty_tracked_files_model_worktree": 0,
+    "dirty_tracked_files_candidate_worktree": 0,
+    "heads_readback_unchanged": true,
+    "tip_readback": "151e218d638a184a74a59df2cf0ede0f388dea42 tree 0dc2fdcfff9a5199f99230608089bb136f849063",
+    "candidate_readback": "dac263fa4c0ab155406d2f2117459b34322cc988 tree def156ce156c7301c30cf7df1f4bf956b7817c5f"
+  },
+  "attribution": "Executed by the local workspace session continuing the Delivery-First same-writer repair+retest+solidify rule; no code repair was required this round (R27+R28 fixes already at tip): all phases passed on first execution from the real checkout.",
+  "findings_summary": {
+    "ads_normative_P0_P1_P2": "0/0/0",
+    "experiment_open_P0_P1_P2": "0/0/0"
+  },
+  "qualification": "R29_EXACT_CHECKOUT_INTEGRATION_CLOSED / PYTHON_97_OF_97_ZERO_SKIP_ZERO_FAIL / NATIVE_STRICT_35_OF_35_MODEL_AND_SOURCE_PASS / DIFFERENTIAL_16_OF_16 / TLC_3_OF_3 / EXECUTION_INVENTORY_AUDIT_PASS_35_35 / R29_NEGATIVE_PROBE_3_FORGED_SCENARIOS_BLOCKED_GREEN_CONTROL_PASS_29_OF_29_ASSERTIONS / SOURCE_MODEL_TOOL_BINDING_PASS / TOOL_BEFORE_AFTER_BYTE_IDENTICAL",
+  "limitations": [
+    "Bounded pilot: 10 declared properties / 35 cases / 7 exact sources; entire ADS normative obligation denominator remains UNKNOWN",
+    "Source<->SMT/TLC semantic equivalence, real GitHub production Claim/CAS/Release, liveness/fairness remain NOT_PROVEN",
+    "Negative probe patches only the run_case seam and the three aligners in-process; it does not modify runner code bytes, which are loaded and verified from the exact Git worktree"
+  ],
+  "no_unauthorized_actions": {
+    "normative_changes": false,
+    "candidate_pr_mutation": false,
+    "github_actions": false,
+    "claim": false,
+    "release": false,
+    "freeze": false,
+    "merge": false,
+    "historical_receipt_modification": false
+  }
+}

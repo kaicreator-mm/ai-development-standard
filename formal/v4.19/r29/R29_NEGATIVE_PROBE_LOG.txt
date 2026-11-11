@@ -1,0 +1,90 @@
+=== runner identity (exact Git worktree tip) ===
+151e218d638a184a74a59df2cf0ede0f388dea42 0dc2fdcfff9a5199f99230608089bb136f849063
+100644 blob 6a26878c5cf9049e92f7dbef04a8fc1b9fc64b90	formal/suite/execution_inventory.py
+100644 blob 0e004cd0f1ea7a8dbb115e9bc894ad3cf32a422e	formal/suite/expanded.py
+candidate source worktree:
+dac263fa4c0ab155406d2f2117459b34322cc988 def156ce156c7301c30cf7df1f4bf956b7817c5f
+probe runner sha256 (repo vs executed copy):
+9faf6f848a3df17ede2d63bb166e4d4e96515e246096f46ad4c5391deda08354  /mnt/c/xDev/kAiCreator/ai-development-standard/ads-i1366-r20-zcode/formal/v4.19/r29/R29_NEGPROBE_runner.py
+9faf6f848a3df17ede2d63bb166e4d4e96515e246096f46ad4c5391deda08354  /home/cc/ads-i1366-r29-negprobe/r29_negprobe_runner.py
+=== scenario P1_tlc_model_id forge=tlc_model_id ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "tlc_model_id", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["RESULT_IDENTITY_MISMATCH"], "model_id_problem": true, "status_mismatch_problem": false, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P2_tlc_proof_swap forge=tlc_proof_swap ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "tlc_proof_swap", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["SUCCESS_STATUS_PURPOSE_MISMATCH"], "model_id_problem": false, "status_mismatch_problem": true, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P3_mutation_swap forge=mutation_status_swap ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P3_MUTATION_SWAP.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "mutation_status_swap", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["SUCCESS_STATUS_PURPOSE_MISMATCH"], "model_id_problem": false, "status_mismatch_problem": true, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P4_green_control forge=none ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P4_GREEN_CONTROL.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "none", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": "PASS", "audit_expected": 35, "audit_observed": 35, "audit_reasons": [], "model_id_problem": false, "status_mismatch_problem": false, "differential_statuses": ["PASS"], "differential_pairs": 16, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== scenario P1_tlc_model_id_rerun forge=tlc_model_id ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "tlc_model_id", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["RESULT_IDENTITY_MISMATCH"], "model_id_problem": true, "status_mismatch_problem": false, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P2_tlc_proof_swap_rerun forge=tlc_proof_swap ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "tlc_proof_swap", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["SUCCESS_STATUS_PURPOSE_MISMATCH"], "model_id_problem": false, "status_mismatch_problem": true, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P3_mutation_swap_rerun forge=mutation_status_swap ===
+{"verdict": "BLOCKED", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P3_MUTATION_SWAP_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "mutation_status_swap", "verdict": "BLOCKED", "audit_status": "FAIL", "audit_expected": 35, "audit_observed": 35, "audit_reasons": ["SUCCESS_STATUS_PURPOSE_MISMATCH"], "model_id_problem": false, "status_mismatch_problem": true, "differential_statuses": ["INCONCLUSIVE"], "differential_pairs": 1, "source_bound_verified": 0, "exit_code": 2}
+scenario_exit=2
+=== scenario P4_green_control_rerun forge=none ===
+{"verdict": "MODEL_AND_SOURCE_PASS", "cases": 35, "source": "PASS", "receipt": "/home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P4_GREEN_CONTROL_RERUN.json"}
+{"formal_root": "/home/cc/ads-i1366-r29-tip/formal", "forge": "none", "verdict": "MODEL_AND_SOURCE_PASS", "audit_status": "PASS", "audit_expected": 35, "audit_observed": 35, "audit_reasons": [], "model_id_problem": false, "status_mismatch_problem": false, "differential_statuses": ["PASS"], "differential_pairs": 16, "source_bound_verified": 10, "exit_code": 0}
+scenario_exit=0
+=== receipt sha256 (determinism) ===
+31327aecae89e38c9b47eda471feec315ce45e17c665126a8b01a506c3db06ad  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID.json
+31327aecae89e38c9b47eda471feec315ce45e17c665126a8b01a506c3db06ad  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P1_TLC_MODEL_ID_RERUN.json
+1e0a7a2927261e7ac9756a19a59f2acd50d22a884d81b448e3e519243226a6ac  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP.json
+1e0a7a2927261e7ac9756a19a59f2acd50d22a884d81b448e3e519243226a6ac  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P2_TLC_PROOF_SWAP_RERUN.json
+fb5d4eb5c52806aadcc899cbf9ae8d090463beafb4eb0b4a4a55e2277522763a  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P3_MUTATION_SWAP.json
+fb5d4eb5c52806aadcc899cbf9ae8d090463beafb4eb0b4a4a55e2277522763a  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P3_MUTATION_SWAP_RERUN.json
+c276fa0c5fec72e6ce0f797d5889c0d94907b51b596da85f7ec1c384fe519c8f  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P4_GREEN_CONTROL.json
+c276fa0c5fec72e6ce0f797d5889c0d94907b51b596da85f7ec1c384fe519c8f  /home/cc/ads-i1366-r29-negprobe/R29_NEGPROBE_OUT_P4_GREEN_CONTROL_RERUN.json
+=== scenario exit codes ===
+R29_NEGPROBE_EXIT_P1=2
+R29_NEGPROBE_EXIT_P1_RERUN=2
+R29_NEGPROBE_EXIT_P2=2
+R29_NEGPROBE_EXIT_P2_RERUN=2
+R29_NEGPROBE_EXIT_P3=2
+R29_NEGPROBE_EXIT_P3_RERUN=2
+R29_NEGPROBE_EXIT_P4=0
+R29_NEGPROBE_EXIT_P4_RERUN=0
+ASSERT[P1_verdict_blocked]: OK
+ASSERT[P1_audit_fail]: OK
+ASSERT[P1_model_id_problem]: OK
+ASSERT[P1_source_bound_zero]: OK
+ASSERT[P1_differential_inconclusive]: OK
+ASSERT[P2_verdict_blocked]: OK
+ASSERT[P2_audit_fail]: OK
+ASSERT[P2_status_mismatch_problem]: OK
+ASSERT[P2_identity_legal]: OK
+ASSERT[P2_source_bound_zero]: OK
+ASSERT[P2_differential_inconclusive]: OK
+ASSERT[P3_verdict_blocked]: OK
+ASSERT[P3_audit_fail]: OK
+ASSERT[P3_status_mismatch_problem]: OK
+ASSERT[P3_identity_legal]: OK
+ASSERT[P3_source_bound_zero]: OK
+ASSERT[P3_differential_inconclusive]: OK
+ASSERT[P4_verdict_pass]: OK
+ASSERT[P4_audit_pass_35]: OK
+ASSERT[P4_differential_pass]: OK
+ASSERT[P4_source_bound_10]: OK
+ASSERT[P1_exit_2]: OK
+ASSERT[P2_exit_2]: OK
+ASSERT[P3_exit_2]: OK
+ASSERT[P4_exit_0]: OK
+ASSERT[DETERMINISM[P1]]: OK
+ASSERT[DETERMINISM[P2]]: OK
+ASSERT[DETERMINISM[P3]]: OK
+ASSERT[DETERMINISM[P4]]: OK
+PROBE_RESULT: ALL_ASSERTIONS_PASS
+DRIVER_FINAL: PASS
