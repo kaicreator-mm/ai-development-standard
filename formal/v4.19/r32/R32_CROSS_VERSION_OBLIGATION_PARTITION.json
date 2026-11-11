@@ -134,18 +134,18 @@
   "r30_outstanding": [
     {
       "id": "R30-P2-01",
-      "status": "PARTIAL_SOURCE_REUSE_NO_REAL_CAS_ACCEPTED",
-      "next": "Original v4.18 Host actor may supply trusted current Claim Key/generation and physical CAS evidence for unchanged core; do not require v4.19 just to inspect v4.18 baseline"
+      "status": "PARTIAL_NATIVE_GITHUB_CLAIM_OBSERVED_HOST_CAS_REPORTED_NO_INDEPENDENT_DB_READ",
+      "next": "Evidence now includes authentic unedited v4.18 #166/#169 GitHub native Claim publications, key/gen/source SHA. Need independent Host CAS reservation/revision and currentness, not only self-reported PUBLISHED_VERIFIED"
     },
     {
       "id": "R30-P2-02",
-      "status": "NOT_PROVEN",
-      "next": "Need actual task-pack write-set and concurrent mutation trace under correctly pinned baseline"
+      "status": "PARTIAL_FROZEN_TASK_TO_PR_DIFF_7_OF_7_NO_PARALLEL_WRITER_PROOF",
+      "next": "Issue #169 declared frozen seven files and merged PR #170 changed exactly those seven. Need accepted concurrent competing writer attempt/overlap invariant to close writer P2"
     },
     {
       "id": "R30-P2-03",
-      "status": "NOT_PROVEN",
-      "next": "Need accepted durable Claim/Start Record, terminal/release/grant and Host+GitHub readback; prospective nondefault groups need effective source"
+      "status": "PARTIAL_UNEDITED_START_RECORD_PUBLICATION_NO_SUCCESSOR_GRANT",
+      "next": "Two unedited DISPATCH_CLAIMED records directly observed at separate default-group tasks. Need verified serial successor, non-default grant/scope, terminal and resource reconciliations"
     }
   ],
   "decisions": [
@@ -154,7 +154,9 @@
     "DO_NOT_REPEATEDLY_RUN_R29_NATIVE_OR_REVIEW_R30",
     "DO_NOT_INFER_TRUE_RUNTIME_PREMISES_FROM_EQUAL_GIT_BLOBS",
     "WAIT_FOR_LAWFUL_CURRENT_TASK_HOST_FACTS_BEFORE_REAL_CAS_NEGATIVE_INJECTION",
-    "NO_ADS_NORMATIVE_OR_CANDIDATE_PR_MUTATION"
+    "NO_ADS_NORMATIVE_OR_CANDIDATE_PR_MUTATION",
+    "BASELINE_V418_CLAIM_PUBLICATION_AND_TASK_TO_PR_SCOPE_PROVENANCE_NOW_OBSERVED",
+    "P2_REMAIN_OPEN_NO_PHYSICAL_CAS_OR_PARALLELISM_OR_SUCCESSOR_PROMOTION"
   ],
   "qualifications": {
     "r29_python_97_native_35": "HISTORICAL_AT_R29_MODEL_EXACT_SUBJECT_NOT_REEXECUTED",
@@ -162,7 +164,7 @@
     "independent_semantic_review_this_round": "NOT_RUN",
     "native_solver_this_round": "NOT_RUN",
     "python_this_round": "NOT_RUN",
-    "real_tally_host_and_github_cas": "NOT_RUN",
+    "real_tally_host_and_github_cas": "GITHUB_NATIVE_CLAIM_COMMENT_UNEDITED_OBSERVED_FOR_166_AND_169; HOST_CAS_PUBLISHED_VERIFIED_REPORTED_NOT_INDEPENDENTLY_DB_READ",
     "r30_three_p2_closed": 0,
     "full_ads_atomic_denominator": null,
     "full_source_model_semantic_equivalence": "NOT_PROVEN",
@@ -171,5 +173,107 @@
       "p1": 0,
       "p2": 0
     }
+  },
+  "observed_historical_v418_git_events": {
+    "source": "LIVE_GITHUB_READBACK_IN_CURRENT_R32_OF_HISTORICAL_AUTHENTIC_ISSUES_AND_COMMENTS",
+    "consumer_repo": "kaicreator-mm/tally",
+    "claim_events": [
+      {
+        "issue": 166,
+        "comment_id": 6507893767,
+        "url": "https://github.com/kaicreator-mm/tally/issues/166#issuecomment-6507893767",
+        "created_at": "2026-10-29T20:44:11Z",
+        "updated_at": "2026-10-29T20:44:11Z",
+        "event": "DISPATCH_CLAIMED",
+        "task": "#166",
+        "operator_id": "zcode:t166:bootstrap:1",
+        "protected_claim_key": "kaicreator-mm/tally#166:builder:__default__",
+        "admission_generation": 1,
+        "source_sha": "7823e18e4b9f4d4df9a2c9065de1b1fed6421264",
+        "scope": "OBSERVED_NATIVE_UNEDITED_GITHUB_COMMENT_NOT_INDEPENDENT_HOST_DB_CAS_PROOF"
+      },
+      {
+        "issue": 169,
+        "comment_id": 6511046226,
+        "url": "https://github.com/kaicreator-mm/tally/issues/169#issuecomment-6511046226",
+        "created_at": "2026-10-29T23:35:02Z",
+        "updated_at": "2026-10-29T23:35:02Z",
+        "event": "DISPATCH_CLAIMED",
+        "task": "#169",
+        "operator_id": "zcode:t125:kernel:1",
+        "protected_claim_key": "kaicreator-mm/tally#169:builder:__default__",
+        "admission_generation": 1,
+        "source_sha": "3293aace8a07c2a4f79a75c6539245980f77e2b4",
+        "scope": "OBSERVED_NATIVE_UNEDITED_GITHUB_COMMENT_NOT_INDEPENDENT_HOST_DB_CAS_PROOF"
+      }
+    ],
+    "checked_baseline_version": {
+      "at_claim_sha": "3293aace8a07c2a4f79a75c6539245980f77e2b4",
+      "path": ".dev-standard/VERSION",
+      "blob": "27c31b0835075af6c66cc42ea868f1d12dcfd225",
+      "ads_version": "4.18.0",
+      "ads_revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7"
+    },
+    "task_to_code_write_scope": {
+      "task_issue": 169,
+      "task_state_at_current_readback": "closed",
+      "task_labels_at_readback": [
+        "type:task",
+        "state:ready"
+      ],
+      "task_labels_limitation": "state:ready is a current derived label despite closed Issue; do not claim original live state or terminal semantics from current labels",
+      "frozen_list_source": "https://github.com/kaicreator-mm/tally/issues/169",
+      "source_paths": [
+        "experiments/v2/selected-business-build/bundle-claim-reader.mjs",
+        "experiments/v2/selected-business-build/claim-admission-shim.mjs",
+        "experiments/v2/selected-business-build/consumer-claim-admission.mjs",
+        "experiments/v2/selected-business-build/producer.mjs",
+        "experiments/v2/selected-business-build/run-clean.sh",
+        "packages/tally-engineering-business/src/index.mjs",
+        "packages/tally-engineering-business/test/business-policy.test.mjs"
+      ],
+      "actual_pr": 170,
+      "actual_pr_url": "https://github.com/kaicreator-mm/tally/pull/170",
+      "pr_state": "MERGED",
+      "pr_exact_head": "16046d3446c769f9a1010812f11af8239b86a2d6",
+      "merge_commit_sha": "2c9a9b42426c1af9aae823c98d79eb570a0b4594",
+      "merged_at": "2026-10-30T06:45:40Z",
+      "observed_changed_paths": 7,
+      "declared_task_paths": 7,
+      "matched": 7,
+      "outside_task_paths": 0,
+      "status": "EXACT_SOURCE_TASK_TO_PR_PATH_MATCH_7_OF_7_NO_CONCURRENT_WRITE_PROOF"
+    },
+    "readback_checks": {
+      "native_claim_comment_and_identity": {
+        "passed": 16,
+        "total": 16,
+        "method": "in-session scoped event-field parsing and direct GitHub unedited comment, pin, source SHA and Task path checks; NOT full event-schema AJV validation"
+      },
+      "task_pr_scope": {
+        "passed": true,
+        "scope_path_count": 7,
+        "changed_path_count": 7,
+        "matched_path_count": 7,
+        "extra_path_count": 0,
+        "method": "GitHub Issue #169 exact frozen list vs REST PR #170 files"
+      }
+    },
+    "historic_host_execution_reports": [
+      {
+        "report_issue": 169,
+        "comment_id": 6517259345,
+        "assertion": "Source implementation accepted Claim followed by DomainHarness K ADMITTED_PENDING_AGENT_EFFECT; live registry/readback and Woodpecker #98 reported PASS",
+        "evidence_class": "SELF_REPORTED_TEST_OUTCOME_UNLESS_SEPARATE_NATIVE_HOST_DB_LOG_READ",
+        "meaning": "Does not establish independent DB CAS proof or Agent/Task/Release PASS"
+      },
+      {
+        "report_issue": 125,
+        "comment_id": 6517259345,
+        "assertion": "K outcome claim reported at #169; original #125 remains OPEN for additional work",
+        "evidence_class": "PRIOR_OWNER_REPORT_NOT_NEW_EXECUTION"
+      }
+    ],
+    "integrity_boundary": "Native GitHub comment existence, no-edit, exact public identity and declared Task→PR file scope are OBSERVED. Actual Host SQLite CAS atomicity and K live PASS are currently REPORTS, not independently reread from the Host DB or Woodpecker in R32. Schema-valid event body and true authority need original canonical validator/Host evidence; do not infer from a comment shape alone."
   }
 }
