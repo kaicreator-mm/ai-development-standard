@@ -510,3 +510,11 @@ R31 已按 `tally/main@e9883214...` 精确代码找到 Host 单写入 SQLite CAS
 本轮 Web JS 对**实际 Git Blob、Source Text、JSON Schema Predicate** 做了 **14/14 静态结构检查 PASS**（不是完整 JSON Schema Validator、新 Python Tests 或原生 SMT，不声明语义等价）。新增 `formal/v4.19/r32/R32_CROSS_VERSION_OBLIGATION_PARTITION.json`（完整版本/Blob/各项断言/分轨限制）与 `R32_CROSS_VERSION_PROOF_SCOPE_REVIEW.md`。**改进执行关键路径**：将 R30 三个 P2 分为 (A) 在**已生效的真实 v4.18 Task/Host** 中可独立取得的未改变 Claim Key/CAS/Start Record 基线证据与 (B) 仍需 Product #1347/PR #1365 合法生效的 v4.19 新 Profile、Task/并发可行性义务。A 在正确 v4.18 Task 权限下**不必等待 v4.19 合并**，也不得把旧版本的实际结果升格成新版本真实授权；B 不能擅自用旧版 Schema 生成 `WEB_BUILDER` 等新值。
 
 **实际门槛未虚构**：Tally Issue #125 仍 OPEN，Native Claim/K Effect 尚未完整确认；当前 R31 只读取到源码与测试，没有一条可归属、可持久读回的完整 accepted Claim/Host CAS。R30 三个证据 P2 **0 项关闭**；R29 **97/97 Python、35/35 Native** 仍仅绑定历史模型被测 `151e218d...`。不需要机械重复 R29 35 Native、R30 独立审查，且不要再建 ADS 控制器或对 Tally 人为改 pin。下一次仅在合法既有真实任务/Host 证据出现后执行具体 v4.18 基线验证；新 v4.19 同样等待合法 Project/Task pin。发现真正缺陷才按 Delivery-First 合并 Repair+受影响测试，不派 VALIDATION_ONLY。不修改正式规范、候选 PR/生产 Issue，不建 Gate/Actions/Merge/Freeze/Release。
+
+### R32 追加实证：Tally v4.18 原始 Claim 及 Task 写集→PR 实际差分
+
+原先仅从 R31 Tally 源码和测试定义推断后续需真实生产 Claim，但本轮直接发现两个**已存在的 v4.18 历史原生 GitHub DISPATCH_CLAIMED 评论**：#166 评论 `6507893767` 与 #169 评论 `6511046226`，GitHub API 直接回读 created_at==updated_at、Task/Role/Dispatch、Protected Key、Generation=1、Source SHA。#169 Source SHA `3293aace8a07c2a4f79a75c6539245980f77e2b4` 的 `.dev-standard/VERSION` 精确固定 ADS **4.18.0** @ `2c395c55569fe2edf3f4135f12d3d069e526d0b7`。这不是合成收据、不是 v4.19 消费者，亦不能凭事件自证 CAS 接受。
+
+**实跑 GitHub readback**：16/16 来源/身份静态断言通过，且 #169 Issue 冻结七条写路径与合并的 Tally PR #170 实际文件清单完全相等：**7/7，0 越界**（PR source `16046d3446c769f9a1010812f11af823b86a2d6`，merge `2c9a9b42426c1af9aae823c98d79eb570a0b4594`）。历史 #169/#125 Owner 报告存在 public DH SQLite CAS `PUBLISHED_VERIFIED`、K `ADMITTED_PENDING_AGENT_EFFECT` 和 Woodpecker #98，但本轮未直读 Host SQLite 数据库或 K 原始执行日志，结果仍按 **self-reported host execution** 而不是本轮独立 DB 证实。
+
+**因此**：R30 P2-01 有原生未编辑 Key/Gen1/Claim Publication 的观察，P2-02 有真实 Task 写集到 merged PR 的七路径来源映射，P2-03 有两个原生已发布 Start Record 候选；**三个 P2 均没有达到完整关闭**（分别还缺物理 CAS 独立核验、实际并发写排斥、后继/Grant/资源读回）。保留历史 R29 97/97+35/35 与本轮 14/14+16/16+7/7 的证据资格边界，不重复重跑。机器证据和归责已追加到 `formal/v4.19/r32/R32_CROSS_VERSION_OBLIGATION_PARTITION.json` 及同轮 Markdown 审核，下一步不应再报告“完全没有真实 Claim 事件”，也不能报告“v4.19 实生产 Claim 已证明”。
