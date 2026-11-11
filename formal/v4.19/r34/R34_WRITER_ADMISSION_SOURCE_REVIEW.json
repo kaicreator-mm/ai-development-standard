@@ -8,7 +8,7 @@
     "branch": "experiment/v4.19-formal-proof-r0",
     "pre_r34_head": "2728bfcba4c76412a0aca4b64df5236c8a2fa342",
     "model_commit": "87093e7a46da6157f5da6cdb16a1e1d5d5cfc4ee",
-    "latest_evidence_head": "2a9d4444f10a86ce3b5447f9e16af4479478a872"
+    "documentation_head_before_receipt_metadata_update": "2a9d4444f10a86ce3b5447f9e16af4479478a872"
   },
   "authority": {
     "baseline_ads": {
