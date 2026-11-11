@@ -1,0 +1,222 @@
+{
+  "schema": "ads/r33-host-cas-source-readback/v1",
+  "round": "R33",
+  "outputLabel": "ADS_1366_R33_V418_HOST_CAS_SOURCE_REVIEW_REPAIR",
+  "executedAt": "2026-11-11",
+  "experiment": {
+    "repo": "kaicreator-mm/ai-development-standard",
+    "branch": "experiment/v4.19-formal-proof-r0",
+    "headBeforeExecution_declared": "7b12455d5eb67ec806f467b405cf153da35e5658",
+    "headReconfirmed_executionBase": "7b12455d5eb67ec806f467b405cf153da35e5658",
+    "note": "Mirror re-fetched before execution; branch tip equals the declared HEAD; R33 worktree fast-forwarded 963d3ff -> 7b12455 before any evidence write."
+  },
+  "subject": {
+    "version": "ADS v4.18.0",
+    "revisionPin": "2c395c55569fe2edf3f4135f12d3d069e526d0b7",
+    "sourceShas": {
+      "claim166": {
+        "sha": "7823e18e4b9f4d4df9a2c9065de1b1fed6421264",
+        "commitSubject": "test(v2): integrate reviewed DomainHarness v0.10.3 tagged SDK qualification (#135)",
+        "devStandardVersion": {
+          "repository": "kaicreator-mm/ai-development-standard",
+          "version": "4.18.0",
+          "revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7"
+        }
+      },
+      "claim169": {
+        "sha": "3293aace8a07c2a4f79a75c6539245980f77e2b4",
+        "commitSubject": "feat(v2 T06c): existing Engineering B Task status projection, no new module or CI writes (#165)",
+        "devStandardVersion": {
+          "repository": "kaicreator-mm/ai-development-standard",
+          "version": "4.18.0",
+          "revision": "2c395c55569fe2edf3f4135f12d3d069e526d0b7"
+        }
+      }
+    }
+  },
+  "originalArtifacts": [
+    {
+      "role": "claim reservation registry (Tally #166)",
+      "originalPath": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_OWNER_AUTHORIZED_BOOTSTRAP_IMPLEMENT_AND_COMPLETE\\claim-registry.sqlite",
+      "sizeBytes": 12288,
+      "sha256": "abbccd93dcc18532ef2be9f6046b2462dcf7ba9459216697fd28f9d2b0eab018",
+      "mtimeLocal": "2026-10-30 04:44 +0800",
+      "mtimeUtc": "2026-10-29T20:44:11Z",
+      "snapshot": "formal/v4.19/r33/snapshots/claim-registry-166.sqlite"
+    },
+    {
+      "role": "claim reservation registry (Tally #169)",
+      "originalPath": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\\kernel-claim-registry.sqlite",
+      "sizeBytes": 12288,
+      "sha256": "ea38848b94a951997547ea0918b9a4b6dd72efdd2cae1bfe643ef8d705401cb1",
+      "mtimeLocal": "2026-10-30 07:35 +0800",
+      "mtimeUtc": "2026-10-29T23:35:02Z",
+      "snapshot": "formal/v4.19/r33/snapshots/kernel-claim-registry-169.sqlite"
+    },
+    {
+      "role": "canonical DAG write-set registry (Tally #169, pre-claim state)",
+      "originalPath": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\\canonical-dag.sqlite",
+      "sizeBytes": 12288,
+      "sha256": "fececd3665d74ea30610ec6e60502ec2b2c388d696be9ea209647f4e058a9a18",
+      "mtimeLocal": "2026-10-30 07:34 +0800",
+      "snapshot": "formal/v4.19/r33/snapshots/canonical-dag-169.sqlite"
+    }
+  ],
+  "readback": {
+    "method": "SQLite read-only URI mode (?mode=ro), zero writes; SHA256 recorded before and after each read and proven identical (see R33_HOST_CAS_DB_DUMP.json and R33_VERIFY_HOST_CAS.py)",
+    "tableSchema": "v8_host_docs(key TEXT PRIMARY KEY, revision INTEGER NOT NULL, value TEXT NOT NULL)",
+    "rows": [
+      {
+        "db": "claim-registry-166.sqlite",
+        "key": "tally:v2:claim-admission:2c3d944879495d81e0e0c41c8995a97515b098e5e76f1371c306d1a6d4fdee74",
+        "keyDerivation": "sha256('kaicreator-mm/tally#166:builder:__default__') recomputed independently this round — exact match",
+        "revision": 1,
+        "value": {
+          "phase": "PUBLISHED_VERIFIED",
+          "generation": 1,
+          "protectedClaimKey": "kaicreator-mm/tally#166:builder:__default__",
+          "sourceSha": "7823e18e4b9f4d4df9a2c9065de1b1fed6421264",
+          "dispatchId": "dispatch:166:t06j:bootstrap:20261030:1",
+          "operatorId": "zcode:t166:bootstrap:1",
+          "writerId": "tally-host:win32:t166:bootstrap:1",
+          "commentId": 6507893767,
+          "commentRef": "https://github.com/kaicreator-mm/tally/issues/166#issuecomment-6507893767"
+        }
+      },
+      {
+        "db": "kernel-claim-registry-169.sqlite",
+        "key": "tally:v2:claim-admission:1c1efb4ec90355a2c2ea8b27aa58208f0becf20de5dea9fc5f0f4728e68ebcd2",
+        "keyDerivation": "sha256('kaicreator-mm/tally#169:builder:__default__') recomputed independently this round — exact match",
+        "revision": 1,
+        "value": {
+          "phase": "PUBLISHED_VERIFIED",
+          "generation": 1,
+          "protectedClaimKey": "kaicreator-mm/tally#169:builder:__default__",
+          "sourceSha": "3293aace8a07c2a4f79a75c6539245980f77e2b4",
+          "dispatchId": "dispatch:169:t06l:kernel:20261030:1",
+          "operatorId": "zcode:t125:kernel:1",
+          "writerId": "tally-host:win32:t125:kernel:1",
+          "commentId": 6511046226,
+          "commentRef": "https://github.com/kaicreator-mm/tally/issues/169#issuecomment-6511046226"
+        }
+      },
+      {
+        "db": "canonical-dag-169.sqlite",
+        "key": "tally:v2:dag-admission:de54e861837371f87fb60fdc6121d8621ac28b1379709d5cf66e6a674c5e5491",
+        "revision": 0,
+        "value": {
+          "schema": "tally-v2-canonical-dag-admission/v1",
+          "status": "READY_PENDING_ACCEPTED_CLAIM",
+          "issueNumber": 169,
+          "sourceSha": "3293aace8a07c2a4f79a75c6539245980f77e2b4",
+          "requiredClosedDependencies": [132, 166],
+          "exactWriteSet": [
+            "packages/tally-engineering-business/src/index.mjs",
+            "packages/tally-engineering-business/test/business-policy.test.mjs",
+            "experiments/v2/selected-business-build/producer.mjs",
+            "experiments/v2/selected-business-build/run-clean.sh",
+            "experiments/v2/selected-business-build/bundle-claim-reader.mjs",
+            "experiments/v2/selected-business-build/claim-admission-shim.mjs",
+            "experiments/v2/selected-business-build/consumer-claim-admission.mjs"
+          ],
+          "hostConfigSha256": "458bb8d47e3560628fbd18c9a5d41f033eb7736ab28df96d2318766133d4cf05"
+        }
+      }
+    ]
+  },
+  "githubCommentIdentity": [
+    {
+      "commentId": 6507893767,
+      "repo": "kaicreator-mm/tally",
+      "issue": 166,
+      "apiReadback": {
+        "user": "kaicreator-mm",
+        "createdAt": "2026-10-29T20:44:11Z",
+        "updatedAt": "2026-10-29T20:44:11Z",
+        "edited": false,
+        "event": "DISPATCH_CLAIMED",
+        "bodyFieldsMatchDbRow": true
+      },
+      "registryMtimeMatchesCreatedAt": "exactly (local 04:44:xx +0800 == 20:44:11Z, same minute)"
+    },
+    {
+      "commentId": 6511046226,
+      "repo": "kaicreator-mm/tally",
+      "issue": 169,
+      "apiReadback": {
+        "user": "kaicreator-mm",
+        "createdAt": "2026-10-29T23:35:02Z",
+        "updatedAt": "2026-10-29T23:35:02Z",
+        "edited": false,
+        "event": "DISPATCH_CLAIMED",
+        "bodyFieldsMatchDbRow": true
+      },
+      "registryMtimeMatchesCreatedAt": "exactly (local 07:35 +0800 == 23:35:02Z, same minute)"
+    }
+  ],
+  "casSemanticsSource": {
+    "package": "@kaicreator/domain-harness-host-node@0.10.2-rc.0",
+    "tarballSha256": "3a0a11391936b8cfcdb4dc81136576ad5dd3f30e278168ae485f10abb275c4b8",
+    "adapter": "dist/sqlite-adapter.js",
+    "rules": {
+      "initialInsert": "INSERT INTO v8_host_docs (key, revision, value) VALUES (?, 0, ?) — guarded by mustBeAbsent; duplicate key raises HOST_KEY_EXISTS",
+      "update": "UPDATE v8_host_docs SET revision = revision + 1, value = ? WHERE key = ? AND revision = ? — guarded by mustMatchRevision; stale expectation raises HOST_CAS_CONFLICT",
+      "unconditional": "put/delete without CAS condition raises HOST_PUT_CONDITION_REQUIRED",
+      "concurrency": "begin-immediate transaction + WAL + busy_timeout; read-check-write atomic across processes"
+    },
+    "conclusion": "A claim row at revision 1 proves exactly one CAS-guarded transition: mustBeAbsent insert (rev 0, PENDING_GITHUB_PUBLISH) -> mustMatchRevision:0 update carrying PUBLISHED_VERIFIED after GitHub publish + exact native readback. The DAG row at revision 0 is the never-updated pre-claim insert."
+  },
+  "executionReceipts": {
+    "claim166Driver": "_tmp/TALLY_V2_OWNER_AUTHORIZED_BOOTSTRAP_IMPLEMENT_AND_COMPLETE/bootstrap-receipt.log — status RECORDED / SERIALIZED_GITHUB_PUBLISH_AND_READBACK_CONFIRMED / VERIFIED_PENDING_KERNEL_ADMISSION; durableReservation equals the DB row; driver independently reopened the store (bootstrap-driver.mjs)",
+    "claim169TaskWriter": "_tmp/TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/canonical-task-writer.log — native issue #169 creation readback (labels state:ready/type:task), DAG admission persisted, then claim flow",
+    "kLiveRun": "_tmp/TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/run-clean-live-r3.log — T06L_REAL_GITHUB_CLAIM_ADMISSION_K_B_C_SQLITE=PASS, T02B_BUILD_EXIT=0, sealed-C negative controls PASS",
+    "finalStatus": "_tmp/TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/final-status-t06l.json — kAdmission=ADMITTED_PENDING_AGENT_EFFECT; falsifiers 8/8 DENIED; pr170=MERGED@2c9a9b42426c1af9aae823c98d79eb570a0b4594; pr171=MERGED@2c6631dbdc3458d4dea43fdc7d78cd292c0aebe9",
+    "woodpecker98LocalReceipt": "_tmp/TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/woodpecker-98.json"
+  },
+  "woodpeckerIndependentReadback": {
+    "server": "https://ci.kaicreator.com",
+    "repoId": 12,
+    "forgeRemoteId": 1370136575,
+    "pipeline": { "number": 98, "id": 17265 },
+    "observed": {
+      "status": "success",
+      "event": "push",
+      "branch": "version/v2",
+      "commit": "2c6631dbdc3458d4dea43fdc7d78cd292c0aebe9",
+      "agentId": 2266,
+      "workflows": ["v2-native-node24", "v2-t06j-host-admission", "v2-t06l-kernel-admission"],
+      "steps": 15,
+      "allStepsExitCode": 0
+    },
+    "matchesLocalReceipt": true,
+    "closesR32Gap": "Woodpecker #98 was self-reported in R32; now independently API-read back with per-step exit codes."
+  },
+  "r32Reuse": {
+    "task169ToPr170SevenPathMatch": "REUSED, not re-executed — 7/7 exact write-path equality, 0 out-of-bounds, per formal/v4.19/r32/R32_CROSS_VERSION_OBLIGATION_PARTITION.json and IMPLEMENTATION_PLAN.md §R32",
+    "sanityConfirmed": "Merge commits exist in tally git: 2c9a9b42426c1af9aae823c98d79eb570a0b4594 'feat(v2): admit accepted Claims through DomainHarness K (#170)' and 2c6631dbdc3458d4dea43fdc7d78cd292c0aebe9 'ci(v2): validate accepted Claim K admission (#171)'"
+  },
+  "verdict": {
+    "protectedClaimKey": "PROVEN — stored physical key equals independently recomputed sha256 for both #166 and #169",
+    "generation": "PROVEN — generation=1 in durable rows equals admission_generation:1 in the unedited GitHub events",
+    "casRevision": "PROVEN — revision=1 equals exactly one mustBeAbsent insert plus one mustMatchRevision update under the installed adapter semantics; DAG pre-state row remains revision 0",
+    "publishedVerified": "PROVEN — phase PUBLISHED_VERIFIED persisted in both claim registries; durable rows still readable 2026-11-11, re-read unmutated",
+    "githubCommentIdentity": "PROVEN — commentId/commentRef stored in rows; API readback unedited (created_at==updated_at), author kaicreator-mm, body YAML fields equal DB fields; registry mtimes match created_at",
+    "persistentStateBeforeAfter": "PROVEN within artifact limits — BEFORE: #169 DAG row rev 0 READY_PENDING_ACCEPTED_CLAIM (07:34) and #166 dagWriteSetAdmission ADMITTED_SOURCE_IMPLEMENTATION_ONLY; AFTER: claim rows rev 1 PUBLISHED_VERIFIED (== publish moments). Limitation: the transient rev-0 claim reservation is updated in place; the store keeps no revision history, so the intermediate PENDING_GITHUB_PUBLISH row itself is not separately preserved.",
+    "implementationDefects": "NONE FOUND — controller, adapter and persisted records are mutually consistent; therefore no Repair was merged and no source file was modified",
+    "newClaimsCreated": "NONE — verification was read-only; existing Task/Claim write permissions were not exercised to create anything"
+  },
+  "notProvenBoundaries": [
+    "Post-run tamper resistance is not cryptographically proven: the DBs are plain files in a volatile _tmp directory; no -wal/-shm sidecars exist and hashes were recorded, but an adversarial post-run edit cannot be excluded from file evidence alone. Snapshots pin the observed bytes for repeatability.",
+    "Cross-process concurrent same-key CAS rejection was not exercised by these production runs (a single serialized writer produced them); racing coverage remains at unit-test level with fake ports.",
+    "K journal durable persistence and successor/Grant/resource readback beyond the captured run log (run-clean-live-r3.log) were NOT re-executed this round; K_ADMISSION=ADMITTED_PENDING_AGENT_EFFECT rests on the original run log + falsifier denials + final-status receipt.",
+    "The original DB files live under _tmp auto-clean policy; if they are removed, future re-verification must use the hash-equal snapshots in formal/v4.19/r33/snapshots/ (repeatable via R33_VERIFY_HOST_CAS.py against any path).",
+    "Unchanged from R32: v4.19 canonical consumer eligibility NOT_PROVEN; ADS-wide normative obligation denominator UNKNOWN; historical claims are not upgraded into v4.19 authority."
+  ],
+  "constraintsHonored": {
+    "v419CandidateSpecModified": false,
+    "historicalClaimsModified": false,
+    "autoMergeFreezeRelease": false,
+    "substituteDatabaseCreated": false,
+    "simulatedAcceptanceRecordCreated": false
+  }
+}

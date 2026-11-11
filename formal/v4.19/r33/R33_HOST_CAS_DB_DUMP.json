@@ -1,0 +1,122 @@
+{
+  "dbs": {
+    "TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/kernel-claim-registry.sqlite": {
+      "path": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\\kernel-claim-registry.sqlite",
+      "label": "claim reservation registry #169 (host-bootstrap-config.json reservationRegistry)",
+      "size": 12288,
+      "sha256_before": "ea38848b94a951997547ea0918b9a4b6dd72efdd2cae1bfe643ef8d705401cb1",
+      "sha256_after": "ea38848b94a951997547ea0918b9a4b6dd72efdd2cae1bfe643ef8d705401cb1",
+      "unmutated": true,
+      "schema": [
+        [
+          "index",
+          "sqlite_autoindex_v8_host_docs_1",
+          "v8_host_docs",
+          null
+        ],
+        [
+          "table",
+          "v8_host_docs",
+          "v8_host_docs",
+          "CREATE TABLE v8_host_docs (key TEXT PRIMARY KEY, revision INTEGER NOT NULL, value TEXT NOT NULL)"
+        ]
+      ],
+      "tables": {
+        "v8_host_docs": {
+          "columns": [
+            "key",
+            "revision",
+            "value"
+          ],
+          "rows": [
+            [
+              "tally:v2:claim-admission:1c1efb4ec90355a2c2ea8b27aa58208f0becf20de5dea9fc5f0f4728e68ebcd2",
+              1,
+              "{\"phase\":\"PUBLISHED_VERIFIED\",\"generation\":1,\"protectedClaimKey\":\"kaicreator-mm/tally#169:builder:__default__\",\"repository\":\"kaicreator-mm/tally\",\"issueRef\":\"https://github.com/kaicreator-mm/tally/issues/169\",\"sourceSha\":\"3293aace8a07c2a4f79a75c6539245980f77e2b4\",\"dispatchId\":\"dispatch:169:t06l:kernel:20261030:1\",\"actorRole\":\"builder\",\"operatorKind\":\"other\",\"operatorId\":\"zcode:t125:kernel:1\",\"writerId\":\"tally-host:win32:t125:kernel:1\",\"commentId\":6511046226,\"commentRef\":\"https://github.com/kaicreator-mm/tally/issues/169#issuecomment-6511046226\"}"
+            ]
+          ]
+        }
+      }
+    },
+    "TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION/canonical-dag.sqlite": {
+      "path": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\\canonical-dag.sqlite",
+      "label": "canonical DAG write-set registry (canonical-task-writer.mjs)",
+      "size": 12288,
+      "sha256_before": "fececd3665d74ea30610ec6e60502ec2b2c388d696be9ea209647f4e058a9a18",
+      "sha256_after": "fececd3665d74ea30610ec6e60502ec2b2c388d696be9ea209647f4e058a9a18",
+      "unmutated": true,
+      "schema": [
+        [
+          "index",
+          "sqlite_autoindex_v8_host_docs_1",
+          "v8_host_docs",
+          null
+        ],
+        [
+          "table",
+          "v8_host_docs",
+          "v8_host_docs",
+          "CREATE TABLE v8_host_docs (key TEXT PRIMARY KEY, revision INTEGER NOT NULL, value TEXT NOT NULL)"
+        ]
+      ],
+      "tables": {
+        "v8_host_docs": {
+          "columns": [
+            "key",
+            "revision",
+            "value"
+          ],
+          "rows": [
+            [
+              "tally:v2:dag-admission:de54e861837371f87fb60fdc6121d8621ac28b1379709d5cf66e6a674c5e5491",
+              0,
+              "{\"schema\":\"tally-v2-canonical-dag-admission/v1\",\"status\":\"READY_PENDING_ACCEPTED_CLAIM\",\"repository\":\"kaicreator-mm/tally\",\"issueNumber\":169,\"issueRef\":\"https://github.com/kaicreator-mm/tally/issues/169\",\"sourceSha\":\"3293aace8a07c2a4f79a75c6539245980f77e2b4\",\"parentIssues\":[125,132,166],\"requiredClosedDependencies\":[132,166],\"exactWriteSet\":[\"packages/tally-engineering-business/src/index.mjs\",\"packages/tally-engineering-business/test/business-policy.test.mjs\",\"experiments/v2/selected-business-build/producer.mjs\",\"experiments/v2/selected-business-build/run-clean.sh\",\"experiments/v2/selected-business-build/bundle-claim-reader.mjs\",\"experiments/v2/selected-business-build/claim-admission-shim.mjs\",\"experiments/v2/selected-business-build/consumer-claim-admission.mjs\"],\"dispatchId\":\"dispatch:169:t06l:kernel:20261030:1\",\"writerId\":\"tally-host:win32:t125:kernel:1\",\"hostConfigSha256\":\"458bb8d47e3560628fbd18c9a5d41f033eb7736ab28df96d2318766133d4cf05\",\"labelEvents\":[\"state:ready\",\"type:task\"],\"kernelExecution\":\"CONTROLLED_INTENT_ONLY_NO_AGENT_EFFECT\",\"agentLaunch\":false,\"release\":false}"
+            ]
+          ]
+        }
+      }
+    },
+    "TALLY_V2_OWNER_AUTHORIZED_BOOTSTRAP_IMPLEMENT_AND_COMPLETE/claim-registry.sqlite": {
+      "path": "C:\\xDev\\kAiCreator\\_tmp\\TALLY_V2_OWNER_AUTHORIZED_BOOTSTRAP_IMPLEMENT_AND_COMPLETE\\claim-registry.sqlite",
+      "label": "claim reservation registry #166 (bootstrap round)",
+      "size": 12288,
+      "sha256_before": "abbccd93dcc18532ef2be9f6046b2462dcf7ba9459216697fd28f9d2b0eab018",
+      "sha256_after": "abbccd93dcc18532ef2be9f6046b2462dcf7ba9459216697fd28f9d2b0eab018",
+      "unmutated": true,
+      "schema": [
+        [
+          "index",
+          "sqlite_autoindex_v8_host_docs_1",
+          "v8_host_docs",
+          null
+        ],
+        [
+          "table",
+          "v8_host_docs",
+          "v8_host_docs",
+          "CREATE TABLE v8_host_docs (key TEXT PRIMARY KEY, revision INTEGER NOT NULL, value TEXT NOT NULL)"
+        ]
+      ],
+      "tables": {
+        "v8_host_docs": {
+          "columns": [
+            "key",
+            "revision",
+            "value"
+          ],
+          "rows": [
+            [
+              "tally:v2:claim-admission:2c3d944879495d81e0e0c41c8995a97515b098e5e76f1371c306d1a6d4fdee74",
+              1,
+              "{\"phase\":\"PUBLISHED_VERIFIED\",\"generation\":1,\"protectedClaimKey\":\"kaicreator-mm/tally#166:builder:__default__\",\"repository\":\"kaicreator-mm/tally\",\"issueRef\":\"https://github.com/kaicreator-mm/tally/issues/166\",\"sourceSha\":\"7823e18e4b9f4d4df9a2c9065de1b1fed6421264\",\"dispatchId\":\"dispatch:166:t06j:bootstrap:20261030:1\",\"actorRole\":\"builder\",\"operatorKind\":\"other\",\"operatorId\":\"zcode:t166:bootstrap:1\",\"writerId\":\"tally-host:win32:t166:bootstrap:1\",\"commentId\":6507893767,\"commentRef\":\"https://github.com/kaicreator-mm/tally/issues/166#issuecomment-6507893767\"}"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "derived_keys": {
+    "kaicreator-mm/tally#166:builder:__default__": "tally:v2:claim-admission:2c3d944879495d81e0e0c41c8995a97515b098e5e76f1371c306d1a6d4fdee74",
+    "kaicreator-mm/tally#169:builder:__default__": "tally:v2:claim-admission:1c1efb4ec90355a2c2ea8b27aa58208f0becf20de5dea9fc5f0f4728e68ebcd2"
+  }
+}

@@ -1,0 +1,22 @@
+# R33 — byte-identical preservation snapshots of the ORIGINAL v4.18 Host SQLite CAS databases
+#
+# These are NOT substitute databases and NOT simulated acceptance records.
+# They are byte-identical copies (cp, then SHA256-verified both directions) of the
+# original run artifacts, archived because the originals live under
+# C:\xDev\kAiCreator\_tmp\<task>\ which is subject to the workspace 7/14-day auto-clean.
+# The original files were read via SQLite read-only URI mode (?mode=ro) and their
+# SHA256 was identical before and after the read (zero-mutation proof).
+#
+# snapshot file                          original absolute path
+# claim-registry-169... see mapping below
+#
+# <snapshot-name>  =  SHA256  =  <original path>
+claim-registry-166.sqlite        =  abbccd93dcc18532ef2be9f6046b2462dcf7ba9459216697fd28f9d2b0eab018  =  C:\xDev\kAiCreator\_tmp\TALLY_V2_OWNER_AUTHORIZED_BOOTSTRAP_IMPLEMENT_AND_COMPLETE\claim-registry.sqlite
+kernel-claim-registry-169.sqlite =  ea38848b94a951997547ea0918b9a4b6dd72efdd2cae1bfe643ef8d705401cb1  =  C:\xDev\kAiCreator\_tmp\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\kernel-claim-registry.sqlite
+canonical-dag-169.sqlite         =  fececd3665d74ea30610ec6e60502ec2b2c388d696be9ea209647f4e058a9a18  =  C:\xDev\kAiCreator\_tmp\TALLY_V2_T125_CANONICAL_KERNEL_TASK_ADMISSION\canonical-dag.sqlite
+#
+# Original file mtimes (local +0800), matching GitHub comment created_at to the second:
+#   claim-registry-166.sqlite        2026-10-30 04:44  ==  2026-10-29T20:44:11Z  (comment 6507893767)
+#   kernel-claim-registry-169.sqlite 2026-10-30 07:35  ==  2026-10-29T23:35:02Z  (comment 6511046226)
+#   canonical-dag-169.sqlite         2026-10-30 07:34  (before the #169 claim publish)
+# Snapshots taken: 2026-11-11 (R33), hashes verified equal to originals at copy time.
