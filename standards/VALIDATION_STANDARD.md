@@ -147,6 +147,30 @@ Evidence-only recording should preferably live in Issue/events/external evidence
 
 The required Validation profile and its normal provider are different facts.
 
+### Local-equivalent-first: prove the profile once (v4.19 successor)
+
+**Default execution choice:** When the current authorized Builder/Validator/Agent environment can actually execute the complete required validation profile for the current subject, it SHOULD execute that profile there and publish its real evidence. Once the same exact-SHA, scope, target/toolchain and required independence have been proved, a second CI run **MUST NOT** be requested merely for ceremony, redundant verification or to obtain a provider-branded green badge. CI is an execution channel, **not an additional Gate by default**. This is independent of whether CI is healthy or pending; it is not only a CI-outage exception.
+
+Before requesting a CI run, the executor/controller MUST check the applicable frozen/project Task/Release authority for: the actual required check set; the exact subject/SHA and environment tuple; and whether an independent executor, provider-specific attestation, branch-protection status context, or real Host/device/platform is separately required. The minimal decision is:
+
+```text
+profile complete + valid same-subject evidence + no independent/provider CI requirement
+  → reuse PASS evidence; no duplicate CI invocation
+profile complete + equivalent current executor + no independent/provider CI requirement
+  → execute once here, record actual PASS/FAIL; no duplicate CI invocation
+profile incomplete, wrong SHA/tuple, or necessary independence absent
+  → run the missing required checks in a capable environment
+explicitly required provider/status/independent CI
+  → perform or truthfully report that distinct requirement; local PASS cannot satisfy it
+```
+
+For final Task/PR/Release evidence, local execution MUST preserve the actual tested commit SHA (and current PR HEAD/base where relevant), a clean/reproducible source and dependency input, required commands/checks with exit codes, OS/runtime/toolchain/Target, and artifact/result references; independent execution MUST remain independent when so required. Development checks against an uncommitted worktree are useful feedback but are not automatically an exact-SHA final Gate PASS. The report belongs in the **source GitHub Task Issue** for other Agents to retrieve; the version Master indexes the verified Task result. Prior matching immutable evidence SHOULD be reused instead of rerunning the same commands.
+
+**Truthful states:** local profile PASS remains local profile PASS; an unexecuted CI provider stays `NOT_RUN` or its actual `pending` state. `CI_NOT_REQUESTED_EQUIVALENT_LOCAL_PASS` MAY appear as a **descriptive execution decision**, never as a new validation Gate state or provider SUCCESS. No required check is changed to `NOT_APPLICABLE` merely to avoid CI. A failing local required check stays FAIL, not replaced by an unexecuted CI green claim.
+
+**Non-substitutable exceptions:** if current frozen/project authority truly requires a named provider/check, independent clean runner, branch-protection required status, Release-owned attestation, Hidden Validation or another real platform/Host tuple, those distinct requirements remain enforceable. A GitHub required context cannot be made green by a local receipt, and a pending provider is not a PASS. Change the project profile/branch rules only through prospective authorized governance, never as an ad hoc waiver for an in-flight candidate. Existing ADS pins and previously frozen gates are not retroactively changed.
+
+
 Provider/channel health may use:
 
 ```text
