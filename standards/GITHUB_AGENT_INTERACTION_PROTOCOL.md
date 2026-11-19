@@ -570,7 +570,7 @@ A Validator publishes exact-SHA environment/profile evidence. Validation-only ex
 
 ### Execution profiles and pointer-only role invocation
 
-Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`. Profiles configure execution authority; they never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections.
+Roles execute under one canonical dispatch architecture (`schemas/dispatch.schema.json`) with an execution profile — `LOCAL_BUILDER`, `LOCAL_VALIDATOR`, `WEB_REVIEWER`, `PLATFORM_VALIDATOR`, `CLOSURE_VALIDATOR`, `WEB_BUILDER`, `LOCAL_VALIDATION`. The Dispatch role determines responsibility and authority; the profile selects bounded execution context within that role and never widens authority. For new v4.19 work, ordinary implementation uses `WEB_BUILDER` (builder/WEB). `LOCAL_VALIDATION` (validator/LOCAL) is exact-SHA and validation-only, and is used only for a genuine local capability gap not already satisfied by Web/CI. `LOCAL_BUILDER` remains readable for v4.18-pinned historical records and explicitly grandfathered workflows, but is not the default for new v4.19 work. Profiles never introduce separate role lifecycles or queue state machines. `BuilderReadySet / ValidatorReadySet / ReviewerReadySet` and any version-scoped Validation Handoff Queue are derived projections.
 
 ### Dispatch pre-publication schema admission (#783)
 
