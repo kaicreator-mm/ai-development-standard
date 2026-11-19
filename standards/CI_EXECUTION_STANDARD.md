@@ -220,10 +220,15 @@ implement locally
 → task-owned platform validation
 → stable exact HEAD
 → push
-→ required remote certification only
+→ independently/provider-required remote certification only
 ```
 
 Remote CI SHOULD NOT be used as the normal compile/debug loop. However:
+
+**Avoid duplicate remote CI (v4.19 successor):** An authorized current Agent/Host may execute a complete provider-neutral validation profile locally on the exact required SHA/target with a reproducible source and required checks. After a valid report is written to the source Task Issue and read back, the Controller/Integrator SHOULD reuse it and MUST NOT demand an additional CI execution solely because the same commands normally run in CI. This applies even when CI is healthy; `CI_INFRA_EXCEPTION` is reserved for a real infrastructure incident, not needed for an ordinary locally satisfied profile. An uncommitted-worktree development PASS does not substitute for final exact-SHA evidence.
+
+An extra run is justified only by **a distinct required property**: explicitly frozen/project-required provider or status check, independent/clean executor, target OS/Host/device/runtime, changed SHA or validation inputs, missing required test coverage, or a separate integration/release-owned profile. Such a run SHOULD cover only that missing property, not gratuitously repeat already valid checks. GitHub required branch-protection contexts remain pending/failing until satisfied by their authorized provider or prospectively adjusted through legitimate project authority. Never mark a CI provider SUCCESS from a local result, waive a required profile, or infer a Release PASS from Task PASS.
+
 
 ```text
 provider-specific attestation remains mandatory when explicitly required
