@@ -728,6 +728,8 @@ gate applicability 或 authority ambiguity（→ 上一节）
 - 让表象消失但不处理 root class 的动作不构成 repair，也不是收敛证据，例如：放宽/删除/跳过检查或断言、把 required gate 改判为 `NOT_APPLICABLE`、重写或重新解释既有 evidence、只改文档/注释措辞、只把 finding 标记为已处理。
 - 若 root class 属于当前 Task write set 之外的所有者（产品语义、架构、公共 contract、其它组件、环境/工具链），MUST 把 repair 路由到该 owner 的既有路径（Product thaw/contradiction、Architecture Amendment、Interface Compatibility、环境 owner 等）；MUST NOT 在同一 PR 内静默扩大 scope，MUST NOT 就地重定义更高 authority。
 - repair 沿用既有 routing 与状态（Stage 4 的 Reviewer route 与 validation repair 路径）；本节不新增 route、workflow state 或 gate state。
+- 对跨组件/公共契约、持续复现或明显影响关键用户路径的 root class，owning repair decision SHOULD 在现有 Issue/PR 中简短比较 **局部实现修复、共享适配/成熟依赖、合法契约/架构修订或明确允许的延期**，根据可证伪的第一处因果偏差和对下游消费者、验证/复审、集成、维护总成本的影响选择 **minimum sufficient correction**；不能以 diff 最小、DAG 不变或已有分支写集小作为先验的修复正确性证明。普通单点可复现 Bug 可直接 Fast Path，**不新增 Architecture Review Gate**。参考 [DomainHarness A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) 与 [Host CAS adapter #1394](https://github.com/kaicreator-mm/domain-harness/issues/1394)。
+- 同一 root class 的反复 Review/repair SHOULD 复用同一 concern 的现有 Issue/PR 和 exact-SHA finding/attempt lineage；只有出现实际独立 source owner/Task/环境 obligation 时才另建 Issue。减少跟踪对象不允许合并角色、伪造独立 Review、遗漏 required CI/Validation、转移旧 SHA PASS 或掩盖安全关键问题。参考 [DomainHarness #363](https://github.com/kaicreator-mm/domain-harness/issues/363)、[#378](https://github.com/kaicreator-mm/domain-harness/issues/378) 与 [#586](https://github.com/kaicreator-mm/domain-harness/issues/586)。
 
 ### Non-converging repair：escalation，而非 universal retry cap
 
