@@ -7,6 +7,11 @@ clone:
     settings:
       depth: 0
 
+# Avoid duplicate push+PR runs and unrelated provider execution.
+# Trigger only when this provider-specific Task/Release profile actually requires it.
+when:
+  - event: manual
+
 steps:
   - name: ads-fast-validation
     image: python:3.12-bookworm
