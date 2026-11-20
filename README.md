@@ -4,6 +4,8 @@
 
 **v4.19 的执行策略：** Delivery-First 按任务成果、实际能力、风险及总成本选择执行方式；Web Builder + Local Validation 只是可选低成本模式，合法授权的 Local Builder 仍可实施和修复，LOCAL_VALIDATION 始终只验证而不修改源码。Dispatch 增加 `WEB_BUILDER` / `LOCAL_VALIDATION` 两个 Profile，保留原五个 Profile、角色权限及 Claim 身份。Pre-PR 进行适用的语法与受影响测试检查；本地等价验证可复用，指定 Provider/独立 Host/Required Check 不得被冒充；新增的 `.woodpecker/verify.yaml` 为按需手动执行模式。Stage 1 证据整理可选，Stage 2 的实际架构与验证义务不因此豁免；经验反馈使用既有 Task Learning/Golden 归属，不创建新 Scheduler、DAG、Claim、CI Gate 或指标存储。
 
+**v4.19 开发可运维性规范（#1380）：** 新应用及实际修改的启动/错误路径必须提供可定位、可操作且不泄露敏感数据的日志和错误信息（`standards/IMPLEMENTATION_QUALITY_STANDARD.md` §12）；有交互入口的应用首次启动缺少业务配置时必须进入安全的初始化设置流程，不得只要求用户手工创建 `.env` 等配置文件，完成授权与必要校验前不得执行受保护业务操作（`standards/CONFIGURATION_SECRETS_STANDARD.md` §16）。无交互 CLI、服务和容器允许明确的初始化命令或受控配置注入；真正不可后置的进程启动条件允许提供具体诊断后安全失败。此处是开发规范，不代表下游应用已经实现或通过真实 Host 验证。
+
 当前版本：`v4.19.0`（本分支源码身份；`VERSION=4.19.0` 仅在本发布元数据候选合入后生效）。**源码版本号、合并 PR、GitHub Actions 或 Woodpecker PASS 均不自动等于 v4.19 Release READY、main 合并、Tag/GitHub Release、真实业务 Host Effect 或使用者已采用。** 整版 Release Qualification、已冻结候选身份与需执行的授权检查须以 [v4.19 Release Task #1378](https://github.com/kaicreator-mm/ai-development-standard/issues/1378) 的最终精确回执为准；实际 Agent active time、ROI、生产运行以及受保护的真实 Host/人类决定均未由本源码包证明。已发布 v4.18 历史与资格记录保持不变。
 
 ### 历史 v4.18 源码说明（下文是当时的候选记录，不是当前 v4.19 发布状态）
