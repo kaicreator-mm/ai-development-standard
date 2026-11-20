@@ -456,6 +456,32 @@ def _v419_gate_test_successor_verified(rel_path: str) -> bool:
         return False
 
 
+# Only the integrated #1365 preview's exact gate-currentness successor is
+# admitted alongside the original #1376 source. Both must preserve immutable
+# v4.19 version-base evidence and the old v4.15 pin family.
+V419_COMPOSED_GATE_SOURCE = "2d88a5b79a836f80ebe0140b3016840830776a2d"
+V419_COMPOSED_GATE_BLOB = "ca4e92bf51adb42bc6139c11b9213a1f5122350f"
+
+
+def _v419_composed_gate_successor_verified(rel_path: str) -> bool:
+    if rel_path != V419_GATE_REBIND_PATH:
+        return False
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_COMPOSED_GATE_SOURCE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        return (
+            git_object_sha(V419_GATE_REBIND_BASE, rel_path)
+            == V419_GATE_REBIND_HISTORICAL_BLOB
+            and git_object_sha(V419_COMPOSED_GATE_SOURCE, rel_path)
+            == V419_COMPOSED_GATE_BLOB
+            and git_object_sha("HEAD", rel_path) == V419_COMPOSED_GATE_BLOB
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
 for _repair_path, _repair_blob in V415_BOUNDED_REPAIR_BLOBS.items():
     if _v415_bounded_repair_successor_verified(_repair_path):
         V415_SOURCE_SUCCESSORS[_repair_path] = (
@@ -463,9 +489,15 @@ for _repair_path, _repair_blob in V415_BOUNDED_REPAIR_BLOBS.items():
         )
 
 
-# Rebind only after verifying an immutable v4.19 successor; old source
-# tuples and all unrelated paths keep their v4.15 constraints.
-if _v419_gate_test_successor_verified(V419_GATE_REBIND_PATH):
+# Rebind only after verifying a specific exact v4.19 successor; old source
+# tuples and every unrelated path keep their v4.15 constraints.
+if _v419_composed_gate_successor_verified(V419_GATE_REBIND_PATH):
+    V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH] = (
+        V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH][0],
+        V419_COMPOSED_GATE_SOURCE,
+        V419_COMPOSED_GATE_BLOB,
+    )
+elif _v419_gate_test_successor_verified(V419_GATE_REBIND_PATH):
     V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH] = (
         V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH][0],
         V419_GATE_REBIND_SOURCE,
@@ -1002,7 +1034,11 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
 
     def test_v419_gate_test_rebind_refuses_unknown_third_blob_and_wrong_lineage(self) -> None:
         self.assertFalse(_v419_gate_test_successor_verified("schemas/dispatch.schema.json"))
-        self.assertTrue(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
+        self.assertTrue(
+            _v419_gate_test_successor_verified(V419_GATE_REBIND_PATH)
+            or _v419_composed_gate_successor_verified(V419_GATE_REBIND_PATH)
+        )
+        self.assertFalse(_v419_composed_gate_successor_verified("schemas/dispatch.schema.json"))
         original_sha = git_object_sha
         with mock.patch(
             __name__ + ".git_object_sha",
@@ -1011,11 +1047,13 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
             ),
         ):
             self.assertFalse(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
+            self.assertFalse(_v419_composed_gate_successor_verified(V419_GATE_REBIND_PATH))
         with mock.patch(
             __name__ + ".subprocess.run",
             side_effect=subprocess.CalledProcessError(1, "git"),
         ):
             self.assertFalse(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
+            self.assertFalse(_v419_composed_gate_successor_verified(V419_GATE_REBIND_PATH))
 
     def test_v415_shared_successors_reject_third_blob_and_invalid_lineage(self) -> None:
         self.assertFalse(_v415_exact_successor_verified("schemas/dispatch.schema.json"))
