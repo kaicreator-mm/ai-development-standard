@@ -2,6 +2,16 @@
 
 你正在执行 Stage-1 的 L1 产品证据步骤。目标不是整理竞品列表，而是在进入 PRD/架构前验证“真实问题是否存在、产品形态是否成立、用户实际怎样完成任务、当前替代方案是什么、什么证据可能推翻我们的假设”。
 
+## L1 Requirements Engineering：需求设计与按需 DAG-P（增量候选）
+
+L1 不只是竞品/用户研究：还需要在适用范围内完成**需求获取、澄清、分析、规格化、验证、确认与变更追溯**。现有 Product Evidence/Research/PRD/Review/Freeze 权威不变。复杂度与来源决定所需深度；小型已有明确需求可维持 inline，不强制访谈或独立 DAG。
+
+按当前 Product 决策需要，识别并记录：Stakeholder/User Job、业务目标、功能/非功能需求、业务规则与约束、显式假设、歧义与冲突、优先级、可观察的 Acceptance Criterion、来源/当前性与重要变更影响。Material UNKNOWN 不得被 Agent 自行假定为已获 Product 批准；Human/有效 Product Authority 只介入真实业务决策缺口。
+
+当确有多个独立研究/澄清/分析/实验工作且存在**真实依赖或独立证据/人类/Host 前置条件**时，可选择 `DAG-P` 作为 L1 phase view：每个节点给出待解 Product/Requirement 问题、责任者、实际前置依赖、证据强度、决策消费者与停止条件。仅多条需求并不构成强制 DAG。无实质调度依赖时使用 `INLINE` 或 `BOUNDED_WORKLIST`。
+
+**L1 退出/向 L2 交接**：Product Authority 采纳的准确需求范围与可验证的验收条件、重大矛盾/假设 disposition、版本化来源及 Product Freeze ref。研究完成、Reviewer PASS 或 L1 DAG-P 节点完成都不自动构成 Product Freeze。相关上下游证据复用既有 Evidence Spine，不复制新的事实权威。详见 [三级设计提案](../docs/intake/2026-11-21-three-phase-adaptive-engineering-r0.md)。
+
 ## 生命周期位置与投影边界
 
 本 prompt 是 `standards/DEVELOPMENT_WORKFLOW.md` Stage 1 与 Frozen Product / L2 4.1–4.3 的执行面投影，不是语义 owner，不新增生命周期、状态或权威。规范序列：
