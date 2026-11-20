@@ -856,6 +856,25 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
                 value[field] = "CLAIMED"
                 self.assertTrue(validate_subset(value, SCHEMA))
 
+    def test_v419_dispatch_successor_rejects_wrong_context_and_third_blob(self) -> None:
+        # The guard is an exact successor exception, not a historical rewrite,
+        # wildcard allowed-blob list or new authority source.
+        self.assertFalse(_v419_dispatch_successor_verified(
+            "schemas/other.schema.json", V419_DISPATCH_HISTORICAL_BLOB
+        ))
+        self.assertFalse(_v419_dispatch_successor_verified(
+            V419_DISPATCH_PATH, "0" * 40
+        ))
+        with mock.patch(
+            __name__ + ".git_object_sha",
+            side_effect=lambda rev, rel: (
+                "f" * 40 if rev == "HEAD" else V419_DISPATCH_HISTORICAL_BLOB
+            ),
+        ):
+            self.assertFalse(_v419_dispatch_successor_verified(
+                V419_DISPATCH_PATH, V419_DISPATCH_HISTORICAL_BLOB
+            ))
+
     def test_read_only_owner_surfaces_unmutated_since_base(self) -> None:
         for rel_path in READ_ONLY_OWNER_PATHS:
             if rel_path in V411_OWNER_BLOBS:
