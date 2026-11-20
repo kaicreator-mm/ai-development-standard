@@ -1,0 +1,21 @@
+# ADS v4.19 #1374 — existing frozen T01 Woodpecker provider execution.
+# No new ADS Gate: this makes the named provider runnable on real exact SHAs.
+# Historical ADS tests resolve older git objects; do not use a shallow clone.
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      depth: 0
+
+steps:
+  - name: ads-fast-validation
+    image: python:3.12-bookworm
+    commands:
+      - python -m compileall -q scripts
+      - python scripts/verify_standard.py
+      - python scripts/test_protocol_schemas.py
+      - python scripts/test_v410_t06b_multi_dispatch_conformance.py
+      - python scripts/test_execution_architecture.py
+      - python scripts/test_v49_execution_core.py
+      - python scripts/test_v49_role_execution_profile.py
+      - python scripts/test_v49_execution_contract_refs.py
