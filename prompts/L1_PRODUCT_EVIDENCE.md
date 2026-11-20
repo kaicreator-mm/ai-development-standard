@@ -28,6 +28,15 @@ Idea/Intent
 - `NO_RESEARCH_REQUIRED` 与 inline 都必须是**如实**结论，不是 waiver：**applicable policy 要求的证据不得因 compact/inline 而被跳过**；已存在等价证据时 MUST 引用其 durable 身份（exact ref/sha），而不是凭印象声称“已足够”。
 - **不得为了形式制造 research ceremony**（空 Research Issue、空 research 分支、为“看起来完整”而补齐的清单）。选择适用性 UNKNOWN 或相互矛盾时 **fail closed**，交给 authority/risk disposition，**不得静默降级**。
 
+## 多轮 Demo/实验的证据固化（可选 Product Exploration 组织方式）
+
+当 Stage 1 的多个 Product 假设需要连续实证时，优先复用现有 Product Issue 作为**探索主索引**（没有再创建一个），Git 中按 study revision 固化真实输入、协议/代码、执行收据、正反例、结论和未证明内容。主 Issue 维护问题、证据链接/精确 SHA、阻塞与 Owner 的最终处置，不复制独立第二套源事实。
+
+- 一个实验的 r0/r1 **不是**产品 semver 版本；一次失败/修订不自动需要新 Issue、branch 或 PR。研究分支是隔离工具，**commit/blob/receipt 才证明身份**。只有涉及跨仓库/独立执行责任、外部 Effect/高风险、复杂并行阻塞或适用 owner 明确要求时才建具体 Issue。
+- 对每轮实验至少问：**这次解决什么决策 UNKNOWN？什么事实会证伪？实际运行了哪些真实组件？证据和样本范围是什么？有哪些负例、UNKNOWN 和未运行的验证？如何从结果作出 ADOPT/REVISE/CONTINUE/REJECT 推荐？** 这些词仅是建议，不是新 Gate，不替代真实 Product authority。
+- 没有真实实验必要时继续按本文件 `NO_RESEARCH_REQUIRED` 和 inline 路径执行。**Architecture Research Demo 必须留在 Product Freeze 之后 Stage 2，并服从已有独立 Issue/Research branch/E1–E3 规则**；本模式不能把它提前当作 Product Research，更不能因为一个 Demo PASS 直接 Freeze。
+- 后续实践反馈索引为 [ADS #1361](https://github.com/kaicreator-mm/ai-development-standard/issues/1361)；可选参考和最小索引模板分别见 [Product Exploration Reference](../references/PRODUCT_EXPLORATION_EVIDENCE_REFERENCE.md)、[Exploration Index Template](../templates/product-exploration-index.md)。例子以 [DomainForge DKE R2 × Tally](https://github.com/kaicreator-mm/domain-forge/blob/product/dke-0.0.1-candidate-r1/docs/standards/dke/DKE-0.0.1/demos/tally-v2.1.1/REPORT.md) 为准，注意其 Element/SAP/ECP 仍未独立资格化。
+
 ## 多项依赖研究时的 L1 收敛（有界、按需）
 
 当 L1 确实包含多个相互阻断的研究/访谈/实验执行项，SHOULD 在已有 Product evidence/Issue 中**显式列出轻量依赖映射**：每项要回答的 Product 问题、现有 source/protocol、前置依赖、实际可用执行方/环境、预期可证伪的 study terminal、当前证据状态和下一项会解锁什么；复杂场景 MAY 用 `L1 Evidence DAG` 作为**阶段投影**，但不强制创建新 DAG 文件/Issue/Review Gate，不得与 Frozen implementation Task DAG 或 GitHub 实际 Task 依赖共用权威。简单 L1 保持 `inline / NO_RESEARCH_REQUIRED`。

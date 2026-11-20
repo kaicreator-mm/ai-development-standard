@@ -20,6 +20,7 @@ import json
 import re
 import subprocess
 import unittest
+from unittest import mock
 from pathlib import Path
 
 from test_v49_role_execution_profile import V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified
@@ -336,6 +337,65 @@ def _v412_s01_exact_successor_verified(rel_path: str) -> bool:
         return (
             git_blob_sha(V412_S01_QUALIFIED_BASE_SHA, rel_path) == expected_base
             and git_blob_sha("HEAD", rel_path) == exact_successor
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
+# ADS v4.19 #1376: a version-branch successor may supersede the historical
+# v4.9 read-only owner pin only on a known immutable adoption lineage.
+# Preserve historical VERSION_BASE_SHA pin checks in the owning T07 test.
+V419_ADOPTION_BASE = "fbf1a7d49596c549e955ef36949f4110a0da2d33"
+V419_ADOPTED_HEAD = "b94496eddb382a355362d47e55d2970b365fa1f6"
+V419_ADOPTED_OWNER_BLOBS = {
+    "standards/VALIDATION_STANDARD.md": (
+        "1522b85f9e68cc4a1591ea5899b53c224998e5a8",
+        "c542af7e71f5951d9859005c1eaa4e710d780b2f",
+    ),
+    "standards/DEVELOPMENT_WORKFLOW.md": (
+        "8d14b25dff70991b07d6ea2d963c86bf0e5a6286",
+        "48bc8157c971a82b0ef55908c92a9ec92cb761e0",
+    ),
+}
+
+
+def _v419_adopted_owner_successor_verified(rel_path: str, historical_pin: str) -> bool:
+    pair = V419_ADOPTED_OWNER_BLOBS.get(rel_path)
+    if pair is None or historical_pin != READ_ONLY_DEPS_REBOUND_BLOBS[rel_path]:
+        return False
+    baseline_blob, exact_successor = pair
+    try:
+        git("merge-base", "--is-ancestor", V419_ADOPTED_HEAD, "HEAD")
+        return (
+            git_blob_sha(V419_ADOPTION_BASE, rel_path) == baseline_blob
+            and git_blob_sha(V419_ADOPTED_HEAD, rel_path) == exact_successor
+            and git_blob_sha("HEAD", rel_path) == exact_successor
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
+# ADS v4.19 integrated preview: #1365 composes optional Stage-1 evidence
+# and root-class clauses into the already-accepted #1370 workflow. The
+# integrated workflow is a DIFFERENT exact blob from #1370, not a blanket
+# waiver of the original v4.9 read-only owner guarantee.
+V419_COMPOSED_WORKFLOW_SOURCE = "41ca821ca219c24e5b7f61e9c8fbe4159eef8e36"
+V419_COMPOSED_WORKFLOW_BLOB = "31923fca937df5e69cef6e115ab33c411210d587"
+
+
+def _v419_composed_workflow_successor_verified(rel_path: str, historical_pin: str) -> bool:
+    if rel_path != "standards/DEVELOPMENT_WORKFLOW.md":
+        return False
+    if historical_pin != READ_ONLY_DEPS_REBOUND_BLOBS[rel_path]:
+        return False
+    try:
+        git("merge-base", "--is-ancestor", V419_COMPOSED_WORKFLOW_SOURCE, "HEAD")
+        return (
+            git_blob_sha(V419_ADOPTED_HEAD, rel_path)
+            == V419_ADOPTED_OWNER_BLOBS[rel_path][1]
+            and git_blob_sha(V419_COMPOSED_WORKFLOW_SOURCE, rel_path)
+            == V419_COMPOSED_WORKFLOW_BLOB
+            and git_blob_sha("HEAD", rel_path) == V419_COMPOSED_WORKFLOW_BLOB
         )
     except subprocess.CalledProcessError:
         return False
@@ -1047,6 +1107,52 @@ class GateCurrentnessKernel(unittest.TestCase):
             self.assertIn(rule, self.map_doc)
             self.assertIn(rule, l2_text)
 
+    def test_v419_composed_workflow_rejects_wrong_path_and_unknown_blob(self) -> None:
+        path = "standards/DEVELOPMENT_WORKFLOW.md"
+        pin = READ_ONLY_DEPS_REBOUND_BLOBS[path]
+        self.assertFalse(_v419_composed_workflow_successor_verified(
+            "standards/VALIDATION_STANDARD.md", pin
+        ))
+        self.assertFalse(_v419_composed_workflow_successor_verified(path, "0" * 40))
+        self.assertTrue(_v419_composed_workflow_successor_verified(path, pin))
+        real_sha = git_blob_sha
+        with mock.patch(
+            __name__ + ".git_blob_sha",
+            side_effect=lambda rev, target: (
+                "f" * 40 if rev == "HEAD" else real_sha(rev, target)
+            ),
+        ):
+            self.assertFalse(_v419_composed_workflow_successor_verified(path, pin))
+        with mock.patch(
+            __name__ + ".git", side_effect=subprocess.CalledProcessError(1, "git")
+        ):
+            self.assertFalse(_v419_composed_workflow_successor_verified(path, pin))
+
+    def test_v419_owner_successor_rejects_wrong_path_pin_and_unknown_blob(self) -> None:
+        historical = READ_ONLY_DEPS_REBOUND_BLOBS["standards/VALIDATION_STANDARD.md"]
+        self.assertFalse(_v419_adopted_owner_successor_verified("standards/other.md", historical))
+        self.assertFalse(_v419_adopted_owner_successor_verified(
+            "standards/VALIDATION_STANDARD.md", "0" * 40
+        ))
+        with mock.patch(
+            __name__ + ".git_blob_sha",
+            side_effect=lambda rev, path: (
+                "f" * 40 if rev == "HEAD" else (
+                    V419_ADOPTED_OWNER_BLOBS[path][0] if rev == V419_ADOPTION_BASE
+                    else V419_ADOPTED_OWNER_BLOBS[path][1]
+                )
+            ),
+        ):
+            self.assertFalse(_v419_adopted_owner_successor_verified(
+                "standards/VALIDATION_STANDARD.md", historical
+            ))
+        with mock.patch(
+            __name__ + ".git", side_effect=subprocess.CalledProcessError(1, "git")
+        ):
+            self.assertFalse(_v419_adopted_owner_successor_verified(
+                "standards/VALIDATION_STANDARD.md", historical
+            ))
+
     def test_t07_frozen_authority_and_planning_files_unmutated(self) -> None:
         # Working tree changes stay inside the Builder write set.
         changed = set()
@@ -1117,6 +1223,12 @@ class GateCurrentnessKernel(unittest.TestCase):
                     admitted.add(V412_S01_SOURCE_BLOBS[rel_path][1])
                 if _v411_context_verified(rel_path, pinned_blob) and _v415_exact_successor_verified(rel_path):
                     admitted.add(V415_SOURCE_SUCCESSORS[rel_path][2])
+                if _v419_adopted_owner_successor_verified(rel_path, pinned_blob):
+                    # Exact v4.19 adopted standard only; unknown future third blob
+                    # cannot be accepted by old v4.9 static pin tests.
+                    admitted.add(V419_ADOPTED_OWNER_BLOBS[rel_path][1])
+                if _v419_composed_workflow_successor_verified(rel_path, pinned_blob):
+                    admitted.add(V419_COMPOSED_WORKFLOW_BLOB)
                 self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST

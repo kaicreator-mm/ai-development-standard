@@ -178,6 +178,16 @@ For a substantial or mostly serial candidate, the Planner SHOULD compare at leas
 
 Dependency-reason categories (contract or code baseline, exclusive writer, Review/Validation evidence, integration or Release convergence, and resources) are **non-authoritative planning annotations**; they do not alter GitHub native Issue Dependencies, `ready_builder`, JIT, accepted Claim, write-set/Scaffold Anchor ownership or merge/Release admission.
 
+### 13.1 Feasibility, evidence barriers and coordination cost (v4.19 candidate)
+
+For a substantial multi-package or runtime-replacement DAG, the Planner SHOULD test the **reason for each material serial edge** against the frozen contract and actual artifact prerequisites: is upstream **integrated code** required to begin the downstream concern, or is the relationship only a later compatibility/Review/Host/Release join? A final integration obligation MUST NOT by itself make independent refactor source preparation serial. Conversely, a native dependency, shared write ownership, or unresolved atomic security invariant MUST NOT be waived for concurrency. Any material DAG correction follows existing owning L2/Task-DAG mutation and accepted Claim authority; edge annotations cannot silently grant work.
+
+Before freezing extensive write sets for a material package/toolchain migration, the Planner SHOULD use available **cheap physical/source feasibility evidence** (current package import/pack graph, generated source/dist ownership, manifest/lockfile writer, CI selected Node/runtime profile and one selected consumer seam) or mark the material gap `UNKNOWN` and allocate it to an existing authorized integration/validation owner. It is not a universal pre-Freeze build/Host Gate; static evidence is sufficient when it genuinely establishes the boundary. Avoid freezing a plan that presumes artifact packaging and shared generated writes work without checking the readily available contradiction.
+
+Consider total handoff/review/merge cost when splitting. **A review iteration, CI rerun or campaign checkpoint does not automatically justify a new executable Issue**; keep it under the owning concern's append-only Review/evidence history unless a distinct authority, independently dispatchable repair or real dependency demands a separate work item. Preserve independent Reviewer/Validator roles and exact-subject evidence even when the tracking surface is shared.
+
+Sources: [DomainHarness #530](https://github.com/kaicreator-mm/domain-harness/issues/530) false v0.6→v0.7 serial dependency; [#586](https://github.com/kaicreator-mm/domain-harness/issues/586) one cross-cutting verification campaign; [v0.10.2 A5 #1354](https://github.com/kaicreator-mm/domain-harness/issues/1354) late manifest/BUILD ordering repair. This is a decision/evidence rule, not a new scheduler, required Task field, or dispatch state.
+
 ## 14. Failure handling
 
 ### 14.1 JIT oversized Task discovered after ACTIVE Claim (#1072)

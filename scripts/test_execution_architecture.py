@@ -598,6 +598,23 @@ class T06BKeyedAdmissionOracleTests(unittest.TestCase):
             base_key,
         )
 
+    def test_v419_profile_and_environment_are_not_claim_key_inputs(self) -> None:
+        builder_local = self._dispatch(role="builder", execution_profile="LOCAL_BUILDER", execution_environment="LOCAL")
+        builder_web = self._dispatch(role="builder", execution_profile="WEB_BUILDER", execution_environment="WEB")
+        builder_key = derive_claim_key(builder_local["repository"], builder_local["task"], builder_local["role"], builder_local.get("compatibility_group"))
+        self.assertEqual(
+            builder_key,
+            derive_claim_key(builder_web["repository"], builder_web["task"], builder_web["role"], builder_web.get("compatibility_group")),
+        )
+        validator_legacy = self._dispatch(role="validator", execution_profile="LOCAL_VALIDATOR", execution_environment="LOCAL")
+        validator_new = self._dispatch(role="validator", execution_profile="LOCAL_VALIDATION", execution_environment="LOCAL")
+        validator_key = derive_claim_key(validator_legacy["repository"], validator_legacy["task"], validator_legacy["role"], validator_legacy.get("compatibility_group"))
+        self.assertEqual(
+            validator_key,
+            derive_claim_key(validator_new["repository"], validator_new["task"], validator_new["role"], validator_new.get("compatibility_group")),
+        )
+        self.assertNotEqual(builder_key, validator_key)
+
     def test_d1_web_and_local_scheduler_race_one_default_key(self) -> None:
         web = self._dispatch(dispatch_id="D-web", scheduler_origin="WEB")
         local = self._dispatch(dispatch_id="D-local", scheduler_origin="LOCAL")

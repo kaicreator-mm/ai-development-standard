@@ -40,6 +40,8 @@ When implementation behavior is externally or cross-module observable, public co
 
 Implementation convenience MUST NOT silently narrow an existing compatibility contract or convert technical failure into a successful domain result. Interface compatibility remains owned by the applicable compatibility authority.
 
+For material shipped public/plugin-facing behavior, implementation evidence MUST distinguish `SOURCE_PRESENT` / `EXPORTED_OR_LOADED` from **actual selected-path invocation and observable contract behavior**. These are explanatory evidence categories, not new workflow/Gate states. An implementation claiming "selected feature supported" when only import/activation occurred must repair the real composition or state the missing integration evidence honestly; applicable Testing/Integration owner alone issues the executable proof. A clean installed public package entrypoint can expose dependency/import breakage hidden by workspace-only tests; include it where the public packaging seam is material. See [DomainHarness #139](https://github.com/kaicreator-mm/domain-harness/issues/139), [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264), and [#1394](https://github.com/kaicreator-mm/domain-harness/issues/1394).
+
 ## 6. Secret-safe implementation behavior
 
 Implementations MUST preserve Config/Secrets authority. Ordinary source, logs, fixtures, examples or durable evidence MUST NOT require raw secret values when stable references, identities or redacted representations suffice.

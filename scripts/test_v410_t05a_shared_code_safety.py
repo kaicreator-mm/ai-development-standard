@@ -34,6 +34,7 @@ import re
 import subprocess
 from pathlib import Path
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 STANDARDS = ROOT / "standards"
@@ -200,6 +201,43 @@ def _v411_context_verified(rel_path: Path, historical_blob: str) -> bool:
         return False
 
 
+# ADS #1365 v4.19 integrated source: original V410-T05A exact owner pins
+# remain immutable. Admit only two source-qualified v4.19 owner successions,
+# on the composed version ancestry, never an open-ended future owner.
+V419_OWNER_VERSION_BASE = "b94496eddb382a355362d47e55d2970b365fa1f6"
+V419_OWNER_COMPOSED_SOURCE = "41ca821ca219c24e5b7f61e9c8fbe4159eef8e36"
+V419_OWNER_SUCCESSORS = {
+    IQS: (
+        "3beba2d0324d95674b7bad2ef621e2aa81c66563",
+        "c37c4a223e21764ebe211f0e7bdd886a2060c5e2",
+    ),
+    TDS: (
+        "b7ffab0b94f4476786956f1b160c58d4f4f5110d",
+        "13ded16f7c0a69d16ceb41561ce5e026a49d81bf",
+    ),
+}
+
+
+def _v419_qualified_owner_successor(path: Path, historical_pin: str) -> bool:
+    pair = V419_OWNER_SUCCESSORS.get(path)
+    if pair is None or historical_pin != OWNER_BLOBS[path]:
+        return False
+    previous_version_blob, exact_composed_blob = pair
+    rel = path.relative_to(ROOT).as_posix()
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_OWNER_COMPOSED_SOURCE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        return (
+            _git_object_sha_at(V419_OWNER_VERSION_BASE, rel) == previous_version_blob
+            and _git_object_sha_at(V419_OWNER_COMPOSED_SOURCE, rel) == exact_composed_blob
+            and _git_object_sha_at("HEAD", rel) == exact_composed_blob
+        )
+    except (subprocess.CalledProcessError, OSError):
+        return False
+
+
 def corpus_files() -> list[Path]:
     files: list[Path] = []
     for directory in CORPUS_DIRS:
@@ -244,11 +282,30 @@ class ExactSubjectBindingTests(unittest.TestCase):
                 v411_blob = V411_OWNER_BLOBS.get(path)
                 if v411_blob is not None and _v411_context_verified(path, expected):
                     admitted.add(v411_blob)
+                if _v419_qualified_owner_successor(path, expected):
+                    admitted.add(V419_OWNER_SUCCESSORS[path][1])
                 self.assertIn(
                     actual,
                     admitted,
                     owner_mutation_message(path),
                 )
+
+    def test_v419_owner_successor_rejects_unknown_blob_and_wrong_context(self) -> None:
+        self.assertFalse(_v419_qualified_owner_successor(ICGS, OWNER_BLOBS[ICGS]))
+        self.assertFalse(_v419_qualified_owner_successor(IQS, "0" * 40))
+        self.assertTrue(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
+        actual = _git_object_sha_at
+        with mock.patch(
+            __name__ + "._git_object_sha_at",
+            side_effect=lambda rev, path: (
+                "f" * 40 if rev == "HEAD" else actual(rev, path)
+            ),
+        ):
+            self.assertFalse(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
+        with mock.patch(
+            __name__ + ".subprocess.run", side_effect=subprocess.CalledProcessError(1, "git"),
+        ):
+            self.assertFalse(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
 
     def test_owner_blob_identities_are_anchor_verified(self) -> None:
         # v4.11 F1 shared-pin bridge tamper evidence (issue #1064): every
