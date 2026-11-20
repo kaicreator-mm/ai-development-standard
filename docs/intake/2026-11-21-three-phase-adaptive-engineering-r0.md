@@ -111,9 +111,48 @@ For a phase DAG node, when material to actual scheduling/decision, recover: `PHA
 | Current evidence becomes stale | relevant slice refresh only | relevant slice refresh only | exact refs recheck | stale evidence cannot be promoted to PASS |
 | Development of software by Tally | Tally governs product/requirements | Tally consumes qualified Engineering Domain Package | Agent/tool implementation and verification | delivered application does **not** require ADS/Tally runtime |
 
-## 7. Compiler-consumer boundary (separate downstream qualification)
+## 7. ADS ↔ Tally integration boundary — **two projects only** (Owner clarification 2026-11-21)
 
-ADS owns normative **development-time** semantics. A future DomainForge-qualified compilation may transform current, pinned ADS rules/Workflow/evidence semantics plus separately qualified software-engineering knowledge into a Tally Engineering Domain Package. Tally consumes that package as a **software-development Domain App**; the programs it creates do not load ADS as runtime policy. Transformation must preserve source/authority/version/applicability and reject semantic loss, but this proposal **does not implement a compiler or require every code project to deploy DomainHarness**. The engineering Package maps to existing Business/Rule/Workflow/Validation interfaces; no second scheduler.
+**Current design scope is ONLY ADS and Tally.** Do not require, plan or assume a separate package-production project, new generic compiler, additional scheduler or external runtime as a prerequisite. This section supersedes earlier producer/compilation speculation in this source candidate; the implementation mechanism is a later bounded **Tally-owned** decision against its existing Domain Package interface. Do not claim the source proposal is already a built or activated Package.
+
+ADS owns normative **development-time** methods and rules; Tally is the **Software Engineering Domain App** implementing them during software development. The delivered application does **not** need to load ADS or the Tally engineering package at runtime. Preserve the precise ADS source version and effective profile per Task/Attempt, relevant source rules, provenance/applicability and failure on an unresolved material mismatch. A runtime package revision must not silently rewrite in-flight Task authority.
+
+### 7.1 Model Workflow and reusable domain capabilities separately
+
+| Tally Engineering Domain Package element | Definition and reuse boundary |
+| --- | --- |
+| **Workflow Definition** | The lifecycle of engineering work: L1 Requirements/DAG-P; L2 Solution Design/DAG-A; L3 Implementation/DAG-I; Review/Verify; Integration/Release; Maintenance/Replan. Defines phase activity, input/output, transitions and evidence/decision prerequisites; is not itself an executor or separate scheduler. |
+| **Domain Concepts / Knowledge** | Reusable concepts, practices, constraints, trade-offs, counterexamples for requirements, architecture, task decomposition, testing, release and maintenance; sources, applicability and uncertainty remain explicit. |
+| **Decision Procedure / Skill** | A reusable bounded procedure such as clarify requirements, analyze contradiction, evaluate architecture choices, choose test scope, diagnose root cause; one procedure can be used by several Workflows. |
+| **Rule / Policy / Validation** | Deterministic task eligibility, independence, permission, source currentness, tests and acceptance predicates where actually specified by ADS; do not turn advisory engineering practice into an invented hard gate. |
+| **Business / Agent / Tool Capability** | Tally selects and invokes actual work against accepted scope. Engineering knowledge is not a side-effect permit; a successful Agent response is not a Task PASS. |
+
+This split alone is **not sufficient** for safe extension: each added capability needs a typed purpose/input/output, version, source authority, preconditions/applicability, trust/permissions, failure/UNKNOWN behavior, validation/negative cases, and compatibility boundary. Generic software-engineering knowledge may help decide; Tally's domain remains **software development and management**, not general-purpose agent chat or arbitrary-domain workflow automation.
+
+Minimal consumption path: `ADS pinned profile + reviewed engineering knowledge → Tally-owned typed Package mapping/build → selected Engineering Business/Workflow → Agent/Tool execution → source-qualified evidence + accepted decision`. Package mapping is an **implementation candidate**, not an independently established compiler.
+
+### 7.2 Interaction abstraction — Git/GitHub preferred, not the only channel
+
+Separate **Agent Interaction** (communication), **Agent Runtime/Environment** (where work executes), **Artifact Exchange** (code/evidence), and **Engineering Authority** (who legally changes Task, Claim, native dependency, Review and Release).
+
+- **Git** is preferred for versioned source, design, tests and immutable artifact references; **GitHub native Issues/PRs/Dependencies** are the currently selected canonical durable project/Task facts under existing ADS rules. These two responsibilities are related but not identical.
+- **GitHub comments/events** are a default durable Agent handoff/coordination binding, **not** the only valid medium for Agent↔Agent messages.
+- Alternative interaction bindings may include same-host IPC, direct HTTP/RPC, event queues, or standards-based Agent collaboration adapters (e.g. A2A when a real provider supports it). An MCP Tool adapter is primarily tool access, not automatically an Agent collaboration protocol. Do not require all bindings to ship at once.
+- A Tally-owned conceptual **AgentInteractionPort** transports `send(request|message)`, `receive/observe`, `ack/reconcile` and references to produced Artifacts; concrete exact API and transport profile are Tally L2 decisions. Keep it separate from **AgentExecutor** and from GitHub/source-of-truth read/write.
+- Minimum interoperable semantics (only when material): task/work item ID, logical agent/role/session, attempt and correlation/idempotency IDs, intent/message type, source revision/currentness, immutable artifact/evidence refs, timeout/expiry, response/result state and provenance. These are *candidate semantic mappings*, **not a new mandatory wire schema**.
+- A transport ACK, agent-declared outcome, chat message, A2A Task response or queue delivery **must never auto-create a canonical Claim, Task PASS, independent Review PASS or Release authorization**. A controller validates against the actual selected authoritative source and applies the existing admission/effect path.
+- The current GitHub-only **task-meta↔Tally authoritative evidence exchange** remains unchanged. Non-GitHub Agent messaging does not authorize a second engineering state authority, private task-meta ingestion or bypass of the existing GitHub native Task DAG. A future alternate authoritative project backend would need a separate explicit profile and conformance decision; it is **not** included here.
+- Workers may communicate without GitHub write credentials; privileged source updates are still controlled by Tally's existing admitted Host path. Unknown delivery, duplicate, replay, stale source, late response and interrupted worker retain UNKNOWN/reconciliation and write-fencing semantics.
+
+### 7.3 Focused architecture acceptance
+
+1. A GitHub-backed two-Agent Builder→Reviewer flow emits an immutable candidate and an independent review result without sharing mutable worktree or confusing transport user with logical Agent identity.
+2. A same-host IPC Agent coordination flow gives the same **interaction** semantics while native Task/Claim/source facts remain unchanged; message ACK does not grant implementation authority.
+3. A remote HTTP/A2A or queued message (when actually supported) can carry task-scoped context/artifact references; duplicate or lost ACK cannot become terminal PASS, and no invented A2A conformance is claimed.
+4. Workflows can reuse a requirements-clarification Skill and architectural decision Knowledge independently; adding a Skill does not change Release gates.
+5. All delivered applications remain independent of ADS/Tally runtime; Tally alone consumes its software-engineering workflow/knowledge during development.
+
+Source owners: existing ADS `GITHUB_AGENT_INTERACTION_PROTOCOL.md`, `EXECUTION_ARCHITECTURE_STANDARD.md`, `LOCAL_AGENT_HANDOFF_PROTOCOL.md` and [ADS #1199](https://github.com/kaicreator-mm/ai-development-standard/issues/1199) own normative interaction/handoff semantics; [Tally #276](https://github.com/kaicreator-mm/tally/issues/276) owns existing Engineering Domain Data/Workflow extraction and [Tally #283](https://github.com/kaicreator-mm/tally/issues/283) is the **unassigned, non-frozen** Runtime/Route architecture candidate. This source candidate must not directly authorize implementation there.
 
 ## 8. Existing owner crosswalk and acceptance
 
