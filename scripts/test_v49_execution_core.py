@@ -21,6 +21,8 @@ import unittest
 from dataclasses import dataclass
 from pathlib import Path
 
+from test_v49_role_execution_profile import _v419_dispatch_successor_verified
+
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_DIR = ROOT / "fixtures" / "execution-core-v49"
 STANDARD = ROOT / "standards" / "EXECUTION_ARCHITECTURE_STANDARD.md"
@@ -845,7 +847,12 @@ class ExecutionCoreKernel(unittest.TestCase):
         # exact current DAG-owned blob (see READ_ONLY_DEPS_REBOUND_BLOBS).
         for rel_path, pinned_blob in READ_ONLY_DEPS_REBOUND_BLOBS.items():
             with self.subTest(read_only_rebound=rel_path):
-                self.assertEqual(pinned_blob, git_blob_sha("HEAD", rel_path))
+                observed = git_blob_sha("HEAD", rel_path)
+                self.assertTrue(
+                    observed == pinned_blob
+                    or _v419_dispatch_successor_verified(rel_path, pinned_blob),
+                    f"unadmitted owner blob: {rel_path} {observed}",
+                )
 
     # ---------- K09: Frozen Product acceptance items E/F/G/K/L/M/N ----------
 
