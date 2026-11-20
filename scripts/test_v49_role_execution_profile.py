@@ -401,11 +401,51 @@ for _artifact_path, (_, _artifact_blob) in V415_ARTIFACT_BLOBS.items():
             _historical_blob, V415_ARTIFACT_SOURCE, _artifact_blob,
         )
 
+# ADS v4.19 #1376: the accepted gate-currentness owner test changes its
+# own exact blob after #1368/#1370 standards adoption. Historical v4.15 pins
+# remain untouched; admit only this qualified successor on its real ancestry.
+V419_GATE_REBIND_BASE = "b94496eddb382a355362d47e55d2970b365fa1f6"
+V419_GATE_REBIND_SOURCE = "324680a2797428b586887e9dee1022596e0a3c93"
+V419_GATE_REBIND_PATH = "scripts/test_v49_gate_currentness.py"
+V419_GATE_REBIND_HISTORICAL_BLOB = "7b2330126ceb65effb80a8b8eced5ec0848c9696"
+V419_GATE_REBIND_SUCCESSOR_BLOB = "88c6ca777093103edd346c79c1860280dbfcd1fd"
+
+
+def _v419_gate_test_successor_verified(rel_path: str) -> bool:
+    if rel_path != V419_GATE_REBIND_PATH:
+        return False
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_GATE_REBIND_SOURCE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        return (
+            git_object_sha(V419_GATE_REBIND_BASE, rel_path)
+            == V419_GATE_REBIND_HISTORICAL_BLOB
+            and git_object_sha(V419_GATE_REBIND_SOURCE, rel_path)
+            == V419_GATE_REBIND_SUCCESSOR_BLOB
+            and git_object_sha("HEAD", rel_path)
+            == V419_GATE_REBIND_SUCCESSOR_BLOB
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
 for _repair_path, _repair_blob in V415_BOUNDED_REPAIR_BLOBS.items():
     if _v415_bounded_repair_successor_verified(_repair_path):
         V415_SOURCE_SUCCESSORS[_repair_path] = (
             V415_SOURCE_SUCCESSORS[_repair_path][0], V415_BOUNDED_REPAIR_SOURCE, _repair_blob,
         )
+
+
+# Rebind only after verifying an immutable v4.19 successor; old source
+# tuples and all unrelated paths keep their v4.15 constraints.
+if _v419_gate_test_successor_verified(V419_GATE_REBIND_PATH):
+    V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH] = (
+        V415_SOURCE_SUCCESSORS[V419_GATE_REBIND_PATH][0],
+        V419_GATE_REBIND_SOURCE,
+        V419_GATE_REBIND_SUCCESSOR_BLOB,
+    )
 
 
 def heading_exists(text: str, anchor: str) -> bool:
@@ -910,6 +950,23 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
             self.assertNotIn(V415_SOURCE_BLOB, _admitted_rebound_blobs(V415_SOURCE_PATH, pinned))
         with mock.patch(__name__ + "._v411_context_verified", return_value=False):
             self.assertEqual(_admitted_rebound_blobs(V415_SOURCE_PATH, pinned), {pinned})
+
+    def test_v419_gate_test_rebind_refuses_unknown_third_blob_and_wrong_lineage(self) -> None:
+        self.assertFalse(_v419_gate_test_successor_verified("schemas/dispatch.schema.json"))
+        self.assertTrue(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
+        original_sha = git_object_sha
+        with mock.patch(
+            __name__ + ".git_object_sha",
+            side_effect=lambda rev, path: (
+                "f" * 40 if rev == "HEAD" else original_sha(rev, path)
+            ),
+        ):
+            self.assertFalse(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
+        with mock.patch(
+            __name__ + ".subprocess.run",
+            side_effect=subprocess.CalledProcessError(1, "git"),
+        ):
+            self.assertFalse(_v419_gate_test_successor_verified(V419_GATE_REBIND_PATH))
 
     def test_v415_shared_successors_reject_third_blob_and_invalid_lineage(self) -> None:
         self.assertFalse(_v415_exact_successor_verified("schemas/dispatch.schema.json"))
