@@ -240,6 +240,31 @@ def git_object_sha(rev: str, rel_path: str) -> str:
     return result.stdout.strip()
 
 
+# ADS v4.19 #1372 scoped successor: historical v4.10 schema pin is unchanged.
+# Accept exactly the #1357 owner-authorized schema blob only on the immutable
+# v4.19 version-base ancestry, never via a broad schema/test bypass.
+V419_DISPATCH_BASE = "fbf1a7d49596c549e955ef36949f4110a0da2d33"
+V419_DISPATCH_PATH = "schemas/dispatch.schema.json"
+V419_DISPATCH_HISTORICAL_BLOB = "90bea62524beb0215d5f40cf0be9986786648fec"
+V419_DISPATCH_SUCCESSOR_BLOB = "5d9233b6b881d9d92f66fc6cd5307a05a0fdbe2f"
+
+
+def _v419_dispatch_successor_verified(rel_path: str, historical_blob: str) -> bool:
+    if rel_path != V419_DISPATCH_PATH or historical_blob != V419_DISPATCH_HISTORICAL_BLOB:
+        return False
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_DISPATCH_BASE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        return (
+            git_object_sha(V419_DISPATCH_BASE, rel_path) == historical_blob
+            and git_object_sha("HEAD", rel_path) == V419_DISPATCH_SUCCESSOR_BLOB
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
 def _v411_context_verified(rel_path: str, historical_blob: str) -> bool:
     """Exact v4.11 context gate, keyed on verifiable repository facts only
     (no environment variables, no CI event context — both are spoofable or
@@ -831,6 +856,25 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
                 value[field] = "CLAIMED"
                 self.assertTrue(validate_subset(value, SCHEMA))
 
+    def test_v419_dispatch_successor_rejects_wrong_context_and_third_blob(self) -> None:
+        # The guard is an exact successor exception, not a historical rewrite,
+        # wildcard allowed-blob list or new authority source.
+        self.assertFalse(_v419_dispatch_successor_verified(
+            "schemas/other.schema.json", V419_DISPATCH_HISTORICAL_BLOB
+        ))
+        self.assertFalse(_v419_dispatch_successor_verified(
+            V419_DISPATCH_PATH, "0" * 40
+        ))
+        with mock.patch(
+            __name__ + ".git_object_sha",
+            side_effect=lambda rev, rel: (
+                "f" * 40 if rev == "HEAD" else V419_DISPATCH_HISTORICAL_BLOB
+            ),
+        ):
+            self.assertFalse(_v419_dispatch_successor_verified(
+                V419_DISPATCH_PATH, V419_DISPATCH_HISTORICAL_BLOB
+            ))
+
     def test_read_only_owner_surfaces_unmutated_since_base(self) -> None:
         for rel_path in READ_ONLY_OWNER_PATHS:
             if rel_path in V411_OWNER_BLOBS:
@@ -849,7 +893,12 @@ class RoleExecutionProfileSchemaTests(unittest.TestCase):
             v411_blobs = V411_REBOUND_OWNER_BLOBS.get(rel_path, ())
             if not v411_blobs:
                 with self.subTest(path_rebound=rel_path):
-                    self.assertEqual(pinned_blob, git_object_sha("HEAD", rel_path))
+                    observed = git_object_sha("HEAD", rel_path)
+                    self.assertTrue(
+                        observed == pinned_blob
+                        or _v419_dispatch_successor_verified(rel_path, pinned_blob),
+                        f"unadmitted owner blob: {rel_path} {observed}",
+                    )
                 continue
             # v4.11 F2 shared-pin bridge (issue #967, dispatch
             # V411-T06-F2-SHARED-PIN-R1; R2C extension #967@6120017465):
