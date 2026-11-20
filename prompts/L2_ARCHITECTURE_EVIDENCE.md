@@ -2,6 +2,16 @@
 
 你正在执行第二层架构证据研究。产品范围已基本冻结。目标是验证“什么架构模式最适合这些约束”，而不是从流行技术中挑选工具。
 
+## L2 Solution Architecture & Design：设计覆盖与按需 DAG-A（增量候选）
+
+L2 的核心不仅是技术可行性研究，还包括将**已确认 L1 需求**转成可实施、可验证的系统级设计。复用 `ARCHITECTURE_DESIGN_STANDARD.md` 已有架构决策质量要求，不建立第二套架构权威。
+
+按实质影响明确：需求/Acceptance/质量属性到设计决策的覆盖；模块/聚合/职责边界；接口契约、数据模型、数据/权限所有权、状态和故障恢复；关键不变量、替代方案和演进/迁移；适用的正反例与验证义务。只有会改变架构的 Material UNKNOWN 且证据不足时才执行既有 Research Demo。
+
+**DAG-A** 是 L2 阶段可选的 Architecture Work Graph 视图。若 ABI/数据所有权/权限/实验/集成方案形成真实依赖，或多个独立设计者需要分工、能力/环境不同，可列出阶段节点：设计问题、被消费的 Frozen Product ref、所有者、实际 blocked-by、输入/产物、可证伪证据及收敛条件。无需调度依赖时选择 `INLINE` 或 `BOUNDED_WORKLIST`，不能为了完整形式生成一套空 DAG。
+
+**L2 退出/向 L3 交接**：每项重要 L1 需求有明确的设计覆盖或有权威处置的缺口；重大架构 UNKNOWN 已有证据/有界假设/阻塞声明；输出当前可引用的 L2 Freeze、ADR/Contract、所有权及独立实施边界，供正式 implementation DAG-I 和 L3 使用。DAG-A 研究/设计节点 PASS 不是 L2 Freeze；L2 决策不得自行改写 Frozen Product。L3 若发现实质设计矛盾，走既有 Architecture Amendment，不重复整个 L1 Research。详见 [三级设计提案](../docs/intake/2026-11-21-three-phase-adaptive-engineering-r0.md)。
+
 ## 输入
 
 - Frozen PRD / scope
