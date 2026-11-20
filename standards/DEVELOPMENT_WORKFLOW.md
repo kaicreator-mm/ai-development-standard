@@ -418,7 +418,7 @@ Stage 4 的默认顺序必须避免把昂贵 exact-SHA Validation 放在仍可�
 implementation complete
 → finalize PR + CI/workflow/config
 → cheap/scoped local checks
-→ configured Minimal CI on current exact SHA
+→ required non-equivalent Minimal CI (if any) on current exact SHA
 → task candidate identity stabilized
 → expensive Task-owned exact-SHA Validation
 → applicable Independent Review
@@ -444,6 +444,19 @@ basic build smoke
 ```
 
 这些 checks 仍须按项目 authority 绑定正确 identity，但它们不应被误写成未执行的真实 platform/device/Critical Journey PASS。
+
+
+#### 4.1a Pre-PR Fast Preflight（v4.19 增量，复用现有 Testing/Validation/CI）
+
+在声明实现已交付、将 PR 标记为 Ready for Review，或请求昂贵的 CI/真实环境 Validation 之前，Builder/Controller **MUST** 使用仓库已声明的权威检查入口完成与实际改动相匹配的低成本检查；发现已知基础缺陷应先修复，不得将 CI 用作常规语法调试循环。检查义务和执行环境分离，沿用 `TESTING_STANDARD.md`、`IMPLEMENTATION_QUALITY_STANDARD.md`、`VALIDATION_STANDARD.md` 与 `CI_EXECUTION_STANDARD.md` 的原有 authority，而非新增 Gate：
+
+1. **语法 / 解析（MUST）**：实际新增或修改且有适用解析器的源码、测试、脚本和配置（包括 CI workflow、JSON/YAML 等）必须在相应语言/目标环境的合法工具下解析通过。语法失败的候选不得声称 Ready；文档-only 改动只做项目已有的适用文档检查，不假装执行了源码测试。
+2. **受影响测试（MUST）**：必须真实运行并通过新增/改动的相关测试，以及由源码、接口、依赖、配置、行为变更所影响的**既有测试**；检查测试发现与实际执行数量，预期测试未被发现或未执行不能标记 PASS。新公共契约、缺陷修复与关键失败路径仍按 Testing owner 提供相应覆盖或记录合法、具体的不可测试边界。
+3. **现有项目门禁（条件 MUST）**：当仓库/Task 已经要求相关范围的 typecheck、lint、format、compile、contract 或 build smoke 时，必须通过；不为每个项目强制引入新工具、覆盖率阈值或全仓测试矩阵。检查范围以实际变更影响与真实依赖为准。
+4. **失败与完成状态**：本次引入的必需检查失败时先修复再交付；已有基线缺陷只有在可核验的 baseline 对比和适用权威允许下才可区分，不得忽略；运行环境缺失或测试未执行时，按现有 Validation 状态语义如实记录 `BLOCKED` / `NOT_RUN`；预期测试没有被发现时，仅将 `test discovery missing` 作为失败原因或诊断事实记录，关联的必需检查仍使用已有 Gate 状态（例如 `NOT_RUN` / `BLOCKED`），不得新增第六种 Gate 状态或改写为 `PASS`。
+5. **Commit 与证据身份**：允许显式未完成的 WIP commit / Draft PR 保存工作进度，但它们不是合格 Task/PR 候选。开发中的工作树检查是快速反馈；正式验收仍使用所需的 exact-SHA/target/toolchain/输入证据。记录实际命令、exit code、测试范围和结果并优先写回源 GitHub Task Issue，供后续 Agent 复用。
+6. **最小成本**：已被当前环境等价执行并具备可信证据的检查不得为了形式重复 CI；只有原本 required 的独立执行、特定 Provider / GitHub status、真实 Host/平台或版本/发布范围仍需补齐其特定证明。Git hook 是可选自动化机制，不是额外的通用规范前置条件。
+
 
 在需要昂贵真实环境 Validation 的 Task 上，PR、CI workflow/config、依赖/lockfile/build inputs SHOULD 在进入昂贵 Validation 前完成定稿。
 

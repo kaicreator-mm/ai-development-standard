@@ -1,0 +1,33 @@
+# ADS v4.19 #1374 — existing frozen T01 Woodpecker provider execution.
+# No new ADS Gate: this makes the named provider runnable on real exact SHAs.
+# Historical ADS tests resolve older git objects; do not use a shallow clone.
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      depth: 0
+
+# Avoid duplicate push+PR runs and unrelated provider execution.
+# Trigger only when this provider-specific Task/Release profile actually requires it.
+when:
+  - event: manual
+
+steps:
+  - name: ads-fast-validation
+    # Fleet agents run backend=local: the step `image` is resolved as a
+    # shell executable inside the agent container (container images are not
+    # pulled), so it must name an existing binary (see domain-harness verify.yaml).
+    image: bash
+    commands:
+      # backend=local clone lands as --depth=1 --filter=tree:0 regardless of
+      # clone.settings.depth (pipeline #16 evidence); unshallow in-step so the
+      # pinned BASE_SHA historical objects resolve locally, not via lazy fetch.
+      - git fetch --unshallow --no-filter origin || echo "clone already complete"
+      - python -m compileall -q scripts
+      - python scripts/verify_standard.py
+      - python scripts/test_protocol_schemas.py
+      - python scripts/test_v410_t06b_multi_dispatch_conformance.py
+      - python scripts/test_execution_architecture.py
+      - python scripts/test_v49_execution_core.py
+      - python scripts/test_v49_role_execution_profile.py
+      - python scripts/test_v49_execution_contract_refs.py

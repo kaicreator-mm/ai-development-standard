@@ -238,7 +238,7 @@ class V33LifecycleContractRegression(unittest.TestCase):
         self.assertLess(ci, expensive)
         for token in (
             "finalize PR + CI/workflow/config",
-            "configured Minimal CI on current exact SHA",
+            "required non-equivalent Minimal CI (if any) on current exact SHA",
             "CI/workflow/config change 不是默认的 evidence-only commit",
             "旧 evidence 只属于原 tested SHA",
         ):

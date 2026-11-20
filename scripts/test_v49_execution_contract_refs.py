@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 import subprocess
 import unittest
 
 from test_protocol_schemas import assert_supported_schema, load_schema, validate_subset
-from test_v49_role_execution_profile import V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified
+from test_v49_role_execution_profile import (
+    V415_SOURCE_SUCCESSORS, _v415_exact_successor_verified,
+    V419_DISPATCH_BASE, V419_DISPATCH_HISTORICAL_BLOB,
+    V419_DISPATCH_SUCCESSOR_BLOB, _v419_dispatch_successor_verified,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -333,6 +338,32 @@ class ExecutionContractRefsV49BackwardCompatibilityTests(unittest.TestCase):
         assert_supported_schema(SCHEMA_V2)
 
     def test_schema_change_is_purely_additive(self) -> None:
+        # #1372: v4.9 historical schema is immutable. v4.19 may add exactly
+        # WEB_BUILDER/LOCAL_VALIDATION after the original five profiles, with
+        # precisely the two authorized role-binding clause changes. The complete
+        # schema identity and version-base ancestry are checked by the helper.
+        if _v419_dispatch_successor_verified(
+            "schemas/dispatch.schema.json", V419_DISPATCH_HISTORICAL_BLOB
+        ):
+            expected = copy.deepcopy(git_json_at(
+                V419_DISPATCH_BASE, "schemas/dispatch.schema.json"
+            ))
+            expected["description"] = expected["description"].replace(
+                "role and execution_profile configure authority",
+                "role determines responsibility and authority while execution_profile "
+                "selects bounded execution context within that role",
+            )
+            expected["properties"]["execution_profile"]["enum"].extend(
+                ["WEB_BUILDER", "LOCAL_VALIDATION"]
+            )
+            expected["allOf"][6]["if"]["properties"]["execution_profile"]["enum"].append(
+                "LOCAL_VALIDATION"
+            )
+            expected["allOf"][7]["if"]["properties"]["execution_profile"] = {
+                "enum": ["LOCAL_BUILDER", "WEB_BUILDER"]
+            }
+            self.assertEqual(SCHEMA_V2, expected)
+            return
         base_props = self.base_schema["properties"]
         cand_props = SCHEMA_V2["properties"]
         self.assertEqual(set(cand_props) - set(base_props), set(ADDITIVE_DISPATCH_FIELDS))
@@ -509,10 +540,24 @@ class ExecutionContractRefsV49CompatibilityRecordTests(unittest.TestCase):
             self.compat["candidate"]["sha_or_digest"],
             f"git-blob:{EXPECTED_CANDIDATE_BLOB}",
         )
-        self.assertEqual(
-            self.compat["candidate"]["sha_or_digest"],
-            f"git-blob:{git_blob_sha(DISPATCH_SCHEMA_PATH)}",
-        )
+        if _v419_dispatch_successor_verified(
+            "schemas/dispatch.schema.json", V419_DISPATCH_HISTORICAL_BLOB
+        ):
+            # The v4.9 compatibility record remains historical, not rewritten
+            # to a v4.19 schema digest. Exact successor identity is separately
+            # anchored to the authorized v4.19 schema and immutable base.
+            self.assertEqual(
+                self.compat["candidate"]["sha_or_digest"],
+                f"git-blob:{git_blob_sha(DISPATCH_SCHEMA_PATH, rev=V419_DISPATCH_BASE)}",
+            )
+            self.assertEqual(
+                git_blob_sha(DISPATCH_SCHEMA_PATH), V419_DISPATCH_SUCCESSOR_BLOB
+            )
+        else:
+            self.assertEqual(
+                self.compat["candidate"]["sha_or_digest"],
+                f"git-blob:{git_blob_sha(DISPATCH_SCHEMA_PATH)}",
+            )
 
     def test_change_operations_declare_exactly_the_new_fields(self) -> None:
         operations = self.compat["change_operations"]
@@ -595,6 +640,9 @@ class ExecutionContractRefsV49AuthorityBoundaryTests(unittest.TestCase):
         cls.reference = REFERENCE_PATH.read_text(encoding="utf-8")
 
     def test_authority_and_gate_vocabulary_unchanged(self) -> None:
+        v419_successor = _v419_dispatch_successor_verified(
+            "schemas/dispatch.schema.json", V419_DISPATCH_HISTORICAL_BLOB
+        )
         for field in (
             "dispatch_state",
             "result",
@@ -603,11 +651,19 @@ class ExecutionContractRefsV49AuthorityBoundaryTests(unittest.TestCase):
             "agent_freedom",
         ):
             with self.subTest(field=field):
-                self.assertEqual(
-                    self.base_schema["properties"][field],
-                    SCHEMA_V2["properties"][field],
-                    f"{field} vocabulary must stay frozen byte-for-byte",
-                )
+                if field == "execution_profile" and v419_successor:
+                    expected = copy.deepcopy(self.base_schema["properties"][field])
+                    expected["enum"].extend(["WEB_BUILDER", "LOCAL_VALIDATION"])
+                    self.assertEqual(
+                        SCHEMA_V2["properties"][field], expected,
+                        "v4.19 adds exactly two profiles; old vocabulary remains",
+                    )
+                else:
+                    self.assertEqual(
+                        self.base_schema["properties"][field],
+                        SCHEMA_V2["properties"][field],
+                        f"{field} vocabulary must stay frozen byte-for-byte",
+                    )
 
     def test_new_fields_carry_identity_not_semantics(self) -> None:
         for field in sorted(T008_REF_FIELDS):
