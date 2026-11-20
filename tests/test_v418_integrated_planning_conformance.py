@@ -61,6 +61,53 @@ def _qualified_v419_t05a_zero_failures(path: str) -> bool:
     except (subprocess.CalledProcessError, OSError):
         return False
 
+# #1380: the v4.19 operability change modifies IQS and the T05A guard,
+# not v4.18's immutable historic receipt. Qualify exactly these Blobs
+# under a real source ancestor and original version/source identities.
+V419_I1380_NORMATIVE_SOURCE = "f5b2e8970446fafa37dc3e0bfbf46db729091de7"
+V419_I1380_TEST_SOURCE = "862eb2d2da2b9a640191b59c172d47c59d06e3ea"
+V419_I1380_CHANGED_BLOBS = {
+    "scripts/test_v410_t05a_shared_code_safety.py": "4f840fddb8d376fe3fd73475802a450140df622f",
+    "standards/IMPLEMENTATION_QUALITY_STANDARD.md": "87b444a038abf788bf6ba3a2c4aa93ce7b07ce92",
+}
+V419_I1380_CONFIG_BLOB = "030c05cde2eba541ddfbce78ae710e5c336075be"
+
+
+def _qualified_v419_i1380_t05a_zero_failures(path: str) -> bool:
+    if path != "scripts/test_v410_t05a_shared_code_safety.py":
+        return False
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_T05A_SOURCE, "HEAD"],
+            cwd=ROOT, capture_output=True, check=True,
+        )
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_I1380_TEST_SOURCE, "HEAD"],
+            cwd=ROOT, capture_output=True, check=True,
+        )
+        config = "standards/CONFIGURATION_SECRETS_STANDARD.md"
+        if (
+            git_blob_at(V419_I1380_NORMATIVE_SOURCE, config) != V419_I1380_CONFIG_BLOB
+            or git_blob_at("HEAD", config) != V419_I1380_CONFIG_BLOB
+        ):
+            return False
+        for rel_path, (historic, qualified) in V419_EXACT_BLOBS.items():
+            successor = V419_I1380_CHANGED_BLOBS.get(rel_path, qualified)
+            if not (
+                git_blob_at(V419_VERSION_BASE, rel_path) == historic
+                and git_blob_at(V419_T05A_SOURCE, rel_path) == qualified
+                and git_blob_at("HEAD", rel_path) == successor
+            ):
+                return False
+            if rel_path in V419_I1380_CHANGED_BLOBS and (
+                git_blob_at(V419_I1380_TEST_SOURCE, rel_path) != successor
+            ):
+                return False
+        return True
+    except (subprocess.CalledProcessError, OSError):
+        return False
+
+
 def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
@@ -162,11 +209,30 @@ class IntegratedPlanning(unittest.TestCase):
                 self.assertFalse(_qualified_v419_t05a_zero_failures(
                     "scripts/test_v410_t05a_shared_code_safety.py"
                 ))
+        self.assertFalse(_qualified_v419_i1380_t05a_zero_failures(
+            "scripts/test_v411_t13_role_conduct.py"
+        ))
+        if _qualified_v419_i1380_t05a_zero_failures(
+            "scripts/test_v410_t05a_shared_code_safety.py"
+        ):
+            real_blob = git_blob_at
+            with mock.patch(
+                __name__ + ".git_blob_at",
+                side_effect=lambda rev, name: (
+                    "f" * 40 if rev == "HEAD" else real_blob(rev, name)
+                ),
+            ):
+                self.assertFalse(_qualified_v419_i1380_t05a_zero_failures(
+                    "scripts/test_v410_t05a_shared_code_safety.py"
+                ))
         with mock.patch(
             __name__ + ".subprocess.run",
             side_effect=subprocess.CalledProcessError(1, "git"),
         ):
             self.assertFalse(_qualified_v419_t05a_zero_failures(
+                "scripts/test_v410_t05a_shared_code_safety.py"
+            ))
+            self.assertFalse(_qualified_v419_i1380_t05a_zero_failures(
                 "scripts/test_v410_t05a_shared_code_safety.py"
             ))
 
@@ -195,7 +261,10 @@ class IntegratedPlanning(unittest.TestCase):
                       f"RAN_EXPECTED={count} FAIL_HEADERS={len(headers)}", flush=True)
                 for header in headers:
                     print("HISTORIC_RAW_FAILURE_HEADER=" + header, flush=True)
-                v419_resolved = _qualified_v419_t05a_zero_failures(path)
+                v419_resolved = (
+                    _qualified_v419_t05a_zero_failures(path)
+                    or _qualified_v419_i1380_t05a_zero_failures(path)
+                )
                 self.assertEqual(proc.returncode, 0 if v419_resolved else 1)
                 # v4.19 qualified T05A adds one fail-closed owner-successor test.
                 self.assertRegex(log, rf"Ran {count + (1 if v419_resolved else 0)} tests? in ")

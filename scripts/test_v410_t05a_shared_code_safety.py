@@ -218,6 +218,37 @@ V419_OWNER_SUCCESSORS = {
 }
 
 
+# #1380 v4.19 prospective operability amendment. The original T05A
+# and #1365 implementation-quality owner pins remain immutable; admit only
+# the source-reviewed exact new owner Blob on its real Git provenance.
+V419_I1380_BASE = "b0ea4c1b15898c10bf069e33ae2b9c08f2317dac"
+V419_I1380_SOURCE = "f5b2e8970446fafa37dc3e0bfbf46db729091de7"
+V419_I1380_IQS_BLOB = "87b444a038abf788bf6ba3a2c4aa93ce7b07ce92"
+
+
+def _v419_i1380_quality_successor(path: Path, historical_pin: str) -> bool:
+    if path != IQS or historical_pin != OWNER_BLOBS[IQS]:
+        return False
+    rel = path.relative_to(ROOT).as_posix()
+    try:
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_I1380_SOURCE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", V419_OWNER_COMPOSED_SOURCE, "HEAD"],
+            cwd=ROOT, check=True, capture_output=True,
+        )
+        return (
+            _git_object_sha_at(V419_OWNER_VERSION_BASE, rel) == V419_OWNER_SUCCESSORS[IQS][0]
+            and _git_object_sha_at(V419_I1380_BASE, rel) == V419_OWNER_SUCCESSORS[IQS][1]
+            and _git_object_sha_at(V419_I1380_SOURCE, rel) == V419_I1380_IQS_BLOB
+            and _git_object_sha_at("HEAD", rel) == V419_I1380_IQS_BLOB
+        )
+    except (subprocess.CalledProcessError, OSError):
+        return False
+
+
 def _v419_qualified_owner_successor(path: Path, historical_pin: str) -> bool:
     pair = V419_OWNER_SUCCESSORS.get(path)
     if pair is None or historical_pin != OWNER_BLOBS[path]:
@@ -284,6 +315,8 @@ class ExactSubjectBindingTests(unittest.TestCase):
                     admitted.add(v411_blob)
                 if _v419_qualified_owner_successor(path, expected):
                     admitted.add(V419_OWNER_SUCCESSORS[path][1])
+                if _v419_i1380_quality_successor(path, expected):
+                    admitted.add(V419_I1380_IQS_BLOB)
                 self.assertIn(
                     actual,
                     admitted,
@@ -293,7 +326,12 @@ class ExactSubjectBindingTests(unittest.TestCase):
     def test_v419_owner_successor_rejects_unknown_blob_and_wrong_context(self) -> None:
         self.assertFalse(_v419_qualified_owner_successor(ICGS, OWNER_BLOBS[ICGS]))
         self.assertFalse(_v419_qualified_owner_successor(IQS, "0" * 40))
-        self.assertTrue(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
+        self.assertFalse(_v419_i1380_quality_successor(TDS, OWNER_BLOBS[TDS]))
+        self.assertFalse(_v419_i1380_quality_successor(IQS, "0" * 40))
+        self.assertTrue(
+            _v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS])
+            or _v419_i1380_quality_successor(IQS, OWNER_BLOBS[IQS])
+        )
         actual = _git_object_sha_at
         with mock.patch(
             __name__ + "._git_object_sha_at",
@@ -302,10 +340,12 @@ class ExactSubjectBindingTests(unittest.TestCase):
             ),
         ):
             self.assertFalse(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
+            self.assertFalse(_v419_i1380_quality_successor(IQS, OWNER_BLOBS[IQS]))
         with mock.patch(
             __name__ + ".subprocess.run", side_effect=subprocess.CalledProcessError(1, "git"),
         ):
             self.assertFalse(_v419_qualified_owner_successor(IQS, OWNER_BLOBS[IQS]))
+            self.assertFalse(_v419_i1380_quality_successor(IQS, OWNER_BLOBS[IQS]))
 
     def test_owner_blob_identities_are_anchor_verified(self) -> None:
         # v4.11 F1 shared-pin bridge tamper evidence (issue #1064): every

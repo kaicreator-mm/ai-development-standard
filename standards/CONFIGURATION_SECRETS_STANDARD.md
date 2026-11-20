@@ -147,3 +147,39 @@ Minimal/Fast-Path work may omit a formal configuration profile when configuratio
 - `GIT_EXECUTION_STANDARD.md` owns workspace/repository execution.
 - `WORKSPACE_ARTIFACT_STANDARD.md` owns artifact class/lifecycle; `SECRET_MATERIAL` remains subject to this standard's value-handling rules.
 - T07 owns central adoption/PROJECT_OVERRIDES wiring.
+
+## 16. First-run setup rather than mandatory hand-edited business config (v4.19)
+
+For an **interactive end-user application**, missing or invalid **business/application configuration** MUST NOT, by itself, prevent the user from launching a minimal, safe application shell or from reaching the initial setup/recovery workflow. A project MUST NOT make manually creating, editing or copying a `.env`, YAML, JSON or other configuration file the **only** first-run path for a user-facing app. A configuration file is permitted as an optional import, deployment or advanced-administration mechanism under the same source-precedence and secret rules; the file format is not a startup entitlement.
+
+### 16.1 Interactive first-run contract
+
+When no usable configuration is present, the application MUST offer its authorized user a discoverable setup/recovery entrypoint (for example a desktop dialog, local setup page or guided startup flow) and identify the incomplete settings without exposing secret values. An applicable flow SHOULD permit the user to:
+
+1. choose or create the relevant project/account/environment/connection settings;
+2. enter required non-secret values and securely supply secrets through the project's authorized storage/provider;
+3. validate types, required inputs, reachability or credentials when such validation is feasible and material, with field-specific actionable errors; and
+4. save authorized settings, clearly distinguish a saved configuration from a verified working connection, and continue or resume normal startup after required conditions pass.
+
+Persisted configuration MUST follow §§2–11 (authority/precedence, secret storage, least privilege and redaction). A later restart SHOULD reuse the authorized saved non-secret configuration and secret references rather than requiring the user to re-enter valid settings without a reason.
+
+**No authority by setup presence:** before authentication/authorization and required setup are complete, the application MUST NOT advertise normal business readiness or enable protected effects. A web-based setup UI MUST NOT expose unauthenticated remote administration, a default password, an open mutation endpoint or automatic production side effects. Prefer an authorized local-only/bootstrap-scoped entrypoint unless a separately reviewed secure remote onboarding design is required. Invalid or missing credentials remain `BLOCKED` for the affected protected operation, not fabricated credentials or `PASS`.
+
+### 16.2 Headless services, CLI and true bootstrap prerequisites
+
+A daemon, server-only process, CI job, infrastructure component, embedded system or other genuinely noninteractive program is **not required to invent a GUI or start accepting unsafe production traffic** merely to satisfy §16.1. It MUST provide an explicit documented initial setup path appropriate to its execution profile: a one-time `init/setup` command, an authorized API/installer, or deterministic environment/secret/config injection in orchestration. When mandatory inputs are absent, the service MAY stop safely or enter a minimal administrative mode; the error MUST name the missing setting class/key, safe correction step and where to configure it, without printing secrets. See `IMPLEMENTATION_QUALITY_STANDARD.md` §12.
+
+Distinguish *business configuration that can be collected after opening the setup UI* from true **process bootstrap requirements** such as unavailable runtime/binary, required OS permissions, inaccessible configured storage, safety-critical trust roots or platform resource constraints. A genuinely impossible/unsafe bootstrap MAY fail fast with actionable diagnosis; no standard may require connecting to an unauthorized live database/provider just so the setup screen can be shown. Container/cloud deployments MAY continue using declarative config/env/secret injection as their authorized noninteractive setup.
+
+### 16.3 Affected-path validation and proportionality
+
+For new interactive products and materially modified first-run/configuration behavior, the selected project test profile SHOULD verify:
+
+- first launch with no optional business config reaches setup (rather than crashing or insisting on a hand-edited file);
+- invalid/missing values yield actionable non-secret errors, with normal business operations remaining gated;
+- completing setup saves configuration through the authorized mechanism and subsequent launch uses it; and
+- the applicable headless/bootstrap exception fails safely with a useful diagnostic and no credential leakage.
+
+A one-time manual critical-journey check is sufficient where the UI cannot be executed in a deterministic automated profile, provided the actual evidence and limitations are recorded truthfully. Ordinary library, noninteractive tool and documentation changes do not acquire a fictitious setup UI obligation. Legacy apps not touching first-run/configuration paths SHOULD migrate when those paths are materially changed or when the owning Product/Architecture scope requires it; this v4.19 clause does not retroactively mark past Release/Task results as failed.
+
+This §16 changes user-facing startup usability; it does **not** change the existing configuration-source authority, secret policy, protected Host authorization, readiness semantics, native Gate vocabulary or Release Qualification.
