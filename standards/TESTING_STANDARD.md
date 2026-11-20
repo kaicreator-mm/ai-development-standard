@@ -61,6 +61,18 @@
 - 错误处理 SHOULD 测真实 failure behavior，不仅验证 happy path。
 - UI 变化对关键交互 SHOULD 有 component 或 E2E 证据；纯视觉变化按项目需要使用 screenshot/visual regression。
 
+### 6.1 Executed-test discovery: actual suite, not command name (v4.19 candidate)
+
+When a Test/CI profile materially claims coverage of a declared contract, recovery, security or other required suite, its owner SHOULD compare the **actual discovered/executed test inventory** against the suite(s) that profile claims to cover. An entrypoint existing, source tests being typechecked, or a green aggregate command does not prove that nested/filtered/renamed tests were executed. If a material required suite was omitted, the omitted scope remains `NOT_RUN` under the existing Validation owner; the actually executed scope retains its honest result. Correct test selection/discovery and rerun the affected profile at the proper exact subject. Prefer the ecosystem runner's actual collection/list output or small sentinel/fixture test; do not create a universal test-count target or require exhaustive discovery inventories for trivial Fast Path checks.
+
+Source case: [DomainHarness #162](https://github.com/kaicreator-mm/domain-harness/issues/162) (`npm test` glob excluded nested tests). This is test evidence, not an excuse to rewrite productive code or rerun every expensive unrelated suite.
+
+### 6.2 Selected public path and retained behavior (v4.19 candidate)
+
+For material public SDK/framework/plug-in or architecture-replacement acceptance, distinguish **declared/exported/imported/initialized** components from components **actually selected, invoked and behaviorally verified** through the supported public entrypoint. The owning integration/contract test SHOULD prove the applicable call/dispatch chain and observable result with one representative clean consumer, plus high-impact negative(s) where authorization, replay, concurrency or multi-binding routing is material. A compiled module, loaded hook count, mock-only path, or standalone component PASS alone MUST NOT be presented as proof of required integration behavior. Release-wide full/Hidden/platform evidence stays with the existing closure owner; a new full App test is not automatically required for every leaf.
+
+Sources: [DomainHarness #1013](https://github.com/kaicreator-mm/domain-harness/issues/1013), [#1102](https://github.com/kaicreator-mm/domain-harness/issues/1102), [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264). If the relevant public integration requires unfinished upstream source, record the executable-path check under the appropriate future integration Task and keep that particular claim `NOT_RUN`; no fabricated early PASS.
+
 ## 7. Coverage
 
 Coverage 是发现盲区的信号，不是质量目标本身。

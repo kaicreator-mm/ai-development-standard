@@ -1,0 +1,318 @@
+{
+  "purpose": "ADS v4.19 PROPOSED retrospective decision-evaluation pilot; NOT active conformance, not accepted Golden oracle",
+  "status": "DRAFT_UNADJUDICATED",
+  "version": "0.1",
+  "source_repository": "kaicreator-mm/domain-harness",
+  "methodology": "Issue-finding-stage diagnostic snapshots paraphrased from public GitHub Issue reports; NOT proven reconstruction of earlier Planner information or live Agent runtime.",
+  "authority": "Existing Development Workflow §8 feedback owner, Task Learning v2, Golden and Test Scenario authorities remain controlling. Expected outputs are proposed reviewer labels only.",
+  "time_and_metrics": "All specific Agent active time/cost/token measurements UNKNOWN; the dataset tests decisions, not measured speedups.",
+  "leakage_policy": "Do not present later repair/review/closure information as though available before issue creation. Historical point-in-time prevention claims require separate source-reconstructed snapshots and independent approval.",
+  "cases": [
+    {
+      "id": "DH-V02-TEST-DISCOVERY",
+      "phase": "test-evidence",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/162",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Canonical npm test discovers only root-level tests; nested execution and recovery suites are excluded though CI is green.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Inspect actual discovered suite inventory, fix project test invocation, rerun relevant checks.",
+        "must_not": "Treat prior CI green as proof all critical suites ran."
+      },
+      "paired_control": "DH-V07-CI-RUNNER",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V02-PUBLIC-ENTRY",
+      "phase": "public-consumer",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/139",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "The advertised package root imports Node built-ins and SQLite although an alternate /v2 path is portable.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Verify clean installed import of the documented public root; route export graph and packaging to project interface owner.",
+        "must_not": "Claim public SDK portability from an internal /v2 import test."
+      },
+      "paired_control": "DH-V10-HOOK-UNUSED",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V03-DOWNSTREAM-TOOLS",
+      "phase": "downstream-feedback",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/177",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Thirteen domain-app drafts require host-local writes while the SDK supports remote HTTP or scripts only.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_SPECIFIC_REQUIREMENT",
+        "bounded_decision": "Ask SDK Product/L2 owner for first-class Host Tool semantics; keep downstream workaround evidence.",
+        "must_not": "Declare an ADS-wide runtime protocol defect or demand all projects implement HTTP loopback."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V04-VERSION-CI-DRIFT",
+      "phase": "ci-config",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/409",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Project overrides still call v0.3 current; Woodpecker push branch filter omits v0.4 despite a v0.4 release candidate.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Repair project version/CI configuration and verify exact version-branch check applicability.",
+        "must_not": "Call the failing missing-pipeline condition a product runtime bug."
+      },
+      "paired_control": "DH-V07-CI-RUNNER",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V07-DAG-SERIAL",
+      "phase": "dag-design",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/530",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "A v0.7 refactor Task DAG requires v0.6 code closure before any v0.7 source work despite independent refactor contracts.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "AGENT_EXECUTION_DEFECT",
+        "bounded_decision": "Have L2/DAG owner separate early safe refactor implementation from final compatibility reconciliation, retaining lawful native DAG mutation.",
+        "must_not": "Delete dependencies or issue Builder Claims without authorizing the actual topology change."
+      },
+      "paired_control": "DH-V07-VERIFY-CAMPAIGN",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V07-VERIFY-CAMPAIGN",
+      "phase": "coordination-positive",
+      "assessment_window": "practice-good-example",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/586",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "One cross-cutting Microkernel verification campaign stores multiple checkpoint outcomes under a controller Issue without a new implementation DAG.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "POSITIVE_CONTROL_NO_NEW_OBSERVATION",
+        "bounded_decision": "Prefer one campaign Issue and record checkpoints there; open new work only for independently owned defects or tasks.",
+        "must_not": "Create one mandatory Issue and fresh source Claim for every verification checkpoint."
+      },
+      "paired_control": "DH-V07-DAG-SERIAL",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V07-CI-RUNNER",
+      "phase": "environment",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/782",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Woodpecker runner lacks git-lfs; checkout cannot complete while another compatible runner works.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "ENVIRONMENT_OR_TOOL_DEFECT",
+        "bounded_decision": "Diagnose the runner/toolchain capability and use allowed infra recovery/alternate execution with exact-source evidence.",
+        "must_not": "Patch production source or score Builder quality down because the clone step failed."
+      },
+      "paired_control": "DH-V04-VERSION-CI-DRIFT",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V08-COMPOSITION",
+      "phase": "integration",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1013",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Component PRs were merged but selected Host bootstrap does not wire required protected Kernel ports, blocking the real two-App path.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Route bounded protected integration wiring to its owner; test one real clean public load/send/effect path and negatives.",
+        "must_not": "Claim individual component PR green implies installed Domain App works."
+      },
+      "paired_control": "DH-V10-HOOK-UNUSED",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V081-CAS",
+      "phase": "runtime-invariant",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1100",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Two writers can commit a stale admitted transition using a fresh sequence and run a non-idempotent effect after FINAL.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Preserve original expected-sequence CAS, test actual competing writers and effect side-effect exclusion; P0 remains blocking under applicable authority.",
+        "must_not": "Defer this credible state/effect integrity failure as low-frequency performance edge."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V081-MULTI-B",
+      "phase": "runtime-routing",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1102",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Sealed multiple-B closure is accepted but facade selects the first B policy for all intents.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Route intent to its exactly sealed Business owner; validate B1/B2 distinct policy positives/negatives.",
+        "must_not": "Call both packages imported proof they are both actively selected."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V09-SCOPE",
+      "phase": "scope-positive",
+      "assessment_window": "practice-good-example",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1026",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "The SDK Core needs selected JS/TS execution; Node/OS/native SQLite verification belongs to optional shipped adapters.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "POSITIVE_CONTROL_NO_NEW_OBSERVATION",
+        "bounded_decision": "Keep scoped Core promises separate from selected adapter physical profiles, retain required evidence where applicable.",
+        "must_not": "Impose global Windows/Linux/SQLite matrix on platform-neutral Core by default."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V10-HOOK-UNUSED",
+      "phase": "retained-behavior",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1264",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Kernel extension hooks are imported and initialized but K Primary never calls/revalidates them as Frozen L2 requires.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Prove selected hook invocation and bounded advice rejection on the real current path; route retained requirement to owning Task/integration.",
+        "must_not": "Treat loaded hook count as satisfying end-to-end feature acceptance."
+      },
+      "paired_control": "DH-V08-COMPOSITION",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V10-RACE-FLAKE",
+      "phase": "nondeterministic-test",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1209",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Official packed Rich concurrent writer gate fails 1/3: losing competitor lacks typed outcome; other runs passed.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Preserve failure, inspect child exit/report and true competing writers, repair root; do not substitute two good reruns for required result.",
+        "must_not": "Mark flaky gate PASS by cherry-picking successes."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V101-EVIDENCE-REUSE",
+      "phase": "evidence-reuse-positive",
+      "assessment_window": "practice-good-example",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1291",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Version R01 consumes exact-source qualified T06 physical regression receipts and runs only uncovered required cases.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "POSITIVE_CONTROL_NO_NEW_OBSERVATION",
+        "bounded_decision": "Reuse immutable current tuples across owners when legally valid; keep one final integrated RQ/Hidden owner.",
+        "must_not": "Run every previous full suite for each small leaf regardless of affected tuple."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V102-A5-REPLAN",
+      "phase": "design-rework",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1354",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Manifest/BUILD/Compiler/Node24 ownership and order cause multiple blocked revisions of one architecture/DAG amendment.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Return to L2/DAG owner to compare feasible topology and actual package graph; preserve exact Review history and authorized write-set changes.",
+        "must_not": "Keep adding a narrower shim or unauthorized writer simply to preserve frozen topology."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V102-DOC-GAP",
+      "phase": "acceptance-inventory",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1379",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "A P1 release deliverable requires package authoring guide and extension points but docs PR source PASS did not cover the full Product list.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Map frozen Product rows to observable version candidate artifacts and actual documented commands; route documentation owner.",
+        "must_not": "Claim local docs PR PASS equals complete Product RQ."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V103-TRUST",
+      "phase": "security-trust",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1393",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "Sealed npm Provider shim does not bind resolved executable provider bytes; a replaced provider can run in the trusted Host deployment.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Determine the approved deployment trust anchor and bounded pre-load verification with owning Product/L2; keep the demonstrated P1 risk.",
+        "must_not": "Claim arbitrary npm import sealed because its specifier is allowlisted, or build an infinite sandbox without threat model."
+      },
+      "paired_control": null,
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    },
+    {
+      "id": "DH-V103-DOC-CAS",
+      "phase": "dx-negative-control",
+      "assessment_window": "review-at-finding",
+      "origin_issue": "https://github.com/kaicreator-mm/domain-harness/issues/1394",
+      "evidence_kind": "SOURCE_REPORTED_ISSUE_FINDING",
+      "input_known_fact": "ai-rexform clean SDK consumer can load but first send fails due to mismatch in public DocStore/Host CAS conditional-API wiring.",
+      "input_unknown": "Exact independently verified root/current-version relevance and counterfactual pre-discovery knowledge are not inferred; inspect source where material.",
+      "proposed_expected": {
+        "primary_class": "PROJECT_DEFECT",
+        "bounded_decision": "Prefer official Host CAS adapter documentation and a clean positive/negative consumer before any ABI-breaking redesign.",
+        "must_not": "Assume any failed clean consumer requires Kernel rewrite."
+      },
+      "paired_control": "DH-V103-TRUST",
+      "evaluation_status": "PROPOSED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "source_publication": "Public GitHub source ref only; follow ADS per-source publication/permission constraints before promotion"
+    }
+  ]
+}

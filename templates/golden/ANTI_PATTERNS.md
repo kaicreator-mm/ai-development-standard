@@ -114,3 +114,27 @@ After adopting v4.2, an old exact-SHA PASS is relabeled as compatibility or migr
 Compatibility or migration evidence is used to declare Deployment success, or credential/tool availability is treated as side-effect authority.
 
 **Forbidden because:** v4.2 does not own Deployment result semantics. Deployment execution/result belongs to the applicable Deployment owner; capability is not authorization.
+
+## actual-test-discovery-missing
+
+A CI profile says `npm test: PASS`, while its glob excludes nested suites that the profile explicitly promises to execute (DomainHarness [#162](https://github.com/kaicreator-mm/domain-harness/issues/162)).
+
+**Forbidden because:** command exit 0 is evidence only for tests that actually ran; material omitted required scope remains `NOT_RUN`. Fix test discovery rather than rewriting behavior source or claiming the whole profile passed.
+
+## loaded-extension-as-functional-proof
+
+A build asserts that two plugins were imported and activated and reports the required Kernel extension behavior PASS, without the Kernel Primary ever invoking them (DomainHarness [#1264](https://github.com/kaicreator-mm/domain-harness/issues/1264)).
+
+**Forbidden because:** component presence != selected runtime dispatch != externally observable contract behavior. Use a selected-path invocation/negative at the rightful integration owner, or record missing evidence honestly.
+
+## compatibility-join-as-universal-source-prerequisite
+
+A new refactor branch freezes `old_version_release → every new source Task` even though only final cross-version compatibility comparison needs the old release outcome (DomainHarness [#530](https://github.com/kaicreator-mm/domain-harness/issues/530)).
+
+**Forbidden because:** a final evidence join is not automatically a code-baseline dependency; serialize only real contract/atomic/write-set prerequisites. Do not remove an already-materialized native edge without lawful mutation.
+
+## endless-repair-issues-for-one-root
+
+For the same exact PR concern, each new Reviewer comment becomes a separate repair Issue, full CI rerun and fresh Review, with no root-class progress, even though no independent work owner was created.
+
+**Forbidden because:** Issue proliferation is not user-facing delivery and nonconverging repair must return to the existing root owner. Group currentness-bound Review attempts in the same concern when legal; keep required independent Review and affected Validation intact.
