@@ -197,7 +197,8 @@ class IntegratedPlanning(unittest.TestCase):
                     print("HISTORIC_RAW_FAILURE_HEADER=" + header, flush=True)
                 v419_resolved = _qualified_v419_t05a_zero_failures(path)
                 self.assertEqual(proc.returncode, 0 if v419_resolved else 1)
-                self.assertRegex(log, rf"Ran {count} tests? in ")
+                # v4.19 qualified T05A adds one fail-closed owner-successor test.
+                self.assertRegex(log, rf"Ran {count + (1 if v419_resolved else 0)} tests? in ")
                 self.assertEqual(sorted(observed), [] if v419_resolved else sorted(expected),
                                  f"New/missing historic failure identity:\n{log[-5000:]}")
                 self.assertNotRegex(log, r"FAILED \([^)]*(?:errors=[1-9]|skipped=[1-9])")
