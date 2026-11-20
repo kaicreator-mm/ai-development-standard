@@ -375,6 +375,32 @@ def _v419_adopted_owner_successor_verified(rel_path: str, historical_pin: str) -
         return False
 
 
+# ADS v4.19 integrated preview: #1365 composes optional Stage-1 evidence
+# and root-class clauses into the already-accepted #1370 workflow. The
+# integrated workflow is a DIFFERENT exact blob from #1370, not a blanket
+# waiver of the original v4.9 read-only owner guarantee.
+V419_COMPOSED_WORKFLOW_SOURCE = "41ca821ca219c24e5b7f61e9c8fbe4159eef8e36"
+V419_COMPOSED_WORKFLOW_BLOB = "31923fca937df5e69cef6e115ab33c411210d587"
+
+
+def _v419_composed_workflow_successor_verified(rel_path: str, historical_pin: str) -> bool:
+    if rel_path != "standards/DEVELOPMENT_WORKFLOW.md":
+        return False
+    if historical_pin != READ_ONLY_DEPS_REBOUND_BLOBS[rel_path]:
+        return False
+    try:
+        git("merge-base", "--is-ancestor", V419_COMPOSED_WORKFLOW_SOURCE, "HEAD")
+        return (
+            git_blob_sha(V419_ADOPTED_HEAD, rel_path)
+            == V419_ADOPTED_OWNER_BLOBS[rel_path][1]
+            and git_blob_sha(V419_COMPOSED_WORKFLOW_SOURCE, rel_path)
+            == V419_COMPOSED_WORKFLOW_BLOB
+            and git_blob_sha("HEAD", rel_path) == V419_COMPOSED_WORKFLOW_BLOB
+        )
+    except subprocess.CalledProcessError:
+        return False
+
+
 def github_anchors(text: str) -> set[str]:
     """GitHub-style heading anchors: lowercase, punctuation stripped, spaces -> dashes."""
     anchors = set()
@@ -1081,6 +1107,27 @@ class GateCurrentnessKernel(unittest.TestCase):
             self.assertIn(rule, self.map_doc)
             self.assertIn(rule, l2_text)
 
+    def test_v419_composed_workflow_rejects_wrong_path_and_unknown_blob(self) -> None:
+        path = "standards/DEVELOPMENT_WORKFLOW.md"
+        pin = READ_ONLY_DEPS_REBOUND_BLOBS[path]
+        self.assertFalse(_v419_composed_workflow_successor_verified(
+            "standards/VALIDATION_STANDARD.md", pin
+        ))
+        self.assertFalse(_v419_composed_workflow_successor_verified(path, "0" * 40))
+        self.assertTrue(_v419_composed_workflow_successor_verified(path, pin))
+        real_sha = git_blob_sha
+        with mock.patch(
+            __name__ + ".git_blob_sha",
+            side_effect=lambda rev, target: (
+                "f" * 40 if rev == "HEAD" else real_sha(rev, target)
+            ),
+        ):
+            self.assertFalse(_v419_composed_workflow_successor_verified(path, pin))
+        with mock.patch(
+            __name__ + ".git", side_effect=subprocess.CalledProcessError(1, "git")
+        ):
+            self.assertFalse(_v419_composed_workflow_successor_verified(path, pin))
+
     def test_v419_owner_successor_rejects_wrong_path_pin_and_unknown_blob(self) -> None:
         historical = READ_ONLY_DEPS_REBOUND_BLOBS["standards/VALIDATION_STANDARD.md"]
         self.assertFalse(_v419_adopted_owner_successor_verified("standards/other.md", historical))
@@ -1180,6 +1227,8 @@ class GateCurrentnessKernel(unittest.TestCase):
                     # Exact v4.19 adopted standard only; unknown future third blob
                     # cannot be accepted by old v4.9 static pin tests.
                     admitted.add(V419_ADOPTED_OWNER_BLOBS[rel_path][1])
+                if _v419_composed_workflow_successor_verified(rel_path, pinned_blob):
+                    admitted.add(V419_COMPOSED_WORKFLOW_BLOB)
                 self.assertIn(git_blob_sha("HEAD", rel_path), admitted)
         # F1 RE-BIND (T-012; Controller authorization per the #730@5998009516
         # disclosure, inherited #877@5999737862, MANIFEST
