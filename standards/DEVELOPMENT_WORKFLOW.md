@@ -106,6 +106,30 @@ required evidence
 
 如果选择 Version Branch Mode，应尽早建立或确认 `version/vX.Y.Z` 远端 integration branch，使后续正式 checkpoint 与 Task PR 有稳定目标。
 
+### Phase-scoped Work Graph and adaptive engineering depth (three-layer proposal)
+
+L1/L2/L3 are **different engineering-semantic layers**, not three mandatory DAG files or three separate schedulers. Reuse the previously designed [v4.12 W1 three-phase model](https://github.com/kaicreator-mm/ai-development-standard/issues/1100) and [prospective refinement](../docs/intake/2026-11-21-three-phase-adaptive-engineering-r0.md):
+
+| Phase view | Responsibility | Actual authority |
+| --- | --- | --- |
+| `DAG-P` — L1/Product | Product evidence **and Requirements Engineering**: elicitation, ambiguity/conflict, requirements/business rules, acceptance, optional research and explicit Product decisions | Product evidence/review remains input; existing Product Authority owns Product Freeze |
+| `DAG-A` — L2/Architecture | Requirement-driven system/module, interface, data/ownership, invariant and quality-attribute design; material architecture unknowns/demos and decision dependencies | Existing architecture owner and L2 Freeze; a research Demo is not implementation PASS |
+| `DAG-I` — L3/Implementation | Existing Implementation Task DAG with task-level detailed design, contract/test/failure path, coding, actual verification and integration | Existing Task Pack, GitHub native Issue Dependencies, Claim/CAS, Review/Validation/Release authorities |
+
+These are **three optional phase-scoped views over one conceptual Development Work Graph**. A source/evidence relationship (e.g. `CONSUMES_EVIDENCE`) explains a decision but is not a live `BLOCKED_BY` dependency. For materialized implementation Tasks, the current native GitHub Issue dependency graph alone determines executable Task blocking; L1 and L2 studies must not mint competing native execution authority.
+
+**Choose work organization independently in each phase**, using material risk/authority floor, current evidence, real dependencies, uncertainty, responsible executors, environment and expected decision value:
+
+- `INLINE`: one owner and enough current evidence; preserve a concise decision/acceptance record, **no empty DAG/Issue**.
+- `BOUNDED_WORKLIST`: a small set of checks or questions with no significant independent scheduling dependencies; use one bounded list/checkpoint and stop condition.
+- `EXPLICIT_DAG`: real interdependent/independently ownable work, critical-path needs, shared write constraints or distinct real human/Host prerequisites; describe actual predecessor nodes and evidence terminals, materialize Issues/edges only where existing authority requires them.
+
+`FAST`, `STANDARD`, `EXPLORATORY` and `HIGH_ASSURANCE` are execution-depth intentions, not one globally fixed project profile. Exploration is about uncertainty; high assurance is about consequence/mandated evidence, so both can apply. Complex L1 does **not** mechanically impose complex L2/L3. Fast Path never cancels an applicable trust, validation or human authorization requirement.
+
+**Cross-phase trace when material:** user need/Goal → Requirement/Business Rule/Acceptance → L2 Design/ADR/Contract → DAG-I Task/L3 → Implementation → Test/Evidence. Reuse existing L1/L2/L3 evidence spine/currentness and only re-check the affected slice; Product or L2 changes go through the existing amendment authority and invalidate only affected downstream design/Task evidence. L3's internal checklist is not a fourth canonical DAG.
+
+This is an *additive future-version candidate* sourced from #1100/#1081/#931 and the bounded design in ADS #1383; it does not amend a released ADS 4.19.0 pin until reviewed and adopted.
+
 ### Stage 1 — Product / Scope
 
 Stage 1 把 Idea/Intent 与 Stage 0 Intake/Baseline 的结果收敛为被 Product authority 冻结的产品语义。对 material / new normative Product scope，canonical Stage-1 序列 MUST 可按顺序重构：
