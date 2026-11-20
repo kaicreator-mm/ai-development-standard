@@ -14,8 +14,15 @@ when:
 
 steps:
   - name: ads-fast-validation
-    image: python:3.12-bookworm
+    # Fleet agents run backend=local: the step `image` is resolved as a
+    # shell executable inside the agent container (container images are not
+    # pulled), so it must name an existing binary (see domain-harness verify.yaml).
+    image: bash
     commands:
+      # backend=local clone lands as --depth=1 --filter=tree:0 regardless of
+      # clone.settings.depth (pipeline #16 evidence); unshallow in-step so the
+      # pinned BASE_SHA historical objects resolve locally, not via lazy fetch.
+      - git fetch --unshallow --no-filter origin || echo "clone already complete"
       - python -m compileall -q scripts
       - python scripts/verify_standard.py
       - python scripts/test_protocol_schemas.py
